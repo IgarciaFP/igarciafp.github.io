@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tema 1: Planificación y Diseño de Interfaces Web — 2º DAW (Modo Offline)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --primary-light: #eff6ff;
+            --primary-border: #3b82f6;
+            --secondary-color: #0f766e;
+            --secondary-light: #f0fdf4;
+            --accent-color: #d97706;
+            --accent-light: #fffbeb;
+            --danger-color: #b91c1c;
+            --danger-light: #fef2f2;
+            --purple-color: #6d28d9;
+            --purple-light: #f5f3ff;
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+            --bg-page: #f1f5f9;
+            --bg-card: #ffffff;
+            --border-color: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-page);
+            line-height: 1.7;
+            padding: 30px 20px;
+        }
+
+        .document-wrapper {
+            max-width: 1350px;
+            width: 100%;
+            margin: 0 auto;
+            display: block;
+        }
+
+        /* Índice lateral flotante deslizable (Slide-out Sidebar) */
+        .sidebar-toc {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 310px;
+            max-height: calc(100vh - 40px);
+            background: var(--bg-card);
+            padding: 22px 20px;
+            border-radius: 0 12px 12px 0;
+            border: 1px solid var(--border-color);
+            border-left: none;
+            box-shadow: 6px 0 25px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            transform: translateX(-292px);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto;
+        }
+
+        /* Pestaña indicadora al aproximar el ratón al borde izquierdo */
+        .sidebar-toc::after {
+            content: "\f0c9  ÍNDICE";
+            font-family: 'Font Awesome 6 Free', 'Inter', sans-serif;
+            font-weight: 900;
+            font-size: 0.78rem;
+            position: absolute;
+            top: 20px;
+            right: -88px;
+            width: 88px;
+            height: 40px;
+            background: var(--primary-color);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            box-shadow: 4px 2px 10px rgba(0,0,0,0.15);
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-toc:hover {
+            transform: translateX(0);
+        }
+
+        .sidebar-toc h4 {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 8px;
+        }
+
+        .sidebar-toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .sidebar-toc li {
+            margin-bottom: 6px;
+        }
+
+        .sidebar-toc a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.86rem;
+            display: block;
+            padding: 5px 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-toc a:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Contenido Principal a Ancho Completo (100% Flexible) */
+        .document-container {
+            background: var(--bg-card);
+            padding: 50px 65px;
+            border-radius: 12px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border-color);
+            width: 100%;
+        }
+
+        /* Encabezados y Jerarquía */
+        .header-banner {
+            border-bottom: 4px solid var(--primary-color);
+            padding-bottom: 25px;
+            margin-bottom: 40px;
+        }
+
+        .module-tag {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 5px 14px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+        }
+
+        h1 {
+            font-family: 'Merriweather', Georgia, serif;
+            font-size: 2.3rem;
+            color: var(--primary-color);
+            line-height: 1.25;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-family: 'Merriweather', Georgia, serif;
+            font-size: 1.6rem;
+            color: var(--primary-color);
+            margin-top: 50px;
+            margin-bottom: 22px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            scroll-margin-top: 20px;
+        }
+
+        h3 {
+            font-size: 1.28rem;
+            color: var(--secondary-color);
+            margin-top: 32px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            scroll-margin-top: 20px;
+        }
+
+        h4 {
+            font-size: 1.08rem;
+            color: var(--text-dark);
+            margin-top: 24px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 18px;
+            text-align: justify;
+            font-size: 1rem;
+            color: var(--text-dark);
+        }
+
+        strong {
+            color: #000000;
+            font-weight: 600;
+        }
+
+        ul, ol {
+            margin-bottom: 22px;
+            padding-left: 28px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Cajas Didácticas Especiales */
+        .objectives-box {
+            background-color: var(--primary-light);
+            border-left: 5px solid var(--primary-border);
+            padding: 26px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .objectives-box h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .didactic-note {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid #0284c7;
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .didactic-note h5 {
+            color: #0369a1;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .didactic-note p {
+            margin-bottom: 0;
+            font-size: 0.95rem;
+        }
+
+        /* Cajas de Recursos e Hipervínculos */
+        .resource-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .resource-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .resource-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .resource-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .badge-video { background-color: #fee2e2; color: #dc2626; }
+        .badge-tool { background-color: #e0e7ff; color: #4338ca; }
+        .badge-reading { background-color: #dcfce7; color: #15803d; }
+        .badge-course { background-color: #fef3c7; color: #b45309; }
+
+        .resource-description {
+            font-size: 0.94rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .resource-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--primary-border);
+            width: fit-content;
+            transition: all 0.2s ease;
+        }
+
+        .resource-link-btn:hover {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        /* Tarjetas Leyes UX y Conceptos Avanzados */
+        .ux-law-card {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--purple-color);
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .ux-law-card h5 {
+            font-size: 1.08rem;
+            color: var(--purple-color);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ux-law-card p {
+            margin-bottom: 0;
+            font-size: 0.96rem;
+        }
+
+        .advanced-concept-box {
+            background-color: #fcfcfc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid var(--secondary-color);
+            padding: 22px 26px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .advanced-concept-box h4 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            font-size: 1.12rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Ejemplos y Errores */
+        .example-box {
+            background-color: var(--secondary-light);
+            border: 1px solid #bbf7d0;
+            border-left: 5px solid var(--secondary-color);
+            padding: 25px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .example-box h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            font-size: 1.18rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .error-box {
+            background-color: var(--danger-light);
+            border: 1px solid #fecaca;
+            border-left: 5px solid var(--danger-color);
+            padding: 25px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .error-box h3 {
+            color: var(--danger-color);
+            margin-top: 0;
+            font-size: 1.18rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .case-study-box {
+            background-color: #ffffff;
+            border: 2px solid var(--primary-color);
+            padding: 35px;
+            border-radius: 12px;
+            margin: 35px 0;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        }
+
+        .case-study-box h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 12px;
+            font-size: 1.4rem;
+        }
+
+        .phase-block {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid var(--accent-color);
+            padding: 22px 26px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .phase-block h4 {
+            color: var(--accent-color);
+            margin-top: 0;
+            font-size: 1.18rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .key-ideas-box {
+            background-color: var(--accent-light);
+            border: 1px solid #fde68a;
+            border-left: 5px solid var(--accent-color);
+            padding: 28px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .key-ideas-box h3 {
+            color: var(--accent-color);
+            margin-top: 0;
+        }
+
+        .activities-section {
+            background-color: #fafafa;
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            border-radius: 10px;
+            margin-top: 45px;
+        }
+
+        /* Imágenes e Ilustraciones Vectoriales Embebidas */
+        .image-container {
+            text-align: center;
+            margin: 35px 0;
+            background: #ffffff;
+            padding: 18px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+        }
+
+        .image-container svg {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+        }
+
+        .image-caption {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 12px;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        /* Tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 28px 0;
+            font-size: 0.96rem;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        /* Código */
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, monospace;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        pre {
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Fira Code', Consolas, Monaco, monospace;
+            font-size: 0.9rem;
+            margin: 22px 0;
+        }
+
+        blockquote {
+            font-style: italic;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 18px;
+            margin: 24px 0;
+            color: var(--text-muted);
+        }
+
+        @media print {
+            body {
+                background-color: #ffffff;
+                padding: 0;
+            }
+            .sidebar-toc {
+                display: none;
+            }
+            .document-container {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+            }
+            .ux-law-card, .example-box, .error-box, .resource-card, .advanced-concept-box, .phase-block {
+                break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .document-container {
+                padding: 30px 20px;
+            }
+            .sidebar-toc {
+                width: 280px;
+                transform: translateX(-265px);
+            }
+            .sidebar-toc::after {
+                right: -80px;
+                width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navegación lateral estática deslizable -->
+<nav class="sidebar-toc">
+    <h4><i class="fa-solid fa-list-ol"></i> Contenidos</h4>
+    <ul>
+        <li><a href="#sec1">1. Introducción</a></li>
+        <li><a href="#sec2_1">2.1. UI e IPO (HCI)</a></li>
+        <li><a href="#sec2_2">2.2. UI vs. UX, Usabilidad y Accesibilidad</a></li>
+        <li><a href="#sec2_3">2.3. Percepción Visual & Gestalt</a></li>
+        <li><a href="#sec2_4">2.4. Leyes Fundamentales de UX</a></li>
+        <li><a href="#sec2_5">2.5. Elementos del Diseño Gráfico</a></li>
+        <li><a href="#sec2_6">2.6. Identidad Visual & Atomic Design</a></li>
+        <li><a href="#sec2_7">2.7. Color & Ratios WCAG</a></li>
+        <li><a href="#sec2_8">2.8. Composición, Estados & Mobile-First</a></li>
+        <li><a href="#sec2_9">2.9. Componentes & Formularios Web</a></li>
+        <li><a href="#sec2_10">2.10. Investigación UX & Design Thinking</a></li>
+        <li><a href="#sec3">3. Ejemplos Prácticos</a></li>
+        <li><a href="#sec4">4. Errores Frecuentes</a></li>
+        <li><a href="#sec5">5. Caso Práctico Integrado (Migas Amigas)</a></li>
+        <li><a href="#sec6">6. Resumen (Ideas clave)</a></li>
+        <li><a href="#sec7">7. Actividades</a></li>
+    </ul>
+</nav>
+
+<div class="document-wrapper">
+
+    <main class="document-container">
+
+        <!-- Banner Encabezado -->
+        <div class="header-banner">
+            <span class="module-tag">Diseño de Interfaces Web • 2º DAW</span>
+            <h1>Tema 1: Planificación y Diseño de Interfaces Web</h1>
+        </div>
+
+        <!-- 1. INTRODUCCIÓN -->
+        <h2 id="sec1"><i class="fa-solid fa-book-open"></i> 1. Introducción</h2>
+        <p>El desarrollo de aplicaciones digitales modernas exige concebir la interacción con las personas antes de escribir cualquier línea de código de servidor o de base de datos. En este tema se estudian los fundamentos teóricos, metodológicos y visuales de la planificación de interfaces de usuario (<strong>User Interface</strong> o UI) y la experiencia de usuario (<strong>User Experience</strong> o UX).</p>
+        
+        <p>En el entorno profesional actual del perfil de Técnico Superior en Desarrollo de Aplicaciones Web (DAW), un desarrollador no solo construye código funcional; debe garantizar que las pantallas sean intuitivas, accesibles, coherentes y estéticamente equilibradas. Comprender los modelos de interacción, las leyes de la percepción visual (Gestalt), las leyes fundamentales de UX, la metodología de <strong>Atomic Design</strong>, los ratios numéricos normativos de accesibilidad y las estructuras de maquetación adaptativa resulta imprescindible para que un producto digital sea funcional e interpretable por cualquier usuario.</p>
+        
+        <p>Para abordar este módulo profesional es recomendable contar con conocimientos previos de maquetación HTML y hojas de estilo CSS, así como nociones generales sobre cómo funciona la web. Los contenidos se coordinan con los Resultados de Aprendizaje orientados al diseño, planificación y prototipado de interfaces adaptativas de alta calidad.</p>
+
+        <!-- Objetivos Didácticos -->
+        <div class="objectives-box">
+            <h3><i class="fa-solid fa-bullseye"></i> Al terminar este tema serás capaz de...</h3>
+            <ul>
+                <li><strong>Diferenciar</strong> los conceptos de UI, UX, usabilidad y accesibilidad aplicando su terminología técnica y los ratios numéricos normativos WCAG (4.5:1 / 3:1).</li>
+                <li><strong>Identificar y aplicar</strong> los principios de percepción de la Gestalt, las Leyes de UX y los estados de interacción de componentes UI (hover, focus, disabled).</li>
+                <li><strong>Estructurar</strong> sistemas de diseño basados en <em>Atomic Design</em> y <em>Design Tokens</em> mediante variables CSS.</li>
+                <li><strong>Planificar</strong> la investigación UX con User Personas, Card Sorting y Tree Testing antes de elaborar la arquitectura de navegación.</li>
+                <li><strong>Desacoplar</strong> la arquitectura visual de información frente a los archivos de indexación web (<code>sitemap.xml</code>) y directivas de rastreo (<code>robots.txt</code>).</li>
+                <li><strong>Aplicar</strong> la estrategia <em>Mobile-First</em> y las recomendaciones de área táctil mínima (<em>Target Size</em> 44x44 px / 48x48 px).</li>
+                <li><strong>Construir</strong> prototipos de interfaz web (<em>wireframes</em> y <em>mockups</em>) integrando patrones de usabilidad en formularios y optimización de rendimiento percibido (Core Web Vitals).</li>
+            </ul>
+        </div>
+
+        <!-- 2. DESARROLLO DE CONTENIDOS -->
+        <h2><i class="fa-solid fa-layer-group"></i> 2. Desarrollo de contenidos</h2>
+
+        <h3 id="sec2_1">2.1. Fundamentos de Interfaz de Usuario (UI) e Interacción Persona-Ordenador (IPO/HCI)</h3>
+        
+        <h4>2.1.1. Definición y alcance de la UI (Interfaces Gráficas - GUI)</h4>
+        <p>Las <strong>Interfaces de Usuario</strong> (<em>User Interfaces</em> o <strong>UI</strong>) engloban el conjunto de elementos hardware y software que actúan como frontera de comunicación entre el ser humano y las máquinas. En el ecosistema del diseño digital, la interfaz abarca pantallas, ventanas, menús, controles, iconografía, documentación y sistemas de ayuda en línea.</p>
+        
+        <p>Históricamente, la interacción se basaba en interfaces de línea de comandos (<strong>CLI</strong>, <em>Command Line Interface</em>) estructuradas bajo un patrón <strong>Acción-Objeto</strong>, donde la persona primero indicaba el comando y después el archivo u objeto a modificar. Con la primera implantación comercial por parte de Xerox en 1981 y su posterior popularización a través de Apple, surgieron las <strong>Interfaces Gráficas de Usuario</strong> (<strong>GUI</strong>, <em>Graphical User Interfaces</em>).</p>
+        
+        <p>Las GUI revolucionaron el sector introduciendo la tecnología <strong>WYSIWYG</strong> (<em>What You See Is What You Get</em>, lo que ves es lo que obtienes) y el paradigma de interacción <strong>Objeto-Acción</strong>. En este modelo, la persona selecciona primero el objeto visual en pantalla (por ejemplo, un archivo o una imagen) y posteriormente ejecuta la acción deseada sobre él (como eliminar, mover o editar).</p>
+
+        <!-- Figura 1.1: Diagrama SVG de Evolución de GUI -->
+        <div class="image-container">
+            <svg viewBox="0 0 760 260" width="100%" height="260" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="260" rx="8" fill="#f1f5f9"/>
+                <rect x="30" y="30" width="320" height="200" rx="8" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+                <rect x="30" y="30" width="320" height="30" rx="8" fill="#1e293b"/>
+                <circle cx="50" cy="45" r="5" fill="#ef4444"/><circle cx="65" cy="45" r="5" fill="#f59e0b"/><circle cx="80" cy="45" r="5" fill="#10b981"/>
+                <text x="100" y="50" fill="#94a3b8" font-family="Fira Code, monospace" font-size="12">CLI (Acción - Objeto)</text>
+                <text x="50" y="95" fill="#38bdf8" font-family="Fira Code, monospace" font-size="14">C:\> rm archivo.txt</text>
+                <text x="50" y="125" fill="#94a3b8" font-family="Inter, sans-serif" font-size="12">1º Comando (Acción: borrar)</text>
+                <text x="50" y="145" fill="#94a3b8" font-family="Inter, sans-serif" font-size="12">2º Parámetro (Objeto: archivo)</text>
+                <rect x="50" y="170" width="280" height="40" rx="4" fill="#334155"/>
+                <text x="65" y="195" fill="#f8fafc" font-family="Inter, sans-serif" font-size="12" font-weight="bold">Paradigma rígido basado en memoria</text>
+                <path d="M 365 130 L 395 130" stroke="#0284c7" stroke-width="3" stroke-dasharray="4,4"/>
+                <rect x="410" y="30" width="320" height="200" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+                <rect x="410" y="30" width="320" height="30" rx="8" fill="#e2e8f0"/>
+                <text x="430" y="50" fill="#334155" font-family="Inter, sans-serif" font-size="12" font-weight="bold">GUI (Objeto - Acción / WYSIWYG)</text>
+                <rect x="440" y="80" width="70" height="80" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+                <text x="450" y="140" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="10" font-weight="bold">Doc.pdf</text>
+                <text x="435" y="180" fill="#2563eb" font-family="Inter, sans-serif" font-size="11" font-weight="bold">1º Clic: Seleccionar Objeto</text>
+                <rect x="540" y="80" width="160" height="110" rx="6" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+                <text x="555" y="102" fill="#334155" font-family="Inter, sans-serif" font-size="11">Abrir</text>
+                <text x="555" y="125" fill="#334155" font-family="Inter, sans-serif" font-size="11">Renombrar</text>
+                <rect x="545" y="135" width="150" height="24" rx="3" fill="#fee2e2"/>
+                <text x="555" y="151" fill="#dc2626" font-family="Inter, sans-serif" font-size="11" font-weight="bold">2º Acción: Eliminar</text>
+            </svg>
+            <div class="image-caption">Figura 1.1: Evolución de las interfaces gráficas (GUI) y el paradigma de interacción visual Objeto-Acción.</div>
+        </div>
+
+        <h4>2.1.2. Interacción Persona-Ordenador (IPO / HCI)</h4>
+        <p>La <strong>Interacción Persona-Ordenador</strong> (<strong>IPO</strong>, o <strong>HCI</strong> por sus siglas en inglés <em>Human-Computer Interaction</em>) es la disciplina encargada de estudiar cómo los seres humanos interactúan con las tecnologías informáticas. Su objetivo fundamental es lograr que los sistemas sean eficientes, seguros e intuitivos.</p>
+        
+        <!-- Figura 1.2: Diagrama SVG Multidisciplinariedad HCI -->
+        <div class="image-container">
+            <svg viewBox="0 0 760 220" width="100%" height="220" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="220" rx="8" fill="#fafafa"/>
+                <circle cx="380" cy="110" r="45" fill="#1e3a8a"/>
+                <text x="380" y="115" fill="#ffffff" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">IPO / HCI</text>
+                <g transform="translate(180, 50)"><rect x="0" y="0" width="110" height="35" rx="17" fill="#eff6ff" stroke="#3b82f6"/><text x="55" y="22" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Informática</text></g>
+                <g transform="translate(470, 50)"><rect x="0" y="0" width="110" height="35" rx="17" fill="#f0fdf4" stroke="#0f766e"/><text x="55" y="22" fill="#0f766e" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Psicología</text></g>
+                <g transform="translate(560, 110)"><rect x="0" y="0" width="110" height="35" rx="17" fill="#fffbeb" stroke="#d97706"/><text x="55" y="22" fill="#d97706" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Ergonomía</text></g>
+                <g transform="translate(470, 170)"><rect x="0" y="0" width="110" height="35" rx="17" fill="#f5f3ff" stroke="#6d28d9"/><text x="55" y="22" fill="#6d28d9" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Diseño</text></g>
+                <g transform="translate(180, 170)"><rect x="0" y="0" width="110" height="35" rx="17" fill="#fef2f2" stroke="#b91c1c"/><text x="55" y="22" fill="#b91c1c" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Semiótica</text></g>
+                <g transform="translate(90, 110)"><rect x="0" y="0" width="110" height="35" rx="17" fill="#f8fafc" stroke="#475569"/><text x="55" y="22" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Sociología</text></g>
+            </svg>
+            <div class="image-caption">Figura 1.2: Carácter multidisciplinar de la Interacción Persona-Ordenador (IPO / HCI).</div>
+        </div>
+
+        <h3 id="sec2_2">2.2. User Interface (UI) vs. User Experience (UX), Usabilidad y Accesibilidad</h3>
+        
+        <h4>2.2.1. Diferenciación técnica entre UI y UX</h4>
+        <p>En la industria del software es habitual confundir los conceptos de UI y UX, aunque representan planos complementarios:</p>
+        <ul>
+            <li><strong>User Interface (UI):</strong> Se enfoca en la creación de los componentes visuales e interactivos de la pantalla (botones, tipografías, colores, maquetación HTML/CSS).</li>
+            <li><strong>User Experience (UX):</strong> Hace referencia a la experiencia global y al grado de usabilidad percibido por la persona al interactuar con el sistema digital. Engloba emociones, arquitectura de información y diseño de interacción (IxD).</li>
+        </ul>
+
+        <blockquote>
+            «Algo que luce genial pero es difícil de usar representa una gran UI con una pobre UX. Mientras que algo muy usable que luce terrible es ejemplo de una gran UX con una pobre UI» — Helga Moreno.
+        </blockquote>
+
+        <h4>2.2.2. Usabilidad: atributos clave y perfiles de usuario</h4>
+        <p>La <strong>usabilidad</strong> define la medida en que el diseño de una interfaz toma en consideración la psicología y fisiología humanas para lograr que el uso del sistema resulte efectivo, eficiente y satisfactorio.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Atributo de Usabilidad</th>
+                    <th>Descripción Técnica</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Curva de aprendizaje</strong></td>
+                    <td>Facilidad con la que los usuarios novatos se adaptan al sistema y ejecutan tareas básicas.</td>
+                </tr>
+                <tr>
+                    <td><strong>Eficiencia de uso</strong></td>
+                    <td>Rapidez con la que los usuarios experimentados ejecutan sus objetivos tras dominar la interfaz.</td>
+                </tr>
+                <tr>
+                    <td><strong>Porcentaje de errores</strong></td>
+                    <td>Frecuencia y gravedad de las equivocaciones cometidas; afecta directamente a la frustración.</td>
+                </tr>
+                <tr>
+                    <td><strong>Facilidad para recordar</strong></td>
+                    <td>Capacidad de reutilizar el sistema con éxito tras un período de inactividad sin re-aprenderlo.</td>
+                </tr>
+                <tr>
+                    <td><strong>Satisfacción del usuario</strong></td>
+                    <td>Sensación subjetiva de comodidad, utilidad y agradabilidad tras la interacción.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>2.2.3. Accesibilidad Web (WCAG 2.2 / EN 301 549) y Ratios Numéricos de Contraste</h4>
+        <p>La <strong>Usabilidad</strong> optimiza la experiencia para un perfil de usuario determinado dentro de un contexto de uso. Por su parte, la <strong>Accesibilidad Web</strong> asegura que los contenidos digitales sean utilizables por todas las personas, independientemente de sus capacidades físicas, sensoriales o cognitivas, o de las tecnologías de asistencia empleadas (lectores de pantalla, teclados adaptados).</p>
+
+        <p>Para garantizar la accesibilidad y cumplir con la legislación europea (<strong>EN 301 549</strong> / Real Decreto 1112/2018 en España), se aplican los principios <strong>POUR</strong> de las pautas <strong>WCAG 2.2</strong> (Perceptible, Operable, Comprensible, Robusto) junto a sus <strong>ratios numéricos mínimos de contraste cromático</strong>.</p>
+
+        <div class="advanced-concept-box">
+            <h4><i class="fa-solid fa-eye"></i> Guía Completa de Ratios Numéricos de Contraste WCAG</h4>
+            <p>Los <strong>ratios de contraste de la WCAG</strong> miden la diferencia de luminosidad percibida entre el texto (o elemento gráfico) y su fondo. Se calculan en una escala matemática que abarca desde <strong>1:1</strong> hasta <strong>21:1</strong>:</p>
+            <ul>
+                <li><strong>Ratio 1:1 (Sin contraste):</strong> Ocurre cuando el texto y el fondo son exactamente idénticos (ej. texto blanco sobre fondo blanco). El contenido resulta completamente invisible.</li>
+                <li><strong>Ratio 21:1 (Contraste Máximo):</strong> Representa el máximo contraste cromático posible en pantallas (texto negro puro <code>#000000</code> sobre fondo blanco puro <code>#FFFFFF</code>).</li>
+            </ul>
+
+            <h5>¿Cómo se interpreta la cifra matemática?</h5>
+            <p>El primer número indica la luminosidad del color más claro y el número 1 representa la del más oscuro. Por ejemplo, un ratio de <strong>4.5:1</strong> significa que el color del texto resalta o es 4.5 veces más luminoso que el fondo sobre el que se asienta.</p>
+
+            <h5>Requisitos mínimos obligatorios por elemento (WCAG Nivel AA)</h5>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo de Elemento Visual</th>
+                        <th>Ratio Mínimo</th>
+                        <th>Explicación y Aplicación en Interfaces Web</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Texto Normal</strong> (&lt; 18pt / 24px o &lt; 14pt / 19px negrita)</td>
+                        <td><strong>4.5:1</strong></td>
+                        <td>Obligatorio para párrafos, etiquetas, elementos de menú y botones de texto pequeño.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Texto Grande</strong> (≥ 18pt / 24px o ≥ 14pt / 19px negrita)</td>
+                        <td><strong>3.0:1</strong></td>
+                        <td>Se permite menor ratio en títulos y encabezados de gran tamaño porque su grosor compensa la lectura.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Componentes de UI e Iconografía</strong></td>
+                        <td><strong>3.0:1</strong></td>
+                        <td>Requerido para bordes de cajas de texto, iconos interactivos activos y anillos de foco por teclado.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h5>Niveles de Conformidad WCAG</h5>
+            <ul>
+                <li><strong>Nivel AA (Estándar Legal Obligatorio):</strong> Exige un ratio mínimo de <strong>4.5:1</strong> para texto normal. Es la exigencia normativa en la UE y en sitios corporativos o públicos.</li>
+                <li><strong>Nivel AAA (Máxima Accesibilidad):</strong> Eleva la exigencia a un ratio de <strong>7.0:1</strong> para texto normal (y 4.5:1 para texto grande), recomendado en portales de salud o atención a la tercera edad.</li>
+            </ul>
+        </div>
+
+        <h4>2.2.4. Las 10 Heurísticas de Jakob Nielsen</h4>
+        <p>Jakob Nielsen established diez principios para evaluar heurísticamente la usabilidad de las interfaces:</p>
+        <ol>
+            <li><strong>Visibilidad del estado del sistema:</strong> Informar de lo que ocurre mediante retroalimentación en un tiempo razonable.</li>
+            <li><strong>Coincidencia entre el sistema y el mundo real:</strong> Utilizar el lenguaje habitual del usuario con conceptos familiares.</li>
+            <li><strong>Control y libertad del usuario:</strong> Proporcionar salidas claras, deshacer y rehacer acciones.</li>
+            <li><strong>Consistencia y estándares:</strong> Seguir las convenciones de la plataforma para no generar incertidumbre.</li>
+            <li><strong>Prevención de errores:</strong> Diseñar mecanismos que eviten los fallos antes de que se produzcan.</li>
+            <li><strong>Reconocimiento antes que recuerdo:</strong> Minimizar la carga cognitiva haciendo visibles objetos, acciones y opciones.</li>
+            <li><strong>Flexibilidad y eficiencia de uso:</strong> Ofrecer atajos y aceleradores para usuarios avanzados.</li>
+            <li><strong>Diseño estético y minimalista:</strong> Eliminar la información irrelevante o redundante.</li>
+            <li><strong>Ayuda a reconocer, diagnosticar y solucionar errores:</strong> Mensajes claros con soluciones.</li>
+            <li><strong>Ayuda y documentación:</strong> Disponer de guías sencillas enfocadas en las tareas del usuario.</li>
+        </ol>
+
+        <h3 id="sec2_3">2.3. Psicología de la Percepción Visual: Leyes de la Gestalt</h3>
+        <p>La <strong>percepción visual</strong> es la interpretación activa que realiza el cerebro de los estímulos lumínicos. La escuela alemana de la <strong>Gestalt</strong> ("forma" o "configuración") formuló leyes psicológicas que explican cómo la mente agrupa visualmente elementos individuales para percibir un "todo" estructurado.</p>
+
+        <!-- Figura 1.3: Diagrama SVG de Leyes de la Gestalt -->
+        <div class="image-container">
+            <svg viewBox="0 0 760 280" width="100%" height="280" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="280" rx="8" fill="#f8fafc"/>
+                <g transform="translate(30, 20)">
+                    <rect x="0" y="0" width="160" height="110" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <circle cx="30" cy="30" r="10" fill="#3b82f6"/><circle cx="55" cy="30" r="10" fill="#3b82f6"/>
+                    <circle cx="30" cy="55" r="10" fill="#3b82f6"/><circle cx="55" cy="55" r="10" fill="#3b82f6"/>
+                    <circle cx="105" cy="30" r="10" fill="#3b82f6"/><circle cx="130" cy="30" r="10" fill="#3b82f6"/>
+                    <circle cx="105" cy="55" r="10" fill="#3b82f6"/><circle cx="130" cy="55" r="10" fill="#3b82f6"/>
+                    <text x="80" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Ley de Proximidad</text>
+                </g>
+                <g transform="translate(210, 20)">
+                    <rect x="0" y="0" width="160" height="110" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <circle cx="35" cy="30" r="10" fill="#3b82f6"/><rect x="70" y="20" width="20" height="20" fill="#0f766e"/><circle cx="125" cy="30" r="10" fill="#3b82f6"/>
+                    <circle cx="35" cy="60" r="10" fill="#3b82f6"/><rect x="70" y="50" width="20" height="20" fill="#0f766e"/><circle cx="125" cy="60" r="10" fill="#3b82f6"/>
+                    <text x="80" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Ley de Semejanza</text>
+                </g>
+                <g transform="translate(390, 20)">
+                    <rect x="0" y="0" width="160" height="110" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <path d="M 40 30 L 120 30" stroke="#0f172a" stroke-width="3" stroke-dasharray="15 10"/>
+                    <path d="M 120 30 L 120 70" stroke="#0f172a" stroke-width="3" stroke-dasharray="15 10"/>
+                    <path d="M 120 70 L 40 70" stroke="#0f172a" stroke-width="3" stroke-dasharray="15 10"/>
+                    <path d="M 40 70 L 40 30" stroke="#0f172a" stroke-width="3" stroke-dasharray="15 10"/>
+                    <text x="80" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Ley de Cierre</text>
+                </g>
+                <g transform="translate(570, 20)">
+                    <rect x="0" y="0" width="160" height="110" rx="6" fill="#0f172a" stroke="#cbd5e1"/>
+                    <circle cx="80" cy="45" r="25" fill="#ffffff"/>
+                    <rect x="65" y="30" width="30" height="30" fill="#0f172a"/>
+                    <text x="80" y="95" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Figura y Fondo</text>
+                </g>
+                <g transform="translate(120, 150)">
+                    <rect x="0" y="0" width="240" height="110" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="15" y="15" width="90" height="60" rx="6" fill="#eff6ff" stroke="#3b82f6"/>
+                    <circle cx="40" cy="45" r="8" fill="#3b82f6"/><circle cx="80" cy="45" r="8" fill="#3b82f6"/>
+                    <circle cx="150" cy="45" r="8" fill="#64748b"/><circle cx="190" cy="45" r="8" fill="#64748b"/>
+                    <text x="120" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Ley de Región Común</text>
+                </g>
+                <g transform="translate(400, 150)">
+                    <rect x="0" y="0" width="240" height="110" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <path d="M 40 25 L 80 65 L 40 65 Z" fill="#d97706"/>
+                    <path d="M 200 25 L 160 65 L 200 65 Z" fill="#d97706"/>
+                    <line x1="120" y1="15" x2="120" y2="75" stroke="#94a3b8" stroke-dasharray="4,4"/>
+                    <text x="120" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Simetría y Orden (Prägnanz)</text>
+                </g>
+            </svg>
+            <div class="image-caption">Figura 1.3: Leyes de la Gestalt aplicadas al agrupamiento y percepción visual en pantallas.</div>
+        </div>
+
+        <h4>2.3.1. Principales Leyes de la Gestalt aplicadas a UI</h4>
+        <ul>
+            <li><strong>Ley de Proximidad:</strong> Los objetos colocados cerca unos de otros se perciben como un grupo unificado. <em>UI:</em> Las etiquetas de entrada de formularios se colocan pegadas a sus campos correspondientes.</li>
+            <li><strong>Ley de Semejanza (Similitud):</strong> Elementos con forma o color igual se perciben como pertenecientes a la misma categoría. <em>UI:</em> Botones primarios del mismo color.</li>
+            <li><strong>Ley de Cierre (Clausura):</strong> La mente tiende a completar figuras incompletas. <em>UI:</em> Tarjetas de carrusel recortadas en el borde para sugerir desplazamiento.</li>
+            <li><strong>Ley de Continuidad:</strong> El ojo sigue una trayectoria fluida. <em>UI:</em> Listas de elementos alineadas verticalmente.</li>
+            <li><strong>Ley de Figura y Fondo:</strong> Separamos el objeto destacado del espacio circundante. <em>UI:</em> Modales con fondo oscurecido (<em>overlay</em>).</li>
+            <li><strong>Ley de Simetría y Orden (Prägnanz):</strong> El cerebro simplifica formas complejas. <em>UI:</em> Maquetación en cuadrículas o retículas.</li>
+            <li><strong>Ley de Región Común:</strong> Elementos delimitados por un borde cerrado se perciben como un conjunto. <em>UI:</em> Tarjetas (<em>cards</em>).</li>
+            <li><strong>Ley de Destino Común:</strong> Elementos que se desplazan juntos se perciben unificados. <em>UI:</em> Menús desplegables animados.</li>
+        </ul>
+
+        <h3 id="sec2_4">2.4. Leyes Fundamentales de UX (Laws of UX)</h3>
+        <p>Las <strong>Leyes de UX</strong> (compiladas por Jon Yablonski) integran principios psicológicos que gobiernan la conducta cognitiva interactiva.</p>
+
+        <!-- Recurso Enlace PPTX 1 -->
+        <div class="resource-card">
+            <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-solid fa-compass-drafting"></i> Laws of UX (Portal interactivo)</span>
+                <span class="resource-badge badge-reading">Recurso Didáctico</span>
+            </div>
+            <div class="resource-description">Explora el compendio de principios psicológicos aplicados al diseño de interfaz recopilados por Jon Yablonski, con ejemplos visuales y animaciones.</div>
+            <a href="https://lawsofux.com/es/" target="_blank" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visitar Laws of UX (Español)</a>
+        </div>
+
+        <div class="ux-law-card">
+            <h5><i class="fa-solid fa-gavel"></i> 1. Ley de Jakob (Jakob's Law)</h5>
+            <p>Los usuarios prefieren que tu sitio funcione igual que los demás sitios que ya conocen. Reducir patrones novedosos evita sobrecarga mental.</p>
+        </div>
+
+        <div class="ux-law-card">
+            <h5><i class="fa-solid fa-hand-pointer"></i> 2. Ley de Fitts (Fitts's Law)</h5>
+            <p>El tiempo para alcanzar un objetivo depende de la distancia y su tamaño. Los botones principales (CTA) deben ser grandes y estar al alcance táctil.</p>
+        </div>
+
+        <div class="ux-law-card">
+            <h5><i class="fa-solid fa-list-ol"></i> 3. Ley de Hick (Hick's Law)</h5>
+            <p>El tiempo de decisión aumenta con el número de opciones. Se debe simplificar dividiendo procesos complejos en pasos (<em>wizards</em>).</p>
+        </div>
+
+        <div class="ux-law-card">
+            <h5><i class="fa-solid fa-brain"></i> 4. Ley de Miller (Miller's Law)</h5>
+            <p>La memoria de trabajo mantiene activa una media de 7 (± 2) elementos. Agrupar en bloques (<em>chunking</em>) facilita el procesamiento.</p>
+        </div>
+
+        <div class="ux-law-card">
+            <h5><i class="fa-solid fa-palette"></i> 5. Efecto de Estética-Usabilidad</h5>
+            <p>Los diseños atractivos se perciben intuitivamente como más usables y tolerantes a pequeños fallos técnicos.</p>
+        </div>
+
+        <div class="ux-law-card">
+            <h5><i class="fa-solid fa-shield-halved"></i> 6. Ley de Postel (Principio de Robustez)</h5>
+            <p>Sé liberal en lo que aceptas y conservador en lo que envías. La interfaz debe formatear automáticamente entradas de datos imperfectas.</p>
+        </div>
+
+        <div class="ux-law-card">
+            <h5><i class="fa-solid fa-sliders"></i> 7. Ley de Tesler (Conservación de la Complejidad)</h5>
+            <p>Todo sistema tiene complejidad inherente que debe asumir el desarrollador internamente para simplificar el uso final.</p>
+        </div>
+
+        <div class="ux-law-card">
+            <h5><i class="fa-solid fa-stopwatch"></i> 8. Umbral de Doherty (Doherty Threshold)</h5>
+            <p>La productividad se maximiza cuando el sistema responde en menos de 400 ms. Respuestas superiores exigen pantallas de carga (<em>skeleton screens</em>).</p>
+        </div>
+
+        <div class="ux-law-card">
+            <h5><i class="fa-solid fa-eye"></i> 9. Efecto Von Restorff (Aislamiento)</h5>
+            <p>Entre elementos similares, aquel que difiere visualmente es el más recordado (p. ej., destacar el plan de suscripción recomendado).</p>
+        </div>
+
+        <div class="ux-law-card">
+            <h5><i class="fa-solid fa-chart-line"></i> 10. Regla del Pico-Final (Peak-End Rule)</h5>
+            <p>Las experiencias se juzgan por lo sentido en el punto culminante (pico) y en el desenlace final.</p>
+        </div>
+
+        <div class="ux-law-card">
+            <h5><i class="fa-solid fa-spinner"></i> 11. Efecto Zeigarnik</h5>
+            <p>Las tareas incompletas se recuerdan más. Las barras de progreso motivan a finalizar perfiles de usuario.</p>
+        </div>
+
+        <div class="ux-law-card">
+            <h5><i class="fa-solid fa-clock"></i> 12. Ley de Parkinson</h5>
+            <p>Una tarea consumirá todo el tiempo disponible. Fijar límites temporales en compras aumenta la tasa de conversión.</p>
+        </div>
+
+        <h3 id="sec2_5">2.5. Elementos del Diseño Gráfico Aplicados a la Web</h3>
+        <p>El diseño de interfaces articula cuatro niveles jerárquicos de elementos:</p>
+        <ul>
+            <li><strong>Elementos conceptuales:</strong> Punto, Línea, Plano y Volumen (formas abstractas no físicas).</li>
+            <li><strong>Elementos visuales:</strong> Forma, Medida, Color, Textura y Tipografía (lo que se percibe en pantalla).</li>
+            <li><strong>Elementos de relación:</strong> Dirección, Posición, Espacio y Gravedad visual (gobiernan la distribución).</li>
+            <li><strong>Elementos prácticos:</strong> Representación, Significado y Función (propósito de comunicación).</li>
+        </ul>
+
+        <!-- Recurso Enlace PPTX 4 -->
+        <div class="resource-card">
+            <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-solid fa-file-powerpoint"></i> Introducción al Diseño (Presentación)</span>
+                <span class="resource-badge badge-reading">Lectura Recomendada</span>
+            </div>
+            <div class="resource-description">Presentación didáctica que profundiza en la clasificación teórica de elementos visuales, conceptuales y de relación en el diseño bidimensional.</div>
+            <a href="http://www.slideshare.net/GennesisPia/introduccin-al-diseo-14121258" target="_blank" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver diapositiva en SlideShare</a>
+        </div>
+
+        <h3 id="sec2_6">2.6. Identidad Visual, Marcas y Sistemas de Diseño (Atomic Design)</h3>
+        
+        <h4>2.6.1. Categorización de marcas visuales</h4>
+        <p>En el desarrollo de interfaces web es fundamental clasificar técnicamente la marca corporativa:</p>
+
+        <!-- Figura 1.4: Tipos de Marcas Visuales -->
+        <div class="image-container">
+            <svg viewBox="0 0 760 200" width="100%" height="200" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="200" rx="8" fill="#fafafa"/>
+                <g transform="translate(20, 25)">
+                    <rect x="0" y="0" width="160" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <text x="80" y="70" fill="#1e3a8a" font-family="Merriweather, serif" font-size="22" font-weight="bold" text-anchor="middle">Google</text>
+                    <text x="80" y="115" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">LOGOTIPO</text>
+                    <text x="80" y="132" fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">(Solo texto / tipografía)</text>
+                </g>
+                <g transform="translate(205, 25)">
+                    <rect x="0" y="0" width="160" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <circle cx="80" cy="60" r="24" fill="#0f766e"/>
+                    <path d="M 68 60 L 92 60" stroke="#ffffff" stroke-width="4"/>
+                    <text x="80" y="115" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">ISOTIPO</text>
+                    <text x="80" y="132" fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">(Símbolo solo)</text>
+                </g>
+                <g transform="translate(390, 25)">
+                    <rect x="0" y="0" width="160" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <circle cx="80" cy="45" r="16" fill="#d97706"/>
+                    <text x="80" y="82" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Marca</text>
+                    <text x="80" y="115" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">IMAGOTIPO</text>
+                    <text x="80" y="132" fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">(Icono + Texto separados)</text>
+                </g>
+                <g transform="translate(575, 25)">
+                    <rect x="0" y="0" width="160" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="35" y="35" width="90" height="50" rx="25" fill="#b91c1c"/>
+                    <text x="80" y="66" fill="#ffffff" font-family="Inter, sans-serif" font-size="13" font-weight="bold" text-anchor="middle">BURGER</text>
+                    <text x="80" y="115" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">ISOLOGOTIPO</text>
+                    <text x="80" y="132" fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">(Icono y Texto indivisibles)</text>
+                </g>
+            </svg>
+            <div class="image-caption">Figura 1.4: Clasificación técnica de marcas visuales para diseño de identidades digitales.</div>
+        </div>
+
+        <ul>
+            <li><strong>Logotipo:</strong> Representación basada únicamente en texto/tipografía (ej. Google).</li>
+            <li><strong>Isotipo:</strong> Símbolo gráfico independiente sin texto (ej. la manzana de Apple).</li>
+            <li><strong>Imagotipo:</strong> Unión de icono y texto que pueden funcionar de forma independiente.</li>
+            <li><strong>Isologotipo:</strong> Integración indivisible de texto y símbolo gráfico dentro de una figura unificada.</li>
+        </ul>
+
+        <h4>2.6.2. Iconografía e independencia de resolución</h4>
+        <p>Los gráficos vectoriales (<strong>SVG</strong>) garantizan escalabilidad infinita en pantallas móviles y monitores 4K. La iconografía debe inclinarse por convenciones conocidas (lupa para buscar, carrito para compra) combinada con etiquetas de texto en operaciones clave.</p>
+
+        <h4>2.6.3. Sistemas de Diseño y Metodología Atomic Design</h4>
+        <p>En el desarrollo frontend moderno no se construyen páginas aisladas, sino <strong>Sistemas de Diseño</strong> (<em>Design Systems</em>) escalables basados en la metodología <strong>Atomic Design</strong> (Brad Frost). Esta metodología divide la UI en 5 niveles jerárquicos:</p>
+
+        <!-- Figura 1.5: Atomic Design SVG -->
+        <div class="image-container">
+            <svg viewBox="0 0 760 210" width="100%" height="210" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="210" rx="8" fill="#f8fafc"/>
+                <g transform="translate(20, 30)">
+                    <rect x="0" y="0" width="125" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <circle cx="40" cy="40" r="14" fill="#3b82f6"/>
+                    <rect x="65" y="32" width="45" height="16" rx="3" fill="#93c5fd"/>
+                    <text x="62" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">ÁTOMOS</text>
+                    <text x="62" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Botón, Input, Icono</text>
+                </g>
+                <g transform="translate(165, 30)">
+                    <rect x="0" y="0" width="135" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="15" y="30" width="70" height="20" rx="3" fill="#f1f5f9" stroke="#94a3b8"/>
+                    <rect x="90" y="30" width="30" height="20" rx="3" fill="#3b82f6"/>
+                    <text x="67" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">MOLÉCULAS</text>
+                    <text x="67" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Campo Búsqueda</text>
+                </g>
+                <g transform="translate(320, 30)">
+                    <rect x="0" y="0" width="135" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="10" y="15" width="115" height="50" rx="4" fill="#eff6ff" stroke="#3b82f6"/>
+                    <text x="67" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">ORGANISMOS</text>
+                    <text x="67" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Header Completo</text>
+                </g>
+                <g transform="translate(475, 30)">
+                    <rect x="0" y="0" width="125" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="10" y="15" width="105" height="15" fill="#e2e8f0"/>
+                    <rect x="10" y="35" width="30" height="40" fill="#cbd5e1"/>
+                    <rect x="45" y="35" width="70" height="40" fill="#94a3b8"/>
+                    <text x="62" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">PLANTILLAS</text>
+                    <text x="62" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Wireframe Layout</text>
+                </g>
+                <g transform="translate(620, 30)">
+                    <rect x="0" y="0" width="120" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="10" y="15" width="100" height="15" fill="#1e3a8a"/>
+                    <rect x="10" y="35" width="30" height="40" fill="#0f766e"/>
+                    <rect x="45" y="35" width="65" height="40" fill="#d97706"/>
+                    <text x="60" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">PÁGINAS</text>
+                    <text x="60" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">UI Final con Datos</text>
+                </g>
+            </svg>
+            <div class="image-caption">Figura 1.5: Niveles metodológicos de Atomic Design (Brad Frost).</div>
+        </div>
+
+        <ul>
+            <li><strong>Átomos:</strong> Elementos UI indivisibles (botones, inputs, etiquetas, iconos).</li>
+            <li><strong>Moléculas:</strong> Grupos de átomos unidos que ejecutan una función básica (ej. un input + un botón = formulario de búsqueda).</li>
+            <li><strong>Organismos:</strong> Conjuntos de moléculas que forman una sección completa (ej. la cabecera completa o una tarjeta de producto).</li>
+            <li><strong>Plantillas (Templates):</strong> Maquetación estructural (layout) sin datos reales.</li>
+            <li><strong>Páginas:</strong> Instancia final del sistema rellena con contenido real para producción.</li>
+        </ul>
+
+        <div class="didactic-note">
+            <h5><i class="fa-solid fa-code"></i> Design Tokens en CSS</h5>
+            <p>El núcleo de un sistema de diseño son los <strong>Design Tokens</strong>: variables que almacenan valores visuales fundamentales (colores, fuentes, espaciados) reutilizables en CSS/Sass (ej. <code>--color-primary: #1e3a8a;</code>, <code>--spacing-md: 16px;</code>).</p>
+        </div>
+
+        <h3 id="sec2_7">2.7. Teoría del Color y Composición Visual</h3>
+        
+        <h4>2.7.1. Modelo RGB y Hexadecimal</h4>
+        <p>Los colores digitales se sintetizan sumando Rojo (<em>Red</em>), Verde (<em>Green</em>) y Azul (<em>Blue</em>), con valores hexadecimales entre <code>00</code> y <code>FF</code> (0 a 255 decimal):</p>
+        <ul>
+            <li>Rojo puro: <code>#FF0000</code> | Verde puro: <code>#00FF00</code> | Azul puro: <code>#0000FF</code></li>
+            <li>Para oscurecer un tono, se reduce proporcionalmente el canal (ej. Rojo oscuro: <code>#CC0000</code>).</li>
+        </ul>
+
+        <!-- Recursos Enlaces PPTX 2 -->
+        <div class="resource-card">
+            <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-solid fa-palette"></i> Herramientas de Captura y Selección de Color</span>
+                <span class="resource-badge badge-tool">Herramientas Web</span>
+            </div>
+            <div class="resource-description">Utilidades imprescindibles para extraer valores Hexadecimales directamente de la pantalla y analizar esquemas armónicos:</div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="http://www.colorschemer.com/colorpix_info.php" target="_blank" class="resource-link-btn"><i class="fa-solid fa-eye-dropper"></i> ColorPix (App)</a>
+                <a href="http://www.colorschemer.com/online.html" target="_blank" class="resource-link-btn"><i class="fa-solid fa-swatchbook"></i> ColorSchemer Online</a>
+                <a href="http://whatsitscolor.com/" target="_blank" class="resource-link-btn"><i class="fa-solid fa-image"></i> Whats Its Color</a>
+            </div>
+        </div>
+
+        <h4>2.7.2. Psicología y Armonía del Color</h4>
+        <p>El color transmite sensaciones psicológicas y altera la tasa de conversión en botones de acción.</p>
+
+        <!-- Recursos Enlaces PPTX 3 -->
+        <div class="resource-card">
+            <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-solid fa-brain"></i> Psicología y Aplicación del Color en UX</span>
+                <span class="resource-badge badge-video">Vídeo & Artículos</span>
+            </div>
+            <div class="resource-description">Recursos para comprender cómo afectan las paletas de color al comportamiento emocional del usuario:</div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;">
+                <a href="https://youtu.be/cGglJKvpCEs?si=17Je6J9DjQyjNYze" target="_blank" class="resource-link-btn"><i class="fa-fab fa-youtube"></i> Vídeo: Psicología del Color</a>
+                <a href="http://www.grihotools.udl.cat/mpiua/colors-in-ux-design/" target="_blank" class="resource-link-btn"><i class="fa-solid fa-graduation-cap"></i> Colors in UX Design (MPIUA)</a>
+                <a href="http://www.creativosonline.org/blog/psicologia-del-color.html" target="_blank" class="resource-link-btn"><i class="fa-solid fa-newspaper"></i> Guía de CreativosOnline</a>
+            </div>
+        </div>
+
+        <h3 id="sec2_8">2.8. Composición, Estados UI, Mobile-First y Rendimiento</h3>
+        
+        <h4>2.8.1. Equilibrio, simetría y tensión compositiva</h4>
+        <p>El <strong>equilibrio formal</strong> utiliza simetría (horizontal, vertical, radial), mientras que el <strong>equilibrio informal</strong> (asimétrico) compensa el peso visual mediante variaciones de tamaño, color o posición. La <strong>tensión compositiva</strong> busca dirigir intencionadamente la mirada con técnicas sugestivas o rítmicas.</p>
+
+        <!-- Recursos Enlaces PPTX 5 -->
+        <div class="resource-card">
+            <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-solid fa-scale-balanced"></i> Equilibrio y Simetría en Diseño Web</span>
+                <span class="resource-badge badge-reading">Artículos & Vídeo</span>
+            </div>
+            <div class="resource-description">Referencias técnicas para profundizar en el balance visual y la distribución asimétrica:</div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="https://youtu.be/gJhOHTOjGO8?si=mzZ8qokwlzhbO3A-" target="_blank" class="resource-link-btn"><i class="fa-fab fa-youtube"></i> Vídeo: Composición y Disposición</a>
+                <a href="https://www.lawebera.es/diseno-web/balance-diseno-web.php" target="_blank" class="resource-link-btn"><i class="fa-solid fa-link"></i> El Balance en La Webera</a>
+                <a href="https://fannyfp.wordpress.com/2012/09/06/el-uso-de-la-simetria-en-el-diseno-web/" target="_blank" class="resource-link-btn"><i class="fa-solid fa-blog"></i> Uso de Simetría (Blog)</a>
+                <a href="http://www.staffcreativa.pe/blog/principios-diseno-de-paginas-web-simetria-y-asimetria/" target="_blank" class="resource-link-btn"><i class="fa-solid fa-newspaper"></i> Simetría vs Asimetría</a>
+            </div>
+        </div>
+
+        <h4>2.8.2. Estados de Interacción en Componentes UI (WCAG 2.4.7)</h4>
+        <p>Los componentes dinámicos (botones, campos de texto, enlaces) no son estáticos. Deben diseñarse contemplando sus <strong>6 estados de interacción</strong> clave:</p>
+
+        <!-- Figura 1.6: SVG Estados UI -->
+        <div class="image-container">
+            <svg viewBox="0 0 760 160" width="100%" height="160" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="160" rx="8" fill="#f8fafc"/>
+                <g transform="translate(15, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#2563eb"/>
+                    <text x="52" y="27" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Default</text>
+                    <text x="52" y="75" fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Estado Reposo</text>
+                </g>
+                <g transform="translate(138, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#1d4ed8"/>
+                    <text x="52" y="27" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Hover</text>
+                    <text x="52" y="75" fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Puntero Encima</text>
+                </g>
+                <g transform="translate(261, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#2563eb" stroke="#f59e0b" stroke-width="4"/>
+                    <text x="52" y="27" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Focus</text>
+                    <text x="52" y="75" fill="#d97706" font-family="Inter, sans-serif" font-size="10" font-weight="bold" text-anchor="middle">Teclado Tab (2.4.7)</text>
+                </g>
+                <g transform="translate(384, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#1e40af"/>
+                    <text x="52" y="27" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Active</text>
+                    <text x="52" y="75" fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Clic / Pulsado</text>
+                </g>
+                <g transform="translate(507, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#94a3b8"/>
+                    <text x="52" y="27" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Disabled</text>
+                    <text x="52" y="75" fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Deshabilitado</text>
+                </g>
+                <g transform="translate(630, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#60a5fa"/>
+                    <circle cx="52" cy="22" r="7" stroke="#ffffff" stroke-width="2" fill="none" stroke-dasharray="10 5"/>
+                    <text x="52" y="75" fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Cargando datos</text>
+                </g>
+            </svg>
+            <div class="image-caption">Figura 1.6: Los 6 estados de interacción indispensables en componentes UI.</div>
+        </div>
+
+        <div class="error-box">
+            <h3><i class="fa-solid fa-triangle-exclamation"></i> Error Crítico: Eliminación del Foco (`outline: none`)</h3>
+            <p>Es un error habitual en maquetación eliminar el indicador visual de foco por teclado mediante CSS (<code>outline: none</code>). Esto destruye la accesibilidad para usuarios que navegan con la tecla Tab, violando directamente el <strong>Criterio WCAG 2.4.7 (Focus Visible)</strong>.</p>
+        </div>
+
+        <h4>2.8.3. Estrategia Mobile-First y Área Táctil Mínima (Target Size)</h4>
+        <p>La estrategia <strong>Mobile-First</strong> establece que se debe diseñar e implementar primero la versión para pantallas pequeñas (con restricciones extremas de espacio) priorizando los contenidos esenciales, para posteriormente expandir la interfaz hacia pantallas de escritorio mediante <em>Progressive Enhancement</em>.</p>
+
+        <!-- Figura 1.7: SVG Target Size -->
+        <div class="image-container">
+            <svg viewBox="0 0 760 150" width="100%" height="150" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="150" rx="8" fill="#fafafa"/>
+                <g transform="translate(60, 25)">
+                    <rect x="0" y="0" width="180" height="100" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="78" y="20" width="24" height="24" fill="#fee2e2" stroke="#dc2626" stroke-dasharray="2,2"/>
+                    <circle cx="90" cy="32" r="6" fill="#dc2626"/>
+                    <text x="90" y="68" fill="#dc2626" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Mínimo 24 x 24 px</text>
+                    <text x="90" y="85" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Criterio WCAG 2.2 (AA)</text>
+                </g>
+                <g transform="translate(300, 25)">
+                    <rect x="0" y="0" width="400" height="100" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+                    <rect x="30" y="15" width="48" height="48" fill="#dcfce7" stroke="#16a34a"/>
+                    <circle cx="54" cy="39" r="10" fill="#16a34a"/>
+                    <text x="230" y="42" fill="#0f766e" font-family="Inter, sans-serif" font-size="12" font-weight="bold">Recomendado: 44x44 / 48x48 px</text>
+                    <text x="230" y="62" fill="#475569" font-family="Inter, sans-serif" font-size="10">Estándar de Google Material Design y Apple HIG</text>
+                    <text x="230" y="78" fill="#64748b" font-family="Inter, sans-serif" font-size="9">Evita pulsaciones accidentales con el pulgar móvil.</text>
+                </g>
+            </svg>
+            <div class="image-caption">Figura 1.7: Normativa de área táctil mínima (Target Size) para interfaces móviles.</div>
+        </div>
+
+        <h4>2.8.4. Métricas de Rendimiento Visual (Core Web Vitals & Layout Shift)</h4>
+        <p>La experiencia de usuario no depende únicamente del aspecto gráfico, sino del <strong>rendimiento percibido</strong>. Google y la W3C estandarizan tres métricas clave (<strong>Core Web Vitals</strong>):</p>
+        <ul>
+            <li><strong>CLS (Cumulative Layout Shift):</strong> Mide la inestabilidad visual. Ocurre cuando elementos saltan inesperadamente al cargar imágenes sin atributos de dimensión (<code>width</code> y <code>height</code>), provocando clics accidentales.</li>
+            <li><strong>LCP (Largest Contentful Paint):</strong> Tiempo de renderizado del elemento visual principal (debe ser &lt; 2.5 s).</li>
+            <li><strong>INP (Interaction to Next Paint):</strong> Mide la velocidad de respuesta de la UI tras una pulsación del usuario (&lt; 200 ms).</li>
+        </ul>
+
+        <h3 id="sec2_9">2.9. Componentes y Usabilidad en Formularios Web</h3>
+        <p>Las páginas web estructuran sus componentes en módulos estandarizados: <strong>Cabecera (Header)</strong>, <strong>Sistemas de Navegación</strong> (menú hamburguesa, pestañas, migas de pan), <strong>Cuerpo (Body)</strong>, <strong>Pie de página (Footer)</strong> y <strong>Espacios en blanco</strong>.</p>
+
+        <!-- Recurso Enlace PPTX 6 -->
+        <div class="resource-card">
+            <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-solid fa-font"></i> Tipografía Digital y Legibilidad Web</span>
+                <span class="resource-badge badge-video">Vídeo Didáctico</span>
+            </div>
+            <div class="resource-description">Tutorial en vídeo sobre la elección de fuentes Sans Serif (pantalla) vs Serif (impresión), interlineado y comportamiento multiplataforma.</div>
+            <a href="https://youtu.be/EbV3-AJQElQ?si=UE82rp5szt2rTumm" target="_blank" class="resource-link-btn"><i class="fa-fab fa-youtube"></i> Ver tutorial de Tipografía en YouTube</a>
+        </div>
+
+        <div class="advanced-concept-box">
+            <h4><i class="fa-solid fa-pen-to-square"></i> Patrones de Usabilidad en Formularios Web (WCAG 3.3)</h4>
+            <p>Los formularios son el punto neurálgico de interacción en aplicaciones web. Para maximizar la usabilidad deben seguir tres patrones clave:</p>
+            <ol>
+                <li><strong>Validación Inline en Tiempo Real:</strong> Informar de errores o aciertos inmediatamente al perder el foco del campo (evento <code>blur</code>), sin esperar al envío global del formulario.</li>
+                <li><strong>Etiquetado Explícito (<code>&lt;label&gt;</code>):</strong> Vincular siempre las etiquetas a sus entradas mediante <code>for="id"</code>. Nunca sustituir la etiqueta por un <code>placeholder</code>, ya que este desaparece al escribir y destruye la accesibilidad.</li>
+                <li><strong>Máscaras y Formato Automático:</strong> Aplicar formato guiado para datos complejos (IBAN, teléfonos, fechas) aligerando la carga del usuario.</li>
+            </ol>
+        </div>
+
+        <h3 id="sec2_10">2.10. Metodología de Trabajo: Investigación UX, Design Thinking y Prototipado</h3>
+        <p>El proceso de creación web se fundamenta en la metodología <strong>Design Thinking</strong> dividida en 5 etapas secuenciales: <em>Empatizar</em>, <em>Definir</em>, <em>Idear</em>, <em>Prototipar</em> y <em>Testar</em>.</p>
+
+        <h4>2.10.1. Técnicas de Investigación de Usuarios (UX Research)</h4>
+        <p>En las fases iniciales de <em>Empatizar</em> y <em>Definir</em> no se debe presuponer el comportamiento del usuario. Se aplican tres herramientas empíricas fundamentales:</p>
+        <ul>
+            <li><strong>User Personas:</strong> Arquetipos de usuarios representativos basados en datos reales que resumen metas, patrones de uso y frustraciones.</li>
+            <li><strong>Card Sorting (Clasificación de Tarjetas):</strong> Técnica donde los usuarios agrupan temas o categorías en tarjetas físicas o digitales. Permite descubrir su modelo mental para organizar los menús.</li>
+            <li><strong>Tree Testing:</strong> Prueba para validar la jerarquía visual de un árbol de navegación antes de maquetar ninguna pantalla.</li>
+        </ul>
+
+        <!-- Figura 1.8: Diagrama SVG de Sitemap vs Robots.txt -->
+        <div class="image-container">
+            <svg viewBox="0 0 760 220" width="100%" height="220" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="220" rx="8" fill="#f1f5f9"/>
+                <rect x="30" y="25" width="210" height="170" rx="6" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+                <text x="135" y="45" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Mapa de Navegación</text>
+                <rect x="95" y="60" width="80" height="20" rx="3" fill="#3b82f6"/>
+                <rect x="50" y="95" width="70" height="18" rx="3" fill="#93c5fd"/>
+                <rect x="150" y="95" width="70" height="18" rx="3" fill="#93c5fd"/>
+                <text x="135" y="150" fill="#475569" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Estructura visual de la UX</text>
+                <line x1="265" y1="30" x2="265" y2="190" stroke="#cbd5e1" stroke-dasharray="4,4"/>
+                <rect x="290" y="25" width="210" height="170" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+                <text x="395" y="45" fill="#0f766e" font-family="Fira Code, monospace" font-size="12" font-weight="bold" text-anchor="middle">sitemap.xml</text>
+                <rect x="305" y="60" width="180" height="75" rx="4" fill="#f0fdf4"/>
+                <text x="315" y="80" fill="#115e59" font-family="Fira Code, monospace" font-size="10">&lt;urlset&gt;</text>
+                <text x="325" y="98" fill="#115e59" font-family="Fira Code, monospace" font-size="10">&lt;loc&gt;/inicio&lt;/loc&gt;</text>
+                <text x="315" y="116" fill="#115e59" font-family="Fira Code, monospace" font-size="10">&lt;/urlset&gt;</text>
+                <text x="395" y="160" fill="#475569" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Indexación en Buscadores</text>
+                <rect x="520" y="25" width="210" height="170" rx="6" fill="#ffffff" stroke="#b91c1c" stroke-width="2"/>
+                <text x="625" y="45" fill="#b91c1c" font-family="Fira Code, monospace" font-size="12" font-weight="bold" text-anchor="middle">robots.txt</text>
+                <rect x="535" y="60" width="180" height="75" rx="4" fill="#fef2f2"/>
+                <text x="545" y="80" fill="#991b1b" font-family="Fira Code, monospace" font-size="10">User-agent: *</text>
+                <text x="545" y="98" fill="#991b1b" font-family="Fira Code, monospace" font-size="10">Disallow: /admin/</text>
+                <text x="545" y="116" fill="#991b1b" font-family="Fira Code, monospace" font-size="10">Allow: /</text>
+                <text x="625" y="160" fill="#475569" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Directivas de Rastreo</text>
+            </svg>
+            <div class="image-caption">Figura 1.8: Desacoplamiento conceptual entre el Mapa de Navegación visual, sitemap.xml y robots.txt.</div>
+        </div>
+
+        <h4>2.10.2. Mapa de navegación, Sitemap.xml y Robots.txt</h4>
+        <ul>
+            <li><strong>Mapa de navegación:</strong> Diagrama de bloques visual de UX para el usuario.</li>
+            <li><strong>Sitemap XML (<code>sitemap.xml</code>):</strong> Lista de URLs del servidor para indexación en buscadores.</li>
+            <li><strong>Directivas Robots (<code>robots.txt</code>):</strong> Reglas de acceso (<em>Disallow/Allow</em>) para spiders.</li>
+        </ul>
+
+        <!-- Recurso Enlace PPTX 7 -->
+        <div class="resource-card">
+            <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-solid fa-sitemap"></i> Guía para Crear Mapas de Navegación Web</span>
+                <span class="resource-badge badge-reading">Lectura Técnica</span>
+            </div>
+            <div class="resource-description">Artículo detallado en el blog de HubSpot con pautas para estructurar la arquitectura de navegación de un sitio antes del diseño visual.</div>
+            <a href="https://blog.hubspot.es/website/mapa-navegacion-web" target="_blank" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Leer artículo en HubSpot</a>
+        </div>
+
+        <h4>2.10.3. Guías de estilo y niveles de prototipado</h4>
+        <p>La <strong>Guía de estilo</strong> documenta colores, botones y tipografías. El prototipado evoluciona en 3 niveles: <strong>Wireframe</strong> (borrador estático), <strong>Mockup</strong> (diseño estético) y <strong>Prototipo funcional</strong> (maqueta interactiva).</p>
+
+        <!-- Recurso Enlace PPTX 8 -->
+        <div class="resource-card">
+            <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-solid fa-layer-group"></i> Guía de Estilo y Prototipado en Figma</span>
+                <span class="resource-badge badge-course">Cursos & Guías</span>
+            </div>
+            <div class="resource-description">Recursos para dominar la confección de guías de estilo y la maquetación interactiva en Figma:</div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="https://www.ionos.es/digitalguide/paginas-web/diseno-web/la-guia-de-estilo-perfecta-para-paginas-web/" target="_blank" class="resource-link-btn"><i class="fa-solid fa-book"></i> Guía de Estilo (IONOS)</a>
+                <a href="https://www.youtube.com/watch?v=yqt_MEOGQEE" target="_blank" class="resource-link-btn"><i class="fa-fab fa-youtube"></i> Vídeo de Prototipos</a>
+                <a href="https://www.udemy.com/course/figma-diseno-de-prototipos-desde-cero" target="_blank" class="resource-link-btn"><i class="fa-solid fa-graduation-cap"></i> Curso de Figma (Udemy)</a>
+            </div>
+        </div>
+
+        <!-- 3. EJEMPLOS PRÁCTICOS -->
+        <h2 id="sec3"><i class="fa-solid fa-laptop-code"></i> 3. Ejemplos prácticos</h2>
+
+        <div class="example-box">
+            <h3><i class="fa-solid fa-circle-check"></i> Ejemplo 1: Aplicación de Atomic Design y Design Tokens</h3>
+            <p><strong>Situación:</strong> Una empresa requiere unificar los estilos de 3 aplicaciones web distintas construidas por equipos independientes.</p>
+            <p><strong>Desarrollo razonado:</strong> Se crea un sistema de <strong>Design Tokens</strong> centralizado en un archivo CSS con variables (<code>--color-primary: #1e3a8a</code>, <code>--btn-radius: 6px</code>). Siguiendo <strong>Atomic Design</strong>, se empaquetan los botones como <em>átomos</em> y las barras de búsqueda como <em>moléculas</em> reutilizables.</p>
+            <p><strong>Resultado:</strong> Coherencia estética absoluta y actualización instantánea de la marca modificando únicamente las variables de los tokens.</p>
+        </div>
+
+        <div class="example-box">
+            <h3><i class="fa-solid fa-circle-check"></i> Ejemplo 2: Aplicación del Foco Accesible y Target Size</h3>
+            <p><strong>Situación:</strong> Alta tasa de error en compras móviles y rechazo en auditorías de accesibilidad.</p>
+            <p><strong>Desarrollo razonado:</strong> Se amplia el área táctil del botón de compra a 48x48 px recomendados (<strong>Target Size</strong>) y se añade un borde destacado de alto contraste (3:1) en el estado <code>:focus-visible</code> para usuarios de teclado.</p>
+            <p><strong>Resultado:</strong> Eliminación de clics erróneos en dispositivos móviles y cumplimiento estricto del criterio WCAG 2.4.7.</p>
+        </div>
+
+        <!-- 4. ERRORES FRECUENTES -->
+        <h2 id="sec4"><i class="fa-solid fa-triangle-exclamation"></i> 4. Errores frecuentes</h2>
+
+        <div class="error-box">
+            <h3><i class="fa-solid fa-xmark"></i> Principales fallos en diseño UI/UX</h3>
+            <ul>
+                <li><strong>Eliminar el borde de foco (`outline: none`):</strong> Ocultar el estado de foco destruye la accesibilidad por teclado (WCAG 2.4.7).</li>
+                <li><strong>Sustituir la etiqueta `<label>` por un `placeholder`:</strong> El placeholder desaparece al escribir, confundiendo al usuario y violando la accesibilidad en formularios.</li>
+                <li><strong>Provocar inestabilidad visual (Layout Shift - CLS):</strong> Cargar imágenes o banners sin definir `width` y `height`, provocando que el texto dé saltos al cargar la web.</li>
+                <li><strong>Confundir mapa de navegación con `robots.txt`:</strong> Pensar que `robots.txt` crea menús. Solo da directivas de acceso a spiders.</li>
+                <li><strong>Prescindir de los estados UI:</strong> Diseñar componentes únicamente en estado de reposo (*Default*) ignorando los estados *Hover*, *Focus*, *Active* y *Disabled*.</li>
+            </ul>
+        </div>
+
+        <!-- 5. CASO PRÁCTICO INTEGRADO COMPLETO -->
+        <h2 id="sec5"><i class="fa-solid fa-briefcase"></i> 5. Caso práctico integrado: Proyecto Completo "Migas Amigas"</h2>
+
+        <div class="case-study-box">
+            <h3>Desarrollo Guiado e Integral de la Plataforma Web "Migas Amigas"</h3>
+            <p><strong>Contexto Profesional:</strong> "Migas Amigas" es una panadería y repostería artesanal tradicional con varios obradores locales. Ante la alta demanda de encargo de pan de masa madre y tartas personalizadas, la dirección encarga a tu equipo de desarrollo web en 2º DAW el diseño y prototipado completo de su nuevo sitio e-commerce adaptativo de <strong>5 páginas funcionales</strong>.</p>
+            
+            <p><strong>El Reto de la Empresa:</strong> Su web anterior consistía en una sola página estática desactualizada con baja tasa de conversión móvil, imágenes pesadas que provocaban saltos de pantalla (CLS alto), un formulario donde faltaba el etiquetado explícito <code>&lt;label&gt;</code> y un logotipo PNG borroso. Además, los usuarios de teclados o lectores de pantalla no podían navegar por falta de estados de foco claros.</p>
+
+            <p>Para resolver este proyecto con éxito profesional, el alumnado debe ejecutar en su totalidad las <strong>5 fases del proceso de Design Thinking</strong>, integrando todos los contenidos y normativas estudiados en el Tema 1.</p>
+
+            <!-- FASE 1: EMPATIZAR -->
+            <div class="phase-block">
+                <h4><i class="fa-solid fa-users"></i> Fase 1: Empatizar (Investigación de Usuarios y Requerimientos)</h4>
+                <p>El proyecto arranca con una toma de requisitos empírica. Se efectúa un guion de entrevista semiestructurada a 3 perfiles clave: el dueño del obrador, un cliente particular habitual y un gestor de hostelería que realiza pedidos al por mayor.</p>
+
+                <h5>1. Hallazgos clave de las entrevistas</h5>
+                <ul>
+                    <li><strong>El Obrador:</strong> Necesita recibir encargos con al menos 24 horas de antelación y especificar intolerancias alérgenas (gluten, frutos secos).</li>
+                    <li><strong>Cliente Particular:</strong> Quiere ver fotos reales del pan recién horneado, conocer los ingredientes y pedir tartas desde el móvil en menos de 3 pasos.</li>
+                    <li><strong>Hostelería:</strong> Requiere descargar la ficha técnica de producto en PDF y disponer de una opción de encargo recurrente.</li>
+                </ul>
+
+                <h5>2. Fichas de User Personas creadas</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User Persona</th>
+                            <th>Perfil / Demografía</th>
+                            <th>Objetivos Principales</th>
+                            <th>Frustraciones con la Web Antigua</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Carmen (58 años)</strong></td>
+                            <td>Particular, compra semanal desde tablet o móvil.</td>
+                            <td>Encargar pan especial de espelta sin equivocarse de horario de recogida.</td>
+                            <td>Iconos confusos sin texto, botones demasiado pequeños para pulsar con el pulgar.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Marcos (34 años)</strong></td>
+                            <td>Chef de restaurante local, comprador frecuente.</td>
+                            <td>Solicitar suministros diarios de pan de hamburguesa artesanal a las 07:00 AM.</td>
+                            <td>Formulario de contacto sin validación que fallaba al enviar y no guardaba sus datos.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- FASE 2: DEFINIR -->
+            <div class="phase-block">
+                <h4><i class="fa-solid fa-sitemap"></i> Fase 2: Definir (Arquitectura de Información de 5 Páginas)</h4>
+                <p>Para estructurar los contenidos se ejecuta una sesión de <strong>Card Sorting abierto</strong> con 8 usuarios. A partir de sus agrupaciones mentales y un posterior <strong>Tree Testing</strong>, se fija el mapa de navegación para la web de <strong>5 páginas independientes</strong>:</p>
+
+                <ol>
+                    <li><strong>Página 1: Portada / Inicio (<code>index.html</code>):</strong> Presentación del obrador, propuesta de valor (artesanía y masa madre), carrusel de productos estrella, buscador central y llamada a la acción (CTA) principal.</li>
+                    <li><strong>Página 2: Catálogo de Productos (<code>catalogo.html</code>):</strong> Parrilla interactiva de panes, repostería y salados, con filtros por alérgenos y categorías.</li>
+                    <li><strong>Página 3: Ficha Detallada de Producto (<code>producto.html</code>):</strong> Fotografía de alta resolución con dimensiones explícitas, tabla nutricional, selector de peso, alérgenos y botón de añadir al pedido.</li>
+                    <li><strong>Página 4: Sobre Nosotros / Artesanía (<code>nosotros.html</code>):</strong> Historia de "Migas Amigas", mapa de obradores locales, equipo de maestros panaderos y sello de calidad.</li>
+                    <li><strong>Página 5: Encargos y Contacto (<code>contacto.html</code>):</strong> Formulario de pedidos con fecha de recogida, selector de obrador y mapa de localización.</li>
+                </ol>
+
+                <div class="didactic-note">
+                    <h5><i class="fa-solid fa-network-wired"></i> Desacoplamiento de Archivos de Servidor</h5>
+                    <p>El <strong>Mapa de Navegación UX</strong> define la estructura de pantallas para el ser humano. De forma totalmente independiente, se genera en el servidor el archivo <code>sitemap.xml</code> para que Google indexe estas 5 URLs, y se configura el archivo <code>robots.txt</code> prohibiendo el rastreo del panel interno (<code>Disallow: /admin/</code>).</p>
+                </div>
+            </div>
+
+            <!-- FASE 3: IDEAR -->
+            <div class="phase-block">
+                <h4><i class="fa-solid fa-palette"></i> Fase 3: Idear (Identidad Visual, Guía de Estilo y Design Tokens)</h4>
+                <p>En esta etapa se construye la identidad corporativa y el sistema de diseño garantizando la accesibilidad normada por la WCAG 2.2.</p>
+
+                <h5>1. Diseño de Marca: Imagotipo Vectorial SVG</h5>
+                <p>Se diseña un <strong>Imagotipo</strong> (símbolo y texto separables) compuesto por un icono vectorial de una espiga estilizada junto a la tipografía "Migas Amigas". El código SVG garantiza resolución infinita en pantallas de retina sin pérdida de nitidez:</p>
+
+                <pre><code>&lt;!-- Imagotipo SVG para la Cabecera de Migas Amigas --&gt;
+&lt;svg viewBox="0 0 300 60" width="300" height="60" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;!-- Isotipo: Espiga de trigo en oro cálido --&gt;
+  &lt;g transform="translate(10, 10)" fill="#d97706"&gt;
+    &lt;path d="M 20 0 C 30 10, 30 20, 20 30 C 10 20, 10 10, 20 0 Z" /&gt;
+    &lt;path d="M 10 15 C 20 20, 20 30, 10 35 C 0 30, 0 20, 10 15 Z" /&gt;
+    &lt;path d="M 30 15 C 40 20, 40 30, 30 35 C 20 30, 20 20, 30 15 Z" /&gt;
+    &lt;line x1="20" y1="10" x2="20" y2="45" stroke="#d97706" stroke-width="3" /&gt;
+  &lt;/g&gt;
+  &lt;!-- Logotipo: Tipografía en Marrón Cálido Oscuro --&gt;
+  &lt;text x="65" y="38" fill="#451a03" font-family="'Merriweather', serif" font-size="24" font-weight="bold"&gt;Migas Amigas&lt;/text&gt;
+&lt;/svg&gt;</code></pre>
+
+                <h5>2. Guía de Estilo y Design Tokens CSS</h5>
+                <p>Se formalizan los valores de diseño en variables CSS para alimentar la arquitectura de componentes de <strong>Atomic Design</strong> (Átomos, Moléculas, Organismos):</p>
+
+                <pre><code>:root {
+  /* Colors con Contraste WCAG Validado */
+  --color-primary: #451a03;    /* Marrón Harina Oscuro (Ratio 12.8:1 sobre blanco) */
+  --color-accent: #d97706;     /* Dorado Masa Madre (Ratio 3.1:1 en componentes) */
+  --color-bg: #fffbeb;         /* Blanco Crema Mantequilla */
+  --color-surface: #ffffff;    /* Blanco Puro */
+  --color-text: #1c1917;       /* Negro Carbón (Ratio 17.5:1 sobre crema) */
+  
+  /* Tipografías */
+  --font-heading: 'Merriweather', serif;
+  --font-body: 'Inter', sans-serif;  /* Sans Serif para legibilidad digital */
+  
+  /* Target Size Táctil */
+  --target-size-min: 48px;     /* Google Material / Apple HIG */
+}</code></pre>
+
+                <h5>3. Ratios Numéricos de Contraste WCAG 2.2 Verificados</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Combinación de Elemento</th>
+                            <th>Color Texto / Fondo</th>
+                            <th>Ratio Obtenido</th>
+                            <th>Cumplimiento WCAG Nivel AA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Texto de cuerpo en párrafos</td>
+                            <td><code>#1c1917</code> sobre <code>#fffbeb</code></td>
+                            <td><strong>15.8:1</strong></td>
+                            <td><span class="resource-badge badge-reading">Pasa AA / AAA</span> (Exige ≥ 4.5:1)</td>
+                        </tr>
+                        <tr>
+                            <td>Botón CTA Primario (Texto)</td>
+                            <td><code>#ffffff</code> sobre <code>#451a03</code></td>
+                            <td><strong>12.8:1</strong></td>
+                            <td><span class="resource-badge badge-reading">Pasa AA / AAA</span> (Exige ≥ 4.5:1)</td>
+                        </tr>
+                        <tr>
+                            <td>Anillo de Foco Accesible (Borde)</td>
+                            <td><code>#d97706</code> sobre <code>#ffffff</code></td>
+                            <td><strong>3.1:1</strong></td>
+                            <td><span class="resource-badge badge-reading">Pasa AA (UI)</span> (Exige ≥ 3.0:1)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h5>4. Los 6 Estados de Interacción del Botón de Encargo</h5>
+                <p>Todo componente interactivo debe maquetarse en sus 6 estados, garantizando que el foco por teclado nunca sea eliminado (evitando <code>outline: none</code>):</p>
+                <ul>
+                    <li><code>Default</code>: Botón marrón <code>#451a03</code> con texto blanco.</li>
+                    <li><code>Hover</code>: Fondo oscurecido a <code>#290e02</code> al pasar el cursor.</li>
+                    <li><code>Focus</code>: Anillo exterior dorado <code>#d97706</code> de 3px con alto contraste (WCAG 2.4.7).</li>
+                    <li><code>Active</code>: Ligera contracción visual (compresión táctil).</li>
+                    <li><code>Disabled</code>: Fondo gris claro <code>#cbd5e1</code> con cursor <code>not-allowed</code>.</li>
+                    <li><code>Loading</code>: Icono de spinner giratorio con el texto "Procesando encargo...".</li>
+                </ul>
+            </div>
+
+            <!-- FASE 4: PROTOTIPAR -->
+            <div class="phase-block">
+                <h4><i class="fa-solid fa-layer-group"></i> Fase 4: Prototipar (Wireframe.cc, Figma y Atomic Design)</h4>
+                <p>El prototipado evoluciona en 3 entregables progresivos antes del código final:</p>
+
+                <ol>
+                    <li><strong>Boceto inicial (Wireframing con wireframe.cc):</strong> Trazado rápido en baja fidelidad sin colores ni tipografías decorativas. Permite acordar con la panadería la ubicación del logo, el buscador, la parrilla de productos de 3 columnas y el pie de página.</li>
+                    <li><strong>Diseño de componentes con Figma (Mockup):</strong> Creación del kit UI en Figma aplicando <strong>Atomic Design</strong>:
+                        <ul>
+                            <li><em>Átomos:</em> Botones, inputs de texto, insignias de alérgenos.</li>
+                            <li><em>Moléculas:</em> Tarjeta de producto individual (imagen + título + precio + botón).</li>
+                            <li><em>Organismos:</em> Cabecera completa con menú móvil desplegable e imagotipo.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Prototipo Funcional Interactivo:</strong> Enlazado de pantallas en Figma con animaciones de transición para simular el flujo completo desde la portada hasta la confirmación del encargo.</li>
+                </ol>
+            </div>
+
+            <!-- FASE 5: TESTAR E IMPLEMENTAR -->
+            <div class="phase-block">
+                <h4><i class="fa-solid fa-vial"></i> Fase 5: Testar e Implementar (Desarrollo Funcional e Inspección)</h4>
+                <p>En la fase final, el equipo implementa las <strong>5 páginas HTML5/CSS3</strong> asegurando la ausencia de errores comunes de usabilidad y rendimiento.</p>
+
+                <h5>1. Prevención de Inestabilidad Visual (CLS en Core Web Vitals)</h5>
+                <p>Para evitar que el texto dé saltos cuando cargan las imágenes de los panes, todas las etiquetas <code>&lt;img&gt;</code> incluyen explícitamente sus atributos de anchura y altura (<code>width="400" height="300"</code>) y la regla CSS <code>content-visibility: auto</code>.</p>
+
+                <h5>2. Patron de Usabilidad en el Formulario de Encargo (<code>contacto.html</code>)</h5>
+                <p>El formulario sigue estrictamente las pautas de accesibilidad y usabilidad:</p>
+
+                <pre><code>&lt;!-- Formulario Accesible con Label Explícito y Validación Inline --&gt;
+&lt;form id="form-encargo" action="/api/pedidos" method="POST"&gt;
+  &lt;div class="form-group"&gt;
+    &lt;!-- Etiquetado Explícito OBLIGATORIO --&gt;
+    &lt;label for="nombre-cliente" class="form-label"&gt;Nombre completo:&lt;/label&gt;
+    &lt;input 
+      type="text" 
+      id="nombre-cliente" 
+      name="nombre" 
+      class="form-input" 
+      required 
+      aria-required="true"
+      placeholder="Ej. Carmen García" /&gt;
+    &lt;span class="feedback-inline" id="err-nombre"&gt;&lt;/span&gt;
+  &lt;/div&gt;
+
+  &lt;div class="form-group"&gt;
+    &lt;label for="fecha-recogida" class="form-label"&gt;Fecha de recogida en obrador:&lt;/label&gt;
+    &lt;input 
+      type="date" 
+      id="fecha-recogida" 
+      name="fecha" 
+      class="form-input" 
+      required /&gt;
+  &lt;/div&gt;
+
+  &lt;button type="submit" class="btn-primary" style="min-width: 48px; min-height: 48px;"&gt;
+    Confirmar Encargo
+  &lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+                <h5>3. Resultado del Test de Usabilidad Heurística</h5>
+                <p>Sometida la web a un test con 5 usuarios reales, se alcanza una satisfacción del 94%, verificando que la visibilidad del estado del sistema (Heurística 1) y el reconocimiento antes que el recuerdo (Heurística 6) reducen a cero los pedidos incompletos.</p>
+            </div>
+        </div>
+
+        <!-- 6. RESUMEN -->
+        <h2 id="sec6"><i class="fa-solid fa-list-check"></i> 6. Resumen</h2>
+
+        <div class="key-ideas-box">
+            <h3><i class="fa-solid fa-lightbulb"></i> Ideas clave</h3>
+            <ol>
+                <li>La <strong>UI</strong> aborda elementos visuales; la <strong>UX</strong> la experiencia global de usabilidad.</li>
+                <li>Las <strong>GUI</strong> operan bajo el paradigma <strong>Objeto-Acción</strong>.</li>
+                <li>La accesibilidad WCAG exige ratios de contraste numérico: <strong>4.5:1</strong> (texto normal) y <strong>3:1</strong> (texto grande y componentes UI).</li>
+                <li>Las <strong>Leyes de la Gestalt</strong> y las <strong>Leyes de UX</strong> rigen la organización perceptiva e interactiva.</li>
+                <li>Las marcas se clasifican en <strong>Logotipo</strong>, <strong>Isotipo</strong>, <strong>Imagotipo</strong> e <strong>Isologotipo</strong>.</li>
+                <li><strong>Atomic Design</strong> organiza la UI en Átomos, Moléculas, Organismos, Plantillas y Páginas mediante <strong>Design Tokens</strong>.</li>
+                <li>Todo componente UI interactivo debe definir sus <strong>6 estados</strong> (Default, Hover, Focus, Active, Disabled, Loading) respetando el foco por teclado (WCAG 2.4.7).</li>
+                <li>La estrategia <strong>Mobile-First</strong> requiere áreas táctiles mínimas (<strong>Target Size</strong> de 24px WCAG / 44-48px recomendado).</li>
+                <li>El rendimiento visual se evalúa con <strong>Core Web Vitals</strong>, previniendo saltos de pantalla (<strong>CLS</strong>).</li>
+                <li>Los formularios exigen <strong>validación inline</strong> y etiquetado explícito (<code>&lt;label&gt;</code>) sin depender de <code>placeholder</code>.</li>
+                <li>La arquitectura se investiga con <strong>User Personas</strong>, <strong>Card Sorting</strong> y <strong>Tree Testing</strong>.</li>
+                <li>El <strong>mapa de navegación</strong> de UX es independiente de <code>sitemap.xml</code> y <code>robots.txt</code>.</li>
+                <li>El prototipado evoluciona: <strong>Wireframe</strong> → <strong>Mockup</strong> → <strong>Prototipo Funcional</strong>.</li>
+            </ol>
+        </div>
+
+        <!-- 7. ACTIVIDADES -->
+        <div class="activities-section" id="sec7">
+            <h2><i class="fa-solid fa-pen-to-square"></i> 7. Actividades</h2>
+
+            <h3>Actividades de comprensión</h3>
+            <ol>
+                <li>Explica la diferencia entre un Átomo y una Molécula en Atomic Design.</li>
+                <li>¿Cuáles son los ratios numéricos de contraste requeridos por WCAG para texto normal y componentes de UI?</li>
+                <li>Explica la importancia del Criterio WCAG 2.4.7 (Focus Visible) y por qué no debe usarse `outline: none`.</li>
+                <li>Diferencia las técnicas de investigación UX: Card Sorting vs Tree Testing.</li>
+                <li>¿Qué es la métrica CLS en Core Web Vitals y cómo afecta a la usabilidad?</li>
+            </ol>
+
+            <h3>Actividades de aplicación</h3>
+            <ol>
+                <li>Define en CSS una lista de Design Tokens con variables para el color primario, secundario y espaciado base.</li>
+                <li>Analiza un formulario web e identifica si cumple con el uso de `<label>` explícito y la validación inline.</li>
+                <li>Diseña una tarjeta de producto (*organismo*) identificando cuáles son sus átomos y moléculas constitutivas.</li>
+            </ol>
+
+            <h3>Actividad profesional</h3>
+            <p>Elabora un informe técnico de auditoría UI/UX para un portal institucional evaluando la marca SVG, la estrategia Mobile-First (Target Size 48px), la accesibilidad de focos por teclado (ratio 3:1), el sistema Atomic Design y la separación del mapa de navegación frente a `sitemap.xml` y `robots.txt`.</p>
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>
