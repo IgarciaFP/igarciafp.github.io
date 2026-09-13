@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UD01 Arquitectura de un ordenador — Componentes físicos y lógicos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --primary-light: #eff6ff;
+            --primary-border: #3b82f6;
+            --secondary-color: #0f766e;
+            --secondary-light: #f0fdf4;
+            --accent-color: #d97706;
+            --accent-light: #fffbeb;
+            --danger-color: #b91c1c;
+            --danger-light: #fef2f2;
+            --purple-color: #6d28d9;
+            --purple-light: #f5f3ff;
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+            --bg-page: #f1f5f9;
+            --bg-card: #ffffff;
+            --border-color: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-page);
+            line-height: 1.7;
+            padding: 30px 20px;
+        }
+
+        .document-wrapper {
+            max-width: 1350px;
+            width: 100%;
+            margin: 0 auto;
+            display: block;
+        }
+
+        /* Índice lateral flotante deslizable (Slide-out Sidebar) */
+        .sidebar-toc {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 310px;
+            max-height: calc(100vh - 40px);
+            background: var(--bg-card);
+            padding: 22px 20px;
+            border-radius: 0 12px 12px 0;
+            border: 1px solid var(--border-color);
+            border-left: none;
+            box-shadow: 6px 0 25px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            transform: translateX(-292px);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto;
+        }
+
+        /* Pestaña indicadora al aproximar el ratón al borde izquierdo */
+        .sidebar-toc::after {
+            content: "\f0c9  ÍNDICE";
+            font-family: 'Font Awesome 6 Free', 'Inter', sans-serif;
+            font-weight: 900;
+            font-size: 0.78rem;
+            position: absolute;
+            top: 20px;
+            right: -88px;
+            width: 88px;
+            height: 40px;
+            background: var(--primary-color);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            box-shadow: 4px 2px 10px rgba(0,0,0,0.15);
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-toc:hover {
+            transform: translateX(0);
+        }
+
+        .sidebar-toc h4 {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 8px;
+        }
+
+        .sidebar-toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .sidebar-toc li {
+            margin-bottom: 6px;
+        }
+
+        .sidebar-toc a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.86rem;
+            display: block;
+            padding: 5px 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-toc a:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Contenido Principal a Ancho Completo (100% Flexible) */
+        .document-container {
+            background: var(--bg-card);
+            padding: 50px 65px;
+            border-radius: 12px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border-color);
+            width: 100%;
+        }
+
+        /* Encabezados y Jerarquía */
+        .header-banner {
+            border-bottom: 4px solid var(--primary-color);
+            padding-bottom: 25px;
+            margin-bottom: 40px;
+        }
+
+        .module-tag {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 5px 14px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+        }
+
+        h1 {
+            font-family: 'Merriweather', Georgia, serif;
+            font-size: 2.3rem;
+            color: var(--primary-color);
+            line-height: 1.25;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-family: 'Merriweather', Georgia, serif;
+            font-size: 1.6rem;
+            color: var(--primary-color);
+            margin-top: 50px;
+            margin-bottom: 22px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            scroll-margin-top: 20px;
+        }
+
+        h3 {
+            font-size: 1.28rem;
+            color: var(--secondary-color);
+            margin-top: 32px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            scroll-margin-top: 20px;
+        }
+
+        h4 {
+            font-size: 1.08rem;
+            color: var(--text-dark);
+            margin-top: 24px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 18px;
+            text-align: justify;
+            font-size: 1rem;
+            color: var(--text-dark);
+        }
+
+        strong {
+            color: #000000;
+            font-weight: 600;
+        }
+
+        ul, ol {
+            margin-bottom: 22px;
+            padding-left: 28px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Cajas Didácticas Especiales */
+        .objectives-box {
+            background-color: var(--primary-light);
+            border-left: 5px solid var(--primary-border);
+            padding: 26px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .objectives-box h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .didactic-note {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid #0284c7;
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .didactic-note h5 {
+            color: #0369a1;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .didactic-note p {
+            margin-bottom: 0;
+            font-size: 0.95rem;
+        }
+
+        /* Cajas de Recursos e Hipervínculos */
+        .resource-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .resource-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .resource-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .resource-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .badge-video { background-color: #fee2e2; color: #dc2626; }
+        .badge-tool { background-color: #e0e7ff; color: #4338ca; }
+        .badge-reading { background-color: #dcfce7; color: #15803d; }
+        .badge-course { background-color: #fef3c7; color: #b45309; }
+
+        .resource-description {
+            font-size: 0.94rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .resource-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--primary-border);
+            width: fit-content;
+            transition: all 0.2s ease;
+        }
+
+        .resource-link-btn:hover {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        /* Tarjetas Leyes UX y Conceptos Avanzados */
+        .ux-law-card {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--purple-color);
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .ux-law-card h5 {
+            font-size: 1.08rem;
+            color: var(--purple-color);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ux-law-card p {
+            margin-bottom: 0;
+            font-size: 0.96rem;
+        }
+
+        .advanced-concept-box {
+            background-color: #fcfcfc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid var(--secondary-color);
+            padding: 22px 26px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .advanced-concept-box h4 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            font-size: 1.12rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Ejemplos y Errores */
+        .example-box {
+            background-color: var(--secondary-light);
+            border: 1px solid #bbf7d0;
+            border-left: 5px solid var(--secondary-color);
+            padding: 25px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .example-box h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            font-size: 1.18rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .error-box {
+            background-color: var(--danger-light);
+            border: 1px solid #fecaca;
+            border-left: 5px solid var(--danger-color);
+            padding: 25px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .error-box h3,
+        .error-box h4 {
+            color: var(--danger-color);
+            margin-top: 0;
+            font-size: 1.18rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .case-study-box {
+            background-color: #ffffff;
+            border: 2px solid var(--primary-color);
+            padding: 35px;
+            border-radius: 12px;
+            margin: 35px 0;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        }
+
+        .case-study-box h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 12px;
+            font-size: 1.4rem;
+        }
+
+        .phase-block {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid var(--accent-color);
+            padding: 22px 26px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .phase-block h4 {
+            color: var(--accent-color);
+            margin-top: 0;
+            font-size: 1.18rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .key-ideas-box {
+            background-color: var(--accent-light);
+            border: 1px solid #fde68a;
+            border-left: 5px solid var(--accent-color);
+            padding: 28px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .key-ideas-box h3 {
+            color: var(--accent-color);
+            margin-top: 0;
+        }
+
+        .activities-section {
+            background-color: #fafafa;
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            border-radius: 10px;
+            margin-top: 45px;
+        }
+
+        /* Imágenes e Ilustraciones Vectoriales Embebidas */
+        .image-container {
+            text-align: center;
+            margin: 35px 0;
+            background: #ffffff;
+            padding: 18px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+        }
+
+        .image-container svg {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+        }
+
+        .image-caption {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 12px;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        /* Tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 28px 0;
+            font-size: 0.96rem;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        .table-scroll {
+            width: 100%;
+            overflow-x: auto;
+            margin: 28px 0;
+        }
+
+        .table-scroll table {
+            min-width: 720px;
+            margin: 0;
+        }
+
+        /* Código */
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, monospace;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        pre {
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Fira Code', Consolas, Monaco, monospace;
+            font-size: 0.9rem;
+            margin: 22px 0;
+        }
+
+        blockquote {
+            font-style: italic;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 18px;
+            margin: 24px 0;
+            color: var(--text-muted);
+        }
+
+        @media print {
+            body {
+                background-color: #ffffff;
+                padding: 0;
+            }
+            .sidebar-toc {
+                display: none;
+            }
+            .document-container {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+            }
+            .ux-law-card, .example-box, .error-box, .resource-card, .advanced-concept-box, .phase-block {
+                break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .document-container {
+                padding: 30px 20px;
+            }
+            .sidebar-toc {
+                width: 280px;
+                transform: translateX(-265px);
+            }
+            .sidebar-toc::after {
+                right: -80px;
+                width: 80px;
+            }
+        }
+    </style>
+<style>
+        .header-subtitle {
+            margin-top: 10px;
+            margin-bottom: 0;
+            color: var(--text-muted);
+            font-size: 1.08rem;
+            text-align: left;
+        }
+
+        .image-container img {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto;
+            border-radius: 6px;
+        }
+
+        .activity-card {
+            background-color: var(--accent-light);
+            border: 1px solid #fde68a;
+            border-left: 5px solid var(--accent-color);
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .activity-card h4,
+        .activities-section h3 {
+            margin-top: 0;
+        }
+
+        .activity-card p:last-child,
+        .didactic-note p:last-child {
+            margin-bottom: 0;
+        }
+
+        .activities-section .evaluation-step {
+            margin-bottom: 8px;
+            padding-left: 0;
+            text-align: left;
+        }
+
+        .activities-section .evaluation-question {
+            margin-bottom: 9px;
+            padding: 8px 12px;
+            background: #ffffff;
+            border-left: 3px solid var(--accent-color);
+            text-align: left;
+        }
+
+        .sidebar-toc a.subsection-link {
+            padding-left: 20px;
+            font-size: 0.82rem;
+        }
+
+        h4.numbered-subsection {
+            color: var(--text-dark);
+            scroll-margin-top: 20px;
+        }
+
+        .document-footer {
+            margin-top: 55px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            text-align: center;
+        }
+
+        main a {
+            color: var(--primary-color);
+            overflow-wrap: anywhere;
+        }
+
+        @media (max-width: 700px) {
+            h1 { font-size: 1.85rem; }
+            h2 { font-size: 1.38rem; }
+            h3 { font-size: 1.15rem; }
+            .image-container { padding: 8px; margin: 24px 0; }
+            .activities-section { padding: 22px 18px; }
+        }
+
+        @media print {
+            h2, h3, h4 { break-after: avoid-page; }
+            .image-container, .activity-card, .didactic-note { break-inside: avoid; }
+            .image-container img { max-height: 235mm; object-fit: contain; }
+        }
+</style></head>
+<body>
+<nav class="sidebar-toc" aria-label="Índice de contenidos"><h4><i class="fa-solid fa-list-ol" aria-hidden="true"></i> Contenidos</h4><ul><li><a href="#evaluacion-inicial">Evaluación inicial</a></li><li><a href="#sec1">1. Introducción y definiciones previas</a></li><li><a href="#sec1_1" class="subsection-link">1.1. Hardware y Software</a></li><li><a href="#sec1_2" class="subsection-link">1.2. Informática y Ordenador</a></li><li><a href="#sec1_3" class="subsection-link">1.3. Digital</a></li><li><a href="#sec2">2. Comunicación de la información</a></li><li><a href="#sec2_1" class="subsection-link">2.1. Elementos de un sistema de comunicación</a></li><li><a href="#sec3">3. Representación interna de la información</a></li><li><a href="#sec3_1" class="subsection-link">3.1. Unidades y magnitudes informáticas</a></li><li><a href="#sec3_2" class="subsection-link">3.2. Sistemas de numeración</a></li><li><a href="#sec3_3" class="subsection-link">3.3. Representación de la información</a></li><li><a href="#sec4">4. Características de un ordenador digital</a></li><li><a href="#sec4_1" class="subsection-link">4.1. Longitud de palabra:</a></li><li><a href="#sec4_2" class="subsection-link">4.2. Memoria Principal (RAM)</a></li><li><a href="#sec4_3" class="subsection-link">4.3. Memoria Secundaria</a></li><li><a href="#sec4_4" class="subsection-link">4.4. Ancho de banda</a></li><li><a href="#sec4_5" class="subsection-link">4.5. Frecuencia de reloj</a></li><li><a href="#sec4_6" class="subsection-link">4.6. MIPS (Millones de Instrucciones por segundo)</a></li><li><a href="#sec4_7" class="subsection-link">4.7. MFLOPS</a></li><li><a href="#sec4_8" class="subsection-link">4.8. Test sintéticos (Benchmarks)</a></li><li><a href="#sec5">5. Componentes físicos. Arquitectura Von Neumann</a></li><li><a href="#sec5_1" class="subsection-link">5.1. Introducción. Arquitectura Von Neumann</a></li><li><a href="#sec5_2" class="subsection-link">5.2. Componentes. Bloques funcionales de la CPU</a></li><li><a href="#sec5_3" class="subsection-link">5.3. Función y Propósito de la Memoria Interna</a></li><li><a href="#sec5_4" class="subsection-link">5.4. Buses de E/S</a></li><li><a href="#sec5_5" class="subsection-link">5.5. Periféricos</a></li><li><a href="#sec6">6. Componentes lógicos: Software</a></li><li><a href="#sec6_1" class="subsection-link">6.1. Design Thinking</a></li><li><a href="#sec6_2" class="subsection-link">6.2. Recursos</a></li></ul></nav>
+<div class="document-wrapper"><main class="document-container"><div class="header-banner"><span class="module-tag">Arquitectura de Ordenadores • Unidad Didáctica 01</span><h1>UD01 Arquitectura de un ordenador</h1><p class="header-subtitle">Componentes físicos y lógicos</p></div><section class="activities-section" id="evaluacion-inicial"><h3><i class="fa-solid fa-clipboard-question" aria-hidden="true"></i> Evaluación inicial de la unidad</h3>
+<p>Las siguientes preguntas sólo serán evaluadas como resueltas/no
+resueltas:</p>
+<p class="evaluation-step">A. Inicia sesión en Google con tu cuenta de EDUCAAND</p>
+<p class="evaluation-step">B. Entra en Google Drive y crea una carpeta para la asignatura: “Aplicaciones Ofimáticas”</p>
+<p class="evaluation-step">C. Crea una subcarpeta con el título “UD 1 Instalación de Aplicaciones Ofimáticas”</p>
+<p class="evaluation-step">C. Dentro de la subcarpeta crea un documento nuevo de Google Docs, de nombre “Ejercicios UD 1”</p>
+<p class="evaluation-step">Abre el documento creado y Copia y responde las siguientes preguntas/ejercicios:</p>
+<h4>Ejercicio 1:</h4>
+<p class="evaluation-question">1 ¿Sabes lo que es un ordenador? Defínelo</p>
+<p class="evaluation-question">2. ¿Cuál es la unidad mínima de información del ordenador?</p>
+<p class="evaluation-question">3. ¿Qué es el código binario?</p>
+<p class="evaluation-question">4. ¿Cuáles son las dos operaciones que podemos realizar sobre la memoria?</p>
+<p class="evaluation-question">5. Organiza las siguientes memorias según sean internas o externas: registros, disco duro. RAM. memoria USB. caché</p>
+<p class="evaluation-question">6. ¿Qué tipo de operaciones realiza la unidad aritmético-lógica?</p>
+<p class="evaluation-question">7. La CPU es un componente físico conocido como: M_____p_______</p>
+<p class="evaluation-question">8. ¿Para qué sirven los drivers o controladores?</p>
+<p class="evaluation-question">9. ¿Qué función tienen los periféricos de un sistema informático?</p>
+</section><h2 id="sec1"><i class="fa-solid fa-microchip" aria-hidden="true"></i> 1. Introducción y definiciones previas</h2>
+<h3 id="sec1_1">1.1. Hardware y Software</h3>
+<p>Entendemos por arquitectura de un ordenador las partes que lo
+componen, así podemos hablar de dos componentes básicos en un
+ordenador:</p>
+<p>► <strong>Componentes físicos</strong>, también llamado en su
+conjunto <strong>hardware</strong> y que está compuesto por toda la
+circuitería y los componentes electrónicos del ordenador.</p>
+<p>► <strong>Componentes lógicos</strong>, también llamado en conjunto
+<strong>software</strong> y que está compuesto por los componentes
+intangibles de un ordenador; es decir: los programas que se ejecutan en
+el ordenador, así como por la información o datos que se procesan. Un
+ordenador sin software no tendría ningún sentido, solamente sería una
+máquina que no haría nada.</p>
+<div class="didactic-note"><h5><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Recuerda:</h5><p>Si lo podemos tocar es hardware (componente físico), si es intangible es software (componente lógico).</p></div><h3 id="sec1_2">1.2. Informática y Ordenador</h3>
+<p>La <strong>informática</strong> es la ciencia que estudia la
+adquisición, representación, tratamiento y transmisión de la
+información, de manera automática mediante máquinas denominadas
+ordenadores.</p>
+<p>El término <strong>información</strong> tiene en informática un
+significado amplio, y hace referencia a un conjunto de símbolos que
+representan hechos, objetos o ideas.</p>
+<p>El <strong>ordenador</strong> es una máquina, generalmente
+electrónica y digital, capaz de aceptar unos datos de entrada, efectuar
+con ellos una serie de operaciones matemáticas y lógicas y proporcionar
+la información resultante a través de un medio de salida; todo ello sin
+intervención humana, utilizando para ello un conjunto de instrucciones,
+es decir, un programa previamente almacenado en la memoria del
+ordenador.</p>
+<div class="didactic-note"><p>¿Sabías que...?</p><p>El término informática proviene del francés informatique, implementado por el ingeniero Philippe Dreyfus a comienzos de la década del '60. La palabra es, a su vez, un acrónimo de information y automatique.</p></div><p>El concepto de información supera al de “dato” (“Antecedente
+necesario para llegar al conocimiento exacto de algo o para deducir las
+consecuencias legítimas de un hecho”, o “Información dispuesta de manera
+adecuada para su tratamiento por un ordenador”).</p>
+<div class="didactic-note"><h5><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Recuerda:</h5><p>Un ordenador es un dispositivo electrónico y digital que procesa información siguiendo unas instrucciones (programa almacenado).</p></div><p><strong>Modelo de caja negra.</strong></p>
+<p>En la teoría de sistemas, un modelo de caja negra es un sistema que
+recibe una serie de datos de entrada, los procesa y emite una
+información de salida. Podemos considerar por tanto un ordenador como
+una caja negra -ya que por ahora no nos incumbe lo que ocurre dentro de
+él- que va a recibir una serie de datos de entrada y va a emitir
+información útil para el usuario como salida.</p>
+<h3 id="sec1_3">1.3. Digital</h3>
+<p><strong>Digital vs analógico.</strong></p>
+<p>Es importante considerar que este flujo de información se realiza de
+forma digital por lo general. El término dígito = dedo nos da una idea
+aproximada de que la representación no va a tomar cualquier valor del
+mundo real (señales analógicas) sino sólo un número discreto de estos al
+igual que el número de dedos es limitado.</p>
+<p><strong>Concepto de bit</strong></p>
+<p>Ligado íntimamente a la representación interna de la información está
+el concepto de bit. Por simplicidad y velocidad, los ordenadores
+internamente sólo van a poder almacenar dos estados (voltaje o ausencia
+de este, magnetizado o no, refleja un láser o no, etc) que
+matemáticamente vamos a representar con un cero o un uno. De aquí
+aparece surge el concepto de dígito binario, Binary digit o Bit, ya que
+en inglés esa palabra tiene connotaciones de algo muy pequeño, esta será
+la unidad más pequeña de medida de la información.</p>
+<h2 id="sec2"><i class="fa-solid fa-tower-broadcast" aria-hidden="true"></i> 2. Comunicación de la información</h2>
+<h3 id="sec2_1">2.1. Elementos de un sistema de comunicación</h3>
+<p>Los elementos básicos que intervienen en el proceso de comunicación
+son:</p>
+<ul>
+<li>
+<p><strong>Emisor</strong>: Ente que transmite la información.</p>
+</li>
+<li>
+<p><strong>Receptor</strong>: Ente que recibe la información.</p>
+</li>
+<li>
+<p><strong>Canal</strong>: Medio por el cual se transmite la
+información, inevitablemente contendrá <strong>ruido</strong>.</p>
+</li>
+<li>
+<p><strong>Mensaje</strong>: Conjunto de señales, signos y símbolos que
+son objeto de la comunicación.</p>
+</li>
+<li>
+<p><strong>Protocolos y estándares</strong>: Por último, es necesario
+para que la comunicación sea efectiva, que tanto emisor como receptor
+sigan un determinado conjunto de reglas en la comunicación. A éstas, se
+les denomina protocolos. En la actualidad existen multitud de
+protocolos, y muchos de ellos se encuentran estandarizados, como es el
+caso del conjunto de protocolos TCP/IP.</p>
+</li>
+</ul>
+<p>Así, la transmisión de información entre el ser humano y la
+computadora puede hacerse de muchas formas:</p>
+<ul>
+<li>
+<p>Mediante caracteres alfanuméricos (letras, números y caracteres
+gráficos)</p>
+</li>
+<li>
+<p>Mediantes sonidos</p>
+</li>
+<li>
+<p>Mediante imágenes y video</p>
+</li>
+</ul>
+<p>En cada caso es diferente, y para proceder a la comunicación de los
+datos es necesario cambiar la forma en que estos se representan.</p>
+<p><strong>Por tanto, los datos deben ser siempre
+codificados.</strong></p>
+<p>Opcionalmente los datos también pueden ser <strong>cifrados,
+comprimidos</strong> y se le puede añadir <strong>información
+redundante</strong> para la detección y/o corrección de errores o para
+la sincronización.</p>
+<div class="didactic-note"><p>Con todo esto, podemos definir información como la representación de hechos, objetos, valores, ideas, etc, que permiten la comunicación entre emisor y receptor y la adquisición del conocimiento de las cosas.</p></div><h2 id="sec3"><i class="fa-solid fa-code" aria-hidden="true"></i> 3. Representación interna de la información</h2>
+<h3 id="sec3_1">3.1. Unidades y magnitudes informáticas</h3>
+<h4 id="sec3_1_1" class="numbered-subsection">3.1.1. Unidades de medida para el almacenamiento de información</h4>
+<p>Como veíamos al comienzo del tema, el bit es la unidad más pequeña
+para medir cualquier información, pero igual que no medimos la distancia
+entre ciudades en centímetros, tampoco vamos a usar el bit, sino
+múltiplos suyos, como norma general.</p>
+<p>De hecho, la mínima cantidad de información que un ordenador va a
+tratar será de <strong>8 bits</strong>, esto es 1 <strong>Byte</strong>,
+y los múltiplos del mismo utilizando prefijos griegos: <strong>Kilo,
+Mega, Giga, Tera, Peta, Exa, Zetta, Yotta.</strong></p>
+<p>Tradicionalmente (desde los años 60) la escala de multiplicación ha
+sido siempre expresada en potencia de 2 elevado a 10 (1024), aunque han
+surgido intentos de normalizar el uso de la escala de 1000 por parte del
+IEC desde el año 1998, <strong>introduciendo la nomenclatura Kibibyte,
+Mebibyte, etc para potencias de 2</strong>. Su uso es debatido aún hoy
+en día (año 2022) por la comunidad científica, de forma que unos adoptan
+el estándar en base 10 (Ubuntu por ejemplo) y otros en base 2 (Microsoft
+sin ir más lejos). [<a href="https://es.wikipedia.org/wiki/Kilobyte" target="_blank" rel="noopener noreferrer"><u>+</u></a>]</p>
+<h4 id="sec3_1_2" class="numbered-subsection">3.1.2. Unidades de medida para la transmisión de información</h4>
+<p>Tradicionalmente el envío de información en medios analógicos se
+efectuaba en <strong>baudios</strong>, que mide el número de cambios en
+la señal por segundo, sin embargo actualmente se utiliza el <strong>bit
+por segundo (bps o bit/s)</strong> que es una medida mucho más
+precisa.</p>
+<p>Para nombrar a los múltiplos del bit/s se suele debería la notación
+Kilobits/s, Megabits/s etc, sin embargo es frecuente encontrarse estas
+medidas expresadas en <strong>bytes por segundo</strong> y también en
+<strong>Megatransfers</strong>.</p>
+<p>Un <strong>Megatransfer</strong> (Millones de transferencias por
+segundo) es equivalente al Megabit por segundo excepto por el hecho de
+que mide todos los datos que se transfieren incluyendo información de
+sincronización y control de errores, lo cual permite utilizar unidades
+redondas a la hora de dar información sobre la tasa de transferencia de
+un bus de comunicaciones.</p>
+<h4 id="sec3_1_3" class="numbered-subsection">3.1.3. Unidades de medida para imagen</h4>
+<p>La unidad básica para medir una imagen es el <strong>pixel (picture
+element)</strong> o punto de luz, cuyo tamaño, profundidad de color y
+distancia a otros puntos va a depender totalmente de la tecnología
+empleada y la precisión que se le quiera dar. Para sus múltiplos se
+utilizan los mismos prefijos que para el bit.</p>
+<h3 id="sec3_2">3.2. Sistemas de numeración</h3>
+<p>Podemos definir un sistema de numeración como un conjunto de símbolos
+y reglas: <strong>N=(S,R)</strong></p>
+<h4 id="sec3_2_1" class="numbered-subsection">3.2.1. Sistemas de Numeración Posicionales</h4>
+<p>Existen sistemas de numeración no posicionales, como por ejemplo el
+utilizado para representar los números romanos o el chino, y sistemas de
+numeración posicionales, en los que <strong>la posición de un símbolo
+dentro del número</strong> determina su valor.</p>
+<h4 id="sec3_2_2" class="numbered-subsection">3.2.2. Teorema Fundamental de la numeración</h4>
+<p>Para conocer el valor que representa un número en un <strong>sistema
+posicional,</strong> se calcula aplicando <strong>el teorema fundamental
+de la numeración</strong>, el cual dice que dado un número N={
+x<sub>n</sub> … x<sub>0</sub>, x<sub>-1</sub> … x<sub>-d</sub>}, su
+valor <strong>en base B</strong> es:</p>
+<div class="image-container"><img src="data:image/png;base64,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" alt="Fórmula del teorema fundamental de la numeración" loading="lazy"></div><h4 id="sec3_2_3" class="numbered-subsection">3.2.3. El sistema decimal</h4>
+<div class="didactic-note"><p>El ser humano tiene 10 dedos. No es casualidad que el sistema de numeración más utilizado tenga diez símbolos, del 0 al 9.</p></div><p>Alguno de los <strong>sistemas de numeración</strong> más utilizados
+son:</p>
+<ul>
+<li>
+<p>Binario (base 2). Es el sistema de representación de los
+ordenadores</p>
+</li>
+<li>
+<p>Decimal (base 10). Es el sistema de representación numérico del
+hombre.</p>
+</li>
+<li>
+<p>Hexadecimal (base 16)</p>
+</li>
+</ul>
+<h4 id="sec3_2_4" class="numbered-subsection">3.2.4. El sistema binario</h4>
+<p>El ordenador utiliza el sistema binario por su sencillez de
+representación. La Base del sistema es B=2, y el conjunto de símbolos
+del lenguaje es L={0,1}</p>
+<p>Para <strong>transformar un número de base binaria a decimal</strong>
+se puede aplicar el teorema fundamental de la numeración, por
+ejemplo:</p>
+<p>10)<sub>2</sub>= 1*2<sup>1</sup>+0*2<sup>0</sup>)<sub>10</sub> =
+2</p>
+<p>A su vez, para <strong>transformar un número entero de base decimal a
+base binaria</strong>, se obtiene dividiendo por 2, y después se
+realizan sucesivamente divisiones por los cocientes obtenidos, hasta
+llegar a un cociente menor a 2. El resultado es el último cociente junto
+con los restos obtenidos en el orden inverso de aparición. Otra forma de
+calcularlo es mediante el <strong>método de Ruffini</strong>.</p>
+<p>Para calcular la <strong>parte decimal,</strong> esta se multiplica
+por dos y vamos cogiendo la parte entera resultante en <strong>orden de
+aparición</strong> hasta obtener cero o tener la precisión
+requerida.</p>
+<h4 id="sec3_2_5" class="numbered-subsection">3.2.5. Códigos intermedios</h4>
+<p>Otros códigos comúnmente utilizados relacionados con los ordenadores
+son los llamados códigos de representación intermedia, que nos permiten
+<strong>representar de forma práctica</strong> múltiples informaciones.
+Estos son el Octal (B=8, L={0,...7} y el Hexadecimal (B=16,
+L={0,...9,A,...,F})</p>
+<p>Estos códigos tienen la particularidad de ser <strong>muy fáciles de
+convertir en binario</strong> simplemente usando la equivalencia de 1
+símbolo a 3 o a 4, respectivamente de octal a binario o de hexadecimal a
+binario.</p>
+<h3 id="sec3_3">3.3. Representación de la información</h3>
+<p>Para <strong>seleccionar</strong> un sistema de representación es
+importante tener en cuenta la <strong>naturaleza de la
+información</strong> que se desea representar, ésta se clasifica según
+los autores <em>Alberto Prieto, Antonio Lloris, y Juan Carlos Torres, en
+su obra “Introducción a la Informática” (2006)</em>, en:</p>
+<ul>
+<li>
+<p>Textos.</p>
+</li>
+<li>
+<p>Valores numéricos.</p>
+</li>
+<li>
+<p>Instrucciones.</p>
+</li>
+<li>
+<p>Sonidos.</p>
+</li>
+<li>
+<p>Imágenes y vídeos.</p>
+</li>
+</ul>
+<h4 id="sec3_3_1" class="numbered-subsection">3.3.1. Representación numérica</h4>
+<p>Un primer enfoque al problema de representar un número signado de
+n-bits es la representación en <strong>Signo y Magnitud</strong>:</p>
+<ul>
+<li>
+<p>Se utiliza el MSB para representar el número que, por convención: un
+0 denota un número positivo, y un 1 denota un número negativo;</p>
+</li>
+<li>
+<p>Los (n-1)-bits restantes para representar el significando que es la
+magnitud del número en valor absoluto.</p>
+</li>
+</ul>
+<p>Un problema de esta representación es la <strong>necesidad de una
+operación condicional</strong> al operar con ellos para determinar su
+signo y otro la <strong>doble representación del cero</strong> (1000000
+y 0000000)</p>
+<p>Mucho más utilizado es la representación en
+<strong>Complementos</strong>, que nos permite una aritmética más
+sencilla.</p>
+<ul>
+<li>
+<p><strong>Complemento a 1</strong> (a la base menos 1): Se invierten
+los ceros y unos del significado -equivale a restarle la base menos 1- ,
+lo cual <strong>nos permite operar aritméticamente</strong>, aunque hay
+que tener en cuenta el acarreo y sigue teniendo doble representación
+para el cero. Es utilizada por los protocolos TCP, UDP, ICMP, y otros.
+p.eje: 1010<sub>)2</sub> = -5<sub>)10</sub></p>
+</li>
+<li>
+<p><strong>Complemento a 2</strong> (a la base): Se suma 1 al
+complemento a 1 del número, lo cual nos da una notación muy efectiva
+para operar aritméticamente. Es la notación más utilizada. p.eje:
+1011<sub>)2</sub> = -5<sub>)10</sub></p>
+</li>
+</ul>
+<p>Para representar números <strong>reales o muy grandes</strong> se
+suele utilizar la <strong>notación punto flotante</strong>, la cual se
+basa en la propiedad de que todo número n se puede representar por n=
+m*B<sup>e</sup> donde m es la mantisa, B es la base (no es necesario
+explicitar este valor) y e es el exponente.</p>
+<p>Actualmente, existe la <strong>norma</strong> <strong>IEEE
+754</strong> de aceptación prácticamente universal, que representa
+número reales con 32 o con 64 bits.</p>
+<h4 id="sec3_3_2" class="numbered-subsection">3.3.2. Representación alfanumérica (Textos) : Códigos de E/S</h4>
+<p>Para la representación numérica se utiliza la denominada
+<strong>Codificación de entrada/salida,</strong> que asocia a cada
+<strong>carácter</strong> una determinada combinación de bits.</p>
+<p>Según el autor <em>J. Glenn Brookshear, en su libro Introducción a la
+computación</em>, en la década de los 40 y 50 se empezaron a utilizar
+una variedad muy amplia de diferentes códigos de E/S, lo que generó la
+existencia de problemas de comunicación, es por ello que actualmente se
+utilizan <strong>códigos de E/S normalizados</strong>, como por
+ejemplo:</p>
+<ul>
+<li><p><strong>BCD</strong> (Binary Coded Decimal) Para representar
+números en decimal dígito a dígito utilizamos 4 bits. Esto simplifica
+enormemente el hardware. Tiene varias variantes como el código Aiken o
+el XS3 - Exceso a 3.</p></li>
+<li><p><strong>EBCDIC</strong> (Extended BCD Interchange Code): Utiliza
+8 bits. Representa minúsculas, mayúsculas, símbolos especiales y
+caracteres de control.</p></li>
+<li><p><strong>ASCII</strong> (American Standard Code for Information
+Interchange): Hay dos versiones, la primera Utiliza 7 bits de datos y 1
+de paridad. La segunda es el código ASCII extendido que utiliza 8 bits
+para datos.</p></li>
+<li><p><strong>UNICODE</strong>: os símbolos están organizados por
+páginas, las cuales corresponden a diferentes idiomas o a un conjunto de
+símbolos determinado. Utiliza un número variable de bits (8, 16 o 32)
+dependiendo del UTF -Unicode Tranformation Format- utilizado, ya que de
+esta forma podemos operar con menos información para códigos conocidos
+sin estar limitados en la cantidad de símbolos potencialmente
+representables. Actualmente es el código más utilizado.</p></li>
+</ul>
+<blockquote>
+<p>Hay que añadir, que la forma concreta que tome la letra va a estar
+determinada por lo que se denomina “fuente de letra”.</p>
+</blockquote>
+<h4 id="sec3_3_3" class="numbered-subsection">3.3.3. Representación de instrucciones</h4>
+<p>Las instrucciones de un lenguaje en alto nivel o en lenguaje
+ensamblador se dan en forma de texto, representándose en consecuencia
+con un código de E/S, y el traductor correspondiente, ya sea un
+compilador o un intérprete, se encarga de transformarlas en
+instrucciones máquina que internamente se representarán como cadena de
+bits.</p>
+<h4 id="sec3_3_4" class="numbered-subsection">3.3.4. Representación de Imagen y video</h4>
+<p>La codificación de imágenes estáticas se puede realizar de formas:
+mediante <strong>mapas de bits</strong> (indicando para cada bit de la
+pantalla su color) o mediante <strong>representación vectorial</strong>
+(Indicando únicamente los vértices y color de cada polígono que queramos
+generar).</p>
+<p>Cada pixel se representará utilizando una escala de color RGB (Red,
+Green and Blue) o CMYK (Cyan, Magenta, Yellow, blacK -para impresoras-)
+reduciendo así a tres números (4 en el caso de impresión) que simbolizan
+la cantidad de cada color que se van a mezclar para generar el color
+resultante.</p>
+<p>A los colores en pantalla se les puede incorporar un cuarto valor que
+representa la transparencia de la imagen, y que es conocido como el
+“canal Alfa”.</p>
+<p>La resolución de una imagen viene determinada por tanto por la
+cantidad de puntos que vamos a utilizar para representarla, pero también
+por la cantidad de colores que nos permite la paleta que estemos
+utilizando, según el número de bits que dediquemos a cada color básico.
+Por ejemplo, si utilizamos 8 bits para la paleta, podremos representar
+2<sup>8</sup> combinaciones distintas, es decir 256 colores, pero si
+utilizamos 16 bits, 65536. Al número de bits utilizado se le denomina
+“profundidad de color”</p>
+<p>También es frecuente comprimir las imágenes para que ocupen menos
+tamaño reduciendo la <strong>profundidad de color</strong>, la
+<strong>resolución</strong> de la imágen, o el número de pixeles a
+representar mediante la <strong>aproximación de zonas de bits</strong>
+de igual color.</p>
+<p>Un video siempre se va a formar a partir de imágenes estáticas,
+siendo importante el número de imágenes (marcos) que se representan
+<strong>FPS</strong> y teniendo en cuenta que la compresión también se
+puede realizar mediante <strong>transiciones</strong> entre imágenes, es
+decir, manteniendo los elementos que no cambian y guardando información
+de los que sí.</p>
+<h4 id="sec3_3_5" class="numbered-subsection">3.3.5. Representación de sonido</h4>
+<p>Para representar sonido es necesario digitalizarlo. Este proceso sólo
+puede tomar un número discreto de valores del mundo real, por lo que se
+realiza un <strong>muestreo</strong> que consiste en tomar un cierto
+número limitado de valores (<em>frecuencias en el tiempo</em>) de dicho
+sonido. En la calidad de sonido también va a influir la
+<strong>amplitud</strong> de la muestra, es decir los límites que
+consideremos a la misma.</p>
+<h2 id="sec4"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i> 4. Características de un ordenador digital</h2>
+<blockquote>
+<p>Hay una serie de características o parámetros que nos permiten
+comparar ordenadores digitales. Listamos en este apartado las
+características relevantes de un ordenador digital.</p>
+</blockquote>
+<h3 id="sec4_1">4.1. Longitud de palabra:</h3>
+<blockquote>
+<p>Longitud de la cadena de bits que el computador puede manejar
+simultáneamente (en paralelo). Así un ordenador de 32 bits puede
+realizar operaciones con operandos de este tamaño de una sola vez. En la
+actualidad, se comercializan computadoras de 32 y 64bits</p>
+</blockquote>
+<h3 id="sec4_2">4.2. Memoria Principal (RAM)</h3>
+<ul>
+<li>
+<p>Tamaño de la memoria interna principal del computador. La unidad
+básica es el byte u octeto (8 bits) aunque habitualmente se emplean
+múltiplos</p>
+</li>
+</ul>
+<h3 id="sec4_3">4.3. Memoria Secundaria</h3>
+<p>Cantidad de memoria de almacenamiento o permanente de que dispone el
+ordenador (habitualmente, capacidad del disco duro, en gigabytes o
+terabytes)</p>
+<h3 id="sec4_4">4.4. Ancho de banda</h3>
+<p>El ancho de banda es la cantidad de información por unidad de tiempo
+que se puede transmitir a través de un bus o unidad de E/S. Se mide en
+MB/s Mb/s o GT/s</p>
+<h3 id="sec4_5">4.5. Frecuencia de reloj</h3>
+<p>Frecuencia con la que el oscilador interno (reloj) coordina las
+operaciones del ordenador, habitualmente medidas en MHZ o GHZRecuerda:
+Un Mhz es...</p>
+<h3 id="sec4_6">4.6. MIPS (Millones de Instrucciones por segundo)</h3>
+<p>Medida de rendimiento del computador, que indica el número de
+instrucciones máquina que puede ejecutar un procesador en un segundo,
+agrupadas en millones.</p>
+<h3 id="sec4_7">4.7. MFLOPS</h3>
+<p>Medida análoga a la anterior, pero exclusivamente para operaciones
+con números reales en coma flotante, que presentan mayor carga de
+cálculo.</p>
+<h3 id="sec4_8">4.8. Test sintéticos (Benchmarks)</h3>
+<p>Son un conjunto variado de prueba cuyo resultado en tiempo de
+ejecución es más fiable que la medida en MIPS, MFLOPS o GHZ. El
+resultado de estos test da lugar a un ranking de potencia.</p>
+<h2 id="sec5"><i class="fa-solid fa-memory" aria-hidden="true"></i> 5. Componentes físicos. Arquitectura Von Neumann</h2>
+<h3 id="sec5_1">5.1. Introducción. Arquitectura Von Neumann</h3>
+<p>El modelo básico de arquitectura empleada en los ordenadores
+digitales fue establecido en <strong>1945 por John Von Neumann</strong>,
+físico húngaro afincado en Estados Unidos.</p>
+<p>Su gran aportación con respecto a las arquitecturas preexistentes
+(arquitectura Hardvard principalmente) fue eliminar <strong>la lógica de
+programación basada en relés o conexiones cableadas</strong>, unificando
+memoria de datos y memoria de programa en una <strong>única memoria
+principal</strong> y simplificando por consiguiente la doble gestión de
+control de datos y programa. De esta forma además se garantiza la
+<strong>disponibilidad incremental de espacio</strong> en memoria ya que
+este se puede dividir entre datos y programas a voluntad.</p>
+<p>Los <strong>elementos funcionales</strong> de la arquitectura Von
+Neumann son por tanto:</p>
+<ul>
+<li>
+<p><strong>Unidad de Control</strong></p>
+</li>
+<li>
+<p><strong>Unidad Aritmético-lógica</strong></p>
+</li>
+<li>
+<p><strong>Memoria Principal</strong></p>
+</li>
+<li>
+<p><strong>Unidad de E/S</strong></p>
+</li>
+</ul>
+<p>La unidad de control y la unidad aritmético-lógica se agrupan en la
+denominada <strong>unidad central de proceso</strong>.</p>
+<h3 id="sec5_2">5.2. Componentes. Bloques funcionales de la CPU</h3>
+<p>La unidad central de Proceso (CPU = Central Process Unit) unifica los
+elementos funcionales de Unidad de Control y Unidad
+Aritmético-Lógica.</p>
+<h4 id="sec5_2_1" class="numbered-subsection">5.2.1. Unidad de Control</h4>
+<p>Es el centro neurálgico del ordenador, donde se procesan los
+programas y su función consiste en realizar la <strong>búsqueda, carga,
+secuenciación y ejecución</strong> de las instrucciones.</p>
+<p>Estas instrucciones están escritas en <strong>Lenguaje
+Máquina</strong> y están formadas por un <strong>código de
+operación</strong>, que indica a la UC qué operación debe realizarse, y
+por hasta <strong>dos datos o direcciones de memoria</strong> que
+indican la localización de esos datos.</p>
+<p>Para realizar su trabajo, la UC utiliza los siguientes elementos:</p>
+<p><strong>Registros,</strong> algunos visibles al usuario y otros
+no<strong>,</strong> entre los que cabe destacar:</p>
+<ul>
+<li>
+<p><strong>Contador de programa(PC)</strong>. Contiene en todo momento
+la dirección de memoria de la siguiente instrucción a ejecutar.</p>
+</li>
+<li>
+<p><strong>Registro de instrucción(IR)</strong> Almacena la instrucción
+en curso, que llevará consigo el código de operación y en su caso, los
+operandos o las direcciones de memoria de los mismos.</p>
+</li>
+<li>
+<p><strong>Registro de direcciones de memoria (MAR)</strong> Se utilizan
+para almacenar direcciones de memoria que contienen los datos de una
+instrucción o el lugar donde almacenar el resultado de la misma.</p>
+</li>
+<li>
+<p><strong>Registro de intercambio de memoria(MIR):</strong> Se almacena
+de forma temporal cualquier información recuperada de memoria.</p>
+</li>
+<li>
+<p><strong>Registros de estado (Flags/PSW)</strong>. Contiene
+información sobre el resultado de la operación anterior de la unidad
+aritmético lógica y de posibles situaciones anómalas, como
+desbordamientos, interrupciones, etc.</p>
+</li>
+<li>
+<p><strong>Otros registros,</strong> como los <strong>registros
+genéricos</strong> que pueden ser utilizados por los propios programas y
+otros <strong>registros específicos</strong> utilizados por el
+procesador (<strong>puntero de pila, registro de base</strong>, etc) y
+que dependen de su arquitectura concreta.</p>
+</li>
+</ul>
+<p><strong>Reloj</strong>. El reloj es un circuito oscilador que genera
+autónomamente una señal en forma de pulsos a intervalos constantes que
+marcan los instantes en que han de comenzar los distintos pasos de que
+consta cada instrucción.</p>
+<p><strong>Decodificador.</strong> Se encarga de extraer el código de
+operación de la instrucción en curso, analizarlo y emitir las señales
+necesarias al resto de elementos para su ejecución a través del
+secuenciador.</p>
+<p><strong>Secuenciador.</strong> Genera una serie de órdenes muy
+elementales que permiten ejecutar la instrucción en curso, de forma
+síncrona con el reloj del sistema.</p>
+<p>Por último, cabe señalar que las Unidades de Control se pueden
+clasificar en <strong>dos<br>
+categorías</strong>:</p>
+<ul>
+<li>
+<p><strong>UC cableadas.</strong> La lógica está implementada en el
+hardware, lo que las convierte en UC de <strong>propósito
+específico</strong> y no es modificable.</p>
+</li>
+<li>
+<p><strong>UC microprogramadas.</strong> En ellas, la lógica se
+implementa como un programa almacenado como <strong>firmware</strong>,
+lo que permite su posterior reescritura.</p>
+</li>
+</ul>
+<h4 id="sec5_2_2" class="numbered-subsection">5.2.2. Unidad Aritmético-Lógica</h4>
+<p>Es la unidad funcional encargada de realizar las operaciones
+aritméticas y lógicas <strong>bajo la supervisión de la unidad de
+control</strong>.</p>
+<p>Las operaciones que puede efectuar esta unidad <strong>solían ser muy
+elementales</strong>, puesto que normalmente estaban formadas por un
+circuito sumador-restador, y basaban todas las operaciones aritméticas
+en sumas, descomponiendo las operaciones complejas en pasos
+elementales.</p>
+<p><strong>Actualmente</strong> la Unidad Aritmética ha cobrado gran
+importancia y el tipo de operaciones que realiza es muy complejo, siendo
+similar a una <strong>calculadora científica de alta velocidad y gran
+precisión.</strong></p>
+<p>Las operaciones que es capaz de realizar la ALU se clasifican en tres
+grupos:</p>
+<ul>
+<li>
+<p><strong>Aritméticas</strong>. Normalmente son la suma (ADD), la resta
+(SUB), la multiplicación (MUL), la división (DIV) y el cambio de
+signo.</p>
+</li>
+<li>
+<p><strong>Lógicas</strong>. Normalmente son la negación (NOT), la suma
+lógica (OR), el producto lógico (AND) y la suma exclusiva (XOR).</p>
+</li>
+<li>
+<p><strong>Desplazamiento</strong>. Consiste en desplazar los bits de
+una palabra un determinado número de posiciones hacia la derecha o hacia
+la izquierda.</p>
+</li>
+</ul>
+<p>El número de operadores que puede aceptar la unidad aritmético-lógica
+también es variable, clasificándose en operadores <strong>monádicos,
+diádicos y triádicos</strong> si es capaz de trabajar con uno, dos o
+tres datos de forma simultánea respectivamente</p>
+<h3 id="sec5_3">5.3. Función y Propósito de la Memoria Interna</h3>
+<p>La memoria es considerada un único componente funcional, compuesto de
+celdas que pueden almacenar <strong>bits</strong> de forma
+independiente, con dos operaciones básicas: <strong>lectura y
+escritura</strong>.</p>
+<p>Sin embargo las limitaciones en términos de <strong>rendimiento,
+coste económico y velocidad</strong> hacen necesaria una estructuración
+de la misma.</p>
+<h4 id="sec5_3_1" class="numbered-subsection">5.3.1. Jerarquía de memoria</h4>
+<p>El autor <strong>Pedro de Miguel de Anasagasti</strong>, en su libro
+Fundamentos de los computadores, caracteriza la memoria según:</p>
+<ul>
+<li>
+<p>El coste por bit</p>
+</li>
+<li>
+<p>Tiempo que se tarda en acceder a la información</p>
+</li>
+<li>
+<p>Capacidad de almacenamiento o tamaño</p>
+</li>
+</ul>
+<p>Los valores deseados para una memoria son una gran capacidad de
+almacenamiento, un tiempo de acceso pequeño, y un precio reducido. Sin
+embargo, ésta combinación no existe: <strong>una memoria rápida es una
+memoria cara.</strong> Esta limitación es válida desde que surgieron las
+primeras memorias hasta la actualidad. Las memorias rápidas, sin ciclos
+de refresco, con latencias casi inexistentes, requieren del uso de
+componentes caros: biestables integrados de alta conductividad, cuyo
+proceso de fabricación es caro y cuyos materiales son caros. De este
+imperativo se deduce que a <strong>más capacidad de memoria, más coste
+económico.</strong></p>
+<p>Afortunadamente <strong>no toda la memoria necesita ser accedida en
+un momento dado</strong>. Esto posibilita que las instrucciones y datos
+requeridos por el procesador <strong>se puedan jerarquizar en distintas
+memorias</strong> dependiendo de la inmediatez necesaria para su
+proceso.</p>
+<p>La jerarquía de memoria se conforma entonces con <strong>memorias muy
+rápidas, caras y de baja capacidad</strong> para los datos en proceso
+hasta <strong>memorias relativamente lentas, de alta capacidad y bajo
+coste por bit</strong> para los datos que no van a ser procesados en un
+futuro próximo (no en los próximos segundos). Las distintas memorias de
+menor a mayor capacidad y de mayor a menor velocidad y coste se
+clasifican en:</p>
+<ul>
+<li>
+<p><strong>Registros</strong> (del procesador)</p>
+</li>
+<li>
+<p><strong>Memoria caché</strong> (estructurada en niveles: L1, L2, L3,
+etc)</p>
+</li>
+<li>
+<p><strong>Memoria Principal</strong> (RAM Dinámica)</p>
+</li>
+<li>
+<p><strong>Memoria secundaria</strong> (Discos duros y de estado
+sólido)</p>
+</li>
+<li>
+<p><strong>Memoria masiva auxiliar</strong> (Soportes de respaldo)</p>
+</li>
+</ul>
+<p>Los datos deben ser transferidos de una memoria a otra según la
+disponibilidad necesaria.</p>
+<h4 id="sec5_3_2" class="numbered-subsection">5.3.2. Funciones por niveles</h4>
+<p>Como vemos en la jerarquía de memoria, la <strong>memoria
+interna</strong> está compuesta por 3 niveles. Cada uno de los cuales
+tienen las siguientes funciones específicas:</p>
+<ul>
+<li>
+<p><strong>Nivel 0</strong> - Registros: Almacena datos sobre los que la
+unidad de control está trabajando directamente.</p>
+</li>
+<li>
+<p><strong>Nivel 1</strong> - Caché: Memoria formada por circuitos
+integrados SRAM. A su vez se encuentra dividida en varios niveles. Se
+utiliza para minimizar los accesos a la memoria principal.</p>
+</li>
+<li>
+<p><strong>Nivel 2</strong> - Memoria principal. Memoria formada por
+DRAM, cuya función es almacenar las instrucciones y datos que se están
+utilizando en la ejecución de un proceso.</p>
+</li>
+</ul>
+<h3 id="sec5_4">5.4. Buses de E/S</h3>
+<p>El conjunto de componentes de un ordenador se comunica entre sí
+mediante ciertos caminos, que constituyen la estructura de
+interconexión, o buses de E/S.</p>
+<p>En la arquitectura Von Neumann se distinguen los buses de
+<strong>datos, dirección y control</strong>:</p>
+<h4 id="sec5_4_1" class="numbered-subsection">5.4.1. Bus de datos:</h4>
+<p>El bus de datos permite el intercambio de datos entre la CPU y el
+resto de unidades.</p>
+<h4 id="sec5_4_2" class="numbered-subsection">5.4.2. Bus de direcciones:</h4>
+<p>La memoria RAM es direccionable, de forma que cada celda de memoria
+tiene su propia dirección. Las direcciones son un número que selecciona
+una celda de memoria dentro de la memoria principal o en el espacio de
+direcciones de la unidad de entrada/salida.<br>
+<br>
+El bus de direcciones es un canal del microprocesador totalmente
+independiente del bus de datos donde se establece la dirección de
+memoria del dato en tránsito.<br>
+<br>
+El bus de dirección consiste en el conjunto de líneas eléctricas
+necesarias para establecer una dirección. La capacidad de la memoria que
+se puede direccionar depende de la cantidad de bits que conforman el bus
+de direcciones, siendo 2<sup>n</sup> el tamaño máximo en bits del banco
+de memoria que se podrá direccionar con n líneas. Por ejemplo, para
+direccionar una memoria de 256 bits, son necesarias al menos 8 líneas,
+pues 2<sup>8</sup> = 256. Adicionalmente pueden ser necesarias líneas de
+control para señalar cuándo la dirección está disponible en el bus. Esto
+depende del diseño del propio bus.</p>
+<h4 id="sec5_4_3" class="numbered-subsection">5.4.3. Bus de control:</h4>
+<p>El bus de control gobierna el uso y acceso a las líneas de datos y de
+direcciones. Como estas líneas están compartidas por todos los
+componentes, tiene que proveerse de determinados mecanismos que
+controlen su utilización. Las señales de control transmiten tanto
+órdenes como información de sincronización, evitando que haya colisión
+de información en el sistema.</p>
+<h4 id="sec5_4_4" class="numbered-subsection">5.4.4. Buses multiplexados:</h4>
+<p>Algunos diseños utilizan líneas eléctricas multiplexadas para el bus
+de direcciones y el bus de datos. Esto significa que un mismo conjunto
+de líneas eléctricas se comportan unas veces como bus de direcciones y
+otras veces como bus de datos, pero nunca al mismo tiempo. Una línea de
+control permite discernir cuál de las dos funciones está activa.</p>
+<h3 id="sec5_5">5.5. Periféricos</h3>
+<p>Los periféricos se interconectan a la unidad de E/S mediante el uso
+de una <strong>interfaz</strong> con especificaciones de acceso
+<strong>estandarizadas</strong> tanto a nivel de forma, como de voltaje
+y de protocolos de comunicación.</p>
+<p>Cada periférico dispone de un <strong>circuito controlador</strong>
+(o controladora) que gestiona toda la lógica del mismo.</p>
+<p>Las peculiaridades de cada dispositivo son gestionadas de forma
+transparente por el sistema operativo mediante un <strong>software
+controlador (driver)</strong> que es normalmente provisto por el propio
+fabricante.</p>
+<p>Los periféricos pueden ser clasificados en dispositivos de
+<strong>Entrada</strong>, de <strong>Salida</strong>, o de Entrada y
+Salida; estos últimos son de tipo <strong>almacenamiento</strong> o
+<strong>comunicación</strong>.</p>
+<h2 id="sec6"><i class="fa-solid fa-cubes" aria-hidden="true"></i> 6. Componentes lógicos: Software</h2>
+<p><strong>¿Qué es Software?</strong></p>
+<p>La definición más simple para entender qué es Software es que son los
+programas informáticos que se instalan en los ordenadores, tablets,
+teléfonos inteligentes o reloj digital, entre otros, estos programas
+sirven para realizar diferentes tareas específicas, entre las más
+comunes por ejemplo: escribir una carta en Word, llevar la contabilidad
+de un negocio en Excel, o hacer la presentación de un producto con
+PowerPoint, entre muchas otras más.</p>
+<p>Se considera Software al equipamiento lógico e intangible de un
+ordenador, abarcando todas las aplicaciones informáticas, el desarrollo
+de estos software se han convertido en una industria protagonista en la
+economía global, el software mueve millones de euros cada año, Microsoft
+es la empresa más grande y conocida, fue fundada en 1975 por Bill Gates
+y Paul Allen, logrando ser el referente cuando hablamos todo sobre qué
+es software, gracias a su sistema operativo Windows y su suite de
+programas de oficina Word, Excel, PowerPoint, etc.</p>
+<p>Como dato interesante, la palabra “software” proviene del idioma
+inglés, pero la Real Academia Española aceptó su uso gracias a la
+masificación entre hispanohablantes. Según la RAE, Software es un
+conjunto de programas, instrucciones y reglas informáticas que permiten
+ejecutar tareas en un ordenador.</p>
+<p>Para saber un poco más allá de qué es Software, podemos decir que es
+desarrollado mediante distintos tipos de lenguajes de programación,
+estos distintos tipos de lenguajes permiten controlar el comportamiento
+de un dispositivo que contenga un ordenador, a través de un conjunto de
+símbolos y reglas sintácticas y semánticas que definen sus elementos y
+expresiones, los lenguajes de programación permiten especificar de forma
+precisa sobre qué datos debe operar un ordenador.</p>
+<p><strong>Tipos de Software</strong></p>
+<p>Aunque es verdad que cada empresa que desarrolle software puede tener
+su propia manera de ver los tipos de software que desarrolla y su
+definición acerca de qué es Software, existen una clasificación de los
+software en la que coinciden la mayorías dentro del sector de software a
+nivel mundial, dejando así de una forma simple y real de entender los
+tipos de software para las personas que no tienen un perfil técnico o
+que no son programadores.</p>
+<ol start="0" type="A">
+<li><p><strong>Software de Sistema</strong></p></li>
+</ol>
+<p>Este tipo de software es también conocido como un software base,
+dentro de esta clasificación se encuentran los sistemas operativos como
+<strong>Windows, MacOS, Android  o Linux</strong>, este es el tipo de
+software que requieren los ordenadores para que sean capaces de iniciar
+el ordenador y poder utilizar otras aplicaciones o software, son los
+encargados de la comunicación entre el sistema operativo y el hardware
+que compone el ordenador, algunos están diseñados para administrar los
+propios recursos del ordenador o de configurar la interfaz según las
+preferencias de los usuarios.</p>
+<p>La clasificación del <strong>Software de sistema</strong> queda de la
+siguiente manera:</p>
+<ul>
+<li>
+<p>Sistemas operativos</p>
+</li>
+<li>
+<p>Controladores de dispositivo</p>
+</li>
+<li>
+<p>Herramientas de diagnóstico</p>
+</li>
+<li>
+<p>Herramientas de Corrección y Optimización</p>
+</li>
+<li>
+<p>Servidores/servicios</p>
+</li>
+<li>
+<p>Utilidades del sistema</p>
+</li>
+<li>
+<p>Software de Programación</p>
+</li>
+</ul>
+<p>Después del sistema operativo como un tipo de software fundamental en
+la informática de hoy, <strong>el software de programación</strong> está
+detrás, su importancia es clave, gracias a este tipo de software es
+posible desarrollar otras aplicaciones y sistemas que son usados en los
+ordenadores para diferentes tareas haciendo uso de conocimientos lógicos
+y de programación.</p>
+<p>Los programadores por ejemplo desarrollan en un editor de texto y
+luego lo compila el programa para verificar que todo está bien y el
+código es correcto, esto aplica para cualquier lenguaje de programación.
+Hoy existen los <strong>entornos de desarrollo integrados (IDE)</strong>
+, que son un programa informático con una serie de herramientas de
+programación.</p>
+<p>La Clasificación del software de programación es la siguiente:</p>
+<ul>
+<li>
+<p>Editores</p>
+</li>
+<li>
+<p>Compiladores</p>
+</li>
+<li>
+<p>Intérpretes</p>
+</li>
+<li>
+<p>Enlazadores</p>
+</li>
+<li>
+<p>Depuradores</p>
+</li>
+<li>
+<p>(Interfaz de programación de aplicaciones) API</p>
+</li>
+<li>
+<p>Bibliotecas de funciones (library)</p>
+</li>
+<li>
+<p>Entornos de Desarrollo Integrados (IDE)</p>
+</li>
+</ul>
+<ol start="2" type="A">
+<li>
+<p><strong>Software de Aplicación (Apps)</strong></p>
+</li>
+</ol>
+<p>Este tipo de software es el que más utilizamos el día a día, hoy con
+la penetración de Internet y los teléfonos inteligentes, las
+aplicaciones son las más usadas, están incluidas todos los programas,
+aplicaciones o utilidades que manejamos dentro de nuestro ordenador,
+tablet o móvil, estos software hablando de forma técnica son aquellos
+software diseñados para los usuarios finales, la mayoría ya están
+diseñados y enfocados para ser utilizados en cada sistema operativo
+específicamente.</p>
+<p>El ejemplo más conocido de este software es el paquete o suite de
+Office de Microsoft: Word, Excel, PowerPoint, etc. También los programas
+de comunicación, juegos, para edición de multimedia, antivirus, y muchos
+otros más.</p>
+<p>La clasificación del software de aplicación queda de la siguiente
+manera:</p>
+<ul>
+<li>
+<p>Aplicaciones de Sistema de control y automatización industrial</p>
+</li>
+<li>
+<p><strong>Aplicaciones ofimáticas (distribuidas en paquetes o
+suites)</strong></p>
+</li>
+<li>
+<p>Software educativo</p>
+</li>
+<li>
+<p>Software médico</p>
+</li>
+<li>
+<p>Software de Cálculo Numérico</p>
+</li>
+<li>
+<p>Software de Diseño Asistido</p>
+</li>
+<li>
+<p>Software de Control Numérico</p>
+</li>
+<li>
+<p>Aplicaciones en la nube</p>
+</li>
+</ul>
+<p><strong>C. Software específico</strong></p>
+<p>Aplicaciones corporativas o de propósito específico: resuelven
+aspectos concretos del funcionamiento de la empresa (contabilidad,
+facturación, control de horas trabajadas...). . Ejemplos: los productos
+Contaplus de SAGE y FacturaSOL de software del Sol. Visual Studio Code,
+Eclipse o NetBeans como entornos de desarrollo de software.</p>
+<p>El software específico se puede clasificar a su vez en:</p>
+<p>-Software profesionalizado.</p>
+<p>-Sistemas de relación con el cliente (CRM)</p>
+<p>-Sistemas de planificación de recursos empresariales (ERP)</p>
+<p>-Sistemas de Decisión de soporte (DSS)</p>
+<p>-Software a medida.</p>
+<p><strong>Software Profesionalizado:</strong></p>
+<p>Son programas característicos de una profesión y muy específicos,
+como por ejemplo el software de programación antes mencionado, pero
+también programas de edición profesional de audio/video, desarrollo de
+modelos de ingeniería en 3D (AutoDesk, Skechup, …), desarrollo de
+videojuegos (Unity, Unreal engine) desarrollo web, etc. </p>
+<p><strong>CRM</strong></p>
+<p>Los Sistemas de relación con el cliente (Customer Relationship
+Management - CRM), conocidos como FrontOffice, son software destinado a
+cubrir todo el proceso de venta y el seguimiento de la misma por parte
+de una compañía, desde el marketing inicial, al embudo de ventas,
+servicios postventa, etc., buscando la fidelización de los clientes ya
+existentes y la captación de nuevos clientes.</p>
+<p>Un CRM está compuesto como mínimo de tres módulos:</p>
+<ul>
+<li>
+<p><strong>Módulo de ventas:</strong> para gestionar el proceso de
+postventa</p>
+</li>
+<li>
+<p><strong>Módulo de marketing</strong>: para la optimización del
+proceso de marketing</p>
+</li>
+<li>
+<p><strong>Módulo de soporte y atención al cliente</strong>: gestiona
+las contrataciones, servicios, comunicaciones, redes sociales, etc.</p>
+</li>
+</ul>
+<p><strong>ERP</strong></p>
+<p>Los Sistemas de <strong>Planificación de Recursos
+Empresariales</strong> (ERP por sus siglas en inglés Enterprise Resource
+Planning) y conocidos como <strong>BackOffice</strong> integran diversos
+módulos que dan solución a la gestión integral del negocio, incluyendo
+la facturación, contabilidad, ventas, compras, recursos humanos,
+almacén, fabricación, etc.</p>
+<p><strong>DSS</strong></p>
+<p>Los sistemas de información para el apoyo a la toma de decisiones
+utilizan la información de salida de los ERM y los CRM para gestionar la
+toma de decisiones a nivel gerencial.</p>
+<p><strong>Software “a medida”</strong></p>
+<p>En esta categoría se engloban las páginas web empresariales,
+intranets y cualquier software desarrollado a propósito para una función
+específica dentro de la empresa, que por su especificidad no puede ser
+compartido de forma general, y que requiere de una enorme labor de
+soporte, formación y mantenimiento.</p>
+<h3 id="sec6_1">6.1. Design Thinking</h3>
+<div class="activity-card"><p>Crea un código similar al ASCII pero que a la vez que codifica, encripte la información con un método similar al método caesar.</p></div><h3 id="sec6_2">6.2. Recursos</h3>
+<p><strong>Bibliografía</strong></p>
+<p>Apuntes del profesor (Cuaderno de trabajo)</p>
+<p>Montaje y Mantenimiento de Equipos. Edt. Síntesis – Unidad 1</p>
+<p><strong>Otros Recursos</strong></p>
+<p>Video Historia de la informática (2019) <a href="https://youtu.be/zewkqnInHVY" target="_blank" rel="noopener noreferrer"><u>https://youtu.be/zewkqnInHVY</u></a></p>
+<p>Simulador de Von Neumann online <a href="http://lab.xitrus.es/VonNeumann/" target="_blank" rel="noopener noreferrer"><u>http://lab.xitrus.es/VonNeumann/</u></a></p>
+<p>La computadora del futuro: <a href="https://youtu.be/14UdiF4slpU" target="_blank" rel="noopener noreferrer"><u>https://youtu.be/14UdiF4slpU</u></a></p>
+<p>El ordenador cuántico: <a href="https://youtu.be/O9TA2faf6nw" target="_blank" rel="noopener noreferrer"><u>https://youtu.be/O9TA2faf6nw</u></a></p>
+<footer class="document-footer">© Ignacio García 2020</footer></main></div>
+</body>
+</html>
