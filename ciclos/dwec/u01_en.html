@@ -700,11 +700,11 @@
 <body><nav class="sidebar-toc" aria-label="Table of contents"><h4><i class="fa-solid fa-list-ol" aria-hidden="true"></i> Contents</h4><ul>
 <li><a href="#sec1">1. Web Technology</a></li><li><a href="#sec1_1" class="subsection-link">1.1. The World Wide Web</a></li><li><a href="#sec1_2" class="subsection-link">1.2. Internet and the Web</a></li><li><a href="#sec1_3" class="subsection-link">1.3. Client–server architecture</a></li><li><a href="#sec2">2. The Web Browser</a></li><li><a href="#sec2_1" class="subsection-link">2.1. Rendering and JavaScript engines</a></li><li><a href="#sec2_2" class="subsection-link">2.2. The DOM</a></li><li><a href="#sec2_3" class="subsection-link">2.3. Cross-browser compatibility</a></li><li><a href="#sec3">3. HTTP Protocol</a></li><li><a href="#sec3_1" class="subsection-link">3.1. HTTPS handshake</a></li><li><a href="#sec3_2" class="subsection-link">3.2. HTTP request</a></li><li><a href="#sec3_3" class="subsection-link">3.3. HTTP response</a></li><li><a href="#sec3_4" class="subsection-link">3.4. Main HTTP methods</a></li><li><a href="#sec4">4. HTTP Headers and Message Structure</a></li><li><a href="#sec4_1" class="subsection-link">4.1. Request headers</a></li><li><a href="#sec4_2" class="subsection-link">4.2. Response and content headers</a></li><li><a href="#sec4_3" class="subsection-link">4.3. HTTP status codes</a></li><li><a href="#sec4_4" class="subsection-link">4.4. Cache management</a></li><li><a href="#sec4_5" class="subsection-link">4.5. CORS</a></li><li><a href="#sec4_6" class="subsection-link">4.6. User-Agent</a></li></ul></nav><div class="document-wrapper"><main class="document-container">
 <div class="header-banner"><div class="header-top-row"><span class="module-tag">Client-Side Web Development • 2nd DAW</span><a class="language-switch" href="u01_es.html" hreflang="es" lang="es" aria-label="Leer esta página en español"><i class="fa-solid fa-language" aria-hidden="true"></i> Español</a></div><h1>LU01 Frontend Architecture</h1><p class="header-subtitle">Components, layers and data flow in a browser-based web application</p></div>
-<div class="image-container"><img src="" data-source-image="0" alt="Frontend architecture: layers, technologies and communication with the backend" loading="lazy"></div>
+<div class="image-container"><img src="assets/u01/ilustracion-01.webp" width="1352" height="901" alt="Frontend architecture: layers, technologies and communication with the backend" loading="lazy" decoding="async"></div>
 <h2 id="sec1"><i class="fa-solid fa-globe" aria-hidden="true"></i> 1. Web Technology</h2>
 <h3 id="sec1_1">1.1. The World Wide Web</h3>
 <p><strong>The Internet and the Web are not the same thing.</strong> Email, IRC, Telnet and FTP existed before the Web.</p>
-<div class="image-container"><img src="" data-source-image="1" alt="Visual comparison between the Internet and the World Wide Web" loading="lazy"></div>
+<div class="image-container"><img src="assets/u01/ilustracion-02.webp" width="1352" height="901" alt="Visual comparison between the Internet and the World Wide Web" loading="lazy" decoding="async"></div>
 <p>In 1989, <strong>Tim Berners-Lee</strong> worked at CERN, where scientists needed to share documents across different computers. He proposed linking documents through <strong>hypertext</strong>, a term coined by Ted Nelson in 1965.</p>
 <p>By late 1990, the first server and browser—WorldWideWeb, later renamed Nexus—were running. The project combined HTML for structuring documents, URLs for locating resources and HTTP for requesting and receiving them.</p>
 <p>Mosaic popularised graphical browsing in 1993. CERN released the Web software into the public domain, Netscape Navigator appeared in 1994 and Internet Explorer in 1995. Competition between browsers became known as the “browser wars”.</p>
@@ -714,21 +714,21 @@
 <div class="resource-card"><p>Explore CERN's first website: <a href="https://info.cern.ch/" target="_blank" rel="noopener noreferrer">https://info.cern.ch/</a></p><p>Video: <a href="https://youtu.be/sSqZ_hJu9zA" target="_blank" rel="noopener noreferrer">A brief history of the World Wide Web</a></p></div>
 <h3 id="sec1_3">1.3. Client–server architecture</h3>
 <p>A web application is divided into a <strong>client/frontend</strong>, which presents the interface and sends requests, and a <strong>server/backend</strong>, which applies business logic, queries databases and returns responses.</p>
-<div class="image-container"><img src="" data-source-image="2" alt="Frontend and backend in a web application" loading="lazy"></div>
+<div class="image-container"><img src="assets/u01/ilustracion-03.webp" width="1352" height="901" alt="Frontend and backend in a web application" loading="lazy" decoding="async"></div>
 <div class="table-scroll" role="region" aria-label="Client-server roles" tabindex="0"><table><thead><tr><th>Layer</th><th>Responsibility</th></tr></thead><tbody><tr><td>Client/frontend</td><td>Displays forms, reacts to interaction and presents results.</td></tr><tr><td>Server/backend</td><td>Validates operations, checks permissions and processes requests.</td></tr><tr><td>Database</td><td>Stores persistent application data.</td></tr></tbody></table></div>
 <p>A page rarely arrives as one object: the browser may first download HTML, then CSS, JavaScript, images and data, and combine these resources into the rendered result.</p>
 
 <h2 id="sec2"><i class="fa-solid fa-compass" aria-hidden="true"></i> 2. The Web Browser</h2>
 <p>A browser is a Web client or <em>user agent</em>. It requests resources, parses HTML, applies CSS, executes JavaScript, renders graphics, supports interaction and exposes APIs and storage mechanisms.</p>
-<div class="image-container"><img src="" data-source-image="3" alt="Main components of a web browser" loading="lazy"></div>
-<div class="image-container"><img src="" data-source-image="4" alt="Simplified internal architecture of a web browser" loading="lazy"></div>
+<div class="image-container"><img src="assets/u01/ilustracion-04.webp" width="1536" height="1024" alt="Main components of a web browser" loading="lazy" decoding="async"></div>
+<div class="image-container"><img src="assets/u01/ilustracion-05.webp" width="1352" height="901" alt="Simplified internal architecture of a web browser" loading="lazy" decoding="async"></div>
 <h4 class="content-subtitle">URL</h4><p>A URL identifies a resource and may contain a scheme, host, port, path, query and fragment.</p>
-<div class="table-scroll" role="region" aria-label="URL diagram" tabindex="0"><table><tbody><tr><td><img src="" data-source-image="5" alt="Parts of a URL" loading="lazy"></td></tr></tbody></table></div>
-<div class="image-container"><img src="" data-source-image="6" alt="Browser navigation and resource-loading process" loading="lazy"></div>
+<div class="table-scroll" role="region" aria-label="URL diagram" tabindex="0"><table><tbody><tr><td><img src="assets/u01/ilustracion-06.webp" width="1352" height="901" alt="Parts of a URL" loading="lazy" decoding="async"></td></tr></tbody></table></div>
+<div class="image-container"><img src="assets/u01/ilustracion-07.webp" width="1352" height="901" alt="Browser navigation and resource-loading process" loading="lazy" decoding="async"></div>
 <h3 id="sec2_1">2.1. Rendering and JavaScript engines</h3>
-<div class="image-container"><img src="" data-source-image="7" alt="Comparison of web rendering and JavaScript engines" loading="lazy"></div>
+<div class="image-container"><img src="assets/u01/ilustracion-08.webp" width="1254" height="1254" alt="Comparison of web rendering and JavaScript engines" loading="lazy" decoding="async"></div>
 <p>A browser is not the same as its engines. Chromium uses Blink for rendering and V8 for JavaScript/WebAssembly. Firefox uses Gecko and SpiderMonkey. Safari uses WebKit and JavaScriptCore.</p>
-<div class="image-container"><img src="" data-source-image="8" alt="Engines used by the main browser families" loading="lazy"></div>
+<div class="image-container"><img src="assets/u01/ilustracion-09.webp" width="1312" height="1199" alt="Engines used by the main browser families" loading="lazy" decoding="async"></div>
 <pre><code>Chrome ≠ Blink ≠ V8
 Chrome  application/browser
 Blink   web rendering engine
@@ -736,7 +736,7 @@ V8      JavaScript engine</code></pre>
 <div class="activity-card"><p><strong>Practice:</strong> choose browsers that provide real engine diversity. Chromium/Blink plus Firefox/Gecko is more diverse than two brands based on Chromium.</p></div>
 <h3 id="sec2_2">2.2. The DOM</h3>
 <p>The DOM (Document Object Model) is the browser's in-memory object representation of a document. It connects the page to scripts and can change while the application runs; it is not simply the original HTML source.</p>
-<div class="image-container"><img src="" data-source-image="9" alt="The DOM represented as a tree of nodes" loading="lazy"></div>
+<div class="image-container"><img src="assets/u01/ilustracion-10.webp" width="1312" height="1199" alt="The DOM represented as a tree of nodes" loading="lazy" decoding="async"></div>
 <p>The DOM also supports events and many APIs connecting JavaScript with documents.</p>
 <div class="resource-card"><p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model" target="_blank" rel="noopener noreferrer">MDN: Document Object Model</a></p></div>
 <div class="activity-card"><p><strong>Activity:</strong> use DevTools Console to change an element's <code>textContent</code>, reload the page and explain why the temporary DOM edit did not alter the HTML file.</p></div>
@@ -749,19 +749,19 @@ Safari/WebKit, when available</code></pre>
 
 <h2 id="sec3"><i class="fa-solid fa-arrow-right-arrow-left" aria-hidden="true"></i> 3. HTTP Protocol</h2>
 <p>A protocol is a set of rules that lets systems communicate compatibly. HTTP means Hypertext Transfer Protocol and defines message exchange between web clients and servers.</p>
-<div class="image-container"><img src="" data-source-image="10" alt="Technologies and evolution of the Web" loading="lazy"></div>
+<div class="image-container"><img src="assets/u01/ilustracion-11.webp" width="1350" height="675" alt="Technologies and evolution of the Web" loading="lazy" decoding="async"></div>
 <p>The basic cycle consists of a client <strong>request</strong> and a server <strong>response</strong>. Responses may contain HTML, CSS, JavaScript, images or data.</p>
-<div class="image-container"><img src="" data-source-image="11" alt="HTTP communication flow between client and server" loading="lazy"></div>
-<div class="image-container"><img src="" data-source-image="12" alt="General structure of an HTTP request and response" loading="lazy"></div>
-<h3 id="sec3_1">3.1. HTTPS handshake</h3><div class="image-container"><img src="" data-source-image="13" alt="Main stages in establishing an HTTPS connection" loading="lazy"></div><div class="didactic-note"><blockquote><p>HTTP defines the messages; HTTPS protects their exchange with TLS.</p></blockquote></div>
-<h3 id="sec3_2">3.2. HTTP request</h3><p>A request is the message a client sends to ask the server to perform an operation on a resource.</p><div class="image-container"><img src="" data-source-image="14" alt="Anatomy of an HTTP request" loading="lazy"></div>
+<div class="image-container"><img src="assets/u01/ilustracion-12.webp" width="1352" height="901" alt="HTTP communication flow between client and server" loading="lazy" decoding="async"></div>
+<div class="image-container"><img src="assets/u01/ilustracion-13.webp" width="1352" height="901" alt="General structure of an HTTP request and response" loading="lazy" decoding="async"></div>
+<h3 id="sec3_1">3.1. HTTPS handshake</h3><div class="image-container"><img src="assets/u01/ilustracion-14.webp" width="1352" height="901" alt="Main stages in establishing an HTTPS connection" loading="lazy" decoding="async"></div><div class="didactic-note"><blockquote><p>HTTP defines the messages; HTTPS protects their exchange with TLS.</p></blockquote></div>
+<h3 id="sec3_2">3.2. HTTP request</h3><p>A request is the message a client sends to ask the server to perform an operation on a resource.</p><div class="image-container"><img src="assets/u01/ilustracion-15.webp" width="1352" height="761" alt="Anatomy of an HTTP request" loading="lazy" decoding="async"></div>
 <div class="table-scroll"><table><thead><tr><th>Element</th><th>Purpose</th></tr></thead><tbody><tr><td>Method</td><td>States the requested operation.</td></tr><tr><td>URL</td><td>Identifies the resource or endpoint.</td></tr><tr><td>Headers</td><td>Carry request metadata.</td></tr><tr><td>Body</td><td>Optionally carries submitted data.</td></tr></tbody></table></div>
 <h4 class="content-subtitle">Example request</h4><pre><code>POST /students HTTP/1.1
 Host: example.com
 Content-Type: application/json
 
 {"name": "Ana", "age": 16}</code></pre>
-<h3 id="sec3_3">3.3. HTTP response</h3><p>The response contains a status code, headers and, when appropriate, a body with requested data or result information.</p><div class="image-container"><img src="" data-source-image="15" alt="Anatomy of an HTTP response" loading="lazy"></div>
+<h3 id="sec3_3">3.3. HTTP response</h3><p>The response contains a status code, headers and, when appropriate, a body with requested data or result information.</p><div class="image-container"><img src="assets/u01/ilustracion-16.webp" width="1352" height="761" alt="Anatomy of an HTTP response" loading="lazy" decoding="async"></div>
 <pre><code>HTTP/1.1 200 OK
 Content-Type: application/json
 
@@ -788,16 +788,13 @@ User-Agent: ClassroomClient/1.0</code></pre>
 <h3 id="sec4_4">4.4. Cache management</h3><p>A web cache stores HTTP responses for reuse, reducing downloads, latency and server work. Browser caches are private; proxies and CDNs may be shared. Every resource has its own policy.</p>
 <p>A fresh response can normally be reused directly. A stale response may be revalidated with an ETag and <code>If-None-Match</code>; a 304 response tells the client to reuse its stored body.</p>
 <div class="table-scroll"><table><thead><tr><th>Cache-Control directive</th><th>Meaning</th></tr></thead><tbody><tr><td>max-age=3600</td><td>Fresh for one hour</td></tr><tr><td>no-cache</td><td>May be stored but must be revalidated before reuse</td></tr><tr><td>no-store</td><td>Must not be stored</td></tr><tr><td>private</td><td>Must not be stored in shared caches</td></tr><tr><td>public</td><td>Allows shared storage under applicable rules</td></tr></tbody></table></div>
-<div class="image-container"><img src="" data-source-image="16" alt="Web-cache operation and revalidation" loading="lazy"></div><p><strong>Important:</strong> <code>no-cache</code> does not mean “do not store”; that is <code>no-store</code>.</p>
-<h3 id="sec4_5">4.5. CORS: cross-origin access</h3><p>CORS lets a server state which other origins may read its responses in a browser. The server publishes the policy through HTTP headers and the browser enforces it. Same-origin policy prevents a malicious page from freely reading another site's authenticated data.</p><div class="image-container"><img src="" data-source-image="17" alt="CORS between different origins" loading="lazy"></div>
-<h3 id="sec4_6">4.6. User-Agent</h3><p>A user agent is the program initiating a request: browser, application, command-line tool, library or robot. The <code>User-Agent</code> header describes the software, not the person.</p><div class="image-container"><img src="" data-source-image="18" alt="Components of a User-Agent string" loading="lazy"></div>
+<div class="image-container"><img src="assets/u01/ilustracion-17.webp" width="1352" height="901" alt="Web-cache operation and revalidation" loading="lazy" decoding="async"></div><p><strong>Important:</strong> <code>no-cache</code> does not mean “do not store”; that is <code>no-store</code>.</p>
+<h3 id="sec4_5">4.5. CORS: cross-origin access</h3><p>CORS lets a server state which other origins may read its responses in a browser. The server publishes the policy through HTTP headers and the browser enforces it. Same-origin policy prevents a malicious page from freely reading another site's authenticated data.</p><div class="image-container"><img src="assets/u01/ilustracion-18.webp" width="1352" height="901" alt="CORS between different origins" loading="lazy" decoding="async"></div>
+<h3 id="sec4_6">4.6. User-Agent</h3><p>A user agent is the program initiating a request: browser, application, command-line tool, library or robot. The <code>User-Agent</code> header describes the software, not the person.</p><div class="image-container"><img src="assets/u01/ilustracion-19.webp" width="1350" height="675" alt="Components of a User-Agent string" loading="lazy" decoding="async"></div>
 <h4 class="content-subtitle">Anatomy of a browser string</h4><pre><code>Mozilla/5.0 (Windows NT 10.0; Win64; x64)
 AppleWebKit/537.36 (KHTML, like Gecko)
 Chrome/140.0.0.0 Safari/537.36</code></pre>
 <p>Historical compatibility tokens make isolated word matching unreliable. Chrome uses Blink even though its string contains AppleWebKit, and other Chromium browsers may also contain Chrome.</p>
 <footer class="document-footer">DAW / DWEC · © Ignacio García</footer></main></div>
-<script>
-(async()=>{try{const r=await fetch("dwec01.html");const d=new DOMParser().parseFromString(await r.text(),"text/html");const images=[...d.querySelectorAll("img")];document.querySelectorAll("img[data-source-image]").forEach(img=>{const original=images[Number(img.dataset.sourceImage)];if(original)img.src=original.getAttribute("src")})}catch(e){console.error("Could not load embedded illustrations",e)}})();
-</script>
 </body>
 </html>
