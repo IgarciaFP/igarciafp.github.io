@@ -1,0 +1,76 @@
+name: Traducción Automática Multi-Carpeta
+
+on:
+  push:
+    paths:
+      - 'ciclos/daw/diw/u01_es.html'
+      - 'ciclos/daw/dwec/u01_es.html'
+      - 'ciclos/daw/ssii/u01_es.html'
+
+permissions:
+  contents: write
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Instalar dependencias
+        run: |
+          pip install deep-translator beautifulsoup4
+
+      - name: Traducir archivos modificados
+        run: |
+          python -c "
+          from bs4 import BeautifulSoup
+          from deep-translator import GoogleTranslator
+          import os
+
+          # Lista de las rutas exactas de tus archivos en el repositorio
+          archivos_origen = [
+              'ciclos/daw/diw/u01_es.html',
+              'ciclos/daw/dwec/u01_es.html',
+              'ciclos/daw/ssii/u01_es.html'
+          ]
+
+          translator = GoogleTranslator(source='es', target='en')
+
+          for ruta_es in archivos_origen:
+              # Solo traduce si el archivo existe físicamente en el repositorio
+              if os.path.exists(ruta_es):
+                  print(f'Procesando: {ruta_es}')
+                  
+                  with open(ruta_es, 'r', encoding='utf-8') as f:
+                      soup = BeautifulSoup(f.read(), 'html.parser')
+
+                  # Traducir los elementos de texto visibles
+                  for element in soup.find_all(text=True):
+                      if element.parent.name not in ['script', 'style'] and element.strip():
+                          try:
+                              texto_traducido = translator.translate(element)
+                              element.replace_with(texto_traducido)
+                          except Exception as e:
+                              print(f'Error al traducir texto en {ruta_es}: {e}')
+
+                  # Define el destino cambiando '_es.html' por '_en.html'
+                  ruta_en = ruta_es.replace('_es.html', '_en.html')
+                  
+                  with open(ruta_en, 'w', encoding='utf-8') as f:
+                      f.write(str(soup))
+                  print(f'Creado/Actualizado con éxito: {ruta_en}')
+          "
+
+      - name: Guardar cambios en GitHub
+        run: |
+          git config --local user.email "github-actions[bot]@://github.com"
+          git config --local user.name "github-actions[bot]"
+          git add ciclos/daw/diw/u01_en.html ciclos/daw/dwec/u01_en.html ciclos/daw/ssii/u01_en.html
+          git diff --staged --quiet || (git commit -m "Traducción automática de unidades HTML" && git push)
