@@ -1105,6 +1105,36 @@ codificados.</strong></p>
 comprimidos</strong> y se le puede añadir <strong>información
 redundante</strong> para la detección y/o corrección de errores o para
 la sincronización.</p>
+<div class="resource-card expansion-card" id="ampliacion-compresion-cifrado">
+    <div class="resource-card-header">
+        <span class="resource-title"><i class="fa-solid fa-file-shield"></i> Compresión y cifrado: objetivos diferentes</span>
+        <span class="resource-badge badge-reading">Ampliación</span>
+    </div>
+    <div class="resource-description">Ambos procesos transforman los datos, pero resuelven problemas distintos:</div>
+    <ul>
+        <li><strong>Compresión:</strong> reduce el tamaño aprovechando redundancias. Puede ser <em>sin pérdida</em>, como ZIP o PNG, o <em>con pérdida</em>, como JPEG o MP3.</li>
+        <li><strong>Cifrado:</strong> oculta el contenido mediante una clave para aportar confidencialidad. No tiene como objetivo reducir el tamaño.</li>
+    </ul>
+    <p><strong>Ejemplo didáctico: cifrado César.</strong> Cada letra se desplaza un número fijo de posiciones en el alfabeto. Con una clave de <code>3</code>, <code>HOLA</code> se convierte en <code>KROD</code>.</p>
+    <pre><code>def cesar(texto, desplazamiento):
+    resultado = ""
+
+    for caracter in texto.upper():
+        if "A" &lt;= caracter &lt;= "Z":
+            posicion = ord(caracter) - ord("A")
+            nueva_posicion = (posicion + desplazamiento) % 26
+            resultado += chr(ord("A") + nueva_posicion)
+        else:
+            resultado += caracter
+
+    return resultado
+
+
+mensaje_cifrado = cesar("HOLA MUNDO", 3)
+print(mensaje_cifrado)           # KROD PXQGR
+print(cesar(mensaje_cifrado, -3)) # HOLA MUNDO</code></pre>
+    <p class="resource-description"><strong>Importante:</strong> el cifrado César solo sirve como ejemplo para comprender el uso de una clave. No es seguro: únicamente tiene 25 desplazamientos posibles y puede romperse con facilidad.</p>
+</div>
 <div class="didactic-note"><p>Con todo esto, podemos definir información como la representación de hechos, objetos, valores, ideas, etc, que permiten la comunicación entre emisor y receptor y la adquisición del conocimiento de las cosas.</p></div>
 <figure class="image-container" role="group" aria-labelledby="fig-comunicacion-caption">
 <svg viewBox="0 0 900 260" role="img" aria-label="Elementos de un sistema de comunicación" xmlns="http://www.w3.org/2000/svg"><rect width="900" height="260" rx="14" fill="#f8fafc"/>
