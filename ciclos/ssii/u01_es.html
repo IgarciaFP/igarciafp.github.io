@@ -474,6 +474,139 @@
             margin-top: 45px;
         }
 
+        /* Identidad visual de bloques pedagógicos */
+        .curiosity-card,
+        .activity-callout,
+        .expansion-card,
+        .activities-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .curiosity-card::before,
+        .activity-callout::before,
+        .expansion-card::before {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            line-height: 1.5;
+        }
+
+        /* Curiosidades */
+        .didactic-note.curiosity-card {
+            background: linear-gradient(135deg, #faf5ff 0%, #f5f3ff 100%);
+            border-color: #ddd6fe;
+            border-left-color: var(--purple-color);
+            box-shadow: 0 3px 14px rgba(109, 40, 217, 0.08);
+        }
+
+        .curiosity-card::before {
+            content: "\f0eb  CURIOSIDAD";
+            font-family: "Font Awesome 6 Free", "Inter", sans-serif;
+            color: #5b21b6;
+            background: #ede9fe;
+            border: 1px solid #c4b5fd;
+        }
+
+        .curiosity-card p:first-of-type {
+            color: #5b21b6;
+            font-weight: 700;
+        }
+
+        /* Enlaces y materiales para ampliar */
+        .resource-card.expansion-card {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 75%);
+            border-color: #99f6e4;
+            border-left-color: var(--secondary-color);
+            box-shadow: 0 3px 14px rgba(15, 118, 110, 0.09);
+        }
+
+        .expansion-card::before {
+            align-self: flex-start;
+            width: fit-content;
+            content: "\f02d  PARA AMPLIAR";
+            font-family: "Font Awesome 6 Free", "Inter", sans-serif;
+            color: #115e59;
+            background: #ccfbf1;
+            border: 1px solid #5eead4;
+        }
+
+        .expansion-card .resource-title {
+            color: #115e59;
+        }
+
+        .expansion-card .resource-link-btn {
+            color: #115e59;
+            background: #f0fdfa;
+            border-color: #0d9488;
+        }
+
+        .expansion-card .resource-link-btn:hover,
+        .expansion-card .resource-link-btn:focus-visible {
+            color: #ffffff;
+            background: #0f766e;
+            outline: 3px solid rgba(13, 148, 136, 0.25);
+            outline-offset: 2px;
+        }
+
+        /* Actividades prácticas */
+        .activity-card.activity-callout {
+            background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%);
+            border-color: #fed7aa;
+            border-left-color: var(--accent-color);
+            box-shadow: 0 3px 14px rgba(217, 119, 6, 0.09);
+        }
+
+        .activity-callout::before {
+            content: "\f303  ACTIVIDAD";
+            font-family: "Font Awesome 6 Free", "Inter", sans-serif;
+            color: #92400e;
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+        }
+
+        .activity-callout strong {
+            color: #92400e;
+        }
+
+        /* Evaluaciones y bloques extensos de actividades */
+        .activities-section {
+            background: linear-gradient(180deg, #fffbeb 0%, #ffffff 24%);
+            border: 2px solid #f59e0b;
+            border-top-width: 7px;
+            padding: 34px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(146, 64, 14, 0.10);
+        }
+
+        .activities-section h3 {
+            color: #92400e;
+            margin-top: 0;
+            padding-left: 13px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .activities-section h4 {
+            color: #9a3412;
+        }
+
+        @media (max-width: 560px) {
+            .activities-section {
+                padding: 24px 18px;
+            }
+
+            .resource-card-header {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+
         /* Imágenes e Ilustraciones Vectoriales Embebidas */
         .image-container {
             text-align: center;
@@ -793,7 +926,7 @@ la información resultante a través de un medio de salida; todo ello sin
 intervención humana, utilizando para ello un conjunto de instrucciones,
 es decir, un programa previamente almacenado en la memoria del
 ordenador.</p>
-<div class="didactic-note"><p>¿Sabías que...?</p><p>El término informática proviene del francés informatique, implementado por el ingeniero Philippe Dreyfus a comienzos de la década del '60. La palabra es, a su vez, un acrónimo de information y automatique.</p></div><p>El concepto de información supera al de “dato” (“Antecedente
+<div class="didactic-note curiosity-card"><p>¿Sabías que...?</p><p>El término informática proviene del francés informatique, implementado por el ingeniero Philippe Dreyfus a comienzos de la década del '60. La palabra es, a su vez, un acrónimo de information y automatique.</p></div><p>El concepto de información supera al de “dato” (“Antecedente
 necesario para llegar al conocimiento exacto de algo o para deducir las
 consecuencias legítimas de un hecho”, o “Información dispuesta de manera
 adecuada para su tratamiento por un ordenador”).</p>
@@ -982,7 +1115,7 @@ valor <strong>en base B</strong> es:</p>
 
 <figure class="image-container" role="group" aria-labelledby="fig-teorema-caption"><svg viewBox="0 0 900 250" role="img" aria-label="El teorema fundamental descompone un número posicional como la suma de cada cifra multiplicada por una potencia de la base." xmlns="http://www.w3.org/2000/svg"><rect width="900" height="250" rx="14" fill="#f8fafc"/><text x="450" y="38" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">Teorema fundamental de la numeración</text><text x="450" y="93" text-anchor="middle" font-family="Inter, sans-serif" font-size="24" font-weight="700" fill="#0f172a">N = xₙ·Bⁿ + … + x₁·B¹ + x₀·B⁰</text><rect x="180" y="130" width="540" height="62" rx="10" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="450" y="158" text-anchor="middle" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#1e3a8a">Ejemplo decimal: 342 = 3·10² + 4·10¹ + 2·10⁰</text><text x="450" y="181" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" fill="#475569">Cada posición tiene un peso determinado por la base B.</text></svg><figcaption id="fig-teorema-caption" class="image-caption">El teorema fundamental descompone un número posicional como la suma de cada cifra multiplicada por una potencia de la base.</figcaption></figure>
 <h4 id="sec3_2_3" class="numbered-subsection">3.2.3. El sistema decimal</h4>
-<div class="didactic-note"><p>El ser humano tiene 10 dedos. No es casualidad que el sistema de numeración más utilizado tenga diez símbolos, del 0 al 9.</p></div><p>Alguno de los <strong>sistemas de numeración</strong> más utilizados
+<div class="didactic-note curiosity-card"><p>El ser humano tiene 10 dedos. No es casualidad que el sistema de numeración más utilizado tenga diez símbolos, del 0 al 9.</p></div><p>Alguno de los <strong>sistemas de numeración</strong> más utilizados
 son:</p>
 <ul>
 <li>
@@ -1770,15 +1903,43 @@ específica dentro de la empresa, que por su especificidad no puede ser
 compartido de forma general, y que requiere de una enorme labor de
 soporte, formación y mantenimiento.</p>
 <h3 id="sec6_1">6.1. Design Thinking</h3>
-<div class="activity-card"><p>Crea un código similar al ASCII pero que a la vez que codifica, encripte la información con un método similar al método caesar.</p></div><h3 id="sec6_2">6.2. Recursos</h3>
+<div class="activity-card activity-callout"><p>Crea un código similar al ASCII pero que a la vez que codifica, encripte la información con un método similar al método caesar.</p></div><h3 id="sec6_2">6.2. Recursos</h3>
 <p><strong>Bibliografía</strong></p>
 <p>Apuntes del profesor (Cuaderno de trabajo)</p>
 <p>Montaje y Mantenimiento de Equipos. Edt. Síntesis – Unidad 1</p>
-<p><strong>Otros Recursos</strong></p>
-<p>Video Historia de la informática (2019) <a href="https://youtu.be/zewkqnInHVY" target="_blank" rel="noopener noreferrer"><u>https://youtu.be/zewkqnInHVY</u></a></p>
-<p>Simulador de Von Neumann online <a href="http://lab.xitrus.es/VonNeumann/" target="_blank" rel="noopener noreferrer"><u>http://lab.xitrus.es/VonNeumann/</u></a></p>
-<p>La computadora del futuro: <a href="https://youtu.be/14UdiF4slpU" target="_blank" rel="noopener noreferrer"><u>https://youtu.be/14UdiF4slpU</u></a></p>
-<p>El ordenador cuántico: <a href="https://youtu.be/O9TA2faf6nw" target="_blank" rel="noopener noreferrer"><u>https://youtu.be/O9TA2faf6nw</u></a></p>
+<h4 class="content-subtitle">Otros recursos</h4>
+<div class="resource-card expansion-card">
+    <div class="resource-card-header">
+        <span class="resource-title"><i class="fa-brands fa-youtube"></i> Historia de la informática</span>
+        <span class="resource-badge badge-video">Vídeo</span>
+    </div>
+    <div class="resource-description">Recorrido audiovisual por los principales hitos de la historia de la informática.</div>
+    <a href="https://youtu.be/zewkqnInHVY" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver el vídeo</a>
+</div>
+<div class="resource-card expansion-card">
+    <div class="resource-card-header">
+        <span class="resource-title"><i class="fa-solid fa-microchip"></i> Simulador de Von Neumann</span>
+        <span class="resource-badge badge-tool">Herramienta</span>
+    </div>
+    <div class="resource-description">Simulador en línea para explorar el funcionamiento básico de la arquitectura de Von Neumann.</div>
+    <a href="http://lab.xitrus.es/VonNeumann/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir el simulador</a>
+</div>
+<div class="resource-card expansion-card">
+    <div class="resource-card-header">
+        <span class="resource-title"><i class="fa-brands fa-youtube"></i> La computadora del futuro</span>
+        <span class="resource-badge badge-video">Vídeo</span>
+    </div>
+    <div class="resource-description">Material audiovisual sobre la evolución y las posibilidades futuras de los computadores.</div>
+    <a href="https://youtu.be/14UdiF4slpU" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver el vídeo</a>
+</div>
+<div class="resource-card expansion-card">
+    <div class="resource-card-header">
+        <span class="resource-title"><i class="fa-solid fa-atom"></i> El ordenador cuántico</span>
+        <span class="resource-badge badge-video">Vídeo</span>
+    </div>
+    <div class="resource-description">Introducción audiovisual a los principios y posibilidades de la computación cuántica.</div>
+    <a href="https://youtu.be/O9TA2faf6nw" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver el vídeo</a>
+</div>
 <footer class="document-footer">© Ignacio García 2020</footer></main></div>
 </body>
 </html>
