@@ -474,6 +474,137 @@
             margin-top: 45px;
         }
 
+        /* Identidad visual de bloques pedagógicos */
+        .curiosity-card,
+        .activity-callout,
+        .expansion-card,
+        .activities-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .curiosity-card::before,
+        .activity-callout::before,
+        .expansion-card::before {
+            align-self: flex-start;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            line-height: 1.5;
+        }
+
+        /* Curiosidades y notas que amplían una idea */
+        .didactic-note.curiosity-card {
+            background: linear-gradient(135deg, #faf5ff 0%, #f5f3ff 100%);
+            border-color: #ddd6fe;
+            border-left-color: var(--purple-color);
+            box-shadow: 0 3px 14px rgba(109, 40, 217, 0.08);
+        }
+
+        .curiosity-card::before {
+            content: "\f0eb  CURIOSIDAD";
+            font-family: "Font Awesome 6 Free", "Inter", sans-serif;
+            color: #5b21b6;
+            background: #ede9fe;
+            border: 1px solid #c4b5fd;
+        }
+
+        .didactic-note.curiosity-card h5 {
+            color: #5b21b6;
+        }
+
+        /* Enlaces y materiales para ampliar */
+        .resource-card.expansion-card {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 75%);
+            border-color: #99f6e4;
+            border-left-color: var(--secondary-color);
+            box-shadow: 0 3px 14px rgba(15, 118, 110, 0.09);
+        }
+
+        .expansion-card::before {
+            content: "\f02d  PARA AMPLIAR";
+            font-family: "Font Awesome 6 Free", "Inter", sans-serif;
+            color: #115e59;
+            background: #ccfbf1;
+            border: 1px solid #5eead4;
+        }
+
+        .expansion-card .resource-title {
+            color: #115e59;
+        }
+
+        .expansion-card .resource-link-btn {
+            color: #115e59;
+            background: #f0fdfa;
+            border-color: #0d9488;
+        }
+
+        .expansion-card .resource-link-btn:hover,
+        .expansion-card .resource-link-btn:focus-visible {
+            color: #ffffff;
+            background: #0f766e;
+            outline: 3px solid rgba(13, 148, 136, 0.25);
+            outline-offset: 2px;
+        }
+
+        /* Actividades breves intercaladas */
+        .didactic-note.activity-callout {
+            background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%) !important;
+            border-color: #fed7aa;
+            border-left-color: var(--accent-color) !important;
+            box-shadow: 0 3px 14px rgba(217, 119, 6, 0.09);
+        }
+
+        .activity-callout::before {
+            content: "\f303  ACTIVIDAD";
+            font-family: "Font Awesome 6 Free", "Inter", sans-serif;
+            color: #92400e;
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+        }
+
+        .didactic-note.activity-callout h5 {
+            color: #92400e !important;
+        }
+
+        /* Bloque final de actividades */
+        .activities-section {
+            background: linear-gradient(180deg, #fffbeb 0%, #ffffff 24%);
+            border: 2px solid #f59e0b;
+            border-top-width: 7px;
+            padding: 34px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(146, 64, 14, 0.10);
+        }
+
+        .activities-section h2 {
+            color: #92400e;
+            margin-top: 0;
+            border-bottom-color: #fde68a;
+        }
+
+        .activities-section h3 {
+            color: #9a3412;
+            padding-left: 13px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .activities-section li::marker {
+            color: #b45309;
+            font-weight: 700;
+        }
+
+        @media (max-width: 560px) {
+            .activities-section {
+                padding: 24px 18px;
+            }
+        }
+
         /* Imágenes e Ilustraciones Vectoriales Embebidas */
         .image-container {
             text-align: center;
@@ -730,7 +861,7 @@
 
         <p>El diseño web no ha evolucionado únicamente por cambios estéticos. Cada etapa responde a nuevas capacidades técnicas, dispositivos, velocidades de conexión y expectativas de uso. La Web pasó de organizar documentos enlazados y casi exclusivamente textuales a ofrecer aplicaciones interactivas, accesibles, adaptativas e incluso inmersivas. Comprender esta evolución permite distinguir una <strong>tendencia visual</strong> de una mejora real en comunicación, usabilidad o rendimiento.</p>
 
-        <div class="didactic-note" style="border-left-color: var(--accent-color); background-color: #fffbf0;">
+        <div class="didactic-note activity-callout">
             <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 1.1)</h5>
             <p><strong>Análisis comparativo de evolución web real:</strong> Accede a la plataforma <em>Internet Archive Wayback Machine</em> (<code>webarchive.org</code>) e introduce la URL de la Wikipedia en español (<code>https://es.wikipedia.org</code>). Compara su versión de capturas del año <strong>2005</strong> frente a la versión actual de <strong>2026</strong>. Anota en una ficha de tres columnas: 1) Cambios en la retícula de ancho fijo a responsiva, 2) Densidad tipográfica y de espacios, y 3) Adaptación del menú de navegación lateral en dispositivos móviles.</p>
         </div>
@@ -786,12 +917,12 @@
             </table>
         </div>
 
-        <div class="didactic-note">
+        <div class="didactic-note curiosity-card">
             <h5><i class="fa-solid fa-circle-info"></i> Precisión histórica</h5>
             <p>Las cronologías divulgativas suelen agrupar procesos que duraron varios años. Por ejemplo, CSS1 fue recomendación del W3C en 1996, JavaScript llegó a Netscape en 1995 y el término <em>Responsive Web Design</em> se publicó en 2010. Conviene interpretar las fechas como hitos de adopción, no como fronteras absolutas.</p>
         </div>
 
-        <div class="didactic-note" style="border-left-color: var(--accent-color); background-color: #fffbf0;">
+        <div class="didactic-note activity-callout">
             <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 1.2)</h5>
             <p><strong>Relación Hito-Impacto en Interfaz:</strong> Elabora una tabla de 5 filas seleccionando 5 hitos fundamentales de la cronología (ej. 1991 Nacer la Web, 1996 Aparición de CSS1, 1995 Nacer JavaScript, 2005 AJAX/Web 2.0 y 2010 Responsive Web Design). Para cada hito, redacta una frase explicando qué limitación de maquetación o interacción logró resolver para los usuarios.</p>
         </div>
@@ -932,7 +1063,7 @@
         <h4>1.3.1. Observar la evolución de sitios reales</h4>
         <p>La evolución no solo se estudia mediante fechas: puede analizarse comparando versiones históricas de un mismo sitio en <strong>Internet Archive Wayback Machine</strong>. Al observar una secuencia de capturas conviene registrar cambios en la retícula, navegación, densidad de contenido, tipografía, imágenes, adaptación móvil y llamadas a la acción.</p>
 
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-clock-rotate-left"></i> Evolución del diseño web — Eniun</span>
                 <span class="resource-badge badge-reading">Lectura base</span>
@@ -941,7 +1072,7 @@
             <a href="https://www.eniun.com/evolucion-diseno-web/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Consultar el artículo</a>
         </div>
 
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-landmark"></i> Fuentes históricas de contraste</span>
                 <span class="resource-badge badge-reading">Ampliación</span>
@@ -1025,7 +1156,7 @@
             «Algo que luce genial pero es difícil de usar representa una gran UI con una pobre UX. Mientras que algo muy usable que luce terrible es ejemplo de una gran UX con una pobre UI» — Helga Moreno.
         </blockquote>
 
-        <div class="didactic-note" style="border-left-color: var(--accent-color); background-color: #fffbf0;">
+        <div class="didactic-note activity-callout">
             <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 2.2)</h5>
             <p><strong>Diagnóstico de Desconexión UI vs UX:</strong> Identifica y describe un ejemplo de tu experiencia cotidiana en internet donde te hayas encontrado con una <em>"Excelente UI pero pésima UX"</em> (por ejemplo, un sitio web con animaciones 3D o tipografías espectaculares pero con formularios confusos o botones inaccesibles) y un ejemplo inverso de <em>"Pésima UI pero gran UX"</em> (como portales gubernamentales o wikis estéticamente simples pero extremadamente rápidos y efectivos para cumplir su tarea). Justifica la respuesta en 4 líneas.</p>
         </div>
@@ -1158,12 +1289,12 @@
             </table>
         </div>
 
-        <div class="didactic-note">
+        <div class="didactic-note curiosity-card">
             <h5><i class="fa-solid fa-flask"></i> Reglas orientativas que deben validarse</h5>
             <p>Los valores de <strong>dos segundos</strong>, <strong>tres clics</strong> y <strong>7 ± 2 elementos</strong> ayudan a detectar posibles problemas, pero no son criterios normativos ni límites universales. El número de clics importa menos que la claridad de cada paso, y el trabajo de Miller estudia la memoria inmediata, no establece un máximo obligatorio de opciones de menú. Las decisiones deben comprobarse mediante analítica, pruebas de rendimiento y tests con usuarios.</p>
         </div>
 
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-person-circle-check"></i> La usabilidad en el diseño de aplicaciones — Eniun</span>
                 <span class="resource-badge badge-reading">Lectura base</span>
@@ -1188,7 +1319,7 @@
         </ol>
 
         <!-- Recurso Enlace Vídeo Nielsen (NUEVO) -->
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-brands fa-youtube"></i> 10 Heurísticas de Usabilidad de Nielsen (Explicación detallada)</span>
                 <span class="resource-badge badge-video">Vídeo Didáctico</span>
@@ -1209,7 +1340,7 @@
         </ul>
 
         <!-- Recurso Enlace PPTX 4 -->
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-file-powerpoint"></i> Introducción al Diseño (Presentación)</span>
                 <span class="resource-badge badge-reading">Lectura Recomendada</span>
@@ -1313,7 +1444,7 @@
             <p>En una tarjeta de comercio electrónico, la <strong>dirección</strong> conduce de la imagen al nombre, el precio y el CTA; la <strong>posición</strong> mantiene precio y acción dentro de la misma unidad; el <strong>espacio</strong> agrupa lo relacionado sin saturar; y la <strong>gravedad visual</strong> convierte el precio o el botón en puntos de atención. Si la tarjeta cambia a una sola columna en móvil, estas relaciones deben mantenerse aunque cambie la disposición.</p>
         </div>
 
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-up-down-left-right"></i> Elementos de relación en diseño</span>
                 <span class="resource-badge badge-reading">Lectura Recomendada</span>
@@ -1377,12 +1508,12 @@
             <li><strong>Páginas:</strong> Instancia final del sistema rellena con contenido real para producción.</li>
         </ul>
 
-        <div class="didactic-note">
+        <div class="didactic-note curiosity-card">
             <h5><i class="fa-solid fa-code"></i> Design Tokens en CSS</h5>
             <p>El núcleo de un sistema de diseño son los <strong>Design Tokens</strong>: variables que almacenan valores visuales fundamentales (colores, fuentes, espaciados) reutilizables en CSS/Sass (ej. <code>--color-primary: #1e3a8a;</code>, <code>--spacing-md: 16px;</code>).</p>
         </div>
 
-        <div class="didactic-note" style="border-left-color: var(--accent-color); background-color: #fffbf0;">
+        <div class="didactic-note activity-callout">
             <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 3.3)</h5>
             <p><strong>Descomposición en Atomic Design:</strong> Selecciona el componente de la cabecera (Header) de cualquier plataforma digital que utilices a diario (ej. GitHub, YouTube o El País). Identifica por escrito los 5 niveles de Atomic Design presentes en él: 1) Átomos (ej. botón de búsqueda, input, avatar), 2) Moléculas (ej. campo de búsqueda completo con icono), 3) Organismos (ej. navbar superior completa), 4) Plantillas (layout del header fijo), y 5) Página (pantalla resultante con datos de tu usuario real).</p>
         </div>
@@ -1450,7 +1581,7 @@
         <p>Gracias a este desacoplamiento, si la empresa decide actualizar el color corporativo o la escala de bordes redondeados, únicamente se modifica el valor central del token; automáticamente, todas las aplicaciones web, Android e iOS sincronizan la nueva apariencia sin necesidad de refactorizar manualmente cada hoja de estilos.</p>
 
         <!-- Recurso Enlace Design Tokens (NUEVO) -->
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-code"></i> Design Tokens: Agiliza el diseño y desarrollo de interfaces</span>
                 <span class="resource-badge badge-reading">Lectura de Ampliación</span>
@@ -1527,7 +1658,7 @@
         </ul>
 
         <!-- Recursos Didácticos e Interactivos Leyes de la Gestalt -->
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-eye"></i> Recursos sobre las Leyes de la Gestalt en Diseño Web</span>
                 <span class="resource-badge badge-video">Vídeo, Lectura & Juego</span>
@@ -1544,7 +1675,7 @@
         <p>Las <strong>Leyes de UX</strong> (compiladas por Jon Yablonski) integran principios psicológicos que gobiernan la conducta cognitiva interactiva.</p>
 
         <!-- Recurso Enlace PPTX 1 -->
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-compass-drafting"></i> Laws of UX (Portal interactivo)</span>
                 <span class="resource-badge badge-reading">Recurso Didáctico</span>
@@ -1623,7 +1754,7 @@
         </ul>
 
         <!-- Recursos Enlaces PPTX 2 -->
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-palette"></i> Herramientas de Captura y Selección de Color</span>
                 <span class="resource-badge badge-tool">Herramientas Web</span>
@@ -1640,7 +1771,7 @@
         <p>El color transmite sensaciones psicológicas y altera la tasa de conversión en botones de acción.</p>
 
         <!-- Recursos Enlaces PPTX 3 -->
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-brain"></i> Psicología y Aplicación del Color en UX</span>
                 <span class="resource-badge badge-video">Vídeo & Artículos</span>
@@ -1653,7 +1784,7 @@
             </div>
         </div>
 
-        <div class="didactic-note" style="border-left-color: var(--accent-color); background-color: #fffbf0;">
+        <div class="didactic-note activity-callout">
             <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 4.3)</h5>
             <p><strong>Extracción de Paleta y Verificación WCAG:</strong> Utilizando las <em>DevTools</em> del navegador (F12) o una extensión de cuentagotas, extrae el código Hexadecimal (`#HEX`) del color de texto principal y del color de fondo del botón primario del portal <code>https://www.w3.org</code>. Introduce ambos valores en una calculadora de contraste en línea y verifica si superan el ratio normativo exigido de <strong>4.5:1</strong> para texto normal y de <strong>3:1</strong> para elementos de interfaz.</p>
         </div>
@@ -1708,12 +1839,12 @@
         <h4>4.4.2. Iconografía e independencia de resolución</h4>
         <p>Los gráficos vectoriales (<strong>SVG</strong>) garantizan escalabilidad infinita en pantallas móviles y monitores 4K. La iconografía debe inclinarse por convenciones conocidas (lupa para buscar, carrito para compra) combinada con etiquetas de texto en operaciones clave.</p>
 
-        <div class="didactic-note">
+        <div class="didactic-note curiosity-card">
             <h5><i class="fa-solid fa-link"></i> Relación entre identidad visual y Atomic Design</h5>
             <p>La identidad se traduce al sistema descrito en el apartado 3.3 mediante <strong>Design Tokens</strong> —color, tipografía, espaciado y forma— y mediante átomos como logotipo, iconos y botones. Así, la marca se mantiene coherente en todas las moléculas, organismos, plantillas y páginas.</p>
         </div>
 
-        <div class="didactic-note" style="border-left-color: var(--accent-color); background-color: #fffbf0;">
+        <div class="didactic-note activity-callout">
             <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 4.4)</h5>
             <p><strong>Clasificación de Marcas de Identidad Digital:</strong> Busca en internet e identifica un ejemplo real para cada una de las 4 categorías de identidad visual estudiadas: 1) <strong>Logotipo</strong> (solo texto), 2) <strong>Isotipo</strong> (solo gráfico), 3) <strong>Imagotipo</strong> (símbolo y texto independientes) y 4) <strong>Isologotipo</strong> (texto y gráficos indivisibles). Justifica por escrito por qué cada marca pertenece a su categoría correspondiente.</p>
         </div>
@@ -1724,7 +1855,7 @@
         <p>El <strong>equilibrio formal</strong> utiliza simetría (horizontal, vertical, radial), mientras que el <strong>equilibrio informal</strong> (asimétrico) compensa el peso visual mediante variaciones de tamaño, color o posición. La <strong>tensión compositiva</strong> busca dirigir intencionadamente la mirada con técnicas sugestivas o rítmicas.</p>
 
         <!-- Recursos Enlaces PPTX 5 -->
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-scale-balanced"></i> Equilibrio y Simetría en Diseño Web</span>
                 <span class="resource-badge badge-reading">Artículos & Vídeo</span>
@@ -1822,7 +1953,7 @@
         <p>Las páginas web estructuran sus componentes en módulos estandarizados: <strong>Cabecera (Header)</strong>, <strong>Sistemas de Navegación</strong> (menú hamburguesa, pestañas, migas de pan), <strong>Cuerpo (Body)</strong>, <strong>Pie de página (Footer)</strong> y <strong>Espacios en blanco</strong>.</p>
 
         <!-- Recurso Enlace PPTX 6 -->
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-font"></i> Tipografía Digital y Legibilidad Web</span>
                 <span class="resource-badge badge-video">Vídeo Didáctico</span>
@@ -1841,7 +1972,7 @@
             </ol>
         </div>
 
-        <div class="didactic-note" style="border-left-color: var(--accent-color); background-color: #fffbf0;">
+        <div class="didactic-note activity-callout">
             <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 4.6)</h5>
             <p><strong>Auditoría de Usabilidad en Formularios Reales:</strong> Accede al formulario de contacto o registro de la plataforma de aprendizaje de la UNED (<code>https://www.uned.es</code>) o de Renfe (<code>https://www.renfe.com</code>). Inspecciona el código con las DevTools (F12) e identifica: 1) Si cada campo `&lt;input&gt;` cuenta con su etiqueta `&lt;label&gt;` explícita vinculada mediante `for="id"`, 2) Si se ha utilizado erróneamente el atributo `placeholder` como única etiqueta visual, y 3) Si los campos muestran feedback de error inline al perder el foco.</p>
         </div>
@@ -1991,7 +2122,7 @@
             <li><strong>Especificar componentes UI:</strong> documentar botones, campos de entrada, tarjetas y modales con anatomía, variantes, estados interactivos y código CSS.</li>
         </ol>
 
-        <div class="didactic-note">
+        <div class="didactic-note curiosity-card">
             <h5><i class="fa-solid fa-arrows-rotate"></i> Documento vivo y evolucionar continuo</h5>
             <p>La guía no debe quedar estancada en un documento estático. Necesita un responsable de mantenimiento, número de versión, fecha de actualización, historial de cambios (changelog) y un procedimiento para proponer, revisar, probar y retirar reglas. Toda modificación debe sincronizar el diseño visual, el código y la documentación.</p>
         </div>
@@ -2052,7 +2183,7 @@
   --color-info: #0369a1;
 }</code></pre>
 
-        <div class="didactic-note">
+        <div class="didactic-note curiosity-card">
             <h5><i class="fa-solid fa-earth-europe"></i> Psicología del color contextualizada</h5>
             <p>Asociaciones como azul–confianza, verde–naturaleza o rojo–urgencia orientan una hipótesis de diseño, pero no son leyes universales. Su interpretación depende de la cultura, el sector industrial, la combinación cromática, la saturación y la experiencia previa; por ello, deben validarse siempre con el público objetivo real.</p>
         </div>
@@ -2184,7 +2315,7 @@
 
         <p>Para inspeccionar e auditar páginas web existentes pueden utilizarse las herramientas integradas para desarrolladores (DevTools de Chrome/Firefox) junto a extensiones como <strong>ColorZilla</strong> (captura cromática), <strong>WhatFont</strong> (identificación tipográfica), <strong>Pesticide</strong> (visualización de cajas CSS), <strong>Responsive Viewer</strong> (vista multidispositivo) o <strong>Page Ruler</strong> (medición de píxeles). Se debe verificar el desarrollador, actualizaciones y permisos antes de instalar extensiones.</p>
 
-        <div class="didactic-note" style="border-left-color: var(--accent-color); background-color: #fffbf0;">
+        <div class="didactic-note activity-callout">
             <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 5.6)</h5>
             <p><strong>Inspección Tipográfica con DevTools:</strong> Abre el portal periodístico <code>https://www.elpais.com</code>. Utilizando el panel de inspección CSS de tu navegador, localiza un titular principal y responde a las siguientes preguntas: 1) ¿Qué familia tipográfica principal y de reserva (*fallback*) utiliza?, 2) ¿Cuál es su tamaño en píxeles o `rem` y su altura de línea (`line-height`)?, y 3) ¿Se trata de una tipografía Serif o Sans-Serif y por qué se ha elegido según su formato de lectura?</p>
         </div>
@@ -2392,7 +2523,7 @@
         <p>Una vez completado el estudio, se analizan los resultados mediante matrices de similitud y dendrogramas para construir la <strong>Arquitectura de la Información (IA)</strong> y el mapa de navegación final de la aplicación web.</p>
 
         <!-- Recurso Enlace Card Sorting (NUEVO) -->
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-folder-tree"></i> Card Sorting — Design Toolkit de la UOC</span>
                 <span class="resource-badge badge-reading">Lectura Metodológica</span>
@@ -2469,7 +2600,7 @@
         </ul>
 
         <!-- Recurso Enlace PPTX 7 -->
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-sitemap"></i> Guía para Crear Mapas de Navegación Web</span>
                 <span class="resource-badge badge-reading">Lectura Técnica</span>
@@ -2482,7 +2613,7 @@
         <p>Una vez consolidada la guía de estilo del apartado 5, el prototipado evoluciona en 3 niveles: <strong>Wireframe</strong> (borrador estático), <strong>Mockup</strong> (diseño estético) y <strong>Prototipo funcional</strong> (maqueta interactiva).</p>
 
         <!-- Recurso Enlace PPTX 8 -->
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-layer-group"></i> Guía de Estilo y Prototipado en Figma</span>
                 <span class="resource-badge badge-course">Cursos & Guías</span>
@@ -2594,12 +2725,12 @@
             <li><strong>Publicar, versionar y revisar</strong> la guía a medida que cambien la marca, el producto o las necesidades de las personas usuarias.</li>
         </ol>
 
-        <div class="didactic-note">
+        <div class="didactic-note curiosity-card">
             <h5><i class="fa-solid fa-clipboard-check"></i> Criterio de calidad</h5>
             <p>Una paleta o un tablero visual aislado no constituyen una guía suficiente. Cada regla debe indicar <strong>qué usar, cuándo usarlo, cuándo evitarlo y cómo comprobarlo</strong>, acompañada por ejemplos correctos e incorrectos. Figma puede centralizar estilos y componentes, pero la fuente de verdad debe coordinarse con los tokens y componentes implementados en código.</p>
         </div>
 
-        <div class="resource-card">
+        <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-book-open-reader"></i> Guía de estilo para interfaces web</span>
                 <span class="resource-badge badge-reading">Lectura Recomendada</span>
@@ -2661,7 +2792,7 @@
             <p><strong>Resultado:</strong> Eliminación de clics erróneos en dispositivos móviles y cumplimiento estricto del criterio WCAG 2.4.7.</p>
         </div>
 
-        <div class="didactic-note" style="border-left-color: var(--accent-color); background-color: #fffbf0;">
+        <div class="didactic-note activity-callout">
             <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 8.1)</h5>
             <p><strong>Análisis y Reproducción del Rediseño UI/UX (Figura 1.12):</strong> Observa detalladamente el gráfico explicativo comparativo de la <strong>Figura 1.12</strong> presentado en esta sección. En tu cuaderno de prácticas o software de prototipado, reproduce la maqueta del formulario optimizado agregando un nuevo campo de tipo <code>&lt;select&gt;</code> para "Franja horaria de entrega". Asegúrate de dibujar la etiqueta explícita <code>&lt;label&gt;</code>, el indicador visual de foco accesible y garantizar que el botón cumpla el área táctil mínima (Target Size &ge; 48 &times; 48 px).</p>
         </div>
@@ -2845,7 +2976,7 @@
                     <li><strong>Página 5: Encargos y Contacto (<code>contacto.html</code>):</strong> Formulario de pedidos con fecha de recogida, selector de obrador y mapa de localización.</li>
                 </ol>
 
-                <div class="didactic-note">
+                <div class="didactic-note curiosity-card">
                     <h5><i class="fa-solid fa-network-wired"></i> Desacoplamiento de Archivos de Servidor</h5>
                     <p>El <strong>Mapa de Navegación UX</strong> define la estructura de pantallas para el ser humano. De forma totalmente independiente, se genera en el servidor el archivo <code>sitemap.xml</code> para que Google indexe estas 5 URLs, y se configura el archivo <code>robots.txt</code> prohibiendo el rastreo del panel interno (<code>Disallow: /admin/</code>).</p>
                 </div>
