@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UD01 Arquitectura de un ordenador — Componentes físicos y lógicos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --primary-light: #eff6ff;
+            --primary-border: #3b82f6;
+            --secondary-color: #0f766e;
+            --secondary-light: #f0fdf4;
+            --accent-color: #d97706;
+            --accent-light: #fffbeb;
+            --danger-color: #b91c1c;
+            --danger-light: #fef2f2;
+            --purple-color: #6d28d9;
+            --purple-light: #f5f3ff;
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+            --bg-page: #f1f5f9;
+            --bg-card: #ffffff;
+            --border-color: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-page);
+            line-height: 1.7;
+            padding: 30px 20px;
+        }
+
+        .document-wrapper {
+            max-width: 1350px;
+            width: 100%;
+            margin: 0 auto;
+            display: block;
+        }
+
+        /* Índice lateral flotante deslizable (Slide-out Sidebar) */
+        .sidebar-toc {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 310px;
+            max-height: calc(100vh - 40px);
+            background: var(--bg-card);
+            padding: 22px 20px;
+            border-radius: 0 12px 12px 0;
+            border: 1px solid var(--border-color);
+            border-left: none;
+            box-shadow: 6px 0 25px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            transform: translateX(-292px);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto;
+        }
+
+        /* Pestaña indicadora al aproximar el ratón al borde izquierdo */
+        .sidebar-toc::after {
+            content: "\f0c9  ÍNDICE";
+            font-family: 'Font Awesome 6 Free', 'Inter', sans-serif;
+            font-weight: 900;
+            font-size: 0.78rem;
+            position: absolute;
+            top: 20px;
+            right: -88px;
+            width: 88px;
+            height: 40px;
+            background: var(--primary-color);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            box-shadow: 4px 2px 10px rgba(0,0,0,0.15);
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-toc:hover {
+            transform: translateX(0);
+        }
+
+        .sidebar-toc h4 {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 8px;
+        }
+
+        .sidebar-toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .sidebar-toc li {
+            margin-bottom: 6px;
+        }
+
+        .sidebar-toc a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.86rem;
+            display: block;
+            padding: 5px 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-toc a:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Contenido Principal a Ancho Completo (100% Flexible) */
+        .document-container {
+            background: var(--bg-card);
+            padding: 50px 65px;
+            border-radius: 12px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border-color);
+            width: 100%;
+        }
+
+        /* Encabezados y Jerarquía */
+        .header-banner {
+            border-bottom: 4px solid var(--primary-color);
+            padding-bottom: 25px;
+            margin-bottom: 40px;
+        }
+
+        .module-tag {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 5px 14px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+        }
+
+        h1 {
+            font-family: 'Merriweather', Georgia, serif;
+            font-size: 2.3rem;
+            color: var(--primary-color);
+            line-height: 1.25;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-family: 'Merriweather', Georgia, serif;
+            font-size: 1.6rem;
+            color: var(--primary-color);
+            margin-top: 50px;
+            margin-bottom: 22px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            scroll-margin-top: 20px;
+        }
+
+        h3 {
+            font-size: 1.28rem;
+            color: var(--secondary-color);
+            margin-top: 32px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            scroll-margin-top: 20px;
+        }
+
+        h4 {
+            font-size: 1.08rem;
+            color: var(--text-dark);
+            margin-top: 24px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 18px;
+            text-align: justify;
+            font-size: 1rem;
+            color: var(--text-dark);
+        }
+
+        strong {
+            color: #000000;
+            font-weight: 600;
+        }
+
+        ul, ol {
+            margin-bottom: 22px;
+            padding-left: 28px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Cajas Didácticas Especiales */
+        .objectives-box {
+            background-color: var(--primary-light);
+            border-left: 5px solid var(--primary-border);
+            padding: 26px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .objectives-box h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .didactic-note {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid #0284c7;
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .didactic-note h5 {
+            color: #0369a1;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .didactic-note p {
+            margin-bottom: 0;
+            font-size: 0.95rem;
+        }
+
+        /* Cajas de Recursos e Hipervínculos */
+        .resource-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .resource-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .resource-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .resource-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .badge-video { background-color: #fee2e2; color: #dc2626; }
+        .badge-tool { background-color: #e0e7ff; color: #4338ca; }
+        .badge-reading { background-color: #dcfce7; color: #15803d; }
+        .badge-course { background-color: #fef3c7; color: #b45309; }
+
+        .resource-description {
+            font-size: 0.94rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .resource-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--primary-border);
+            width: fit-content;
+            transition: all 0.2s ease;
+        }
+
+        .resource-link-btn:hover {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        /* Tarjetas Leyes UX y Conceptos Avanzados */
+        .ux-law-card {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--purple-color);
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .ux-law-card h5 {
+            font-size: 1.08rem;
+            color: var(--purple-color);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ux-law-card p {
+            margin-bottom: 0;
+            font-size: 0.96rem;
+        }
+
+        .advanced-concept-box {
+            background-color: #fcfcfc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid var(--secondary-color);
+            padding: 22px 26px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .advanced-concept-box h4 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            font-size: 1.12rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Ejemplos y Errores */
+        .example-box {
+            background-color: var(--secondary-light);
+            border: 1px solid #bbf7d0;
+            border-left: 5px solid var(--secondary-color);
+            padding: 25px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .example-box h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            font-size: 1.18rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .error-box {
+            background-color: var(--danger-light);
+            border: 1px solid #fecaca;
+            border-left: 5px solid var(--danger-color);
+            padding: 25px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .error-box h3,
+        .error-box h4 {
+            color: var(--danger-color);
+            margin-top: 0;
+            font-size: 1.18rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .case-study-box {
+            background-color: #ffffff;
+            border: 2px solid var(--primary-color);
+            padding: 35px;
+            border-radius: 12px;
+            margin: 35px 0;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        }
+
+        .case-study-box h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 12px;
+            font-size: 1.4rem;
+        }
+
+        .phase-block {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid var(--accent-color);
+            padding: 22px 26px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .phase-block h4 {
+            color: var(--accent-color);
+            margin-top: 0;
+            font-size: 1.18rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .key-ideas-box {
+            background-color: var(--accent-light);
+            border: 1px solid #fde68a;
+            border-left: 5px solid var(--accent-color);
+            padding: 28px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .key-ideas-box h3 {
+            color: var(--accent-color);
+            margin-top: 0;
+        }
+
+        .activities-section {
+            background-color: #fafafa;
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            border-radius: 10px;
+            margin-top: 45px;
+        }
+
+        /* Imágenes e Ilustraciones Vectoriales Embebidas */
+        .image-container {
+            text-align: center;
+            margin: 35px 0;
+            background: #ffffff;
+            padding: 18px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+        }
+
+        .image-container svg {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+        }
+
+        .image-caption {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 12px;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        /* Tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 28px 0;
+            font-size: 0.96rem;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        .table-scroll {
+            width: 100%;
+            overflow-x: auto;
+            margin: 28px 0;
+        }
+
+        .table-scroll table {
+            min-width: 720px;
+            margin: 0;
+        }
+
+        /* Código */
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, monospace;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        pre {
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Fira Code', Consolas, Monaco, monospace;
+            font-size: 0.9rem;
+            margin: 22px 0;
+        }
+
+        blockquote {
+            font-style: italic;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 18px;
+            margin: 24px 0;
+            color: var(--text-muted);
+        }
+
+        @media print {
+            body {
+                background-color: #ffffff;
+                padding: 0;
+            }
+            .sidebar-toc {
+                display: none;
+            }
+            .document-container {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+            }
+            .ux-law-card, .example-box, .error-box, .resource-card, .advanced-concept-box, .phase-block {
+                break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .document-container {
+                padding: 30px 20px;
+            }
+            .sidebar-toc {
+                width: 280px;
+                transform: translateX(-265px);
+            }
+            .sidebar-toc::after {
+                right: -80px;
+                width: 80px;
+            }
+        }
+    </style>
+<style>
+        .header-subtitle {
+            margin-top: 10px;
+            margin-bottom: 0;
+            color: var(--text-muted);
+            font-size: 1.08rem;
+            text-align: left;
+        }
+
+        .image-container img {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto;
+            border-radius: 6px;
+        }
+
+        .activity-card {
+            background-color: var(--accent-light);
+            border: 1px solid #fde68a;
+            border-left: 5px solid var(--accent-color);
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .activity-card h4,
+        .activities-section h3 {
+            margin-top: 0;
+        }
+
+        .activity-card p:last-child,
+        .didactic-note p:last-child {
+            margin-bottom: 0;
+        }
+
+        .activities-section .evaluation-step {
+            margin-bottom: 8px;
+            padding-left: 0;
+            text-align: left;
+        }
+
+        .activities-section .evaluation-question {
+            margin-bottom: 9px;
+            padding: 8px 12px;
+            background: #ffffff;
+            border-left: 3px solid var(--accent-color);
+            text-align: left;
+        }
+
+        .sidebar-toc a.subsection-link {
+            padding-left: 20px;
+            font-size: 0.82rem;
+        }
+
+        h4.numbered-subsection {
+            color: var(--text-dark);
+            scroll-margin-top: 20px;
+        }
+
+        .document-footer {
+            margin-top: 55px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            text-align: center;
+        }
+
+        main a {
+            color: var(--primary-color);
+            overflow-wrap: anywhere;
+        }
+
+        @media (max-width: 700px) {
+            h1 { font-size: 1.85rem; }
+            h2 { font-size: 1.38rem; }
+            h3 { font-size: 1.15rem; }
+            .image-container { padding: 8px; margin: 24px 0; }
+            .activities-section { padding: 22px 18px; }
+        }
+
+        @media print {
+            h2, h3, h4 { break-after: avoid-page; }
+            .image-container, .activity-card, .didactic-note { break-inside: avoid; }
+            .image-container img { max-height: 235mm; object-fit: contain; }
+        }
+
+        .header-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+        .header-top-row .module-tag { margin-bottom: 0; }
+        .language-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 13px;
+            border: 1px solid var(--primary-border);
+            border-radius: 7px;
+            background: var(--primary-light);
+            color: var(--primary-color);
+            font-size: 0.88rem;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background-color .2s ease, color .2s ease;
+        }
+        .language-switch:hover { background: var(--primary-color); color: #fff; }
+        @media (max-width: 560px) {
+            .header-top-row { align-items: flex-start; }
+            .language-switch { font-size: 0.8rem; padding: 6px 10px; }
+        }
+</style></head>
+<body>
+<nav class="sidebar-toc" aria-label="Índice de contenidos"><h4><i class="fa-solid fa-list-ol" aria-hidden="true"></i> Contenidos</h4><ul><li><a href="#evaluacion-inicial">Evaluación inicial</a></li><li><a href="#sec1">1. Introducción y definiciones previas</a></li><li><a href="#sec1_1" class="subsection-link">1.1. Hardware y Software</a></li><li><a href="#sec1_2" class="subsection-link">1.2. Informática y Ordenador</a></li><li><a href="#sec1_3" class="subsection-link">1.3. Digital</a></li><li><a href="#sec2">2. Comunicación de la información</a></li><li><a href="#sec2_1" class="subsection-link">2.1. Elementos de un sistema de comunicación</a></li><li><a href="#sec3">3. Representación interna de la información</a></li><li><a href="#sec3_1" class="subsection-link">3.1. Unidades y magnitudes informáticas</a></li><li><a href="#sec3_2" class="subsection-link">3.2. Sistemas de numeración</a></li><li><a href="#sec3_3" class="subsection-link">3.3. Representación de la información</a></li><li><a href="#sec4">4. Características de un ordenador digital</a></li><li><a href="#sec4_1" class="subsection-link">4.1. Longitud de palabra:</a></li><li><a href="#sec4_2" class="subsection-link">4.2. Memoria Principal (RAM)</a></li><li><a href="#sec4_3" class="subsection-link">4.3. Memoria Secundaria</a></li><li><a href="#sec4_4" class="subsection-link">4.4. Ancho de banda</a></li><li><a href="#sec4_5" class="subsection-link">4.5. Frecuencia de reloj</a></li><li><a href="#sec4_6" class="subsection-link">4.6. MIPS (Millones de Instrucciones por segundo)</a></li><li><a href="#sec4_7" class="subsection-link">4.7. MFLOPS</a></li><li><a href="#sec4_8" class="subsection-link">4.8. Test sintéticos (Benchmarks)</a></li><li><a href="#sec5">5. Componentes físicos. Arquitectura Von Neumann</a></li><li><a href="#sec5_1" class="subsection-link">5.1. Introducción. Arquitectura Von Neumann</a></li><li><a href="#sec5_2" class="subsection-link">5.2. Componentes. Bloques funcionales de la CPU</a></li><li><a href="#sec5_3" class="subsection-link">5.3. Función y Propósito de la Memoria Interna</a></li><li><a href="#sec5_4" class="subsection-link">5.4. Buses de E/S</a></li><li><a href="#sec5_5" class="subsection-link">5.5. Periféricos</a></li><li><a href="#sec6">6. Componentes lógicos: Software</a></li><li><a href="#sec6_1" class="subsection-link">6.1. Design Thinking</a></li><li><a href="#sec6_2" class="subsection-link">6.2. Recursos</a></li></ul></nav>
+<div class="document-wrapper"><main class="document-container"><div class="header-banner"><div class="header-top-row"><span class="module-tag">Arquitectura de Ordenadores • Unidad Didáctica 01</span><a class="language-switch" href="u01_en.html" hreflang="en" lang="en" aria-label="Read this page in English"><i class="fa-solid fa-language" aria-hidden="true"></i> English</a></div><h1>UD01 Arquitectura de un ordenador</h1><p class="header-subtitle">Componentes físicos y lógicos</p></div><section class="activities-section" id="evaluacion-inicial"><h3><i class="fa-solid fa-clipboard-question" aria-hidden="true"></i> Evaluación inicial de la unidad</h3>
+<p>Las siguientes preguntas sólo serán evaluadas como resueltas/no resueltas:</p>
+<p class="evaluation-step">A. Inicia sesión en Google con tu cuenta de EDUCAAND</p>
+<p class="evaluation-step">B. Entra en Google Drive y crea una carpeta para la asignatura: “Aplicaciones Ofimáticas”</p>
+<p class="evaluation-step">C. Crea una subcarpeta con el título “UD 1 Instalación de Aplicaciones Ofimáticas”</p>
+<p class="evaluation-step">D. Dentro de la subcarpeta crea un documento nuevo de Google Docs, de nombre “Ejercicios UD 1”</p>
+<p class="evaluation-step">E. Comparte el documento con tu profesor con permiso de comentar.</p>
+<p class="evaluation-step">F. Abre el documento creado y copia y responde las siguientes preguntas/ejercicios:</p>
+<h4>Ejercicio 1:</h4>
+<p class="evaluation-question">1. ¿Cuál es la unidad mínima de información del ordenador?</p>
+<p class="evaluation-question">3. ¿Qué es el código binario?</p>
+<p class="evaluation-question">4. ¿Para qué sirven los drivers o controladores?</p>
+<p class="evaluation-question">5. ¿Qué función tienen los periféricos de un sistema informático?</p>
+</section><h2 id="sec1"><i class="fa-solid fa-microchip" aria-hidden="true"></i> 1. Introducción y definiciones previas</h2>
+<h3 id="sec1_1">1.1. Hardware y Software</h3>
+<p>Entendemos por arquitectura de un ordenador las partes que lo
+componen, así podemos hablar de dos componentes básicos en un
+ordenador:</p>
+<p>► <strong>Componentes físicos</strong>, también llamado en su
+conjunto <strong>hardware</strong> y que está compuesto por toda la
+circuitería y los componentes electrónicos del ordenador.</p>
+<p>► <strong>Componentes lógicos</strong>, también llamado en conjunto
+<strong>software</strong> y que está compuesto por los componentes
+intangibles de un ordenador; es decir: los programas que se ejecutan en
+el ordenador, así como por la información o datos que se procesan. Un
+ordenador sin software no tendría ningún sentido, solamente sería una
+máquina que no haría nada.</p>
+<figure class="image-container" role="group" aria-labelledby="fig-hardware-software-caption">
+<svg viewBox="0 0 960 390" role="img" aria-labelledby="svg-hardware-software-title svg-hardware-software-desc" xmlns="http://www.w3.org/2000/svg">
+  <title id="svg-hardware-software-title">Hardware y software de un ordenador</title>
+  <desc id="svg-hardware-software-desc">Diagrama que diferencia los componentes físicos del software que los utiliza.</desc>
+  <defs>
+    <linearGradient id="hardware-gradient" x1="0" x2="1"><stop stop-color="#dbeafe"/><stop offset="1" stop-color="#eff6ff"/></linearGradient>
+    <linearGradient id="software-gradient" x1="0" x2="1"><stop stop-color="#dcfce7"/><stop offset="1" stop-color="#f0fdf4"/></linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/></marker>
+  </defs>
+  <rect width="960" height="390" rx="14" fill="#f8fafc"/>
+  <text x="480" y="42" text-anchor="middle" font-family="Inter, sans-serif" font-size="24" font-weight="700" fill="#1e3a8a">Un ordenador necesita hardware y software</text>
+  <rect x="48" y="78" width="350" height="245" rx="16" fill="url(#hardware-gradient)" stroke="#3b82f6" stroke-width="2"/>
+  <text x="223" y="116" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">HARDWARE</text>
+  <text x="223" y="140" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" fill="#475569">Partes físicas que podemos tocar</text>
+  <rect x="86" y="165" width="104" height="72" rx="8" fill="#fff" stroke="#60a5fa" stroke-width="2"/>
+  <rect x="101" y="177" width="74" height="42" rx="3" fill="#1e3a8a"/><rect x="128" y="221" width="20" height="8" fill="#1e3a8a"/>
+  <text x="138" y="264" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#0f172a">Monitor</text>
+  <rect x="252" y="165" width="104" height="72" rx="8" fill="#fff" stroke="#60a5fa" stroke-width="2"/>
+  <rect x="273" y="177" width="62" height="50" rx="4" fill="#334155"/><circle cx="304" cy="202" r="13" fill="#60a5fa"/>
+  <text x="304" y="264" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#0f172a">CPU</text>
+  <text x="223" y="297" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" fill="#475569">Teclado · RAM · disco · periféricos</text>
+  <line x1="418" y1="200" x2="542" y2="200" stroke="#475569" stroke-width="3" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+  <text x="480" y="183" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#475569">instrucciones y datos</text>
+  <rect x="562" y="78" width="350" height="245" rx="16" fill="url(#software-gradient)" stroke="#14b8a6" stroke-width="2"/>
+  <text x="737" y="116" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#0f766e">SOFTWARE</text>
+  <text x="737" y="140" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" fill="#475569">Programas e información intangibles</text>
+  <rect x="603" y="166" width="268" height="42" rx="7" fill="#fff" stroke="#5eead4" stroke-width="2"/>
+  <text x="737" y="193" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" font-weight="600" fill="#0f172a">Sistema operativo</text>
+  <rect x="603" y="220" width="126" height="42" rx="7" fill="#fff" stroke="#5eead4" stroke-width="2"/>
+  <text x="666" y="247" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#0f172a">Aplicaciones</text>
+  <rect x="745" y="220" width="126" height="42" rx="7" fill="#fff" stroke="#5eead4" stroke-width="2"/>
+  <text x="808" y="247" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#0f172a">Datos</text>
+  <text x="737" y="297" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" fill="#475569">Hace útil al hardware</text>
+</svg>
+<figcaption id="fig-hardware-software-caption" class="image-caption">El hardware ejecuta las instrucciones y procesa los datos que proporciona el software.</figcaption>
+</figure>
+<div class="didactic-note"><h5><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Recuerda:</h5><p>Si lo podemos tocar es hardware (componente físico), si es intangible es software (componente lógico).</p></div><h3 id="sec1_2">1.2. Informática y Ordenador</h3>
+<p>La <strong>informática</strong> es la ciencia que estudia la
+adquisición, representación, tratamiento y transmisión de la
+información, de manera automática mediante máquinas denominadas
+ordenadores.</p>
+<p>El término <strong>información</strong> tiene en informática un
+significado amplio, y hace referencia a un conjunto de símbolos que
+representan hechos, objetos o ideas.</p>
+<p>El <strong>ordenador</strong> es una máquina, generalmente
+electrónica y digital, capaz de aceptar unos datos de entrada, efectuar
+con ellos una serie de operaciones matemáticas y lógicas y proporcionar
+la información resultante a través de un medio de salida; todo ello sin
+intervención humana, utilizando para ello un conjunto de instrucciones,
+es decir, un programa previamente almacenado en la memoria del
+ordenador.</p>
+<div class="didactic-note"><p>¿Sabías que...?</p><p>El término informática proviene del francés informatique, implementado por el ingeniero Philippe Dreyfus a comienzos de la década del '60. La palabra es, a su vez, un acrónimo de information y automatique.</p></div><p>El concepto de información supera al de “dato” (“Antecedente
+necesario para llegar al conocimiento exacto de algo o para deducir las
+consecuencias legítimas de un hecho”, o “Información dispuesta de manera
+adecuada para su tratamiento por un ordenador”).</p>
+<div class="didactic-note"><h5><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Recuerda:</h5><p>Un ordenador es un dispositivo electrónico y digital que procesa información siguiendo unas instrucciones (programa almacenado).</p></div><p><strong>Modelo de caja negra.</strong></p>
+<p>En la teoría de sistemas, un modelo de caja negra es un sistema que
+recibe una serie de datos de entrada, los procesa y emite una
+información de salida. Podemos considerar por tanto un ordenador como
+una caja negra -ya que por ahora no nos incumbe lo que ocurre dentro de
+él- que va a recibir una serie de datos de entrada y va a emitir
+información útil para el usuario como salida.</p>
+<h3 id="sec1_3">1.3. Digital</h3>
+<p><strong>Digital vs analógico.</strong></p>
+<p>Es importante considerar que este flujo de información se realiza de
+forma digital por lo general. El término dígito = dedo nos da una idea
+aproximada de que la representación no va a tomar cualquier valor del
+mundo real (señales analógicas) sino sólo un número discreto de estos al
+igual que el número de dedos es limitado.</p>
+<p><strong>Concepto de bit</strong></p>
+<p>Ligado íntimamente a la representación interna de la información está
+el concepto de bit. Por simplicidad y velocidad, los ordenadores
+internamente sólo van a poder almacenar dos estados (voltaje o ausencia
+de este, magnetizado o no, refleja un láser o no, etc) que
+matemáticamente vamos a representar con un cero o un uno. De aquí
+aparece surge el concepto de dígito binario, Binary digit o Bit, ya que
+en inglés esa palabra tiene connotaciones de algo muy pequeño, esta será
+la unidad más pequeña de medida de la información.</p>
+
+<figure class="image-container" role="group" aria-labelledby="fig-digital-caption">
+<svg viewBox="0 0 900 260" role="img" aria-label="Comparación entre señal analógica y digital" xmlns="http://www.w3.org/2000/svg"><rect width="900" height="260" rx="14" fill="#f8fafc"/>
+<text x="450" y="34" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">Analógico y digital</text>
+<text x="50" y="76" font-family="Inter, sans-serif" font-size="17" font-weight="700" fill="#475569">Analógica: valores continuos</text><path d="M50 155 C100 85 150 225 200 155 S300 85 350 155 S450 225 500 155" fill="none" stroke="#d97706" stroke-width="5"/>
+<line x1="50" y1="205" x2="500" y2="205" stroke="#94a3b8" stroke-width="2"/><text x="50" y="238" font-family="Inter, sans-serif" font-size="14" fill="#475569">Puede tomar muchos valores intermedios</text>
+<text x="560" y="76" font-family="Inter, sans-serif" font-size="17" font-weight="700" fill="#475569">Digital: valores discretos</text><path d="M560 190 H640 V110 H730 V190 H820 V110 H885" fill="none" stroke="#0f766e" stroke-width="6"/>
+<line x1="560" y1="205" x2="885" y2="205" stroke="#94a3b8" stroke-width="2"/><text x="595" y="105" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#0f766e">1</text><text x="595" y="230" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#0f766e">0</text><text x="560" y="238" font-family="Inter, sans-serif" font-size="14" fill="#475569">El bit representa uno de dos estados</text></svg>
+<figcaption id="fig-digital-caption" class="image-caption">Una señal digital utiliza valores discretos; en informática, normalmente dos estados: 0 y 1.</figcaption>
+</figure>
+<h2 id="sec2"><i class="fa-solid fa-tower-broadcast" aria-hidden="true"></i> 2. Comunicación de la información</h2>
+<h3 id="sec2_1">2.1. Elementos de un sistema de comunicación</h3>
+<p>Los elementos básicos que intervienen en el proceso de comunicación
+son:</p>
+<ul>
+<li>
+<p><strong>Emisor</strong>: Ente que transmite la información.</p>
+</li>
+<li>
+<p><strong>Receptor</strong>: Ente que recibe la información.</p>
+</li>
+<li>
+<p><strong>Canal</strong>: Medio por el cual se transmite la
+información, inevitablemente contendrá <strong>ruido</strong>.</p>
+</li>
+<li>
+<p><strong>Mensaje</strong>: Conjunto de señales, signos y símbolos que
+son objeto de la comunicación.</p>
+</li>
+<li>
+<p><strong>Protocolos y estándares</strong>: Por último, es necesario
+para que la comunicación sea efectiva, que tanto emisor como receptor
+sigan un determinado conjunto de reglas en la comunicación. A éstas, se
+les denomina protocolos. En la actualidad existen multitud de
+protocolos, y muchos de ellos se encuentran estandarizados, como es el
+caso del conjunto de protocolos TCP/IP.</p>
+</li>
+</ul>
+<p>Así, la transmisión de información entre el ser humano y la
+computadora puede hacerse de muchas formas:</p>
+<ul>
+<li>
+<p>Mediante caracteres alfanuméricos (letras, números y caracteres
+gráficos)</p>
+</li>
+<li>
+<p>Mediantes sonidos</p>
+</li>
+<li>
+<p>Mediante imágenes y video</p>
+</li>
+</ul>
+<p>En cada caso es diferente, y para proceder a la comunicación de los
+datos es necesario cambiar la forma en que estos se representan.</p>
+<p><strong>Por tanto, los datos deben ser siempre
+codificados.</strong></p>
+<p>Opcionalmente los datos también pueden ser <strong>cifrados,
+comprimidos</strong> y se le puede añadir <strong>información
+redundante</strong> para la detección y/o corrección de errores o para
+la sincronización.</p>
+<div class="didactic-note"><p>Con todo esto, podemos definir información como la representación de hechos, objetos, valores, ideas, etc, que permiten la comunicación entre emisor y receptor y la adquisición del conocimiento de las cosas.</p></div>
+<figure class="image-container" role="group" aria-labelledby="fig-comunicacion-caption">
+<svg viewBox="0 0 900 260" role="img" aria-label="Elementos de un sistema de comunicación" xmlns="http://www.w3.org/2000/svg"><rect width="900" height="260" rx="14" fill="#f8fafc"/>
+<text x="450" y="36" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">Sistema de comunicación</text>
+<rect x="45" y="105" width="175" height="80" rx="12" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="132" y="139" text-anchor="middle" font-family="Inter, sans-serif" font-size="19" font-weight="700" fill="#1e3a8a">EMISOR</text><text x="132" y="163" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" fill="#475569">codifica</text>
+<line x1="220" y1="145" x2="680" y2="145" stroke="#475569" stroke-width="4"/><path d="M680 145l-14-9v18z" fill="#475569"/><text x="450" y="122" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#475569">CANAL · MENSAJE</text><path d="M395 173l12-22 12 22 12-22 12 22" fill="none" stroke="#d97706" stroke-width="3"/><text x="420" y="200" font-family="Inter, sans-serif" font-size="13" fill="#d97706">ruido</text>
+<rect x="680" y="105" width="175" height="80" rx="12" fill="#dcfce7" stroke="#14b8a6" stroke-width="2"/><text x="767" y="139" text-anchor="middle" font-family="Inter, sans-serif" font-size="19" font-weight="700" fill="#0f766e">RECEPTOR</text><text x="767" y="163" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" fill="#475569">decodifica</text>
+<text x="450" y="240" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" fill="#475569">Los protocolos y estándares establecen las reglas compartidas.</text></svg>
+<figcaption id="fig-comunicacion-caption" class="image-caption">La comunicación requiere un emisor, un mensaje transmitido por un canal y un receptor que interpreta la información.</figcaption>
+</figure>
+<h2 id="sec3"><i class="fa-solid fa-code" aria-hidden="true"></i> 3. Representación interna de la información</h2>
+<h3 id="sec3_1">3.1. Unidades y magnitudes informáticas</h3>
+<h4 id="sec3_1_1" class="numbered-subsection">3.1.1. Unidades de medida para el almacenamiento de información</h4>
+<p>Como veíamos al comienzo del tema, el bit es la unidad más pequeña
+para medir cualquier información, pero igual que no medimos la distancia
+entre ciudades en centímetros, tampoco vamos a usar el bit, sino
+múltiplos suyos, como norma general.</p>
+<p>De hecho, la mínima cantidad de información que un ordenador va a
+tratar será de <strong>8 bits</strong>, esto es 1 <strong>Byte</strong>,
+y los múltiplos del mismo utilizando prefijos griegos: <strong>Kilo,
+Mega, Giga, Tera, Peta, Exa, Zetta, Yotta.</strong></p>
+<p>Tradicionalmente (desde los años 60) la escala de multiplicación ha
+sido siempre expresada en potencia de 2 elevado a 10 (1024), aunque han
+surgido intentos de normalizar el uso de la escala de 1000 por parte del
+IEC desde el año 1998, <strong>introduciendo la nomenclatura Kibibyte,
+Mebibyte, etc para potencias de 2</strong>. Su uso es debatido aún hoy
+en día (año 2022) por la comunidad científica, de forma que unos adoptan
+el estándar en base 10 (Ubuntu por ejemplo) y otros en base 2 (Microsoft
+sin ir más lejos). [<a href="https://es.wikipedia.org/wiki/Kilobyte" target="_blank" rel="noopener noreferrer"><u>+</u></a>]</p>
+
+<figure class="image-container" role="group" aria-labelledby="fig-almacenamiento-caption">
+<svg viewBox="0 0 900 260" role="img" aria-label="Unidades de almacenamiento" xmlns="http://www.w3.org/2000/svg"><rect width="900" height="260" rx="14" fill="#f8fafc"/>
+<text x="450" y="34" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">Unidades de almacenamiento</text>
+<g font-family="Inter, sans-serif" text-anchor="middle"><rect x="52" y="105" width="120" height="72" rx="10" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="112" y="136" font-size="21" font-weight="700" fill="#1e3a8a">bit</text><text x="112" y="158" font-size="13" fill="#475569">0 o 1</text>
+<path d="M182 141h48l-12-10v20z" fill="#64748b"/><rect x="240" y="105" width="130" height="72" rx="10" fill="#dcfce7" stroke="#14b8a6" stroke-width="2"/><text x="305" y="136" font-size="21" font-weight="700" fill="#0f766e">Byte</text><text x="305" y="158" font-size="13" fill="#475569">8 bits</text>
+<path d="M380 141h48l-12-10v20z" fill="#64748b"/><rect x="438" y="105" width="150" height="72" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="2"/><text x="513" y="136" font-size="21" font-weight="700" fill="#b45309">KB / KiB</text><text x="513" y="158" font-size="13" fill="#475569">miles de bytes</text>
+<path d="M598 141h48l-12-10v20z" fill="#64748b"/><rect x="656" y="105" width="190" height="72" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/><text x="751" y="136" font-size="21" font-weight="700" fill="#6d28d9">MB · GB · TB…</text><text x="751" y="158" font-size="13" fill="#475569">múltiplos mayores</text></g><text x="450" y="220" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" fill="#475569">Conviene distinguir los múltiplos decimales (kB = 1000 B) de los binarios (KiB = 1024 B).</text></svg>
+<figcaption id="fig-almacenamiento-caption" class="image-caption">La información se agrupa en unidades crecientes: 8 bits forman 1 byte; los prefijos expresan múltiplos de bytes.</figcaption>
+</figure>
+<h4 id="sec3_1_2" class="numbered-subsection">3.1.2. Unidades de medida para la transmisión de información</h4>
+<p>Tradicionalmente el envío de información en medios analógicos se
+efectuaba en <strong>baudios</strong>, que mide el número de cambios en
+la señal por segundo, sin embargo actualmente se utiliza el <strong>bit
+por segundo (bps o bit/s)</strong> que es una medida mucho más
+precisa.</p>
+<p>Para nombrar a los múltiplos del bit/s se suele debería la notación
+Kilobits/s, Megabits/s etc, sin embargo es frecuente encontrarse estas
+medidas expresadas en <strong>bytes por segundo</strong> y también en
+<strong>Megatransfers</strong>.</p>
+<p>Un <strong>Megatransfer</strong> (Millones de transferencias por
+segundo) es equivalente al Megabit por segundo excepto por el hecho de
+que mide todos los datos que se transfieren incluyendo información de
+sincronización y control de errores, lo cual permite utilizar unidades
+redondas a la hora de dar información sobre la tasa de transferencia de
+un bus de comunicaciones.</p>
+
+<figure class="image-container" role="group" aria-labelledby="fig-transmision-caption">
+<svg viewBox="0 0 900 260" role="img" aria-label="Tasa de transmisión de información" xmlns="http://www.w3.org/2000/svg"><rect width="900" height="260" rx="14" fill="#f8fafc"/>
+<text x="450" y="34" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">Tasa de transmisión</text>
+<rect x="80" y="100" width="160" height="76" rx="12" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="160" y="132" text-anchor="middle" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#1e3a8a">Origen</text><text x="160" y="156" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" fill="#475569">datos</text>
+<line x1="240" y1="138" x2="660" y2="138" stroke="#0f766e" stroke-width="7" stroke-dasharray="11 8"/><path d="M660 138l-16-11v22z" fill="#0f766e"/><text x="450" y="112" text-anchor="middle" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#0f766e">1 0 1 1 0 0 1 …</text><text x="450" y="184" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#475569">cantidad transferida ÷ tiempo</text>
+<rect x="660" y="100" width="160" height="76" rx="12" fill="#dcfce7" stroke="#14b8a6" stroke-width="2"/><text x="740" y="132" text-anchor="middle" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#0f766e">Destino</text><text x="740" y="156" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" fill="#475569">recibe</text><text x="450" y="231" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#1e3a8a">bps · Kbps · Mbps · Gbps</text></svg>
+<figcaption id="fig-transmision-caption" class="image-caption">La tasa de transmisión mide cuántos bits o bytes se transfieren cada segundo.</figcaption>
+</figure>
+<h4 id="sec3_1_3" class="numbered-subsection">3.1.3. Unidades de medida para imagen</h4>
+<p>La unidad básica para medir una imagen es el <strong>pixel (picture
+element)</strong> o punto de luz, cuyo tamaño, profundidad de color y
+distancia a otros puntos va a depender totalmente de la tecnología
+empleada y la precisión que se le quiera dar. Para sus múltiplos se
+utilizan los mismos prefijos que para el bit.</p>
+
+<figure class="image-container" role="group" aria-labelledby="fig-pixel-caption">
+<svg viewBox="0 0 900 260" role="img" aria-label="Píxeles de una imagen digital" xmlns="http://www.w3.org/2000/svg"><rect width="900" height="260" rx="14" fill="#f8fafc"/>
+<text x="450" y="34" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">Una imagen está formada por píxeles</text>
+<g stroke="#fff" stroke-width="3"><path d="M115 82h48v48h-48zM163 82h48v48h-48zM211 82h48v48h-48zM259 82h48v48h-48zM307 82h48v48h-48zM115 130h48v48h-48zM163 130h48v48h-48zM211 130h48v48h-48zM259 130h48v48h-48zM307 130h48v48h-48zM115 178h48v48h-48zM163 178h48v48h-48zM211 178h48v48h-48zM259 178h48v48h-48zM307 178h48v48h-48z" fill="#3b82f6"/><rect x="211" y="130" width="48" height="48" fill="#f59e0b"/><rect x="259" y="130" width="48" height="48" fill="#14b8a6"/></g><path d="M355 154H560" stroke="#64748b" stroke-width="3"/><path d="M560 154l-14-9v18z" fill="#64748b"/><rect x="600" y="86" width="176" height="132" rx="12" fill="#fff" stroke="#cbd5e1" stroke-width="2"/><rect x="630" y="112" width="82" height="82" fill="#f59e0b"/><text x="688" y="245" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#475569">Píxel ampliado</text><text x="450" y="250" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" fill="#475569">Más píxeles permiten representar mayor detalle (resolución).</text></svg>
+<figcaption id="fig-pixel-caption" class="image-caption">Una imagen digital se forma mediante una cuadrícula de píxeles; cada píxel almacena un color.</figcaption>
+</figure>
+<h3 id="sec3_2">3.2. Sistemas de numeración</h3>
+<p>Podemos definir un sistema de numeración como un conjunto de símbolos
+y reglas: <strong>N=(S,R)</strong></p>
+<h4 id="sec3_2_1" class="numbered-subsection">3.2.1. Sistemas de Numeración Posicionales</h4>
+<p>Existen sistemas de numeración no posicionales, como por ejemplo el
+utilizado para representar los números romanos o el chino, y sistemas de
+numeración posicionales, en los que <strong>la posición de un símbolo
+dentro del número</strong> determina su valor.</p>
+
+<figure class="image-container" role="group" aria-labelledby="fig-posicional-caption">
+<svg viewBox="0 0 900 260" role="img" aria-label="Sistema de numeración posicional" xmlns="http://www.w3.org/2000/svg"><rect width="900" height="260" rx="14" fill="#f8fafc"/>
+<text x="450" y="34" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">El valor depende de la posición</text>
+<text x="450" y="98" text-anchor="middle" font-family="Inter, sans-serif" font-size="30" font-weight="700" fill="#0f172a">3  4  2</text><line x1="300" y1="110" x2="600" y2="110" stroke="#cbd5e1" stroke-width="2"/>
+<g font-family="Inter, sans-serif" text-anchor="middle"><text x="335" y="143" font-size="15" font-weight="700" fill="#1e3a8a">centenas</text><text x="335" y="170" font-size="16" fill="#475569">3 × 10²</text><text x="450" y="143" font-size="15" font-weight="700" fill="#1e3a8a">decenas</text><text x="450" y="170" font-size="16" fill="#475569">4 × 10¹</text><text x="565" y="143" font-size="15" font-weight="700" fill="#1e3a8a">unidades</text><text x="565" y="170" font-size="16" fill="#475569">2 × 10⁰</text><text x="450" y="225" font-size="20" font-weight="700" fill="#0f766e">342 = 300 + 40 + 2</text></g></svg>
+<figcaption id="fig-posicional-caption" class="image-caption">En un sistema posicional, el valor de cada cifra depende de su posición y de la base utilizada.</figcaption>
+</figure>
+<h4 id="sec3_2_2" class="numbered-subsection">3.2.2. Teorema Fundamental de la numeración</h4>
+<p>Para conocer el valor que representa un número en un <strong>sistema
+posicional,</strong> se calcula aplicando <strong>el teorema fundamental
+de la numeración</strong>, el cual dice que dado un número N={
+x<sub>n</sub> … x<sub>0</sub>, x<sub>-1</sub> … x<sub>-d</sub>}, su
+valor <strong>en base B</strong> es:</p>
+
+<figure class="image-container" role="group" aria-labelledby="fig-teorema-caption"><svg viewBox="0 0 900 250" role="img" aria-label="El teorema fundamental descompone un número posicional como la suma de cada cifra multiplicada por una potencia de la base." xmlns="http://www.w3.org/2000/svg"><rect width="900" height="250" rx="14" fill="#f8fafc"/><text x="450" y="38" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">Teorema fundamental de la numeración</text><text x="450" y="93" text-anchor="middle" font-family="Inter, sans-serif" font-size="24" font-weight="700" fill="#0f172a">N = xₙ·Bⁿ + … + x₁·B¹ + x₀·B⁰</text><rect x="180" y="130" width="540" height="62" rx="10" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="450" y="158" text-anchor="middle" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#1e3a8a">Ejemplo decimal: 342 = 3·10² + 4·10¹ + 2·10⁰</text><text x="450" y="181" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" fill="#475569">Cada posición tiene un peso determinado por la base B.</text></svg><figcaption id="fig-teorema-caption" class="image-caption">El teorema fundamental descompone un número posicional como la suma de cada cifra multiplicada por una potencia de la base.</figcaption></figure>
+<h4 id="sec3_2_3" class="numbered-subsection">3.2.3. El sistema decimal</h4>
+<div class="didactic-note"><p>El ser humano tiene 10 dedos. No es casualidad que el sistema de numeración más utilizado tenga diez símbolos, del 0 al 9.</p></div><p>Alguno de los <strong>sistemas de numeración</strong> más utilizados
+son:</p>
+<ul>
+<li>
+<p>Binario (base 2). Es el sistema de representación de los
+ordenadores</p>
+</li>
+<li>
+<p>Decimal (base 10). Es el sistema de representación numérico del
+hombre.</p>
+</li>
+<li>
+<p>Hexadecimal (base 16)</p>
+</li>
+</ul>
+<h4 id="sec3_2_4" class="numbered-subsection">3.2.4. El sistema binario</h4>
+<p>El ordenador utiliza el sistema binario por su sencillez de
+representación. La Base del sistema es B=2, y el conjunto de símbolos
+del lenguaje es L={0,1}</p>
+<p>Para <strong>transformar un número de base binaria a decimal</strong>
+se puede aplicar el teorema fundamental de la numeración, por
+ejemplo:</p>
+<p>10)<sub>2</sub>= 1*2<sup>1</sup>+0*2<sup>0</sup>)<sub>10</sub> =
+2</p>
+<p>A su vez, para <strong>transformar un número entero de base decimal a
+base binaria</strong>, se obtiene dividiendo por 2, y después se
+realizan sucesivamente divisiones por los cocientes obtenidos, hasta
+llegar a un cociente menor a 2. El resultado es el último cociente junto
+con los restos obtenidos en el orden inverso de aparición. Otra forma de
+calcularlo es mediante el <strong>método de Ruffini</strong>.</p>
+<p>Para calcular la <strong>parte decimal,</strong> esta se multiplica
+por dos y vamos cogiendo la parte entera resultante en <strong>orden de
+aparición</strong> hasta obtener cero o tener la precisión
+requerida.</p>
+
+<figure class="image-container" role="group" aria-labelledby="fig-binario-caption"><svg viewBox="0 0 900 250" role="img" aria-label="Ejemplo de conversión: 13 en decimal equivale a 1101 en binario." xmlns="http://www.w3.org/2000/svg"><rect width="900" height="250" rx="14" fill="#f8fafc"/><text x="450" y="36" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">Conversión de decimal a binario</text><g font-family="Inter, sans-serif" text-anchor="middle"><text x="150" y="94" font-size="20" font-weight="700" fill="#475569">División</text><text x="150" y="128" font-size="18" fill="#0f172a">13 ÷ 2 = 6 · resto 1</text><text x="150" y="155" font-size="18" fill="#0f172a">6 ÷ 2 = 3 · resto 0</text><text x="150" y="182" font-size="18" fill="#0f172a">3 ÷ 2 = 1 · resto 1</text><text x="150" y="209" font-size="18" fill="#0f172a">1 ÷ 2 = 0 · resto 1</text><path d="M345 148h135" stroke="#64748b" stroke-width="3"/><path d="M480 148l-14-9v18z" fill="#64748b"/><rect x="535" y="105" width="220" height="82" rx="12" fill="#dcfce7" stroke="#14b8a6" stroke-width="2"/><text x="645" y="140" font-size="28" font-weight="700" fill="#0f766e">1101₂</text><text x="645" y="165" font-size="14" fill="#475569">leer los restos de abajo arriba</text></g></svg><figcaption id="fig-binario-caption" class="image-caption">Ejemplo de conversión: 13 en decimal equivale a 1101 en binario.</figcaption></figure>
+
+<figure class="image-container" role="group" aria-labelledby="fig-binario-decimal-caption"><svg viewBox="0 0 900 245" role="img" aria-label="Conversión de 1101 en binario a 13 en decimal mediante las potencias de dos." xmlns="http://www.w3.org/2000/svg"><rect width="900" height="245" rx="14" fill="#f8fafc"/><text x="450" y="35" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">Conversión de binario a decimal</text><g font-family="Inter, sans-serif" text-anchor="middle"><text x="450" y="90" font-size="28" font-weight="700" fill="#0f172a">1101₂</text><text x="450" y="132" font-size="21" fill="#475569">1·2³ + 1·2² + 0·2¹ + 1·2⁰</text><text x="450" y="168" font-size="21" fill="#475569">8 + 4 + 0 + 1</text><rect x="345" y="190" width="210" height="36" rx="8" fill="#dcfce7"/><text x="450" y="215" font-size="20" font-weight="700" fill="#0f766e">= 13₁₀</text></g></svg><figcaption id="fig-binario-decimal-caption" class="image-caption">Conversión de 1101 en binario a 13 en decimal mediante las potencias de dos.</figcaption></figure>
+<h4 id="sec3_2_5" class="numbered-subsection">3.2.5. Códigos intermedios</h4>
+<p>Otros códigos comúnmente utilizados relacionados con los ordenadores
+son los llamados códigos de representación intermedia, que nos permiten
+<strong>representar de forma práctica</strong> múltiples informaciones.
+Estos son el Octal (B=8, L={0,...7} y el Hexadecimal (B=16,
+L={0,...9,A,...,F})</p>
+<p>Estos códigos tienen la particularidad de ser <strong>muy fáciles de
+convertir en binario</strong> simplemente usando la equivalencia de 1
+símbolo a 3 o a 4, respectivamente de octal a binario o de hexadecimal a
+binario.</p>
+
+<figure class="image-container" role="group" aria-labelledby="fig-octal-caption"><svg viewBox="0 0 900 335" role="img" aria-label="Tabla de conversión de cada dígito octal a su grupo equivalente de tres bits." xmlns="http://www.w3.org/2000/svg"><rect width="900" height="335" rx="14" fill="#f8fafc"/><text x="450" y="33" text-anchor="middle" font-family="Inter, sans-serif" font-size="21" font-weight="700" fill="#1e3a8a">Conversión octal → binario</text><rect x="250" y="55" width="370" height="38" fill="#dbeafe"/><text x="330" y="80" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#1e3a8a">Octal</text><text x="540" y="80" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#1e3a8a">Binario (3 bits)</text><text x="330" y="91" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">0</text><text x="540" y="91" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">000</text><path d="M250 99h370" stroke="#cbd5e1"/><text x="330" y="118" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">1</text><text x="540" y="118" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">001</text><path d="M250 126h370" stroke="#cbd5e1"/><text x="330" y="145" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">2</text><text x="540" y="145" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">010</text><path d="M250 153h370" stroke="#cbd5e1"/><text x="330" y="172" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">3</text><text x="540" y="172" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">011</text><path d="M250 180h370" stroke="#cbd5e1"/><text x="330" y="199" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">4</text><text x="540" y="199" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">100</text><path d="M250 207h370" stroke="#cbd5e1"/><text x="330" y="226" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">5</text><text x="540" y="226" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">101</text><path d="M250 234h370" stroke="#cbd5e1"/><text x="330" y="253" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">6</text><text x="540" y="253" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">110</text><path d="M250 261h370" stroke="#cbd5e1"/><text x="330" y="280" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">7</text><text x="540" y="280" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">111</text><path d="M250 288h370" stroke="#cbd5e1"/><path d="M250 55v224M410 55v224M620 55v224" stroke="#94a3b8" stroke-width="1.5"/><text x="450" y="313" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" fill="#475569">Cada dígito octal equivale exactamente a tres bits.</text></svg><figcaption id="fig-octal-caption" class="image-caption">Tabla de conversión de cada dígito octal a su grupo equivalente de tres bits.</figcaption></figure>
+
+<figure class="image-container" role="group" aria-labelledby="fig-hexadecimal-caption"><svg viewBox="0 0 900 335" role="img" aria-label="Tabla de conversión de cada dígito hexadecimal a su grupo equivalente de cuatro bits." xmlns="http://www.w3.org/2000/svg"><rect width="900" height="335" rx="14" fill="#f8fafc"/><text x="450" y="33" text-anchor="middle" font-family="Inter, sans-serif" font-size="21" font-weight="700" fill="#1e3a8a">Conversión hexadecimal → binario</text><g font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#1e3a8a" text-anchor="middle"><rect x="80" y="55" width="310" height="38" fill="#f5f3ff"/><rect x="395" y="55" width="310" height="38" fill="#f5f3ff"/><text x="155" y="80">Hex</text><text x="315" y="80">Binario (4 bits)</text><text x="470" y="80">Hex</text><text x="630" y="80">Binario (4 bits)</text></g><text x="155" y="93" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">0</text><text x="315" y="93" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">0000</text><path d="M80 101h310M395 101h310" stroke="#cbd5e1"/><text x="155" y="121" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">1</text><text x="315" y="121" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">0001</text><path d="M80 129h310M395 129h310" stroke="#cbd5e1"/><text x="155" y="149" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">2</text><text x="315" y="149" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">0010</text><path d="M80 157h310M395 157h310" stroke="#cbd5e1"/><text x="155" y="177" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">3</text><text x="315" y="177" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">0011</text><path d="M80 185h310M395 185h310" stroke="#cbd5e1"/><text x="155" y="205" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">4</text><text x="315" y="205" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">0100</text><path d="M80 213h310M395 213h310" stroke="#cbd5e1"/><text x="155" y="233" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">5</text><text x="315" y="233" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">0101</text><path d="M80 241h310M395 241h310" stroke="#cbd5e1"/><text x="155" y="261" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">6</text><text x="315" y="261" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">0110</text><path d="M80 269h310M395 269h310" stroke="#cbd5e1"/><text x="155" y="289" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">7</text><text x="315" y="289" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">0111</text><path d="M80 297h310M395 297h310" stroke="#cbd5e1"/><text x="470" y="93" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">8</text><text x="630" y="93" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">1000</text><path d="M80 101h310M395 101h310" stroke="#cbd5e1"/><text x="470" y="121" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">9</text><text x="630" y="121" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">1001</text><path d="M80 129h310M395 129h310" stroke="#cbd5e1"/><text x="470" y="149" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">A</text><text x="630" y="149" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">1010</text><path d="M80 157h310M395 157h310" stroke="#cbd5e1"/><text x="470" y="177" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">B</text><text x="630" y="177" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">1011</text><path d="M80 185h310M395 185h310" stroke="#cbd5e1"/><text x="470" y="205" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">C</text><text x="630" y="205" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">1100</text><path d="M80 213h310M395 213h310" stroke="#cbd5e1"/><text x="470" y="233" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">D</text><text x="630" y="233" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">1101</text><path d="M80 241h310M395 241h310" stroke="#cbd5e1"/><text x="470" y="261" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">E</text><text x="630" y="261" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">1110</text><path d="M80 269h310M395 269h310" stroke="#cbd5e1"/><text x="470" y="289" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">F</text><text x="630" y="289" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" fill="#0f172a">1111</text><path d="M80 297h310M395 297h310" stroke="#cbd5e1"/><path d="M80 55v232M235 55v232M390 55v232M395 55v232M550 55v232M705 55v232" stroke="#94a3b8" stroke-width="1.5"/><text x="450" y="313" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" fill="#475569">Cada dígito hexadecimal equivale exactamente a cuatro bits.</text></svg><figcaption id="fig-hexadecimal-caption" class="image-caption">Tabla de conversión de cada dígito hexadecimal a su grupo equivalente de cuatro bits.</figcaption></figure>
+<h3 id="sec3_3">3.3. Representación de la información</h3>
+<p>Para <strong>seleccionar</strong> un sistema de representación es
+importante tener en cuenta la <strong>naturaleza de la
+información</strong> que se desea representar, ésta se clasifica según
+los autores <em>Alberto Prieto, Antonio Lloris, y Juan Carlos Torres, en
+su obra “Introducción a la Informática” (2006)</em>, en:</p>
+<ul>
+<li>
+<p>Textos.</p>
+</li>
+<li>
+<p>Valores numéricos.</p>
+</li>
+<li>
+<p>Instrucciones.</p>
+</li>
+<li>
+<p>Sonidos.</p>
+</li>
+<li>
+<p>Imágenes y vídeos.</p>
+</li>
+</ul>
+
+<figure class="image-container" role="group" aria-labelledby="fig-representacion-caption">
+<svg viewBox="0 0 900 260" role="img" aria-label="Representación de la información" xmlns="http://www.w3.org/2000/svg"><rect width="900" height="260" rx="14" fill="#f8fafc"/>
+<text x="450" y="34" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">La información se codifica en bits</text>
+<g font-family="Inter, sans-serif" text-anchor="middle"><rect x="45" y="90" width="138" height="62" rx="10" fill="#dbeafe"/><text x="114" y="119" font-size="17" font-weight="700" fill="#1e3a8a">Texto</text><text x="114" y="140" font-size="13" fill="#475569">caracteres</text><rect x="212" y="90" width="138" height="62" rx="10" fill="#dcfce7"/><text x="281" y="119" font-size="17" font-weight="700" fill="#0f766e">Números</text><text x="281" y="140" font-size="13" fill="#475569">valores</text><rect x="379" y="90" width="138" height="62" rx="10" fill="#fef3c7"/><text x="448" y="119" font-size="17" font-weight="700" fill="#b45309">Sonido</text><text x="448" y="140" font-size="13" fill="#475569">muestras</text><rect x="546" y="90" width="138" height="62" rx="10" fill="#f5f3ff"/><text x="615" y="119" font-size="17" font-weight="700" fill="#6d28d9">Imagen</text><text x="615" y="140" font-size="13" fill="#475569">píxeles</text><rect x="713" y="90" width="138" height="62" rx="10" fill="#fee2e2"/><text x="782" y="119" font-size="17" font-weight="700" fill="#b91c1c">Instrucción</text><text x="782" y="140" font-size="13" fill="#475569">operación</text></g><path d="M450 162v30" stroke="#64748b" stroke-width="3"/><path d="M450 192l-9-13h18z" fill="#64748b"/><rect x="290" y="205" width="320" height="38" rx="8" fill="#0f172a"/><text x="450" y="231" text-anchor="middle" font-family="Inter, sans-serif" font-size="19" font-weight="700" fill="#fff">0 1 1 0 1 0 0 1 …</text></svg>
+<figcaption id="fig-representacion-caption" class="image-caption">Los ordenadores representan textos, números, instrucciones, sonidos e imágenes mediante patrones binarios.</figcaption>
+</figure>
+<h4 id="sec3_3_1" class="numbered-subsection">3.3.1. Representación numérica</h4>
+<p>Un primer enfoque al problema de representar un número signado de
+n-bits es la representación en <strong>Signo y Magnitud</strong>:</p>
+<ul>
+<li>
+<p>Se utiliza el MSB para representar el número que, por convención: un
+0 denota un número positivo, y un 1 denota un número negativo;</p>
+</li>
+<li>
+<p>Los (n-1)-bits restantes para representar el significando que es la
+magnitud del número en valor absoluto.</p>
+</li>
+</ul>
+<p>Un problema de esta representación es la <strong>necesidad de una
+operación condicional</strong> al operar con ellos para determinar su
+signo y otro la <strong>doble representación del cero</strong> (1000000
+y 0000000)</p>
+<p>Mucho más utilizado es la representación en
+<strong>Complementos</strong>, que nos permite una aritmética más
+sencilla.</p>
+<ul>
+<li>
+<p><strong>Complemento a 1</strong> (a la base menos 1): Se invierten
+los ceros y unos del significado -equivale a restarle la base menos 1- ,
+lo cual <strong>nos permite operar aritméticamente</strong>, aunque hay
+que tener en cuenta el acarreo y sigue teniendo doble representación
+para el cero. Es utilizada por los protocolos TCP, UDP, ICMP, y otros.
+p.eje: 1010<sub>)2</sub> = -5<sub>)10</sub></p>
+</li>
+<li>
+<p><strong>Complemento a 2</strong> (a la base): Se suma 1 al
+complemento a 1 del número, lo cual nos da una notación muy efectiva
+para operar aritméticamente. Es la notación más utilizada. p.eje:
+1011<sub>)2</sub> = -5<sub>)10</sub></p>
+</li>
+</ul>
+<p>Para representar números <strong>reales o muy grandes</strong> se
+suele utilizar la <strong>notación punto flotante</strong>, la cual se
+basa en la propiedad de que todo número n se puede representar por n=
+m*B<sup>e</sup> donde m es la mantisa, B es la base (no es necesario
+explicitar este valor) y e es el exponente.</p>
+<p>Actualmente, existe la <strong>norma</strong> <strong>IEEE
+754</strong> de aceptación prácticamente universal, que representa
+número reales con 32 o con 64 bits.</p>
+
+<figure class="image-container" role="group" aria-labelledby="fig-signo-caption"><svg viewBox="0 0 900 250" role="img" aria-label="Ejemplo de número con signo y magnitud: el bit más significativo indica el signo y los restantes la magnitud." xmlns="http://www.w3.org/2000/svg"><rect width="900" height="250" rx="14" fill="#f8fafc"/><text x="450" y="35" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">Representación de un número con signo</text><g font-family="Inter, sans-serif" text-anchor="middle"><rect x="160" y="93" width="110" height="72" rx="8" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/><text x="215" y="124" font-size="25" font-weight="700" fill="#b91c1c">1</text><text x="215" y="148" font-size="14" fill="#475569">signo (−)</text><rect x="270" y="93" width="470" height="72" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="505" y="124" font-size="25" font-weight="700" fill="#1e3a8a">0 0 1 0 1 0 1</text><text x="505" y="148" font-size="14" fill="#475569">magnitud = 21</text><text x="450" y="211" font-size="20" font-weight="700" fill="#0f172a">10010101₂ representa −21 en signo y magnitud</text></g></svg><figcaption id="fig-signo-caption" class="image-caption">Ejemplo de número con signo y magnitud: el bit más significativo indica el signo y los restantes la magnitud.</figcaption></figure>
+<h4 id="sec3_3_2" class="numbered-subsection">3.3.2. Representación alfanumérica (Textos) : Códigos de E/S</h4>
+<p>Para la representación numérica se utiliza la denominada
+<strong>Codificación de entrada/salida,</strong> que asocia a cada
+<strong>carácter</strong> una determinada combinación de bits.</p>
+<p>Según el autor <em>J. Glenn Brookshear, en su libro Introducción a la
+computación</em>, en la década de los 40 y 50 se empezaron a utilizar
+una variedad muy amplia de diferentes códigos de E/S, lo que generó la
+existencia de problemas de comunicación, es por ello que actualmente se
+utilizan <strong>códigos de E/S normalizados</strong>, como por
+ejemplo:</p>
+<ul>
+<li><p><strong>BCD</strong> (Binary Coded Decimal) Para representar
+números en decimal dígito a dígito utilizamos 4 bits. Esto simplifica
+enormemente el hardware. Tiene varias variantes como el código Aiken o
+el XS3 - Exceso a 3.</p></li>
+<li><p><strong>EBCDIC</strong> (Extended BCD Interchange Code): Utiliza
+8 bits. Representa minúsculas, mayúsculas, símbolos especiales y
+caracteres de control.</p></li>
+<li><p><strong>ASCII</strong> (American Standard Code for Information
+Interchange): Hay dos versiones, la primera Utiliza 7 bits de datos y 1
+de paridad. La segunda es el código ASCII extendido que utiliza 8 bits
+para datos.</p></li>
+<li><p><strong>UNICODE</strong>: os símbolos están organizados por
+páginas, las cuales corresponden a diferentes idiomas o a un conjunto de
+símbolos determinado. Utiliza un número variable de bits (8, 16 o 32)
+dependiendo del UTF -Unicode Tranformation Format- utilizado, ya que de
+esta forma podemos operar con menos información para códigos conocidos
+sin estar limitados en la cantidad de símbolos potencialmente
+representables. Actualmente es el código más utilizado.</p></li>
+</ul>
+<blockquote>
+<p>Hay que añadir, que la forma concreta que tome la letra va a estar
+determinada por lo que se denomina “fuente de letra”.</p>
+</blockquote>
+
+<figure class="image-container" role="group" aria-labelledby="fig-ascii-caption"><svg viewBox="0 0 900 250" role="img" aria-label="Tabla ASCII simplificada: cada carácter se asocia a un código binario y a un valor decimal." xmlns="http://www.w3.org/2000/svg"><rect width="900" height="250" rx="14" fill="#f8fafc"/><text x="450" y="32" text-anchor="middle" font-family="Inter, sans-serif" font-size="21" font-weight="700" fill="#1e3a8a">Tabla ASCII simplificada</text><g font-family="Inter, sans-serif" text-anchor="middle" font-size="16"><path d="M185 62h530M185 102h530M185 137h530M185 172h530M185 207h530M185 62v145M360 62v145M535 62v145M715 62v145" stroke="#94a3b8" stroke-width="1.5"/><rect x="185" y="62" width="530" height="40" fill="#dbeafe"/><text x="272" y="88" font-weight="700" fill="#1e3a8a">Carácter</text><text x="447" y="88" font-weight="700" fill="#1e3a8a">Decimal</text><text x="625" y="88" font-weight="700" fill="#1e3a8a">Binario (7 bits)</text><text x="272" y="126" fill="#0f172a">A</text><text x="447" y="126" fill="#0f172a">65</text><text x="625" y="126" fill="#0f172a">1000001</text><text x="272" y="161" fill="#0f172a">a</text><text x="447" y="161" fill="#0f172a">97</text><text x="625" y="161" fill="#0f172a">1100001</text><text x="272" y="196" fill="#0f172a">0</text><text x="447" y="196" fill="#0f172a">48</text><text x="625" y="196" fill="#0f172a">0110000</text></g></svg><figcaption id="fig-ascii-caption" class="image-caption">Tabla ASCII simplificada: cada carácter se asocia a un código binario y a un valor decimal.</figcaption></figure>
+<h4 id="sec3_3_3" class="numbered-subsection">3.3.3. Representación de instrucciones</h4>
+<p>Las instrucciones de un lenguaje en alto nivel o en lenguaje
+ensamblador se dan en forma de texto, representándose en consecuencia
+con un código de E/S, y el traductor correspondiente, ya sea un
+compilador o un intérprete, se encarga de transformarlas en
+instrucciones máquina que internamente se representarán como cadena de
+bits.</p>
+
+<figure class="image-container" role="group" aria-labelledby="fig-instruccion-caption"><svg viewBox="0 0 900 250" role="img" aria-label="Una instrucción máquina codifica una operación y los datos o direcciones sobre los que debe actuar." xmlns="http://www.w3.org/2000/svg"><rect width="900" height="250" rx="14" fill="#f8fafc"/><text x="450" y="36" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">Estructura de una instrucción máquina</text><g font-family="Inter, sans-serif" text-anchor="middle"><rect x="115" y="100" width="260" height="70" rx="10" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="245" y="130" font-size="20" font-weight="700" fill="#1e3a8a">Código de operación</text><text x="245" y="153" font-size="14" fill="#475569">qué hacer: ADD, LOAD…</text><rect x="375" y="100" width="410" height="70" rx="10" fill="#dcfce7" stroke="#14b8a6" stroke-width="2"/><text x="580" y="130" font-size="20" font-weight="700" fill="#0f766e">Operando / dirección</text><text x="580" y="153" font-size="14" fill="#475569">sobre qué dato actuar</text><text x="450" y="215" font-size="18" font-weight="700" fill="#0f172a">0101 0011 1000 0010 …</text></g></svg><figcaption id="fig-instruccion-caption" class="image-caption">Una instrucción máquina codifica una operación y los datos o direcciones sobre los que debe actuar.</figcaption></figure>
+<h4 id="sec3_3_4" class="numbered-subsection">3.3.4. Representación de Imagen y video</h4>
+<p>La codificación de imágenes estáticas se puede realizar de formas:
+mediante <strong>mapas de bits</strong> (indicando para cada bit de la
+pantalla su color) o mediante <strong>representación vectorial</strong>
+(Indicando únicamente los vértices y color de cada polígono que queramos
+generar).</p>
+<p>Cada pixel se representará utilizando una escala de color RGB (Red,
+Green and Blue) o CMYK (Cyan, Magenta, Yellow, blacK -para impresoras-)
+reduciendo así a tres números (4 en el caso de impresión) que simbolizan
+la cantidad de cada color que se van a mezclar para generar el color
+resultante.</p>
+<p>A los colores en pantalla se les puede incorporar un cuarto valor que
+representa la transparencia de la imagen, y que es conocido como el
+“canal Alfa”.</p>
+<p>La resolución de una imagen viene determinada por tanto por la
+cantidad de puntos que vamos a utilizar para representarla, pero también
+por la cantidad de colores que nos permite la paleta que estemos
+utilizando, según el número de bits que dediquemos a cada color básico.
+Por ejemplo, si utilizamos 8 bits para la paleta, podremos representar
+2<sup>8</sup> combinaciones distintas, es decir 256 colores, pero si
+utilizamos 16 bits, 65536. Al número de bits utilizado se le denomina
+“profundidad de color”</p>
+<p>También es frecuente comprimir las imágenes para que ocupen menos
+tamaño reduciendo la <strong>profundidad de color</strong>, la
+<strong>resolución</strong> de la imágen, o el número de pixeles a
+representar mediante la <strong>aproximación de zonas de bits</strong>
+de igual color.</p>
+<p>Un video siempre se va a formar a partir de imágenes estáticas,
+siendo importante el número de imágenes (marcos) que se representan
+<strong>FPS</strong> y teniendo en cuenta que la compresión también se
+puede realizar mediante <strong>transiciones</strong> entre imágenes, es
+decir, manteniendo los elementos que no cambian y guardando información
+de los que sí.</p>
+
+<figure class="image-container" role="group" aria-labelledby="fig-imagen-video-caption"><svg viewBox="0 0 900 250" role="img" aria-label="Un píxel se codifica con componentes RGB; una imagen es una cuadrícula de esos valores." xmlns="http://www.w3.org/2000/svg"><rect width="900" height="250" rx="14" fill="#f8fafc"/><text x="450" y="35" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">Color de un píxel en RGB</text><g font-family="Inter, sans-serif" text-anchor="middle"><rect x="130" y="90" width="150" height="72" rx="10" fill="#fee2e2"/><text x="205" y="122" font-size="18" font-weight="700" fill="#b91c1c">R = 255</text><text x="205" y="146" font-size="14" fill="#475569">rojo</text><rect x="375" y="90" width="150" height="72" rx="10" fill="#dcfce7"/><text x="450" y="122" font-size="18" font-weight="700" fill="#0f766e">G = 180</text><text x="450" y="146" font-size="14" fill="#475569">verde</text><rect x="620" y="90" width="150" height="72" rx="10" fill="#dbeafe"/><text x="695" y="122" font-size="18" font-weight="700" fill="#1e3a8a">B = 40</text><text x="695" y="146" font-size="14" fill="#475569">azul</text><path d="M280 126h78M525 126h78" stroke="#64748b" stroke-width="3"/><text x="450" y="213" font-size="18" font-weight="700" fill="#0f172a">RGB(255, 180, 40) → color del píxel</text></g></svg><figcaption id="fig-imagen-video-caption" class="image-caption">Un píxel se codifica con componentes RGB; una imagen es una cuadrícula de esos valores.</figcaption></figure>
+<h4 id="sec3_3_5" class="numbered-subsection">3.3.5. Representación de sonido</h4>
+<p>Para representar sonido es necesario digitalizarlo. Este proceso sólo
+puede tomar un número discreto de valores del mundo real, por lo que se
+realiza un <strong>muestreo</strong> que consiste en tomar un cierto
+número limitado de valores (<em>frecuencias en el tiempo</em>) de dicho
+sonido. En la calidad de sonido también va a influir la
+<strong>amplitud</strong> de la muestra, es decir los límites que
+consideremos a la misma.</p>
+
+<figure class="image-container" role="group" aria-labelledby="fig-sonido-caption">
+<svg viewBox="0 0 960 330" role="img" aria-labelledby="fig-sonido-title fig-sonido-desc" xmlns="http://www.w3.org/2000/svg">
+  <title id="fig-sonido-title">Cómo se digitaliza un sonido</title>
+  <desc id="fig-sonido-desc">Un ejemplo muestra una señal de voz continua, cuatro muestras cuantizadas y sus códigos binarios.</desc>
+  <rect width="960" height="330" rx="14" fill="#f8fafc"/>
+  <text x="480" y="35" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">De sonido analógico a datos digitales</text>
+  <g font-family="Inter, sans-serif">
+    <text x="45" y="78" font-size="17" font-weight="700" fill="#475569">1. Señal original</text>
+    <path d="M45 145 C75 90 105 200 135 145 S195 90 225 145 S285 200 315 145" fill="none" stroke="#64748b" stroke-width="4"/>
+    <text x="165" y="190" text-anchor="middle" font-size="13" fill="#475569">amplitud continua</text>
+    <path d="M337 135h67" stroke="#64748b" stroke-width="3"/><path d="M404 135l-13-9v18z" fill="#64748b"/>
+    <text x="430" y="78" font-size="17" font-weight="700" fill="#475569">2. Muestreo y cuantización</text>
+    <g stroke="#cbd5e1" stroke-width="1.5"><path d="M430 105h215M430 135h215M430 165h215"/><path d="M468 92v92M518 92v92M568 92v92M618 92v92"/></g>
+    <path d="M430 145 C455 95 480 195 505 145 S555 95 580 145 S630 195 645 145" fill="none" stroke="#64748b" stroke-width="3"/>
+    <g fill="#d97706"><circle cx="468" cy="106" r="7"/><circle cx="518" cy="164" r="7"/><circle cx="568" cy="106" r="7"/><circle cx="618" cy="164" r="7"/></g>
+    <text x="537" y="207" text-anchor="middle" font-size="13" fill="#b45309">se guardan niveles discretos</text>
+    <path d="M666 135h67" stroke="#64748b" stroke-width="3"/><path d="M733 135l-13-9v18z" fill="#64748b"/>
+    <text x="755" y="78" font-size="17" font-weight="700" fill="#475569">3. Datos binarios</text>
+    <g font-family="Fira Code, monospace" text-anchor="middle" font-size="17" font-weight="700"><rect x="748" y="100" width="66" height="36" rx="6" fill="#dbeafe"/><text x="781" y="124" fill="#1e3a8a">110</text><rect x="830" y="152" width="66" height="36" rx="6" fill="#dcfce7"/><text x="863" y="176" fill="#0f766e">001</text><rect x="748" y="202" width="66" height="36" rx="6" fill="#dbeafe"/><text x="781" y="226" fill="#1e3a8a">110</text><rect x="830" y="252" width="66" height="36" rx="6" fill="#dcfce7"/><text x="863" y="276" fill="#0f766e">001</text></g>
+    <text x="820" y="310" text-anchor="middle" font-size="13" fill="#475569">cada muestra se codifica</text>
+  </g>
+  <rect x="55" y="240" width="610" height="52" rx="10" fill="#fff" stroke="#cbd5e1"/>
+  <text x="360" y="263" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#0f172a">Ejemplo: 4 muestras por instante</text>
+  <text x="360" y="282" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" fill="#475569">más muestras por segundo y más bits por muestra → mayor fidelidad</text>
+</svg>
+<figcaption id="fig-sonido-caption" class="image-caption">El sistema mide la amplitud del sonido en instantes concretos, la redondea a niveles posibles y codifica cada nivel en bits.</figcaption>
+</figure>
+<h2 id="sec4"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i> 4. Características de un ordenador digital</h2>
+<blockquote>
+<p>Hay una serie de características o parámetros que nos permiten
+comparar ordenadores digitales. Listamos en este apartado las
+características relevantes de un ordenador digital.</p>
+</blockquote>
+<h3 id="sec4_1">4.1. Longitud de palabra:</h3>
+<blockquote>
+<p>Longitud de la cadena de bits que el computador puede manejar
+simultáneamente (en paralelo). Así un ordenador de 32 bits puede
+realizar operaciones con operandos de este tamaño de una sola vez. En la
+actualidad, se comercializan computadoras de 32 y 64bits</p>
+</blockquote>
+<h3 id="sec4_2">4.2. Memoria Principal (RAM)</h3>
+<ul>
+<li>
+<p>Tamaño de la memoria interna principal del computador. La unidad
+básica es el byte u octeto (8 bits) aunque habitualmente se emplean
+múltiplos</p>
+</li>
+</ul>
+<h3 id="sec4_3">4.3. Memoria Secundaria</h3>
+<p>Cantidad de memoria de almacenamiento o permanente de que dispone el
+ordenador (habitualmente, capacidad del disco duro, en gigabytes o
+terabytes)</p>
+<h3 id="sec4_4">4.4. Ancho de banda</h3>
+<p>El ancho de banda es la cantidad de información por unidad de tiempo
+que se puede transmitir a través de un bus o unidad de E/S. Se mide en
+MB/s Mb/s o GT/s</p>
+<h3 id="sec4_5">4.5. Frecuencia de reloj</h3>
+<p>Frecuencia con la que el oscilador interno (reloj) coordina las
+operaciones del ordenador, habitualmente medidas en MHZ o GHZRecuerda:
+Un Mhz es...</p>
+<h3 id="sec4_6">4.6. MIPS (Millones de Instrucciones por segundo)</h3>
+<p>Medida de rendimiento del computador, que indica el número de
+instrucciones máquina que puede ejecutar un procesador en un segundo,
+agrupadas en millones.</p>
+<h3 id="sec4_7">4.7. MFLOPS</h3>
+<p>Medida análoga a la anterior, pero exclusivamente para operaciones
+con números reales en coma flotante, que presentan mayor carga de
+cálculo.</p>
+<h3 id="sec4_8">4.8. Test sintéticos (Benchmarks)</h3>
+<p>Son un conjunto variado de prueba cuyo resultado en tiempo de
+ejecución es más fiable que la medida en MIPS, MFLOPS o GHZ. El
+resultado de estos test da lugar a un ranking de potencia.</p>
+<h2 id="sec5"><i class="fa-solid fa-memory" aria-hidden="true"></i> 5. Componentes físicos. Arquitectura Von Neumann</h2>
+<h3 id="sec5_1">5.1. Introducción. Arquitectura Von Neumann</h3>
+<p>El modelo básico de arquitectura empleada en los ordenadores
+digitales fue establecido en <strong>1945 por John Von Neumann</strong>,
+físico húngaro afincado en Estados Unidos.</p>
+<p>Su gran aportación con respecto a las arquitecturas preexistentes
+(arquitectura Hardvard principalmente) fue eliminar <strong>la lógica de
+programación basada en relés o conexiones cableadas</strong>, unificando
+memoria de datos y memoria de programa en una <strong>única memoria
+principal</strong> y simplificando por consiguiente la doble gestión de
+control de datos y programa. De esta forma además se garantiza la
+<strong>disponibilidad incremental de espacio</strong> en memoria ya que
+este se puede dividir entre datos y programas a voluntad.</p>
+<p>Los <strong>elementos funcionales</strong> de la arquitectura Von
+Neumann son por tanto:</p>
+<ul>
+<li>
+<p><strong>Unidad de Control</strong></p>
+</li>
+<li>
+<p><strong>Unidad Aritmético-lógica</strong></p>
+</li>
+<li>
+<p><strong>Memoria Principal</strong></p>
+</li>
+<li>
+<p><strong>Unidad de E/S</strong></p>
+</li>
+</ul>
+<p>La unidad de control y la unidad aritmético-lógica se agrupan en la
+denominada <strong>unidad central de proceso</strong>.</p>
+<h3 id="sec5_2">5.2. Componentes. Bloques funcionales de la CPU</h3>
+<p>La unidad central de Proceso (CPU = Central Process Unit) unifica los
+elementos funcionales de Unidad de Control y Unidad
+Aritmético-Lógica.</p>
+<h4 id="sec5_2_1" class="numbered-subsection">5.2.1. Unidad de Control</h4>
+<p>Es el centro neurálgico del ordenador, donde se procesan los
+programas y su función consiste en realizar la <strong>búsqueda, carga,
+secuenciación y ejecución</strong> de las instrucciones.</p>
+<p>Estas instrucciones están escritas en <strong>Lenguaje
+Máquina</strong> y están formadas por un <strong>código de
+operación</strong>, que indica a la UC qué operación debe realizarse, y
+por hasta <strong>dos datos o direcciones de memoria</strong> que
+indican la localización de esos datos.</p>
+<p>Para realizar su trabajo, la UC utiliza los siguientes elementos:</p>
+<p><strong>Registros,</strong> algunos visibles al usuario y otros
+no<strong>,</strong> entre los que cabe destacar:</p>
+<ul>
+<li>
+<p><strong>Contador de programa(PC)</strong>. Contiene en todo momento
+la dirección de memoria de la siguiente instrucción a ejecutar.</p>
+</li>
+<li>
+<p><strong>Registro de instrucción(IR)</strong> Almacena la instrucción
+en curso, que llevará consigo el código de operación y en su caso, los
+operandos o las direcciones de memoria de los mismos.</p>
+</li>
+<li>
+<p><strong>Registro de direcciones de memoria (MAR)</strong> Se utilizan
+para almacenar direcciones de memoria que contienen los datos de una
+instrucción o el lugar donde almacenar el resultado de la misma.</p>
+</li>
+<li>
+<p><strong>Registro de intercambio de memoria(MIR):</strong> Se almacena
+de forma temporal cualquier información recuperada de memoria.</p>
+</li>
+<li>
+<p><strong>Registros de estado (Flags/PSW)</strong>. Contiene
+información sobre el resultado de la operación anterior de la unidad
+aritmético lógica y de posibles situaciones anómalas, como
+desbordamientos, interrupciones, etc.</p>
+</li>
+<li>
+<p><strong>Otros registros,</strong> como los <strong>registros
+genéricos</strong> que pueden ser utilizados por los propios programas y
+otros <strong>registros específicos</strong> utilizados por el
+procesador (<strong>puntero de pila, registro de base</strong>, etc) y
+que dependen de su arquitectura concreta.</p>
+</li>
+</ul>
+<p><strong>Reloj</strong>. El reloj es un circuito oscilador que genera
+autónomamente una señal en forma de pulsos a intervalos constantes que
+marcan los instantes en que han de comenzar los distintos pasos de que
+consta cada instrucción.</p>
+<p><strong>Decodificador.</strong> Se encarga de extraer el código de
+operación de la instrucción en curso, analizarlo y emitir las señales
+necesarias al resto de elementos para su ejecución a través del
+secuenciador.</p>
+<p><strong>Secuenciador.</strong> Genera una serie de órdenes muy
+elementales que permiten ejecutar la instrucción en curso, de forma
+síncrona con el reloj del sistema.</p>
+<p>Por último, cabe señalar que las Unidades de Control se pueden
+clasificar en <strong>dos<br>
+categorías</strong>:</p>
+<ul>
+<li>
+<p><strong>UC cableadas.</strong> La lógica está implementada en el
+hardware, lo que las convierte en UC de <strong>propósito
+específico</strong> y no es modificable.</p>
+</li>
+<li>
+<p><strong>UC microprogramadas.</strong> En ellas, la lógica se
+implementa como un programa almacenado como <strong>firmware</strong>,
+lo que permite su posterior reescritura.</p>
+</li>
+</ul>
+<h4 id="sec5_2_2" class="numbered-subsection">5.2.2. Unidad Aritmético-Lógica</h4>
+<p>Es la unidad funcional encargada de realizar las operaciones
+aritméticas y lógicas <strong>bajo la supervisión de la unidad de
+control</strong>.</p>
+<p>Las operaciones que puede efectuar esta unidad <strong>solían ser muy
+elementales</strong>, puesto que normalmente estaban formadas por un
+circuito sumador-restador, y basaban todas las operaciones aritméticas
+en sumas, descomponiendo las operaciones complejas en pasos
+elementales.</p>
+<p><strong>Actualmente</strong> la Unidad Aritmética ha cobrado gran
+importancia y el tipo de operaciones que realiza es muy complejo, siendo
+similar a una <strong>calculadora científica de alta velocidad y gran
+precisión.</strong></p>
+<p>Las operaciones que es capaz de realizar la ALU se clasifican en tres
+grupos:</p>
+<ul>
+<li>
+<p><strong>Aritméticas</strong>. Normalmente son la suma (ADD), la resta
+(SUB), la multiplicación (MUL), la división (DIV) y el cambio de
+signo.</p>
+</li>
+<li>
+<p><strong>Lógicas</strong>. Normalmente son la negación (NOT), la suma
+lógica (OR), el producto lógico (AND) y la suma exclusiva (XOR).</p>
+</li>
+<li>
+<p><strong>Desplazamiento</strong>. Consiste en desplazar los bits de
+una palabra un determinado número de posiciones hacia la derecha o hacia
+la izquierda.</p>
+</li>
+</ul>
+<p>El número de operadores que puede aceptar la unidad aritmético-lógica
+también es variable, clasificándose en operadores <strong>monádicos,
+diádicos y triádicos</strong> si es capaz de trabajar con uno, dos o
+tres datos de forma simultánea respectivamente</p>
+<h3 id="sec5_3">5.3. Función y Propósito de la Memoria Interna</h3>
+<p>La memoria es considerada un único componente funcional, compuesto de
+celdas que pueden almacenar <strong>bits</strong> de forma
+independiente, con dos operaciones básicas: <strong>lectura y
+escritura</strong>.</p>
+<p>Sin embargo las limitaciones en términos de <strong>rendimiento,
+coste económico y velocidad</strong> hacen necesaria una estructuración
+de la misma.</p>
+<h4 id="sec5_3_1" class="numbered-subsection">5.3.1. Jerarquía de memoria</h4>
+<p>El autor <strong>Pedro de Miguel de Anasagasti</strong>, en su libro
+Fundamentos de los computadores, caracteriza la memoria según:</p>
+<ul>
+<li>
+<p>El coste por bit</p>
+</li>
+<li>
+<p>Tiempo que se tarda en acceder a la información</p>
+</li>
+<li>
+<p>Capacidad de almacenamiento o tamaño</p>
+</li>
+</ul>
+<p>Los valores deseados para una memoria son una gran capacidad de
+almacenamiento, un tiempo de acceso pequeño, y un precio reducido. Sin
+embargo, ésta combinación no existe: <strong>una memoria rápida es una
+memoria cara.</strong> Esta limitación es válida desde que surgieron las
+primeras memorias hasta la actualidad. Las memorias rápidas, sin ciclos
+de refresco, con latencias casi inexistentes, requieren del uso de
+componentes caros: biestables integrados de alta conductividad, cuyo
+proceso de fabricación es caro y cuyos materiales son caros. De este
+imperativo se deduce que a <strong>más capacidad de memoria, más coste
+económico.</strong></p>
+<p>Afortunadamente <strong>no toda la memoria necesita ser accedida en
+un momento dado</strong>. Esto posibilita que las instrucciones y datos
+requeridos por el procesador <strong>se puedan jerarquizar en distintas
+memorias</strong> dependiendo de la inmediatez necesaria para su
+proceso.</p>
+<p>La jerarquía de memoria se conforma entonces con <strong>memorias muy
+rápidas, caras y de baja capacidad</strong> para los datos en proceso
+hasta <strong>memorias relativamente lentas, de alta capacidad y bajo
+coste por bit</strong> para los datos que no van a ser procesados en un
+futuro próximo (no en los próximos segundos). Las distintas memorias de
+menor a mayor capacidad y de mayor a menor velocidad y coste se
+clasifican en:</p>
+<ul>
+<li>
+<p><strong>Registros</strong> (del procesador)</p>
+</li>
+<li>
+<p><strong>Memoria caché</strong> (estructurada en niveles: L1, L2, L3,
+etc)</p>
+</li>
+<li>
+<p><strong>Memoria Principal</strong> (RAM Dinámica)</p>
+</li>
+<li>
+<p><strong>Memoria secundaria</strong> (Discos duros y de estado
+sólido)</p>
+</li>
+<li>
+<p><strong>Memoria masiva auxiliar</strong> (Soportes de respaldo)</p>
+</li>
+</ul>
+<p>Los datos deben ser transferidos de una memoria a otra según la
+disponibilidad necesaria.</p>
+<h4 id="sec5_3_2" class="numbered-subsection">5.3.2. Funciones por niveles</h4>
+<p>Como vemos en la jerarquía de memoria, la <strong>memoria
+interna</strong> está compuesta por 3 niveles. Cada uno de los cuales
+tienen las siguientes funciones específicas:</p>
+<ul>
+<li>
+<p><strong>Nivel 0</strong> - Registros: Almacena datos sobre los que la
+unidad de control está trabajando directamente.</p>
+</li>
+<li>
+<p><strong>Nivel 1</strong> - Caché: Memoria formada por circuitos
+integrados SRAM. A su vez se encuentra dividida en varios niveles. Se
+utiliza para minimizar los accesos a la memoria principal.</p>
+</li>
+<li>
+<p><strong>Nivel 2</strong> - Memoria principal. Memoria formada por
+DRAM, cuya función es almacenar las instrucciones y datos que se están
+utilizando en la ejecución de un proceso.</p>
+</li>
+</ul>
+<h3 id="sec5_4">5.4. Buses de E/S</h3>
+<p>El conjunto de componentes de un ordenador se comunica entre sí
+mediante ciertos caminos, que constituyen la estructura de
+interconexión, o buses de E/S.</p>
+<p>En la arquitectura Von Neumann se distinguen los buses de
+<strong>datos, dirección y control</strong>:</p>
+<h4 id="sec5_4_1" class="numbered-subsection">5.4.1. Bus de datos:</h4>
+<p>El bus de datos permite el intercambio de datos entre la CPU y el
+resto de unidades.</p>
+<h4 id="sec5_4_2" class="numbered-subsection">5.4.2. Bus de direcciones:</h4>
+<p>La memoria RAM es direccionable, de forma que cada celda de memoria
+tiene su propia dirección. Las direcciones son un número que selecciona
+una celda de memoria dentro de la memoria principal o en el espacio de
+direcciones de la unidad de entrada/salida.<br>
+<br>
+El bus de direcciones es un canal del microprocesador totalmente
+independiente del bus de datos donde se establece la dirección de
+memoria del dato en tránsito.<br>
+<br>
+El bus de dirección consiste en el conjunto de líneas eléctricas
+necesarias para establecer una dirección. La capacidad de la memoria que
+se puede direccionar depende de la cantidad de bits que conforman el bus
+de direcciones, siendo 2<sup>n</sup> el tamaño máximo en bits del banco
+de memoria que se podrá direccionar con n líneas. Por ejemplo, para
+direccionar una memoria de 256 bits, son necesarias al menos 8 líneas,
+pues 2<sup>8</sup> = 256. Adicionalmente pueden ser necesarias líneas de
+control para señalar cuándo la dirección está disponible en el bus. Esto
+depende del diseño del propio bus.</p>
+<h4 id="sec5_4_3" class="numbered-subsection">5.4.3. Bus de control:</h4>
+<p>El bus de control gobierna el uso y acceso a las líneas de datos y de
+direcciones. Como estas líneas están compartidas por todos los
+componentes, tiene que proveerse de determinados mecanismos que
+controlen su utilización. Las señales de control transmiten tanto
+órdenes como información de sincronización, evitando que haya colisión
+de información en el sistema.</p>
+<h4 id="sec5_4_4" class="numbered-subsection">5.4.4. Buses multiplexados:</h4>
+<p>Algunos diseños utilizan líneas eléctricas multiplexadas para el bus
+de direcciones y el bus de datos. Esto significa que un mismo conjunto
+de líneas eléctricas se comportan unas veces como bus de direcciones y
+otras veces como bus de datos, pero nunca al mismo tiempo. Una línea de
+control permite discernir cuál de las dos funciones está activa.</p>
+<h3 id="sec5_5">5.5. Periféricos</h3>
+<p>Los periféricos se interconectan a la unidad de E/S mediante el uso
+de una <strong>interfaz</strong> con especificaciones de acceso
+<strong>estandarizadas</strong> tanto a nivel de forma, como de voltaje
+y de protocolos de comunicación.</p>
+<p>Cada periférico dispone de un <strong>circuito controlador</strong>
+(o controladora) que gestiona toda la lógica del mismo.</p>
+<p>Las peculiaridades de cada dispositivo son gestionadas de forma
+transparente por el sistema operativo mediante un <strong>software
+controlador (driver)</strong> que es normalmente provisto por el propio
+fabricante.</p>
+<p>Los periféricos pueden ser clasificados en dispositivos de
+<strong>Entrada</strong>, de <strong>Salida</strong>, o de Entrada y
+Salida; estos últimos son de tipo <strong>almacenamiento</strong> o
+<strong>comunicación</strong>.</p>
+<h2 id="sec6"><i class="fa-solid fa-cubes" aria-hidden="true"></i> 6. Componentes lógicos: Software</h2>
+<p><strong>¿Qué es Software?</strong></p>
+<p>La definición más simple para entender qué es Software es que son los
+programas informáticos que se instalan en los ordenadores, tablets,
+teléfonos inteligentes o reloj digital, entre otros, estos programas
+sirven para realizar diferentes tareas específicas, entre las más
+comunes por ejemplo: escribir una carta en Word, llevar la contabilidad
+de un negocio en Excel, o hacer la presentación de un producto con
+PowerPoint, entre muchas otras más.</p>
+<p>Se considera Software al equipamiento lógico e intangible de un
+ordenador, abarcando todas las aplicaciones informáticas, el desarrollo
+de estos software se han convertido en una industria protagonista en la
+economía global, el software mueve millones de euros cada año, Microsoft
+es la empresa más grande y conocida, fue fundada en 1975 por Bill Gates
+y Paul Allen, logrando ser el referente cuando hablamos todo sobre qué
+es software, gracias a su sistema operativo Windows y su suite de
+programas de oficina Word, Excel, PowerPoint, etc.</p>
+<p>Como dato interesante, la palabra “software” proviene del idioma
+inglés, pero la Real Academia Española aceptó su uso gracias a la
+masificación entre hispanohablantes. Según la RAE, Software es un
+conjunto de programas, instrucciones y reglas informáticas que permiten
+ejecutar tareas en un ordenador.</p>
+<p>Para saber un poco más allá de qué es Software, podemos decir que es
+desarrollado mediante distintos tipos de lenguajes de programación,
+estos distintos tipos de lenguajes permiten controlar el comportamiento
+de un dispositivo que contenga un ordenador, a través de un conjunto de
+símbolos y reglas sintácticas y semánticas que definen sus elementos y
+expresiones, los lenguajes de programación permiten especificar de forma
+precisa sobre qué datos debe operar un ordenador.</p>
+<p><strong>Tipos de Software</strong></p>
+<p>Aunque es verdad que cada empresa que desarrolle software puede tener
+su propia manera de ver los tipos de software que desarrolla y su
+definición acerca de qué es Software, existen una clasificación de los
+software en la que coinciden la mayorías dentro del sector de software a
+nivel mundial, dejando así de una forma simple y real de entender los
+tipos de software para las personas que no tienen un perfil técnico o
+que no son programadores.</p>
+<ol start="0" type="A">
+<li><p><strong>Software de Sistema</strong></p></li>
+</ol>
+<p>Este tipo de software es también conocido como un software base,
+dentro de esta clasificación se encuentran los sistemas operativos como
+<strong>Windows, MacOS, Android  o Linux</strong>, este es el tipo de
+software que requieren los ordenadores para que sean capaces de iniciar
+el ordenador y poder utilizar otras aplicaciones o software, son los
+encargados de la comunicación entre el sistema operativo y el hardware
+que compone el ordenador, algunos están diseñados para administrar los
+propios recursos del ordenador o de configurar la interfaz según las
+preferencias de los usuarios.</p>
+<p>La clasificación del <strong>Software de sistema</strong> queda de la
+siguiente manera:</p>
+<ul>
+<li>
+<p>Sistemas operativos</p>
+</li>
+<li>
+<p>Controladores de dispositivo</p>
+</li>
+<li>
+<p>Herramientas de diagnóstico</p>
+</li>
+<li>
+<p>Herramientas de Corrección y Optimización</p>
+</li>
+<li>
+<p>Servidores/servicios</p>
+</li>
+<li>
+<p>Utilidades del sistema</p>
+</li>
+<li>
+<p>Software de Programación</p>
+</li>
+</ul>
+<p>Después del sistema operativo como un tipo de software fundamental en
+la informática de hoy, <strong>el software de programación</strong> está
+detrás, su importancia es clave, gracias a este tipo de software es
+posible desarrollar otras aplicaciones y sistemas que son usados en los
+ordenadores para diferentes tareas haciendo uso de conocimientos lógicos
+y de programación.</p>
+<p>Los programadores por ejemplo desarrollan en un editor de texto y
+luego lo compila el programa para verificar que todo está bien y el
+código es correcto, esto aplica para cualquier lenguaje de programación.
+Hoy existen los <strong>entornos de desarrollo integrados (IDE)</strong>
+, que son un programa informático con una serie de herramientas de
+programación.</p>
+<p>La Clasificación del software de programación es la siguiente:</p>
+<ul>
+<li>
+<p>Editores</p>
+</li>
+<li>
+<p>Compiladores</p>
+</li>
+<li>
+<p>Intérpretes</p>
+</li>
+<li>
+<p>Enlazadores</p>
+</li>
+<li>
+<p>Depuradores</p>
+</li>
+<li>
+<p>(Interfaz de programación de aplicaciones) API</p>
+</li>
+<li>
+<p>Bibliotecas de funciones (library)</p>
+</li>
+<li>
+<p>Entornos de Desarrollo Integrados (IDE)</p>
+</li>
+</ul>
+<ol start="2" type="A">
+<li>
+<p><strong>Software de Aplicación (Apps)</strong></p>
+</li>
+</ol>
+<p>Este tipo de software es el que más utilizamos el día a día, hoy con
+la penetración de Internet y los teléfonos inteligentes, las
+aplicaciones son las más usadas, están incluidas todos los programas,
+aplicaciones o utilidades que manejamos dentro de nuestro ordenador,
+tablet o móvil, estos software hablando de forma técnica son aquellos
+software diseñados para los usuarios finales, la mayoría ya están
+diseñados y enfocados para ser utilizados en cada sistema operativo
+específicamente.</p>
+<p>El ejemplo más conocido de este software es el paquete o suite de
+Office de Microsoft: Word, Excel, PowerPoint, etc. También los programas
+de comunicación, juegos, para edición de multimedia, antivirus, y muchos
+otros más.</p>
+<p>La clasificación del software de aplicación queda de la siguiente
+manera:</p>
+<ul>
+<li>
+<p>Aplicaciones de Sistema de control y automatización industrial</p>
+</li>
+<li>
+<p><strong>Aplicaciones ofimáticas (distribuidas en paquetes o
+suites)</strong></p>
+</li>
+<li>
+<p>Software educativo</p>
+</li>
+<li>
+<p>Software médico</p>
+</li>
+<li>
+<p>Software de Cálculo Numérico</p>
+</li>
+<li>
+<p>Software de Diseño Asistido</p>
+</li>
+<li>
+<p>Software de Control Numérico</p>
+</li>
+<li>
+<p>Aplicaciones en la nube</p>
+</li>
+</ul>
+<p><strong>C. Software específico</strong></p>
+<p>Aplicaciones corporativas o de propósito específico: resuelven
+aspectos concretos del funcionamiento de la empresa (contabilidad,
+facturación, control de horas trabajadas...). . Ejemplos: los productos
+Contaplus de SAGE y FacturaSOL de software del Sol. Visual Studio Code,
+Eclipse o NetBeans como entornos de desarrollo de software.</p>
+<p>El software específico se puede clasificar a su vez en:</p>
+<p>-Software profesionalizado.</p>
+<p>-Sistemas de relación con el cliente (CRM)</p>
+<p>-Sistemas de planificación de recursos empresariales (ERP)</p>
+<p>-Sistemas de Decisión de soporte (DSS)</p>
+<p>-Software a medida.</p>
+<p><strong>Software Profesionalizado:</strong></p>
+<p>Son programas característicos de una profesión y muy específicos,
+como por ejemplo el software de programación antes mencionado, pero
+también programas de edición profesional de audio/video, desarrollo de
+modelos de ingeniería en 3D (AutoDesk, Skechup, …), desarrollo de
+videojuegos (Unity, Unreal engine) desarrollo web, etc. </p>
+<p><strong>CRM</strong></p>
+<p>Los Sistemas de relación con el cliente (Customer Relationship
+Management - CRM), conocidos como FrontOffice, son software destinado a
+cubrir todo el proceso de venta y el seguimiento de la misma por parte
+de una compañía, desde el marketing inicial, al embudo de ventas,
+servicios postventa, etc., buscando la fidelización de los clientes ya
+existentes y la captación de nuevos clientes.</p>
+<p>Un CRM está compuesto como mínimo de tres módulos:</p>
+<ul>
+<li>
+<p><strong>Módulo de ventas:</strong> para gestionar el proceso de
+postventa</p>
+</li>
+<li>
+<p><strong>Módulo de marketing</strong>: para la optimización del
+proceso de marketing</p>
+</li>
+<li>
+<p><strong>Módulo de soporte y atención al cliente</strong>: gestiona
+las contrataciones, servicios, comunicaciones, redes sociales, etc.</p>
+</li>
+</ul>
+<p><strong>ERP</strong></p>
+<p>Los Sistemas de <strong>Planificación de Recursos
+Empresariales</strong> (ERP por sus siglas en inglés Enterprise Resource
+Planning) y conocidos como <strong>BackOffice</strong> integran diversos
+módulos que dan solución a la gestión integral del negocio, incluyendo
+la facturación, contabilidad, ventas, compras, recursos humanos,
+almacén, fabricación, etc.</p>
+<p><strong>DSS</strong></p>
+<p>Los sistemas de información para el apoyo a la toma de decisiones
+utilizan la información de salida de los ERM y los CRM para gestionar la
+toma de decisiones a nivel gerencial.</p>
+<p><strong>Software “a medida”</strong></p>
+<p>En esta categoría se engloban las páginas web empresariales,
+intranets y cualquier software desarrollado a propósito para una función
+específica dentro de la empresa, que por su especificidad no puede ser
+compartido de forma general, y que requiere de una enorme labor de
+soporte, formación y mantenimiento.</p>
+<h3 id="sec6_1">6.1. Design Thinking</h3>
+<div class="activity-card"><p>Crea un código similar al ASCII pero que a la vez que codifica, encripte la información con un método similar al método caesar.</p></div><h3 id="sec6_2">6.2. Recursos</h3>
+<p><strong>Bibliografía</strong></p>
+<p>Apuntes del profesor (Cuaderno de trabajo)</p>
+<p>Montaje y Mantenimiento de Equipos. Edt. Síntesis – Unidad 1</p>
+<p><strong>Otros Recursos</strong></p>
+<p>Video Historia de la informática (2019) <a href="https://youtu.be/zewkqnInHVY" target="_blank" rel="noopener noreferrer"><u>https://youtu.be/zewkqnInHVY</u></a></p>
+<p>Simulador de Von Neumann online <a href="http://lab.xitrus.es/VonNeumann/" target="_blank" rel="noopener noreferrer"><u>http://lab.xitrus.es/VonNeumann/</u></a></p>
+<p>La computadora del futuro: <a href="https://youtu.be/14UdiF4slpU" target="_blank" rel="noopener noreferrer"><u>https://youtu.be/14UdiF4slpU</u></a></p>
+<p>El ordenador cuántico: <a href="https://youtu.be/O9TA2faf6nw" target="_blank" rel="noopener noreferrer"><u>https://youtu.be/O9TA2faf6nw</u></a></p>
+<footer class="document-footer">© Ignacio García 2020</footer></main></div>
+</body>
+</html>
