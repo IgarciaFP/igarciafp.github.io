@@ -1,0 +1,1399 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 1: Web Interface Planning and Design</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --primary-light: #eff6ff;
+            --primary-border: #3b82f6;
+            --secondary-color: #0f766e;
+            --secondary-light: #f0fdf4;
+            --accent-color: #d97706;
+            --accent-light: #fffbeb;
+            --danger-color: #b91c1c;
+            --danger-light: #fef2f2;
+            --purple-color: #6d28d9;
+            --purple-light: #f5f3ff;
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+            --bg-page: #f1f5f9;
+            --bg-card: #ffffff;
+            --border-color: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-page);
+            line-height: 1.7;
+            padding: 30px 20px;
+        }
+
+        .document-wrapper {
+            max-width: 1350px;
+            width: 100%;
+            margin: 0 auto;
+            display: block;
+        }
+
+        /* Índice lateral flotante deslizable (Slide-out Sidebar) */
+        .sidebar-toc {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 310px;
+            max-height: calc(100vh - 40px);
+            background: var(--bg-card);
+            padding: 22px 20px;
+            border-radius: 0 12px 12px 0;
+            border: 1px solid var(--border-color);
+            border-left: none;
+            box-shadow: 6px 0 25px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            transform: translateX(-292px);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto;
+        }
+
+        .sidebar-toc::after {
+            content: "\f0c9  ÍNDICE";
+            font-family: 'Font Awesome 6 Free', 'Inter', sans-serif;
+            font-weight: 900;
+            font-size: 0.78rem;
+            position: absolute;
+            top: 20px;
+            right: -88px;
+            width: 88px;
+            height: 40px;
+            background: var(--primary-color);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            box-shadow: 4px 2px 10px rgba(0,0,0,0.15);
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-toc:hover {
+            transform: translateX(0);
+        }
+
+        .sidebar-toc h4 {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 8px;
+        }
+
+        .sidebar-toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .sidebar-toc li {
+            margin-bottom: 6px;
+        }
+
+        .sidebar-toc a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.86rem;
+            display: block;
+            padding: 5px 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-toc a:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Contenido Principal a Ancho Completo (100% Flexible) */
+        .document-container {
+            background: var(--bg-card);
+            padding: 50px 65px;
+            border-radius: 12px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border-color);
+            width: 100%;
+        }
+
+        /* Encabezados y Jerarquía */
+        .header-banner {
+            border-bottom: 4px solid var(--primary-color);
+            padding-bottom: 25px;
+            margin-bottom: 40px;
+        }
+
+        .module-tag {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 5px 14px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+        }
+
+        h1 {
+            font-family: 'Merriweather', Georgia, serif;
+            font-size: 2.3rem;
+            color: var(--primary-color);
+            line-height: 1.25;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-family: 'Merriweather', Georgia, serif;
+            font-size: 1.6rem;
+            color: var(--primary-color);
+            margin-top: 50px;
+            margin-bottom: 22px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            scroll-margin-top: 20px;
+        }
+
+        h3 {
+            font-size: 1.28rem;
+            color: var(--secondary-color);
+            margin-top: 32px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            scroll-margin-top: 20px;
+        }
+
+        h4 {
+            font-size: 1.08rem;
+            color: var(--text-dark);
+            margin-top: 24px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 18px;
+            text-align: justify;
+            font-size: 1rem;
+            color: var(--text-dark);
+        }
+
+        strong {
+            color: #000000;
+            font-weight: 600;
+        }
+
+        ul, ol {
+            margin-bottom: 22px;
+            padding-left: 28px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Cajas Didácticas Especiales */
+        .objectives-box {
+            background-color: var(--primary-light);
+            border-left: 5px solid var(--primary-border);
+            padding: 26px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .objectives-box h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .didactic-note {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid #0284c7;
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .didactic-note h5 {
+            color: #0369a1;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .didactic-note p {
+            margin-bottom: 0;
+            font-size: 0.95rem;
+        }
+
+        /* Cajas de Recursos e Hipervínculos */
+        .resource-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .resource-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .resource-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .resource-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .badge-video { background-color: #fee2e2; color: #dc2626; }
+        .badge-tool { background-color: #e0e7ff; color: #4338ca; }
+        .badge-reading { background-color: #dcfce7; color: #15803d; }
+        .badge-course { background-color: #fef3c7; color: #b45309; }
+
+        .resource-description {
+            font-size: 0.94rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .resource-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--primary-border);
+            width: fit-content;
+            transition: all 0.2s ease;
+        }
+
+        .resource-link-btn:hover {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        /* Tarjetas Leyes UX y Conceptos Avanzados */
+        .ux-law-card {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--purple-color);
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .ux-law-card h5 {
+            font-size: 1.08rem;
+            color: var(--purple-color);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ux-law-card p {
+            margin-bottom: 0;
+            font-size: 0.96rem;
+        }
+
+        .advanced-concept-box {
+            background-color: #fcfcfc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid var(--secondary-color);
+            padding: 22px 26px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .advanced-concept-box h4 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            font-size: 1.12rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Ejemplos y Errores */
+        .example-box {
+            background-color: var(--secondary-light);
+            border: 1px solid #bbf7d0;
+            border-left: 5px solid var(--secondary-color);
+            padding: 25px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .example-box h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            font-size: 1.18rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .error-box {
+            background-color: var(--danger-light);
+            border: 1px solid #fecaca;
+            border-left: 5px solid var(--danger-color);
+            padding: 25px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .error-box h3,
+        .error-box h4 {
+            color: var(--danger-color);
+            margin-top: 0;
+            font-size: 1.18rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .case-study-box {
+            background-color: #ffffff;
+            border: 2px solid var(--primary-color);
+            padding: 35px;
+            border-radius: 12px;
+            margin: 35px 0;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        }
+
+        .case-study-box h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 12px;
+            font-size: 1.4rem;
+        }
+
+        .phase-block {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid var(--accent-color);
+            padding: 22px 26px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .phase-block h4 {
+            color: var(--accent-color);
+            margin-top: 0;
+            font-size: 1.18rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .key-ideas-box {
+            background-color: var(--accent-light);
+            border: 1px solid #fde68a;
+            border-left: 5px solid var(--accent-color);
+            padding: 28px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .key-ideas-box h3 {
+            color: var(--accent-color);
+            margin-top: 0;
+        }
+
+        .activities-section {
+            background-color: #fafafa;
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            border-radius: 10px;
+            margin-top: 45px;
+        }
+
+        /* Imágenes e Ilustraciones Vectoriales Embebidas */
+        .image-container {
+            text-align: center;
+            margin: 35px 0;
+            background: #ffffff;
+            padding: 18px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+        }
+
+        .image-container svg {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+        }
+
+        .image-caption {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 12px;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        /* Tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 28px 0;
+            font-size: 0.96rem;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        .table-scroll {
+            width: 100%;
+            overflow-x: auto;
+            margin: 28px 0;
+        }
+
+        .table-scroll table {
+            min-width: 720px;
+            margin: 0;
+        }
+
+        /* Código */
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, monospace;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        pre {
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Fira Code', Consolas, Monaco, monospace;
+            font-size: 0.9rem;
+            margin: 22px 0;
+        }
+
+        blockquote {
+            font-style: italic;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 18px;
+            margin: 24px 0;
+            color: var(--text-muted);
+        }
+
+        @media print {
+            body {
+                background-color: #ffffff;
+                padding: 0;
+            }
+            .sidebar-toc {
+                display: none;
+            }
+            .document-container {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+            }
+            .ux-law-card, .example-box, .error-box, .resource-card, .advanced-concept-box, .phase-block {
+                break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .document-container {
+                padding: 30px 20px;
+            }
+            .sidebar-toc {
+                width: 280px;
+                transform: translateX(-265px);
+            }
+            .sidebar-toc::after {
+                right: -80px;
+                width: 80px;
+            }
+        }
+    
+        .header-top-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px}
+        .header-top-row .module-tag{margin-bottom:0}
+        .language-switch{display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border:1px solid var(--primary-border);border-radius:7px;background:var(--primary-light);color:var(--primary-color);font-size:.88rem;font-weight:700;text-decoration:none;white-space:nowrap;transition:background-color .2s ease,color .2s ease}
+        .language-switch:hover{background:var(--primary-color);color:#fff}
+        @media(max-width:560px){.header-top-row{align-items:flex-start}.language-switch{font-size:.8rem;padding:6px 10px}}
+    </style>
+</head>
+<body><nav class="sidebar-toc" aria-label="Table of contents"><h4><i class="fa-solid fa-list-ol"></i> Contents</h4><ul><li><a href="#sec1">1. Introduction to Web Design</a></li><li><a href="#sec1_1">1.1. Historical evolution</a></li><li><a href="#sec1_2">1.2. Key milestones</a></li><li><a href="#sec1_3">1.3. Current trends</a></li><li><a href="#sec2">2. Human–Computer Interaction</a></li><li><a href="#sec2_1">2.1. UI and HCI foundations</a></li><li><a href="#sec2_2">2.2. UI vs UX</a></li><li><a href="#sec2_3">2.3. Usability and accessibility</a></li><li><a href="#sec3">3. Graphic Design Elements</a></li><li><a href="#sec3_1">3.1. Conceptual elements</a></li><li><a href="#sec3_2">3.2. Relational elements</a></li><li><a href="#sec3_3">3.3. Atomic Design</a></li><li><a href="#sec3_3_1">3.3.1. Design Tokens</a></li><li><a href="#sec4">4. Visual Perception</a></li><li><a href="#sec5">5. Web Style Guide</a></li><li><a href="#sec6">6. UX Research and Design Thinking</a></li><li><a href="#sec7">7. Interface Style Guide</a></li><li><a href="#sec8">8. Practical Examples</a></li><li><a href="#sec9">9. Common Errors</a></li><li><a href="#sec10">10. Integrated Case Study</a></li><li><a href="#sec11">11. Summary</a></li><li><a href="#sec12">12. Activities</a></li></ul></nav><div class="document-wrapper"><main class="document-container"><div class="header-banner"><div class="header-top-row"><span class="module-tag">Web Interface Design • 2nd DAW</span><a class="language-switch" href="u01_es.html" hreflang="es" lang="es" aria-label="Leer esta página en español"><i class="fa-solid fa-language" aria-hidden="true"></i> Español</a></div><h1>Unit 1: Web Interface Planning and Design</h1></div>
+<h2 id="sec1"><i class="fa-solid fa-book-open"></i> 1. Introduction to Web Design</h2><p>Modern applications must be planned around human interaction before implementation begins. This unit covers the theoretical, methodological and visual foundations of UI and UX.</p><div class="image-container"><svg viewBox="0 0 760 220" width="100%" height="220" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="220" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="380" y="30" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Evolution of Web Design Paradigms and Approaches</text>
+                
+                <g transform="translate(30, 50)">
+                    <rect x="0" y="0" width="210" height="135" rx="6" fill="#ffffff" stroke="#3b82f6" stroke-width="2"/>
+                    <rect x="0" y="0" width="210" height="28" rx="6" fill="#eff6ff"/>
+                    <text x="105" y="19" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Web 1.0 / Desktop First (1990-2009)</text>
+                    <text x="15" y="48" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Static text documents</text>
+                    <text x="15" y="66" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Tables and fixed width (800x600px)</text>
+                    <text x="15" y="84" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Mixed HTML and CSS</text>
+                    <text x="15" y="102" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Mouse-only navigation</text>
+                </g>
+
+                <path d="M 250 115 L 270 115" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
+
+                <g transform="translate(275, 50)">
+                    <rect x="0" y="0" width="210" height="135" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+                    <rect x="0" y="0" width="210" height="28" rx="6" fill="#f0fdf4"/>
+                    <text x="105" y="19" fill="#0f766e" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Responsive Web / RWD (2010-2015)</text>
+                    <text x="15" y="48" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Fluid grids and media queries</text>
+                    <text x="15" y="66" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Separation of structure and style</text>
+                    <text x="15" y="84" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Adaptive resolution support</text>
+                    <text x="15" y="102" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Beginning of touch navigation</text>
+                </g>
+
+                <path d="M 495 115 L 515 115" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
+
+                <g transform="translate(520, 50)">
+                    <rect x="0" y="0" width="210" height="135" rx="6" fill="#ffffff" stroke="#6d28d9" stroke-width="2"/>
+                    <rect x="0" y="0" width="210" height="28" rx="6" fill="#f5f3ff"/>
+                    <text x="105" y="19" fill="#6d28d9" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Design Systems & Mobile (Current)</text>
+                    <text x="15" y="48" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Mobile-first strategy (48px)</text>
+                    <text x="15" y="66" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Design Tokens y Atomic Design</text>
+                    <text x="15" y="84" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Universal accessibility (WCAG)</text>
+                    <text x="15" y="102" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Performance metrics (Core Web Vitals)</text>
+                </g>
+            </svg></div><div class="objectives-box"><h3>Learning outcomes</h3><ul><li>Explain the historical development of web design.</li><li>Distinguish UI, UX, usability and accessibility.</li><li>Apply visual-perception principles and design systems.</li><li>Create an accessible style guide and prototype.</li></ul></div>
+<h3 id="sec1_1">1.1. Historical evolution</h3><p>The web evolved from static, fixed-width desktop documents to responsive, touch-friendly and component-based experiences. Current work integrates accessibility, performance, mobile-first layouts and reusable systems.</p><h3 id="sec1_2">1.2. Timeline of key milestones</h3><ul><li><strong>1991–1996:</strong> HTML documents, links and tables.</li><li><strong>1996–2006:</strong> CSS, JavaScript and separation of content from presentation.</li><li><strong>2007–2015:</strong> smartphones, responsive design and mobile-first.</li><li><strong>2015–today:</strong> components, design systems, SVG, accessibility and Core Web Vitals.</li></ul>
+<h3 id="sec1_3">1.3. Current trends</h3><p>Contemporary interfaces use expressive typography, SVG, gradients, 3D/WebXR, soft UI and hero areas. Trends are valid only when they improve communication and remain usable, accessible and efficient.</p><div class="table-scroll"><table><tbody><tr><td><div class="image-container"><svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
+  <rect width="160" height="90" rx="6" fill="#1e293b"/>
+  <text x="12" y="38" fill="#38bdf8" font-family="'Merriweather', serif" font-size="20" font-weight="bold">DESIGN</text>
+  <text x="12" y="58" fill="#f8fafc" font-family="'Inter', sans-serif" font-size="9">High-impact visual elegance</text>
+  <rect x="12" y="68" width="50" height="14" rx="3" fill="#0284c7"/>
+  <text x="37" y="78" fill="#ffffff" font-family="'Inter', sans-serif" font-size="7" font-weight="bold" text-anchor="middle">LEARN MORE</text>
+</svg></div></td><td><div class="image-container"><svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
+  <rect width="160" height="90" rx="6" fill="#0f172a"/>
+  <!-- SVG resolution independence graphic -->
+  <circle cx="50" cy="45" r="25" fill="none" stroke="#34d399" stroke-width="3"/>
+  <polygon points="50,25 60,55 35,38 65,38 40,55" fill="#f59e0b"/>
+  <text x="90" y="38" fill="#34d399" font-family="Fira Code, monospace" font-size="10" font-weight="bold">&lt;svg&gt;</text>
+  <text x="90" y="54" fill="#94a3b8" font-family="Inter, sans-serif" font-size="8">Scalability</text>
+  <text x="90" y="66" fill="#94a3b8" font-family="Inter, sans-serif" font-size="8">without loss</text>
+</svg></div></td><td><div class="image-container"><svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
+  <rect width="160" height="90" rx="6" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <!-- Parallax Layers -->
+  <rect x="15" y="15" width="130" height="20" rx="4" fill="#cbd5e1"/>
+  <rect x="15" y="40" width="130" height="35" rx="4" fill="#0f766e"/>
+  <circle cx="120" cy="57" r="10" fill="#f59e0b"/>
+  <!-- Scroll arrow -->
+  <path d="M 80 78 L 80 86 M 76 82 L 80 86 L 84 82" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
+</svg></div></td></tr><tr><td><div class="image-container"><svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
+  <rect width="160" height="90" rx="6" fill="#2e1065"/>
+  <!-- Isometric 3D Cube -->
+  <g transform="translate(80, 45)">
+    <polygon points="0,-25 25,-12 0,0 -25,-12" fill="#a855f7"/>
+    <polygon points="-25,-12 0,0 0,25 -25,12" fill="#7e22ce"/>
+    <polygon points="0,0 25,-12 25,12 0,25" fill="#c084fc"/>
+  </g>
+  <text x="80" y="80" fill="#e9d5ff" font-family="Inter, sans-serif" font-size="8" font-weight="bold" text-anchor="middle">WebXR / 3D Interactivo</text>
+</svg></div></td><td><div class="image-container"><svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
+  <rect width="160" height="90" rx="6" fill="#e0e5ec"/>
+  <!-- Neumorphic button with soft dual shadow -->
+  <defs>
+    <filter id="neo-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="3" dy="3" stdDeviation="3" flood-color="#a3b1c6" flood-opacity="0.8"/>
+      <feDropShadow dx="-3" dy="-3" stdDeviation="3" flood-color="#ffffff" flood-opacity="0.9"/>
+    </filter>
+  </defs>
+  <rect x="30" y="25" width="100" height="40" rx="10" fill="#e0e5ec" filter="url(#neo-shadow)"/>
+  <circle cx="55" cy="45" r="8" fill="#4d7c0f"/>
+  <text x="90" y="49" fill="#334155" font-family="Inter, sans-serif" font-size="9" font-weight="bold" text-anchor="middle">Soft UI</text>
+</svg></div></td><td><div class="image-container"><svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad-hero" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="50%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#db2777"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="90" rx="6" fill="url(#grad-hero)"/>
+  <circle cx="130" cy="25" r="30" fill="#ffffff" opacity="0.15"/>
+  <text x="15" y="42" fill="#ffffff" font-family="'Merriweather', serif" font-size="13" font-weight="bold">Hero Banner</text>
+  <text x="15" y="58" fill="#fbcfe8" font-family="Inter, sans-serif" font-size="8">Gradients and HD images</text>
+</svg></div></td></tr></tbody></table></div>
+<h2 id="sec2"><i class="fa-solid fa-users-viewfinder"></i> 2. Human–Computer Interaction</h2><h3 id="sec2_1">2.1. UI and HCI foundations</h3><h4>2.1.1. Graphical interfaces</h4><p>A UI is the visible and interactive layer through which a person operates a system. Graphical interfaces changed command-first interaction into object–action interaction: select a visible object, then act on it.</p><div class="image-container"><svg viewBox="0 0 760 260" width="100%" height="260" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="260" rx="8" fill="#f1f5f9"/>
+                <rect x="30" y="30" width="320" height="200" rx="8" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+                <rect x="30" y="30" width="320" height="30" rx="8" fill="#1e293b"/>
+                <circle cx="50" cy="45" r="5" fill="#ef4444"/><circle cx="65" cy="45" r="5" fill="#f59e0b"/><circle cx="80" cy="45" r="5" fill="#10b981"/>
+                <text x="100" y="50" fill="#94a3b8" font-family="Fira Code, monospace" font-size="12">CLI (Action - Object)</text>
+                <text x="50" y="95" fill="#38bdf8" font-family="Fira Code, monospace" font-size="14">C:\> rm archivo.txt</text>
+                <text x="50" y="125" fill="#94a3b8" font-family="Inter, sans-serif" font-size="12">1º Command (Action: delete)</text>
+                <text x="50" y="145" fill="#94a3b8" font-family="Inter, sans-serif" font-size="12">2º Parameter (Object: file)</text>
+                <rect x="50" y="170" width="280" height="40" rx="4" fill="#334155"/>
+                <text x="65" y="195" fill="#f8fafc" font-family="Inter, sans-serif" font-size="12" font-weight="bold">Rigid memory-based paradigm</text>
+                <path d="M 365 130 L 395 130" stroke="#0284c7" stroke-width="3" stroke-dasharray="4,4"/>
+                <rect x="410" y="30" width="320" height="200" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+                <rect x="410" y="30" width="320" height="30" rx="8" fill="#e2e8f0"/>
+                <text x="430" y="50" fill="#334155" font-family="Inter, sans-serif" font-size="12" font-weight="bold">GUI (Object - Action / WYSIWYG)</text>
+                <rect x="440" y="80" width="70" height="80" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+                <text x="450" y="140" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="10" font-weight="bold">Doc.pdf</text>
+                <text x="435" y="180" fill="#2563eb" font-family="Inter, sans-serif" font-size="11" font-weight="bold">1º Click: select object</text>
+                <rect x="540" y="80" width="160" height="110" rx="6" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+                <text x="555" y="102" fill="#334155" font-family="Inter, sans-serif" font-size="11">Open</text>
+                <text x="555" y="125" fill="#334155" font-family="Inter, sans-serif" font-size="11">Rename</text>
+                <rect x="545" y="135" width="150" height="24" rx="3" fill="#fee2e2"/>
+                <text x="555" y="151" fill="#dc2626" font-family="Inter, sans-serif" font-size="11" font-weight="bold">2º Action: delete</text>
+            </svg></div><h4>2.1.2. HCI</h4><p>HCI combines computing, psychology, ergonomics, design, semiotics and sociology to create effective, efficient, safe and inclusive systems.</p><div class="image-container"><svg viewBox="0 0 760 220" width="100%" height="220" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="220" rx="8" fill="#fafafa"/>
+                <circle cx="380" cy="110" r="45" fill="#1e3a8a"/>
+                <text x="380" y="115" fill="#ffffff" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">IPO / HCI</text>
+                <g transform="translate(180, 50)"><rect x="0" y="0" width="110" height="35" rx="17" fill="#eff6ff" stroke="#3b82f6"/><text x="55" y="22" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Computer science</text></g>
+                <g transform="translate(470, 50)"><rect x="0" y="0" width="110" height="35" rx="17" fill="#f0fdf4" stroke="#0f766e"/><text x="55" y="22" fill="#0f766e" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Psychology</text></g>
+                <g transform="translate(560, 110)"><rect x="0" y="0" width="110" height="35" rx="17" fill="#fffbeb" stroke="#d97706"/><text x="55" y="22" fill="#d97706" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Ergonomics</text></g>
+                <g transform="translate(470, 170)"><rect x="0" y="0" width="110" height="35" rx="17" fill="#f5f3ff" stroke="#6d28d9"/><text x="55" y="22" fill="#6d28d9" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Design</text></g>
+                <g transform="translate(180, 170)"><rect x="0" y="0" width="110" height="35" rx="17" fill="#fef2f2" stroke="#b91c1c"/><text x="55" y="22" fill="#b91c1c" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Semiotics</text></g>
+                <g transform="translate(90, 110)"><rect x="0" y="0" width="110" height="35" rx="17" fill="#f8fafc" stroke="#475569"/><text x="55" y="22" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Sociology</text></g>
+            </svg></div>
+<h3 id="sec2_2">2.2. UI vs UX</h3><p><strong>UI</strong> covers controls, layout, colour, typography and states. <strong>UX</strong> covers the entire experience: usefulness, expectations, effort, emotion and satisfaction.</p>
+<h3 id="sec2_3">2.3. Usability and accessibility</h3><p>Usability includes learnability, efficiency, memorability, error prevention and satisfaction. WCAG 2.2 requires content to be perceivable, operable, understandable and robust. Practical design includes keyboard access, visible focus, sufficient contrast, labels, status feedback and understandable errors.</p><h4>Nielsen's ten heuristics</h4><ol><li>System-status visibility.</li><li>Match with the real world.</li><li>User control and freedom.</li><li>Consistency and standards.</li><li>Error prevention.</li><li>Recognition rather than recall.</li><li>Flexibility and efficiency.</li><li>Minimalist design.</li><li>Error recognition and recovery.</li><li>Help and documentation.</li></ol>
+<h2 id="sec3"><i class="fa-solid fa-pen-ruler"></i> 3. Graphic Design Elements Applied to the Web</h2><h3 id="sec3_1">3.1. Conceptual elements</h3><p>Points, lines, planes and volumes become icons, separators, surfaces, cards and layered regions. Their repetition, size and colour create hierarchy.</p><h3 id="sec3_2">3.2. Direction, position, space and visual gravity</h3><p>Direction guides attention; position creates order; space groups or separates; and visual weight creates balance or tension. CSS Grid, Flexbox, gap and alignment translate these decisions into code.</p><div class="table-scroll"><table><tbody><tr><td><div class="image-container"><svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
+  <rect width="160" height="90" rx="6" fill="#0f172a"/>
+  <!-- Direction flow line and arrows -->
+  <path d="M 20 65 L 60 25 L 140 25" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+  <polygon points="140,20 150,25 140,30" fill="#38bdf8"/>
+  <circle cx="20" cy="65" r="5" fill="#f59e0b"/>
+  <circle cx="60" cy="25" r="5" fill="#38bdf8"/>
+  <circle cx="140" cy="25" r="5" fill="#38bdf8"/>
+  <text x="80" y="75" fill="#94a3b8" font-family="Inter, sans-serif" font-size="8" font-weight="bold" text-anchor="middle">Guiding the eye</text>
+</svg></div></td><td><div class="image-container"><svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
+  <rect width="160" height="90" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <!-- Grid layout and deliberate positioning -->
+  <rect x="15" y="15" width="40" height="60" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+  <rect x="62" y="15" width="83" height="26" rx="4" fill="#0f766e"/>
+  <rect x="62" y="48" width="83" height="27" rx="4" fill="#d97706"/>
+  <circle cx="35" cy="45" r="8" fill="#2563eb"/>
+</svg></div></td><td><div class="image-container"><svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
+  <rect width="160" height="90" rx="6" fill="#1e293b"/>
+  <!-- Positive vs Negative space balance -->
+  <rect x="20" y="20" width="50" height="50" rx="6" fill="#0284c7"/>
+  <rect x="90" y="20" width="50" height="50" rx="6" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4,4"/>
+  <text x="45" y="48" fill="#ffffff" font-family="Inter, sans-serif" font-size="8" font-weight="bold" text-anchor="middle">Object</text>
+  <text x="115" y="48" fill="#38bdf8" font-family="Inter, sans-serif" font-size="8" font-weight="bold" text-anchor="middle">Whitespace / gap</text>
+</svg></div></td><td><div class="image-container"><svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
+  <rect width="160" height="90" rx="6" fill="#0f172a"/>
+  <!-- Visual weight scale / balance -->
+  <rect x="20" y="20" width="30" height="20" rx="3" fill="#64748b"/>
+  <text x="35" y="33" fill="#f8fafc" font-family="Inter, sans-serif" font-size="7" text-anchor="middle">Light</text>
+  <!-- Heavy anchor element -->
+  <rect x="65" y="35" width="75" height="40" rx="6" fill="#1e3a8a" stroke="#38bdf8" stroke-width="2"/>
+  <text x="102" y="58" fill="#ffffff" font-family="Inter, sans-serif" font-size="9" font-weight="bold" text-anchor="middle">High visual weight (CTA)</text>
+</svg></div></td></tr></tbody></table></div>
+<h3 id="sec3_3">3.3. Design systems and Atomic Design</h3><p>A design system combines principles, components, patterns, documentation and governance. Atomic Design organises a UI into atoms, molecules, organisms, templates and pages.</p><div class="image-container"><svg viewBox="0 0 760 210" width="100%" height="210" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="210" rx="8" fill="#f8fafc"/>
+                <g transform="translate(20, 30)">
+                    <rect x="0" y="0" width="125" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <circle cx="40" cy="40" r="14" fill="#3b82f6"/>
+                    <rect x="65" y="32" width="45" height="16" rx="3" fill="#93c5fd"/>
+                    <text x="62" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">ATOMS</text>
+                    <text x="62" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Button, input, icon</text>
+                </g>
+                <g transform="translate(165, 30)">
+                    <rect x="0" y="0" width="135" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="15" y="30" width="70" height="20" rx="3" fill="#f1f5f9" stroke="#94a3b8"/>
+                    <rect x="90" y="30" width="30" height="20" rx="3" fill="#3b82f6"/>
+                    <text x="67" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">MOLECULES</text>
+                    <text x="67" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Search field</text>
+                </g>
+                <g transform="translate(320, 30)">
+                    <rect x="0" y="0" width="135" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="10" y="15" width="115" height="50" rx="4" fill="#eff6ff" stroke="#3b82f6"/>
+                    <text x="67" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">ORGANISMS</text>
+                    <text x="67" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Complete header</text>
+                </g>
+                <g transform="translate(475, 30)">
+                    <rect x="0" y="0" width="125" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="10" y="15" width="105" height="15" fill="#e2e8f0"/>
+                    <rect x="10" y="35" width="30" height="40" fill="#cbd5e1"/>
+                    <rect x="45" y="35" width="70" height="40" fill="#94a3b8"/>
+                    <text x="62" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">TEMPLATES</text>
+                    <text x="62" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Wireframe Layout</text>
+                </g>
+                <g transform="translate(620, 30)">
+                    <rect x="0" y="0" width="120" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="10" y="15" width="100" height="15" fill="#1e3a8a"/>
+                    <rect x="10" y="35" width="30" height="40" fill="#0f766e"/>
+                    <rect x="45" y="35" width="65" height="40" fill="#d97706"/>
+                    <text x="60" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">PAGES</text>
+                    <text x="60" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Final UI with data</text>
+                </g>
+            </svg></div><h3 id="sec3_3_1">3.3.1. Design Tokens</h3><p>Tokens store design decisions as data. Global tokens hold raw values, semantic tokens express intent, and component tokens apply them to UI elements across Figma, CSS and native platforms.</p><div class="image-container"><svg viewBox="0 0 760 230" width="100%" height="230" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="230" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="380" y="28" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Design-token architecture (from Figma to multiplatform code)</text>
+
+                <!-- Nivel 1: Tokens Globales / Base -->
+                <g transform="translate(30, 48)">
+                    <rect x="0" y="0" width="200" height="150" rx="6" fill="#ffffff" stroke="#3b82f6" stroke-width="2"/>
+                    <rect x="0" y="0" width="200" height="26" rx="6" fill="#eff6ff"/>
+                    <text x="100" y="18" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle">1. Global tokens (raw values)</text>
+                    <text x="12" y="45" fill="#115e59" font-family="Fira Code, monospace" font-size="9.5">COLOR_BLUE_900 = #1e3a8a;</text>
+                    <text x="12" y="65" fill="#115e59" font-family="Fira Code, monospace" font-size="9.5">SPACE_16 = 16px;</text>
+                    <text x="12" y="85" fill="#115e59" font-family="Fira Code, monospace" font-size="9.5">FONT_SIZE_BASE = 1rem;</text>
+                    <text x="12" y="105" fill="#115e59" font-family="Fira Code, monospace" font-size="9.5">RADIUS_MD = 8px;</text>
+                    <text x="12" y="130" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5" font-style="italic">Generic context-free values</text>
+                </g>
+
+                <path d="M 240 120 L 265 120" stroke="#3b82f6" stroke-width="2.5"/>
+
+                <!-- Nivel 2: Tokens Semánticos -->
+                <g transform="translate(275, 48)">
+                    <rect x="0" y="0" width="210" height="150" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+                    <rect x="0" y="0" width="210" height="26" rx="6" fill="#f0fdf4"/>
+                    <text x="105" y="18" fill="#0f766e" font-family="Inter, sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle">2. Semantic tokens (intent)</text>
+                    <text x="12" y="45" fill="#115e59" font-family="Fira Code, monospace" font-size="9">--color-primary = COLOR_BLUE_900;</text>
+                    <text x="12" y="65" fill="#115e59" font-family="Fira Code, monospace" font-size="9">--spacing-body = SPACE_16;</text>
+                    <text x="12" y="85" fill="#115e59" font-family="Fira Code, monospace" font-size="9">--color-error = COLOR_RED_700;</text>
+                    <text x="12" y="105" fill="#115e59" font-family="Fira Code, monospace" font-size="9">--target-size = 48px;</text>
+                    <text x="12" y="130" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5" font-style="italic">They express functional meaning</text>
+                </g>
+
+                <path d="M 495 120 L 520 120" stroke="#0f766e" stroke-width="2.5"/>
+
+                <!-- Nivel 3: Tokens de Componente / Multi-Output -->
+                <g transform="translate(530, 48)">
+                    <rect x="0" y="0" width="200" height="150" rx="6" fill="#ffffff" stroke="#6d28d9" stroke-width="2"/>
+                    <rect x="0" y="0" width="200" height="26" rx="6" fill="#f5f3ff"/>
+                    <text x="100" y="18" fill="#6d28d9" font-family="Inter, sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle">3. Components / code output</text>
+                    <text x="12" y="45" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• CSS: var(--color-primary)</text>
+                    <text x="12" y="65" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• Android: R.color.primary</text>
+                    <text x="12" y="85" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• iOS: Color.primary</text>
+                    <text x="12" y="105" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• JSON exportable desde Figma</text>
+                    <text x="12" y="130" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5" font-style="italic">Cross-platform consistency</text>
+                </g>
+            </svg></div>
+<h2 id="sec4"><i class="fa-solid fa-eye"></i> 4. Visual Perception</h2><h3 id="sec4_1">4.1. Gestalt psychology</h3><p>People perceive organised wholes. Proximity, similarity, closure, figure–ground, common region and symmetry communicate grouping and hierarchy.</p><div class="image-container"><svg viewBox="0 0 760 280" width="100%" height="280" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="280" rx="8" fill="#f8fafc"/>
+                <g transform="translate(30, 20)">
+                    <rect x="0" y="0" width="160" height="110" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <circle cx="30" cy="30" r="10" fill="#3b82f6"/><circle cx="55" cy="30" r="10" fill="#3b82f6"/>
+                    <circle cx="30" cy="55" r="10" fill="#3b82f6"/><circle cx="55" cy="55" r="10" fill="#3b82f6"/>
+                    <circle cx="105" cy="30" r="10" fill="#3b82f6"/><circle cx="130" cy="30" r="10" fill="#3b82f6"/>
+                    <circle cx="105" cy="55" r="10" fill="#3b82f6"/><circle cx="130" cy="55" r="10" fill="#3b82f6"/>
+                    <text x="80" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Law of Proximity</text>
+                </g>
+                <g transform="translate(210, 20)">
+                    <rect x="0" y="0" width="160" height="110" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <circle cx="35" cy="30" r="10" fill="#3b82f6"/><rect x="70" y="20" width="20" height="20" fill="#0f766e"/><circle cx="125" cy="30" r="10" fill="#3b82f6"/>
+                    <circle cx="35" cy="60" r="10" fill="#3b82f6"/><rect x="70" y="50" width="20" height="20" fill="#0f766e"/><circle cx="125" cy="60" r="10" fill="#3b82f6"/>
+                    <text x="80" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Law of Similarity</text>
+                </g>
+                <g transform="translate(390, 20)">
+                    <rect x="0" y="0" width="160" height="110" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <path d="M 40 30 L 120 30" stroke="#0f172a" stroke-width="3" stroke-dasharray="15 10"/>
+                    <path d="M 120 30 L 120 70" stroke="#0f172a" stroke-width="3" stroke-dasharray="15 10"/>
+                    <path d="M 120 70 L 40 70" stroke="#0f172a" stroke-width="3" stroke-dasharray="15 10"/>
+                    <path d="M 40 70 L 40 30" stroke="#0f172a" stroke-width="3" stroke-dasharray="15 10"/>
+                    <text x="80" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Law of Closure</text>
+                </g>
+                <g transform="translate(570, 20)">
+                    <rect x="0" y="0" width="160" height="110" rx="6" fill="#0f172a" stroke="#cbd5e1"/>
+                    <circle cx="80" cy="45" r="25" fill="#ffffff"/>
+                    <rect x="65" y="30" width="30" height="30" fill="#0f172a"/>
+                    <text x="80" y="95" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Figure and Ground</text>
+                </g>
+                <g transform="translate(120, 150)">
+                    <rect x="0" y="0" width="240" height="110" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="15" y="15" width="90" height="60" rx="6" fill="#eff6ff" stroke="#3b82f6"/>
+                    <circle cx="40" cy="45" r="8" fill="#3b82f6"/><circle cx="80" cy="45" r="8" fill="#3b82f6"/>
+                    <circle cx="150" cy="45" r="8" fill="#64748b"/><circle cx="190" cy="45" r="8" fill="#64748b"/>
+                    <text x="120" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Law of Common Region</text>
+                </g>
+                <g transform="translate(400, 150)">
+                    <rect x="0" y="0" width="240" height="110" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <path d="M 40 25 L 80 65 L 40 65 Z" fill="#d97706"/>
+                    <path d="M 200 25 L 160 65 L 200 65 Z" fill="#d97706"/>
+                    <line x1="120" y1="15" x2="120" y2="75" stroke="#94a3b8" stroke-dasharray="4,4"/>
+                    <text x="120" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Symmetry and Order (Prägnanz)</text>
+                </g>
+            </svg></div><h3 id="sec4_2">4.2. Laws of UX</h3><ul><li><strong>Fitts:</strong> larger, nearer targets are faster.</li><li><strong>Hick:</strong> more choices increase decision time.</li><li><strong>Jakob:</strong> users expect familiar conventions.</li><li><strong>Miller:</strong> working memory is limited.</li><li><strong>Von Restorff:</strong> distinctive items are remembered.</li><li><strong>Peak–End:</strong> peaks and endings shape remembered experience.</li></ul>
+<h3 id="sec4_3">4.3. Colour psychology</h3><p>RGB represents screen colours; hexadecimal writes those channel values as #RRGGBB. Colour meaning depends on culture and context. Semantic palettes should define text, surface, action, success, warning and error roles while meeting contrast requirements.</p>
+<h3 id="sec4_4">4.4. Visual identity</h3><p>Document wordmarks, symbols, combination marks and integrated marks, including clear space, minimum size, variants and forbidden uses.</p><div class="image-container"><svg viewBox="0 0 760 200" width="100%" height="200" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="200" rx="8" fill="#fafafa"/>
+                <g transform="translate(20, 25)">
+                    <rect x="0" y="0" width="160" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <text x="80" y="70" fill="#1e3a8a" font-family="Merriweather, serif" font-size="22" font-weight="bold" text-anchor="middle">Google</text>
+                    <text x="80" y="115" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">LOGOTIPO</text>
+                    <text x="80" y="132" fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">(Text / typography only)</text>
+                </g>
+                <g transform="translate(205, 25)">
+                    <rect x="0" y="0" width="160" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <circle cx="80" cy="60" r="24" fill="#0f766e"/>
+                    <path d="M 68 60 L 92 60" stroke="#ffffff" stroke-width="4"/>
+                    <text x="80" y="115" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">ISOTIPO</text>
+                    <text x="80" y="132" fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">(Symbol only)</text>
+                </g>
+                <g transform="translate(390, 25)">
+                    <rect x="0" y="0" width="160" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <circle cx="80" cy="45" r="16" fill="#d97706"/>
+                    <text x="80" y="82" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Marca</text>
+                    <text x="80" y="115" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">IMAGOTIPO</text>
+                    <text x="80" y="132" fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">(Separate icon + text)</text>
+                </g>
+                <g transform="translate(575, 25)">
+                    <rect x="0" y="0" width="160" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="35" y="35" width="90" height="50" rx="25" fill="#b91c1c"/>
+                    <text x="80" y="66" fill="#ffffff" font-family="Inter, sans-serif" font-size="13" font-weight="bold" text-anchor="middle">BURGER</text>
+                    <text x="80" y="115" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">ISOLOGOTIPO</text>
+                    <text x="80" y="132" fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">(Inseparable icon and text)</text>
+                </g>
+            </svg></div><p>SVG iconography remains sharp at any resolution and can inherit CSS colour. Icons require consistent geometry and accessible names when their meaning is not obvious.</p>
+<h3 id="sec4_5">4.5. Composition, UI states, mobile-first and performance</h3><p>Balance uses whitespace, alignment, scale, contrast and rhythm. Components need default, hover, focus, active, disabled and loading states. Never remove keyboard focus without an equivalent visible replacement.</p><div class="image-container"><svg viewBox="0 0 760 160" width="100%" height="160" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="160" rx="8" fill="#f8fafc"/>
+                <g transform="translate(15, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#2563eb"/>
+                    <text x="52" y="27" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Default</text>
+                    <text x="52" y="75" fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Resting state</text>
+                </g>
+                <g transform="translate(138, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#1d4ed8"/>
+                    <text x="52" y="27" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Hover</text>
+                    <text x="52" y="75" fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Pointer over</text>
+                </g>
+                <g transform="translate(261, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#2563eb" stroke="#f59e0b" stroke-width="4"/>
+                    <text x="52" y="27" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Focus</text>
+                    <text x="52" y="75" fill="#d97706" font-family="Inter, sans-serif" font-size="10" font-weight="bold" text-anchor="middle">Keyboard Tab (2.4.7)</text>
+                </g>
+                <g transform="translate(384, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#1e40af"/>
+                    <text x="52" y="27" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Active</text>
+                    <text x="52" y="75" fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Click / pressed</text>
+                </g>
+                <g transform="translate(507, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#94a3b8"/>
+                    <text x="52" y="27" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Disabled</text>
+                    <text x="52" y="75" fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Disabled</text>
+                </g>
+                <g transform="translate(630, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#60a5fa"/>
+                    <circle cx="52" cy="22" r="7" stroke="#ffffff" stroke-width="2" fill="none" stroke-dasharray="10 5"/>
+                    <text x="52" y="75" fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Loading data</text>
+                </g>
+            </svg></div><p>Start with small screens and progressively enhance. WCAG 2.2 defines a 24×24 CSS-pixel target-size criterion with exceptions; 44×44 or 48×48 is a robust touch recommendation.</p><div class="image-container"><svg viewBox="0 0 760 150" width="100%" height="150" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="150" rx="8" fill="#fafafa"/>
+                <g transform="translate(60, 25)">
+                    <rect x="0" y="0" width="180" height="100" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="78" y="20" width="24" height="24" fill="#fee2e2" stroke="#dc2626" stroke-dasharray="2,2"/>
+                    <circle cx="90" cy="32" r="6" fill="#dc2626"/>
+                    <text x="90" y="68" fill="#dc2626" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Minimum 24 x 24 px</text>
+                    <text x="90" y="85" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Criterion WCAG 2.2 (AA)</text>
+                </g>
+                <g transform="translate(300, 25)">
+                    <rect x="0" y="0" width="400" height="100" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+                    <rect x="30" y="15" width="48" height="48" fill="#dcfce7" stroke="#16a34a"/>
+                    <circle cx="54" cy="39" r="10" fill="#16a34a"/>
+                    <text x="230" y="42" fill="#0f766e" font-family="Inter, sans-serif" font-size="12" font-weight="bold">Recommended: 44x44 / 48x48 px</text>
+                    <text x="230" y="62" fill="#475569" font-family="Inter, sans-serif" font-size="10">Standard from Google Material Design y Apple HIG</text>
+                    <text x="230" y="78" fill="#64748b" font-family="Inter, sans-serif" font-size="9">Prevents accidental thumb taps on mobile.</text>
+                </g>
+            </svg></div><p>Optimise LCP and INP, reserve media dimensions and avoid unexpected movement to reduce CLS.</p>
+<h3 id="sec4_6">4.6. Web components and forms</h3><p>Reusable components need semantic HTML, keyboard operation and responsive states. Forms need explicit labels, suitable input types, instructions, validation and clear error recovery.</p>
+<h2 id="sec5"><i class="fa-solid fa-book"></i> 5. Web Style Guide</h2><div class="image-container"><svg viewBox="0 0 760 280" width="100%" height="280" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="280" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+                <text x="380" y="32" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Modular structure of a web style guide</text>
+
+                <!-- Bloque 1: Identidad y Marca -->
+                <g transform="translate(30, 50)">
+                    <rect x="0" y="0" width="155" height="95" rx="8" fill="#ffffff" stroke="#3b82f6" stroke-width="2"/>
+                    <rect x="0" y="0" width="155" height="28" rx="8" fill="#eff6ff"/>
+                    <text x="77" y="19" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">1. Visual identity</text>
+                    <text x="12" y="45" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Logotypes and symbols</text>
+                    <text x="12" y="62" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Clear space</text>
+                    <text x="12" y="79" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Incorrect uses</text>
+                </g>
+
+                <!-- Bloque 2: Sistema Cromático -->
+                <g transform="translate(205, 50)">
+                    <rect x="0" y="0" width="155" height="95" rx="8" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+                    <rect x="0" y="0" width="155" height="28" rx="8" fill="#f0fdf4"/>
+                    <text x="77" y="19" fill="#0f766e" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">2. Colour system</text>
+                    <text x="12" y="45" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Primary/secondary palette</text>
+                    <text x="12" y="62" fill="#475569" font-family="Inter, sans-serif" font-size="10">• WCAG ratios (4.5:1)</text>
+                    <text x="12" y="79" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Tokens CSS (:root)</text>
+                </g>
+
+                <!-- Bloque 3: Typography -->
+                <g transform="translate(380, 50)">
+                    <rect x="0" y="0" width="155" height="95" rx="8" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+                    <rect x="0" y="0" width="155" height="28" rx="8" fill="#fffbeb"/>
+                    <text x="77" y="19" fill="#d97706" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">3. Typography</text>
+                    <text x="12" y="45" fill="#475569" font-family="Inter, sans-serif" font-size="10">• H1–H6 and body scale</text>
+                    <text x="12" y="62" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Unidades rem y %</text>
+                    <text x="12" y="79" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Line-height & Spacing</text>
+                </g>
+
+                <!-- Bloque 4: Iconografía e Imagen -->
+                <g transform="translate(555, 50)">
+                    <rect x="0" y="0" width="155" height="95" rx="8" fill="#ffffff" stroke="#6d28d9" stroke-width="2"/>
+                    <rect x="0" y="0" width="155" height="28" rx="8" fill="#f5f3ff"/>
+                    <text x="77" y="19" fill="#6d28d9" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">4. Icons & media</text>
+                    <text x="12" y="45" fill="#475569" font-family="Inter, sans-serif" font-size="10">• SVG grid (24px)</text>
+                    <text x="12" y="62" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Aspect ratio & WebP</text>
+                    <text x="12" y="79" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Accessible alt text</text>
+                </g>
+
+                <!-- Bloque 5: UI components -->
+                <g transform="translate(115, 160)">
+                    <rect x="0" y="0" width="250" height="95" rx="8" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+                    <rect x="0" y="0" width="250" height="28" rx="8" fill="#eff6ff"/>
+                    <text x="125" y="19" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">5. UI components (Atomic Design)</text>
+                    <text x="15" y="45" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Buttons, inputs, cards and modals</text>
+                    <text x="15" y="62" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Specification of the six states (Focus, Hover...)</text>
+                    <text x="15" y="79" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Target Size mínimo (48x48px táctil)</text>
+                </g>
+
+                <!-- Bloque 6: Voz y Código/Figma -->
+                <g transform="translate(395, 160)">
+                    <rect x="0" y="0" width="250" height="95" rx="8" fill="#ffffff" stroke="#b91c1c" stroke-width="2"/>
+                    <rect x="0" y="0" width="250" height="28" rx="8" fill="#fef2f2"/>
+                    <text x="125" y="19" fill="#b91c1c" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">6. Tono de Voz & Handoff Frontend</text>
+                    <text x="15" y="45" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Microcopy, mensajes de error y feedback</text>
+                    <text x="15" y="62" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Sincronización Figma Auto-Layout y CSS</text>
+                    <text x="15" y="79" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Gobernanza y versionado del manual</text>
+                </g>
+            </svg></div><h3 id="sec5_1">5.1. Purpose and essential content</h3><p>A style guide records identity, colour, typography, spacing, imagery, icons, voice, components and accessibility rules.</p><h3 id="sec5_2">5.2. Seven-step process</h3><ol><li>Audit product and brand.</li><li>Define principles and users.</li><li>Establish colour and typography.</li><li>Define spacing and layout.</li><li>Specify imagery and icons.</li><li>Document components and states.</li><li>Test, govern and version.</li></ol><h3 id="sec5_3">5.3. Colour system</h3><p>Record HEX/RGB values, semantic names, contrast ratios and light/dark variants. Never convey meaning by colour alone.</p><h3 id="sec5_4">5.4. Typography</h3><p>Specify families, weights, responsive scale, line height, measure, fallbacks and loading behaviour.</p><h3 id="sec5_5">5.5. Images and icons</h3><p>Define aspect ratios, crops, formats, compression, responsive sources, dimensions and alt-text rules.</p><h3 id="sec5_6">5.6. References and tools</h3><p>Use developer tools, accessibility inspectors, contrast checkers, Lighthouse and established design-system documentation.</p><h3 id="sec5_7">5.7. Figma, code and governance</h3><p>Design libraries and code must share token and component names, with ownership, contribution rules, versions and release notes.</p>
+<h2 id="sec6"><i class="fa-solid fa-lightbulb"></i> 6. UX Research, Design Thinking and Prototyping</h2><p>Design Thinking iterates through empathise, define, ideate, prototype and test.</p><div class="image-container"><svg viewBox="0 0 760 300" width="100%" height="300" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="300" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+                <text x="380" y="30" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Iterative Design Thinking process (Doble Diamante UI/UX)</text>
+
+                <!-- Fase 1: Empatizar -->
+                <g transform="translate(20, 50)">
+                    <polygon points="0,60 60,0 120,60 60,120" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+                    <circle cx="60" cy="50" r="16" fill="#2563eb"/>
+                    <text x="60" y="55" fill="#ffffff" font-family="Font Awesome 6 Free, Inter" font-size="12" text-anchor="middle">1</text>
+                    <text x="60" y="140" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">EMPATHISE</text>
+                    <text x="60" y="158" fill="#475569" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Understand the user</text>
+                    <text x="60" y="172" fill="#64748b" font-family="Inter, sans-serif" font-size="8" text-anchor="middle">• Interviews</text>
+                    <text x="60" y="184" fill="#64748b" font-family="Inter, sans-serif" font-size="8" text-anchor="middle">• Empathy maps</text>
+                    <text x="60" y="196" fill="#64748b" font-family="Inter, sans-serif" font-size="8" text-anchor="middle">• Observation</text>
+                </g>
+
+                <!-- Conector 1-2 -->
+                <path d="M 140 110 L 160 110" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
+
+                <!-- Fase 2: Definir -->
+                <g transform="translate(165, 50)">
+                    <polygon points="0,0 60,60 0,120 0,0" fill="#f0fdf4" stroke="#0f766e" stroke-width="2"/>
+                    <rect x="10" y="40" width="22" height="22" rx="11" fill="#0f766e"/>
+                    <text x="21" y="55" fill="#ffffff" font-family="Inter" font-size="12" font-weight="bold" text-anchor="middle">2</text>
+                    <text x="60" y="140" fill="#0f766e" font-family="Inter, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">DEFINE</text>
+                    <text x="60" y="158" fill="#475569" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Synthesise the problem</text>
+                    <text x="60" y="172" fill="#64748b" font-family="Inter, sans-serif" font-size="8" text-anchor="middle">• User Personas</text>
+                    <text x="60" y="184" fill="#64748b" font-family="Inter, sans-serif" font-size="8" text-anchor="middle">• Card Sorting</text>
+                    <text x="60" y="196" fill="#64748b" font-family="Inter, sans-serif" font-size="8" text-anchor="middle">• Tree Testing</text>
+                </g>
+
+                <!-- Conector 2-3 -->
+                <path d="M 285 110 L 310 110" stroke="#94a3b8" stroke-width="2" opacity="0.8"/>
+
+                <!-- Fase 3: Idear -->
+                <g transform="translate(315, 50)">
+                    <polygon points="0,60 60,0 120,60 60,120" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+                    <circle cx="60" cy="50" r="16" fill="#d97706"/>
+                    <text x="60" y="55" fill="#ffffff" font-family="Inter" font-size="12" font-weight="bold" text-anchor="middle">3</text>
+                    <text x="60" y="140" fill="#d97706" font-family="Inter, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">IDEATE</text>
+                    <text x="60" y="158" fill="#475569" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Generate solutions</text>
+                    <text x="60" y="172" fill="#64748b" font-family="Inter, sans-serif" font-size="8" text-anchor="middle">• Brainstorming</text>
+                    <text x="60" y="184" fill="#64748b" font-family="Inter, sans-serif" font-size="8" text-anchor="middle">• Design Tokens</text>
+                    <text x="60" y="196" fill="#64748b" font-family="Inter, sans-serif" font-size="8" text-anchor="middle">• Style guide</text>
+                </g>
+
+                <!-- Conector 3-4 -->
+                <path d="M 435 110 L 455 110" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
+
+                <!-- Fase 4: Prototipar -->
+                <g transform="translate(460, 50)">
+                    <polygon points="0,0 60,60 0,120 0,0" fill="#f5f3ff" stroke="#6d28d9" stroke-width="2"/>
+                    <rect x="10" y="40" width="22" height="22" rx="11" fill="#6d28d9"/>
+                    <text x="21" y="55" fill="#ffffff" font-family="Inter" font-size="12" font-weight="bold" text-anchor="middle">4</text>
+                    <text x="60" y="140" fill="#6d28d9" font-family="Inter, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">PROTOTYPE</text>
+                    <text x="60" y="158" fill="#475569" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Construir maquetas</text>
+                    <text x="60" y="172" fill="#64748b" font-family="Inter, sans-serif" font-size="8" text-anchor="middle">• Wireframe.cc</text>
+                    <text x="60" y="184" fill="#64748b" font-family="Inter, sans-serif" font-size="8" text-anchor="middle">• Figma Mockups</text>
+                    <text x="60" y="196" fill="#64748b" font-family="Inter, sans-serif" font-size="8" text-anchor="middle">• Atomic Design</text>
+                </g>
+
+                <!-- Conector 4-5 -->
+                <path d="M 580 110 L 600 110" stroke="#94a3b8" stroke-width="2"/>
+
+                <!-- Fase 5: Testar -->
+                <g transform="translate(605, 50)">
+                    <rect x="0" y="0" width="135" height="120" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="2"/>
+                    <circle cx="67" cy="40" r="16" fill="#b91c1c"/>
+                    <text x="67" y="45" fill="#ffffff" font-family="Inter" font-size="12" font-weight="bold" text-anchor="middle">5</text>
+                    <text x="67" y="140" fill="#b91c1c" font-family="Inter, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">TEST</text>
+                    <text x="67" y="158" fill="#475569" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Validate with users</text>
+                    <text x="67" y="172" fill="#64748b" font-family="Inter, sans-serif" font-size="8" text-anchor="middle">• Heurísticas Nielsen</text>
+                    <text x="67" y="184" fill="#64748b" font-family="Inter, sans-serif" font-size="8" text-anchor="middle">• Pruebas WCAG 2.2</text>
+                    <text x="67" y="196" fill="#64748b" font-family="Inter, sans-serif" font-size="8" text-anchor="middle">• Métricas CLS / INP</text>
+                </g>
+
+                <!-- Bucle de Re-iteración -->
+                <path d="M 672 215 C 672 265, 80 265, 80 215" fill="none" stroke="#b91c1c" stroke-width="2" stroke-dasharray="5,5"/>
+                <polygon points="75,220 80,210 85,220" fill="#b91c1c"/>
+                <text x="380" y="275" fill="#b91c1c" font-family="Inter, sans-serif" font-size="10" font-weight="bold" text-anchor="middle">Feedback e Iteración Continua (Re-evaluación y Ajustes de Prototipo)</text>
+            </svg></div><h3>6.1. Five phases</h3><p><strong>Empathise:</strong> observe and interview users in context. <strong>Define:</strong> synthesise evidence into a clear problem. <strong>Ideate:</strong> generate alternatives. <strong>Prototype:</strong> build enough fidelity to answer a question. <strong>Test:</strong> observe realistic tasks, measure and iterate.</p><h3 id="sec6_1_1">6.1.1. Card Sorting</h3><p>Open card sorting lets users create groups; closed sorting supplies categories; hybrid sorting combines both. Tree testing validates the resulting architecture.</p><div class="image-container"><svg viewBox="0 0 760 230" width="100%" height="230" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="230" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="380" y="28" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Card sorting in UX research (information architecture)</text>
+
+                <!-- Bloque 1: Tarjetas de Contenido sueltas -->
+                <g transform="translate(30, 48)">
+                    <rect x="0" y="0" width="180" height="150" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+                    <rect x="0" y="0" width="180" height="26" rx="6" fill="#fffbeb"/>
+                    <text x="90" y="18" fill="#d97706" font-family="Inter, sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle">1. Cards (content)</text>
+                    <rect x="15" y="38" width="150" height="22" rx="3" fill="#fef3c7" stroke="#b45309"/>
+                    <text x="90" y="53" fill="#78350f" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Edit profile</text>
+                    <rect x="15" y="66" width="150" height="22" rx="3" fill="#fef3c7" stroke="#b45309"/>
+                    <text x="90" y="81" fill="#78350f" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Order history</text>
+                    <rect x="15" y="94" width="150" height="22" rx="3" fill="#fef3c7" stroke="#b45309"/>
+                    <text x="90" y="109" fill="#78350f" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Payment methods</text>
+                    <text x="90" y="135" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5" font-style="italic">Unsorted concepts</text>
+                </g>
+
+                <path d="M 220 120 L 250 120" stroke="#d97706" stroke-width="2.5"/>
+
+                <!-- Bloque 2: Proceso de Agrupación del Usuario -->
+                <g transform="translate(260, 48)">
+                    <rect x="0" y="0" width="220" height="150" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+                    <rect x="0" y="0" width="220" height="26" rx="6" fill="#f0fdf4"/>
+                    <text x="110" y="18" fill="#0f766e" font-family="Inter, sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle">2. User evaluation</text>
+                    <text x="12" y="45" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• <strong>Open card sorting:</strong></text>
+                    <text x="20" y="62" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5">The user groups and names categories.</text>
+                    <text x="12" y="85" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• <strong>Closed card sorting:</strong></text>
+                    <text x="20" y="102" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5">Categories are predefined by the team.</text>
+                    <text x="12" y="125" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• <strong>Hybrid card sorting:</strong> Combines both.</text>
+                </g>
+
+                <path d="M 490 120 L 520 120" stroke="#0f766e" stroke-width="2.5"/>
+
+                <!-- Bloque 3: Estructura del Menú resultante -->
+                <g transform="translate(530, 48)">
+                    <rect x="0" y="0" width="200" height="150" rx="6" fill="#ffffff" stroke="#1e3a8a" stroke-width="2"/>
+                    <rect x="0" y="0" width="200" height="26" rx="6" fill="#eff6ff"/>
+                    <text x="100" y="18" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle">3. UX navigation map</text>
+                    <rect x="15" y="38" width="170" height="30" rx="4" fill="#3b82f6"/>
+                    <text x="100" y="57" fill="#ffffff" font-family="Inter, sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle">Menú "Mi Cuenta"</text>
+                    <rect x="25" y="74" width="150" height="18" fill="#f1f5f9"/>
+                    <text x="100" y="87" fill="#475569" font-family="Inter, sans-serif" font-size="8.5" text-anchor="middle">├─ Personal details</text>
+                    <rect x="25" y="95" width="150" height="18" fill="#f1f5f9"/>
+                    <text x="100" y="108" fill="#475569" font-family="Inter, sans-serif" font-size="8.5" text-anchor="middle">└─ Billing and payments</text>
+                    <text x="100" y="135" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5" font-style="italic">Validated mental model</text>
+                </g>
+            </svg></div><h3>6.2. Navigation map, sitemap.xml and robots.txt</h3><p>A navigation map models the user experience. <code>sitemap.xml</code> lists URLs for search engines; <code>robots.txt</code> supplies crawler directives.</p><div class="image-container"><svg viewBox="0 0 760 220" width="100%" height="220" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="220" rx="8" fill="#f1f5f9"/>
+                <rect x="30" y="25" width="210" height="170" rx="6" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+                <text x="135" y="45" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Navigation map</text>
+                <rect x="95" y="60" width="80" height="20" rx="3" fill="#3b82f6"/>
+                <rect x="50" y="95" width="70" height="18" rx="3" fill="#93c5fd"/>
+                <rect x="150" y="95" width="70" height="18" rx="3" fill="#93c5fd"/>
+                <text x="135" y="150" fill="#475569" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Visual UX structure</text>
+                <line x1="265" y1="30" x2="265" y2="190" stroke="#cbd5e1" stroke-dasharray="4,4"/>
+                <rect x="290" y="25" width="210" height="170" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+                <text x="395" y="45" fill="#0f766e" font-family="Fira Code, monospace" font-size="12" font-weight="bold" text-anchor="middle">sitemap.xml</text>
+                <rect x="305" y="60" width="180" height="75" rx="4" fill="#f0fdf4"/>
+                <text x="315" y="80" fill="#115e59" font-family="Fira Code, monospace" font-size="10">&lt;urlset&gt;</text>
+                <text x="325" y="98" fill="#115e59" font-family="Fira Code, monospace" font-size="10">&lt;loc&gt;/inicio&lt;/loc&gt;</text>
+                <text x="315" y="116" fill="#115e59" font-family="Fira Code, monospace" font-size="10">&lt;/urlset&gt;</text>
+                <text x="395" y="160" fill="#475569" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Search-engine indexing</text>
+                <rect x="520" y="25" width="210" height="170" rx="6" fill="#ffffff" stroke="#b91c1c" stroke-width="2"/>
+                <text x="625" y="45" fill="#b91c1c" font-family="Fira Code, monospace" font-size="12" font-weight="bold" text-anchor="middle">robots.txt</text>
+                <rect x="535" y="60" width="180" height="75" rx="4" fill="#fef2f2"/>
+                <text x="545" y="80" fill="#991b1b" font-family="Fira Code, monospace" font-size="10">User-agent: *</text>
+                <text x="545" y="98" fill="#991b1b" font-family="Fira Code, monospace" font-size="10">Disallow: /admin/</text>
+                <text x="545" y="116" fill="#991b1b" font-family="Fira Code, monospace" font-size="10">Allow: /</text>
+                <text x="625" y="160" fill="#475569" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Crawling directives</text>
+            </svg></div><h3>6.3. Prototype levels</h3><p>Low fidelity explores structure cheaply; medium fidelity tests flows; high fidelity validates interaction, content and visual detail.</p>
+<h2 id="sec7"><i class="fa-solid fa-swatchbook"></i> 7. Style Guide for Web Interfaces</h2><div class="image-container"><svg viewBox="0 0 760 220" width="100%" height="220" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="220" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="380" y="30" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Flujo de Integración: Style guide -> Design Tokens -> Componentes</text>
+
+                <g transform="translate(30, 50)">
+                    <rect x="0" y="0" width="200" height="135" rx="6" fill="#ffffff" stroke="#3b82f6" stroke-width="2"/>
+                    <rect x="0" y="0" width="200" height="28" rx="6" fill="#eff6ff"/>
+                    <text x="100" y="19" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">1. Style guide (Norma)</text>
+                    <text x="15" y="48" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Brand and identity rules</text>
+                    <text x="15" y="66" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Paleta semántica y WCAG ratios</text>
+                    <text x="15" y="84" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Type scale and fonts</text>
+                    <text x="15" y="102" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Tone of voice and SVG iconography</text>
+                </g>
+
+                <path d="M 240 115 L 270 115" stroke="#3b82f6" stroke-width="3"/>
+
+                <g transform="translate(280, 50)">
+                    <rect x="0" y="0" width="200" height="135" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+                    <rect x="0" y="0" width="200" height="28" rx="6" fill="#f0fdf4"/>
+                    <text x="100" y="19" fill="#0f766e" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">2. Design Tokens (:root)</text>
+                    <text x="15" y="48" fill="#115e59" font-family="Fira Code, monospace" font-size="9">--color-primary: #1e3a8a;</text>
+                    <text x="15" y="66" fill="#115e59" font-family="Fira Code, monospace" font-size="9">--font-body: 'Inter';</text>
+                    <text x="15" y="84" fill="#115e59" font-family="Fira Code, monospace" font-size="9">--target-size: 48px;</text>
+                    <text x="15" y="102" fill="#115e59" font-family="Fira Code, monospace" font-size="9">--border-radius: 6px;</text>
+                </g>
+
+                <path d="M 490 115 L 520 115" stroke="#0f766e" stroke-width="3"/>
+
+                <g transform="translate(530, 50)">
+                    <rect x="0" y="0" width="200" height="135" rx="6" fill="#ffffff" stroke="#6d28d9" stroke-width="2"/>
+                    <rect x="0" y="0" width="200" height="28" rx="6" fill="#f5f3ff"/>
+                    <text x="100" y="19" fill="#6d28d9" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">3. Production components</text>
+                    <text x="15" y="48" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Buttons with their six UI states</text>
+                    <text x="15" y="66" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Inputs with accessible &lt;label&gt; elements</text>
+                    <text x="15" y="84" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Reusable cards and modals</text>
+                    <text x="15" y="102" fill="#475569" font-family="Inter, sans-serif" font-size="10">• Figma/CSS synchronisation</text>
+                </g>
+            </svg></div><h3>7.1. What it must solve</h3><p>Translate brand and UX decisions into testable tokens, layouts, accessible components, states and content patterns.</p><h3>7.2. Creation and maintenance</h3><p>Treat the guide as a living product: audit, document, implement, test, release, measure adoption and revise.</p>
+<h2 id="sec8"><i class="fa-solid fa-flask"></i> 8. Practical Examples</h2><div class="image-container"><svg viewBox="0 0 760 210" width="100%" height="210" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="210" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="380" y="28" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Practical example: turning a poor form into an accessible one</text>
+
+                <!-- Incorrecto -->
+                <g transform="translate(30, 45)">
+                    <rect x="0" y="0" width="335" height="145" rx="6" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+                    <text x="167" y="22" fill="#b91c1c" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">❌ Incorrect form (low usability/accessibility)</text>
+                    <rect x="25" y="38" width="285" height="28" rx="4" fill="#ffffff" stroke="#cbd5e1"/>
+                    <text x="35" y="56" fill="#94a3b8" font-family="Inter, sans-serif" font-size="10">Name… (placeholder used as label)</text>
+                    <rect x="25" y="75" width="120" height="25" rx="3" fill="#3b82f6"/>
+                    <text x="85" y="91" fill="#ffffff" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Submit</text>
+                    <text x="25" y="122" fill="#991b1b" font-family="Inter, sans-serif" font-size="9">• outline: none sin foco | Botón pequeño (25px) | No feedback</text>
+                </g>
+
+                <!-- Flecha -->
+                <path d="M 373 115 L 387 115" stroke="#0f766e" stroke-width="3"/>
+
+                <!-- Correcto -->
+                <g transform="translate(395, 45)">
+                    <rect x="0" y="0" width="335" height="145" rx="6" fill="#f0fdf4" stroke="#0f766e" stroke-width="1.5"/>
+                    <text x="167" y="22" fill="#0f766e" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">✅ Optimised form (WCAG 2.2 + Target Size)</text>
+                    <text x="25" y="42" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="10" font-weight="bold">Full name (*):</text>
+                    <rect x="25" y="47" width="285" height="32" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="2.5"/>
+                    <text x="35" y="67" fill="#0f172a" font-family="Inter, sans-serif" font-size="10">Carmen García</text>
+                    <rect x="25" y="86" width="160" height="44" rx="6" fill="#1e3a8a"/>
+                    <text x="105" y="112" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Confirm order</text>
+                    <text x="195" y="105" fill="#115e59" font-family="Inter, sans-serif" font-size="9">• Explicit label + for</text>
+                    <text x="195" y="118" fill="#115e59" font-family="Inter, sans-serif" font-size="9">• Target Size ≥ 44x44px</text>
+                </g>
+            </svg></div><h3>Example 1: Atomic Design and tokens</h3><p>Apply colour, spacing and typography tokens to an atom, molecule, organism, template and page.</p><h3>Example 2: Accessible focus and target size</h3><p>Replace placeholder-only labelling and tiny controls with explicit labels, visible focus, feedback and sufficiently large targets.</p>
+<h2 id="sec9"><i class="fa-solid fa-triangle-exclamation"></i> 9. Common Errors</h2><div class="image-container"><svg viewBox="0 0 760 210" width="100%" height="210" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="210" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="380" y="28" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Common UI/UX errors and technical corrections</text>
+
+                <g transform="translate(25, 45)">
+                    <rect x="0" y="0" width="225" height="145" rx="6" fill="#ffffff" stroke="#b91c1c" stroke-width="1.5"/>
+                    <rect x="0" y="0" width="225" height="26" rx="6" fill="#fef2f2"/>
+                    <text x="112" y="18" fill="#b91c1c" font-family="Inter, sans-serif" font-size="10" font-weight="bold" text-anchor="middle">❌ Interaction errors</text>
+                    <text x="12" y="45" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• Removing focus con outline:none</text>
+                    <text x="12" y="65" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• Touch targets &lt; 24px</text>
+                    <text x="12" y="85" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• Missing state Hover/Focus</text>
+                    <rect x="10" y="105" width="205" height="28" rx="4" fill="#fee2e2"/>
+                    <text x="112" y="122" fill="#991b1b" font-family="Inter, sans-serif" font-size="9" font-weight="bold" text-anchor="middle">Solution: Focus visible (2.4.7)</text>
+                </g>
+
+                <g transform="translate(267, 45)">
+                    <rect x="0" y="0" width="225" height="145" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+                    <rect x="0" y="0" width="225" height="26" rx="6" fill="#fffbeb"/>
+                    <text x="112" y="18" fill="#d97706" font-family="Inter, sans-serif" font-size="10" font-weight="bold" text-anchor="middle">⚠️ Layout errors</text>
+                    <text x="12" y="45" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• Usar placeholder como label</text>
+                    <text x="12" y="65" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• Images without width/height (CLS)</text>
+                    <text x="12" y="85" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• Insufficient contrast (&lt; 4.5:1)</text>
+                    <rect x="10" y="105" width="205" height="28" rx="4" fill="#fef3c7"/>
+                    <text x="112" y="122" fill="#b45309" font-family="Inter, sans-serif" font-size="9" font-weight="bold" text-anchor="middle">Solution: Explicit label & Tokens</text>
+                </g>
+
+                <g transform="translate(510, 45)">
+                    <rect x="0" y="0" width="225" height="145" rx="6" fill="#ffffff" stroke="#6d28d9" stroke-width="1.5"/>
+                    <rect x="0" y="0" width="225" height="26" rx="6" fill="#f5f3ff"/>
+                    <text x="112" y="18" fill="#6d28d9" font-family="Inter, sans-serif" font-size="10" font-weight="bold" text-anchor="middle">ℹ️ Architecture errors</text>
+                    <text x="12" y="45" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• Confusing sitemap with robots.txt</text>
+                    <text x="12" y="65" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• Ignoring qualitative card sorting</text>
+                    <text x="12" y="85" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• No living style guide</text>
+                    <rect x="10" y="105" width="205" height="28" rx="4" fill="#ede9fe"/>
+                    <text x="112" y="122" fill="#6d28d9" font-family="Inter, sans-serif" font-size="9" font-weight="bold" text-anchor="middle">Solution: UX research & Design System</text>
+                </g>
+            </svg></div><ul><li>Choosing trends before understanding the problem.</li><li>Removing focus or ignoring keyboard access.</li><li>Using colour or icons as the only cue.</li><li>Small targets, poor contrast and placeholder-only labels.</li><li>Images without dimensions, causing CLS.</li><li>Unvalidated information architecture and undocumented components.</li></ul>
+<h2 id="sec10"><i class="fa-solid fa-diagram-project"></i> 10. Integrated Case Study: “Migas Amigas”</h2><div class="image-container"><svg viewBox="0 0 760 210" width="100%" height="210" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="210" rx="8" fill="#fffbeb" stroke="#d97706" stroke-width="1.5"/>
+                <text x="380" y="28" fill="#451a03" font-family="'Merriweather', serif" font-size="14" font-weight="bold" text-anchor="middle">Integrated case study: platform architecture "Migas Amigas"</text>
+
+                <!-- Páginas del Sitio -->
+                <g transform="translate(20, 45)">
+                    <rect x="0" y="0" width="130" height="135" rx="6" fill="#ffffff" stroke="#451a03" stroke-width="2"/>
+                    <rect x="0" y="0" width="130" height="24" rx="6" fill="#451a03"/>
+                    <text x="65" y="16" fill="#ffffff" font-family="Inter, sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle">1. Home (index.html)</text>
+                    <text x="10" y="42" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Banner Hero con SVG</text>
+                    <text x="10" y="58" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Accessible search</text>
+                    <text x="10" y="74" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Featured carousel</text>
+                    <text x="10" y="90" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• CTA a encargos</text>
+                </g>
+
+                <g transform="translate(165, 45)">
+                    <rect x="0" y="0" width="130" height="135" rx="6" fill="#ffffff" stroke="#451a03" stroke-width="2"/>
+                    <rect x="0" y="0" width="130" height="24" rx="6" fill="#451a03"/>
+                    <text x="65" y="16" fill="#ffffff" font-family="Inter, sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle">2. Catalogue (catalogo)</text>
+                    <text x="10" y="42" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Product grid</text>
+                    <text x="10" y="58" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Allergen filter</text>
+                    <text x="10" y="74" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Composite cards</text>
+                    <text x="10" y="90" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Atomic Design</text>
+                </g>
+
+                <g transform="translate(310, 45)">
+                    <rect x="0" y="0" width="130" height="135" rx="6" fill="#ffffff" stroke="#451a03" stroke-width="2"/>
+                    <rect x="0" y="0" width="130" height="24" rx="6" fill="#451a03"/>
+                    <text x="65" y="16" fill="#ffffff" font-family="Inter, sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle">3. Product page (producto)</text>
+                    <text x="10" y="42" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Image with width/height</text>
+                    <text x="10" y="58" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Zero CLS shifts</text>
+                    <text x="10" y="74" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Weight selector</text>
+                    <text x="10" y="90" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Nutrition table</text>
+                </g>
+
+                <g transform="translate(455, 45)">
+                    <rect x="0" y="0" width="130" height="135" rx="6" fill="#ffffff" stroke="#451a03" stroke-width="2"/>
+                    <rect x="0" y="0" width="130" height="24" rx="6" fill="#451a03"/>
+                    <text x="65" y="16" fill="#ffffff" font-family="Inter, sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle">4. About us (nosotros)</text>
+                    <text x="10" y="42" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Bakery story</text>
+                    <text x="10" y="58" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Quality seal</text>
+                    <text x="10" y="74" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Store map</text>
+                    <text x="10" y="90" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Galería artesanal</text>
+                </g>
+
+                <g transform="translate(600, 45)">
+                    <rect x="0" y="0" width="140" height="135" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+                    <rect x="0" y="0" width="140" height="24" rx="6" fill="#d97706"/>
+                    <text x="70" y="16" fill="#ffffff" font-family="Inter, sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle">5. Encargo (contacto)</text>
+                    <text x="10" y="42" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Formulario accesible</text>
+                    <text x="10" y="58" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Labels explícitos</text>
+                    <text x="10" y="74" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Validación inline</text>
+                    <text x="10" y="90" fill="#475569" font-family="Inter, sans-serif" font-size="8.5">• Target Size 48px</text>
+                </g>
+            </svg></div><h3>Guided platform development</h3><p><strong>Empathise:</strong> research customers and staff. <strong>Define:</strong> create a five-page architecture. <strong>Ideate:</strong> establish identity, style guide and tokens. <strong>Prototype:</strong> move from wireframes to a Figma component system. <strong>Test and implement:</strong> run usability and accessibility checks, then verify performance.</p>
+<h2 id="sec11"><i class="fa-solid fa-list-check"></i> 11. Summary</h2><div class="image-container"><svg viewBox="0 0 760 210" width="100%" height="210" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="210" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="380" y="28" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Visual summary: four foundations of web-interface planning</text>
+
+                <g transform="translate(25, 45)">
+                    <rect x="0" y="0" width="160" height="140" rx="6" fill="#ffffff" stroke="#3b82f6" stroke-width="2"/>
+                    <circle cx="80" cy="35" r="18" fill="#3b82f6"/>
+                    <text x="80" y="40" fill="#ffffff" font-family="Inter, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">1</text>
+                    <text x="80" y="70" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">UI/UX principles</text>
+                    <text x="12" y="92" fill="#475569" font-family="Inter, sans-serif" font-size="9">• Usability & HCI</text>
+                    <text x="12" y="108" fill="#475569" font-family="Inter, sans-serif" font-size="9">• WCAG (4.5:1 / 3:1)</text>
+                    <text x="12" y="124" fill="#475569" font-family="Inter, sans-serif" font-size="9">• Gestalt & UX laws</text>
+                </g>
+
+                <g transform="translate(205, 45)">
+                    <rect x="0" y="0" width="160" height="140" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+                    <circle cx="80" cy="35" r="18" fill="#0f766e"/>
+                    <text x="80" y="40" fill="#ffffff" font-family="Inter, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">2</text>
+                    <text x="80" y="70" fill="#0f766e" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Systems & tokens</text>
+                    <text x="12" y="92" fill="#475569" font-family="Inter, sans-serif" font-size="9">• Atomic Design</text>
+                    <text x="12" y="108" fill="#475569" font-family="Inter, sans-serif" font-size="9">• Design Tokens CSS</text>
+                    <text x="12" y="124" fill="#475569" font-family="Inter, sans-serif" font-size="9">• UI components</text>
+                </g>
+
+                <g transform="translate(385, 45)">
+                    <rect x="0" y="0" width="160" height="140" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+                    <circle cx="80" cy="35" r="18" fill="#d97706"/>
+                    <text x="80" y="40" fill="#ffffff" font-family="Inter, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">3</text>
+                    <text x="80" y="70" fill="#d97706" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Guides & brands</text>
+                    <text x="12" y="92" fill="#475569" font-family="Inter, sans-serif" font-size="9">• Style manual</text>
+                    <text x="12" y="108" fill="#475569" font-family="Inter, sans-serif" font-size="9">• Logotipo / SVG</text>
+                    <text x="12" y="124" fill="#475569" font-family="Inter, sans-serif" font-size="9">• Microcopy & voice</text>
+                </g>
+
+                <g transform="translate(565, 45)">
+                    <rect x="0" y="0" width="170" height="140" rx="6" fill="#ffffff" stroke="#6d28d9" stroke-width="2"/>
+                    <circle cx="85" cy="35" r="18" fill="#6d28d9"/>
+                    <text x="85" y="40" fill="#ffffff" font-family="Inter, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">4</text>
+                    <text x="85" y="70" fill="#6d28d9" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Research & prototypes</text>
+                    <text x="12" y="92" fill="#475569" font-family="Inter, sans-serif" font-size="9">• Design Thinking (5 phases)</text>
+                    <text x="12" y="108" fill="#475569" font-family="Inter, sans-serif" font-size="9">• Card Sorting & Testing</text>
+                    <text x="12" y="124" fill="#475569" font-family="Inter, sans-serif" font-size="9">• Wireframe -> Mockup</text>
+                </g>
+            </svg></div><div class="key-ideas-box"><h3>Key ideas</h3><ul><li>UI is the interface; UX is the complete experience.</li><li>Accessibility, usability and performance are requirements.</li><li>Gestalt and UX laws help explain perception and behaviour.</li><li>Tokens, components and style guides create consistency.</li><li>Research and prototyping reduce uncertainty.</li></ul></div>
+<h2 id="sec12"><i class="fa-solid fa-pen-to-square"></i> 12. Activities</h2><div class="activities-section"><h3>Comprehension</h3><ol><li>Explain UI, UX, usability and accessibility.</li><li>Apply three Gestalt laws to a real interface.</li><li>Identify Nielsen-heuristic violations on a website.</li></ol><h3>Application</h3><ol><li>Create colour and typography tokens.</li><li>Document six states of a button and form field.</li><li>Run a small card-sorting exercise and draw the navigation map.</li></ol><h3>Professional task</h3><p>Create a responsive, accessible style guide and prototype for “Migas Amigas”; justify decisions with user evidence and verify contrast, focus, target size and layout stability.</p></div><footer class="document-footer">© Ignacio García</footer></main></div></body>
+</html>
