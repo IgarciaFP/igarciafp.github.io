@@ -475,6 +475,154 @@
             margin-top: 45px;
         }
 
+        /* Identidad visual de bloques pedagógicos */
+        .curiosity-card,
+        .activity-callout,
+        .expansion-card,
+        .activities-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .curiosity-card::before,
+        .activity-callout::before,
+        .expansion-card::before {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            line-height: 1.5;
+        }
+
+        /* Curiosidades y notas que amplían una idea */
+        .didactic-note.curiosity-card {
+            background: linear-gradient(135deg, #faf5ff 0%, #f5f3ff 100%);
+            border-color: #ddd6fe;
+            border-left-color: var(--purple-color);
+            box-shadow: 0 3px 14px rgba(109, 40, 217, 0.08);
+        }
+
+        .curiosity-card::before {
+            content: "\f0eb  CURIOSIDAD";
+            font-family: "Font Awesome 6 Free", "Inter", sans-serif;
+            color: #5b21b6;
+            background: #ede9fe;
+            border: 1px solid #c4b5fd;
+        }
+
+        .didactic-note.curiosity-card blockquote {
+            margin: 0;
+            border-left-color: #a78bfa;
+        }
+
+        /* Enlaces y materiales para ampliar */
+        .resource-card.expansion-card {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 75%);
+            border-color: #99f6e4;
+            border-left-color: var(--secondary-color);
+            box-shadow: 0 3px 14px rgba(15, 118, 110, 0.09);
+        }
+
+        .expansion-card::before {
+            content: "\f02d  PARA AMPLIAR";
+            font-family: "Font Awesome 6 Free", "Inter", sans-serif;
+            color: #115e59;
+            background: #ccfbf1;
+            border: 1px solid #5eead4;
+        }
+
+        .expansion-card .resource-title,
+        .expansion-card strong {
+            color: #115e59;
+        }
+
+        .expansion-card a {
+            color: #115e59;
+            text-decoration-color: #0d9488;
+            text-underline-offset: 3px;
+        }
+
+        .expansion-card a:hover,
+        .expansion-card a:focus-visible {
+            color: #134e4a;
+            background: #ccfbf1;
+            outline: 3px solid rgba(13, 148, 136, 0.25);
+            outline-offset: 2px;
+            border-radius: 3px;
+        }
+
+        /* Actividades prácticas */
+        .activity-card.activity-callout {
+            background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%);
+            border-color: #fed7aa;
+            border-left-color: var(--accent-color);
+            box-shadow: 0 3px 14px rgba(217, 119, 6, 0.09);
+        }
+
+        .activity-callout::before {
+            content: "\f303  ACTIVIDAD";
+            font-family: "Font Awesome 6 Free", "Inter", sans-serif;
+            color: #92400e;
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+        }
+
+        .activity-callout strong {
+            color: #92400e;
+        }
+
+        .activity-callout a {
+            color: #92400e;
+            text-decoration-color: #d97706;
+            text-underline-offset: 3px;
+        }
+
+        .activity-callout a:hover,
+        .activity-callout a:focus-visible {
+            color: #78350f;
+            background: #fef3c7;
+            outline: 3px solid rgba(217, 119, 6, 0.25);
+            outline-offset: 2px;
+            border-radius: 3px;
+        }
+
+        /* Bloque final de actividades, si se incorpora */
+        .activities-section {
+            background: linear-gradient(180deg, #fffbeb 0%, #ffffff 24%);
+            border: 2px solid #f59e0b;
+            border-top-width: 7px;
+            padding: 34px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(146, 64, 14, 0.10);
+        }
+
+        .activities-section h2 {
+            color: #92400e;
+            margin-top: 0;
+            border-bottom-color: #fde68a;
+        }
+
+        .activities-section h3 {
+            color: #9a3412;
+            padding-left: 13px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .activities-section li::marker {
+            color: #b45309;
+            font-weight: 700;
+        }
+
+        @media (max-width: 560px) {
+            .activities-section {
+                padding: 24px 18px;
+            }
+        }
+
         /* Imágenes e Ilustraciones Vectoriales Embebidas */
         .image-container {
             text-align: center;
@@ -727,7 +875,7 @@ documentos a alojar periódicos, tiendas, aplicaciones, etc.</p>
 <p>A su vez, la fiera competencia por dominar el mercado de la
 incipiente World Wide Web desató la conocida como “<strong>Guerra de los
 Navegadores</strong>”.</p>
-<div class="resource-card">
+<div class="resource-card expansion-card">
 <p><strong>Amplía conceptos:</strong> Visualiza este documental sobre la
 guerra de los navegadores y la primera edad de la www:
 https://youtu.be/zZmhnIa97NU</p>
@@ -742,7 +890,7 @@ que utilice una interfaz Web.</p>
 <strong>navegador</strong>, por su parte, es el programa que usamos para
 visitar páginas; un <strong>buscador</strong> es un servicio que ayuda a
 encontrarlas.</p>
-<div class="resource-card">
+<div class="resource-card expansion-card">
 <p><a href="https://info.cern.ch/" target="_blank" rel="noopener noreferrer"><strong>Explora</strong>: la primera
 web del CERN</a> · Entra en «Browse the first website»: <a href="https://info.cern.ch/" target="_blank" rel="noopener noreferrer">https://info.cern.ch/</a></p>
 <p><a href="https://www.youtube.com/watch?v=sSqZ_hJu9zA" target="_blank" rel="noopener noreferrer"><strong>Vídeo:</strong>
@@ -912,7 +1060,7 @@ V8                 	motor JavaScript</code></pre>
 aplicación puede mostrar diferencias entre navegadores o por qué una
 característica de JavaScript puede depender de la versión del motor.</p>
 
-<div class="activity-card">
+<div class="activity-card activity-callout">
 <p><strong>Práctica ·</strong>¿Cuál es la combinación de navegadores que
 aportaría mayor diversidad de motores actualmente en tu entorno de
 trabajo? Investiga, verifica la actualidad de tu información e instala
@@ -932,10 +1080,10 @@ aplicación se ejecuta.</p>
 <div class="image-container"><img alt="Representación del DOM como árbol de nodos" src="assets/u01/ilustracion-10.webp" width="1312" height="1199" loading="lazy" decoding="async"></div><p>El DOM también proporciona la base para eventos y para muchas de las
 APIs que relacionan JavaScript con los documentos.</p>
 
-<div class="resource-card">
+<div class="resource-card expansion-card">
 <p><strong>+info</strong>: <a href="https://developer.mozilla.org/es/docs/Web/API/Document_Object_Model" target="_blank" rel="noopener noreferrer">https://developer.mozilla.org/es/docs/Web/API/Document_Object_Model</a></p>
 </div>
-<div class="activity-card">
+<div class="activity-card activity-callout">
 <p><strong>Actividad ·</strong> En la página local del final, cambia
 #titulo con las Chrome Devtools desde Console con
 document.querySelector("#titulo").textContent = "Hola". Recarga. Clave:
@@ -966,7 +1114,7 @@ documentación de las APIs; por ejemplo, su página de <code>localStorage</code>
 característica ampliamente disponible y ofrece la tabla
 correspondiente.</p>
 
-<div class="resource-card">
+<div class="resource-card expansion-card">
 <p><strong>Visita:</strong> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage" target="_blank" rel="noopener noreferrer">https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage</a></p>
 </div>
 
@@ -980,7 +1128,7 @@ Safari/WebKit, cuando esté disponible</code></pre>
 representan necesariamente implementaciones web totalmente
 distintas.</p>
 
-<div class="activity-card">
+<div class="activity-card activity-callout">
 <p><strong>Actividad ·</strong> Ejecuta CSS.supports("display", "grid")
 en dos navegadores y registra versiones y resultados. Clave: true indica
 soporte declarado de esa combinación; no sustituye comprobar el diseño
@@ -1009,13 +1157,13 @@ que estas aparecen tanto en peticiones como en respuestas.</p>
 
 <h3 id="sec3_1">3.1. Handshake HTTPS</h3>
 
-<div class="image-container"><img alt="Fases principales del establecimiento de una conexión HTTPS" src="assets/u01/ilustracion-14.webp" width="1352" height="901" loading="lazy" decoding="async"></div><div class="didactic-note">
+<div class="image-container"><img alt="Fases principales del establecimiento de una conexión HTTPS" src="assets/u01/ilustracion-14.webp" width="1352" height="901" loading="lazy" decoding="async"></div><div class="didactic-note curiosity-card">
 <blockquote>
 <p>HTTP define cómo intercambian mensajes cliente y servidor; HTTPS
 protege esa comunicación mediante TLS.</p>
 </blockquote>
 </div>
-<div class="activity-card">
+<div class="activity-card activity-callout">
 <p><strong>Actividad ·</strong> 4 min · Explica qué aporta HTTPS frente
 a un negocio fraudulento.</p>
 </div>
@@ -1176,10 +1324,9 @@ datos se devuelven en formato JSON dentro del cuerpo.</p>
 leer, PUT o PATCH para actualizar y DELETE para eliminar. Es una
 convención de diseño, no una equivalencia universal: POST solicita
 procesamiento y PUT también puede crear el recurso de destino.</p>
-<div class="activity-card">
+<div class="activity-card activity-callout">
 <p>Actividad: Lee el siguiente artículo de la web de MDN:</p>
-</div>
-<div class="resource-card">
+
 <p><a href="https://developer.mozilla.org/es/docs/Web/HTTP/Guides/Overview" target="_blank" rel="noopener noreferrer">https://developer.mozilla.org/es/docs/Web/HTTP/Guides/Overview</a></p>
 </div>
 <h2 id="sec4"><i class="fa-solid fa-server" aria-hidden="true"></i> 4. Cabeceras HTTP y estructura de los mensajes</h2>
@@ -1206,10 +1353,9 @@ sin un salto de línea final. Content-Length cuenta bytes, no caracteres:
 <strong>el símbolo «º» ocupa dos bytes en UTF-8.</strong> En
 aplicaciones reales conviene dejar este cálculo a la biblioteca
 HTTP.</p>
-<div class="activity-card">
+<div class="activity-card activity-callout">
 <p><strong>Actividad</strong></p>
-</div>
-<div class="resource-card">
+
 <p>Escribe en Console new
 TextEncoder().encode('{"nombre":"Ana","curso":"4º ESO"}').length y
 comprueba el resultado</p>
@@ -1764,10 +1910,9 @@ opaco: no tiene por qué ser un número de versión ni un hash.</p>
 contenido</strong> facilita usar caché prolongada. En datos
 personalizados conviene decidir explícitamente si pueden almacenarse y
 dónde.</p>
-<div class="activity-card">
+<div class="activity-card activity-callout">
 <p><strong>Actividad</strong></p>
-</div>
-<div class="resource-card">
+
 <p>Investiga cómo vaciar la caché en Devtools. Recarga la página del
 centro con caché habilitada y luego con Disable cache activo,
 manteniendo DevTools abierto. Registra estado y transferencia. Pista:
@@ -1785,7 +1930,7 @@ página. Referencia: MDN.</p>
 <p>La política de mismo origen evita, por ejemplo, que una página
 maliciosa lea libremente datos de otra web donde tienes sesión iniciada.
 CORS permite autorizar excepciones. MDN: política de mismo origen.</p>
-<div class="image-container"><img alt="Funcionamiento de CORS entre distintos orígenes" src="assets/u01/ilustracion-18.webp" width="1352" height="901" loading="lazy" decoding="async"></div><div class="activity-card">
+<div class="image-container"><img alt="Funcionamiento de CORS entre distintos orígenes" src="assets/u01/ilustracion-18.webp" width="1352" height="901" loading="lazy" decoding="async"></div><div class="activity-card activity-callout">
 <p><strong>Actividad ·</strong> Desde https://aula.example compara /api
 y https://aula.example:8443/api. Señala cuál de las dos peticiones
 podría requerir autorización CORS para lectura desde JavaScript.</p>
