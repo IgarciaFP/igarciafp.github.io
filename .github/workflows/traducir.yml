@@ -3,9 +3,9 @@ name: Traducción Automática Multi-Carpeta
 on:
   push:
     paths:
-      - 'ciclos/daw/diw/u01_es.html'
-      - 'ciclos/daw/dwec/u01_es.html'
-      - 'ciclos/daw/ssii/u01_es.html'
+      - 'ciclos/diw/u01_es.html'
+      - 'ciclos/dwec/u01_es.html'
+      - 'ciclos/ssii/u01_es.html'
 
 permissions:
   contents: write
@@ -36,9 +36,9 @@ jobs:
 
           # Lista de las rutas exactas de tus archivos en el repositorio
           archivos_origen = [
-              'ciclos/daw/diw/u01_es.html',
-              'ciclos/daw/dwec/u01_es.html',
-              'ciclos/daw/ssii/u01_es.html'
+              'ciclos/diw/u01_es.html',
+              'ciclos/dwec/u01_es.html',
+              'ciclos/ssii/u01_es.html'
           ]
 
           translator = GoogleTranslator(source='es', target='en')
@@ -72,5 +72,5 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@://github.com"
           git config --local user.name "github-actions[bot]"
-          git add ciclos/daw/diw/u01_en.html ciclos/daw/dwec/u01_en.html ciclos/daw/ssii/u01_en.html
+          git add ciclos/diw/u01_en.html ciclos/dwec/u01_en.html ciclos/ssii/u01_en.html
           git diff --staged --quiet || (git commit -m "Traducción automática de unidades HTML" && git push)
