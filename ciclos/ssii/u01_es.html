@@ -11,708 +11,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #1e3a8a;
-            --primary-light: #eff6ff;
-            --primary-border: #3b82f6;
-            --secondary-color: #0f766e;
-            --secondary-light: #f0fdf4;
-            --accent-color: #d97706;
-            --accent-light: #fffbeb;
-            --danger-color: #b91c1c;
-            --danger-light: #fef2f2;
-            --purple-color: #6d28d9;
-            --purple-light: #f5f3ff;
-            --text-dark: #0f172a;
-            --text-muted: #475569;
-            --bg-page: #f1f5f9;
-            --bg-card: #ffffff;
-            --border-color: #cbd5e1;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: var(--text-dark);
-            background-color: var(--bg-page);
-            line-height: 1.7;
-            padding: 30px 20px;
-        }
-
-        .document-wrapper {
-            max-width: 1350px;
-            width: 100%;
-            margin: 0 auto;
-            display: block;
-        }
-
-        /* Índice lateral flotante deslizable (Slide-out Sidebar) */
-        .sidebar-toc {
-            position: fixed;
-            top: 20px;
-            left: 0;
-            width: 310px;
-            max-height: calc(100vh - 40px);
-            background: var(--bg-card);
-            padding: 22px 20px;
-            border-radius: 0 12px 12px 0;
-            border: 1px solid var(--border-color);
-            border-left: none;
-            box-shadow: 6px 0 25px rgba(0, 0, 0, 0.15);
-            z-index: 9999;
-            transform: translateX(-292px);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow-y: auto;
-        }
-
-        /* Pestaña indicadora al aproximar el ratón al borde izquierdo */
-        .sidebar-toc::after {
-            content: "\f0c9  ÍNDICE";
-            font-family: 'Font Awesome 6 Free', 'Inter', sans-serif;
-            font-weight: 900;
-            font-size: 0.78rem;
-            position: absolute;
-            top: 20px;
-            right: -88px;
-            width: 88px;
-            height: 40px;
-            background: var(--primary-color);
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            border-radius: 0 8px 8px 0;
-            cursor: pointer;
-            box-shadow: 4px 2px 10px rgba(0,0,0,0.15);
-            letter-spacing: 0.5px;
-        }
-
-        .sidebar-toc:hover {
-            transform: translateX(0);
-        }
-
-        .sidebar-toc h4 {
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--primary-color);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 2px solid var(--primary-light);
-            padding-bottom: 8px;
-        }
-
-        .sidebar-toc ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .sidebar-toc li {
-            margin-bottom: 6px;
-        }
-
-        .sidebar-toc a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.86rem;
-            display: block;
-            padding: 5px 8px;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .sidebar-toc a:hover {
-            background-color: var(--primary-light);
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        /* Contenido Principal a Ancho Completo (100% Flexible) */
-        .document-container {
-            background: var(--bg-card);
-            padding: 50px 65px;
-            border-radius: 12px;
-            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
-            border: 1px solid var(--border-color);
-            width: 100%;
-        }
-
-        /* Encabezados y Jerarquía */
-        .header-banner {
-            border-bottom: 4px solid var(--primary-color);
-            padding-bottom: 25px;
-            margin-bottom: 40px;
-        }
-
-        .module-tag {
-            display: inline-block;
-            background-color: var(--primary-color);
-            color: white;
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 5px 14px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 14px;
-        }
-
-        h1 {
-            font-family: 'Merriweather', Georgia, serif;
-            font-size: 2.3rem;
-            color: var(--primary-color);
-            line-height: 1.25;
-            font-weight: 700;
-        }
-
-        h2 {
-            font-family: 'Merriweather', Georgia, serif;
-            font-size: 1.6rem;
-            color: var(--primary-color);
-            margin-top: 50px;
-            margin-bottom: 22px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--primary-light);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            scroll-margin-top: 20px;
-        }
-
-        h3 {
-            font-size: 1.28rem;
-            color: var(--secondary-color);
-            margin-top: 32px;
-            margin-bottom: 16px;
-            font-weight: 600;
-            scroll-margin-top: 20px;
-        }
-
-        h4 {
-            font-size: 1.08rem;
-            color: var(--text-dark);
-            margin-top: 24px;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        p {
-            margin-bottom: 18px;
-            text-align: justify;
-            font-size: 1rem;
-            color: var(--text-dark);
-        }
-
-        strong {
-            color: #000000;
-            font-weight: 600;
-        }
-
-        ul, ol {
-            margin-bottom: 22px;
-            padding-left: 28px;
-        }
-
-        li {
-            margin-bottom: 8px;
-        }
-
-        /* Cajas Didácticas Especiales */
-        .objectives-box {
-            background-color: var(--primary-light);
-            border-left: 5px solid var(--primary-border);
-            padding: 26px;
-            border-radius: 0 8px 8px 0;
-            margin: 30px 0;
-        }
-
-        .objectives-box h3 {
-            color: var(--primary-color);
-            margin-top: 0;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .didactic-note {
-            background-color: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-left: 5px solid #0284c7;
-            padding: 20px 24px;
-            border-radius: 0 8px 8px 0;
-            margin: 25px 0;
-        }
-
-        .didactic-note h5 {
-            color: #0369a1;
-            font-size: 1rem;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .didactic-note p {
-            margin-bottom: 0;
-            font-size: 0.95rem;
-        }
-
-        /* Cajas de Recursos e Hipervínculos */
-        .resource-card {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-left: 5px solid var(--primary-color);
-            border-radius: 8px;
-            padding: 20px 24px;
-            margin: 25px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .resource-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .resource-title {
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .resource-badge {
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 12px;
-            text-transform: uppercase;
-        }
-
-        .badge-video { background-color: #fee2e2; color: #dc2626; }
-        .badge-tool { background-color: #e0e7ff; color: #4338ca; }
-        .badge-reading { background-color: #dcfce7; color: #15803d; }
-        .badge-course { background-color: #fef3c7; color: #b45309; }
-
-        .resource-description {
-            font-size: 0.94rem;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-
-        .resource-link-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background-color: var(--primary-light);
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            padding: 8px 16px;
-            border-radius: 6px;
-            border: 1px solid var(--primary-border);
-            width: fit-content;
-            transition: all 0.2s ease;
-        }
-
-        .resource-link-btn:hover {
-            background-color: var(--primary-color);
-            color: #ffffff;
-        }
-
-        /* Tarjetas Leyes UX y Conceptos Avanzados */
-        .ux-law-card {
-            background-color: #ffffff;
-            border: 1px solid var(--border-color);
-            border-left: 5px solid var(--purple-color);
-            padding: 20px 24px;
-            border-radius: 0 8px 8px 0;
-            margin-bottom: 18px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-
-        .ux-law-card h5 {
-            font-size: 1.08rem;
-            color: var(--purple-color);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .ux-law-card p {
-            margin-bottom: 0;
-            font-size: 0.96rem;
-        }
-
-        .advanced-concept-box {
-            background-color: #fcfcfc;
-            border: 1px solid #cbd5e1;
-            border-left: 5px solid var(--secondary-color);
-            padding: 22px 26px;
-            border-radius: 0 8px 8px 0;
-            margin: 25px 0;
-        }
-
-        .advanced-concept-box h4 {
-            color: var(--secondary-color);
-            margin-top: 0;
-            font-size: 1.12rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Ejemplos y Errores */
-        .example-box {
-            background-color: var(--secondary-light);
-            border: 1px solid #bbf7d0;
-            border-left: 5px solid var(--secondary-color);
-            padding: 25px;
-            border-radius: 0 8px 8px 0;
-            margin: 30px 0;
-        }
-
-        .example-box h3 {
-            color: var(--secondary-color);
-            margin-top: 0;
-            font-size: 1.18rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .error-box {
-            background-color: var(--danger-light);
-            border: 1px solid #fecaca;
-            border-left: 5px solid var(--danger-color);
-            padding: 25px;
-            border-radius: 0 8px 8px 0;
-            margin: 30px 0;
-        }
-
-        .error-box h3,
-        .error-box h4 {
-            color: var(--danger-color);
-            margin-top: 0;
-            font-size: 1.18rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .case-study-box {
-            background-color: #ffffff;
-            border: 2px solid var(--primary-color);
-            padding: 35px;
-            border-radius: 12px;
-            margin: 35px 0;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-        }
-
-        .case-study-box h3 {
-            color: var(--primary-color);
-            margin-top: 0;
-            border-bottom: 2px solid var(--primary-light);
-            padding-bottom: 12px;
-            font-size: 1.4rem;
-        }
-
-        .phase-block {
-            background-color: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-left: 5px solid var(--accent-color);
-            padding: 22px 26px;
-            border-radius: 0 8px 8px 0;
-            margin: 25px 0;
-        }
-
-        .phase-block h4 {
-            color: var(--accent-color);
-            margin-top: 0;
-            font-size: 1.18rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .key-ideas-box {
-            background-color: var(--accent-light);
-            border: 1px solid #fde68a;
-            border-left: 5px solid var(--accent-color);
-            padding: 28px;
-            border-radius: 0 8px 8px 0;
-            margin: 30px 0;
-        }
-
-        .key-ideas-box h3 {
-            color: var(--accent-color);
-            margin-top: 0;
-        }
-
-        .activities-section {
-            background-color: #fafafa;
-            border: 1px solid var(--border-color);
-            padding: 32px;
-            border-radius: 10px;
-            margin-top: 45px;
-        }
-
-        /* Imágenes e Ilustraciones Vectoriales Embebidas */
-        .image-container {
-            text-align: center;
-            margin: 35px 0;
-            background: #ffffff;
-            padding: 18px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.03);
-        }
-
-        .image-container svg {
-            max-width: 100%;
-            height: auto;
-            border-radius: 6px;
-        }
-
-        .image-caption {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-top: 12px;
-            font-style: italic;
-            font-weight: 500;
-        }
-
-        /* Tablas */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 28px 0;
-            font-size: 0.96rem;
-        }
-
-        th, td {
-            padding: 14px 18px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            background-color: var(--primary-light);
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9fafb;
-        }
-
-        .table-scroll {
-            width: 100%;
-            overflow-x: auto;
-            margin: 28px 0;
-        }
-
-        .table-scroll table {
-            min-width: 720px;
-            margin: 0;
-        }
-
-        /* Código */
-        code {
-            font-family: 'Fira Code', Consolas, Monaco, monospace;
-            background-color: #f1f5f9;
-            color: #0f172a;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.9rem;
-        }
-
-        pre {
-            background-color: #0f172a;
-            color: #f8fafc;
-            padding: 18px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-family: 'Fira Code', Consolas, Monaco, monospace;
-            font-size: 0.9rem;
-            margin: 22px 0;
-        }
-
-        blockquote {
-            font-style: italic;
-            border-left: 4px solid var(--primary-color);
-            padding-left: 18px;
-            margin: 24px 0;
-            color: var(--text-muted);
-        }
-
-        @media print {
-            body {
-                background-color: #ffffff;
-                padding: 0;
-            }
-            .sidebar-toc {
-                display: none;
-            }
-            .document-container {
-                box-shadow: none;
-                border: none;
-                padding: 0;
-            }
-            .ux-law-card, .example-box, .error-box, .resource-card, .advanced-concept-box, .phase-block {
-                break-inside: avoid;
-            }
-        }
-
-        @media (max-width: 992px) {
-            .document-container {
-                padding: 30px 20px;
-            }
-            .sidebar-toc {
-                width: 280px;
-                transform: translateX(-265px);
-            }
-            .sidebar-toc::after {
-                right: -80px;
-                width: 80px;
-            }
-        }
-    </style>
-<style>
-        .header-subtitle {
-            margin-top: 10px;
-            margin-bottom: 0;
-            color: var(--text-muted);
-            font-size: 1.08rem;
-            text-align: left;
-        }
-
-        .image-container img {
-            display: block;
-            width: 100%;
-            max-width: 100%;
-            height: auto;
-            margin: 0 auto;
-            border-radius: 6px;
-        }
-
-        .activity-card {
-            background-color: var(--accent-light);
-            border: 1px solid #fde68a;
-            border-left: 5px solid var(--accent-color);
-            padding: 20px 24px;
-            border-radius: 0 8px 8px 0;
-            margin: 25px 0;
-        }
-
-        .activity-card h4,
-        .activities-section h3 {
-            margin-top: 0;
-        }
-
-        .activity-card p:last-child,
-        .didactic-note p:last-child {
-            margin-bottom: 0;
-        }
-
-        .activities-section .evaluation-step {
-            margin-bottom: 8px;
-            padding-left: 0;
-            text-align: left;
-        }
-
-        .activities-section .evaluation-question {
-            margin-bottom: 9px;
-            padding: 8px 12px;
-            background: #ffffff;
-            border-left: 3px solid var(--accent-color);
-            text-align: left;
-        }
-
-        .sidebar-toc a.subsection-link {
-            padding-left: 20px;
-            font-size: 0.82rem;
-        }
-
-        h4.numbered-subsection {
-            color: var(--text-dark);
-            scroll-margin-top: 20px;
-        }
-
-        .document-footer {
-            margin-top: 55px;
-            padding-top: 18px;
-            border-top: 1px solid var(--border-color);
-            color: var(--text-muted);
-            font-size: 0.88rem;
-            text-align: center;
-        }
-
-        main a {
-            color: var(--primary-color);
-            overflow-wrap: anywhere;
-        }
-
-        @media (max-width: 700px) {
-            h1 { font-size: 1.85rem; }
-            h2 { font-size: 1.38rem; }
-            h3 { font-size: 1.15rem; }
-            .image-container { padding: 8px; margin: 24px 0; }
-            .activities-section { padding: 22px 18px; }
-        }
-
-        @media print {
-            h2, h3, h4 { break-after: avoid-page; }
-            .image-container, .activity-card, .didactic-note { break-inside: avoid; }
-            .image-container img { max-height: 235mm; object-fit: contain; }
-        }
-
-        .header-top-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 14px;
-        }
-        .header-top-row .module-tag { margin-bottom: 0; }
-        .language-switch {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 7px 13px;
-            border: 1px solid var(--primary-border);
-            border-radius: 7px;
-            background: var(--primary-light);
-            color: var(--primary-color);
-            font-size: 0.88rem;
-            font-weight: 700;
-            text-decoration: none;
-            white-space: nowrap;
-            transition: background-color .2s ease, color .2s ease;
-        }
-        .language-switch:hover { background: var(--primary-color); color: #fff; }
-        @media (max-width: 560px) {
-            .header-top-row { align-items: flex-start; }
-            .language-switch { font-size: 0.8rem; padding: 6px 10px; }
-        }
-</style></head>
+        <link rel="stylesheet" href="u01.css">
+</head>
 <body>
 <nav class="sidebar-toc" aria-label="Índice de contenidos"><h4><i class="fa-solid fa-list-ol" aria-hidden="true"></i> Contenidos</h4><ul><li><a href="#evaluacion-inicial">Evaluación inicial</a></li><li><a href="#sec1">1. Introducción y definiciones previas</a></li><li><a href="#sec1_1" class="subsection-link">1.1. Hardware y Software</a></li><li><a href="#sec1_2" class="subsection-link">1.2. Informática y Ordenador</a></li><li><a href="#sec1_3" class="subsection-link">1.3. Digital</a></li><li><a href="#sec2">2. Comunicación de la información</a></li><li><a href="#sec2_1" class="subsection-link">2.1. Elementos de un sistema de comunicación</a></li><li><a href="#sec3">3. Representación interna de la información</a></li><li><a href="#sec3_1" class="subsection-link">3.1. Unidades y magnitudes informáticas</a></li><li><a href="#sec3_2" class="subsection-link">3.2. Sistemas de numeración</a></li><li><a href="#sec3_3" class="subsection-link">3.3. Representación de la información</a></li><li><a href="#sec4">4. Características de un ordenador digital</a></li><li><a href="#sec4_1" class="subsection-link">4.1. Longitud de palabra:</a></li><li><a href="#sec4_2" class="subsection-link">4.2. Memoria Principal (RAM)</a></li><li><a href="#sec4_3" class="subsection-link">4.3. Memoria Secundaria</a></li><li><a href="#sec4_4" class="subsection-link">4.4. Ancho de banda</a></li><li><a href="#sec4_5" class="subsection-link">4.5. Frecuencia de reloj</a></li><li><a href="#sec4_6" class="subsection-link">4.6. MIPS (Millones de Instrucciones por segundo)</a></li><li><a href="#sec4_7" class="subsection-link">4.7. MFLOPS</a></li><li><a href="#sec4_8" class="subsection-link">4.8. Test sintéticos (Benchmarks)</a></li><li><a href="#sec5">5. Componentes físicos. Arquitectura Von Neumann</a></li><li><a href="#sec5_1" class="subsection-link">5.1. Introducción. Arquitectura Von Neumann</a></li><li><a href="#sec5_2" class="subsection-link">5.2. Componentes. Bloques funcionales de la CPU</a></li><li><a href="#sec5_3" class="subsection-link">5.3. Función y Propósito de la Memoria Interna</a></li><li><a href="#sec5_4" class="subsection-link">5.4. Buses de E/S</a></li><li><a href="#sec5_5" class="subsection-link">5.5. Periféricos</a></li><li><a href="#sec6">6. Componentes lógicos: Software</a></li><li><a href="#sec6_1" class="subsection-link">6.1. Design Thinking</a></li><li><a href="#sec6_2" class="subsection-link">6.2. Recursos</a></li></ul></nav>
 <div class="document-wrapper"><main class="document-container"><div class="header-banner"><div class="header-top-row"><span class="module-tag">Arquitectura de Ordenadores • Unidad Didáctica 01</span><a class="language-switch" href="u01_en.html" hreflang="en" lang="en" aria-label="Read this page in English"><i class="fa-solid fa-language" aria-hidden="true"></i> English</a></div><h1>UD01 Arquitectura de un ordenador</h1><p class="header-subtitle">Componentes físicos y lógicos</p></div><section class="activities-section" id="evaluacion-inicial"><h3><i class="fa-solid fa-clipboard-question" aria-hidden="true"></i> Evaluación inicial de la unidad</h3>
@@ -728,7 +28,7 @@
 <p class="evaluation-question">3. ¿Qué es el código binario?</p>
 <p class="evaluation-question">4. ¿Para qué sirven los drivers o controladores?</p>
 <p class="evaluation-question">5. ¿Qué función tienen los periféricos de un sistema informático?</p>
-</section><h2 id="sec1"><i class="fa-solid fa-microchip" aria-hidden="true"></i> 1. Introducción y definiciones previas</h2>
+</section><section class="content-section section-theme--fundamentos" aria-labelledby="sec1"><h2 id="sec1"><i class="fa-solid fa-microchip" aria-hidden="true"></i> 1. Introducción y definiciones previas</h2>
 <h3 id="sec1_1">1.1. Hardware y Software</h3>
 <p>Entendemos por arquitectura de un ordenador las partes que lo
 componen, así podemos hablar de dos componentes básicos en un
@@ -778,7 +78,7 @@ máquina que no haría nada.</p>
 </svg>
 <figcaption id="fig-hardware-software-caption" class="image-caption">El hardware ejecuta las instrucciones y procesa los datos que proporciona el software.</figcaption>
 </figure>
-<div class="didactic-note"><h5><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Recuerda:</h5><p>Si lo podemos tocar es hardware (componente físico), si es intangible es software (componente lógico).</p></div><h3 id="sec1_2">1.2. Informática y Ordenador</h3>
+<div class="didactic-note memory-callout"><h5><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Recuerda:</h5><p>Si lo podemos tocar es hardware (componente físico), si es intangible es software (componente lógico).</p></div><h3 id="sec1_2">1.2. Informática y Ordenador</h3>
 <p>La <strong>informática</strong> es la ciencia que estudia la
 adquisición, representación, tratamiento y transmisión de la
 información, de manera automática mediante máquinas denominadas
@@ -793,11 +93,11 @@ la información resultante a través de un medio de salida; todo ello sin
 intervención humana, utilizando para ello un conjunto de instrucciones,
 es decir, un programa previamente almacenado en la memoria del
 ordenador.</p>
-<div class="didactic-note"><p>¿Sabías que...?</p><p>El término informática proviene del francés informatique, implementado por el ingeniero Philippe Dreyfus a comienzos de la década del '60. La palabra es, a su vez, un acrónimo de information y automatique.</p></div><p>El concepto de información supera al de “dato” (“Antecedente
+<div class="didactic-note memory-callout"><p>¿Sabías que...?</p><p>El término informática proviene del francés informatique, implementado por el ingeniero Philippe Dreyfus a comienzos de la década del '60. La palabra es, a su vez, un acrónimo de information y automatique.</p></div><p>El concepto de información supera al de “dato” (“Antecedente
 necesario para llegar al conocimiento exacto de algo o para deducir las
 consecuencias legítimas de un hecho”, o “Información dispuesta de manera
 adecuada para su tratamiento por un ordenador”).</p>
-<div class="didactic-note"><h5><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Recuerda:</h5><p>Un ordenador es un dispositivo electrónico y digital que procesa información siguiendo unas instrucciones (programa almacenado).</p></div><p><strong>Modelo de caja negra.</strong></p>
+<div class="didactic-note memory-callout"><h5><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Recuerda:</h5><p>Un ordenador es un dispositivo electrónico y digital que procesa información siguiendo unas instrucciones (programa almacenado).</p></div><p><strong>Modelo de caja negra.</strong></p>
 <p>En la teoría de sistemas, un modelo de caja negra es un sistema que
 recibe una serie de datos de entrada, los procesa y emite una
 información de salida. Podemos considerar por tanto un ordenador como
@@ -830,7 +130,7 @@ la unidad más pequeña de medida de la información.</p>
 <line x1="560" y1="205" x2="885" y2="205" stroke="#94a3b8" stroke-width="2"/><text x="595" y="105" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#0f766e">1</text><text x="595" y="230" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#0f766e">0</text><text x="560" y="238" font-family="Inter, sans-serif" font-size="14" fill="#475569">El bit representa uno de dos estados</text></svg>
 <figcaption id="fig-digital-caption" class="image-caption">Una señal digital utiliza valores discretos; en informática, normalmente dos estados: 0 y 1.</figcaption>
 </figure>
-<h2 id="sec2"><i class="fa-solid fa-tower-broadcast" aria-hidden="true"></i> 2. Comunicación de la información</h2>
+</section><section class="content-section section-theme--comunicacion" aria-labelledby="sec2"><h2 id="sec2"><i class="fa-solid fa-tower-broadcast" aria-hidden="true"></i> 2. Comunicación de la información</h2>
 <h3 id="sec2_1">2.1. Elementos de un sistema de comunicación</h3>
 <p>Los elementos básicos que intervienen en el proceso de comunicación
 son:</p>
@@ -880,7 +180,7 @@ codificados.</strong></p>
 comprimidos</strong> y se le puede añadir <strong>información
 redundante</strong> para la detección y/o corrección de errores o para
 la sincronización.</p>
-<div class="didactic-note"><p>Con todo esto, podemos definir información como la representación de hechos, objetos, valores, ideas, etc, que permiten la comunicación entre emisor y receptor y la adquisición del conocimiento de las cosas.</p></div>
+<div class="didactic-note memory-callout"><p>Con todo esto, podemos definir información como la representación de hechos, objetos, valores, ideas, etc, que permiten la comunicación entre emisor y receptor y la adquisición del conocimiento de las cosas.</p></div>
 <figure class="image-container" role="group" aria-labelledby="fig-comunicacion-caption">
 <svg viewBox="0 0 900 260" role="img" aria-label="Elementos de un sistema de comunicación" xmlns="http://www.w3.org/2000/svg"><rect width="900" height="260" rx="14" fill="#f8fafc"/>
 <text x="450" y="36" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">Sistema de comunicación</text>
@@ -890,7 +190,7 @@ la sincronización.</p>
 <text x="450" y="240" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" fill="#475569">Los protocolos y estándares establecen las reglas compartidas.</text></svg>
 <figcaption id="fig-comunicacion-caption" class="image-caption">La comunicación requiere un emisor, un mensaje transmitido por un canal y un receptor que interpreta la información.</figcaption>
 </figure>
-<h2 id="sec3"><i class="fa-solid fa-code" aria-hidden="true"></i> 3. Representación interna de la información</h2>
+</section><section class="content-section section-theme--representacion" aria-labelledby="sec3"><h2 id="sec3"><i class="fa-solid fa-code" aria-hidden="true"></i> 3. Representación interna de la información</h2>
 <h3 id="sec3_1">3.1. Unidades y magnitudes informáticas</h3>
 <h4 id="sec3_1_1" class="numbered-subsection">3.1.1. Unidades de medida para el almacenamiento de información</h4>
 <p>Como veíamos al comienzo del tema, el bit es la unidad más pequeña
@@ -982,7 +282,7 @@ valor <strong>en base B</strong> es:</p>
 
 <figure class="image-container" role="group" aria-labelledby="fig-teorema-caption"><svg viewBox="0 0 900 250" role="img" aria-label="El teorema fundamental descompone un número posicional como la suma de cada cifra multiplicada por una potencia de la base." xmlns="http://www.w3.org/2000/svg"><rect width="900" height="250" rx="14" fill="#f8fafc"/><text x="450" y="38" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">Teorema fundamental de la numeración</text><text x="450" y="93" text-anchor="middle" font-family="Inter, sans-serif" font-size="24" font-weight="700" fill="#0f172a">N = xₙ·Bⁿ + … + x₁·B¹ + x₀·B⁰</text><rect x="180" y="130" width="540" height="62" rx="10" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="450" y="158" text-anchor="middle" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#1e3a8a">Ejemplo decimal: 342 = 3·10² + 4·10¹ + 2·10⁰</text><text x="450" y="181" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" fill="#475569">Cada posición tiene un peso determinado por la base B.</text></svg><figcaption id="fig-teorema-caption" class="image-caption">El teorema fundamental descompone un número posicional como la suma de cada cifra multiplicada por una potencia de la base.</figcaption></figure>
 <h4 id="sec3_2_3" class="numbered-subsection">3.2.3. El sistema decimal</h4>
-<div class="didactic-note"><p>El ser humano tiene 10 dedos. No es casualidad que el sistema de numeración más utilizado tenga diez símbolos, del 0 al 9.</p></div><p>Alguno de los <strong>sistemas de numeración</strong> más utilizados
+<div class="didactic-note memory-callout"><p>El ser humano tiene 10 dedos. No es casualidad que el sistema de numeración más utilizado tenga diez símbolos, del 0 al 9.</p></div><p>Alguno de los <strong>sistemas de numeración</strong> más utilizados
 son:</p>
 <ul>
 <li>
@@ -1226,7 +526,7 @@ consideremos a la misma.</p>
 </svg>
 <figcaption id="fig-sonido-caption" class="image-caption">El sistema mide la amplitud del sonido en instantes concretos, la redondea a niveles posibles y codifica cada nivel en bits.</figcaption>
 </figure>
-<h2 id="sec4"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i> 4. Características de un ordenador digital</h2>
+</section><section class="content-section section-theme--rendimiento" aria-labelledby="sec4"><h2 id="sec4"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i> 4. Características de un ordenador digital</h2>
 <blockquote>
 <p>Hay una serie de características o parámetros que nos permiten
 comparar ordenadores digitales. Listamos en este apartado las
@@ -1271,7 +571,7 @@ cálculo.</p>
 <p>Son un conjunto variado de prueba cuyo resultado en tiempo de
 ejecución es más fiable que la medida en MIPS, MFLOPS o GHZ. El
 resultado de estos test da lugar a un ranking de potencia.</p>
-<h2 id="sec5"><i class="fa-solid fa-memory" aria-hidden="true"></i> 5. Componentes físicos. Arquitectura Von Neumann</h2>
+</section><section class="content-section section-theme--hardware" aria-labelledby="sec5"><h2 id="sec5"><i class="fa-solid fa-memory" aria-hidden="true"></i> 5. Componentes físicos. Arquitectura Von Neumann</h2>
 <h3 id="sec5_1">5.1. Introducción. Arquitectura Von Neumann</h3>
 <p>El modelo básico de arquitectura empleada en los ordenadores
 digitales fue establecido en <strong>1945 por John Von Neumann</strong>,
@@ -1553,7 +853,7 @@ fabricante.</p>
 <strong>Entrada</strong>, de <strong>Salida</strong>, o de Entrada y
 Salida; estos últimos son de tipo <strong>almacenamiento</strong> o
 <strong>comunicación</strong>.</p>
-<h2 id="sec6"><i class="fa-solid fa-cubes" aria-hidden="true"></i> 6. Componentes lógicos: Software</h2>
+</section><section class="content-section section-theme--software" aria-labelledby="sec6"><h2 id="sec6"><i class="fa-solid fa-cubes" aria-hidden="true"></i> 6. Componentes lógicos: Software</h2>
 <p><strong>¿Qué es Software?</strong></p>
 <p>La definición más simple para entender qué es Software es que son los
 programas informáticos que se instalan en los ordenadores, tablets,
@@ -1770,7 +1070,7 @@ específica dentro de la empresa, que por su especificidad no puede ser
 compartido de forma general, y que requiere de una enorme labor de
 soporte, formación y mantenimiento.</p>
 <h3 id="sec6_1">6.1. Design Thinking</h3>
-<div class="activity-card"><p>Crea un código similar al ASCII pero que a la vez que codifica, encripte la información con un método similar al método caesar.</p></div><h3 id="sec6_2">6.2. Recursos</h3>
+<div class="activity-card activity-callout"><p class="callout-label"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i> Actividad práctica</p><p>Crea un código similar al ASCII pero que a la vez que codifica, encripte la información con un método similar al método caesar.</p></div><h3 id="sec6_2">6.2. Recursos</h3>
 <p><strong>Bibliografía</strong></p>
 <p>Apuntes del profesor (Cuaderno de trabajo)</p>
 <p>Montaje y Mantenimiento de Equipos. Edt. Síntesis – Unidad 1</p>
@@ -1779,6 +1079,6 @@ soporte, formación y mantenimiento.</p>
 <p>Simulador de Von Neumann online <a href="http://lab.xitrus.es/VonNeumann/" target="_blank" rel="noopener noreferrer"><u>http://lab.xitrus.es/VonNeumann/</u></a></p>
 <p>La computadora del futuro: <a href="https://youtu.be/14UdiF4slpU" target="_blank" rel="noopener noreferrer"><u>https://youtu.be/14UdiF4slpU</u></a></p>
 <p>El ordenador cuántico: <a href="https://youtu.be/O9TA2faf6nw" target="_blank" rel="noopener noreferrer"><u>https://youtu.be/O9TA2faf6nw</u></a></p>
-<footer class="document-footer">© Ignacio García 2020</footer></main></div>
+</section><footer class="document-footer">© Ignacio García 2020</footer></main></div>
 </body>
 </html>
