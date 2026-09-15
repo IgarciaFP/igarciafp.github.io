@@ -1134,55 +1134,116 @@ página. Referencia: MDN.</p>
 <p>La política de mismo origen evita, por ejemplo, que una página
 maliciosa lea libremente datos de otra web donde tienes sesión iniciada.
 CORS permite autorizar excepciones. MDN: política de mismo origen.</p>
-<div class="image-container"><img alt="Funcionamiento de CORS entre distintos orígenes" src="assets/u01/ilustracion-18.webp" width="1352" height="901" loading="lazy" decoding="async"></div><div class="activity-card activity-callout">
-<p><strong>Actividad ·</strong> Desde https://aula.example compara /api
-y https://aula.example:8443/api. Señala cuál de las dos peticiones
-podría requerir autorización CORS para lectura desde JavaScript.</p>
-</div>
-<div class="activity-card activity-callout" id="actividad-cors-lab">
-<p><strong>Ejercicio paso a paso · Crear una mini página y comprobar CORS</strong></p>
-<p>Necesitas Python 3. Crea una carpeta <code>cors-lab</code> y, dentro, una subcarpeta <code>api</code>.</p>
-<ol>
-<li><p>Crea <code>cors-lab/index.html</code>:</p>
+<div class="image-container"><img alt="Funcionamiento de CORS entre distintos orígenes" src="assets/u01/ilustracion-18.webp" width="1352" height="901" loading="lazy" decoding="async"></div>
+<div class="resource-card expansion-card">
+            <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-brands fa-youtube"></i> Cómo funciona CORS</span>
+                <span class="resource-badge badge-video">Vídeo</span>
+            </div>
+            <div class="resource-description">Explicación de la política de mismo origen, las peticiones simples y las peticiones con preflight.</div>
+            <a href="https://youtu.be/E6jgEtj-UjI" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver el vídeo sobre CORS</a>
+        </div>
+
+<h4 class="content-subtitle">Ejemplo resuelto: provocar un fallo CORS y solucionarlo</h4>
+<p>El navegador cargará el frontend desde <code>http://localhost:8000</code>
+y solicitará datos a una API situada en <code>http://localhost:8001</code>.
+Aunque coincida el host, el puerto es distinto y, por tanto, son
+<strong>orígenes diferentes</strong>.</p>
+
+<p><strong>1. Prepara la estructura</strong></p>
+<pre><code>cors-demo/
+├── api.py
+└── frontend/
+    └── index.html</code></pre>
+
+<p><strong>2. Crea <code>frontend/index.html</code></strong></p>
 <pre><code>&lt;!doctype html&gt;
 &lt;html lang="es"&gt;
 &lt;meta charset="utf-8"&gt;
-&lt;title&gt;Laboratorio CORS&lt;/title&gt;
-&lt;button id="probar"&gt;Pedir datos&lt;/button&gt;
-&lt;pre id="salida"&gt;&lt;/pre&gt;
+&lt;title&gt;Ejemplo CORS&lt;/title&gt;
+&lt;button id="probar"&gt;Solicitar saludo&lt;/button&gt;
+&lt;pre id="salida"&gt;Pulsa el botón.&lt;/pre&gt;
+
 &lt;script&gt;
-probar.addEventListener("click", async () =&gt; {
-  salida.textContent = "Cargando…";
+const salida = document.querySelector("#salida");
+
+document.querySelector("#probar").addEventListener("click", async () =&gt; {
   try {
-    const respuesta = await fetch("http://localhost:8001/datos.json");
+    const respuesta = await fetch("http://localhost:8001/api/saludo");
     if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
     salida.textContent = JSON.stringify(await respuesta.json(), null, 2);
   } catch (error) {
-    salida.textContent = `Fallo: ${error.message}`;
+    salida.textContent = `Error: ${error.message}`;
     console.error(error);
   }
 });
 &lt;/script&gt;
-&lt;/html&gt;</code></pre></li>
-<li><p>Crea <code>cors-lab/api/datos.json</code> con <code>{"mensaje":"CORS funciona"}</code>.</p></li>
-<li><p>Desde <code>cors-lab</code>, inicia la página en una terminal: <code>python -m http.server 8000</code>. En otra terminal inicia la API: <code>python -m http.server 8001 --directory api</code>.</p></li>
-<li><p>Abre <code>http://localhost:8000</code>, abre <strong>Console</strong> y <strong>Network</strong>, y pulsa <strong>Pedir datos</strong>. Los puertos 8000 y 8001 forman orígenes distintos. La API entrega el archivo, pero no autoriza a esta página a leer la respuesta; observa el error CORS y la ausencia de <code>Access-Control-Allow-Origin</code>.</p></li>
-<li><p>Detén solamente el servidor del puerto 8001 con <kbd>Ctrl</kbd> + <kbd>C</kbd>. Crea <code>cors-lab/servidor_cors.py</code>:</p>
-<pre><code>from functools import partial
-from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+&lt;/html&gt;</code></pre>
 
-class CORSHandler(SimpleHTTPRequestHandler):
-    def end_headers(self):
-        self.send_header("Access-Control-Allow-Origin",
-                         "http://localhost:8000")
-        super().end_headers()
+<p><strong>3. Crea <code>api.py</code> sin autorización CORS</strong></p>
+<pre><code>import json
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-handler = partial(CORSHandler, directory="api")
-ThreadingHTTPServer(("localhost", 8001), handler).serve_forever()</code></pre></li>
-<li><p>Ejecuta <code>python servidor_cors.py</code>, recarga la mini página y vuelve a pulsar el botón. Ahora aparecerá el JSON. En Network comprueba la cabecera <code>Access-Control-Allow-Origin: http://localhost:8000</code>.</p></li>
-<li><p>Cambia temporalmente el puerto autorizado en Python a <code>http://localhost:9999</code>, reinicia el servidor y repite. Explica por qué vuelve a fallar aunque la API responda.</p></li>
+class APIHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path != "/api/saludo":
+            self.send_error(404)
+            return
+
+        cuerpo = json.dumps(
+            {"mensaje": "Hola desde la API"}
+        ).encode("utf-8")
+
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(cuerpo)))
+        self.end_headers()
+        self.wfile.write(cuerpo)
+
+ThreadingHTTPServer(("localhost", 8001), APIHandler).serve_forever()</code></pre>
+
+<p><strong>4. Ejecuta y observa el fallo</strong></p>
+<p>Desde la carpeta <code>cors-demo</code>, ejecuta cada orden en una
+terminal diferente:</p>
+<pre><code>python -m http.server 8000 --directory frontend
+python api.py</code></pre>
+<p>Abre exactamente <code>http://localhost:8000</code>, abre las DevTools
+en las pestañas <strong>Console</strong> y <strong>Network</strong>, y
+pulsa el botón. La API puede registrar y responder la petición, pero el
+JavaScript no puede leer su respuesta porque esta no incluye una
+autorización CORS. <code>fetch()</code> termina en el bloque
+<code>catch</code>.</p>
+
+<p><strong>5. Autoriza el origen del frontend</strong></p>
+<p>Añade esta cabecera en <code>api.py</code>, después de
+<code>Content-Type</code> y antes de <code>end_headers()</code>:</p>
+<pre><code>self.send_header(
+    "Access-Control-Allow-Origin",
+    "http://localhost:8000"
+)</code></pre>
+<p>Detén la API con <kbd>Ctrl</kbd> + <kbd>C</kbd>, vuelve a ejecutar
+<code>python api.py</code> y pulsa otra vez el botón. Ahora el navegador
+puede leer la respuesta y muestra el JSON. En Network, selecciona
+<code>saludo</code> y comprueba la cabecera
+<code>Access-Control-Allow-Origin: http://localhost:8000</code>.</p>
+
+<p>Este <code>GET</code> es una <strong>petición simple</strong> y no
+necesita una petición previa <code>OPTIONS</code>. Para corregir CORS no
+se debe desactivar la seguridad del navegador: la autorización debe
+configurarse en el servidor que ofrece el recurso.</p>
+
+<div class="activity-card activity-callout" id="actividad-cors-repeticion">
+<p><strong>Actividad paso a paso · Repite el proceso con una API de alumnado</strong></p>
+<ol>
+<li><p>Crea un nuevo proyecto <code>cors-practica</code> basándote en el ejemplo resuelto. Usa un frontend en <code>http://localhost:5500</code> y una API en <code>http://localhost:5501</code>.</p></li>
+<li><p>Haz que la API responda en <code>/api/alumnos</code> con un array JSON que contenga, al menos, dos objetos con <code>nombre</code> y <code>curso</code>.</p></li>
+<li><p>Crea una mini página con un botón que utilice <code>fetch()</code> para solicitar esos datos y los muestre dentro de un elemento <code>&lt;pre&gt;</code>.</p></li>
+<li><p>Ejecuta ambos servidores <strong>sin</strong> enviar todavía <code>Access-Control-Allow-Origin</code>. Reproduce el fallo y guarda una captura de Console y otra de la petición en Network.</p></li>
+<li><p>Corrige exclusivamente el servidor de la API para que autorice a <code>http://localhost:5500</code>. Reinicia la API y comprueba que la misma petición funciona sin cambiar el <code>fetch()</code>.</p></li>
+<li><p>En Network, verifica el código HTTP y la cabecera CORS recibida. Explica por qué recibir un <code>200</code> no bastaba para que el JavaScript pudiera leer la primera respuesta.</p></li>
+<li><p>Como comprobación final, cambia la cabecera para autorizar un origen incorrecto, por ejemplo <code>http://localhost:9999</code>, y demuestra que el navegador vuelve a bloquear la lectura.</p></li>
 </ol>
-<p><strong>Conclusión esperada:</strong> CORS no impide enviar la petición; controla si el JavaScript de un origen puede leer la respuesta de otro. La autorización debe enviarla el servidor de destino.</p>
+<p><strong>Entrega:</strong> los dos archivos del proyecto, capturas del fallo y de la solución, y una explicación breve que identifique los dos orígenes y la cabecera que resolvió el problema.</p>
 </div>
 <h3 id="sec4_6">4.6. User-Agent</h3>
 <p>Un agente de usuario es el <strong>programa que inicia una petición:
