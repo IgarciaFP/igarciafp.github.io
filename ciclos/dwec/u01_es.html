@@ -201,7 +201,7 @@ carpeta, etc.</p>
 
 <div class="image-container"><img alt="Proceso de navegación y carga de recursos en el navegador" src="assets/u01/ilustracion-07.webp" width="1352" height="901" loading="lazy" decoding="async"></div><h3 id="sec2_1">2.1. Motores de renderizado y motores JavaScript</h3>
 
-<p><img alt="Comparación de motores web y motores JavaScript" src="assets/u01/ilustracion-08.webp" width="1254" height="1254" loading="lazy" decoding="async">No debemos confundir un
+<p><img alt="Comparación de motores web y motores JavaScript" src="assets/u01/ilustracion-08.webp" width="627" height="627" style="display: block; width: 50%; max-width: 627px; height: auto; margin: 0 auto 1rem;" loading="lazy" decoding="async">No debemos confundir un
 navegador con sus motores internos.</p>
 
 
@@ -328,6 +328,14 @@ información entre clientes y servidores web.</p>
 <p>El ciclo básico consta de una solicitud (request) del cliente y una
 respuesta (response) del servidor. Por ejemplo, el navegador pide una
 página y el servidor envía su contenido o comunica un error.</p>
+<div class="resource-card expansion-card">
+            <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-brands fa-youtube"></i> El ciclo petición-respuesta HTTP</span>
+                <span class="resource-badge badge-video">Vídeo</span>
+            </div>
+            <div class="resource-description">Vídeo de ampliación sobre el intercambio de solicitudes y respuestas entre el cliente y el servidor.</div>
+            <a href="https://youtu.be/WvSVSbGo0wI" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver el vídeo de ampliación</a>
+        </div>
 <div class="image-container"><img alt="Flujo de una comunicación HTTP entre cliente y servidor" src="assets/u01/ilustracion-12.webp" width="1352" height="901" loading="lazy" decoding="async"></div><p>HTTP es un protocolo de <strong>capa de aplicación</strong> basado en
 un modelo <strong>cliente-servidor</strong>. El navegador envía
 peticiones y el servidor devuelve respuestas que pueden contener HTML,
@@ -888,6 +896,19 @@ adelante.</p>
 familia. Las respuestas 1xx preceden normalmente a una respuesta final.
 Un error DNS, TLS o de conexión puede ocurrir antes de recibir cualquier
 código HTTP.</p>
+<div class="activity-card activity-callout" id="actividad-devtools-https">
+<p><strong>Actividad paso a paso · Analizar la transferencia de esta página y HTTPS</strong></p>
+<ol>
+<li><p>Abre esta misma unidad en <code>https://igarciafp.github.io/ciclos/dwec/u01_es.html</code> y abre las DevTools con <kbd>F12</kbd> o <kbd>Ctrl</kbd> + <kbd>Mayús</kbd> + <kbd>I</kbd>.</p></li>
+<li><p>Entra en <strong>Network/Red</strong>, activa <strong>Disable cache/Desactivar caché</strong> y recarga la página. Mantén abiertas las DevTools durante la prueba.</p></li>
+<li><p>Filtra por <strong>Doc</strong> y selecciona <code>u01_es.html</code>. En <strong>Headers/Cabeceras → General</strong>, localiza la URL solicitada, el método <code>GET</code> y el código de estado. Anota el código realmente obtenido: normalmente será <code>200</code>, aunque otra carga podría producir <code>304</code>.</p></li>
+<li><p>Revisa <strong>Response Headers/Cabeceras de respuesta</strong>. Identifica, si aparecen, <code>content-type</code>, <code>content-length</code>, <code>content-encoding</code> y <code>cache-control</code>. Explica qué aporta cada una al intercambio.</p></li>
+<li><p>Vuelve a la lista de solicitudes. Compara las columnas <strong>Size/Tamaño</strong> y <strong>Time/Tiempo</strong> del documento, la hoja CSS y dos imágenes. En la barra inferior anota el número total de solicitudes, los bytes transferidos y el tamaño total de los recursos. La cantidad transferida puede ser menor por compresión o caché.</p></li>
+<li><p>Comprueba HTTPS: la URL debe comenzar por <code>https://</code> y el navegador no debe mostrar una advertencia de seguridad. Abre <strong>Security/Seguridad</strong> desde el menú de más herramientas de DevTools y examina la conexión, el certificado y la versión de TLS que muestre el navegador.</p></li>
+<li><p>Relaciona las capas: HTTPS protege en tránsito la petición y la respuesta mediante TLS; no oculta el dominio de destino ni convierte en fiable el contenido de la página. El código HTTP se recibe después de establecer correctamente la conexión segura.</p></li>
+</ol>
+<p><strong>Entrega:</strong> una captura de Network con el documento seleccionado y una tabla con: recurso, método, estado, tipo, tamaño, transferido y tiempo. Añade la versión de TLS observada y una frase que explique la diferencia entre HTTP y HTTPS.</p>
+</div>
 <h3 id="sec4_4">4.4. Gestión de la caché</h3>
 
 <p>La <strong>caché web</strong> guarda respuestas HTTP para
@@ -1117,6 +1138,51 @@ CORS permite autorizar excepciones. MDN: política de mismo origen.</p>
 <p><strong>Actividad ·</strong> Desde https://aula.example compara /api
 y https://aula.example:8443/api. Señala cuál de las dos peticiones
 podría requerir autorización CORS para lectura desde JavaScript.</p>
+</div>
+<div class="activity-card activity-callout" id="actividad-cors-lab">
+<p><strong>Ejercicio paso a paso · Crear una mini página y comprobar CORS</strong></p>
+<p>Necesitas Python 3. Crea una carpeta <code>cors-lab</code> y, dentro, una subcarpeta <code>api</code>.</p>
+<ol>
+<li><p>Crea <code>cors-lab/index.html</code>:</p>
+<pre><code>&lt;!doctype html&gt;
+&lt;html lang="es"&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;Laboratorio CORS&lt;/title&gt;
+&lt;button id="probar"&gt;Pedir datos&lt;/button&gt;
+&lt;pre id="salida"&gt;&lt;/pre&gt;
+&lt;script&gt;
+probar.addEventListener("click", async () =&gt; {
+  salida.textContent = "Cargando…";
+  try {
+    const respuesta = await fetch("http://localhost:8001/datos.json");
+    if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+    salida.textContent = JSON.stringify(await respuesta.json(), null, 2);
+  } catch (error) {
+    salida.textContent = `Fallo: ${error.message}`;
+    console.error(error);
+  }
+});
+&lt;/script&gt;
+&lt;/html&gt;</code></pre></li>
+<li><p>Crea <code>cors-lab/api/datos.json</code> con <code>{"mensaje":"CORS funciona"}</code>.</p></li>
+<li><p>Desde <code>cors-lab</code>, inicia la página en una terminal: <code>python -m http.server 8000</code>. En otra terminal inicia la API: <code>python -m http.server 8001 --directory api</code>.</p></li>
+<li><p>Abre <code>http://localhost:8000</code>, abre <strong>Console</strong> y <strong>Network</strong>, y pulsa <strong>Pedir datos</strong>. Los puertos 8000 y 8001 forman orígenes distintos. La API entrega el archivo, pero no autoriza a esta página a leer la respuesta; observa el error CORS y la ausencia de <code>Access-Control-Allow-Origin</code>.</p></li>
+<li><p>Detén solamente el servidor del puerto 8001 con <kbd>Ctrl</kbd> + <kbd>C</kbd>. Crea <code>cors-lab/servidor_cors.py</code>:</p>
+<pre><code>from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+
+class CORSHandler(SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header("Access-Control-Allow-Origin",
+                         "http://localhost:8000")
+        super().end_headers()
+
+handler = partial(CORSHandler, directory="api")
+ThreadingHTTPServer(("localhost", 8001), handler).serve_forever()</code></pre></li>
+<li><p>Ejecuta <code>python servidor_cors.py</code>, recarga la mini página y vuelve a pulsar el botón. Ahora aparecerá el JSON. En Network comprueba la cabecera <code>Access-Control-Allow-Origin: http://localhost:8000</code>.</p></li>
+<li><p>Cambia temporalmente el puerto autorizado en Python a <code>http://localhost:9999</code>, reinicia el servidor y repite. Explica por qué vuelve a fallar aunque la API responda.</p></li>
+</ol>
+<p><strong>Conclusión esperada:</strong> CORS no impide enviar la petición; controla si el JavaScript de un origen puede leer la respuesta de otro. La autorización debe enviarla el servidor de destino.</p>
 </div>
 <h3 id="sec4_6">4.6. User-Agent</h3>
 <p>Un agente de usuario es el <strong>programa que inicia una petición:
