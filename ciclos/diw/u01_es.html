@@ -12,726 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #1e3a8a;
-            --primary-light: #eff6ff;
-            --primary-border: #3b82f6;
-            --secondary-color: #0f766e;
-            --secondary-light: #f0fdf4;
-            --accent-color: #d97706;
-            --accent-light: #fffbeb;
-            --danger-color: #b91c1c;
-            --danger-light: #fef2f2;
-            --purple-color: #6d28d9;
-            --purple-light: #f5f3ff;
-            --text-dark: #0f172a;
-            --text-muted: #475569;
-            --bg-page: #f1f5f9;
-            --bg-card: #ffffff;
-            --border-color: #cbd5e1;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: var(--text-dark);
-            background-color: var(--bg-page);
-            line-height: 1.7;
-            padding: 30px 20px;
-        }
-
-        .document-wrapper {
-            max-width: 1350px;
-            width: 100%;
-            margin: 0 auto;
-            display: block;
-        }
-
-        /* Índice lateral flotante deslizable (Slide-out Sidebar) */
-        .sidebar-toc {
-            position: fixed;
-            top: 20px;
-            left: 0;
-            width: 310px;
-            max-height: calc(100vh - 40px);
-            background: var(--bg-card);
-            padding: 22px 20px;
-            border-radius: 0 12px 12px 0;
-            border: 1px solid var(--border-color);
-            border-left: none;
-            box-shadow: 6px 0 25px rgba(0, 0, 0, 0.15);
-            z-index: 9999;
-            transform: translateX(-292px);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow-y: auto;
-        }
-
-        .sidebar-toc::after {
-            content: "\f0c9  ÍNDICE";
-            font-family: 'Font Awesome 6 Free', 'Inter', sans-serif;
-            font-weight: 900;
-            font-size: 0.78rem;
-            position: absolute;
-            top: 20px;
-            right: -88px;
-            width: 88px;
-            height: 40px;
-            background: var(--primary-color);
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            border-radius: 0 8px 8px 0;
-            cursor: pointer;
-            box-shadow: 4px 2px 10px rgba(0,0,0,0.15);
-            letter-spacing: 0.5px;
-        }
-
-        .sidebar-toc:hover {
-            transform: translateX(0);
-        }
-
-        .sidebar-toc h4 {
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--primary-color);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 2px solid var(--primary-light);
-            padding-bottom: 8px;
-        }
-
-        .sidebar-toc ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .sidebar-toc li {
-            margin-bottom: 6px;
-        }
-
-        .sidebar-toc a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.86rem;
-            display: block;
-            padding: 5px 8px;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .sidebar-toc a:hover {
-            background-color: var(--primary-light);
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        /* Contenido Principal a Ancho Completo (100% Flexible) */
-        .document-container {
-            background: var(--bg-card);
-            padding: 50px 65px;
-            border-radius: 12px;
-            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
-            border: 1px solid var(--border-color);
-            width: 100%;
-        }
-
-        /* Encabezados y Jerarquía */
-        .header-banner {
-            border-bottom: 4px solid var(--primary-color);
-            padding-bottom: 25px;
-            margin-bottom: 40px;
-        }
-
-        .module-tag {
-            display: inline-block;
-            background-color: var(--primary-color);
-            color: white;
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 5px 14px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 14px;
-        }
-
-        h1 {
-            font-family: 'Merriweather', Georgia, serif;
-            font-size: 2.3rem;
-            color: var(--primary-color);
-            line-height: 1.25;
-            font-weight: 700;
-        }
-
-        h2 {
-            font-family: 'Merriweather', Georgia, serif;
-            font-size: 1.6rem;
-            color: var(--primary-color);
-            margin-top: 50px;
-            margin-bottom: 22px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--primary-light);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            scroll-margin-top: 20px;
-        }
-
-        h3 {
-            font-size: 1.28rem;
-            color: var(--secondary-color);
-            margin-top: 32px;
-            margin-bottom: 16px;
-            font-weight: 600;
-            scroll-margin-top: 20px;
-        }
-
-        h4 {
-            font-size: 1.08rem;
-            color: var(--text-dark);
-            margin-top: 24px;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        p {
-            margin-bottom: 18px;
-            text-align: justify;
-            font-size: 1rem;
-            color: var(--text-dark);
-        }
-
-        strong {
-            color: #000000;
-            font-weight: 600;
-        }
-
-        ul, ol {
-            margin-bottom: 22px;
-            padding-left: 28px;
-        }
-
-        li {
-            margin-bottom: 8px;
-        }
-
-        /* Cajas Didácticas Especiales */
-        .objectives-box {
-            background-color: var(--primary-light);
-            border-left: 5px solid var(--primary-border);
-            padding: 26px;
-            border-radius: 0 8px 8px 0;
-            margin: 30px 0;
-        }
-
-        .objectives-box h3 {
-            color: var(--primary-color);
-            margin-top: 0;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .didactic-note {
-            background-color: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-left: 5px solid #0284c7;
-            padding: 20px 24px;
-            border-radius: 0 8px 8px 0;
-            margin: 25px 0;
-        }
-
-        .didactic-note h5 {
-            color: #0369a1;
-            font-size: 1rem;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .didactic-note p {
-            margin-bottom: 0;
-            font-size: 0.95rem;
-        }
-
-        /* Cajas de Recursos e Hipervínculos */
-        .resource-card {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-left: 5px solid var(--primary-color);
-            border-radius: 8px;
-            padding: 20px 24px;
-            margin: 25px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .resource-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .resource-title {
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .resource-badge {
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 12px;
-            text-transform: uppercase;
-        }
-
-        .badge-video { background-color: #fee2e2; color: #dc2626; }
-        .badge-tool { background-color: #e0e7ff; color: #4338ca; }
-        .badge-reading { background-color: #dcfce7; color: #15803d; }
-        .badge-course { background-color: #fef3c7; color: #b45309; }
-
-        .resource-description {
-            font-size: 0.94rem;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-
-        .resource-link-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background-color: var(--primary-light);
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            padding: 8px 16px;
-            border-radius: 6px;
-            border: 1px solid var(--primary-border);
-            width: fit-content;
-            transition: all 0.2s ease;
-        }
-
-        .resource-link-btn:hover {
-            background-color: var(--primary-color);
-            color: #ffffff;
-        }
-
-        /* Tarjetas Leyes UX y Conceptos Avanzados */
-        .ux-law-card {
-            background-color: #ffffff;
-            border: 1px solid var(--border-color);
-            border-left: 5px solid var(--purple-color);
-            padding: 20px 24px;
-            border-radius: 0 8px 8px 0;
-            margin-bottom: 18px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-
-        .ux-law-card h5 {
-            font-size: 1.08rem;
-            color: var(--purple-color);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .ux-law-card p {
-            margin-bottom: 0;
-            font-size: 0.96rem;
-        }
-
-        .advanced-concept-box {
-            background-color: #fcfcfc;
-            border: 1px solid #cbd5e1;
-            border-left: 5px solid var(--secondary-color);
-            padding: 22px 26px;
-            border-radius: 0 8px 8px 0;
-            margin: 25px 0;
-        }
-
-        .advanced-concept-box h4 {
-            color: var(--secondary-color);
-            margin-top: 0;
-            font-size: 1.12rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Ejemplos y Errores */
-        .example-box {
-            background-color: var(--secondary-light);
-            border: 1px solid #bbf7d0;
-            border-left: 5px solid var(--secondary-color);
-            padding: 25px;
-            border-radius: 0 8px 8px 0;
-            margin: 30px 0;
-        }
-
-        .example-box h3 {
-            color: var(--secondary-color);
-            margin-top: 0;
-            font-size: 1.18rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .error-box {
-            background-color: var(--danger-light);
-            border: 1px solid #fecaca;
-            border-left: 5px solid var(--danger-color);
-            padding: 25px;
-            border-radius: 0 8px 8px 0;
-            margin: 30px 0;
-        }
-
-        .error-box h3,
-        .error-box h4 {
-            color: var(--danger-color);
-            margin-top: 0;
-            font-size: 1.18rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .case-study-box {
-            background-color: #ffffff;
-            border: 2px solid var(--primary-color);
-            padding: 35px;
-            border-radius: 12px;
-            margin: 35px 0;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-        }
-
-        .case-study-box h3 {
-            color: var(--primary-color);
-            margin-top: 0;
-            border-bottom: 2px solid var(--primary-light);
-            padding-bottom: 12px;
-            font-size: 1.4rem;
-        }
-
-        .phase-block {
-            background-color: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-left: 5px solid var(--accent-color);
-            padding: 22px 26px;
-            border-radius: 0 8px 8px 0;
-            margin: 25px 0;
-        }
-
-        .phase-block h4 {
-            color: var(--accent-color);
-            margin-top: 0;
-            font-size: 1.18rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .key-ideas-box {
-            background-color: var(--accent-light);
-            border: 1px solid #fde68a;
-            border-left: 5px solid var(--accent-color);
-            padding: 28px;
-            border-radius: 0 8px 8px 0;
-            margin: 30px 0;
-        }
-
-        .key-ideas-box h3 {
-            color: var(--accent-color);
-            margin-top: 0;
-        }
-
-        .activities-section {
-            background-color: #fafafa;
-            border: 1px solid var(--border-color);
-            padding: 32px;
-            border-radius: 10px;
-            margin-top: 45px;
-        }
-
-        /* Identidad visual de bloques pedagógicos */
-        .curiosity-card,
-        .activity-callout,
-        .expansion-card,
-        .activities-section {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .curiosity-card::before,
-        .activity-callout::before,
-        .expansion-card::before {
-            align-self: flex-start;
-            display: inline-flex;
-            align-items: center;
-            margin-bottom: 10px;
-            padding: 3px 10px;
-            border-radius: 999px;
-            font-size: 0.72rem;
-            font-weight: 800;
-            letter-spacing: 0.08em;
-            line-height: 1.5;
-        }
-
-        /* Curiosidades y notas que amplían una idea */
-        .didactic-note.curiosity-card {
-            background: linear-gradient(135deg, #faf5ff 0%, #f5f3ff 100%);
-            border-color: #ddd6fe;
-            border-left-color: var(--purple-color);
-            box-shadow: 0 3px 14px rgba(109, 40, 217, 0.08);
-        }
-
-        .curiosity-card::before {
-            content: "\f0eb  CURIOSIDAD";
-            font-family: "Font Awesome 6 Free", "Inter", sans-serif;
-            color: #5b21b6;
-            background: #ede9fe;
-            border: 1px solid #c4b5fd;
-        }
-
-        .didactic-note.curiosity-card h5 {
-            color: #5b21b6;
-        }
-
-        /* Enlaces y materiales para ampliar */
-        .resource-card.expansion-card {
-            background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 75%);
-            border-color: #99f6e4;
-            border-left-color: var(--secondary-color);
-            box-shadow: 0 3px 14px rgba(15, 118, 110, 0.09);
-        }
-
-        .expansion-card::before {
-            content: "\f02d  PARA AMPLIAR";
-            font-family: "Font Awesome 6 Free", "Inter", sans-serif;
-            color: #115e59;
-            background: #ccfbf1;
-            border: 1px solid #5eead4;
-        }
-
-        .expansion-card .resource-title {
-            color: #115e59;
-        }
-
-        .expansion-card .resource-link-btn {
-            color: #115e59;
-            background: #f0fdfa;
-            border-color: #0d9488;
-        }
-
-        .expansion-card .resource-link-btn:hover,
-        .expansion-card .resource-link-btn:focus-visible {
-            color: #ffffff;
-            background: #0f766e;
-            outline: 3px solid rgba(13, 148, 136, 0.25);
-            outline-offset: 2px;
-        }
-
-        /* Actividades breves intercaladas */
-        .didactic-note.activity-callout {
-            background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%) !important;
-            border-color: #fed7aa;
-            border-left-color: var(--accent-color) !important;
-            box-shadow: 0 3px 14px rgba(217, 119, 6, 0.09);
-        }
-
-        .activity-callout::before {
-            content: "\f303  ACTIVIDAD";
-            font-family: "Font Awesome 6 Free", "Inter", sans-serif;
-            color: #92400e;
-            background: #fef3c7;
-            border: 1px solid #fbbf24;
-        }
-
-        .didactic-note.activity-callout h5 {
-            color: #92400e !important;
-        }
-
-        /* Bloque final de actividades */
-        .activities-section {
-            background: linear-gradient(180deg, #fffbeb 0%, #ffffff 24%);
-            border: 2px solid #f59e0b;
-            border-top-width: 7px;
-            padding: 34px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(146, 64, 14, 0.10);
-        }
-
-        .activities-section h2 {
-            color: #92400e;
-            margin-top: 0;
-            border-bottom-color: #fde68a;
-        }
-
-        .activities-section h3 {
-            color: #9a3412;
-            padding-left: 13px;
-            border-left: 4px solid #f59e0b;
-        }
-
-        .activities-section li::marker {
-            color: #b45309;
-            font-weight: 700;
-        }
-
-        @media (max-width: 560px) {
-            .activities-section {
-                padding: 24px 18px;
-            }
-        }
-
-        /* Imágenes e Ilustraciones Vectoriales Embebidas */
-        .image-container {
-            text-align: center;
-            margin: 35px 0;
-            background: #ffffff;
-            padding: 18px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.03);
-        }
-
-        .image-container svg {
-            max-width: 100%;
-            height: auto;
-            border-radius: 6px;
-        }
-
-        .image-caption {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-top: 12px;
-            font-style: italic;
-            font-weight: 500;
-        }
-
-        /* Tablas */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 28px 0;
-            font-size: 0.96rem;
-        }
-
-        th, td {
-            padding: 14px 18px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            background-color: var(--primary-light);
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9fafb;
-        }
-
-        .table-scroll {
-            width: 100%;
-            overflow-x: auto;
-            margin: 28px 0;
-        }
-
-        .table-scroll table {
-            min-width: 720px;
-            margin: 0;
-        }
-
-        /* Código */
-        code {
-            font-family: 'Fira Code', Consolas, Monaco, monospace;
-            background-color: #f1f5f9;
-            color: #0f172a;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.9rem;
-        }
-
-        pre {
-            background-color: #0f172a;
-            color: #f8fafc;
-            padding: 18px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-family: 'Fira Code', Consolas, Monaco, monospace;
-            font-size: 0.9rem;
-            margin: 22px 0;
-        }
-
-        blockquote {
-            font-style: italic;
-            border-left: 4px solid var(--primary-color);
-            padding-left: 18px;
-            margin: 24px 0;
-            color: var(--text-muted);
-        }
-
-        @media print {
-            body {
-                background-color: #ffffff;
-                padding: 0;
-            }
-            .sidebar-toc {
-                display: none;
-            }
-            .document-container {
-                box-shadow: none;
-                border: none;
-                padding: 0;
-            }
-            .ux-law-card, .example-box, .error-box, .resource-card, .advanced-concept-box, .phase-block {
-                break-inside: avoid;
-            }
-        }
-
-        @media (max-width: 992px) {
-            .document-container {
-                padding: 30px 20px;
-            }
-            .sidebar-toc {
-                width: 280px;
-                transform: translateX(-265px);
-            }
-            .sidebar-toc::after {
-                right: -80px;
-                width: 80px;
-            }
-        }
-    
-        .header-top-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px}
-        .header-top-row .module-tag{margin-bottom:0}
-        .language-switch{display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border:1px solid var(--primary-border);border-radius:7px;background:var(--primary-light);color:var(--primary-color);font-size:.88rem;font-weight:700;text-decoration:none;white-space:nowrap;transition:background-color .2s ease,color .2s ease}
-        .language-switch:hover{background:var(--primary-color);color:#fff}
-        @media(max-width:560px){.header-top-row{align-items:flex-start}.language-switch{font-size:.8rem;padding:6px 10px}}
-    </style>
+    <link rel="stylesheet" href="u01_es.css">
 </head>
 <body>
 
@@ -862,7 +143,7 @@
         <p>El diseño web no ha evolucionado únicamente por cambios estéticos. Cada etapa responde a nuevas capacidades técnicas, dispositivos, velocidades de conexión y expectativas de uso. La Web pasó de organizar documentos enlazados y casi exclusivamente textuales a ofrecer aplicaciones interactivas, accesibles, adaptativas e incluso inmersivas. Comprender esta evolución permite distinguir una <strong>tendencia visual</strong> de una mejora real en comunicación, usabilidad o rendimiento.</p>
 
         <div class="didactic-note activity-callout">
-            <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 1.1)</h5>
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 1.1)</h5>
             <p><strong>Análisis comparativo de evolución web real:</strong> Accede a la plataforma <em>Internet Archive Wayback Machine</em> (<code>webarchive.org</code>) e introduce la URL de la Wikipedia en español (<code>https://es.wikipedia.org</code>). Compara su versión de capturas del año <strong>2005</strong> frente a la versión actual de <strong>2026</strong>. Anota en una ficha de tres columnas: 1) Cambios en la retícula de ancho fijo a responsiva, 2) Densidad tipográfica y de espacios, y 3) Adaptación del menú de navegación lateral en dispositivos móviles.</p>
         </div>
 
@@ -923,7 +204,7 @@
         </div>
 
         <div class="didactic-note activity-callout">
-            <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 1.2)</h5>
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 1.2)</h5>
             <p><strong>Relación Hito-Impacto en Interfaz:</strong> Elabora una tabla de 5 filas seleccionando 5 hitos fundamentales de la cronología (ej. 1991 Nacer la Web, 1996 Aparición de CSS1, 1995 Nacer JavaScript, 2005 AJAX/Web 2.0 y 2010 Responsive Web Design). Para cada hito, redacta una frase explicando qué limitación de maquetación o interacción logró resolver para los usuarios.</p>
         </div>
 
@@ -945,7 +226,7 @@
                     <tr>
                         <td><strong>Tipografía expresiva y títulos grandes</strong></td>
                         <td>Refuerzan la jerarquía visual y captan rápidamente la atención.</td>
-                        <td style="text-align: center; padding: 8px;">
+                        <td class="visual-cell">
                             <svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
   <rect width="160" height="90" rx="6" fill="#1e293b"/>
   <text x="12" y="38" fill="#38bdf8" font-family="'Merriweather', serif" font-size="20" font-weight="bold">DESIGN</text>
@@ -953,14 +234,14 @@
   <rect x="12" y="68" width="50" height="14" rx="3" fill="#0284c7"/>
   <text x="37" y="78" fill="#ffffff" font-family="'Inter', sans-serif" font-size="7" font-weight="bold" text-anchor="middle">VER MÁS</text>
 </svg>
-                            <div style="font-size: 0.78rem; color: #64748b; margin-top: 4px;">Titulares XL de alto impacto</div>
+                            <div class="visual-note">Titulares XL de alto impacto</div>
                         </td>
                         <td>Deben conservar legibilidad, contraste, escalado responsivo y una longitud de línea cómoda.</td>
                     </tr>
                     <tr>
                         <td><strong>SVG e ilustración vectorial</strong></td>
                         <td>Permiten iconos e ilustraciones nítidos a cualquier escala y, a menudo, archivos ligeros.</td>
-                        <td style="text-align: center; padding: 8px;">
+                        <td class="visual-cell">
                             <svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
   <rect width="160" height="90" rx="6" fill="#0f172a"/>
   <!-- SVG resolution independence graphic -->
@@ -970,14 +251,14 @@
   <text x="90" y="54" fill="#94a3b8" font-family="Inter, sans-serif" font-size="8">Escalabilidad</text>
   <text x="90" y="66" fill="#94a3b8" font-family="Inter, sans-serif" font-size="8">sin pérdida</text>
 </svg>
-                            <div style="font-size: 0.78rem; color: #64748b; margin-top: 4px;">Gráficos vectoriales infinitos</div>
+                            <div class="visual-note">Gráficos vectoriales infinitos</div>
                         </td>
                         <td>Los SVG informativos necesitan alternativa textual o etiquetado accesible; también deben optimizarse.</td>
                     </tr>
                     <tr>
                         <td><strong><em>Long scroll</em>, scroll infinito y parallax</strong></td>
                         <td>Favorecen relatos continuos, exploración y sensación de profundidad.</td>
-                        <td style="text-align: center; padding: 8px;">
+                        <td class="visual-cell">
                             <svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
   <rect width="160" height="90" rx="6" fill="#f1f5f9" stroke="#cbd5e1"/>
   <!-- Parallax Layers -->
@@ -987,14 +268,14 @@
   <!-- Scroll arrow -->
   <path d="M 80 78 L 80 86 M 76 82 L 80 86 L 84 82" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
 </svg>
-                            <div style="font-size: 0.78rem; color: #64748b; margin-top: 4px;">Profundidad y capas en scroll</div>
+                            <div class="visual-note">Profundidad y capas en scroll</div>
                         </td>
                         <td>El scroll infinito dificulta localizar el pie, volver a una posición o compartir un resultado. El parallax puede causar mareo y afectar al rendimiento; debe respetar <code>prefers-reduced-motion</code>.</td>
                     </tr>
                     <tr>
                         <td><strong>WebXR y experiencias 3D</strong></td>
                         <td>Ofrecen visualización inmersiva, formación práctica o previsualización de productos.</td>
-                        <td style="text-align: center; padding: 8px;">
+                        <td class="visual-cell">
                             <svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
   <rect width="160" height="90" rx="6" fill="#2e1065"/>
   <!-- Isometric 3D Cube -->
@@ -1005,14 +286,14 @@
   </g>
   <text x="80" y="80" fill="#e9d5ff" font-family="Inter, sans-serif" font-size="8" font-weight="bold" text-anchor="middle">WebXR / 3D Interactivo</text>
 </svg>
-                            <div style="font-size: 0.78rem; color: #64748b; margin-top: 4px;">Modelado y objetos 3D</div>
+                            <div class="visual-note">Modelado y objetos 3D</div>
                         </td>
                         <td>Requieren alternativa no inmersiva, controles comprensibles y mejora progresiva para dispositivos no compatibles.</td>
                     </tr>
                     <tr>
                         <td><strong>Neomorfismo</strong></td>
                         <td>Genera sensación de volumen mediante luces y sombras suaves.</td>
-                        <td style="text-align: center; padding: 8px;">
+                        <td class="visual-cell">
                             <svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
   <rect width="160" height="90" rx="6" fill="#e0e5ec"/>
   <!-- Neumorphic button with soft dual shadow -->
@@ -1026,14 +307,14 @@
   <circle cx="55" cy="45" r="8" fill="#4d7c0f"/>
   <text x="90" y="49" fill="#334155" font-family="Inter, sans-serif" font-size="9" font-weight="bold" text-anchor="middle">Soft UI</text>
 </svg>
-                            <div style="font-size: 0.78rem; color: #64748b; margin-top: 4px;">Superficies y sombras extrusionadas</div>
+                            <div class="visual-note">Superficies y sombras extrusionadas</div>
                         </td>
                         <td>Puede producir controles con poco contraste y estados ambiguos; no debe comprometer la perceptibilidad ni el foco.</td>
                     </tr>
                     <tr>
                         <td><strong>Degradados, vídeo e imágenes de gran formato</strong></td>
                         <td>Crean identidad y alto impacto emocional en cabeceras o campañas.</td>
-                        <td style="text-align: center; padding: 8px;">
+                        <td class="visual-cell">
                             <svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="grad-hero" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1047,7 +328,7 @@
   <text x="15" y="42" fill="#ffffff" font-family="'Merriweather', serif" font-size="13" font-weight="bold">Hero Banner</text>
   <text x="15" y="58" fill="#fbcfe8" font-family="Inter, sans-serif" font-size="8">Degradados e imágenes HD</text>
 </svg>
-                            <div style="font-size: 0.78rem; color: #64748b; margin-top: 4px;">Fondos vibrantes e imágenes Hero</div>
+                            <div class="visual-note">Fondos vibrantes e imágenes Hero</div>
                         </td>
                         <td>Exigen controlar contraste, peso de descarga, recorte responsivo y estabilidad visual para no empeorar los Core Web Vitals.</td>
                     </tr>
@@ -1157,7 +438,7 @@
         </blockquote>
 
         <div class="didactic-note activity-callout">
-            <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 2.2)</h5>
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 2.2)</h5>
             <p><strong>Diagnóstico de Desconexión UI vs UX:</strong> Identifica y describe un ejemplo de tu experiencia cotidiana en internet donde te hayas encontrado con una <em>"Excelente UI pero pésima UX"</em> (por ejemplo, un sitio web con animaciones 3D o tipografías espectaculares pero con formularios confusos o botones inaccesibles) y un ejemplo inverso de <em>"Pésima UI pero gran UX"</em> (como portales gubernamentales o wikis estéticamente simples pero extremadamente rápidos y efectivos para cumplir su tarea). Justifica la respuesta en 4 líneas.</p>
         </div>
 
@@ -1367,7 +648,7 @@
                         <td><strong>Dirección</strong></td>
                         <td>¿Hacia dónde parece avanzar la mirada?</td>
                         <td>La orientación horizontal, vertical, diagonal o curva establece un recorrido visual. Las diagonales suelen sugerir dinamismo; los ejes verticales, estabilidad.</td>
-                        <td style="text-align: center; padding: 8px;">
+                        <td class="visual-cell">
                             <svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
   <rect width="160" height="90" rx="6" fill="#0f172a"/>
   <!-- Direction flow line and arrows -->
@@ -1378,14 +659,14 @@
   <circle cx="140" cy="25" r="5" fill="#38bdf8"/>
   <text x="80" y="75" fill="#94a3b8" font-family="Inter, sans-serif" font-size="8" font-weight="bold" text-anchor="middle">Guiado de la Mirada</text>
 </svg>
-                            <div style="font-size: 0.78rem; color: #64748b; margin-top: 4px;">Ejes visuales y flujo de lectura</div>
+                            <div class="visual-note">Ejes visuales y flujo de lectura</div>
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Posición</strong></td>
                         <td>¿Dónde está cada elemento respecto al marco y a los demás?</td>
                         <td>La retícula, la alineación y la distribución simétrica o asimétrica determinan orden, énfasis y relación funcional.</td>
-                        <td style="text-align: center; padding: 8px;">
+                        <td class="visual-cell">
                             <svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
   <rect width="160" height="90" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
   <!-- Grid layout and deliberate positioning -->
@@ -1394,14 +675,14 @@
   <rect x="62" y="48" width="83" height="27" rx="4" fill="#d97706"/>
   <circle cx="35" cy="45" r="8" fill="#2563eb"/>
 </svg>
-                            <div style="font-size: 0.78rem; color: #64748b; margin-top: 4px;">Distribución en retícula y cercanía</div>
+                            <div class="visual-note">Distribución en retícula y cercanía</div>
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Espacio</strong></td>
                         <td>¿Qué ocupa la composición y qué zonas quedan libres?</td>
                         <td>El espacio positivo contiene información; el negativo separa, agrupa y ofrece descanso visual. La superposición y la escala también pueden sugerir profundidad.</td>
-                        <td style="text-align: center; padding: 8px;">
+                        <td class="visual-cell">
                             <svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
   <rect width="160" height="90" rx="6" fill="#1e293b"/>
   <!-- Positive vs Negative space balance -->
@@ -1410,14 +691,14 @@
   <text x="45" y="48" fill="#ffffff" font-family="Inter, sans-serif" font-size="8" font-weight="bold" text-anchor="middle">Objeto</text>
   <text x="115" y="48" fill="#38bdf8" font-family="Inter, sans-serif" font-size="8" font-weight="bold" text-anchor="middle">Aire / Gap</text>
 </svg>
-                            <div style="font-size: 0.78rem; color: #64748b; margin-top: 4px;">Equilibrio entre espacio lleno y negativo (gap)</div>
+                            <div class="visual-note">Equilibrio entre espacio lleno y negativo (gap)</div>
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Gravedad visual</strong></td>
                         <td>¿Qué elemento parece más pesado, estable o inestable?</td>
                         <td>Tamaño, contraste, densidad, color y ubicación modifican el peso percibido. Un elemento bajo suele parecer más asentado; uno alto o aislado puede generar tensión.</td>
-                        <td style="text-align: center; padding: 8px;">
+                        <td class="visual-cell">
                             <svg viewBox="0 0 160 90" width="160" height="90" xmlns="http://www.w3.org/2000/svg">
   <rect width="160" height="90" rx="6" fill="#0f172a"/>
   <!-- Visual weight scale / balance -->
@@ -1427,7 +708,7 @@
   <rect x="65" y="35" width="75" height="40" rx="6" fill="#1e3a8a" stroke="#38bdf8" stroke-width="2"/>
   <text x="102" y="58" fill="#ffffff" font-family="Inter, sans-serif" font-size="9" font-weight="bold" text-anchor="middle">Alto Peso (CTA)</text>
 </svg>
-                            <div style="font-size: 0.78rem; color: #64748b; margin-top: 4px;">Contraste de peso visual y atracción</div>
+                            <div class="visual-note">Contraste de peso visual y atracción</div>
                         </td>
                     </tr>
                 </tbody>
@@ -1514,7 +795,7 @@
         </div>
 
         <div class="didactic-note activity-callout">
-            <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 3.3)</h5>
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 3.3)</h5>
             <p><strong>Descomposición en Atomic Design:</strong> Selecciona el componente de la cabecera (Header) de cualquier plataforma digital que utilices a diario (ej. GitHub, YouTube o El País). Identifica por escrito los 5 niveles de Atomic Design presentes en él: 1) Átomos (ej. botón de búsqueda, input, avatar), 2) Moléculas (ej. campo de búsqueda completo con icono), 3) Organismos (ej. navbar superior completa), 4) Plantillas (layout del header fijo), y 5) Página (pantalla resultante con datos de tu usuario real).</p>
         </div>
 
@@ -1664,7 +945,7 @@
                 <span class="resource-badge badge-video">Vídeo, Lectura & Juego</span>
             </div>
             <div class="resource-description">Vídeos explicatorios, artículos didácticos y juegos interactivos para comprender y aplicar las leyes de percepción visual de la Gestalt en interfaces digitales:</div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div class="flex-wrap-group">
                 <a href="https://youtu.be/oW6dwEZIf3g" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-fab fa-youtube"></i> Ver vídeo Leyes de la Gestalt</a>
                 <a href="https://uifrommars.com/principios-gestalt-diseno-web/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-newspaper"></i> Leer artículo en UI from Mars</a>
                 <a href="https://wordwall.net/es/resource/33516307/juego-interactivo-de-principios-de-las-leyes-de-la-gestalt" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-gamepad"></i> Abrir Juego Interactivo en Wordwall</a>
@@ -1760,7 +1041,7 @@
                 <span class="resource-badge badge-tool">Herramientas Web</span>
             </div>
             <div class="resource-description">Utilidades imprescindibles para extraer valores Hexadecimales directamente de la pantalla y analizar esquemas armónicos:</div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div class="flex-wrap-group">
                 <a href="http://www.colorschemer.com/colorpix_info.php" target="_blank" class="resource-link-btn"><i class="fa-solid fa-eye-dropper"></i> ColorPix (App)</a>
                 <a href="http://www.colorschemer.com/online.html" target="_blank" class="resource-link-btn"><i class="fa-solid fa-swatchbook"></i> ColorSchemer Online</a>
                 <a href="http://whatsitscolor.com/" target="_blank" class="resource-link-btn"><i class="fa-solid fa-image"></i> Whats Its Color</a>
@@ -1777,7 +1058,7 @@
                 <span class="resource-badge badge-video">Vídeo & Artículos</span>
             </div>
             <div class="resource-description">Recursos para comprender cómo afectan las paletas de color al comportamiento emocional del usuario:</div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;">
+            <div class="flex-wrap-group flex-wrap-group--spaced">
                 <a href="https://youtu.be/cGglJKvpCEs?si=17Je6J9DjQyjNYze" target="_blank" class="resource-link-btn"><i class="fa-fab fa-youtube"></i> Vídeo: Psicología del Color</a>
                 <a href="http://www.grihotools.udl.cat/mpiua/colors-in-ux-design/" target="_blank" class="resource-link-btn"><i class="fa-solid fa-graduation-cap"></i> Colors in UX Design (MPIUA)</a>
                 <a href="http://www.creativosonline.org/blog/psicologia-del-color.html" target="_blank" class="resource-link-btn"><i class="fa-solid fa-newspaper"></i> Guía de CreativosOnline</a>
@@ -1785,7 +1066,7 @@
         </div>
 
         <div class="didactic-note activity-callout">
-            <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 4.3)</h5>
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 4.3)</h5>
             <p><strong>Extracción de Paleta y Verificación WCAG:</strong> Utilizando las <em>DevTools</em> del navegador (F12) o una extensión de cuentagotas, extrae el código Hexadecimal (`#HEX`) del color de texto principal y del color de fondo del botón primario del portal <code>https://www.w3.org</code>. Introduce ambos valores en una calculadora de contraste en línea y verifica si superan el ratio normativo exigido de <strong>4.5:1</strong> para texto normal y de <strong>3:1</strong> para elementos de interfaz.</p>
         </div>
 
@@ -1845,7 +1126,7 @@
         </div>
 
         <div class="didactic-note activity-callout">
-            <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 4.4)</h5>
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 4.4)</h5>
             <p><strong>Clasificación de Marcas de Identidad Digital:</strong> Busca en internet e identifica un ejemplo real para cada una de las 4 categorías de identidad visual estudiadas: 1) <strong>Logotipo</strong> (solo texto), 2) <strong>Isotipo</strong> (solo gráfico), 3) <strong>Imagotipo</strong> (símbolo y texto independientes) y 4) <strong>Isologotipo</strong> (texto y gráficos indivisibles). Justifica por escrito por qué cada marca pertenece a su categoría correspondiente.</p>
         </div>
 
@@ -1861,7 +1142,7 @@
                 <span class="resource-badge badge-reading">Artículos & Vídeo</span>
             </div>
             <div class="resource-description">Referencias técnicas para profundizar en el balance visual y la distribución asimétrica:</div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div class="flex-wrap-group">
                 <a href="https://youtu.be/gJhOHTOjGO8?si=mzZ8qokwlzhbO3A-" target="_blank" class="resource-link-btn"><i class="fa-fab fa-youtube"></i> Vídeo: Composición y Disposición</a>
                 <a href="https://www.lawebera.es/diseno-web/balance-diseno-web.php" target="_blank" class="resource-link-btn"><i class="fa-solid fa-link"></i> El Balance en La Webera</a>
                 <a href="https://fannyfp.wordpress.com/2012/09/06/el-uso-de-la-simetria-en-el-diseno-web/" target="_blank" class="resource-link-btn"><i class="fa-solid fa-blog"></i> Uso de Simetría (Blog)</a>
@@ -1973,7 +1254,7 @@
         </div>
 
         <div class="didactic-note activity-callout">
-            <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 4.6)</h5>
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 4.6)</h5>
             <p><strong>Auditoría de Usabilidad en Formularios Reales:</strong> Accede al formulario de contacto o registro de la plataforma de aprendizaje de la UNED (<code>https://www.uned.es</code>) o de Renfe (<code>https://www.renfe.com</code>). Inspecciona el código con las DevTools (F12) e identifica: 1) Si cada campo `&lt;input&gt;` cuenta con su etiqueta `&lt;label&gt;` explícita vinculada mediante `for="id"`, 2) Si se ha utilizado erróneamente el atributo `placeholder` como única etiqueta visual, y 3) Si los campos muestran feedback de error inline al perder el foco.</p>
         </div>
 
@@ -2316,7 +1597,7 @@
         <p>Para inspeccionar e auditar páginas web existentes pueden utilizarse las herramientas integradas para desarrolladores (DevTools de Chrome/Firefox) junto a extensiones como <strong>ColorZilla</strong> (captura cromática), <strong>WhatFont</strong> (identificación tipográfica), <strong>Pesticide</strong> (visualización de cajas CSS), <strong>Responsive Viewer</strong> (vista multidispositivo) o <strong>Page Ruler</strong> (medición de píxeles). Se debe verificar el desarrollador, actualizaciones y permisos antes de instalar extensiones.</p>
 
         <div class="didactic-note activity-callout">
-            <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 5.6)</h5>
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 5.6)</h5>
             <p><strong>Inspección Tipográfica con DevTools:</strong> Abre el portal periodístico <code>https://www.elpais.com</code>. Utilizando el panel de inspección CSS de tu navegador, localiza un titular principal y responde a las siguientes preguntas: 1) ¿Qué familia tipográfica principal y de reserva (*fallback*) utiliza?, 2) ¿Cuál es su tamaño en píxeles o `rem` y su altura de línea (`line-height`)?, y 3) ¿Se trata de una tipografía Serif o Sans-Serif y por qué se ha elegido según su formato de lectura?</p>
         </div>
 
@@ -2619,7 +1900,7 @@
                 <span class="resource-badge badge-course">Cursos & Guías</span>
             </div>
             <div class="resource-description">Recursos para dominar la confección de guías de estilo y la maquetación interactiva en Figma:</div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div class="flex-wrap-group">
                 <a href="https://www.ionos.es/digitalguide/paginas-web/diseno-web/la-guia-de-estilo-perfecta-para-paginas-web/" target="_blank" class="resource-link-btn"><i class="fa-solid fa-book"></i> Guía de Estilo (IONOS)</a>
                 <a href="https://www.youtube.com/watch?v=yqt_MEOGQEE" target="_blank" class="resource-link-btn"><i class="fa-fab fa-youtube"></i> Vídeo de Prototipos</a>
                 <a href="https://www.udemy.com/course/figma-diseno-de-prototipos-desde-cero" target="_blank" class="resource-link-btn"><i class="fa-solid fa-graduation-cap"></i> Curso de Figma (Udemy)</a>
@@ -2793,7 +2074,7 @@
         </div>
 
         <div class="didactic-note activity-callout">
-            <h5 style="color: #b45309;"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 8.1)</h5>
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Ejercicio breve de repaso (Apartado 8.1)</h5>
             <p><strong>Análisis y Reproducción del Rediseño UI/UX (Figura 1.12):</strong> Observa detalladamente el gráfico explicativo comparativo de la <strong>Figura 1.12</strong> presentado en esta sección. En tu cuaderno de prácticas o software de prototipado, reproduce la maqueta del formulario optimizado agregando un nuevo campo de tipo <code>&lt;select&gt;</code> para "Franja horaria de entrega". Asegúrate de dibujar la etiqueta explícita <code>&lt;label&gt;</code>, el indicador visual de foco accesible y garantizar que el botón cumpla el área táctil mínima (Target Size &ge; 48 &times; 48 px).</p>
         </div>
 
