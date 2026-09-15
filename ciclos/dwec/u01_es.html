@@ -807,6 +807,56 @@ que llevan cuerpo; no son exclusivas de las respuestas.</p>
 </table>
 </div><div class="resource-card expansion-card">
             <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-solid fa-book-open"></i> Qué es HTTP y cómo funciona</span>
+                <span class="resource-badge badge-reading">Lectura</span>
+            </div>
+            <div class="resource-description">Artículo introductorio sobre el ciclo de petición y respuesta, las cabeceras HTTP más habituales y su consulta mediante curl y las herramientas del navegador.</div>
+            <a href="https://www.makingscience.es/blog/que-es-http-y-como-funciona/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Leer el artículo</a>
+        </div>
+
+<div class="activity-card activity-callout" id="actividad-cabeceras-curl-devtools">
+<p><strong>Actividad paso a paso · Comprobar cabeceras con curl y DevTools</strong></p>
+<p>Analiza en las dos herramientas la misma página:
+<code>https://igarciafp.github.io/ciclos/dwec/u01_es.html</code>.</p>
+<ol>
+<li><p>Lee el artículo anterior e identifica qué son una petición, una respuesta y una cabecera HTTP.</p></li>
+<li><p>Abre una terminal y solicita únicamente las cabeceras de respuesta:</p>
+<pre><code>curl -I https://igarciafp.github.io/ciclos/dwec/u01_es.html</code></pre>
+<p>En Windows, si <code>curl</code> ejecuta otro comando de PowerShell, utiliza <code>curl.exe</code>. Anota la versión HTTP, el código de estado y las cabeceras <code>content-type</code>, <code>content-length</code>, <code>cache-control</code> y <code>server</code> cuando aparezcan. La opción <code>-I</code> realiza normalmente una petición <code>HEAD</code>: pide las cabeceras sin descargar el cuerpo.</p></li>
+<li><p>Ejecuta ahora una petición <code>GET</code>, descarta el cuerpo y conserva sus cabeceras:</p>
+<pre><code>curl -sS -D - -o /dev/null https://igarciafp.github.io/ciclos/dwec/u01_es.html</code></pre></li>
+<li><p>Para observar tanto lo que envía el cliente como lo que responde el servidor, ejecuta:</p>
+<pre><code>curl -v -o /dev/null https://igarciafp.github.io/ciclos/dwec/u01_es.html</code></pre>
+<p>En la salida detallada, las líneas que comienzan por <code>&gt;</code> pertenecen a la petición y las que comienzan por <code>&lt;</code> a la respuesta. Localiza el método, <code>Host</code>, <code>User-Agent</code>, el código de estado y dos cabeceras de respuesta.</p></li>
+<li><p>Abre la misma URL en el navegador, inicia las DevTools y entra en <strong>Network/Red</strong>. Activa <strong>Disable cache/Desactivar caché</strong>, recarga y selecciona el documento <code>u01_es.html</code>.</p></li>
+<li><p>En <strong>Headers/Cabeceras</strong>, observa <strong>General</strong>, <strong>Request Headers</strong> y <strong>Response Headers</strong>. Comprueba el método <code>GET</code>, el código de estado, <code>User-Agent</code>, <code>Accept</code>, <code>Accept-Encoding</code>, <code>Content-Type</code> y las cabeceras de caché disponibles.</p></li>
+<li><p>Compara los resultados. No tienen que coincidir todas las cabeceras: curl y el navegador son clientes distintos y pueden enviar valores diferentes. Además, una CDN, la caché o una negociación de protocolo pueden modificar la respuesta observada.</p></li>
+</ol>
+<div class="table-scroll" role="region" aria-label="Comparación de cabeceras HTTP con curl y DevTools" tabindex="0"><table>
+<thead>
+<tr class="header">
+<th><p><strong>Elemento</strong></p></th>
+<th><p><strong>curl</strong></p></th>
+<th><p><strong>DevTools</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr><td><p>Método</p></td><td></td><td></td></tr>
+<tr><td><p>Versión HTTP y estado</p></td><td></td><td></td></tr>
+<tr><td><p>Host</p></td><td></td><td></td></tr>
+<tr><td><p>User-Agent</p></td><td></td><td></td></tr>
+<tr><td><p>Accept / Content-Type</p></td><td></td><td></td></tr>
+<tr><td><p>Content-Length</p></td><td></td><td></td></tr>
+<tr><td><p>Cache-Control u otras cabeceras de caché</p></td><td></td><td></td></tr>
+</tbody>
+</table></div>
+<p><strong>Entrega:</strong> la tabla completada, una captura de la
+terminal, una captura de DevTools y una explicación de tres diferencias
+observadas. Indica también por qué <code>curl -I</code> y la carga normal
+del navegador pueden utilizar métodos distintos.</p>
+</div>
+<div class="resource-card expansion-card">
+            <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-brands fa-youtube"></i> XSS y seguridad de las cookies</span>
                 <span class="resource-badge badge-video">Vídeo</span>
             </div>
