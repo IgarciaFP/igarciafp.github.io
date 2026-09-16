@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Práctica guiada para iniciarse en Visual Studio Code, GitHub Codespaces, Vite y Git.">
+  <title>VS Code + Codespaces + Vite</title>
+  <style>
+    :root {
+      --ink:#152033; --muted:#53627a; --paper:#fffefa; --line:#d6deeb;
+      --blue:#2563eb; --blue2:#1d4ed8; --blue-soft:#dbeafe;
+      --cyan:#0e7490; --cyan-soft:#cffafe; --green:#0f766e; --green-soft:#ccfbf1;
+      --amber:#b45309; --amber-soft:#fef3c7; --rose:#be123c; --rose-soft:#ffe4e6;
+      --violet:#6d28d9; --violet-soft:#ede9fe; --shadow:0 12px 30px rgba(21,32,51,.10);
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;color:var(--ink);background:radial-gradient(circle at 8% 0,#dbeafe 0 10rem,transparent 27rem),radial-gradient(circle at 96% 8%,#cffafe 0 8rem,transparent 24rem),#f4f7fb;font:17px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    a{color:#1746a2} button,input,select,textarea{font:inherit} code,kbd,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+    code{padding:.12rem .34rem;border-radius:.35rem;background:#edf1f7;color:#7c2d12;overflow-wrap:anywhere}
+    kbd{display:inline-block;padding:.1rem .4rem;border:1px solid #aab5c8;border-bottom-width:3px;border-radius:.4rem;background:#fff;font-size:.88em;line-height:1.2}
+    .wrap{width:min(1100px,calc(100% - 2rem));margin-inline:auto}.skip{position:absolute;left:-999px;top:1rem;z-index:30;padding:.6rem 1rem;background:#fff;border-radius:.5rem}.skip:focus{left:1rem}
+    header{padding:2.6rem 0 1.1rem}.hero{display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:1.5rem;padding:clamp(1.3rem,4vw,2.8rem);border:1px solid #fff;border-radius:28px;background:rgba(255,255,255,.88);box-shadow:var(--shadow)}
+    .eyebrow{display:inline-block;margin:0 0 .6rem;padding:.32rem .68rem;border-radius:999px;background:var(--blue-soft);color:#1746a2;font-weight:850;font-size:.88rem}.hero h1{margin:0;font-size:clamp(2.2rem,6vw,4.5rem);line-height:1;letter-spacing:-.05em}.lede{max-width:60ch;color:var(--muted);font-size:1.08rem}.hero svg{width:100%;height:auto}
+    .tags{display:flex;flex-wrap:wrap;gap:.5rem}.tag{padding:.38rem .65rem;border-radius:999px;background:#eef2f8;font-size:.9rem;font-weight:800}
+    .progress{position:sticky;top:.5rem;z-index:12;display:grid;grid-template-columns:auto 1fr auto;gap:.75rem;align-items:center;margin:1rem 0;padding:.65rem .85rem;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.96);box-shadow:0 5px 18px rgba(21,32,51,.08)}
+    .track{height:11px;overflow:hidden;border-radius:99px;background:#e7ecf4}.bar{width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--blue),#14b8a6);transition:width .2s}.reset{border:0;border-radius:.6rem;padding:.35rem .6rem;color:#9f1239;background:var(--rose-soft);font-weight:800;cursor:pointer}
+    .panel{margin:1rem 0;padding:1.25rem;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 7px 20px rgba(21,32,51,.06)}.panel h2{margin-top:0}.two{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
+    .tip{padding:.72rem .85rem;border-left:5px solid var(--green);border-radius:8px;background:var(--green-soft)}.warning{border-left-color:var(--rose);background:var(--rose-soft)}.teacher{border-left-color:var(--violet);background:var(--violet-soft)}
+    .map{width:100%;height:auto}.nav ol{display:grid;grid-template-columns:repeat(5,1fr);gap:.55rem;margin:0;padding:0;list-style:none}.nav a{display:block;padding:.55rem .65rem;border:1px solid var(--line);border-radius:10px;background:#fff;text-decoration:none;font-weight:800}.nav a:hover,.nav a:focus-visible{outline:3px solid var(--blue-soft);border-color:var(--blue)}
+    .missions{display:grid;gap:1rem;margin-top:1rem}.mission{scroll-margin-top:5rem;display:grid;grid-template-columns:76px 1fr;gap:1rem;padding:1.15rem;border:1px solid var(--line);border-radius:20px;background:var(--paper);box-shadow:var(--shadow)}.num{display:grid;place-items:center;align-self:start;width:62px;aspect-ratio:1;border-radius:18px;color:#fff;background:linear-gradient(145deg,var(--blue),var(--violet));font-size:1.55rem;font-weight:900;transform:rotate(-3deg)}
+    .mission-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.6rem}.mission h3{margin:0;font-size:1.35rem;line-height:1.2}.time{padding:.25rem .55rem;border-radius:999px;background:var(--amber-soft);color:#854d0e;font-weight:850;white-space:nowrap}.goal{margin:.45rem 0 .75rem;color:var(--muted)}.steps{margin:0;padding-left:1.3rem}.steps li+li{margin-top:.45rem}.check{margin:.8rem 0 0;padding:.65rem .8rem;border-left:5px solid var(--green);border-radius:8px;background:var(--green-soft)}
+    details{margin-top:.7rem;border:1px dashed #aeb8ca;border-radius:9px;background:#fff}summary{cursor:pointer;padding:.55rem .7rem;font-weight:800}details p,details ul{margin:0;padding:0 .8rem .7rem}details ul{padding-left:2rem}.done-row{display:flex;align-items:center;gap:.5rem;margin-top:.8rem}.done-row input{width:1.2rem;height:1.2rem;accent-color:var(--green)}.done-row label{font-weight:850;cursor:pointer}
+    .code-box{position:relative;margin:.75rem 0}.code-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.48rem .65rem;border-radius:10px 10px 0 0;background:#26334a;color:#fff;font-size:.88rem;font-weight:800}.copy{border:1px solid #64748b;border-radius:.5rem;padding:.25rem .5rem;background:#111827;color:#fff;font-size:.82rem;cursor:pointer}.copy.copied{background:#0f766e}.code-box pre{max-height:470px;margin:0;padding:.9rem;overflow:auto;border-radius:0 0 10px 10px;background:#111827;color:#e5eefb;font-size:.82rem;line-height:1.45;white-space:pre}.command{display:block;margin:.6rem 0;padding:.7rem .8rem;overflow-x:auto;border-radius:9px;background:#172033;color:#f8fafc;white-space:pre;font-size:.92rem}
+    .layout-card{padding:.9rem;border:1px solid var(--line);border-radius:12px;background:#f8fafc}.layout-card strong{display:block;color:#1e40af}.shortcuts{width:100%;border-collapse:collapse}.shortcuts th,.shortcuts td{padding:.58rem;border:1px solid var(--line);text-align:left}.shortcuts th{background:#eff6ff}
+    .final{margin:1.4rem 0;padding:clamp(1.2rem,4vw,2rem);border:4px solid #f59e0b;border-radius:24px;background:linear-gradient(145deg,#fffbeb,#fff7ed);box-shadow:0 16px 34px rgba(180,83,9,.16)}.badge{display:inline-block;padding:.35rem .7rem;border-radius:999px;color:#fff;background:#9a3412;font-weight:900}.final h2{margin:.65rem 0 .3rem}.brief{padding:.9rem 1rem;border:1px solid #fed7aa;border-radius:12px;background:#fff}.final-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.final li+li{margin-top:.42rem}
+    .delivery{border:3px solid var(--violet);background:linear-gradient(145deg,#faf5ff,#f5f3ff)}.delivery-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.delivery label{display:block;margin-top:.7rem;font-weight:800}.delivery input,.delivery select,.delivery textarea{width:100%;margin-top:.3rem;padding:.65rem .7rem;border:1px solid #a78bfa;border-radius:9px;background:#fff}.delivery textarea{min-height:100px;resize:vertical}.actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:.9rem}.actions button{border:0;border-radius:10px;padding:.65rem .9rem;color:#fff;background:var(--violet);font-weight:850;cursor:pointer}.actions button:disabled{opacity:.45;cursor:not-allowed}.actions .secondary{color:#5b21b6;background:#ede9fe;border:1px solid #a78bfa}.preview{min-height:220px;margin:0;padding:.9rem;overflow:auto;border:1px solid #c4b5fd;border-radius:11px;background:#172033;color:#f8fafc;white-space:pre-wrap;font-size:.86rem;line-height:1.48}
+    .sources li+li{margin-top:.4rem}.small{font-size:.91rem}footer{padding:1rem 0 3rem;color:var(--muted)}
+    @media(max-width:780px){.hero,.two,.final-grid,.delivery-grid{grid-template-columns:1fr}.hero svg{max-width:390px;margin-inline:auto;order:-1}.three{grid-template-columns:1fr}.nav ol{grid-template-columns:repeat(2,1fr)}.mission{grid-template-columns:1fr}}
+    @media(max-width:480px){body{font-size:16px}.wrap{width:calc(100% - 1rem)}header{padding-top:.6rem}.hero{padding:1.1rem;border-radius:19px}.progress{grid-template-columns:1fr auto}.track{grid-column:1/-1;grid-row:2}.nav ol{grid-template-columns:1fr}}
+    @media print{body{background:#fff;font-size:10.5pt}.wrap{width:100%}.hero,.mission,.panel,.final{box-shadow:none}.progress,.reset,.done-row,.copy,.delivery form{display:none}.mission,.final{break-inside:avoid}details>*{display:block}}
+  </style>
+</head>
+<body>
+  <a class="skip" href="#m1">Saltar a las misiones</a>
+  <header class="wrap">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">💻 LABORATORIO DE PROGRAMACIÓN · 10 AÑOS</p>
+        <h1>VS Code, Codespaces y Vite</h1>
+        <p class="lede">Crea una web, ejecútala con Vite y guarda tu trabajo en GitHub. Aprenderás los primeros pasos de Visual Studio Code mientras construyes un proyecto real.</p>
+        <div class="tags"><span class="tag">10 misiones</span><span class="tag">50–60 min</span><span class="tag">Reto final</span><span class="tag">Entrega TXT + captura + enlace</span></div>
+      </div>
+      <svg viewBox="0 0 450 320" role="img" aria-label="Editor de código conectado a una nube y a una página web">
+        <rect x="25" y="35" width="330" height="230" rx="22" fill="#172033"/><rect x="42" y="53" width="296" height="194" rx="11" fill="#0f172a"/>
+        <rect x="42" y="53" width="62" height="194" rx="11" fill="#1e293b"/><circle cx="73" cy="84" r="10" fill="#60a5fa"/><rect x="59" y="110" width="28" height="5" rx="2" fill="#94a3b8"/><rect x="59" y="126" width="34" height="5" rx="2" fill="#94a3b8"/><rect x="59" y="142" width="24" height="5" rx="2" fill="#94a3b8"/>
+        <text x="122" y="85" font-family="monospace" font-size="13" fill="#93c5fd">&lt;h1&gt;</text><text x="122" y="110" font-family="monospace" font-size="13" fill="#fef08a">Club Explorador</text><text x="122" y="135" font-family="monospace" font-size="13" fill="#93c5fd">&lt;/h1&gt;</text><text x="122" y="178" font-family="monospace" font-size="13" fill="#5eead4">npm run dev</text>
+        <path d="M334 88c18-30 61-24 67 7 28-1 35 38 8 48h-67c-27-5-29-42-8-55z" fill="#dbeafe" stroke="#2563eb" stroke-width="4"/><text x="370" y="121" text-anchor="middle" font-family="system-ui" font-weight="900" fill="#1e40af">GitHub</text>
+        <path d="M355 190h52v58h-52z" fill="#fff" stroke="#0f766e" stroke-width="4"/><rect x="363" y="199" width="36" height="7" rx="3" fill="#99f6e4"/><rect x="363" y="213" width="28" height="6" rx="3" fill="#bfdbfe"/><rect x="363" y="227" width="33" height="6" rx="3" fill="#fde68a"/>
+        <path d="M340 145l-18 20M356 180l-14 12" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+    </section>
+  </header>
+
+  <main class="wrap">
+    <section class="progress" aria-label="Progreso"><strong id="progress-text">0 de 10 misiones</strong><div class="track" aria-hidden="true"><div class="bar" id="progress-bar"></div></div><button class="reset" id="reset" type="button">Reiniciar</button></section>
+
+    <section class="two">
+      <article class="panel"><h2>Antes de la clase</h2><p>El profesor debe proporcionar un repositorio de GitHub que contenga al menos un <code>README.md</code>. Una rama vacía no permite crear un Codespace.</p><p class="tip teacher"><strong>Cuenta supervisada:</strong> el alumnado debe usar la cuenta y el repositorio indicados por el centro.</p></article>
+      <article class="panel"><h2>Reglas de seguridad</h2><p class="tip warning"><strong>Nunca compartas</strong> contraseñas, tokens, claves ni datos personales.</p><p>Mantén el puerto <strong>5173 privado</strong>. Para esta práctica no hay que hacerlo público. Detén el Codespace cuando termines para no consumir tiempo innecesario.</p></article>
+    </section>
+
+    <section class="panel">
+      <h2>El recorrido</h2>
+      <svg class="map" viewBox="0 0 900 180" role="img" aria-label="Repositorio, Codespace, VS Code, Vite y GitHub forman el recorrido">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#64748b"/></marker></defs>
+        <g font-family="system-ui" text-anchor="middle"><rect x="10" y="38" width="145" height="90" rx="15" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/><text x="82" y="75" font-weight="900" fill="#1e40af">Repositorio</text><text x="82" y="100" font-size="14">punto de partida</text><path d="M155 83h28" stroke="#64748b" stroke-width="4" marker-end="url(#arr)"/>
+        <rect x="190" y="38" width="145" height="90" rx="15" fill="#cffafe" stroke="#0e7490" stroke-width="3"/><text x="262" y="75" font-weight="900" fill="#155e75">Codespace</text><text x="262" y="100" font-size="14">ordenador en nube</text><path d="M335 83h28" stroke="#64748b" stroke-width="4" marker-end="url(#arr)"/>
+        <rect x="370" y="38" width="145" height="90" rx="15" fill="#ede9fe" stroke="#6d28d9" stroke-width="3"/><text x="442" y="75" font-weight="900" fill="#5b21b6">VS Code</text><text x="442" y="100" font-size="14">editar archivos</text><path d="M515 83h28" stroke="#64748b" stroke-width="4" marker-end="url(#arr)"/>
+        <rect x="550" y="38" width="145" height="90" rx="15" fill="#fef3c7" stroke="#b45309" stroke-width="3"/><text x="622" y="75" font-weight="900" fill="#92400e">Vite</text><text x="622" y="100" font-size="14">mostrar la web</text><path d="M695 83h28" stroke="#64748b" stroke-width="4" marker-end="url(#arr)"/>
+        <rect x="730" y="38" width="160" height="90" rx="15" fill="#ccfbf1" stroke="#0f766e" stroke-width="3"/><text x="810" y="75" font-weight="900" fill="#115e59">Commit + Sync</text><text x="810" y="100" font-size="14">guardar en GitHub</text></g>
+      </svg>
+    </section>
+
+    <section class="panel">
+      <h2>Primer vistazo a Visual Studio Code</h2>
+      <div class="three"><div class="layout-card"><strong>Activity Bar</strong>Iconos verticales: Explorer, Search, Source Control y Extensions.</div><div class="layout-card"><strong>Explorer</strong>Árbol de carpetas y archivos del proyecto.</div><div class="layout-card"><strong>Editor</strong>Zona central donde escribes el código.</div><div class="layout-card"><strong>Panel inferior</strong>Terminal, problemas, salida y puertos.</div><div class="layout-card"><strong>Status Bar</strong>Rama Git, avisos y estado del Codespace.</div><div class="layout-card"><strong>Command Palette</strong>Buscador de todas las órdenes de VS Code.</div></div>
+      <details><summary>⌨️ Cinco atajos útiles</summary><table class="shortcuts"><thead><tr><th>Acción</th><th>Windows/Linux</th></tr></thead><tbody><tr><td>Guardar</td><td><kbd>Ctrl</kbd> + <kbd>S</kbd></td></tr><tr><td>Buscar</td><td><kbd>Ctrl</kbd> + <kbd>F</kbd></td></tr><tr><td>Paleta de órdenes</td><td><kbd>Ctrl</kbd> + <kbd>Mayús</kbd> + <kbd>P</kbd></td></tr><tr><td>Terminal</td><td><kbd>Ctrl</kbd> + <kbd>`</kbd></td></tr><tr><td>Control de código</td><td><kbd>Ctrl</kbd> + <kbd>Mayús</kbd> + <kbd>G</kbd></td></tr></tbody></table><p class="small">En Mac, normalmente se usa <kbd>⌘</kbd> en lugar de <kbd>Ctrl</kbd>.</p></details>
+    </section>
+
+    <nav class="panel nav" aria-label="Índice de misiones"><h2>Misiones</h2><ol><li><a href="#m1">1 · Codespace</a></li><li><a href="#m2">2 · Interfaz</a></li><li><a href="#m3">3 · package.json</a></li><li><a href="#m4">4 · Vite</a></li><li><a href="#m5">5 · HTML</a></li><li><a href="#m6">6 · Editar</a></li><li><a href="#m7">7 · Ejecutar</a></li><li><a href="#m8">8 · Recarga</a></li><li><a href="#m9">9 · Commit</a></li><li><a href="#m10">10 · Sync</a></li></ol></nav>
+
+    <section class="missions" aria-label="Diez prácticas">
+      <article class="mission" id="m1"><div class="num">01</div><div><div class="mission-head"><h3>Crea el Codespace</h3><span class="time">⏱ 3–5 min</span></div><p class="goal">Abre un entorno de programación en la nube.</p><ol class="steps"><li>Entra en el repositorio indicado por el profesor.</li><li>Pulsa <strong>Code</strong> → <strong>Codespaces</strong> → <strong>Create codespace on main</strong>.</li><li>Espera a que aparezca VS Code en el navegador.</li></ol><p class="check"><strong>Comprobación:</strong> el nombre del repositorio aparece en Explorer.</p><details><summary>💡 Si no aparece el botón</summary><p>Comprueba que has iniciado sesión, que tienes acceso al repositorio y que la rama contiene al menos un archivo.</p></details><div class="done-row"><input class="done" id="d1" type="checkbox"><label for="d1">Hecho</label></div></div></article>
+
+      <article class="mission" id="m2"><div class="num">02</div><div><div class="mission-head"><h3>Reconoce la interfaz</h3><span class="time">⏱ 4 min</span></div><p class="goal">Encuentra las partes principales de VS Code.</p><ol class="steps"><li>Pulsa <strong>Explorer</strong> y abre <code>README.md</code>.</li><li>Pulsa <strong>Search</strong> y busca una palabra del README.</li><li>Abre la <strong>Command Palette</strong> y escribe <code>theme</code>; no cambies nada todavía.</li><li>Abre y cierra el terminal con <kbd>Ctrl</kbd> + <kbd>`</kbd>.</li></ol><p class="check"><strong>Comprobación:</strong> puedes señalar Explorer, Editor, Terminal y Status Bar.</p><div class="done-row"><input class="done" id="d2" type="checkbox"><label for="d2">Hecho</label></div></div></article>
+
+      <article class="mission" id="m3"><div class="num">03</div><div><div class="mission-head"><h3>Crea package.json y .gitignore</h3><span class="time">⏱ 4 min</span></div><p class="goal">Define el proyecto y evita subir archivos pesados.</p><ol class="steps"><li>En Explorer, pulsa <strong>New File</strong> y crea <code>package.json</code>.</li><li>Copia este contenido y guarda con <kbd>Ctrl</kbd> + <kbd>S</kbd>.</li></ol>
+        <div class="code-box"><div class="code-head"><span>package.json</span><button class="copy" type="button" data-copy="codigo-package">Copiar</button></div><pre><code id="codigo-package">{
+  "name": "club-exploradores",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0"
+  }
+}</code></pre></div>
+        <ol class="steps" start="3"><li>Crea también <code>.gitignore</code> y escribe una sola línea:</li></ol><code class="command">node_modules/</code>
+        <p class="check"><strong>Comprobación:</strong> <code>package.json</code> contiene el script <code>dev</code> y existe <code>.gitignore</code>.</p><details><summary>🧠 ¿Para qué sirven?</summary><p><code>package.json</code> es la ficha del proyecto. <code>.gitignore</code> indica que Git no debe guardar la carpeta pesada <code>node_modules</code>.</p></details><div class="done-row"><input class="done" id="d3" type="checkbox"><label for="d3">Hecho</label></div></div></article>
+
+      <article class="mission" id="m4"><div class="num">04</div><div><div class="mission-head"><h3>Comprueba Node e instala Vite</h3><span class="time">⏱ 4–6 min</span></div><p class="goal">Usa el terminal integrado.</p><ol class="steps"><li>Abre <strong>Terminal</strong> → <strong>New Terminal</strong>.</li><li>Ejecuta estas órdenes de una en una:</li></ol><code class="command">node --version
+npm --version
+npm install -D vite</code><p class="check"><strong>Comprobación:</strong> aparece <code>node_modules</code>, un <code>package-lock.json</code> y no termina con un error rojo.</p><details><summary>💡 Si Vite avisa sobre Node</summary><p>La versión actual de Vite requiere Node 20.19+ o 22.12+. Avisa al profesor para actualizar o reconstruir el Codespace.</p></details><div class="done-row"><input class="done" id="d4" type="checkbox"><label for="d4">Hecho</label></div></div></article>
+
+      <article class="mission" id="m5"><div class="num">05</div><div><div class="mission-head"><h3>Crea la web Club de Exploradores</h3><span class="time">⏱ 5 min</span></div><p class="goal">Crea un único archivo HTML con estructura, estilos e interacción.</p><ol class="steps"><li>Crea <code>index.html</code> en la raíz del proyecto.</li><li>Copia todo el código siguiente y guarda.</li></ol>
+        <div class="code-box"><div class="code-head"><span>index.html</span><button class="copy" type="button" data-copy="codigo-index">Copiar</button></div><pre><code id="codigo-index">&lt;!doctype html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Club de Exploradores&lt;/title&gt;
+  &lt;style&gt;
+    :root { --principal: #2563eb; --fondo: #eff6ff; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: grid; place-items: center;
+      background: var(--fondo); color: #172033;
+      font-family: system-ui, sans-serif;
+    }
+    main { width: min(900px, 92%); text-align: center; }
+    h1 { margin-bottom: .3rem; color: var(--principal); font-size: 3rem; }
+    .tarjetas {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1rem; margin: 2rem 0;
+    }
+    article {
+      padding: 1.2rem; border: 2px solid #bfdbfe;
+      border-radius: 18px; background: white;
+      box-shadow: 0 8px 20px #1e3a8a18;
+    }
+    .icono { font-size: 2.5rem; }
+    button {
+      border: 0; border-radius: 12px; padding: .8rem 1.2rem;
+      color: white; background: var(--principal);
+      font: inherit; font-weight: 800; cursor: pointer;
+    }
+    #mensaje { min-height: 1.6em; font-weight: 800; }
+    @media (max-width: 650px) {
+      .tarjetas { grid-template-columns: 1fr; }
+      h1 { font-size: 2.2rem; }
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;main&gt;
+    &lt;p&gt;🚀 PROYECTO VITE&lt;/p&gt;
+    &lt;h1&gt;Club de Exploradores&lt;/h1&gt;
+    &lt;p&gt;Elige una misión y descubre el mundo de la programación.&lt;/p&gt;
+
+    &lt;section class="tarjetas"&gt;
+      &lt;article&gt;&lt;div class="icono"&gt;🌙&lt;/div&gt;&lt;h2&gt;Luna&lt;/h2&gt;&lt;p&gt;Observa el cielo.&lt;/p&gt;&lt;/article&gt;
+      &lt;article&gt;&lt;div class="icono"&gt;🌊&lt;/div&gt;&lt;h2&gt;Océano&lt;/h2&gt;&lt;p&gt;Investiga las mareas.&lt;/p&gt;&lt;/article&gt;
+      &lt;article&gt;&lt;div class="icono"&gt;🌿&lt;/div&gt;&lt;h2&gt;Bosque&lt;/h2&gt;&lt;p&gt;Protege la naturaleza.&lt;/p&gt;&lt;/article&gt;
+    &lt;/section&gt;
+
+    &lt;button id="boton"&gt;Recibir una misión&lt;/button&gt;
+    &lt;p id="mensaje" aria-live="polite"&gt;&lt;/p&gt;
+  &lt;/main&gt;
+
+  &lt;script&gt;
+    const mensajes = [
+      'Busca tres constelaciones.',
+      'Descubre un animal marino.',
+      'Dibuja la hoja de un árbol.'
+    ];
+    let turno = 0;
+    document.querySelector('#boton').addEventListener('click', () =&gt; {
+      document.querySelector('#mensaje').textContent = mensajes[turno];
+      turno = (turno + 1) % mensajes.length;
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+        <p class="check"><strong>Comprobación:</strong> Explorer muestra <code>index.html</code>, <code>package.json</code> y <code>package-lock.json</code>.</p><div class="done-row"><input class="done" id="d5" type="checkbox"><label for="d5">Hecho</label></div></div></article>
+
+      <article class="mission" id="m6"><div class="num">06</div><div><div class="mission-head"><h3>Practica edición y búsqueda</h3><span class="time">⏱ 4 min</span></div><p class="goal">Aprende tres herramientas básicas del editor.</p><ol class="steps"><li>Pulsa <kbd>Ctrl</kbd> + <kbd>F</kbd>, busca <code>Exploradores</code> y cambia el título por <code>Exploradores del Futuro</code>.</li><li>Abre la Command Palette, busca <strong>Format Document</strong> y ejecútalo.</li><li>Haz clic en la línea del color <code>#2563eb</code> y prueba el selector de color. Guarda.</li></ol><p class="check"><strong>Comprobación:</strong> el archivo está ordenado y el nuevo título aparece dos veces: en <code>&lt;title&gt;</code> y en <code>&lt;h1&gt;</code>.</p><details><summary>💡 Si solo cambiaste una aparición</summary><p>Usa <kbd>Ctrl</kbd> + <kbd>H</kbd> para abrir Buscar y reemplazar.</p></details><div class="done-row"><input class="done" id="d6" type="checkbox"><label for="d6">Hecho</label></div></div></article>
+
+      <article class="mission" id="m7"><div class="num">07</div><div><div class="mission-head"><h3>Lanza Vite</h3><span class="time">⏱ 3 min</span></div><p class="goal">Inicia el servidor de desarrollo.</p><ol class="steps"><li>En el terminal ejecuta:</li></ol><code class="command">npm run dev</code><ol class="steps" start="2"><li>Espera a que aparezca una dirección con el puerto <code>5173</code>.</li><li>Pulsa <strong>Open in Browser</strong> en la notificación o abre el enlace del terminal.</li><li>Si no se abre, entra en la pestaña <strong>PORTS</strong> y pulsa el icono del globo junto a 5173.</li></ol><p class="check"><strong>Comprobación:</strong> ves la web Club de Exploradores y el botón muestra misiones.</p><p class="tip warning"><strong>No cierres ese terminal:</strong> mientras Vite está funcionando, el terminal queda ocupado. Para detenerlo usa <kbd>Ctrl</kbd> + <kbd>C</kbd>.</p><div class="done-row"><input class="done" id="d7" type="checkbox"><label for="d7">Hecho</label></div></div></article>
+
+      <article class="mission" id="m8"><div class="num">08</div><div><div class="mission-head"><h3>Comprueba la recarga automática</h3><span class="time">⏱ 4 min</span></div><p class="goal">Observa cómo Vite actualiza la página al guardar.</p><ol class="steps"><li>Deja la vista previa abierta en otra pestaña.</li><li>En VS Code cambia <code>🚀 PROYECTO VITE</code> por <code>✨ MI PRIMERA WEB</code>.</li><li>Guarda con <kbd>Ctrl</kbd> + <kbd>S</kbd> y vuelve a la vista previa.</li></ol><p class="check"><strong>Comprobación:</strong> el texto cambia sin ejecutar otra vez <code>npm run dev</code>.</p><details><summary>🧠 ¿Qué ha ocurrido?</summary><p>Vite detectó el archivo guardado y avisó al navegador para recargar la página.</p></details><div class="done-row"><input class="done" id="d8" type="checkbox"><label for="d8">Hecho</label></div></div></article>
+
+      <article class="mission" id="m9"><div class="num">09</div><div><div class="mission-head"><h3>Revisa y crea un commit</h3><span class="time">⏱ 5 min</span></div><p class="goal">Guarda una versión explicando qué contiene.</p><ol class="steps"><li>Abre <strong>Source Control</strong> con el icono de la rama.</li><li>Comprueba que <code>node_modules</code> no aparece gracias a <code>.gitignore</code>.</li><li>Haz clic en <code>index.html</code> y revisa el comparador de cambios.</li><li>Pulsa <strong>+</strong> junto a los archivos para prepararlos.</li><li>Escribe el mensaje <code>feat: crea web con Vite</code> y pulsa <strong>Commit</strong>.</li></ol><p class="check"><strong>Comprobación:</strong> la lista de cambios queda vacía y aparece un commit saliente.</p><details><summary>🧠 Tres palabras importantes</summary><ul><li><strong>Stage:</strong> elegir lo que entrará.</li><li><strong>Commit:</strong> crear una versión local.</li><li><strong>Mensaje:</strong> explicar el cambio.</li></ul></details><div class="done-row"><input class="done" id="d9" type="checkbox"><label for="d9">Hecho</label></div></div></article>
+
+      <article class="mission" id="m10"><div class="num">10</div><div><div class="mission-head"><h3>Sincroniza con GitHub</h3><span class="time">⏱ 3–5 min</span></div><p class="goal">Envía el commit al repositorio remoto.</p><ol class="steps"><li>En Source Control pulsa <strong>Sync Changes</strong> o el icono de sincronización de la Status Bar.</li><li>Si aparece una confirmación para obtener y enviar commits, acéptala.</li><li>Vuelve a la página del repositorio en GitHub y recarga.</li><li>Abre <code>index.html</code> y comprueba el mensaje del último commit.</li></ol><p class="check"><strong>Comprobación:</strong> GitHub muestra <code>feat: crea web con Vite</code> y los archivos del proyecto.</p><p class="tip warning"><strong>Importante:</strong> un commit no llega a GitHub hasta hacer <em>push</em> o <em>Sync</em>.</p><div class="done-row"><input class="done" id="d10" type="checkbox"><label for="d10">Hecho</label></div></div></article>
+    </section>
+
+    <section class="final" id="reto-final"><span class="badge">🔥 RETO FINAL · 10 MINUTOS</span><h2>Amplía el Club de Exploradores</h2><p class="brief"><strong>Misión:</strong> mejora el proyecto sin copiar una solución completa. Debes editar, comprobar en Vite y guardar una nueva versión en GitHub.</p><div class="final-grid"><div><h3>Objetivos</h3><ol><li>Añade una cuarta tarjeta llamada <strong>Cometa</strong> con el icono ☄️.</li><li>Cambia el color principal por otro que tenga suficiente contraste con el texto blanco del botón.</li><li>Añade un pie de página con tu alias de clase.</li><li>Comprueba que el botón sigue mostrando las tres misiones.</li><li>Crea el commit <code>feat: personaliza reto final</code>.</li><li>Sincroniza y verifica el commit en GitHub.</li></ol></div><div><h3>Condiciones</h3><ul><li>La vista móvil debe seguir mostrando una sola columna.</li><li><code>node_modules</code> no puede aparecer en GitHub.</li><li>El terminal no debe mostrar errores.</li></ul><details><summary>🧩 Pista 1</summary><p>Duplica uno de los bloques <code>&lt;article&gt;...&lt;/article&gt;</code> y cambia su contenido.</p></details><details><summary>🧩 Pista 2</summary><p>Añade <code>&lt;footer&gt;Creado por ALIAS&lt;/footer&gt;</code> antes de cerrar <code>&lt;main&gt;</code>.</p></details><details><summary>🧩 Pista 3</summary><p>El color principal está guardado en la variable CSS <code>--principal</code>.</p></details></div></div><p class="check"><strong>Superado si…</strong> completas 5 de 6 objetivos y el último commit se ve en GitHub.</p><div class="done-row"><input id="final-done" type="checkbox"><label for="final-done">Reto final superado</label></div></section>
+
+    <section class="panel delivery" id="entrega"><h2>📦 Entrega: prueba de concepto</h2><p>Entrega <strong>el enlace del repositorio</strong>, <strong>una captura</strong> de la web funcionando y <strong>el informe TXT</strong> que puedes generar aquí.</p><div class="delivery-grid"><form id="form-entrega"><label for="alias">Nombre o alias de clase</label><input id="alias" type="text" maxlength="40" placeholder="Ejemplo: Equipo Cometa" required><label for="repo">Enlace del repositorio</label><input id="repo" type="url" placeholder="https://github.com/..." required><label for="commit">Mensaje del último commit</label><input id="commit" type="text" maxlength="80" value="feat: personaliza reto final" required><label for="explicacion">¿Qué aprendiste?</label><textarea id="explicacion" maxlength="350" placeholder="Explica qué hiciste con VS Code, Vite y Git." required></textarea><div class="actions"><button type="submit">Generar informe</button><button class="secondary" id="download" type="button" disabled>Descargar TXT</button></div></form><div><h3>Vista previa</h3><pre class="preview" id="preview" aria-live="polite">Completa el formulario y pulsa “Generar informe”.</pre></div></div><h3>La captura debe mostrar</h3><ul><li>Las cuatro tarjetas, incluido <strong>Cometa</strong>.</li><li>El pie de página con el alias.</li><li>La URL de vista previa de Codespaces o el panel PORTS con el puerto 5173 privado.</li></ul><p class="check"><strong>Entrega mínima:</strong> enlace de GitHub + captura + <code>entrega-vscode-alias.txt</code>.</p></section>
+
+    <section class="panel"><h2>Lista de comprobación del profesor</h2><table class="shortcuts"><thead><tr><th>Evidencia</th><th>Puntos</th></tr></thead><tbody><tr><td>Proyecto abre con <code>npm run dev</code> sin errores.</td><td>2</td></tr><tr><td>HTML inicial completo y botón funcional.</td><td>2</td></tr><tr><td>Personalización del reto y diseño adaptable.</td><td>2</td></tr><tr><td><code>node_modules</code> está ignorado.</td><td>1</td></tr><tr><td>Dos commits claros y sincronizados.</td><td>2</td></tr><tr><td>Entrega completa y explicación.</td><td>1</td></tr></tbody></table></section>
+
+    <section class="panel sources"><h2>Fuentes oficiales</h2><ul><li><a href="https://docs.github.com/en/codespaces/developing-in-a-codespace/creating-a-codespace-for-a-repository">GitHub Docs: crear un Codespace para un repositorio</a>.</li><li><a href="https://docs.github.com/en/codespaces/developing-in-a-codespace/forwarding-ports-in-your-codespace">GitHub Docs: puertos reenviados en Codespaces</a>.</li><li><a href="https://code.visualstudio.com/docs/sourcecontrol/overview">Visual Studio Code: control de versiones</a>.</li><li><a href="https://vite.dev/guide/">Vite: guía oficial de inicio</a>.</li></ul><p class="small">La interfaz puede variar ligeramente. Los nombres en inglés coinciden con los rótulos habituales de GitHub y VS Code.</p></section>
+  </main>
+
+  <footer class="wrap"><p>Material autocontenido para uso educativo. No instala extensiones ni solicita credenciales.</p></footer>
+
+  <script>
+    (() => {
+      document.querySelectorAll('.copy').forEach(button => {
+        button.addEventListener('click', async () => {
+          const code = document.getElementById(button.dataset.copy).textContent;
+          try {
+            await navigator.clipboard.writeText(code);
+            button.textContent = 'Copiado ✓'; button.classList.add('copied');
+            setTimeout(() => { button.textContent = 'Copiar'; button.classList.remove('copied'); }, 1600);
+          } catch (_) {
+            button.textContent = 'Selecciona el código';
+          }
+        });
+      });
+
+      const boxes = [...document.querySelectorAll('.done')];
+      const finalBox = document.querySelector('#final-done');
+      const bar = document.querySelector('#progress-bar');
+      const text = document.querySelector('#progress-text');
+      const progressKey = 'vscode-misiones-v1';
+      const finalKey = 'vscode-reto-v1';
+      const read = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch (_) { return fallback; } };
+      const render = () => {
+        const total = boxes.filter(box => box.checked).length;
+        bar.style.width = `${total * 10}%`;
+        text.textContent = total === 10 ? (finalBox.checked ? '🏆 10 misiones + reto superado' : '🎉 10 de 10 · falta el reto') : `${total} de 10 misiones`;
+      };
+      const saved = read(progressKey, []);
+      boxes.forEach((box, index) => {
+        box.checked = saved.includes(index + 1);
+        box.addEventListener('change', () => {
+          localStorage.setItem(progressKey, JSON.stringify(boxes.map((item, i) => item.checked ? i + 1 : null).filter(Boolean)));
+          render();
+        });
+      });
+      finalBox.checked = read(finalKey, false);
+      finalBox.addEventListener('change', () => { localStorage.setItem(finalKey, JSON.stringify(finalBox.checked)); render(); });
+      document.querySelector('#reset').addEventListener('click', () => {
+        boxes.forEach(box => { box.checked = false; }); finalBox.checked = false;
+        localStorage.removeItem(progressKey); localStorage.removeItem(finalKey); render();
+      });
+      render();
+
+      const form = document.querySelector('#form-entrega');
+      const preview = document.querySelector('#preview');
+      const download = document.querySelector('#download');
+      let report = '';
+      const filePart = value => value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'alumno';
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const alias = document.querySelector('#alias').value.trim();
+        const repo = document.querySelector('#repo').value.trim();
+        const commit = document.querySelector('#commit').value.trim();
+        const explanation = document.querySelector('#explicacion').value.trim();
+        report = [
+          'PRUEBA DE CONCEPTO · VS CODE + CODESPACES + VITE',
+          '================================================',
+          `Autor/a o equipo: ${alias}`,
+          `Fecha: ${new Date().toLocaleDateString('es-ES')}`,
+          `Repositorio: ${repo}`,
+          `Último commit: ${commit}`,
+          `Misiones marcadas: ${boxes.filter(box => box.checked).length} de 10`,
+          `Reto final marcado: ${finalBox.checked ? 'Sí' : 'No'}`,
+          '', 'EXPLICACIÓN', explanation,
+          '', 'COMPROBACIONES',
+          '[ ] npm run dev inicia Vite sin errores',
+          '[ ] La web contiene la tarjeta Cometa',
+          '[ ] El botón sigue funcionando',
+          '[ ] node_modules no está en GitHub',
+          '[ ] El último commit está sincronizado',
+          '[ ] Se adjunta una captura de la web'
+        ].join('\n');
+        preview.textContent = report; download.disabled = false; download.dataset.filename = `entrega-vscode-${filePart(alias)}.txt`;
+      });
+      download.addEventListener('click', () => {
+        if (!report) return;
+        const url = URL.createObjectURL(new Blob([report], {type:'text/plain;charset=utf-8'}));
+        const link = document.createElement('a'); link.href = url; link.download = download.dataset.filename || 'entrega-vscode.txt'; link.click(); URL.revokeObjectURL(url);
+      });
+    })();
+  </script>
+</body>
+</html>
