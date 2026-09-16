@@ -106,6 +106,21 @@
     .final li + li { margin-top: .45rem; }
     .final .done-row { padding-top: .65rem; border-top: 1px solid #fbbf24; }
 
+    .delivery { border: 3px solid #7c3aed; background: linear-gradient(145deg, #faf5ff, #f5f3ff); }
+    .delivery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .delivery label { display: block; margin-top: .7rem; font-weight: 800; }
+    .delivery input[type="text"], .delivery select, .delivery textarea {
+      width: 100%; margin-top: .3rem; padding: .65rem .7rem;
+      border: 1px solid #a78bfa; border-radius: 9px; background: white; color: var(--ink);
+    }
+    .delivery textarea { min-height: 105px; resize: vertical; }
+    .delivery-actions { display: flex; flex-wrap: wrap; gap: .65rem; margin-top: .9rem; }
+    .delivery button { border: 0; border-radius: 10px; padding: .65rem .9rem; color: white; background: var(--violet); font-weight: 850; cursor: pointer; }
+    .delivery button:disabled { opacity: .45; cursor: not-allowed; }
+    .delivery button.secondary { color: #5b21b6; background: #ede9fe; border: 1px solid #a78bfa; }
+    .report-preview { min-height: 210px; margin: 0; padding: .9rem; overflow: auto; border: 1px solid #c4b5fd; border-radius: 11px; background: #172033; color: #f8fafc; white-space: pre-wrap; font: .88rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .evidence-list { padding-left: 1.25rem; }
+
     footer { padding: 1rem 0 3rem; color: var(--muted); }
     .small { font-size: .91rem; }
     @media (max-width: 760px) {
@@ -356,9 +371,47 @@ localStorage.setItem('insignia', 'detective-web');</code><p>En <strong>Sources</
       <div class="done-row"><input id="final-done" type="checkbox"><label for="final-done">Reto final superado</label></div>
     </section>
 
+    <section class="panel delivery" id="entrega-poc">
+      <h2>📦 Entrega: prueba de concepto</h2>
+      <p>Entrega dos evidencias: <strong>una captura</strong> y <strong>el informe TXT</strong> que genera esta página. El informe lee automáticamente el estado actual de la zona de prácticas.</p>
+      <div class="delivery-grid">
+        <form id="form-entrega">
+          <label for="alias-alumno">Nombre o alias de clase</label>
+          <input id="alias-alumno" name="alias" type="text" maxlength="40" placeholder="Ejemplo: Equipo Pixel" required>
+
+          <label for="objetivos-logrados">Objetivos del reto completados</label>
+          <select id="objetivos-logrados" name="objetivos">
+            <option value="6 de 6">6 de 6</option>
+            <option value="5 de 6">5 de 6</option>
+            <option value="4 de 6">4 de 6</option>
+            <option value="Menos de 4">Menos de 4</option>
+          </select>
+
+          <label for="explicacion-alumno">¿Qué demuestras con tu prototipo?</label>
+          <textarea id="explicacion-alumno" name="explicacion" maxlength="350" placeholder="Explica qué cambiaste y qué paneles utilizaste." required></textarea>
+
+          <div class="delivery-actions">
+            <button id="generar-entrega" type="submit">Generar informe</button>
+            <button class="secondary" id="descargar-entrega" type="button" disabled>Descargar TXT</button>
+          </div>
+        </form>
+        <div>
+          <h3>Vista previa</h3>
+          <pre class="report-preview" id="resumen-entrega" aria-live="polite">Completa el formulario y pulsa “Generar informe”.</pre>
+        </div>
+      </div>
+      <h3>Captura que debes adjuntar</h3>
+      <ul class="evidence-list">
+        <li>Debe verse la zona <strong>Planeta Web</strong> con los cambios del reto.</li>
+        <li>Debe verse DevTools abierto en <strong>Elements</strong> o <strong>Application</strong>.</li>
+        <li>No debe mostrar nombres completos, cuentas ni otros datos personales.</li>
+      </ul>
+      <p class="check"><strong>Entrega mínima:</strong> <code>prueba-devtools-alias.txt</code> + una captura de pantalla.</p>
+    </section>
+
     <section class="panel">
       <h2>Para el profesorado</h2>
-      <p>Propuesta de uso: misiones 1–5 en una sesión, misiones 6–10 en otra y el reto final como evaluación práctica. Para comprobar el reto, observe el título, la tarjeta Byte, el contador y la entrada de Local Storage; después pida al alumno que señale la función y la petición del documento.</p>
+      <p>Propuesta de uso: misiones 1–5 en una sesión, misiones 6–10 en otra y el reto final como evaluación práctica. La entrega combina una evidencia visual con un informe generado desde el estado real del prototipo.</p>
       <p class="small">Referencia opcional: <a href="https://developer.chrome.com/docs/devtools/">documentación oficial de Chrome DevTools</a>.</p>
     </section>
   </main>
@@ -425,9 +478,77 @@ localStorage.setItem('insignia', 'detective-web');</code><p>En <strong>Sources</
         finalBox.checked = false;
         localStorage.removeItem(progressKey);
         localStorage.removeItem(finalKey);
+        localStorage.removeItem('insignia');
         render();
       });
       render();
+    })();
+
+    (() => {
+      const form = document.querySelector('#form-entrega');
+      const preview = document.querySelector('#resumen-entrega');
+      const downloadButton = document.querySelector('#descargar-entrega');
+      let reportText = '';
+
+      function safeStorage(key) {
+        try { return localStorage.getItem(key) || 'No encontrada'; }
+        catch (_) { return 'No disponible'; }
+      }
+
+      function cleanFilePart(value) {
+        return value.trim().toLowerCase()
+          .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '') || 'alumno';
+      }
+
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const alias = document.querySelector('#alias-alumno').value.trim();
+        const objetivos = document.querySelector('#objetivos-logrados').value;
+        const explicacion = document.querySelector('#explicacion-alumno').value.trim();
+        const completed = document.querySelectorAll('.done:checked').length;
+        const byteCard = [...document.querySelectorAll('.demo-card')]
+          .find(card => card.querySelector('h3')?.textContent.trim() === 'Byte');
+
+        reportText = [
+          'PRUEBA DE CONCEPTO · CHROME DEVTOOLS',
+          '=====================================',
+          `Autor/a o equipo: ${alias}`,
+          `Fecha: ${new Date().toLocaleDateString('es-ES')}`,
+          `Misiones marcadas: ${completed} de 10`,
+          `Objetivos declarados: ${objetivos}`,
+          '',
+          'ESTADO DEL PROTOTIPO',
+          `Título visible: ${document.querySelector('#titulo-demo').textContent.trim()}`,
+          `Tarjeta Byte destacada: ${byteCard?.classList.contains('destacada') ? 'Sí' : 'No'}`,
+          `Contador visible: ${document.querySelector('#contador-demo').textContent.trim()}`,
+          `Insignia en Local Storage: ${safeStorage('insignia')}`,
+          '',
+          'EXPLICACIÓN DEL ALUMNO/A',
+          explicacion,
+          '',
+          'EVIDENCIA ADJUNTA',
+          '[ ] Captura de la zona de prácticas con DevTools abierto',
+          '',
+          'Paneles esperados: Elements · Console · Sources · Network · Application'
+        ].join('\n');
+
+        preview.textContent = reportText;
+        downloadButton.disabled = false;
+        downloadButton.dataset.filename = `prueba-devtools-${cleanFilePart(alias)}.txt`;
+      });
+
+      downloadButton.addEventListener('click', () => {
+        if (!reportText) return;
+        const blob = new Blob([reportText], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = downloadButton.dataset.filename || 'prueba-devtools.txt';
+        link.click();
+        URL.revokeObjectURL(url);
+      });
     })();
   </script>
 </body>
