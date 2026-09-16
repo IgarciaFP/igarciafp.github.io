@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Diez microprácticas de menos de cinco minutos para iniciarse en Chrome DevTools.">
+  <title>10 misiones con Chrome DevTools</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #526077;
+      --paper: #fffdf8;
+      --blue: #2563eb;
+      --blue-soft: #dbeafe;
+      --teal: #0f766e;
+      --teal-soft: #ccfbf1;
+      --gold: #b45309;
+      --gold-soft: #fef3c7;
+      --rose: #be123c;
+      --rose-soft: #ffe4e6;
+      --line: #d8deea;
+      --shadow: 0 12px 32px rgba(23, 32, 51, .10);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, #dbeafe 0 10rem, transparent 26rem),
+        radial-gradient(circle at 95% 12%, #ccfbf1 0 8rem, transparent 24rem),
+        #f4f7fb;
+      font: 17px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: #1746a2; }
+    button, input { font: inherit; }
+    code, kbd { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    code {
+      padding: .12rem .35rem;
+      border-radius: .35rem;
+      background: #edf1f7;
+      color: #7c2d12;
+      overflow-wrap: anywhere;
+    }
+    kbd {
+      display: inline-block;
+      padding: .12rem .42rem;
+      border: 1px solid #aeb8ca;
+      border-bottom-width: 3px;
+      border-radius: .4rem;
+      background: white;
+      color: #25324a;
+      font-size: .9em;
+      line-height: 1.2;
+    }
+    .wrap { width: min(1120px, calc(100% - 2rem)); margin-inline: auto; }
+    .skip {
+      position: absolute; left: -999px; top: 1rem; z-index: 10;
+      background: white; padding: .7rem 1rem; border-radius: .6rem;
+    }
+    .skip:focus { left: 1rem; }
+
+    header { padding: 3.4rem 0 2rem; }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 2rem;
+      align-items: center;
+      padding: clamp(1.4rem, 4vw, 3.2rem);
+      border: 1px solid rgba(255,255,255,.8);
+      border-radius: 30px;
+      background: rgba(255,255,255,.82);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+    .eyebrow {
+      display: inline-flex; gap: .45rem; align-items: center;
+      margin: 0 0 .65rem; padding: .35rem .7rem;
+      border-radius: 999px; background: var(--blue-soft); color: #1746a2;
+      font-weight: 800; font-size: .88rem; letter-spacing: .02em;
+    }
+    h1 { margin: 0; font-size: clamp(2.25rem, 6vw, 4.7rem); line-height: .98; letter-spacing: -.055em; }
+    .lede { max-width: 62ch; margin: 1.2rem 0; color: var(--muted); font-size: 1.12rem; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: .55rem; }
+    .tag { padding: .42rem .72rem; border-radius: 999px; background: #eef2f8; font-weight: 750; font-size: .9rem; }
+    .hero svg { width: 100%; height: auto; filter: drop-shadow(0 16px 18px rgba(37,99,235,.14)); }
+
+    .progress-panel {
+      position: sticky; top: .55rem; z-index: 5;
+      display: grid; grid-template-columns: auto 1fr auto; gap: .8rem; align-items: center;
+      margin: 1rem 0 1.5rem; padding: .7rem .9rem;
+      border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.95);
+      box-shadow: 0 6px 18px rgba(23,32,51,.08);
+    }
+    .progress-track { height: 12px; overflow: hidden; border-radius: 99px; background: #e8edf5; }
+    .progress-bar { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--blue), #14b8a6); transition: width .25s ease; }
+    .reset {
+      border: 0; border-radius: .65rem; padding: .38rem .62rem;
+      color: #7f1d1d; background: var(--rose-soft); font-weight: 750; cursor: pointer;
+    }
+
+    .intro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+    .panel { padding: 1.3rem; border: 1px solid var(--line); border-radius: var(--radius); background: white; box-shadow: 0 7px 20px rgba(23,32,51,.06); }
+    .panel h2, .panel h3 { margin-top: 0; }
+    .rules { margin: .4rem 0 0; padding-left: 1.25rem; }
+    .rules li + li { margin-top: .45rem; }
+    .route { width: 100%; height: auto; }
+
+    .mission-nav { margin: 2rem 0; }
+    .mission-nav h2 { margin-bottom: .6rem; }
+    .mission-nav ol { display: grid; grid-template-columns: repeat(5, 1fr); gap: .6rem; margin: 0; padding: 0; list-style: none; }
+    .mission-nav a {
+      display: block; min-height: 100%; padding: .65rem .75rem;
+      border: 1px solid var(--line); border-radius: 12px; background: white;
+      text-decoration: none; font-weight: 750;
+    }
+    .mission-nav a:hover, .mission-nav a:focus-visible { border-color: var(--blue); outline: 3px solid var(--blue-soft); }
+
+    .missions { display: grid; gap: 1.15rem; }
+    .mission {
+      scroll-margin-top: 5rem;
+      display: grid; grid-template-columns: 92px minmax(0,1fr); gap: 1rem;
+      padding: 1.25rem; border: 1px solid var(--line); border-radius: var(--radius);
+      background: var(--paper); box-shadow: var(--shadow);
+    }
+    .num {
+      display: grid; place-items: center; align-self: start;
+      width: 76px; aspect-ratio: 1; border-radius: 24px;
+      color: white; background: linear-gradient(145deg, var(--blue), #5b21b6);
+      font-size: 2rem; font-weight: 900; transform: rotate(-3deg);
+    }
+    .mission-head { display: flex; flex-wrap: wrap; gap: .7rem; align-items: center; justify-content: space-between; }
+    .mission h3 { margin: 0; font-size: 1.45rem; line-height: 1.15; }
+    .time { white-space: nowrap; padding: .28rem .6rem; border-radius: 999px; background: var(--gold-soft); color: #854d0e; font-weight: 850; }
+    .goal { margin: .55rem 0 1rem; color: var(--muted); }
+    .steps { margin: 0; padding-left: 1.35rem; }
+    .steps li { padding-left: .3rem; }
+    .steps li + li { margin-top: .55rem; }
+    .check {
+      margin-top: 1rem; padding: .75rem .9rem; border-left: 5px solid var(--teal);
+      border-radius: 9px; background: var(--teal-soft);
+    }
+    .check strong { color: #115e59; }
+    details { margin-top: .8rem; border: 1px dashed #aeb8ca; border-radius: 10px; background: #fff; }
+    summary { cursor: pointer; padding: .65rem .8rem; font-weight: 800; }
+    details p, details ul { margin: 0; padding: 0 .9rem .8rem; }
+    details ul { padding-left: 2.15rem; }
+    .done-row { display: flex; align-items: center; gap: .55rem; margin-top: 1rem; }
+    .done-row input { width: 1.25rem; height: 1.25rem; accent-color: var(--teal); }
+    .done-row label { font-weight: 850; cursor: pointer; }
+    .mini-svg { width: min(540px, 100%); height: auto; margin-top: 1rem; border: 1px solid var(--line); border-radius: 14px; background: white; }
+    .command {
+      display: block; margin: .7rem 0; padding: .75rem .9rem; overflow-x: auto;
+      border: 1px solid #bcc8dc; border-radius: 10px; background: #152033; color: #f8fafc;
+      font-size: .94rem; white-space: pre;
+    }
+    .warning { background: var(--rose-soft); border-left-color: var(--rose); }
+    .warning strong { color: #9f1239; }
+
+    .teacher, .sources { margin: 2rem 0; }
+    .rubric { width: 100%; border-collapse: collapse; }
+    .rubric th, .rubric td { padding: .65rem; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .rubric th { background: #edf4ff; }
+    footer { padding: 1rem 0 3rem; color: var(--muted); }
+    .small { font-size: .92rem; }
+
+    @media (max-width: 800px) {
+      .hero, .intro-grid { grid-template-columns: 1fr; }
+      .hero-visual { order: -1; max-width: 430px; margin-inline: auto; }
+      .mission-nav ol { grid-template-columns: repeat(2, 1fr); }
+      .mission { grid-template-columns: 1fr; }
+      .num { width: 58px; border-radius: 17px; font-size: 1.5rem; }
+    }
+    @media (max-width: 520px) {
+      body { font-size: 16px; }
+      .wrap { width: min(100% - 1rem, 1120px); }
+      header { padding-top: .8rem; }
+      .hero { border-radius: 20px; padding: 1.15rem; }
+      .progress-panel { grid-template-columns: 1fr auto; }
+      .progress-track { grid-column: 1 / -1; grid-row: 2; }
+      .mission-nav ol { grid-template-columns: 1fr; }
+    }
+    @media print {
+      body { background: white; font-size: 11pt; }
+      .wrap { width: 100%; }
+      header { padding: 0 0 1rem; }
+      .hero { box-shadow: none; border: 2px solid #333; grid-template-columns: 1.3fr .7fr; }
+      .progress-panel, .reset, .done-row { display: none; }
+      .mission { box-shadow: none; break-inside: avoid; page-break-inside: avoid; }
+      details { display: block; }
+      details > * { display: block; }
+      a { color: black; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#mision-1">Saltar a las misiones</a>
+  <header class="wrap">
+    <section class="hero" aria-labelledby="titulo">
+      <div>
+        <p class="eyebrow">🕵️‍♀️ LABORATORIO WEB · 10 AÑOS</p>
+        <h1 id="titulo">10 misiones con Chrome DevTools</h1>
+        <p class="lede">Aprende a mirar por dentro una página web, cambiarla de forma temporal y encontrar pistas. Cada misión dura entre 2 y 4 minutos.</p>
+        <div class="hero-tags" aria-label="Características">
+          <span class="tag">⏱️ 35 min en total</span>
+          <span class="tag">🧩 Pasos cortos</span>
+          <span class="tag">✅ Comprobación inmediata</span>
+          <span class="tag">🔄 Nada se rompe</span>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <svg viewBox="0 0 520 390" role="img">
+          <defs>
+            <linearGradient id="screen" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#eff6ff"/><stop offset="1" stop-color="#ecfeff"/>
+            </linearGradient>
+          </defs>
+          <rect x="34" y="28" width="452" height="306" rx="26" fill="#172033"/>
+          <rect x="49" y="48" width="422" height="267" rx="16" fill="url(#screen)"/>
+          <circle cx="68" cy="67" r="6" fill="#fb7185"/><circle cx="88" cy="67" r="6" fill="#fbbf24"/><circle cx="108" cy="67" r="6" fill="#34d399"/>
+          <rect x="67" y="92" width="182" height="194" rx="12" fill="#fff" stroke="#93c5fd" stroke-width="3"/>
+          <rect x="267" y="92" width="186" height="35" rx="8" fill="#dbeafe"/>
+          <text x="281" y="115" font-family="system-ui" font-size="15" font-weight="700" fill="#1e40af">Elements  Console  Network</text>
+          <rect x="267" y="139" width="186" height="147" rx="10" fill="#111827"/>
+          <text x="282" y="166" font-family="monospace" font-size="14" fill="#93c5fd">&lt;h1&gt;</text>
+          <text x="282" y="191" font-family="monospace" font-size="14" fill="#fef08a">  Hello World</text>
+          <text x="282" y="216" font-family="monospace" font-size="14" fill="#93c5fd">&lt;/h1&gt;</text>
+          <text x="282" y="249" font-family="monospace" font-size="14" fill="#5eead4">color: blue;</text>
+          <circle cx="158" cy="162" r="47" fill="#fef3c7"/>
+          <path d="M145 159h26M158 146v26" stroke="#b45309" stroke-width="8" stroke-linecap="round"/>
+          <path d="M190 220l41 52" stroke="#172033" stroke-width="13" stroke-linecap="round"/>
+          <circle cx="163" cy="185" r="42" fill="none" stroke="#172033" stroke-width="12"/>
+          <rect x="188" y="328" width="144" height="18" rx="9" fill="#172033"/>
+        </svg>
+      </div>
+    </section>
+  </header>
+
+  <main class="wrap">
+    <section class="progress-panel" aria-label="Progreso">
+      <strong id="progress-text">0 de 10 misiones</strong>
+      <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
+      <button class="reset" id="reset" type="button">Reiniciar</button>
+    </section>
+
+    <section class="intro-grid" aria-label="Preparación">
+      <article class="panel">
+        <h2>Antes de empezar</h2>
+        <ol class="rules">
+          <li>Abre en Chrome el archivo <code>dtcrashcourse.html</code> del autor, mejor con un servidor local como Live Server.</li>
+          <li>Ten esta guía en otra pestaña o ventana.</li>
+          <li>Trabaja solo en la copia local de clase. No escribas nombres reales, correos ni contraseñas.</li>
+          <li>Si algo queda raro, recarga con <kbd>Ctrl</kbd> + <kbd>R</kbd>. Los cambios de <em>Elements</em> desaparecen.</li>
+        </ol>
+        <p class="check warning"><strong>Regla de oro:</strong> DevTools sirve para investigar y probar. No lo uses para engañar, molestar o tocar páginas ajenas.</p>
+      </article>
+      <article class="panel">
+        <h2>El mapa secreto</h2>
+        <svg class="route" viewBox="0 0 680 240" role="img" aria-labelledby="map-title map-desc">
+          <title id="map-title">Mapa de paneles de DevTools</title>
+          <desc id="map-desc">Elements cambia la apariencia, Console prueba órdenes, Sources muestra archivos, Network muestra viajes y Application guarda datos.</desc>
+          <rect x="8" y="20" width="128" height="64" rx="14" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/>
+          <text x="72" y="48" text-anchor="middle" font-family="system-ui" font-weight="800" fill="#1e40af">Elements</text><text x="72" y="69" text-anchor="middle" font-family="system-ui" font-size="13">aspecto</text>
+          <path d="M136 52h35" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+          <rect x="178" y="20" width="128" height="64" rx="14" fill="#ccfbf1" stroke="#0f766e" stroke-width="3"/>
+          <text x="242" y="48" text-anchor="middle" font-family="system-ui" font-weight="800" fill="#115e59">Console</text><text x="242" y="69" text-anchor="middle" font-family="system-ui" font-size="13">órdenes</text>
+          <path d="M306 52h35" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+          <rect x="348" y="20" width="128" height="64" rx="14" fill="#fef3c7" stroke="#b45309" stroke-width="3"/>
+          <text x="412" y="48" text-anchor="middle" font-family="system-ui" font-weight="800" fill="#92400e">Sources</text><text x="412" y="69" text-anchor="middle" font-family="system-ui" font-size="13">archivos</text>
+          <path d="M476 52h35" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+          <rect x="518" y="20" width="154" height="64" rx="14" fill="#ffe4e6" stroke="#be123c" stroke-width="3"/>
+          <text x="595" y="48" text-anchor="middle" font-family="system-ui" font-weight="800" fill="#9f1239">Network</text><text x="595" y="69" text-anchor="middle" font-family="system-ui" font-size="13">viajes de datos</text>
+          <path d="M595 84v38" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+          <rect x="501" y="130" width="188" height="64" rx="14" fill="#ede9fe" stroke="#6d28d9" stroke-width="3"/>
+          <text x="595" y="158" text-anchor="middle" font-family="system-ui" font-weight="800" fill="#5b21b6">Application</text><text x="595" y="179" text-anchor="middle" font-family="system-ui" font-size="13">datos guardados</text>
+          <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#64748b"/></marker></defs>
+        </svg>
+        <p class="small">En algunas pantallas, <strong>Application</strong> se esconde dentro del botón <strong>»</strong>.</p>
+      </article>
+    </section>
+
+    <nav class="mission-nav" aria-label="Índice de misiones">
+      <h2>Elige una misión</h2>
+      <ol>
+        <li><a href="#mision-1">1 · Abrir</a></li><li><a href="#mision-2">2 · Apuntar</a></li>
+        <li><a href="#mision-3">3 · Texto</a></li><li><a href="#mision-4">4 · Color</a></li>
+        <li><a href="#mision-5">5 · Caja</a></li><li><a href="#mision-6">6 · Console</a></li>
+        <li><a href="#mision-7">7 · Tabla</a></li><li><a href="#mision-8">8 · Sources</a></li>
+        <li><a href="#mision-9">9 · Network</a></li><li><a href="#mision-10">10 · Application</a></li>
+      </ol>
+    </nav>
+
+    <section class="missions" aria-label="Diez prácticas">
+      <article class="mission" id="mision-1">
+        <div class="num" aria-hidden="true">01</div>
+        <div>
+          <div class="mission-head"><h3>Abre la caja de herramientas</h3><span class="time">⏱ 2 min</span></div>
+          <p class="goal"><strong>Meta:</strong> abrir y cerrar DevTools sin perder la página.</p>
+          <ol class="steps">
+            <li>Haz clic derecho en cualquier parte de la página del proyecto.</li>
+            <li>Elige <strong>Inspeccionar</strong>. Aparecerá DevTools a un lado o debajo.</li>
+            <li>Ciérralo con la <strong>×</strong> y ábrelo otra vez con <kbd>F12</kbd> o <kbd>Ctrl</kbd> + <kbd>Mayús</kbd> + <kbd>I</kbd>.</li>
+          </ol>
+          <p class="check"><strong>Lo lograste si…</strong> ves pestañas como <em>Elements</em> y <em>Console</em>.</p>
+          <details><summary>💡 Si no sale</summary><p>En Mac usa <kbd>⌘</kbd> + <kbd>⌥</kbd> + <kbd>I</kbd>. En algunos teclados, <kbd>F12</kbd> necesita también <kbd>Fn</kbd>.</p></details>
+          <div class="done-row"><input class="done" id="done-1" type="checkbox"><label for="done-1">Misión completada</label></div>
+        </div>
+      </article>
+
+      <article class="mission" id="mision-2">
+        <div class="num" aria-hidden="true">02</div>
+        <div>
+          <div class="mission-head"><h3>La lupa que encuentra etiquetas</h3><span class="time">⏱ 3 min</span></div>
+          <p class="goal"><strong>Meta:</strong> conectar una parte visible con su etiqueta HTML.</p>
+          <ol class="steps">
+            <li>Abre DevTools y entra en <strong>Elements</strong>.</li>
+            <li>Pulsa el icono de flecha dentro de un cuadrado, arriba a la izquierda. Atajo: <kbd>Ctrl</kbd> + <kbd>Mayús</kbd> + <kbd>C</kbd>.</li>
+            <li>Mueve el ratón sobre el título <strong>Hello World</strong> y haz clic.</li>
+            <li>Busca en el código la etiqueta <code>&lt;h1&gt;</code>.</li>
+          </ol>
+          <p class="check"><strong>Lo lograste si…</strong> el título queda coloreado en la página y su línea está marcada en DevTools.</p>
+          <details><summary>🧠 ¿Qué descubriste?</summary><p>HTML es el esqueleto de la página. <code>h1</code> significa “título principal”.</p></details>
+          <div class="done-row"><input class="done" id="done-2" type="checkbox"><label for="done-2">Misión completada</label></div>
+        </div>
+      </article>
+
+      <article class="mission" id="mision-3">
+        <div class="num" aria-hidden="true">03</div>
+        <div>
+          <div class="mission-head"><h3>Cambia el titular… sin guardar</h3><span class="time">⏱ 3 min</span></div>
+          <p class="goal"><strong>Meta:</strong> editar el DOM y comprobar que el cambio es temporal.</p>
+          <ol class="steps">
+            <li>En <strong>Elements</strong>, haz doble clic sobre el texto <code>Hello World</code>.</li>
+            <li>Escribe <code>¡Hola, detectives web!</code> y pulsa <kbd>Enter</kbd>.</li>
+            <li>Recarga con <kbd>Ctrl</kbd> + <kbd>R</kbd>.</li>
+          </ol>
+          <p class="check"><strong>Lo lograste si…</strong> primero aparece tu frase y, al recargar, vuelve <em>Hello World</em>.</p>
+          <details><summary>🔎 Explicación corta</summary><p>DevTools cambió la copia que Chrome tenía en memoria. No cambió el archivo original.</p></details>
+          <div class="done-row"><input class="done" id="done-3" type="checkbox"><label for="done-3">Misión completada</label></div>
+        </div>
+      </article>
+
+      <article class="mission" id="mision-4">
+        <div class="num" aria-hidden="true">04</div>
+        <div>
+          <div class="mission-head"><h3>Pinta el título con CSS</h3><span class="time">⏱ 4 min</span></div>
+          <p class="goal"><strong>Meta:</strong> probar estilos sin editar el archivo.</p>
+          <ol class="steps">
+            <li>Selecciona otra vez el <code>&lt;h1&gt;</code> en <strong>Elements</strong>.</li>
+            <li>En el panel <strong>Styles</strong>, haz clic dentro de <code>element.style { }</code>.</li>
+            <li>Escribe <code>color</code>, pulsa <kbd>Enter</kbd>, escribe <code>royalblue</code> y pulsa <kbd>Enter</kbd>.</li>
+            <li>Añade también <code>background-color: gold</code>.</li>
+          </ol>
+          <p class="check"><strong>Lo lograste si…</strong> ves letras azules sobre un fondo dorado.</p>
+          <details><summary>🎨 Reto extra de 30 segundos</summary><p>Haz clic en el cuadradito de color y elige otro. Después desmarca la casilla junto a una propiedad para apagarla.</p></details>
+          <div class="done-row"><input class="done" id="done-4" type="checkbox"><label for="done-4">Misión completada</label></div>
+        </div>
+      </article>
+
+      <article class="mission" id="mision-5">
+        <div class="num" aria-hidden="true">05</div>
+        <div>
+          <div class="mission-head"><h3>Explora la caja invisible</h3><span class="time">⏱ 4 min</span></div>
+          <p class="goal"><strong>Meta:</strong> distinguir contenido, relleno y margen.</p>
+          <ol class="steps">
+            <li>Con el <code>&lt;h1&gt;</code> seleccionado, baja en el panel derecho hasta el dibujo <strong>Box model</strong>.</li>
+            <li>Señala con el ratón cada anillo: <em>content</em>, <em>padding</em>, <em>border</em> y <em>margin</em>.</li>
+            <li>Vuelve a <strong>Styles</strong> y añade <code>padding: 20px</code>.</li>
+            <li>Cambia después a <code>padding: 5px</code> y compara.</li>
+          </ol>
+          <svg class="mini-svg" viewBox="0 0 560 230" role="img" aria-labelledby="box-title box-desc">
+            <title id="box-title">Modelo de caja CSS</title><desc id="box-desc">Cuatro rectángulos muestran margen, borde, relleno y contenido.</desc>
+            <rect x="28" y="20" width="504" height="190" rx="18" fill="#fde68a"/><text x="48" y="48" font-family="system-ui" font-weight="800" fill="#854d0e">margin · espacio exterior</text>
+            <rect x="78" y="58" width="404" height="130" rx="12" fill="#fca5a5"/><text x="96" y="84" font-family="system-ui" font-weight="800" fill="#881337">border · borde</text>
+            <rect x="126" y="92" width="308" height="76" rx="9" fill="#86efac"/><text x="145" y="119" font-family="system-ui" font-weight="800" fill="#166534">padding · relleno</text>
+            <rect x="220" y="126" width="120" height="27" rx="6" fill="#93c5fd"/><text x="280" y="145" text-anchor="middle" font-family="system-ui" font-weight="800" fill="#1e3a8a">contenido</text>
+          </svg>
+          <p class="check"><strong>Lo lograste si…</strong> el espacio alrededor del texto crece y encoge.</p>
+          <div class="done-row"><input class="done" id="done-5" type="checkbox"><label for="done-5">Misión completada</label></div>
+        </div>
+      </article>
+
+      <article class="mission" id="mision-6">
+        <div class="num" aria-hidden="true">06</div>
+        <div>
+          <div class="mission-head"><h3>Habla con la Console</h3><span class="time">⏱ 3 min</span></div>
+          <p class="goal"><strong>Meta:</strong> ejecutar una instrucción sencilla y reconocer tres tipos de mensaje.</p>
+          <ol class="steps">
+            <li>Abre la pestaña <strong>Console</strong>.</li>
+            <li>Escribe cada línea y pulsa <kbd>Enter</kbd> después de cada una:</li>
+          </ol>
+          <code class="command">console.log('Hola, clase');
+console.warn('Atención: esto es una prueba');
+console.error('Error de mentira');</code>
+          <p class="check"><strong>Lo lograste si…</strong> aparecen un mensaje normal, una advertencia amarilla y un error rojo.</p>
+          <details><summary>💡 Si Chrome no deja pegar</summary><p>Escribe las líneas a mano. No actives permisos de pegado que no entiendas: la consola puede ejecutar instrucciones.</p></details>
+          <div class="done-row"><input class="done" id="done-6" type="checkbox"><label for="done-6">Misión completada</label></div>
+        </div>
+      </article>
+
+      <article class="mission" id="mision-7">
+        <div class="num" aria-hidden="true">07</div>
+        <div>
+          <div class="mission-head"><h3>Convierte datos en una tabla</h3><span class="time">⏱ 3 min</span></div>
+          <p class="goal"><strong>Meta:</strong> mostrar información de forma ordenada con una línea del código del autor.</p>
+          <ol class="steps">
+            <li>En <strong>Console</strong>, escribe exactamente esta instrucción:</li>
+          </ol>
+          <code class="command">console.table([{name:'Ada', age:10}, {name:'Leo', age:11}]);</code>
+          <ol class="steps" start="2"><li>Pulsa <kbd>Enter</kbd> y abre las filas si aparece una flechita.</li><li>Limpia la consola con <code>console.clear()</code>.</li></ol>
+          <p class="check"><strong>Lo lograste si…</strong> ves dos filas, una para Ada y otra para Leo, con columnas de nombre y edad.</p>
+          <details><summary>🧠 ¿Qué significan los signos?</summary><p>Los corchetes <code>[ ]</code> forman una lista y las llaves <code>{ }</code> guardan datos de una persona inventada.</p></details>
+          <div class="done-row"><input class="done" id="done-7" type="checkbox"><label for="done-7">Misión completada</label></div>
+        </div>
+      </article>
+
+      <article class="mission" id="mision-8">
+        <div class="num" aria-hidden="true">08</div>
+        <div>
+          <div class="mission-head"><h3>Encuentra una línea en Sources</h3><span class="time">⏱ 4 min</span></div>
+          <p class="goal"><strong>Meta:</strong> localizar código sin leer el archivo entero.</p>
+          <ol class="steps">
+            <li>Abre <strong>Sources</strong>. En la columna izquierda, busca y abre <code>dtcrashcourse.html</code>.</li>
+            <li>Pulsa <kbd>Ctrl</kbd> + <kbd>F</kbd> y busca <code>console.table</code>.</li>
+            <li>Después busca <code>localStorage</code>.</li>
+            <li>Lee el número de línea que aparece a la izquierda de cada resultado.</li>
+          </ol>
+          <p class="check"><strong>Lo lograste si…</strong> encuentras ambas palabras y puedes señalar sus números de línea.</p>
+          <details><summary>💡 Si no ves el archivo</summary><p>Recarga la página con DevTools abierto. También puedes pulsar <kbd>Ctrl</kbd> + <kbd>P</kbd> y escribir parte del nombre del archivo.</p></details>
+          <div class="done-row"><input class="done" id="done-8" type="checkbox"><label for="done-8">Misión completada</label></div>
+        </div>
+      </article>
+
+      <article class="mission" id="mision-9">
+        <div class="num" aria-hidden="true">09</div>
+        <div>
+          <div class="mission-head"><h3>Observa los viajes de la página</h3><span class="time">⏱ 4 min</span></div>
+          <p class="goal"><strong>Meta:</strong> ver qué archivos pide Chrome para construir la página.</p>
+          <ol class="steps">
+            <li>Abre <strong>Network</strong> y pulsa el icono de limpiar ⊘.</li>
+            <li>Recarga la página. Verás aparecer varias filas.</li>
+            <li>Haz clic en la fila de <code>dtcrashcourse.html</code> o en la primera fila de tipo <em>document</em>.</li>
+            <li>Busca en <strong>Headers</strong> el valor <strong>Status Code</strong>. Normalmente será <code>200</code>.</li>
+          </ol>
+          <svg class="mini-svg" viewBox="0 0 620 180" role="img" aria-labelledby="net-title net-desc">
+            <title id="net-title">Viaje de una petición de red</title><desc id="net-desc">Chrome pide un archivo al servidor y el servidor responde con estado 200 y el archivo.</desc>
+            <rect x="28" y="45" width="150" height="88" rx="18" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/><text x="103" y="83" text-anchor="middle" font-family="system-ui" font-weight="900" fill="#1e40af">Chrome</text><text x="103" y="106" text-anchor="middle" font-family="system-ui" font-size="14">“Dame el archivo”</text>
+            <path d="M186 66h240" stroke="#be123c" stroke-width="5" marker-end="url(#arrow2)"/><text x="307" y="52" text-anchor="middle" font-family="system-ui" font-weight="800" fill="#9f1239">petición →</text>
+            <path d="M426 116H186" stroke="#0f766e" stroke-width="5" marker-end="url(#arrow3)"/><text x="307" y="145" text-anchor="middle" font-family="system-ui" font-weight="800" fill="#115e59">← respuesta 200</text>
+            <rect x="442" y="45" width="150" height="88" rx="18" fill="#ccfbf1" stroke="#0f766e" stroke-width="3"/><text x="517" y="83" text-anchor="middle" font-family="system-ui" font-weight="900" fill="#115e59">Servidor</text><text x="517" y="106" text-anchor="middle" font-family="system-ui" font-size="14">“Aquí lo tienes”</text>
+            <defs><marker id="arrow2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#be123c"/></marker><marker id="arrow3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#0f766e"/></marker></defs>
+          </svg>
+          <p class="check"><strong>Lo lograste si…</strong> puedes explicar: “Chrome pidió un archivo y recibió una respuesta”.</p>
+          <details><summary>🚦 ¿Qué significa 200?</summary><p>Es el código que dice “todo ha ido bien”. Si trabajas con <code>file://</code> quizá veas menos datos; usa el servidor local indicado al principio.</p></details>
+          <div class="done-row"><input class="done" id="done-9" type="checkbox"><label for="done-9">Misión completada</label></div>
+        </div>
+      </article>
+
+      <article class="mission" id="mision-10">
+        <div class="num" aria-hidden="true">10</div>
+        <div>
+          <div class="mission-head"><h3>Abre las taquillas de datos</h3><span class="time">⏱ 4 min</span></div>
+          <p class="goal"><strong>Meta:</strong> distinguir datos locales, de sesión y cookies.</p>
+          <ol class="steps">
+            <li>Abre <strong>Application</strong> (quizá esté dentro de <strong>»</strong>).</li>
+            <li>En <strong>Storage</strong>, abre <strong>Local Storage</strong> y el origen de tu página. Busca <code>name → John</code>.</li>
+            <li>Abre <strong>Session Storage</strong>. Busca <code>user → Will</code>.</li>
+            <li>Abre <strong>Cookies</strong>. Si el servidor local admite cookies, busca <code>username → John Doe</code>.</li>
+          </ol>
+          <svg class="mini-svg" viewBox="0 0 620 220" role="img" aria-labelledby="store-title store-desc">
+            <title id="store-title">Tres taquillas de almacenamiento</title><desc id="store-desc">Local Storage dura más, Session Storage dura hasta cerrar la pestaña y las cookies viajan con algunas peticiones.</desc>
+            <rect x="25" y="34" width="175" height="150" rx="18" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/><text x="112" y="70" text-anchor="middle" font-family="system-ui" font-weight="900" fill="#1e40af">LOCAL</text><text x="112" y="103" text-anchor="middle" font-family="system-ui" font-size="15">permanece</text><text x="112" y="128" text-anchor="middle" font-family="system-ui" font-size="15">al recargar</text><circle cx="173" cy="109" r="8" fill="#2563eb"/>
+            <rect x="222" y="34" width="175" height="150" rx="18" fill="#fef3c7" stroke="#b45309" stroke-width="3"/><text x="309" y="70" text-anchor="middle" font-family="system-ui" font-weight="900" fill="#92400e">SESIÓN</text><text x="309" y="103" text-anchor="middle" font-family="system-ui" font-size="15">hasta cerrar</text><text x="309" y="128" text-anchor="middle" font-family="system-ui" font-size="15">la pestaña</text><circle cx="370" cy="109" r="8" fill="#b45309"/>
+            <rect x="419" y="34" width="175" height="150" rx="18" fill="#ccfbf1" stroke="#0f766e" stroke-width="3"/><text x="506" y="70" text-anchor="middle" font-family="system-ui" font-weight="900" fill="#115e59">COOKIE</text><text x="506" y="103" text-anchor="middle" font-family="system-ui" font-size="15">dato pequeño</text><text x="506" y="128" text-anchor="middle" font-family="system-ui" font-size="15">del sitio</text><circle cx="567" cy="109" r="8" fill="#0f766e"/>
+          </svg>
+          <p class="check"><strong>Lo lograste si…</strong> encuentras al menos dos de los tres pares de clave y valor.</p>
+          <details><summary>💡 Si las taquillas están vacías</summary><p>Ve a <strong>Console</strong>, ejecuta estas dos líneas y vuelve a <strong>Application</strong>:</p><code class="command">localStorage.setItem('name','John');
+sessionStorage.setItem('user','Will');</code></details>
+          <div class="done-row"><input class="done" id="done-10" type="checkbox"><label for="done-10">Misión completada</label></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel teacher">
+      <h2>Guía rápida para el profesorado</h2>
+      <p>Las tareas siguen el recorrido del vídeo, pero evitan técnicas avanzadas y acciones con riesgo. Pueden hacerse en dos sesiones: misiones 1–5 y 6–10.</p>
+      <table class="rubric">
+        <thead><tr><th>Nivel</th><th>Evidencia observable</th></tr></thead>
+        <tbody>
+          <tr><td>En proceso</td><td>Abre DevTools con ayuda y reconoce al menos un panel.</td></tr>
+          <tr><td>Conseguido</td><td>Completa 7 misiones y explica que los cambios de Elements son temporales.</td></tr>
+          <tr><td>Avanzado</td><td>Completa 9–10 misiones y diferencia HTML, CSS, Console, Network y almacenamiento.</td></tr>
+        </tbody>
+      </table>
+      <details><summary>⭐ Ampliación opcional: Lighthouse (3–5 min extra)</summary><p>El antiguo panel <em>Audits</em> del vídeo se llama ahora <strong>Lighthouse</strong>. Ábrelo, marca solo <strong>Accessibility</strong>, ejecuta el análisis y localiza una recomendación. El tiempo puede variar según el equipo, por eso no forma parte de las diez misiones.</p></details>
+    </section>
+
+    <section class="panel sources">
+      <h2>Fuentes y correspondencia con el vídeo</h2>
+      <p>Secuencia usada: <strong>Elements 04:20 · Console 17:00 · Sources 30:02 · Network 33:30 · Application 40:52 · Audits 45:45</strong>.</p>
+      <ul>
+        <li><a href="https://www.youtube.com/watch?v=x4q86IjJFag">Vídeo: Google Chrome Developer Tools Crash Course</a>, Traversy Media.</li>
+        <li><a href="https://gist.github.com/bradtraversy/15261a79264528ddb9a380323697f0f7">Código del autor: <code>dtcrashcourse.html</code></a>.</li>
+        <li><a href="https://developer.chrome.com/docs/devtools/">Documentación oficial de Chrome DevTools</a>.</li>
+        <li><a href="https://developer.chrome.com/docs/lighthouse/overview">Documentación oficial de Lighthouse</a>.</li>
+      </ul>
+      <p class="small">Chrome cambia con el tiempo: la posición de botones y paneles puede variar ligeramente. Los nombres importantes están escritos en inglés porque así aparecen habitualmente en DevTools.</p>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <p>Material autocontenido: no necesita imágenes externas. Los dibujos están hechos en SVG y el progreso se guarda solo en este navegador.</p>
+  </footer>
+
+  <script>
+    (() => {
+      const boxes = [...document.querySelectorAll('.done')];
+      const bar = document.getElementById('progress-bar');
+      const text = document.getElementById('progress-text');
+      const key = 'devtools-misiones-v1';
+
+      function readProgress() {
+        try { return JSON.parse(localStorage.getItem(key)) || []; }
+        catch (_) { return []; }
+      }
+      function render() {
+        const completed = boxes.filter(box => box.checked).length;
+        bar.style.width = `${completed * 10}%`;
+        text.textContent = completed === 10 ? '🎉 10 de 10: ¡misión cumplida!' : `${completed} de 10 misiones`;
+      }
+      const saved = readProgress();
+      boxes.forEach((box, index) => {
+        box.checked = saved.includes(index + 1);
+        box.addEventListener('change', () => {
+          const state = boxes.map((item, i) => item.checked ? i + 1 : null).filter(Boolean);
+          localStorage.setItem(key, JSON.stringify(state));
+          render();
+        });
+      });
+      document.getElementById('reset').addEventListener('click', () => {
+        boxes.forEach(box => { box.checked = false; });
+        localStorage.removeItem(key);
+        render();
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>
