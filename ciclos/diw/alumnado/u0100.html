@@ -1,0 +1,159 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>P01.01 · Emmet (Zen Coding) en VS Code</title>
+  <style>
+    :root{--ink:#1f2937;--muted:#526071;--paper:#fffdf8;--card:#fff;--blue:#2563eb;--cyan:#dff7ff;--lime:#ddf8dc;--yellow:#fff2b8;--pink:#ffe0eb;--line:#d9e1ea;--code:#172033;--shadow:0 12px 30px #1f293718;--radius:20px}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:linear-gradient(145deg,#eef7ff,#fffdf8 38%,#fff3d9);color:var(--ink);font:17px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+    a{color:#174dbb} button,input{font:inherit} code,kbd{font-family:ui-monospace,SFMono-Regular,Consolas,monospace} kbd{padding:.12rem .42rem;border:1px solid #aeb8c4;border-bottom-width:3px;border-radius:6px;background:#fff;color:#253042}
+    .wrap{width:min(1050px,calc(100% - 28px));margin:auto}.hero{padding:48px 0 24px}.hero-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:24px;align-items:center}.eyebrow{display:inline-block;padding:6px 12px;border-radius:999px;background:var(--yellow);font-weight:800;font-size:.84rem}.hero h1{margin:.4rem 0 .5rem;font-size:clamp(2.15rem,6vw,4.6rem);line-height:.96;letter-spacing:-.055em}.hero p{max-width:700px;color:var(--muted);font-size:1.08rem}.hero svg{width:100%;height:auto;filter:drop-shadow(0 14px 18px #21436a22)}
+    .goal,.notice,.delivery{border:2px solid var(--line);border-radius:var(--radius);background:#ffffffd9;box-shadow:var(--shadow)}.goal{padding:18px 22px;margin:14px 0 22px}.goal strong{color:#0d5c2c}.notice{display:flex;gap:14px;padding:16px 18px;margin:16px 0}.notice .icon{font-size:1.6rem}.notice.warn{background:#fff9d9;border-color:#f0cf58}.notice.info{background:#eaf5ff;border-color:#8bbcf4}
+    .progress-box{position:sticky;top:8px;z-index:5;padding:12px 16px;margin:0 0 22px;background:#172033ed;color:white;border-radius:16px;backdrop-filter:blur(8px);box-shadow:var(--shadow)}.progress-line{height:9px;margin-top:8px;background:#ffffff2c;border-radius:999px;overflow:hidden}.progress-line span{display:block;width:0;height:100%;background:linear-gradient(90deg,#57e28b,#ffd866);transition:.25s}.progress-text{display:flex;justify-content:space-between;gap:12px;font-size:.9rem}
+    h2{margin:36px 0 12px;font-size:clamp(1.55rem,4vw,2.25rem)}.steps{display:grid;gap:18px}.mission{position:relative;padding:22px;border:2px solid var(--line);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow)}.mission::before{content:attr(data-number);position:absolute;right:18px;top:14px;color:#e6edf5;font-size:4.4rem;line-height:1;font-weight:900;z-index:0}.mission>*{position:relative}.mission-head{display:flex;gap:12px;align-items:flex-start}.mission h3{margin:0;font-size:1.35rem}.time{margin-left:auto;white-space:nowrap;padding:5px 10px;border-radius:999px;background:var(--cyan);font-size:.83rem;font-weight:800}.task{padding:13px 15px;border-left:6px solid var(--blue);background:#eef5ff;border-radius:10px}.codebox{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin:12px 0;padding:13px 14px;border-radius:12px;background:var(--code);color:#f7fbff;overflow:auto}.codebox code{white-space:pre-wrap}.copy{border:0;border-radius:9px;padding:7px 10px;background:#ffd866;color:#302500;font-weight:800;cursor:pointer}.copy:focus-visible,.done:focus-visible,.download:focus-visible{outline:4px solid #82b1ff;outline-offset:2px}.result{margin-top:10px;border:1px dashed #9aa9ba;border-radius:12px}.result summary{padding:10px 13px;cursor:pointer;font-weight:800}.result pre{margin:0;padding:13px;overflow:auto;background:#f4f7fa;border-radius:0 0 12px 12px;font-size:.82rem}.checkline{display:flex;align-items:center;gap:10px;margin-top:14px}.done{width:23px;height:23px;accent-color:#16883f}.tip{padding:10px 12px;border-radius:10px;background:var(--lime)}
+    .map{padding:18px;border-radius:var(--radius);background:#172033;color:white;overflow:auto}.map svg{display:block;width:min(100%,900px);height:auto;margin:auto}.legend{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}.legend div{padding:10px;border-radius:10px;background:#ffffff13}.legend code{color:#ffd866;font-weight:900}
+    .challenge{padding:24px;border:3px solid #7c3aed;border-radius:var(--radius);background:linear-gradient(135deg,#f7efff,#fff);box-shadow:var(--shadow)}.challenge h2{margin-top:0}.badge{display:inline-block;padding:5px 10px;background:#7c3aed;color:white;border-radius:999px;font-weight:900}.criteria{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0;list-style:none}.criteria li{padding:10px 12px;background:white;border:1px solid #d9c5f5;border-radius:10px}.criteria li::before{content:"✓ ";color:#19883d;font-weight:900}
+    .delivery{padding:24px;margin:32px 0 50px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field label{display:block;font-weight:800}.field input{width:100%;padding:10px;border:2px solid #bac5d1;border-radius:10px}.field.full{grid-column:1/-1}.download{margin-top:16px;border:0;border-radius:12px;padding:12px 17px;background:#146c3a;color:white;font-weight:900;cursor:pointer}.rubric{width:100%;border-collapse:collapse;margin-top:14px}.rubric th,.rubric td{border:1px solid var(--line);padding:9px;text-align:left}.rubric th{background:#eef5ff}.footer{padding:24px 0 40px;text-align:center;color:var(--muted);font-size:.9rem}.small{font-size:.9rem;color:var(--muted)}
+    @media(max-width:760px){.hero-grid,.form-grid{grid-template-columns:1fr}.hero svg{max-width:390px;margin:auto}.legend,.criteria{grid-template-columns:1fr}.progress-box{position:static}.mission-head{flex-wrap:wrap}.time{margin-left:0}.field.full{grid-column:auto}}
+    @media print{body{background:#fff;font-size:12px}.progress-box,.copy,.download{display:none}.mission,.goal,.delivery,.challenge{box-shadow:none;break-inside:avoid}.hero{padding-top:10px}.result:not([open])>*:not(summary){display:block}.wrap{width:100%}}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">P01.01 · Visual Studio Code</span>
+        <h1>Emmet:<br>HTML a toda velocidad</h1>
+        <p>Escribe abreviaturas pequeñas y deja que VS Code construya las etiquetas. Antes se llamaba <strong>Zen Coding</strong>. Hoy lo conocemos como <strong>Emmet</strong>.</p>
+      </div>
+      <svg viewBox="0 0 430 330" role="img" aria-labelledby="svgTitle svgDesc">
+        <title id="svgTitle">Una abreviatura de Emmet se transforma en HTML</title><desc id="svgDesc">Una máquina convierte ul mayor que li por tres en una lista HTML.</desc>
+        <rect x="30" y="65" width="370" height="220" rx="30" fill="#172033"/>
+        <circle cx="65" cy="100" r="9" fill="#ff6b6b"/><circle cx="92" cy="100" r="9" fill="#ffd866"/><circle cx="119" cy="100" r="9" fill="#57e28b"/>
+        <rect x="55" y="130" width="320" height="54" rx="12" fill="#24314c"/><text x="215" y="165" text-anchor="middle" font-family="monospace" font-size="26" font-weight="700" fill="#ffd866">ul&gt;li*3</text>
+        <path d="M185 206h60m-13-13 13 13-13 13" fill="none" stroke="#57e28b" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="215" y="254" text-anchor="middle" font-family="system-ui" font-size="22" font-weight="800" fill="white">¡EXPANDE!</text>
+        <path d="M78 45l12-28 12 28m230 0 12-28 12 28" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="goal">
+      <strong>Meta:</strong> crear una miniweb con HTML y CSS usando Emmet, sin instalar extensiones. Tiempo aproximado: 45 minutos + reto final de 10 minutos.
+    </section>
+    <aside class="notice warn"><span class="icon">🧭</span><div><strong>Antes de empezar.</strong> Abre una carpeta en VS Code y crea <code>reto-emmet.html</code>. Mira abajo a la derecha: debe decir <strong>HTML</strong>. Si no, pulsa allí y elige “HTML”.</div></aside>
+    <aside class="notice info"><span class="icon">⌨️</span><div><strong>Cómo expandir.</strong> Escribe la abreviatura sin espacios y selecciónala en las sugerencias. Pulsa <kbd>Tab</kbd> o <kbd>Enter</kbd>. Si no funciona: <kbd>F1</kbd> → escribe <strong>Emmet: Expand Abbreviation</strong> → <kbd>Enter</kbd>.</div></aside>
+
+    <div class="progress-box" aria-live="polite">
+      <div class="progress-text"><strong>Tu progreso</strong><span id="progressLabel">0 de 10 misiones</span></div>
+      <div class="progress-line"><span id="progressBar"></span></div>
+    </div>
+
+    <h2>Mapa secreto de Emmet</h2>
+    <section class="map" aria-label="Chuleta visual de operadores Emmet">
+      <svg viewBox="0 0 900 310" role="img" aria-labelledby="mapTitle mapDesc">
+        <title id="mapTitle">Operadores principales de Emmet</title><desc id="mapDesc">Árbol visual que explica hijo, hermano, repetición, clase, identificador, texto y numeración.</desc>
+        <style>.n{fill:#24314c;stroke:#5e7398;stroke-width:2}.t{fill:#fff;font:700 19px system-ui}.c{fill:#ffd866;font:900 25px monospace}.l{stroke:#57e28b;stroke-width:4;fill:none}</style>
+        <rect class="n" x="355" y="15" width="190" height="58" rx="16"/><text class="t" x="450" y="52" text-anchor="middle">ABREVIATURA</text>
+        <path class="l" d="M450 73v28M110 101h680M110 101v35M280 101v35M450 101v35M620 101v35M790 101v35"/>
+        <g><rect class="n" x="35" y="136" width="150" height="62" rx="14"/><text class="c" x="110" y="174" text-anchor="middle">&gt;</text><text class="t" x="110" y="227" text-anchor="middle">hijo</text></g>
+        <g><rect class="n" x="205" y="136" width="150" height="62" rx="14"/><text class="c" x="280" y="174" text-anchor="middle">+</text><text class="t" x="280" y="227" text-anchor="middle">hermano</text></g>
+        <g><rect class="n" x="375" y="136" width="150" height="62" rx="14"/><text class="c" x="450" y="174" text-anchor="middle">*</text><text class="t" x="450" y="227" text-anchor="middle">repetir</text></g>
+        <g><rect class="n" x="545" y="136" width="150" height="62" rx="14"/><text class="c" x="620" y="174" text-anchor="middle">. #</text><text class="t" x="620" y="227" text-anchor="middle">clase · id</text></g>
+        <g><rect class="n" x="715" y="136" width="150" height="62" rx="14"/><text class="c" x="790" y="174" text-anchor="middle">{} $</text><text class="t" x="790" y="227" text-anchor="middle">texto · número</text></g>
+        <text x="450" y="285" text-anchor="middle" fill="#b8c8df" font-family="system-ui" font-size="18">Ejemplo: ul&gt;li.item${Elemento $}*3</text>
+      </svg>
+      <div class="legend"><div><code>&gt;</code> entra dentro</div><div><code>+</code> coloca al lado</div><div><code>*3</code> repite 3 veces</div><div><code>.caja</code> añade una clase</div><div><code>#inicio</code> añade un id</div><div><code>{Hola}</code> escribe texto</div></div>
+    </section>
+
+    <h2>10 misiones rápidas</h2>
+    <section class="steps">
+      <article class="mission" data-number="01"><div class="mission-head"><div><h3>El esqueleto mágico</h3><p class="small">Aprende la abreviatura que inicia cualquier página.</p></div><span class="time">⏱ 3 min</span></div><p class="task">En la primera línea de <code>reto-emmet.html</code>, expande:</p><div class="codebox"><code>!</code><button class="copy" data-copy="!">Copiar</button></div><p>Cambia <code>lang="en"</code> por <code>lang="es"</code> y el título por <strong>Mi reto Emmet</strong>.</p><details class="result"><summary>👀 ¿Qué debe aparecer?</summary><pre>&lt;!doctype html&gt;
+&lt;html lang="es"&gt;
+  &lt;head&gt;...&lt;/head&gt;
+  &lt;body&gt;...&lt;/body&gt;
+&lt;/html&gt;</pre></details><label class="checkline"><input class="done" type="checkbox" data-id="m1"> Misión terminada</label></article>
+
+      <article class="mission" data-number="02"><div class="mission-head"><div><h3>Padres e hijos</h3><p class="small">El símbolo <code>&gt;</code> mete una etiqueta dentro de otra.</p></div><span class="time">⏱ 3 min</span></div><p class="task">Dentro de <code>&lt;body&gt;</code>, expande:</p><div class="codebox"><code>nav&gt;ul&gt;li</code><button class="copy" data-copy="nav>ul>li">Copiar</button></div><details class="result"><summary>✅ Resultado esperado</summary><pre>&lt;nav&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</pre></details><label class="checkline"><input class="done" type="checkbox" data-id="m2"> Misión terminada</label></article>
+
+      <article class="mission" data-number="03"><div class="mission-head"><div><h3>Hermanos en fila</h3><p class="small">El signo <code>+</code> crea elementos al mismo nivel.</p></div><span class="time">⏱ 3 min</span></div><p class="task">Debajo del menú, expande:</p><div class="codebox"><code>header+main+footer</code><button class="copy" data-copy="header+main+footer">Copiar</button></div><p class="tip">Comprueba la sangría: las tres etiquetas deben empezar a la misma altura.</p><label class="checkline"><input class="done" type="checkbox" data-id="m3"> Misión terminada</label></article>
+
+      <article class="mission" data-number="04"><div class="mission-head"><div><h3>La fotocopiadora</h3><p class="small"><code>*</code> repite una etiqueta.</p></div><span class="time">⏱ 3 min</span></div><p class="task">Borra el <code>li</code> vacío de la misión 2 y, dentro de <code>ul</code>, expande:</p><div class="codebox"><code>li*4</code><button class="copy" data-copy="li*4">Copiar</button></div><p>Cuenta el resultado. Debes tener exactamente cuatro <code>&lt;li&gt;</code>.</p><label class="checkline"><input class="done" type="checkbox" data-id="m4"> Misión terminada</label></article>
+
+      <article class="mission" data-number="05"><div class="mission-head"><div><h3>Clases e identificadores</h3><p class="small"><code>.</code> crea una clase y <code>#</code> un identificador único.</p></div><span class="time">⏱ 4 min</span></div><p class="task">Dentro de <code>main</code>, expande:</p><div class="codebox"><code>section#galeria.tarjetas</code><button class="copy" data-copy="section#galeria.tarjetas">Copiar</button></div><details class="result"><summary>✅ Resultado esperado</summary><pre>&lt;section id="galeria" class="tarjetas"&gt;&lt;/section&gt;</pre></details><label class="checkline"><input class="done" type="checkbox" data-id="m5"> Misión terminada</label></article>
+
+      <article class="mission" data-number="06"><div class="mission-head"><div><h3>Texto instantáneo</h3><p class="small">Las llaves <code>{}</code> guardan el texto.</p></div><span class="time">⏱ 3 min</span></div><p class="task">Dentro de <code>header</code>, expande:</p><div class="codebox"><code>h1{Mi planeta web}+p{Creado con Emmet}</code><button class="copy" data-copy="h1{Mi planeta web}+p{Creado con Emmet}">Copiar</button></div><p>Guarda con <kbd>Ctrl</kbd> + <kbd>S</kbd>.</p><label class="checkline"><input class="done" type="checkbox" data-id="m6"> Misión terminada</label></article>
+
+      <article class="mission" data-number="07"><div class="mission-head"><div><h3>Números automáticos</h3><p class="small"><code>$</code> se convierte en 1, 2, 3…</p></div><span class="time">⏱ 4 min</span></div><p class="task">Dentro de <code>section#galeria</code>, expande:</p><div class="codebox"><code>article.tarjeta$*3&gt;h2{Tarjeta $}</code><button class="copy" data-copy="article.tarjeta$*3>h2{Tarjeta $}">Copiar</button></div><p class="tip">Busca <code>tarjeta1</code>, <code>tarjeta2</code> y <code>tarjeta3</code>.</p><label class="checkline"><input class="done" type="checkbox" data-id="m7"> Misión terminada</label></article>
+
+      <article class="mission" data-number="08"><div class="mission-head"><div><h3>Atributos a medida</h3><p class="small">Los corchetes <code>[]</code> añaden información a una etiqueta.</p></div><span class="time">⏱ 4 min</span></div><p class="task">Dentro de cada tarjeta, prueba una vez:</p><div class="codebox"><code>a[href="#galeria" title="Volver"]{Subir}</code><button class="copy" data-copy="a[href=&quot;#galeria&quot; title=&quot;Volver&quot;]{Subir}">Copiar</button></div><p>Localiza los atributos <code>href</code> y <code>title</code>.</p><label class="checkline"><input class="done" type="checkbox" data-id="m8"> Misión terminada</label></article>
+
+      <article class="mission" data-number="09"><div class="mission-head"><div><h3>Grupos con paréntesis</h3><p class="small">Los paréntesis mantienen un bloque unido.</p></div><span class="time">⏱ 4 min</span></div><p class="task">Al final de <code>main</code>, expande:</p><div class="codebox"><code>(section&gt;h2{Noticias}+p{Próximamente})+aside{Ayuda}</code><button class="copy" data-copy="(section>h2{Noticias}+p{Próximamente})+aside{Ayuda}">Copiar</button></div><p>Observa: <code>section</code> y <code>aside</code> son hermanos; <code>h2</code> y <code>p</code> están dentro de <code>section</code>.</p><label class="checkline"><input class="done" type="checkbox" data-id="m9"> Misión terminada</label></article>
+
+      <article class="mission" data-number="10"><div class="mission-head"><div><h3>Emmet también conoce CSS</h3><p class="small">Las propiedades CSS también tienen atajos.</p></div><span class="time">⏱ 5 min</span></div><p class="task">En <code>&lt;head&gt;</code> crea <code>&lt;style&gt;</code>. Dentro de <code>body { }</code>, escribe y expande cada abreviatura:</p><div class="codebox"><code>m20</code><button class="copy" data-copy="m20">Copiar</button></div><div class="codebox"><code>p20</code><button class="copy" data-copy="p20">Copiar</button></div><div class="codebox"><code>bgc#eef6ff</code><button class="copy" data-copy="bgc#eef6ff">Copiar</button></div><details class="result"><summary>✅ Resultado esperado</summary><pre>body {
+  margin: 20px;
+  padding: 20px;
+  background-color: #eef6ff;
+}</pre></details><label class="checkline"><input class="done" type="checkbox" data-id="m10"> Misión terminada</label></article>
+    </section>
+
+    <section class="challenge" id="reto">
+      <span class="badge">⚡ RETO FINAL · 10 MINUTOS</span>
+      <h2>Construye “La base secreta”</h2>
+      <p>Crea un archivo nuevo llamado <code>base-secreta.html</code>. Solo puedes escribir a mano las abreviaturas, los cambios de texto y el CSS. Emmet debe crear las etiquetas.</p>
+      <ol>
+        <li>Expande <code>!</code> y prepara el documento en español.</li>
+        <li>Dentro de <code>body</code>, expande esta única superabreviatura:</li>
+      </ol>
+      <div class="codebox"><code>div.web&gt;(header&gt;h1{Base secreta})+(main&gt;section.tarjetas&gt;article.tarjeta*3&gt;h2{Misión $}+p{Pendiente})+(footer&gt;p{Creado con Emmet})</code><button class="copy" data-copy="div.web>(header>h1{Base secreta})+(main>section.tarjetas>article.tarjeta*3>h2{Misión $}+p{Pendiente})+(footer>p{Creado con Emmet})">Copiar</button></div>
+      <p>Después crea un bloque <code>&lt;style&gt;</code> y usa al menos <strong>tres abreviaturas CSS</strong> de la misión 10. Cambia “Pendiente” por tres estados diferentes.</p>
+      <ul class="criteria"><li>Documento HTML completo</li><li>Tres tarjetas numeradas</li><li>Cabecera, contenido y pie</li><li>Al menos tres reglas CSS</li><li>Sin errores rojos en VS Code</li><li>Se abre correctamente en Chrome</li></ul>
+      <details class="result"><summary>🛟 Pista si te bloqueas</summary><p style="padding:0 13px 13px">Lee la abreviatura por trozos: <strong>web</strong> contiene tres grupos hermanos; el grupo central contiene tres artículos; cada artículo contiene un título y un párrafo.</p></details>
+    </section>
+
+    <section class="delivery">
+      <h2>Entrega: prueba de concepto</h2>
+      <p>Entrega estos <strong>tres archivos</strong>: <code>base-secreta.html</code>, una captura llamada <code>emmet-funciona.png</code> con VS Code y Chrome visibles, y el informe TXT que genera este botón.</p>
+      <div class="form-grid">
+        <div class="field"><label for="student">Nombre y apellidos</label><input id="student" autocomplete="name" placeholder="Tu nombre"></div>
+        <div class="field"><label for="group">Grupo</label><input id="group" placeholder="Ej.: 1.º A"></div>
+        <div class="field full"><label for="favorite">La abreviatura que más me ayudó</label><input id="favorite" placeholder="Ej.: article.tarjeta$*3"></div>
+      </div>
+      <button class="download" id="downloadReport">⬇ Descargar comprobante TXT</button>
+      <p id="downloadMessage" class="small" role="status"></p>
+      <table class="rubric">
+        <thead><tr><th>Comprobación</th><th>Puntos</th></tr></thead>
+        <tbody><tr><td>HTML completo y bien organizado</td><td>4</td></tr><tr><td>Uso correcto de Emmet y tres tarjetas</td><td>3</td></tr><tr><td>CSS visible y página abierta en Chrome</td><td>2</td></tr><tr><td>Captura e informe TXT</td><td>1</td></tr></tbody>
+      </table>
+    </section>
+  </main>
+  <footer class="footer wrap">Práctica P01.01 · Emmet viene integrado en VS Code; no es necesario instalar una extensión.<br><a href="https://code.visualstudio.com/docs/languages/emmet" target="_blank" rel="noopener">Ayuda oficial de Emmet en VS Code</a> · <a href="https://docs.emmet.io/cheat-sheet/" target="_blank" rel="noopener">Chuleta completa de Emmet</a></footer>
+
+  <script>
+    const boxes=[...document.querySelectorAll('.done')];
+    const key='p0101-emmet-progress';
+    let saved={};
+    try{saved=JSON.parse(localStorage.getItem(key)||'{}')}catch(error){saved={}}
+    boxes.forEach(box=>{box.checked=Boolean(saved[box.dataset.id]);box.addEventListener('change',()=>{saved[box.dataset.id]=box.checked;localStorage.setItem(key,JSON.stringify(saved));updateProgress()})});
+    function updateProgress(){const count=boxes.filter(box=>box.checked).length;document.getElementById('progressLabel').textContent=`${count} de 10 misiones`;document.getElementById('progressBar').style.width=`${count*10}%`}
+    updateProgress();
+    document.querySelectorAll('.copy').forEach(button=>button.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(button.dataset.copy);const old=button.textContent;button.textContent='¡Copiado!';setTimeout(()=>button.textContent=old,1200)}catch(error){button.textContent='Selecciona el código'}}));
+    document.getElementById('downloadReport').addEventListener('click',()=>{
+      const name=document.getElementById('student').value.trim();
+      const group=document.getElementById('group').value.trim();
+      const favorite=document.getElementById('favorite').value.trim();
+      const count=boxes.filter(box=>box.checked).length;
+      if(!name||!group||!favorite){document.getElementById('downloadMessage').textContent='Completa los tres campos antes de descargar.';return}
+      const report=['PRÁCTICA P01.01 · EMMET EN VS CODE',`Alumno/a: ${name}`,`Grupo: ${group}`,`Fecha: ${new Date().toLocaleDateString('es-ES')}`,`Misiones marcadas: ${count}/10`,`Abreviatura favorita: ${favorite}`,'','ENTREGA DECLARADA:','[ ] base-secreta.html','[ ] emmet-funciona.png','[x] comprobante-emmet.txt','','Confirmo que he probado la página en Chrome.'].join('\n');
+      const blob=new Blob([report],{type:'text/plain;charset=utf-8'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='comprobante-emmet.txt';link.click();URL.revokeObjectURL(url);document.getElementById('downloadMessage').textContent='Comprobante creado. Revisa tu carpeta de descargas.'
+    });
+  </script>
+</body>
+</html>
