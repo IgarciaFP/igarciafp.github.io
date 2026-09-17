@@ -1,14 +1,14 @@
 
 <!DOCTYPE html>
 
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>UD01 Arquitectura del Frontend — 2º DAW</title>
+<title>UD01 Frontend Architecture — 2nd DAW</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&amp;family=Inter:wght@300;400;500;600;700&amp;family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&amp;display=swap" rel="stylesheet"/>
@@ -16,88 +16,51 @@
 <link href="u01.css" rel="stylesheet"/>
 </head>
 <body>
-<nav aria-label="Índice de contenidos" class="sidebar-toc"><h4><i aria-hidden="true" class="fa-solid fa-list-ol"></i> Contenidos</h4><ul><li><a href="#sec1">1. Tecnología Web</a></li><li><a class="subsection-link" href="#sec1_1">1.1. La World Wide Web</a></li><li><a class="subsection-link" href="#sec1_2">1.2. Internet y Web: dos conceptos relacionados</a></li><li><a class="subsection-link" href="#sec1_3">1.3. Arquitectura cliente-servidor</a></li><li><a href="#sec2">2. El navegador Web</a></li><li><a class="subsection-link" href="#sec2_1">2.1. Motores de renderizado y motores JavaScript</a></li><li><a class="subsection-link" href="#sec2_2">2.2. El DOM</a></li><li><a class="subsection-link" href="#sec2_3">2.3. Compatibilidad entre navegadores</a></li><li><a href="#sec3">3. Protocolo HTTP</a></li><li><a class="subsection-link" href="#sec3_1">3.1. Handshake HTTPS</a></li><li><a class="subsection-link" href="#sec3_2">3.2. Solicitud HTTP: request</a></li><li><a class="subsection-link" href="#sec3_3">3.3. Respuesta HTTP: response</a></li><li><a class="subsection-link" href="#sec3_4">3.4. Métodos HTTP principales</a></li><li><a href="#sec4">4. Cabeceras HTTP y estructura de los mensajes</a></li><li><a class="subsection-link" href="#sec4_1">4.1. Cabeceras de petición</a></li><li><a class="subsection-link" href="#sec4_2">4.2. Cabeceras de respuesta y del contenido</a></li><li><a class="subsection-link" href="#sec4_3">4.3. Códigos de respuesta HTTP</a></li><li><a class="subsection-link" href="#sec4_4">4.4. Gestión de la caché</a></li><li><a class="subsection-link" href="#sec4_5">4.5. CORS: acceso desde otros orígenes</a></li><li><a class="subsection-link" href="#sec4_6">4.6. User-Agent</a></li></ul></nav>
-<div class="document-wrapper"><main class="document-container"><div class="header-banner"><div class="header-top-row"><span class="module-tag">Desarrollo Web en Entorno Cliente • 2º DAW</span><a aria-label="Read this page in English" class="language-switch" href="u01_en.html" hreflang="en" lang="en"><i aria-hidden="true" class="fa-solid fa-language"></i> English</a></div><h1>UD01 Arquitectura del Frontend</h1><p class="header-subtitle">Componentes, capas y flujo de una aplicación web en el navegador</p></div><div class="image-container"><img alt="Arquitectura del frontend con sus capas, tecnologías y comunicación con el backend" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-01.webp" width="1352"/></div><h2 id="sec1"><i aria-hidden="true" class="fa-solid fa-globe"></i> 1. Tecnología Web</h2>
-<h3 id="sec1_1">1.1. La World Wide Web</h3>
-<p>A menudo se confunde <strong>Internet con la Web</strong>, pero esta
-no existía desde el principio de Internet. Otros servicios como el
-correo electrónico, IRC, telnet, FTP, etc llegaron mucho antes.</p>
-<div class="image-container"><img alt="Comparación visual entre Internet y la World Wide Web" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-02.webp" width="1352"/></div><p>En 1989, <strong>Tim Berners-Lee</strong> trabajaba en el CERN. Los
-científicos necesitaban compartir documentos entre ordenadores
-distintos. Su propuesta fue conectarlos mediante enlaces en
-<strong>hipertexto</strong>: desde un documento se podría saltar a otro
-sin tener que conocer cómo estaba organizado el equipo que lo guardaba,
-así tomó forma la propuesta de la Web. El hipertexto era anterior:
-<strong>Ted Nelson</strong> acuñó el término en 1965.</p>
-<p>A finales de <strong>1990</strong> ya funcionaban el primer servidor
-y el primer navegador, llamado <strong>WorldWideWeb</strong> y
-renombrado después <strong>Nexus</strong>. Este programa también
-permitía editar páginas. El proyecto reunía tres piezas: HTML para
-organizar documentos, direcciones para localizar recursos y HTTP para
-pedirlos y recibirlos. El navegador de modo línea extendió el acceso a
-otros equipos.</p>
-<p>En <strong>1993</strong>, <strong>Mosaic</strong> ayudó a popularizar
-la navegación gráfica con texto e imágenes. Ese mismo año, el CERN puso
-el software de la Web en el dominio público. <strong>Netscape
-Navigator</strong> llegó en <strong>1994</strong> e <strong>Internet
-Explorer</strong> en <strong>1995</strong>. La Web pasó de conectar
-documentos a alojar periódicos, tiendas, aplicaciones, etc.</p>
-<p>A su vez, la fiera competencia por dominar el mercado de la
-incipiente World Wide Web desató la conocida como “<strong>Guerra de los
-Navegadores</strong>”.</p>
+<nav aria-label="Contents Index" class="sidebar-toc"><h4><i aria-hidden="true" class="fa-solid fa-list-ol"></i> Contents</h4><ul><li><a href="#sec1">1. Web technology</a></li><li><a class="subsection-link" href="#sec1_1">1.1. The World Wide Web</a></li><li><a class="subsection-link" href="#sec1_2">1.2. Internet and Web: two related concepts</a></li><li><a class="subsection-link" href="#sec1_3">1.3. Client-server architecture</a></li><li><a href="#sec2">2. The Web browser</a></li><li><a class="subsection-link" href="#sec2_1">2.1. JavaScript render engines and engines</a></li><li><a class="subsection-link" href="#sec2_2">2.2. The DOM</a></li><li><a class="subsection-link" href="#sec2_3">2.3. Compatibility between browsers</a></li><li><a href="#sec3">3. HTTP Protocol</a></li><li><a class="subsection-link" href="#sec3_1">3.1. Handshake HTTPS</a></li><li><a class="subsection-link" href="#sec3_2">3.2. HTTP request: request</a></li><li><a class="subsection-link" href="#sec3_3">3.3. HTTP response: response</a></li><li><a class="subsection-link" href="#sec3_4">3.4. Main HTTP methods</a></li><li><a href="#sec4">4. HTTP headers and message structure</a></li><li><a class="subsection-link" href="#sec4_1">4.1. Request Headers</a></li><li><a class="subsection-link" href="#sec4_2">4.2. Response and content heads</a></li><li><a class="subsection-link" href="#sec4_3">4.3. HTTP response codes</a></li><li><a class="subsection-link" href="#sec4_4">4.4. Cache management</a></li><li><a class="subsection-link" href="#sec4_5">4.5. CORS: access from other sources</a></li><li><a class="subsection-link" href="#sec4_6">4.6. User-Agent</a></li></ul></nav>
+<div class="document-wrapper"><main class="document-container"><div class="header-banner"><div class="header-top-row"><span class="module-tag">Web Development in Client Environment • 2nd DAW</span><a aria-label="Leer esta página en español" class="language-switch" href="u01_es.html" hreflang="es" lang="es"><i aria-hidden="true" class="fa-solid fa-language"></i> Español</a></div><h1>UD01 Frontend Architecture</h1><p class="header-subtitle">Components, layers and flow of a web application in the browser</p></div><div class="image-container"><img alt="Frontend architecture with its layers, technologies and communication with the backend" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-01.webp" width="1352"/></div><h2 id="sec1"><i aria-hidden="true" class="fa-solid fa-globe"></i> 1. Web technology</h2>
+<h3 id="sec1_1">1.1. The World Wide Web</h3>
+<p>Often confused <strong>Internet with the Web</strong>Other services such as email, IRC, telnet, FTP, etc. arrived much earlier.</p>
+<div class="image-container"><img alt="Visual comparison between the Internet and the World Wide Web" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-02.webp" width="1352"/></div><p>In 1989, <strong>Tim Berners-Lee</strong> The scientists needed to share documents between different computers. Their proposal was to connect them via links to
+<strong>hypertext</strong>: from one document you could jump to another without having to know how the team that kept it was organized, so the proposal of the Web took shape. The hypertext was earlier:
+<strong>Ted Nelson</strong> coined the term in 1965.</p>
+<p>At the end of <strong>1990</strong> the first server and the first browser, called <strong>WorldWideWeb</strong> and renamed after <strong>Nexus</strong>. This program also allowed to edit pages. The project brought together three pieces: HTML to organize documents, addresses to locate resources and HTTP to request and receive them. The online browser extended access to other computers.</p>
+<p>In <strong>1993</strong>, <strong>Mosaic</strong> helped popularize graphic navigation with text and images. That same year, CERN put Web software in the public domain. <strong>Netscape Navigator</strong> arrived in <strong>1994</strong> e <strong>Internet Explorer</strong> in <strong>1995</strong>The Web moved from connecting documents to hosting newspapers, stores, applications, etc.</p>
+<p>In turn, fierce competition to dominate the emerging World Wide Web market unleashed the so-called “<strong>Navigators' War</strong>”.</p>
 <div class="resource-card expansion-card">
 <div class="resource-card-header">
-<span class="resource-title"><i class="fa-brands fa-youtube"></i> Guerra de los navegadores</span>
-<span class="resource-badge badge-video">Vídeo</span>
+<span class="resource-title"><i class="fa-brands fa-youtube"></i> Browser War</span>
+<span class="resource-badge badge-video">Video</span>
 </div>
-<div class="resource-description">Documental sobre la guerra de los navegadores y la primera etapa de la World Wide Web.</div>
-<a class="resource-link-btn" href="https://youtu.be/zZmhnIa97NU" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver el documental</a>
+<div class="resource-description">Documentary about the browser warfare and the first stage of the World Wide Web.</div>
+<a class="resource-link-btn" href="https://youtu.be/zZmhnIa97NU" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> See the documentary</a>
 </div>
-<h3 id="sec1_2">1.2. Internet y Web: dos conceptos relacionados</h3>
-<p>Internet es la red de redes que comunica equipos. La <strong>World
-Wide Web</strong>, o WWW, es uno de los servicios que funciona sobre
-ella, pero no es el único. Por ejemplo, el <strong>correo
-electrónico</strong> también utiliza Internet, pero no es obligatorio
-que utilice una interfaz Web.</p>
-<p>Por otro lado, convienen diferenciar que un
-<strong>navegador</strong>, por su parte, es el programa que usamos para
-visitar páginas; un <strong>buscador</strong> es un servicio que ayuda a
-encontrarlas.</p>
+<h3 id="sec1_2">1.2. Internet and Web: two related concepts</h3>
+<p>Internet is the network of networks that communicate equipment. <strong>World Wide Web</strong>, or WWW, is one of the services that works on it, but it is not the only one. For example, the <strong>email</strong> also uses the Internet, but it is not mandatory for you to use a Web interface.</p>
+<p>On the other hand, it is appropriate to differentiate between the
+<strong>browser</strong>, for its part, is the program we use to visit pages; a <strong>search engine</strong> It's a service that helps find them.</p>
 <div class="resource-card expansion-card">
 <div class="resource-card-header">
-<span class="resource-title"><i class="fa-solid fa-globe"></i> Orígenes de la World Wide Web</span>
-<span class="resource-badge badge-video">Web y vídeo</span>
+<span class="resource-title"><i class="fa-solid fa-globe"></i> Origins of the World Wide Web</span>
+<span class="resource-badge badge-video">Web and video</span>
 </div>
-<div class="resource-description">Explora la primera web del CERN y repasa en vídeo el problema que Tim Berners-Lee trataba de resolver.</div>
-<a class="resource-link-btn" href="https://info.cern.ch/" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Explorar la primera web</a>
-<a class="resource-link-btn" href="https://youtu.be/SNw4m1m_2GE" rel="noopener noreferrer" target="_blank"><i class="fa-brands fa-youtube"></i> Tim Berners-Lee y la World Wide Web</a>
-<p class="resource-description">Después de consultarlos, explica qué problema intentaba resolver Berners-Lee.</p>
+<div class="resource-description">Explore CERN's first website and review on video the problem Tim Berners-Lee was trying to solve.</div>
+<a class="resource-link-btn" href="https://info.cern.ch/" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Explore the first website</a>
+<a class="resource-link-btn" href="https://youtu.be/SNw4m1m_2GE" rel="noopener noreferrer" target="_blank"><i class="fa-brands fa-youtube"></i> Tim Berners-Lee and the World Wide Web</a>
+<p class="resource-description">After consulting them, he explains what problem Berners-Lee was trying to solve.</p>
 </div>
-<h3 id="sec1_3">1.3. Arquitectura cliente-servidor</h3>
-<p>La arquitectura <strong>cliente-servidor</strong> divide una
-aplicación en dos partes:</p>
+<h3 id="sec1_3">1.3. Client-server architecture</h3>
+<p>Architecture <strong>client-server</strong> divides an application into two parts:</p>
 <ul>
 <li>
-<p><strong>Cliente / frontend:</strong> interfaz que usa la persona, por
-ejemplo, una web o app. Muestra información y envía solicitudes.</p>
+<p><strong>Client / frontend:</strong> interface that the person uses, for example, a web or app. It displays information and sends requests.</p>
 </li>
 <li>
-<p><strong>Servidor / backend:</strong> recibe esas solicitudes, aplica
-la lógica del sistema, consulta bases de datos y devuelve
-respuestas.</p>
+<p><strong>Server / backend:</strong> receive these requests, apply system logic, consult databases and return responses.</p>
 </li>
 </ul>
-<div class="image-container"><img alt="Comparación entre frontend y backend en una aplicación web" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-03.webp" width="1352"/></div><p>Imagina el mostrador de una <strong>biblioteca</strong>. Tú pides un
-libro y la persona encargada comprueba si está disponible. En una
-aplicación web, el cliente inicia la petición y el servidor la atiende.
-La comparación sirve para entender los papeles, aunque en la red todo se
-intercambia mediante mensajes.</p>
-<p>El <strong>navegador</strong> es el cliente de nuestro ejemplo.
-Muestra un formulario y recoge el título que escribes. El servidor busca
-coincidencias y devuelve los resultados. La base de datos puede guardar
-el catálogo, pero es la aplicación del servidor la que decide cómo
-consultarlo.</p>
-<div aria-label="Tabla didáctica 1" class="table-scroll" role="region" tabindex="0"><table>
+<div class="image-container"><img alt="Comparison between frontend and backend in a web application" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-03.webp" width="1352"/></div><p>Imagine the counter of a <strong>library</strong>. You order a book and the person in charge checks if it is available. In a web application, the client initiates the request and the server attends it. The comparison serves to understand the papers, although in the network everything is exchanged through messages.</p>
+<p>The <strong>browser</strong> is the client of our example. It shows a form and collects the title you write. The server searches for matches and returns the results. The database can save the catalog, but it is the server application that decides how to consult it.</p>
+<div aria-label="Table 1" class="table-scroll" role="region" tabindex="0"><table>
 <colgroup>
 <col style="width: 30%"/>
 <col style="width: 69%"/>
@@ -105,218 +68,147 @@ consultarlo.</p>
 <thead>
 <tr class="header">
 <th>
-<p><strong>Dónde ocurre</strong></p>
+<p><strong>Where it happens</strong></p>
 </th>
 <th>
-<p><strong>Ejemplo en la biblioteca</strong></p>
+<p><strong>Example in the library</strong></p>
 </th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>
-<p>Cliente: <strong>frontend</strong></p>
+<p>Client: <strong>frontend</strong></p>
 </td>
 <td>
-<p>Muestra el formulario, responde a los clics y presenta
-resultados.</p>
+<p>Shows the form, responds to clicks and presents results.</p>
 </td>
 </tr>
 <tr class="even">
 <td>
-<p>Servidor: <strong>backend</strong></p>
+<p>Server: <strong>backend</strong></p>
 </td>
 <td>
-<p>Valida la reserva, comprueba permisos y consulta el catálogo.</p>
+<p>Validate the reservation, check permissions and check the catalogue.</p>
 </td>
 </tr>
 <tr class="odd">
 <td>
-<p><strong>Base de datos</strong></p>
+<p><strong>Database</strong></p>
 </td>
 <td>
-<p>Guarda libros, ejemplares y reservas.</p>
+<p>Save books, copies and reserves.</p>
 </td>
 </tr>
 </tbody>
 </table>
-</div><p>Una página no suele llegar como una única pieza. <strong>Primero
-puede descargarse HTML; después, CSS, JavaScript, imágenes y
-datos</strong>. El navegador reúne estos recursos para construir lo que
-ves.</p>
-<h2 id="sec2"><i aria-hidden="true" class="fa-solid fa-compass"></i> 2. El navegador Web</h2>
-<p>Un <strong>navegador web</strong> es un programa que actúa como
-cliente o <em><strong>user agent</strong></em> de la Web. Entre sus
-responsabilidades se encuentran solicitar recursos, procesar documentos
-HTML, aplicar CSS, ejecutar JavaScript, representar el resultado
-gráficamente, permitir la interacción con el usuario y proporcionar APIs
-y mecanismos de almacenamiento a las aplicaciones web.</p>
-<div class="image-container"><img alt="Componentes principales de un navegador web" decoding="async" height="1024" loading="lazy" src="assets/u01/ilustracion-04.webp" width="1536"/></div><p>Una aplicación web del lado cliente es <strong>código y
-recursos</strong> que el <strong>navegador</strong> obtiene,
-<strong>interpreta, ejecuta y representa</strong> dentro de un entorno
-controlado.</p>
-<p><strong>HTTP</strong> define un modelo cliente-servidor en el que las
-peticiones son iniciadas normalmente por un
-<strong>navegador</strong>.</p>
-<p>Es importante diferenciar tres conceptos:</p>
-<div class="image-container"><img alt="Arquitectura interna simplificada de un navegador web" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-05.webp" width="1352"/></div><p>La separación es <strong>conceptual:</strong> las arquitecturas
-internas reales son mucho más complejas y sus componentes están
-estrechamente relacionados. Por ejemplo, la propia documentación de
-Gecko incluye dentro del motor aspectos como análisis y renderizado
-HTML, red, JavaScript, IPC y DOM.</p>
-<p>Una representación pedagógica útil es:</p>
-<div aria-label="Tabla didáctica 2" class="table-scroll" role="region" tabindex="0"><table>
+</div><p>A page doesn't usually come as a single piece. <strong>HTML can first be downloaded; then CSS, JavaScript, images and data</strong>The browser gathers these resources to build what you see.</p>
+<h2 id="sec2"><i aria-hidden="true" class="fa-solid fa-compass"></i> 2. The Web browser</h2>
+<p>A <strong>Web browser</strong> is a program that acts as a client or <em><strong>user agent</strong></em> Your responsibilities include requesting resources, processing HTML documents, applying CSS, running JavaScript, graphically representing the result, enabling user interaction, and providing APIs and storage mechanisms to web applications.</p>
+<div class="image-container"><img alt="Main components of a web browser" decoding="async" height="1024" loading="lazy" src="assets/u01/ilustracion-04.webp" width="1536"/></div><p>A web application on the client side is <strong>code and resources</strong> that the <strong>browser</strong> Gets,
+<strong>interprets, executes and represents</strong> within a controlled environment.</p>
+<p><strong>HTTP</strong> defines a client-server model in which requests are normally initiated by a
+<strong>browser</strong>.</p>
+<p>It is important to differentiate three concepts:</p>
+<div class="image-container"><img alt="Simplified internal architecture of a web browser" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-05.webp" width="1352"/></div><p>The separation is <strong>Conceptual:</strong> Real internal architectures are much more complex and their components are closely related. For example, Gecko's own documentation includes aspects such as HTML analysis and rendering, network, JavaScript, IPC and DOM within the engine.</p>
+<p>A useful pedagogical representation is:</p>
+<div aria-label="Table 2" class="table-scroll" role="region" tabindex="0"><table>
 <colgroup>
 <col style="width: 100%"/>
 </colgroup>
 <tbody>
 <tr class="odd">
-<td><img alt="Partes que componen una URL" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-06.webp" width="1352"/></td>
+<td><img alt="Parts that make up a URL" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-06.webp" width="1352"/></td>
 </tr>
 </tbody>
 </table>
-</div><p>Este diagrama <strong>no representa literalmente la arquitectura de
-procesos de todos los navegadores</strong>; sirve para comprender las
-responsabilidades esenciales que después observaremos mediante
-<strong>DevTools</strong>. Las implementaciones reales varían entre
-motores y plataformas.</p>
+</div><p>This diagram <strong>does not literally represent the process architecture of all browsers</strong>; it serves to understand the essential responsibilities that we will then observe through
+<strong>DevTools</strong>. Real implementations vary between engines and platforms.</p>
 <h4 class="content-subtitle">URL</h4>
-<p>Una URL identifica la localización de un recurso en cualquier parte
-de Internet y contiene distintas partes: protocolo, nombre del servidor,
-carpeta, etc.</p>
-<div class="image-container"><img alt="Proceso de navegación y carga de recursos en el navegador" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-07.webp" width="1352"/></div><h3 id="sec2_1">2.1. Motores de renderizado y motores JavaScript</h3>
-<p><img alt="Comparación de motores web y motores JavaScript" decoding="async" height="627" loading="lazy" src="assets/u01/ilustracion-08.webp" style="display: block; width: 50%; max-width: 627px; height: auto; margin: 0 auto 1rem;" width="627"/>No debemos confundir un
-navegador con sus motores internos.</p>
-<p>En las principales familias actuales:</p>
-<div class="image-container"><img alt="Motores utilizados por las principales familias de navegadores" decoding="async" height="1199" loading="lazy" src="assets/u01/ilustracion-09.webp" width="1312"/></div><p><strong>Chromium</strong> denomina Blink a su motor de renderizado;
-V8 se define oficialmente como el motor JavaScript y
-<strong>WebAssembly</strong> de Google utilizado en Chrome.</p>
-<p>Mozilla define Gecko como su motor web, encargado entre otras cosas
-del análisis y representación HTML, red y DOM, y SpiderMonkey como la
-implementación JavaScript y WebAssembly utilizada por Firefox.</p>
-<p>Apple/WebKit define WebKit como el motor web utilizado por Safari,
-mientras que JavaScriptCore es el motor JavaScript incluido en WebKit e
-implementa ECMAScript.</p>
-<p>Por tanto, con el ejemplo de Chromium:</p>
+<p>A URL identifies the location of a resource anywhere on the Internet and contains different parts: protocol, server name, folder, etc.</p>
+<div class="image-container"><img alt="Navigation process and resource loading in the browser" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-07.webp" width="1352"/></div><h3 id="sec2_1">2.1. JavaScript render engines and engines</h3>
+<p><img alt="Comparison of Web engines and JavaScript engines" decoding="async" height="627" loading="lazy" src="assets/u01/ilustracion-08.webp" style="display: block; width: 50%; max-width: 627px; height: auto; margin: 0 auto 1rem;" width="627"/>We should not confuse a browser with its internal engines.</p>
+<p>In today's main families:</p>
+<div class="image-container"><img alt="Engines used by major browser families" decoding="async" height="1199" loading="lazy" src="assets/u01/ilustracion-09.webp" width="1312"/></div><p><strong>Chromium</strong> calls its render engine Blink; V8 is officially defined as the JavaScript engine and
+<strong>WebAssembly</strong> Google used in Chrome.</p>
+<p>Mozilla defines Gecko as its web engine, responsible for, among other things, HTML analysis and representation, network and DOM, and SpiderMonkey as the JavaScript and WebAssembly implementation used by Firefox.</p>
+<p>Apple/WebKit defines WebKit as the web engine used by Safari, while JavaScriptCore is the JavaScript engine included in WebKit and implements ECMASscript.</p>
+<p>Thus, with Chromium's example:</p>
 <pre><code>Chrome ≠ Blink ≠ V8
 Chrome             aplicación/navegador
 Blink              	motor web
 V8                 	motor JavaScript</code></pre>
-<p>La distinción será útil más adelante al estudiar por qué una misma
-aplicación puede mostrar diferencias entre navegadores o por qué una
-característica de JavaScript puede depender de la versión del motor.</p>
+<p>The distinction will be useful later in studying why the same application can show differences between browsers or why a JavaScript feature can depend on the engine version.</p>
 <div class="activity-card activity-callout">
-<p><strong>Práctica ·</strong>¿Cuál es la combinación de navegadores que
-aportaría mayor diversidad de motores actualmente en tu entorno de
-trabajo? Investiga, verifica la actualidad de tu información e instala
-la combinación de navegadores que creas necesaria. Clave: una pareja
-Chromium/Blink y Firefox/Gecko; dos marcas no implican dos motores.</p>
+<p><strong>Practice</strong>What is the combination of browsers that would bring the greatest diversity of engines currently in your working environment? Investigate, check the current status of your information and install the combination of browsers that you think you need. Key: a Chromium/Blink pair and Firefox/Gecko; two brands do not involve two engines.</p>
 </div>
-<h3 id="sec2_2">2.2. El DOM</h3>
-<p>El DOM —Document Object Model— es una representación en memoria de la
-estructura del documento. MDN explica que conecta la página con los
-scripts al representar documentos como HTML mediante una estructura en
-memoria. El DOM no es simplemente «el código HTML»: es el modelo de
-objetos que el navegador construye y que puede cambiar mientras la
-aplicación se ejecuta.</p>
-<div class="image-container"><img alt="Representación del DOM como árbol de nodos" decoding="async" height="1199" loading="lazy" src="assets/u01/ilustracion-10.webp" width="1312"/></div><p>El DOM también proporciona la base para eventos y para muchas de las
-APIs que relacionan JavaScript con los documentos.</p>
+<h3 id="sec2_2">2.2. The DOM</h3>
+<p>The DOM —Document Object Model — is a memory representation of the document structure. MDN explains that it connects the page to scripts by representing documents as HTML by means of a memory structure. The DOM is not simply "the HTML code": it is the model of objects that the browser builds and that can change while the application is running.</p>
+<div class="image-container"><img alt="Representation of the DOM as a node tree" decoding="async" height="1199" loading="lazy" src="assets/u01/ilustracion-10.webp" width="1312"/></div><p>The DOM also provides the basis for events and for many of the APIs that link JavaScript to documents.</p>
 <div class="resource-card expansion-card">
 <div class="resource-card-header">
 <span class="resource-title"><i class="fa-solid fa-diagram-project"></i> Document Object Model (DOM)</span>
-<span class="resource-badge badge-reading">Lectura</span>
+<span class="resource-badge badge-reading">Reading</span>
 </div>
-<div class="resource-description">Documentación de MDN sobre el modelo de objetos que representa un documento HTML en memoria.</div>
-<a class="resource-link-btn" href="https://developer.mozilla.org/es/docs/Web/API/Document_Object_Model" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Consultar MDN</a>
+<div class="resource-description">MDN documentation on the object model that represents an HTML document in memory.</div>
+<a class="resource-link-btn" href="https://developer.mozilla.org/es/docs/Web/API/Document_Object_Model" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Consult MDN</a>
 </div>
 <div class="activity-card activity-callout">
-<p><strong>Actividad ·</strong> En la página local del final, cambia
-#titulo con las Chrome Devtools desde Console con
-document.querySelector("#titulo").textContent = "Hola". Recarga. Clave:
-vuelve el título del archivo; la edición temporal no guardó el HTML.</p>
+<p><strong>Activity</strong> On the local page at the end, it changes #title with Chrome Devtools from Console with document.querySelector("#title").textContent = "Hello." Reload. Key: the file title returns; the temporary editing did not save HTML.</p>
 </div>
-<h3 id="sec2_3">2.3. Compatibilidad entre navegadores</h3>
-<p>La Web se apoya en estándares comunes, pero <strong>sus
-implementaciones evolucionan de manera independiente</strong>. Una
-característica puede llegar en versiones distintas o necesitar
-correcciones. Como ejemplo fechado, WebKit anunció el 24 de marzo de
-2026 nuevas funciones y correcciones para Safari 26.4. No es una
-referencia a la versión más reciente.</p>
-<p>Por ello, la estrategia correcta no es:</p>
+<h3 id="sec2_3">2.3. Compatibility between browsers</h3>
+<p>The Web relies on common standards, but <strong>their implementations evolve independently</strong>. A feature may arrive in different versions or require corrections. As an example dated, WebKit announced March 24, 2026 new features and fixes for Safari 26.4. It is not a reference to the latest version.</p>
+<p>Therefore, the correct strategy is not:</p>
 <pre><code>"Funciona en mi navegador → funciona en todos."</code></pre>
-<p>sino:</p>
+<p>but:</p>
 <pre><code>1. Usar tecnologías estandarizadas.
 2. Consultar compatibilidad documentada.
 3. Probar en más de un motor.
 4. Evitar depender innecesariamente de comportamientos propietarios.
 5. Diseñar alternativas cuando una característica lo requiera.</code></pre>
-<p>MDN incluye tablas de compatibilidad por navegador en la
-documentación de las APIs; por ejemplo, su página de <code>localStorage</code> lo clasifica como una
-característica ampliamente disponible y ofrece la tabla
-correspondiente.</p>
+<p>MDN includes browser compatibility tables in API documentation, e.g. its page <code>localStorage</code> classifies it as a widely available feature and offers the corresponding table.</p>
 <div class="resource-card expansion-card">
 <div class="resource-card-header">
-<span class="resource-title"><i class="fa-solid fa-database"></i> Almacenamiento local (localStorage)</span>
-<span class="resource-badge badge-reading">Lectura</span>
+<span class="resource-title"><i class="fa-solid fa-database"></i> Local storage (localStorage)</span>
+<span class="resource-badge badge-reading">Reading</span>
 </div>
-<div class="resource-description">Referencia de MDN sobre la API de almacenamiento persistente del navegador y su compatibilidad.</div>
-<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Consultar MDN</a>
+<div class="resource-description">MDN reference to the browser's persistent storage API and its compatibility.</div>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Consult MDN</a>
 </div>
-<p>Esto explica también por qué es didácticamente preferible probar, al
-menos, con:</p>
+<p>This also explains why it is didactically preferable to try at least with:</p>
 <pre><code>Chromium/Blink
 Firefox/Gecko
 Safari/WebKit, cuando esté disponible</code></pre>
-<p>y no limitar una comprobación a Chrome y Edge pensando que
-representan necesariamente implementaciones web totalmente
-distintas.</p>
+<p>and not limit a check to Chrome and Edge thinking that they necessarily represent totally different web implementations.</p>
 <div class="activity-card activity-callout">
-<p><strong>Actividad ·</strong> Ejecuta CSS.supports("display", "grid")
-en dos navegadores y registra versiones y resultados. Clave: true indica
-soporte declarado de esa combinación; no sustituye comprobar el diseño
-real.</p>
+<p><strong>Activity</strong> Run CSS.supports("display", "grid") on two browsers and log versions and results. Key: true indicates declared support for that combination; it does not replace checking the actual design.</p>
 </div>
-<h2 id="sec3"><i aria-hidden="true" class="fa-solid fa-arrow-right-arrow-left"></i> 3. Protocolo HTTP</h2>
-<p>Un <strong>protocolo</strong> es un conjunto de reglas que permite
-que dos sistemas se comuniquen de forma compatible. En la web, el
-cliente solicita información o servicios y el servidor procesa la
-solicitud y devuelve una respuesta.</p>
-<div class="image-container"><img alt="Tecnologías y evolución de la Web" decoding="async" height="675" loading="lazy" src="assets/u01/ilustracion-11.webp" width="1350"/></div><p><strong>HTTP</strong> significa Hypertext Transfer Protocol, o
-Protocolo de transferencia de hipertexto. Establece cómo se intercambia
-información entre clientes y servidores web.</p>
-<p>El ciclo básico consta de una solicitud (request) del cliente y una
-respuesta (response) del servidor. Por ejemplo, el navegador pide una
-página y el servidor envía su contenido o comunica un error.</p>
+<h2 id="sec3"><i aria-hidden="true" class="fa-solid fa-arrow-right-arrow-left"></i> 3. HTTP Protocol</h2>
+<p>A <strong>protocol</strong> is a set of rules that allows two systems to communicate in a compatible way. On the web, the client requests information or services and the server processes the request and returns a response.</p>
+<div class="image-container"><img alt="Technologies and evolution of the Web" decoding="async" height="675" loading="lazy" src="assets/u01/ilustracion-11.webp" width="1350"/></div><p><strong>HTTP</strong> means Hypertext Transfer Protocol, or Hypertext Transfer Protocol. Sets how information is exchanged between clients and web servers.</p>
+<p>The basic cycle consists of a request from the client and a response from the server. For example, the browser asks for a page and the server sends its content or communicates an error.</p>
 <div class="resource-card expansion-card">
 <div class="resource-card-header">
-<span class="resource-title"><i class="fa-brands fa-youtube"></i> El ciclo petición-respuesta HTTP</span>
-<span class="resource-badge badge-video">Vídeo</span>
+<span class="resource-title"><i class="fa-brands fa-youtube"></i> The HTTP request-response cycle</span>
+<span class="resource-badge badge-video">Video</span>
 </div>
-<div class="resource-description">Vídeo de ampliación sobre el intercambio de solicitudes y respuestas entre el cliente y el servidor.</div>
-<a class="resource-link-btn" href="https://youtu.be/WvSVSbGo0wI" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver el vídeo de ampliación</a>
+<div class="resource-description">Extension video on the exchange of requests and responses between the client and the server.</div>
+<a class="resource-link-btn" href="https://youtu.be/WvSVSbGo0wI" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Watch the zoom video</a>
 </div>
-<div class="image-container"><img alt="Flujo de una comunicación HTTP entre cliente y servidor" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-12.webp" width="1352"/></div><p>HTTP es un protocolo de <strong>capa de aplicación</strong> basado en
-un modelo <strong>cliente-servidor</strong>. El navegador envía
-peticiones y el servidor devuelve respuestas que pueden contener HTML,
-CSS, JavaScript, imágenes o datos.</p>
-<div class="image-container"><img alt="Estructura general de una petición y una respuesta HTTP" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-13.webp" width="1352"/></div><p>En este apartado basta con reconocer que una comunicación HTTP
-contiene información de control en forma de <strong>cabeceras</strong> y
-que estas aparecen tanto en peticiones como en respuestas.</p>
+<div class="image-container"><img alt="Flow of HTTP communication between client and server" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-12.webp" width="1352"/></div><p>HTTP is a protocol of <strong>Application layer</strong> model-based <strong>client-server</strong>. The browser sends requests and the server returns responses that may contain HTML, CSS, JavaScript, images or data.</p>
+<div class="image-container"><img alt="General structure of a request and an HTTP response" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-13.webp" width="1352"/></div><p>In this section it is sufficient to recognize that an HTTP communication contains control information in the form of <strong>headers</strong> and that these appear both in petitions and in answers.</p>
 <h3 id="sec3_1">3.1. Handshake HTTPS</h3>
-<div class="image-container"><img alt="Fases principales del establecimiento de una conexión HTTPS" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-14.webp" width="1352"/></div><div class="didactic-note curiosity-card">
+<div class="image-container"><img alt="Main steps of establishing an HTTPS connection" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-14.webp" width="1352"/></div><div class="didactic-note curiosity-card">
 <blockquote>
-<p>HTTP define cómo intercambian mensajes cliente y servidor; HTTPS
-protege esa comunicación mediante TLS.</p>
+<p>HTTP defines how they exchange client and server messages; HTTPS protects that communication using TLS.</p>
 </blockquote>
 </div>
 <div class="activity-card activity-callout">
-<p><strong>Actividad ·</strong> 4 min · Explica qué aporta HTTPS frente
-a un negocio fraudulento.</p>
+<p><strong>Activity</strong> 4 min · Explain what HTTPS contributes to a fraudulent business.</p>
 </div>
-<h3 id="sec3_2">3.2. Solicitud HTTP: request</h3>
-<p>Es el mensaje que el cliente envía al servidor para solicitar una
-operación sobre un recurso.</p>
-<div class="image-container"><img alt="Anatomía de una solicitud HTTP" decoding="async" height="761" loading="lazy" src="assets/u01/ilustracion-15.webp" width="1352"/></div><div aria-label="Tabla didáctica 3" class="table-scroll" role="region" tabindex="0"><table>
+<h3 id="sec3_2">3.2. HTTP request: request</h3>
+<p>It is the message that the client sends to the server to request an operation on a resource.</p>
+<div class="image-container"><img alt="Anatomy of an HTTP request" decoding="async" height="761" loading="lazy" src="assets/u01/ilustracion-15.webp" width="1352"/></div><div aria-label="Table 3" class="table-scroll" role="region" tabindex="0"><table>
 <colgroup>
 <col style="width: 21%"/>
 <col style="width: 78%"/>
@@ -324,20 +216,20 @@ operación sobre un recurso.</p>
 <thead>
 <tr class="header">
 <th>
-<p><strong>Elemento</strong></p>
+<p><strong>Element</strong></p>
 </th>
 <th>
-<p><strong>Función</strong></p>
+<p><strong>Function</strong></p>
 </th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>
-<p>Método</p>
+<p>Method</p>
 </td>
 <td>
-<p>Indica la operación: consultar, crear, modificar o eliminar.</p>
+<p>Indicates the operation: consult, create, modify or delete.</p>
 </td>
 </tr>
 <tr class="even">
@@ -345,51 +237,46 @@ operación sobre un recurso.</p>
 <p>URL</p>
 </td>
 <td>
-<p>Identifica el recurso o endpoint al que se dirige la solicitud.</p>
+<p>Identify the resource or endpoint to which the request is addressed.</p>
 </td>
 </tr>
 <tr class="odd">
 <td>
-<p>Cabeceras</p>
+<p>Headers</p>
 </td>
 <td>
-<p>Contienen metadatos sobre la petición.</p>
+<p>They contain metadata about the request.</p>
 </td>
 </tr>
 <tr class="even">
 <td>
-<p>Cuerpo</p>
+<p>Body</p>
 </td>
 <td>
-<p>Contiene los datos enviados; es opcional.</p>
+<p>It contains the data sent; it is optional.</p>
 </td>
 </tr>
 </tbody>
 </table>
-</div><h4 class="content-subtitle">Ejemplo de petición</h4>
+</div><h4 class="content-subtitle">Example of request</h4>
 <pre><code>POST /alumnos HTTP/1.1
 Host: ejemplo.com
 Content-Type: application/json
 {
 "nombre": "Ana",
 "edad": 16
-}</code></pre><p>POST indica la operación; /alumnos identifica el recurso; Host y
-Content-Type son cabeceras. El objeto JSON forma el cuerpo y contiene
-los datos del alumno.</p>
-<h3 id="sec3_3">3.3. Respuesta HTTP: response</h3>
-<p>Es el mensaje que devuelve el servidor al procesar una solicitud.
-Incluye un código de estado, cabeceras y, cuando corresponde, un cuerpo
-con los datos solicitados o información del resultado.</p>
-<div class="image-container"><img alt="Anatomía de una respuesta HTTP" decoding="async" height="761" loading="lazy" src="assets/u01/ilustracion-16.webp" width="1352"/></div><pre><code>HTTP/1.1 200 OK
+}</code></pre><p>POST indicates the operation; /students identifies the resource; Host and Content-Type are headers. The JSON object forms the body and contains the student data.</p>
+<h3 id="sec3_3">3.3. HTTP response: response</h3>
+<p>It is the message that the server returns when processing a request. It includes a status code, headers and, where applicable, a body with requested data or result information.</p>
+<div class="image-container"><img alt="Anatomy of an HTTP response" decoding="async" height="761" loading="lazy" src="assets/u01/ilustracion-16.webp" width="1352"/></div><pre><code>HTTP/1.1 200 OK
 Content-Type: application/json
 {
 "id": 25,
 "nombre": "Ana",
 "edad": 16
-}</code></pre><p>Este ejemplo representa una consulta atendida correctamente. Los
-datos se devuelven en formato JSON dentro del cuerpo.</p>
-<h3 id="sec3_4">3.4. Métodos HTTP principales</h3>
-<div aria-label="Tabla didáctica 4" class="table-scroll" role="region" tabindex="0"><table>
+}</code></pre><p>This example represents a correctly viewed query. Data is returned in JSON format within the body.</p>
+<h3 id="sec3_4">3.4. Main HTTP methods</h3>
+<div aria-label="Table 4" class="table-scroll" role="region" tabindex="0"><table>
 <colgroup>
 <col style="width: 11%"/>
 <col style="width: 41%"/>
@@ -398,13 +285,13 @@ datos se devuelven en formato JSON dentro del cuerpo.</p>
 <thead>
 <tr class="header">
 <th>
-<p><strong>Método</strong></p>
+<p><strong>Method</strong></p>
 </th>
 <th>
-<p><strong>Operación habitual</strong></p>
+<p><strong>Usual operation</strong></p>
 </th>
 <th>
-<p><strong>Ejemplo con alumnos</strong></p>
+<p><strong>Example with students</strong></p>
 </th>
 </tr>
 </thead>
@@ -414,10 +301,10 @@ datos se devuelven en formato JSON dentro del cuerpo.</p>
 <p><strong>GET</strong></p>
 </td>
 <td>
-<p>Consultar información</p>
+<p>Consult information</p>
 </td>
 <td>
-<p>Obtener todos los alumnos.</p>
+<p>Get all the students.</p>
 </td>
 </tr>
 <tr class="even">
@@ -425,10 +312,10 @@ datos se devuelven en formato JSON dentro del cuerpo.</p>
 <p><strong>POST</strong></p>
 </td>
 <td>
-<p>Crear un recurso</p>
+<p>Create a resource</p>
 </td>
 <td>
-<p>Registrar un alumno.</p>
+<p>Register a student.</p>
 </td>
 </tr>
 <tr class="odd">
@@ -436,10 +323,10 @@ datos se devuelven en formato JSON dentro del cuerpo.</p>
 <p>PUT</p>
 </td>
 <td>
-<p>Sustituir el recurso completo</p>
+<p>Replace full appeal</p>
 </td>
 <td>
-<p>Reemplazar sus datos.</p>
+<p>Replace your data.</p>
 </td>
 </tr>
 <tr class="even">
@@ -447,10 +334,10 @@ datos se devuelven en formato JSON dentro del cuerpo.</p>
 <p>PATCH</p>
 </td>
 <td>
-<p>Modificar parte del recurso</p>
+<p>Modify part of the appeal</p>
 </td>
 <td>
-<p>Cambiar solamente su edad.</p>
+<p>Change only your age.</p>
 </td>
 </tr>
 <tr class="odd">
@@ -458,58 +345,40 @@ datos se devuelven en formato JSON dentro del cuerpo.</p>
 <p>DELETE</p>
 </td>
 <td>
-<p>Eliminar un recurso</p>
+<p>Remove a resource</p>
 </td>
 <td>
-<p>Dar de baja a un alumno.</p>
+<p>Dismissing a student.</p>
 </td>
 </tr>
 </tbody>
 </table>
-</div><p>Relación habitual con CRUD: POST se usa a menudo para crear, GET para
-leer, PUT o PATCH para actualizar y DELETE para eliminar. Es una
-convención de diseño, no una equivalencia universal: POST solicita
-procesamiento y PUT también puede crear el recurso de destino.</p>
+</div><p>Regular relationship with CRUD: POST is often used to create, GET to read, PUT or PATCH to update and DELETE to delete. It is a design convention, not a universal equivalence: POST requests processing and PUT can also create the target resource.</p>
 <div class="activity-card activity-callout">
-<p>Actividad: Lee el siguiente artículo de la web de MDN:</p>
-<p><a href="https://developer.mozilla.org/es/docs/Web/HTTP/Guides/Overview" rel="noopener noreferrer" target="_blank">https://developer.mozilla.org/es/docs/Web/HTTP/Guides/Overview</a></p>
+<p>Activity: Read the following article from the MDN website:</p>
+<p><a href="https://developer.mozilla.org/es/docs/Web/HTTP/Guides/Overview" rel="noopener noreferrer" target="_blank">https://developer.mozilla.org/en/docs/Web/HTTP/Guides/Overview</a></p>
 </div>
-<h2 id="sec4"><i aria-hidden="true" class="fa-solid fa-server"></i> 4. Cabeceras HTTP y estructura de los mensajes</h2>
-<p>Las cabeceras son campos de la forma nombre: valor que acompañan a
-peticiones y respuestas. Aportan metadatos sobre el contenido y las
-condiciones del intercambio: formato, autenticación, idioma, caché o
-cookies. El recurso principal suele encontrarse en el cuerpo, no en las
-cabeceras.</p>
-<h4 class="content-subtitle">Ejemplo de petición HTTP/1.1</h4>
+<h2 id="sec4"><i aria-hidden="true" class="fa-solid fa-server"></i> 4. HTTP headers and message structure</h2>
+<p>Headers are name form fields: value that accompany requests and responses. They provide metadata about the content and terms of the exchange: format, authentication, language, cache or cookies. The main resource is usually found in the body, not in the headers.</p>
+<h4 class="content-subtitle">Example of HTTP/1.1 request</h4>
 <pre><code>GET /api/alumnos/42 HTTP/1.1
 Host: ejemplo.com
 Accept: application/json
 Authorization: Bearer token-de-ejemplo
-User-Agent: ClienteAula/1.0</code></pre><p>La primera línea contiene el método, el destino de la petición y la
-versión del protocolo. Después aparecen las cabeceras. Una línea en
-blanco las separa del cuerpo, si existe. Esta petición GET no incluye
-cuerpo.</p>
+User-Agent: ClienteAula/1.0</code></pre><p>The first line contains the method, the destination of the request and the version of the protocol. Then the headers appear. A blank line separates them from the body, if any. This GET request does not include body.</p>
 <pre><code>POST /api/alumnos HTTP/1.1
 Host: ejemplo.com
 Content-Type: application/json
 Content-Length: 34
-{"nombre":"Ana","curso":"4º ESO"}</code></pre><p>En el segundo ejemplo, el cuerpo ocupa exactamente 34 bytes en UTF-8,
-sin un salto de línea final. Content-Length cuenta bytes, no caracteres:
-<strong>el símbolo «º» ocupa dos bytes en UTF-8.</strong> En
-aplicaciones reales conviene dejar este cálculo a la biblioteca
-HTTP.</p>
+{"nombre":"Ana","curso":"4º ESO"}</code></pre><p>In the second example, the body occupies exactly 34 bytes in UTF-8, without a final line jump. Content-Length counts bytes, not characters:
+<strong>the symbol ‘o’ occupies two bytes in UTF-8.</strong> In real applications, this calculation should be left to the HTTP library.</p>
 <div class="activity-card activity-callout">
-<p><strong>Actividad</strong></p>
-<p>Escribe en Console new
-TextEncoder().encode('{"nombre":"Ana","curso":"4º ESO"}').length y
-comprueba el resultado</p>
+<p><strong>Activity</strong></p>
+<p>Write in Console new TextEncoder().encode('{"name":"An","course":"4o ESO"}'.length and check the result</p>
 </div>
-<h3 id="sec4_1">4.1. Cabeceras de petición</h3>
-<p>El cliente indica qué solicita, qué puede aceptar y qué credenciales
-o condiciones aporta. <strong>Estas cabeceras describen la
-petición</strong>; no garantizan por sí mismas la identidad del
-cliente.</p>
-<div aria-label="Tabla didáctica 5" class="table-scroll" role="region" tabindex="0"><table>
+<h3 id="sec4_1">4.1. Request Headers</h3>
+<p>The customer indicates what he or she requests, what he or she can accept, and what credentials or conditions he or she provides. <strong>These headers describe the request</strong>; they do not guarantee the identity of the customer by themselves.</p>
+<div aria-label="Table 5" class="table-scroll" role="region" tabindex="0"><table>
 <colgroup>
 <col style="width: 25%"/>
 <col style="width: 37%"/>
@@ -518,13 +387,13 @@ cliente.</p>
 <thead>
 <tr class="header">
 <th>
-<p><strong>Cabecera</strong></p>
+<p><strong>Header</strong></p>
 </th>
 <th>
-<p><strong>Función</strong></p>
+<p><strong>Function</strong></p>
 </th>
 <th>
-<p><strong>Ejemplo</strong></p>
+<p><strong>Example:</strong></p>
 </th>
 </tr>
 </thead>
@@ -534,10 +403,10 @@ cliente.</p>
 <p>Host</p>
 </td>
 <td>
-<p>Dominio y, si corresponde, puerto de destino</p>
+<p>Domain and, if applicable, destination port</p>
 </td>
 <td>
-<p>Host: ejemplo.com</p>
+<p>Host: example.com</p>
 </td>
 </tr>
 <tr class="even">
@@ -545,7 +414,7 @@ cliente.</p>
 <p>Accept</p>
 </td>
 <td>
-<p>Tipos de respuesta aceptables</p>
+<p>Acceptable types of response</p>
 </td>
 <td>
 <p>Accept: application/json</p>
@@ -556,10 +425,10 @@ cliente.</p>
 <p>Accept-Language</p>
 </td>
 <td>
-<p>Preferencias de idioma</p>
+<p>Language Preferences</p>
 </td>
 <td>
-<p>Accept-Language: es</p>
+<p>Accept-Language: en</p>
 </td>
 </tr>
 <tr class="even">
@@ -567,7 +436,7 @@ cliente.</p>
 <p>Accept-Encoding</p>
 </td>
 <td>
-<p>Compresiones aceptadas</p>
+<p>Compressions accepted</p>
 </td>
 <td>
 <p>Accept-Encoding: gzip, br</p>
@@ -578,10 +447,10 @@ cliente.</p>
 <p>Authorization</p>
 </td>
 <td>
-<p>Credenciales o token</p>
+<p>Credentials or token</p>
 </td>
 <td>
-<p>Authorization: Bearer …</p>
+<p>Authorization: Bearer ...</p>
 </td>
 </tr>
 <tr class="even">
@@ -589,10 +458,10 @@ cliente.</p>
 <p>Cookie</p>
 </td>
 <td>
-<p>Cookies enviadas al servidor</p>
+<p>Cookies sent to the server</p>
 </td>
 <td>
-<p>Cookie: sesion=abc123</p>
+<p>Cookie: session=abc123</p>
 </td>
 </tr>
 <tr class="odd">
@@ -600,10 +469,10 @@ cliente.</p>
 <p><strong>User-Agent</strong></p>
 </td>
 <td>
-<p>Software cliente declarado</p>
+<p>Declared client software</p>
 </td>
 <td>
-<p>User-Agent: ClienteAula/1.0</p>
+<p>User-Agent: ClientAula/1.0</p>
 </td>
 </tr>
 <tr class="even">
@@ -611,7 +480,7 @@ cliente.</p>
 <p>If-None-Match</p>
 </td>
 <td>
-<p>Validador para petición condicional</p>
+<p>Validator for conditional petition</p>
 </td>
 <td>
 <p>If-None-Match: "v15"</p>
@@ -622,7 +491,7 @@ cliente.</p>
 <p><strong>Origin</strong></p>
 </td>
 <td>
-<p>Origen que inició ciertas peticiones</p>
+<p>Origin that initiated certain requests</p>
 </td>
 <td>
 <p>Origin: https://aula.example</p>
@@ -630,14 +499,10 @@ cliente.</p>
 </tr>
 </tbody>
 </table>
-</div><p>Host es obligatorio en HTTP/1.1. Origin no aparece en todas las
-peticiones y no debe confundirse con la dirección IP. Un origen web se
-define por esquema, host y puerto.</p>
-<h3 id="sec4_2">4.2. Cabeceras de respuesta y del contenido</h3>
-<p>El servidor informa del resultado y de cómo debe tratarse lo
-devuelto. Algunas cabeceras de contenido también se usan en peticiones
-que llevan cuerpo; no son exclusivas de las respuestas.</p>
-<div aria-label="Tabla didáctica 6" class="table-scroll" role="region" tabindex="0"><table>
+</div><p>Host is required in HTTP/1.1. Origin does not appear in all requests and should not be confused with IP address. A web source is defined by schema, host and port.</p>
+<h3 id="sec4_2">4.2. Response and content heads</h3>
+<p>The server reports the result and how it should be treated. Some content headers are also used in body-bearing requests; they are not exclusive to responses.</p>
+<div aria-label="Table 6" class="table-scroll" role="region" tabindex="0"><table>
 <colgroup>
 <col style="width: 25%"/>
 <col style="width: 37%"/>
@@ -646,13 +511,13 @@ que llevan cuerpo; no son exclusivas de las respuestas.</p>
 <thead>
 <tr class="header">
 <th>
-<p><strong>Cabecera</strong></p>
+<p><strong>Header</strong></p>
 </th>
 <th>
-<p><strong>Función</strong></p>
+<p><strong>Function</strong></p>
 </th>
 <th>
-<p><strong>Ejemplo</strong></p>
+<p><strong>Example:</strong></p>
 </th>
 </tr>
 </thead>
@@ -662,7 +527,7 @@ que llevan cuerpo; no son exclusivas de las respuestas.</p>
 <p>Content-Type</p>
 </td>
 <td>
-<p>Tipo del cuerpo enviado</p>
+<p>Type of body sent</p>
 </td>
 <td>
 <p>application/json</p>
@@ -673,7 +538,7 @@ que llevan cuerpo; no son exclusivas de las respuestas.</p>
 <p>Content-Length</p>
 </td>
 <td>
-<p>Longitud del cuerpo en bytes</p>
+<p>Body length in bytes</p>
 </td>
 <td>
 <p>250</p>
@@ -684,10 +549,10 @@ que llevan cuerpo; no son exclusivas de las respuestas.</p>
 <p>Location</p>
 </td>
 <td>
-<p>Destino de redirección o recurso creado</p>
+<p>Redirect or resource destination created</p>
 </td>
 <td>
-<p>/api/alumnos/43</p>
+<p>/api/pupils/43</p>
 </td>
 </tr>
 <tr class="even">
@@ -695,7 +560,7 @@ que llevan cuerpo; no son exclusivas de las respuestas.</p>
 <p>Cache-Control</p>
 </td>
 <td>
-<p>Reglas de caché</p>
+<p>Cache rules</p>
 </td>
 <td>
 <p>max-age=3600</p>
@@ -706,7 +571,7 @@ que llevan cuerpo; no son exclusivas de las respuestas.</p>
 <p>ETag</p>
 </td>
 <td>
-<p>Validador de una representación</p>
+<p>Validator of a representation</p>
 </td>
 <td>
 <p>"v15"</p>
@@ -717,10 +582,10 @@ que llevan cuerpo; no son exclusivas de las respuestas.</p>
 <p>Set-Cookie</p>
 </td>
 <td>
-<p>Solicita guardar una cookie</p>
+<p>Request to save a cookie</p>
 </td>
 <td>
-<p>sesion=abc123; Secure</p>
+<p>session=abc123; Secure</p>
 </td>
 </tr>
 <tr class="odd">
@@ -728,7 +593,7 @@ que llevan cuerpo; no son exclusivas de las respuestas.</p>
 <p>Content-Encoding</p>
 </td>
 <td>
-<p>Codificación o compresión aplicada</p>
+<p>Encoding or compression applied</p>
 </td>
 <td>
 <p>gzip</p>
@@ -739,7 +604,7 @@ que llevan cuerpo; no son exclusivas de las respuestas.</p>
 <p>WWW-Authenticate</p>
 </td>
 <td>
-<p>Reto de autenticación</p>
+<p>Authentication challenge</p>
 </td>
 <td>
 <p>Bearer</p>
@@ -750,7 +615,7 @@ que llevan cuerpo; no son exclusivas de las respuestas.</p>
 <p>Vary</p>
 </td>
 <td>
-<p>Cabeceras que diferencian variantes en caché</p>
+<p>Headers that differentiate variants in cache</p>
 </td>
 <td>
 <p>Accept-Encoding</p>
@@ -760,70 +625,63 @@ que llevan cuerpo; no son exclusivas de las respuestas.</p>
 </table>
 </div><div class="resource-card expansion-card">
 <div class="resource-card-header">
-<span class="resource-title"><i class="fa-solid fa-book-open"></i> Qué es HTTP y cómo funciona</span>
-<span class="resource-badge badge-reading">Lectura</span>
+<span class="resource-title"><i class="fa-solid fa-book-open"></i> What HTTP is and how it works</span>
+<span class="resource-badge badge-reading">Reading</span>
 </div>
-<div class="resource-description">Artículo introductorio sobre el ciclo de petición y respuesta, las cabeceras HTTP más habituales y su consulta mediante curl y las herramientas del navegador.</div>
-<a class="resource-link-btn" href="https://www.makingscience.es/blog/que-es-http-y-como-funciona/" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Leer el artículo</a>
+<div class="resource-description">Introductory article on the request and response cycle, the most common HTTP headers and their query using curl and browser tools.</div>
+<a class="resource-link-btn" href="https://www.makingscience.es/blog/que-es-http-y-como-funciona/" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Read the article</a>
 </div>
 <div class="activity-card activity-callout" id="actividad-cabeceras-curl-devtools">
-<p><strong>Actividad paso a paso · Comprobar cabeceras con curl y DevTools</strong></p>
-<p>Analiza en las dos herramientas la misma página:
+<p><strong>Step by step activity · Check headers with curl and DevTools</strong></p>
+<p>Analyze the same page in the two tools:
 <code>https://igarciafp.github.io/ciclos/dwec/u01_es.html</code>.</p>
 <ol>
-<li><p>Lee el artículo anterior e identifica qué son una petición, una respuesta y una cabecera HTTP.</p></li>
-<li><p>Abre una terminal y solicita únicamente las cabeceras de respuesta:</p>
+<li><p>Read the previous article and identify what a request, a response, and an HTTP header are.</p></li>
+<li><p>Opens a terminal and requests only the reply headers:</p>
 <pre><code>curl -I https://igarciafp.github.io/ciclos/dwec/u01_es.html</code></pre>
-<p>En Windows, si <code>curl</code> ejecuta otro comando de PowerShell, utiliza <code>curl.exe</code>. Anota la versión HTTP, el código de estado y las cabeceras <code>content-type</code>, <code>content-length</code>, <code>cache-control</code> y <code>server</code> cuando aparezcan. La opción <code>-I</code> realiza normalmente una petición <code>HEAD</code>: pide las cabeceras sin descargar el cuerpo.</p></li>
-<li><p>Ejecuta ahora una petición <code>GET</code>, descarta el cuerpo y conserva sus cabeceras:</p>
+<p>On Windows, yes <code>curl</code> runs another PowerShell command, uses <code>curl.exe</code>. Write down HTTP version, status code and headers <code>content-type</code>, <code>content-length</code>, <code>cache-control</code> and <code>server</code> when they appear. <code>-I</code> normally makes a request <code>HEAD</code>: asks for headers without downloading the body.</p></li>
+<li><p>Now execute a request <code>GET</code>, discards the body and retains its headboards:</p>
 <pre><code>curl -sS -D - -o /dev/null https://igarciafp.github.io/ciclos/dwec/u01_es.html</code></pre></li>
-<li><p>Para observar tanto lo que envía el cliente como lo que responde el servidor, ejecuta:</p>
+<li><p>To observe both what the client sends and what the server responds, run:</p>
 <pre><code>curl -v -o /dev/null https://igarciafp.github.io/ciclos/dwec/u01_es.html</code></pre>
-<p>En la salida detallada, las líneas que comienzan por <code>&gt;</code> pertenecen a la petición y las que comienzan por <code>&lt;</code> a la respuesta. Localiza el método, <code>Host</code>, <code>User-Agent</code>, el código de estado y dos cabeceras de respuesta.</p></li>
-<li><p>Abre la misma URL en el navegador, inicia las DevTools y entra en <strong>Network/Red</strong>. Activa <strong>Disable cache/Desactivar caché</strong>, recarga y selecciona el documento <code>u01_es.html</code>.</p></li>
-<li><p>En <strong>Headers/Cabeceras</strong>, observa <strong>General</strong>, <strong>Request Headers</strong> y <strong>Response Headers</strong>. Comprueba el método <code>GET</code>, el código de estado, <code>User-Agent</code>, <code>Accept</code>, <code>Accept-Encoding</code>, <code>Content-Type</code> y las cabeceras de caché disponibles.</p></li>
-<li><p>Compara los resultados. No tienen que coincidir todas las cabeceras: curl y el navegador son clientes distintos y pueden enviar valores diferentes. Además, una CDN, la caché o una negociación de protocolo pueden modificar la respuesta observada.</p></li>
+<p>In the detailed output, the lines that begin with <code>&gt;</code> the request and those that begin with <code>&lt;</code> Locates the method, <code>Host</code>, <code>User-Agent</code>, status code and two response headers.</p></li>
+<li><p>Opens the same URL in the browser, starts DevTools and enters <strong>Network/Network</strong>. Active <strong>Disable cache/Disable cache</strong>, reload and select the document <code>u01_es.html</code>.</p></li>
+<li><p>In <strong>Headers/Headers</strong>, observe <strong>General</strong>, <strong>Request Headers</strong> and <strong>Response Headers</strong>Check the method <code>GET</code>, the status code, <code>User-Agent</code>, <code>Accept</code>, <code>Accept-Encoding</code>, <code>Content-Type</code> and available cache headers.</p></li>
+<li><p>Compare the results. All headers do not have to match: curl and browser are different customers and can send different values. In addition, a CDN, cache or protocol negotiation can modify the observed response.</p></li>
 </ol>
-<div aria-label="Comparación de cabeceras HTTP con curl y DevTools" class="table-scroll" role="region" tabindex="0"><table>
+<div aria-label="Comparison of HTTP headers with curl and DevTools" class="table-scroll" role="region" tabindex="0"><table>
 <thead>
 <tr class="header">
-<th><p><strong>Elemento</strong></p></th>
+<th><p><strong>Element</strong></p></th>
 <th><p><strong>curl</strong></p></th>
 <th><p><strong>DevTools</strong></p></th>
 </tr>
 </thead>
 <tbody>
-<tr><td><p>Método</p></td><td></td><td></td></tr>
-<tr><td><p>Versión HTTP y estado</p></td><td></td><td></td></tr>
+<tr><td><p>Method</p></td><td></td><td></td></tr>
+<tr><td><p>HTTP version and status</p></td><td></td><td></td></tr>
 <tr><td><p>Host</p></td><td></td><td></td></tr>
 <tr><td><p>User-Agent</p></td><td></td><td></td></tr>
 <tr><td><p>Accept / Content-Type</p></td><td></td><td></td></tr>
 <tr><td><p>Content-Length</p></td><td></td><td></td></tr>
-<tr><td><p>Cache-Control u otras cabeceras de caché</p></td><td></td><td></td></tr>
+<tr><td><p>Cache-Control or other cache headers</p></td><td></td><td></td></tr>
 </tbody>
 </table></div>
-<p><strong>Entrega:</strong> la tabla completada, una captura de la
-terminal, una captura de DevTools y una explicación de tres diferencias
-observadas. Indica también por qué <code>curl -I</code> y la carga normal
-del navegador pueden utilizar métodos distintos.</p>
+<p><strong>Delivery:</strong> the completed table, a terminal capture, a DevTools capture and an explanation of three observed differences. It also indicates why <code>curl -I</code> and the normal browser load can use different methods.</p>
 </div>
 <div class="resource-card expansion-card">
 <div class="resource-card-header">
-<span class="resource-title"><i class="fa-brands fa-youtube"></i> XSS y seguridad de las cookies</span>
-<span class="resource-badge badge-video">Vídeo</span>
+<span class="resource-title"><i class="fa-brands fa-youtube"></i> XSS and cookie security</span>
+<span class="resource-badge badge-video">Video</span>
 </div>
-<div class="resource-description">Ejemplo de cómo una vulnerabilidad XSS puede permitir el acceso indebido a cookies y por qué deben combinarse la programación segura y atributos de protección como <code>HttpOnly</code>.</div>
-<a class="resource-link-btn" href="https://youtu.be/m-0p2BFAZvI" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver el vídeo sobre XSS y cookies</a>
+<div class="resource-description">Example of how an XSS vulnerability can allow improper access to cookies and why secure programming and protection attributes should be combined such as <code>HttpOnly</code>.</div>
+<a class="resource-link-btn" href="https://youtu.be/m-0p2BFAZvI" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Watch the video about XSS and cookies</a>
 </div>
-<h3 id="sec4_3">4.3. Códigos de respuesta HTTP</h3>
-<p>Cada respuesta tiene un código de estado de tres cifras que resume el
-resultado. En HTTP/1.1 aparece en la línea inicial, antes de las
-cabeceras:</p>
+<h3 id="sec4_3">4.3. HTTP response codes</h3>
+<p>Each response has a three-digit status code that summarizes the result. In HTTP/1.1 it appears in the initial line, before the headers:</p>
 <pre><code>HTTP/1.1 200 OK
-Content-Type: application/json</code></pre><p>HTTP/1.1 es la versión; 200, el código; OK, una frase descriptiva. El
-número determina el significado. En HTTP/2 y HTTP/3 se transmite
-mediante :status, sin esa línea textual.</p>
-<div aria-label="Tabla didáctica 7" class="table-scroll" role="region" tabindex="0"><table>
+Content-Type: application/json</code></pre><p>HTTP/1.1 is the version; 200, the code; OK, a descriptive phrase. The number determines the meaning. In HTTP/2 and HTTP/3 it is transmitted by :status, without that text line.</p>
+<div aria-label="Table 7" class="table-scroll" role="region" tabindex="0"><table>
 <colgroup>
 <col style="width: 11%"/>
 <col style="width: 42%"/>
@@ -832,13 +690,13 @@ mediante :status, sin esa línea textual.</p>
 <thead>
 <tr class="header">
 <th>
-<p><strong>Familia</strong></p>
+<p><strong>Family</strong></p>
 </th>
 <th>
-<p><strong>Significado</strong></p>
+<p><strong>Meaning</strong></p>
 </th>
 <th>
-<p><strong>Ejemplos</strong></p>
+<p><strong>Examples</strong></p>
 </th>
 </tr>
 </thead>
@@ -848,7 +706,7 @@ mediante :status, sin esa línea textual.</p>
 <p>1xx</p>
 </td>
 <td>
-<p>Información provisional</p>
+<p>Provisional information</p>
 </td>
 <td>
 <p>100 Continue</p>
@@ -859,7 +717,7 @@ mediante :status, sin esa línea textual.</p>
 <p>2xx</p>
 </td>
 <td>
-<p>Operación correcta</p>
+<p>Correct operation</p>
 </td>
 <td>
 <p>200 OK; 201 Created</p>
@@ -869,7 +727,7 @@ mediante :status, sin esa línea textual.</p>
 <td>
 <p>3xx</p>
 </td>
-<td>Redirección o acción adicional; incluye revalidación</td>
+<td>Redirection or additional action; includes revalidation</td>
 <td>
 <p>301 Moved Permanently</p>
 </td>
@@ -879,7 +737,7 @@ mediante :status, sin esa línea textual.</p>
 <p>4xx</p>
 </td>
 <td>
-<p>Error relacionado con la petición</p>
+<p>Request-related error</p>
 </td>
 <td>
 <p>400 Bad Request; 404 Not Found</p>
@@ -890,7 +748,7 @@ mediante :status, sin esa línea textual.</p>
 <p>5xx</p>
 </td>
 <td>
-<p>Error del servidor</p>
+<p>Server Error</p>
 </td>
 <td>
 <p>500 Internal Server Error</p>
@@ -898,37 +756,27 @@ mediante :status, sin esa línea textual.</p>
 </tr>
 </tbody>
 </table>
-</div><p>Como primera aproximación, 200 OK indica una petición atendida
-correctamente y 404 Not Found que no se encontró el recurso o no se
-revela su existencia. El catálogo completo se desarrolla más
-adelante.</p>
-<p>Si un cliente no reconoce un código concreto, lo interpreta según su
-familia. Las respuestas 1xx preceden normalmente a una respuesta final.
-Un error DNS, TLS o de conexión puede ocurrir antes de recibir cualquier
-código HTTP.</p>
+</div><p>As a first approximation, 200 OK indicates a correctly answered request and 404 Not Found that the resource was not found or its existence is not revealed. The complete catalog is developed later.</p>
+<p>If a client does not recognize a particular code, it interprets it according to his family. 1xx responses usually precede a final response. A DNS, TLS or connection error can occur before receiving any HTTP code.</p>
 <div class="activity-card activity-callout" id="actividad-devtools-https">
-<p><strong>Actividad paso a paso · Analizar la transferencia de esta página y HTTPS</strong></p>
+<p><strong>Step by step activity · Analyze the transfer of this page and HTTPS</strong></p>
 <ol>
-<li><p>Abre esta misma unidad en <code>https://igarciafp.github.io/ciclos/dwec/u01_es.html</code> y abre las DevTools con <kbd>F12</kbd> o <kbd>Ctrl</kbd> + <kbd>Mayús</kbd> + <kbd>I</kbd>.</p></li>
-<li><p>Entra en <strong>Network/Red</strong>, activa <strong>Disable cache/Desactivar caché</strong> y recarga la página. Mantén abiertas las DevTools durante la prueba.</p></li>
-<li><p>Filtra por <strong>Doc</strong> y selecciona <code>u01_es.html</code>. En <strong>Headers/Cabeceras → General</strong>, localiza la URL solicitada, el método <code>GET</code> y el código de estado. Anota el código realmente obtenido: normalmente será <code>200</code>, aunque otra carga podría producir <code>304</code>.</p></li>
-<li><p>Revisa <strong>Response Headers/Cabeceras de respuesta</strong>. Identifica, si aparecen, <code>content-type</code>, <code>content-length</code>, <code>content-encoding</code> y <code>cache-control</code>. Explica qué aporta cada una al intercambio.</p></li>
-<li><p>Vuelve a la lista de solicitudes. Compara las columnas <strong>Size/Tamaño</strong> y <strong>Time/Tiempo</strong> del documento, la hoja CSS y dos imágenes. En la barra inferior anota el número total de solicitudes, los bytes transferidos y el tamaño total de los recursos. La cantidad transferida puede ser menor por compresión o caché.</p></li>
-<li><p>Comprueba HTTPS: la URL debe comenzar por <code>https://</code> y el navegador no debe mostrar una advertencia de seguridad. Abre <strong>Security/Seguridad</strong> desde el menú de más herramientas de DevTools y examina la conexión, el certificado y la versión de TLS que muestre el navegador.</p></li>
-<li><p>Relaciona las capas: HTTPS protege en tránsito la petición y la respuesta mediante TLS; no oculta el dominio de destino ni convierte en fiable el contenido de la página. El código HTTP se recibe después de establecer correctamente la conexión segura.</p></li>
+<li><p>Open this same unit in <code>https://igarciafp.github.io/ciclos/dwec/u01_es.html</code> and open DevTools with <kbd>F12</kbd> o <kbd>Ctrl</kbd> + <kbd>Mayús</kbd> + <kbd>I</kbd>.</p></li>
+<li><p>Enter <strong>Network/Network</strong>, active <strong>Disable cache/Disable cache</strong> and reload the page. Keep DevTools open during testing.</p></li>
+<li><p>Filter by <strong>Doc.</strong> and select <code>u01_es.html</code>. In <strong>Headers/Headers → General</strong>, locates the requested URL, the method <code>GET</code> and the status code. Write down the code actually obtained: it will usually be <code>200</code>, although another burden could produce <code>304</code>.</p></li>
+<li><p>Check <strong>Response Headers/Response Headers</strong>. Identify, if they appear, <code>content-type</code>, <code>content-length</code>, <code>content-encoding</code> and <code>cache-control</code>. Explains what each contributes to the exchange.</p></li>
+<li><p>Go back to the request list. Compare the columns <strong>Size/size</strong> and <strong>Time/Time</strong> the document, the CSS sheet and two images. In the bottom bar note the total number of requests, the bytes transferred and the total size of resources. The amount transferred may be less by compression or cache.</p></li>
+<li><p>Check HTTPS: URL should start with <code>https://</code> and the browser should not display a security warning. <strong>Security/Security</strong> from DevTools' more tools menu and examine the connection, certificate and version of TLS displayed by the browser.</p></li>
+<li><p>Related Layers: HTTPS in transit protects the request and response using TLS; it does not hide the target domain or make the content of the page reliable. HTTP code is received after the secure connection is correctly established.</p></li>
 </ol>
-<p><strong>Entrega:</strong> una captura de Network con el documento seleccionado y una tabla con: recurso, método, estado, tipo, tamaño, transferido y tiempo. Añade la versión de TLS observada y una frase que explique la diferencia entre HTTP y HTTPS.</p>
+<p><strong>Delivery:</strong> a Network capture with the selected document and a table with: resource, method, status, type, size, transfer and time. Adds the observed TLS version and a phrase explaining the difference between HTTP and HTTPS.</p>
 </div>
-<h3 id="sec4_4">4.4. Gestión de la caché</h3>
-<p>La <strong>caché web</strong> guarda respuestas HTTP para
-reutilizarlas en peticiones posteriores. Así reduce descargas, latencia
-y trabajo del servidor.</p>
-<p>Cuando estamos en desarrollo, sin embargo, la caché <strong>puede ser
-un gran problema</strong>, ya que podemos estar viendo datos sin
-actualizar si utilizamos caché.</p>
-<p><strong>Dónde se almacena la caché</strong></p>
-<p>Una misma petición puede encontrarse con varias capas:</p>
-<div aria-label="Tabla didáctica 8" class="table-scroll" role="region" tabindex="0"><table>
+<h3 id="sec4_4">4.4. Cache management</h3>
+<p>The <strong>Web cache</strong> saves HTTP responses for reuse in subsequent requests. This reduces downloads, latency and server work.</p>
+<p>When we are developing, however, the cache <strong>It can be a big problem.</strong>since we may be viewing data without updating if we use cache.</p>
+<p><strong>Where the cache is stored</strong></p>
+<p>The same request can be found with several layers:</p>
+<div aria-label="Table 8" class="table-scroll" role="region" tabindex="0"><table>
 <colgroup>
 <col style="width: 25%"/>
 <col style="width: 74%"/>
@@ -936,46 +784,44 @@ actualizar si utilizamos caché.</p>
 <thead>
 <tr class="header">
 <th>
-<p>Capa</p>
+<p>Layer</p>
 </th>
 <th>
-<p>Qué almacena y para quién</p>
+<p>What it stores and for whom</p>
 </th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>
-<p>Navegador</p>
+<p>Browser</p>
 </td>
 <td>
-<p>Respuestas en memoria o disco para ese usuario. Es una caché
-privada.</p>
+<p>Answers in memory or disk for that user. It is a private cache.</p>
 </td>
 </tr>
 <tr class="even">
 <td>
-<p>Proxy compartido</p>
+<p>Shared Proxy</p>
 </td>
 <td>
-<p>Respuestas reutilizables por varios usuarios.</p>
+<p>Reusable responses by several users.</p>
 </td>
 </tr>
 <tr class="odd">
 <td>
-<p>CDN o proxy inverso</p>
+<p>CDN or reverse proxy</p>
 </td>
 <td>
-<p>Respuestas cerca del usuario o delante del servidor de origen.</p>
+<p>Answers near the user or in front of the source server.</p>
 </td>
 </tr>
 <tr class="even">
 <td>
-<p>Aplicación</p>
+<p>Implementation</p>
 </td>
 <td>
-<p>Resultados de consultas, fragmentos o páginas; tiene reglas
-propias.</p>
+<p>Results of queries, excerpts or pages; has own rules.</p>
 </td>
 </tr>
 <tr class="odd">
@@ -983,61 +829,42 @@ propias.</p>
 <p>Service worker</p>
 </td>
 <td>
-<p>Respuestas gestionadas mediante JavaScript y la API Cache.</p>
+<p>Answers managed using JavaScript and the Cache API.</p>
 </td>
 </tr>
 </tbody>
 </table>
-</div><p><strong>Cada recurso tiene su propia política</strong>: el HTML, su
-CSS, los scripts y las imágenes son respuestas independientes. Poner
-no-store al HTML no transmite esa política a sus imágenes.</p>
-<p>HTTPS permite caché en el navegador y en una CDN que termina la
-conexión TLS; un intermediario que solamente transporta tráfico cifrado
-no puede inspeccionarlo para cachearlo.</p>
-<p><strong>Cómo decide si puede reutilizar una respuesta</strong></p>
-<p>La caché busca una respuesta correspondiente al método y la URL,
-considerando también las variantes indicadas por Vary.</p>
-<p>Después distingue:</p>
+</div><p><strong>Each resource has its own policy</strong>: HTML, its CSS, scripts and images are independent responses. Putting no-store to HTML does not transmit that policy to your images.</p>
+<p>HTTPS allows caches in the browser and in a CDN that terminates the TLS connection; an intermediary that only transports encrypted traffic cannot inspect it to search it.</p>
+<p><strong>How you decide if you can reuse an answer</strong></p>
+<p>The cache looks for a response corresponding to the method and URL, also considering the variants indicated by Vary.</p>
+<p>Then he distinguishes:</p>
 <ul>
 <li>
-<p><strong>No existe copia:</strong> solicita el recurso.</p>
+<p><strong>No copy available:</strong> request the appeal.</p>
 </li>
 <li>
-<p><strong>Existe y está fresca:</strong> normalmente puede reutilizarla
-sin consultar.</p>
+<p><strong>It exists and is fresh:</strong> you can usually reuse it without consulting.</p>
 </li>
 <li>
-<p><strong>Ha caducado:</strong> puede revalidarla; que esté caducada no
-significa que haya cambiado ni que se haya borrado.</p>
+<p><strong>It's expired:</strong> it can be revalidated; its expiry does not mean that it has changed or that it has been deleted.</p>
 </li>
 <li>
-<p><strong>La política exige validación:</strong> consulta antes de
-reutilizarla, aunque acabe de almacenarla.</p>
+<p><strong>The policy requires validation:</strong> consult before reuse, even if you have just stored it.</p>
 </li>
 </ul>
-<p>La frescura depende de la edad de la respuesta y del tiempo
-permitido. Age refleja su edad estimada: pasar por otra caché no
-reinicia automáticamente el plazo. Además, una caché puede desalojar una
-copia antes por falta de espacio. <strong>El tiempo de frescura no
-garantiza tiempo de almacenamiento.</strong></p>
-<p>El control principal se realiza mediante cabeceras HTTP.</p>
-<p>La caché conserva respuestas para reutilizarlas. Hay cachés privadas,
-como la del navegador, y compartidas, como ciertos proxies y CDN. Las
-reglas deben <strong>evitar que datos personales se reutilicen</strong>
-para otros usuarios.</p>
+<p>The freshness depends on the age of the response and the time allowed. Age reflects your estimated age: going through another cache does not automatically restart the deadline. In addition, a cache can evict a copy earlier due to lack of space. <strong>The freshness time does not guarantee storage time.</strong></p>
+<p>The main control is done using HTTP headers.</p>
+<p>The cache retains answers to reuse them. There are private caches, such as browser caches, and shared, such as certain proxies and CDNs. Rules should <strong>preventing personal data from being reused</strong>
+for other users.</p>
 <pre><code>HTTP/1.1 200 OK
 Cache-Control: max-age=3600
 ETag: "imagen-v3"
-Content-Type: image/png</code></pre><p>La respuesta puede considerarse fresca durante 3600 segundos, según
-su edad y las reglas de caché. Cuando necesita revalidarse, el cliente
-puede enviar:</p>
+Content-Type: image/png</code></pre><p>The answer can be considered fresh for 3600 seconds, depending on your age and cache rules. When you need to be revalidated, the customer can send:</p>
 <pre><code>GET /logo.png HTTP/1.1
 Host: ejemplo.com
-If-None-Match: "imagen-v3"</code></pre><p>Si la representación no cambió, el servidor puede responder 304 Not
-Modified, sin cuerpo. El cliente reutiliza el contenido almacenado. Si
-cambió, normalmente recibe 200 con el nuevo contenido y un nuevo
-validador.</p>
-<div aria-label="Tabla didáctica 9" class="table-scroll" role="region" tabindex="0"><table>
+If-None-Match: "imagen-v3"</code></pre><p>If the representation did not change, the server can respond 304 Not Modified, bodyless. The client reuses the stored content. If changed, it usually receives 200 with the new content and a new validator.</p>
+<div aria-label="Table 9" class="table-scroll" role="region" tabindex="0"><table>
 <colgroup>
 <col style="width: 31%"/>
 <col style="width: 68%"/>
@@ -1045,10 +872,10 @@ validador.</p>
 <thead>
 <tr class="header">
 <th>
-<p><strong>Directiva de Cache-Control</strong></p>
+<p><strong>Cache-Control Directive</strong></p>
 </th>
 <th>
-<p><strong>Significado</strong></p>
+<p><strong>Meaning</strong></p>
 </th>
 </tr>
 </thead>
@@ -1058,7 +885,7 @@ validador.</p>
 <p>max-age=3600</p>
 </td>
 <td>
-<p>Define un tiempo de frescura de una hora</p>
+<p>Define a time of freshness of one hour</p>
 </td>
 </tr>
 <tr class="even">
@@ -1066,7 +893,7 @@ validador.</p>
 <p>no-cache</p>
 </td>
 <td>
-<p>Permite almacenar, pero exige revalidar antes de reutilizar</p>
+<p>Allows storage, but requires revalidation before reuse</p>
 </td>
 </tr>
 <tr class="odd">
@@ -1074,7 +901,7 @@ validador.</p>
 <p>no-store</p>
 </td>
 <td>
-<p>Indica que no debe almacenarse la respuesta</p>
+<p>Indicates that the answer should not be stored</p>
 </td>
 </tr>
 <tr class="even">
@@ -1082,7 +909,7 @@ validador.</p>
 <p>private</p>
 </td>
 <td>
-<p>Impide almacenarla en cachés compartidas</p>
+<p>Prevents storing it in shared caches</p>
 </td>
 </tr>
 <tr class="odd">
@@ -1090,52 +917,36 @@ validador.</p>
 <p>public</p>
 </td>
 <td>
-<p>Autoriza almacenamiento compartido bajo las reglas aplicables</p>
+<p>Authorizes shared storage under applicable rules</p>
 </td>
 </tr>
 </tbody>
 </table>
-</div><div class="image-container"><img alt="Funcionamiento y revalidación de la caché web" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-17.webp" width="1352"/></div><p><strong>Importante</strong>: no-cache no significa «no guardar». Para
-prohibir el almacenamiento se utiliza no-store. ETag es un validador
-opaco: no tiene por qué ser un número de versión ni un hash.</p>
-<p>Para recursos versionados, <strong>cambiar la URL al actualizar el
-contenido</strong> facilita usar caché prolongada. En datos
-personalizados conviene decidir explícitamente si pueden almacenarse y
-dónde.</p>
+</div><div class="image-container"><img alt="Operation and revalidation of the web cache" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-17.webp" width="1352"/></div><p><strong>Important</strong>: no-cache does not mean "do not save". To prohibit storage, non-store is used. ETag is an opaque validator: it does not have to be a version number or a hash.</p>
+<p>For versioned resources, <strong>change the URL when updating content</strong> makes it easy to use extended cache. In custom data it is important to explicitly decide whether and where they can be stored.</p>
 <div class="activity-card activity-callout">
-<p><strong>Actividad</strong></p>
-<p>Investiga cómo vaciar la caché en Devtools. Recarga la página del
-centro con caché habilitada y luego con Disable cache activo,
-manteniendo DevTools abierto. Registra estado y transferencia. Pista:
-puede haber 200, 304 o reutilización local; explica el caso real sin
-exigir 304.</p>
+<p><strong>Activity</strong></p>
+<p>Find out how to empty the cache in Devtools. Reload the center page with cache enabled and then with Disable cache active, keeping DevTools open. Register status and transfer. Track: there may be 200, 304 or local reuse; explain the real case without requiring 304.</p>
 </div>
-<h3 id="sec4_5">4.5. CORS: acceso desde otros orígenes</h3>
-<p>CORS es el mecanismo por el que un servidor indica qué otras webs
-pueden leer sus respuestas desde el navegador. Significa Cross-Origin
-Resource Sharing: intercambio de recursos entre orígenes.</p>
-<p>La configuración la publica el servidor mediante cabeceras HTTP, y el
-navegador la hace cumplir. Por eso una petición puede funcionar con curl
-o desde tu backend y fallar cuando la haces con JavaScript en una
-página. Referencia: MDN.</p>
-<p>La política de mismo origen evita, por ejemplo, que una página
-maliciosa lea libremente datos de otra web donde tienes sesión iniciada.
-CORS permite autorizar excepciones. MDN: política de mismo origen.</p>
-<div class="image-container"><img alt="Funcionamiento de CORS entre distintos orígenes" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-18.webp" width="1352"/></div>
+<h3 id="sec4_5">4.5. CORS: access from other sources</h3>
+<p>CORS is the mechanism by which a server indicates which other websites can read their responses from the browser. It means Cross-Orgin Resource Sharing: exchange of resources between sources.</p>
+<p>The configuration is published by the server via HTTP headers, and is enforced by the browser. Therefore, a request can work with curl or from your backend and fail when you do it with JavaScript on a page. Reference: MDN.</p>
+<p>The policy of the same origin prevents, for example, that a malicious page freely reads data from another website where you are logged in. CORS allows to authorize exceptions. MDN: policy of the same origin.</p>
+<div class="image-container"><img alt="Operation of CORS between different origins" decoding="async" height="901" loading="lazy" src="assets/u01/ilustracion-18.webp" width="1352"/></div>
 <div class="resource-card expansion-card">
 <div class="resource-card-header">
-<span class="resource-title"><i class="fa-brands fa-youtube"></i> Cómo funciona CORS</span>
-<span class="resource-badge badge-video">Vídeo</span>
+<span class="resource-title"><i class="fa-brands fa-youtube"></i> How CORS works</span>
+<span class="resource-badge badge-video">Video</span>
 </div>
-<div class="resource-description">Explicación de la política de mismo origen, las peticiones simples y las peticiones con preflight.</div>
-<a class="resource-link-btn" href="https://youtu.be/E6jgEtj-UjI" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver el vídeo sobre CORS</a>
+<div class="resource-description">Explanation of policy of the same origin, simple requests and requests with preflight.</div>
+<a class="resource-link-btn" href="https://youtu.be/E6jgEtj-UjI" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Watch the video about CORS</a>
 </div>
-<h4 class="content-subtitle">Ejemplo sencillo: observar y solucionar un error CORS</h4>
-<p>Necesitas tener instalado Node.js. Crea una carpeta
-<code>cors-simple</code> con estos dos archivos.</p>
-<p><strong>1. Archivo <code>datos.json</code></strong></p>
+<h4 class="content-subtitle">Simple example: observe and fix a CORS error</h4>
+<p>You need to have Node.js installed. Create a folder
+<code>cors-simple</code> with these two files.</p>
+<p><strong>1. File <code>datos.json</code></strong></p>
 <pre><code>{"mensaje": "¡La petición funciona!"}</code></pre>
-<p><strong>2. Archivo <code>index.html</code></strong></p>
+<p><strong>2. File <code>index.html</code></strong></p>
 <pre><code>&lt;button id="boton"&gt;Pedir datos&lt;/button&gt;
 &lt;pre id="salida"&gt;&lt;/pre&gt;
 
@@ -1147,55 +958,42 @@ boton.onclick = () =&gt; {
     .catch(error =&gt; salida.textContent = "Error CORS");
 };
 &lt;/script&gt;</code></pre>
-<p><strong>3. Provoca el error</strong></p>
-<p>Abre dos terminales dentro de <code>cors-simple</code> y ejecuta:</p>
+<p><strong>3. Causes error</strong></p>
+<p>Opens two terminals within <code>cors-simple</code> and executes:</p>
 <pre><code># Terminal 1: sirve la página
 npx http-server -p 8000
 
 # Terminal 2: sirve el JSON sin permiso CORS
 npx http-server -p 8001</code></pre>
-<p>Visita <code>http://localhost:8000</code>, abre la
-<strong>Console</strong> de las DevTools y pulsa <strong>Pedir
-datos</strong>. La página pertenece al origen
-<code>http://localhost:8000</code> y el JSON a
-<code>http://localhost:8001</code>. Como el segundo servidor no da
-permiso al primero, aparece el error CORS.</p>
-<p><strong>4. Soluciónalo</strong></p>
-<p>Detén la segunda terminal con <kbd>Ctrl</kbd> + <kbd>C</kbd> y
-reinicia solamente el servidor del JSON con la opción
+<p>Visit <code>http://localhost:8000</code>, open the
+<strong>Console</strong> of the DevTools and press <strong>Requesting data</strong>. The page belongs to the origin
+<code>http://localhost:8000</code> and the JSON to
+<code>http://localhost:8001</code>. Since the second server does not give permission to the first, the CORS error appears.</p>
+<p><strong>4. Solution</strong></p>
+<p>Stop the second terminal with <kbd>Ctrl</kbd> + <kbd>C</kbd> and restarts only the JSON server with the option
 <code>--cors</code>:</p>
 <pre><code>npx http-server -p 8001 --cors</code></pre>
-<p>Recarga la página y vuelve a pulsar el botón. Ahora aparecerá
-«¡La petición funciona!». En <strong>Network</strong>, selecciona
-<code>datos.json</code> y comprueba que la respuesta contiene
+<p>Reload the page and press the button again. Now it will appear "The request works!" <strong>Network</strong>, select
+<code>datos.json</code> and check that the answer contains
 <code>Access-Control-Allow-Origin: *</code>.</p>
 <div class="activity-card activity-callout" id="actividad-cors-repeticion">
-<p><strong>Actividad · Repite la prueba</strong></p>
+<p><strong>Activity · Repeat the test</strong></p>
 <ol>
-<li><p>Copia el ejemplo en otra carpeta y cambia el mensaje de <code>datos.json</code> por tu nombre.</p></li>
-<li><p>Cambia los puertos: usa <code>9000</code> para la página y <code>9001</code> para el JSON. Actualiza también la URL utilizada por <code>fetch()</code>.</p></li>
-<li><p>Inicia ambos servidores sin <code>--cors</code> y realiza una captura del error de Console.</p></li>
-<li><p>Reinicia el servidor del puerto 9001 con <code>--cors</code> y comprueba que aparece tu nombre.</p></li>
-<li><p>Entrega los dos archivos, las capturas del fallo y de la solución, y una frase que explique por qué los dos puertos representan orígenes distintos.</p></li>
+<li><p>Copy the example to another folder and change the message from <code>datos.json</code> by your name.</p></li>
+<li><p>Change ports: use <code>9000</code> for the page and <code>9001</code> for the JSON. Also updates the URL used by <code>fetch()</code>.</p></li>
+<li><p>Start both servers without <code>--cors</code> and captures Console's error.</p></li>
+<li><p>Restart the server of port 9001 with <code>--cors</code> and check that your name appears.</p></li>
+<li><p>It delivers the two files, the bug and solution captures, and a phrase explaining why the two ports represent different origins.</p></li>
 </ol>
 </div>
 <h3 id="sec4_6">4.6. User-Agent</h3>
-<p>Un agente de usuario es el <strong>programa que inicia una petición:
-navegador, aplicación, herramienta de consola, biblioteca o
-robot</strong>. User-Agent es la cabecera con la que ese programa
-declara información sobre sí mismo. No identifica a la persona que lo
-utiliza.</p>
-<p>Su sintaxis permite productos con versión y comentarios. Un cliente
-sencillo puede enviar User-Agent: ClienteAula/1.0. Los navegadores
-suelen utilizar cadenas más largas por razones históricas de
-compatibilidad.</p>
-<div class="image-container"><img alt="Componentes de una cadena User-Agent" decoding="async" height="675" loading="lazy" src="assets/u01/ilustracion-19.webp" width="1350"/></div><h4 class="content-subtitle">Anatomía de una cadena de navegador</h4>
-<p>El siguiente <strong>ejemplo</strong> está dividido visualmente para
-facilitar la lectura. En HTTP/1.1 se enviaría como un único campo en una
-línea, sin estos saltos:</p>
+<p>A user agent is the <strong>program that starts a request: browser, app, console tool, library or robot</strong>. User-Agent is the header with which that program declares information about itself. It does not identify the person who uses it.</p>
+<p>Its syntax allows products with version and comments. A simple customer can send User-Agent: ClientAula/1.0. Browsers usually use longer strings for historical compatibility reasons.</p>
+<div class="image-container"><img alt="Components of a User-Agent chain" decoding="async" height="675" loading="lazy" src="assets/u01/ilustracion-19.webp" width="1350"/></div><h4 class="content-subtitle">Anatomy of a browser string</h4>
+<p>Next <strong>example</strong> is visually divided to facilitate reading. In HTTP/1.1 it would be sent as a single field on a line, without these jumps:</p>
 <pre><code>Mozilla/5.0 (Windows NT 10.0; Win64; x64)
 AppleWebKit/537.36 (KHTML, like Gecko)
-Chrome/140.0.0.0 Safari/537.36</code></pre><div aria-label="Tabla didáctica 10" class="table-scroll" role="region" tabindex="0"><table>
+Chrome/140.0.0.0 Safari/537.36</code></pre><div aria-label="Table 10" class="table-scroll" role="region" tabindex="0"><table>
 <colgroup>
 <col style="width: 31%"/>
 <col style="width: 68%"/>
@@ -1203,10 +1001,10 @@ Chrome/140.0.0.0 Safari/537.36</code></pre><div aria-label="Tabla didáctica 10"
 <thead>
 <tr class="header">
 <th>
-<p><strong>Fragmento</strong></p>
+<p><strong>Fragment</strong></p>
 </th>
 <th>
-<p><strong>Interpretación y precaución</strong></p>
+<p><strong>Interpretation and caution</strong></p>
 </th>
 </tr>
 </thead>
@@ -1216,7 +1014,7 @@ Chrome/140.0.0.0 Safari/537.36</code></pre><div aria-label="Tabla didáctica 10"
 <p>Mozilla/5.0</p>
 </td>
 <td>
-<p>Token histórico; no significa que sea Firefox</p>
+<p>Historical Token; does not mean it is Firefox</p>
 </td>
 </tr>
 <tr class="even">
@@ -1224,7 +1022,7 @@ Chrome/140.0.0.0 Safari/537.36</code></pre><div aria-label="Tabla didáctica 10"
 <p>Windows NT 10.0</p>
 </td>
 <td>
-<p>Plataforma declarada; no garantiza la versión real de Windows</p>
+<p>Platform declared; does not guarantee the actual version of Windows</p>
 </td>
 </tr>
 <tr class="odd">
@@ -1232,7 +1030,7 @@ Chrome/140.0.0.0 Safari/537.36</code></pre><div aria-label="Tabla didáctica 10"
 <p>Win64; x64</p>
 </td>
 <td>
-<p>Indicadores declarados de plataforma y arquitectura</p>
+<p>Declared platform and architecture indicators</p>
 </td>
 </tr>
 <tr class="even">
@@ -1240,7 +1038,7 @@ Chrome/140.0.0.0 Safari/537.36</code></pre><div aria-label="Tabla didáctica 10"
 <p>AppleWebKit/537.36</p>
 </td>
 <td>
-<p>Token de compatibilidad; no prueba que el motor actual sea WebKit</p>
+<p>Token compatibility; does not prove that the current engine is WebKit</p>
 </td>
 </tr>
 <tr class="odd">
@@ -1248,7 +1046,7 @@ Chrome/140.0.0.0 Safari/537.36</code></pre><div aria-label="Tabla didáctica 10"
 <p>KHTML, like Gecko</p>
 </td>
 <td>
-<p>Comentario histórico de compatibilidad</p>
+<p>Historical compatibility comment</p>
 </td>
 </tr>
 <tr class="even">
@@ -1256,7 +1054,7 @@ Chrome/140.0.0.0 Safari/537.36</code></pre><div aria-label="Tabla didáctica 10"
 <p>Chrome/140.0.0.0</p>
 </td>
 <td>
-<p>Versión declarada; algunos componentes pueden estar reducidos</p>
+<p>Declared version; some components may be reduced</p>
 </td>
 </tr>
 <tr class="odd">
@@ -1264,73 +1062,59 @@ Chrome/140.0.0.0 Safari/537.36</code></pre><div aria-label="Tabla didáctica 10"
 <p>Safari/537.36</p>
 </td>
 <td>
-<p>Token de compatibilidad; no implica que sea Safari</p>
+<p>Token compatibility; does not imply Safari</p>
 </td>
 </tr>
 </tbody>
 </table>
-</div><p>Chrome utiliza Blink, aunque su cadena incluya AppleWebKit. Otros
-navegadores basados en Chromium también pueden contener Chrome. Por
-tanto, buscar una palabra aislada no identifica de forma fiable el
-navegador. Estos tokens se acumularon para evitar que sitios con
-detección rígida rechazasen clientes compatibles.</p>
+</div><p>Chrome uses Blink, even if its string includes AppleWebKit. Other Chromium-based browsers can also contain Chrome. Therefore, searching for an isolated word does not reliably identify the browser. These tokens were accumulated to prevent hard-detected sites from rejecting supported customers.</p>
 <div class="resource-card expansion-card">
 <div class="resource-card-header">
-<span class="resource-title"><i class="fa-brands fa-youtube"></i> Browser Fingerprinting Explained</span>
-<span class="resource-badge badge-video">Vídeo</span>
+<span class="resource-title"><i class="fa-brands fa-youtube"></i> Browser Fingerprinting Expanded</span>
+<span class="resource-badge badge-video">Video</span>
 </div>
-<div class="resource-description">Introducción a la huella digital del navegador: qué datos la forman y cómo puede utilizarse para reconocer un dispositivo.</div>
-<a class="resource-link-btn" href="https://youtu.be/EDUdvPhz_lQ" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver el vídeo sobre browser fingerprinting</a>
+<div class="resource-description">Introduction to the browser's fingerprint: what data form it and how it can be used to recognize a device.</div>
+<a class="resource-link-btn" href="https://youtu.be/EDUdvPhz_lQ" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Watch the video about browser fingerprinting</a>
 </div>
 <div class="resource-card expansion-card">
 <div class="resource-card-header">
-<span class="resource-title"><i class="fa-solid fa-file-pdf"></i> Fingerprinting o huella digital del dispositivo</span>
-<span class="resource-badge badge-reading">Lectura</span>
+<span class="resource-title"><i class="fa-solid fa-file-pdf"></i> Fingerprinting or device fingerprinting</span>
+<span class="resource-badge badge-reading">Reading</span>
 </div>
-<div class="resource-description">Estudio de la Agencia Española de Protección de Datos sobre las técnicas de fingerprinting, su capacidad de identificación y las medidas de protección al alcance del usuario.</div>
-<a class="resource-link-btn" href="https://www.aepd.es/guias/estudio-fingerprinting-huella-digital.pdf" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Consultar el estudio de la AEPD</a>
+<div class="resource-description">Study of the Spanish Data Protection Agency on fingerprinting techniques, their identification capacity and the protection measures available to the user.</div>
+<a class="resource-link-btn" href="https://www.aepd.es/guias/estudio-fingerprinting-huella-digital.pdf" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Consult the study of the AEPD</a>
 </div>
 <div class="activity-card activity-callout" id="actividad-huella-navegador">
-<p><strong>Actividad paso a paso · ¿Puede camuflarse Opera?</strong></p>
-<p>El objetivo es comprobar qué información revela el navegador y qué
-cambia al aplicar medidas de privacidad. No inicies sesión ni introduzcas
-datos personales durante la prueba. Lee el aviso de privacidad de cada
-servicio antes de aceptar la recogida de la huella.</p>
+<p><strong>Step by step activity · Can Opera be camouflaged?</strong></p>
+<p>The goal is to check what information the browser reveals and what changes when applying privacy measures. Do not log in or enter personal data during the test. Read the privacy notice for each service before accepting fingerprint collection.</p>
 <ol>
-<li><p><strong>Medición inicial.</strong> Abre Opera sin VPN y desactiva temporalmente las extensiones de privacidad. Visita <a href="https://amiunique.org/fingerprint" rel="noopener noreferrer" target="_blank">AmIUnique</a> y <a href="https://browserleaks.com/" rel="noopener noreferrer" target="_blank">BrowserLeaks</a>.</p></li>
-<li><p>En BrowserLeaks consulta, al menos, las pruebas de <strong>IP Address</strong>, <strong>JavaScript</strong>, <strong>WebRTC</strong>, <strong>Canvas</strong> y <strong>WebGL</strong>. Anota la IP y ubicación aproximada, el navegador detectado, el sistema operativo, idioma, zona horaria, resolución y los identificadores de Canvas y WebGL.</p></li>
-<li><p><strong>Prueba con extensiones.</strong> Desde la tienda oficial de complementos de Opera, instala una extensión que modifique el <em>User-Agent</em> y una extensión de privacidad o bloqueo de rastreadores. Revisa antes su autor, fecha de actualización y permisos; no instales extensiones procedentes de enlaces o archivos externos.</p></li>
-<li><p>Repite las pruebas en AmIUnique y BrowserLeaks. Comprueba si Opera se presenta como otro navegador y qué valores permanecen iguales. Observa también si BrowserLeaks detecta el filtro de contenido o alguna extensión.</p></li>
-<li><p><strong>Prueba con VPN.</strong> En Opera abre <strong>Configuración → Avanzado → Funciones → VPN</strong> y activa <strong>Habilitar VPN</strong>. Desde el distintivo VPN de la barra de direcciones, verifica que esté conectada y, si está disponible, selecciona otra ubicación virtual.</p></li>
-<li><p>Repite por tercera vez las pruebas de IP, WebRTC y huella. Comprueba qué IP y ubicación han cambiado y si siguen coincidiendo valores como pantalla, idioma, zona horaria, Canvas, WebGL o características del equipo.</p></li>
-<li><p>Desactiva la VPN y elimina o desactiva las extensiones instaladas para dejar Opera en su estado inicial.</p></li>
+<li><p><strong>Initial measurement.</strong> Opens Opera without VPN and temporarily disables privacy extensions. Visit <a href="https://amiunique.org/fingerprint" rel="noopener noreferrer" target="_blank">AmIUnique</a> and <a href="https://browserleaks.com/" rel="noopener noreferrer" target="_blank">BrowserLeaks</a>.</p></li>
+<li><p>In BrowserLeaks consult at least the tests of <strong>IP Address</strong>, <strong>JavaScript</strong>, <strong>WebRTC</strong>, <strong>Canvas</strong> and <strong>WebGL</strong>. Notes the IP and approximate location, the detected browser, operating system, language, time zone, resolution and Canvas and WebGL identifiers.</p></li>
+<li><p><strong>Try extensions.</strong> From the official Add-ons Store of Opera, installs an extension that modifies the <em>User-Agent</em> and a privacy extension or tracker lock. Check your author, update date and permissions first; do not install extensions from external links or files.</p></li>
+<li><p>Repeat the tests in AmIUnique and BrowserLeaks. Check if Opera is presented as another browser and what values remain the same. Also see if BrowserLeaks detects the content filter or any extension.</p></li>
+<li><p><strong>Try VPN.</strong> Opera opens <strong>Settings → Advanced → Functions → VPN</strong> and active <strong>Enable VPN</strong>. From the distinctive VPN of the address bar, check that it is connected and, if available, select another virtual location.</p></li>
+<li><p>Repeat for the third time the tests for IP, WebRTC and fingerprint. Check which IP and location have changed and if values like screen, language, time zone, Canvas, WebGL or computer features still match.</p></li>
+<li><p>Deactivate VPN and remove or disable installed extensions to leave Opera in its initial state.</p></li>
 </ol>
-<div aria-label="Resultados de la actividad de huella digital" class="table-scroll" role="region" tabindex="0"><table>
+<div aria-label="Results of the fingerprint activity" class="table-scroll" role="region" tabindex="0"><table>
 <thead>
 <tr class="header">
-<th><p><strong>Dato observado</strong></p></th>
-<th><p><strong>Opera inicial</strong></p></th>
-<th><p><strong>Con extensiones</strong></p></th>
-<th><p><strong>Con extensiones y VPN</strong></p></th>
+<th><p><strong>Observed data</strong></p></th>
+<th><p><strong>Initial operation</strong></p></th>
+<th><p><strong>With Extensions</strong></p></th>
+<th><p><strong>With Extensions and VPN</strong></p></th>
 </tr>
 </thead>
 <tbody>
-<tr><td><p>IP y ubicación aproximada</p></td><td></td><td></td><td></td></tr>
-<tr><td><p>Navegador / User-Agent</p></td><td></td><td></td><td></td></tr>
-<tr><td><p>Canvas y WebGL</p></td><td></td><td></td><td></td></tr>
-<tr><td><p>Pantalla, idioma y zona horaria</p></td><td></td><td></td><td></td></tr>
-<tr><td><p>WebRTC y extensiones detectadas</p></td><td></td><td></td><td></td></tr>
+<tr><td><p>IP and approximate location</p></td><td></td><td></td><td></td></tr>
+<tr><td><p>Browser / User-Agent</p></td><td></td><td></td><td></td></tr>
+<tr><td><p>Canvas and WebGL</p></td><td></td><td></td><td></td></tr>
+<tr><td><p>Display, language and time zone</p></td><td></td><td></td><td></td></tr>
+<tr><td><p>WebRTC and detected extensions</p></td><td></td><td></td><td></td></tr>
 </tbody>
 </table></div>
-<p><strong>Entrega:</strong> la tabla completada, capturas de las tres
-fases y una conclusión que responda: ¿ha dejado Opera de ser
-identificable?, ¿qué ha cambiado realmente la VPN? y ¿alguna extensión
-ha reducido la información expuesta o ha añadido un rasgo
-diferenciador?</p>
-<p><strong>Idea clave:</strong> una VPN puede cambiar la IP aparente, pero
-no modifica automáticamente el resto de la huella. Alterar unos pocos
-valores tampoco garantiza anonimato y, si la combinación resultante es
-poco común, incluso puede hacer el navegador más singular.</p>
+<p><strong>Delivery:</strong> the completed table, catches of the three phases and a conclusion that answers: has Opera stopped being identifiable?, what has actually changed the VPN? and has any extension reduced the information exposed or added a distinguishing feature?</p>
+<p><strong>Key idea:</strong> a VPN can change the apparent IP, but does not automatically modify the rest of the footprint. Altering a few values also does not guarantee anonymity and, if the resulting combination is uncommon, it can even make the browser more unique.</p>
 </div>
 <footer class="document-footer">DAW / DWEC · © Ignacio García</footer></main></div>
 </body>
