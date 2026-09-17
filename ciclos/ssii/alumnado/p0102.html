@@ -1,0 +1,1075 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Práctica interactiva sobre unidades de almacenamiento, transmisión e imagen digital.">
+  <meta name="theme-color" content="#17324d">
+  <title>P0102 · Laboratorio de unidades digitales</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317324d'/%3E%3Cpath d='M16 14h32v36H16z' fill='%23ffffff'/%3E%3Cpath d='M16 25h32M16 37h32M28 14v36' stroke='%2317324d' stroke-width='3'/%3E%3Ccircle cx='45' cy='47' r='10' fill='%23ffc857'/%3E%3Cpath d='M41 47l3 3 6-7' fill='none' stroke='%2317324d' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17324d;
+      --muted: #52677a;
+      --paper: #ffffff;
+      --canvas: #edf4f7;
+      --line: #c7d7df;
+      --blue: #1769d2;
+      --blue-dark: #0e4d9d;
+      --teal: #087f72;
+      --teal-soft: #e7f8f5;
+      --orange: #d46b08;
+      --orange-soft: #fff4df;
+      --yellow: #ffc857;
+      --green: #16734f;
+      --green-soft: #e7f7ef;
+      --red: #b53d38;
+      --red-soft: #fff0ef;
+      --purple: #6941c6;
+      --purple-soft: #f3efff;
+      --shadow: 0 16px 38px rgba(23, 50, 77, 0.12);
+      --radius: 20px;
+      --sans: Inter, ui-rounded, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background-color: var(--canvas);
+      background-image:
+        linear-gradient(rgba(23, 50, 77, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 50, 77, 0.045) 1px, transparent 1px);
+      background-size: 30px 30px;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    :focus-visible {
+      outline: 4px solid rgba(23, 105, 210, 0.25);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: fixed;
+      z-index: 100;
+      top: 0.75rem;
+      left: 0.75rem;
+      transform: translateY(-170%);
+      border-radius: 10px;
+      background: white;
+      color: var(--ink);
+      padding: 0.7rem 1rem;
+      font-weight: 800;
+    }
+
+    .skip-link:focus { transform: translateY(0); }
+
+    .shell {
+      width: min(1180px, calc(100% - 28px));
+      margin-inline: auto;
+    }
+
+    .site-header {
+      position: relative;
+      overflow: hidden;
+      border-bottom: 7px solid var(--yellow);
+      background: var(--ink);
+      color: white;
+    }
+
+    .site-header::after {
+      content: "b  B  KB  KiB  Mb/s  Mpx";
+      position: absolute;
+      right: -1rem;
+      bottom: -1.4rem;
+      color: rgba(255,255,255,0.055);
+      font-family: var(--mono);
+      font-size: clamp(2.2rem, 7vw, 6.5rem);
+      font-weight: 900;
+      white-space: nowrap;
+      transform: rotate(-3deg);
+      pointer-events: none;
+    }
+
+    .header-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      gap: 2rem;
+      align-items: flex-start;
+      padding-block: 1.4rem 1.55rem;
+    }
+
+    .eyebrow {
+      margin: 0 0 0.3rem;
+      color: var(--yellow);
+      font-size: 0.82rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 0.35rem;
+      font-size: clamp(1.8rem, 4vw, 3.15rem);
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+    }
+
+    .header-copy {
+      max-width: 760px;
+      margin-bottom: 0;
+      color: #dce9ef;
+      font-size: 1.02rem;
+    }
+
+    .reset-button {
+      flex: 0 0 auto;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      color: white;
+      padding: 0.65rem 1rem;
+      font-weight: 800;
+    }
+
+    .reset-button:hover { background: rgba(255,255,255,0.16); }
+
+    main { padding-block: 1.2rem 3rem; }
+
+    .identity-card,
+    .guide-card,
+    .exercise-card,
+    .result-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .identity-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+      gap: 0.8rem;
+      align-items: end;
+      margin-bottom: 1rem;
+      padding: 1.1rem;
+    }
+
+    .field {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    label,
+    .field-label { font-weight: 850; }
+
+    input[type="text"] {
+      width: 100%;
+      min-width: 0;
+      border: 2px solid #9fb7c3;
+      border-radius: 11px;
+      background: white;
+      color: var(--ink);
+      padding: 0.72rem 0.8rem;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--blue);
+      outline: 4px solid rgba(23, 105, 210, 0.13);
+    }
+
+    .progress-box {
+      min-width: 170px;
+      border-radius: 14px;
+      background: var(--ink);
+      color: white;
+      padding: 0.75rem 0.9rem;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.4rem;
+      color: #d7e7ef;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .progress-track {
+      height: 9px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+    }
+
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--yellow);
+      transition: width 180ms ease;
+    }
+
+    .guide-card {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding: 1.15rem;
+    }
+
+    .guide-card h2 {
+      margin-bottom: 0;
+      font-size: 1.25rem;
+    }
+
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.7rem;
+    }
+
+    .rule {
+      border-radius: 14px;
+      background: #f4f8fa;
+      padding: 0.9rem;
+    }
+
+    .rule code {
+      display: block;
+      margin-bottom: 0.35rem;
+      color: var(--blue-dark);
+      font-family: var(--mono);
+      font-size: 1.05rem;
+      font-weight: 900;
+    }
+
+    .rule p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .notice {
+      border: 1px solid #e7bd55;
+      border-left: 6px solid var(--yellow);
+      border-radius: 13px;
+      background: #fff9e9;
+      padding: 0.85rem 1rem;
+    }
+
+    .notice p { margin-bottom: 0; }
+
+    .exercise-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .exercise-card {
+      overflow: hidden;
+    }
+
+    .exercise-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(120deg, #ffffff, #f1faf9);
+      padding: 1.1rem 1.2rem;
+    }
+
+    .exercise-head h2 {
+      margin-bottom: 0.2rem;
+      font-size: 1.35rem;
+      line-height: 1.2;
+    }
+
+    .exercise-head p {
+      max-width: 760px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+
+    .score-chip {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: #e8eff3;
+      color: var(--ink);
+      padding: 0.35rem 0.7rem;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 900;
+    }
+
+    .exercise-card.is-complete .score-chip {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+      padding: 1rem 1.2rem 0;
+    }
+
+    table {
+      width: 100%;
+      min-width: 650px;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+    }
+
+    caption {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+    }
+
+    th, td {
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 0.62rem 0.7rem;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th:last-child, td:last-child { border-right: 0; }
+    tbody tr:last-child td { border-bottom: 0; }
+
+    thead th {
+      background: var(--ink);
+      color: white;
+      font-size: 0.84rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    tbody tr:nth-child(even) td { background: #f7fafb; }
+
+    .unit-value {
+      font-family: var(--mono);
+      font-weight: 800;
+    }
+
+    .table-input {
+      min-height: 42px;
+      border-width: 2px !important;
+      border-style: dashed !important;
+      border-color: var(--blue) !important;
+      background: #edf5ff !important;
+      font-family: var(--mono) !important;
+      font-weight: 800;
+    }
+
+    .table-input.is-correct {
+      border-color: var(--green) !important;
+      border-style: solid !important;
+      background: var(--green-soft) !important;
+    }
+
+    .table-input.is-wrong {
+      border-color: var(--red) !important;
+      border-style: solid !important;
+      background: var(--red-soft) !important;
+    }
+
+    .exercise-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+      padding: 1rem 1.2rem 1.2rem;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 0.6rem 0.95rem;
+      font-weight: 850;
+      text-decoration: none;
+      transition: transform 100ms ease, background 100ms ease;
+    }
+
+    .button:not(:disabled):hover { transform: translateY(-1px); }
+
+    .button-primary {
+      background: var(--blue);
+      color: white;
+      box-shadow: 0 4px 0 var(--blue-dark);
+    }
+
+    .button-secondary {
+      border-color: #99b4c1;
+      background: white;
+      color: var(--ink);
+    }
+
+    .button-secondary:hover { background: #eef5f8; }
+
+    .button-success {
+      background: var(--green);
+      color: white;
+      box-shadow: 0 4px 0 #0b4c34;
+    }
+
+    .feedback {
+      flex: 1 1 250px;
+      min-height: 1.2em;
+      margin: 0;
+      font-weight: 750;
+    }
+
+    .feedback.success { color: var(--green); }
+    .feedback.error { color: var(--red); }
+    .feedback.info { color: var(--blue-dark); }
+
+    .final-zone {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .final-check {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      align-items: center;
+      justify-content: space-between;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--orange-soft);
+      padding: 1.1rem;
+    }
+
+    .final-check h2 {
+      margin-bottom: 0.2rem;
+      font-size: 1.35rem;
+    }
+
+    .final-check p { margin-bottom: 0; }
+
+    .result-card {
+      display: grid;
+      gap: 0.9rem;
+      border-width: 3px;
+      border-color: var(--ink);
+      padding: 1.2rem;
+      box-shadow: 8px 8px 0 var(--teal);
+    }
+
+    .result-card[hidden] { display: none; }
+
+    .result-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-start;
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 0.75rem;
+    }
+
+    .result-head h2 { margin-bottom: 0.1rem; }
+
+    .stamp {
+      flex: 0 0 auto;
+      border: 3px solid var(--green);
+      border-radius: 9px;
+      color: var(--green);
+      padding: 0.35rem 0.55rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 950;
+      text-transform: uppercase;
+      transform: rotate(-2deg);
+    }
+
+    .result-text {
+      margin: 0;
+      overflow-wrap: anywhere;
+      border-radius: 12px;
+      background: #f1f6f8;
+      color: var(--ink);
+      padding: 1rem;
+      font-family: var(--mono);
+      font-size: 0.92rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .result-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .footer {
+      padding: 0 1rem 2rem;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.84rem;
+    }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 760px) {
+      .header-inner,
+      .identity-card {
+        grid-template-columns: 1fr;
+      }
+
+      .header-inner { display: grid; }
+      .reset-button { justify-self: start; }
+      .rules-grid { grid-template-columns: 1fr; }
+      .progress-box { min-width: 0; }
+      .exercise-head { flex-direction: column; }
+    }
+
+    @media (max-width: 520px) {
+      .shell { width: min(100% - 18px, 1180px); }
+      .table-scroll { padding-inline: 0.7rem; }
+      .exercise-actions { padding-inline: 0.7rem; }
+      .final-check { align-items: stretch; }
+      .final-check .button { width: 100%; }
+      .result-head { flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: 0.01ms !important; }
+    }
+
+    @media print {
+      @page { margin: 14mm; }
+      body { background: white; }
+      body.print-result > *:not(main),
+      body.print-result main > *:not(.final-zone),
+      body.print-result .final-zone > *:not(.result-card),
+      body.print-result .result-actions { display: none !important; }
+      body.print-result main { padding: 0; }
+      body.print-result .final-zone,
+      body.print-result .result-card { display: block !important; margin: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Saltar a la actividad</a>
+
+  <header class="site-header">
+    <div class="shell header-inner">
+      <div>
+        <p class="eyebrow">Sistemas informáticos · Práctica P0102</p>
+        <h1>Laboratorio de unidades digitales</h1>
+        <p class="header-copy">Completa las unidades de almacenamiento, transmisión e imagen sin confundir bits, bytes ni prefijos.</p>
+      </div>
+      <button class="reset-button" id="resetPractice" type="button">Reiniciar práctica</button>
+    </div>
+  </header>
+
+  <main class="shell" id="main-content" tabindex="-1">
+    <section class="identity-card" aria-labelledby="identity-title">
+      <h2 id="identity-title" hidden>Datos del alumno o alumna</h2>
+      <div class="field">
+        <label for="studentName">Nombre</label>
+        <input id="studentName" type="text" maxlength="40" autocomplete="given-name" placeholder="Escribe tu nombre">
+      </div>
+      <div class="field">
+        <label for="studentSurname">Apellidos</label>
+        <input id="studentSurname" type="text" maxlength="70" autocomplete="family-name" placeholder="Escribe tus apellidos">
+      </div>
+      <div class="progress-box">
+        <div class="progress-label"><span>Respuestas correctas</span><span id="progressText">0 / 43</span></div>
+        <div class="progress-track" role="progressbar" aria-label="Progreso de la práctica" aria-valuemin="0" aria-valuemax="43" aria-valuenow="0">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="guide-card" aria-labelledby="guide-title">
+      <h2 id="guide-title">Tres reglas antes de empezar</h2>
+      <div class="rules-grid">
+        <article class="rule"><code>1 B = 8 b</code><p>La <strong>b</strong> minúscula significa bit; la <strong>B</strong> mayúscula significa byte.</p></article>
+        <article class="rule"><code>kilo = 10³</code><p>Los prefijos decimales avanzan de mil en mil: KB, MB, GB…</p></article>
+        <article class="rule"><code>kibi = 2¹⁰</code><p>Los prefijos binarios avanzan de 1024 en 1024: KiB, MiB, GiB…</p></article>
+      </div>
+      <div class="notice"><p><strong>Cómo responder:</strong> completa únicamente las casillas azules. Puedes escribir potencias con teclado: <code>10^3 B</code> o <code>2^10 B</code>. Las mayúsculas de los símbolos importan.</p></div>
+      <div class="notice"><p>Las cuatro tablas de información y transmisión comienzan en el <strong>bit</strong>. El reto visual comienza en el <strong>píxel</strong>, porque esa es su unidad propia.</p></div>
+    </section>
+
+    <div class="exercise-list" id="exerciseList"></div>
+
+    <section class="final-zone" aria-labelledby="final-title">
+      <div class="final-check">
+        <div>
+          <h2 id="final-title">Resultado de la práctica</h2>
+          <p>Comprueba todas las tablas y genera un texto con tu nombre, apellidos y puntuación.</p>
+        </div>
+        <button class="button button-success" id="checkAll" type="button">Comprobar todo y generar resultado</button>
+      </div>
+      <p class="feedback" id="finalFeedback" role="status" aria-live="polite"></p>
+
+      <article class="result-card" id="resultCard" hidden aria-labelledby="result-title">
+        <div class="result-head">
+          <div>
+            <h2 id="result-title">Informe P0102</h2>
+            <p id="resultSubtitle">Unidades digitales</p>
+          </div>
+          <span class="stamp" id="resultStamp">Resultado</span>
+        </div>
+        <pre class="result-text" id="resultText"></pre>
+        <div class="result-actions">
+          <button class="button button-primary" id="copyResult" type="button">Copiar texto</button>
+          <button class="button button-secondary" id="downloadResult" type="button">Descargar .txt</button>
+          <button class="button button-secondary" id="printResult" type="button">Imprimir resultado</button>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="footer"><p>Recuerda: la velocidad de una conexión suele expresarse en bits por segundo; el tamaño de un archivo, en bytes.</p></footer>
+
+  <script>
+    "use strict";
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+    const superscripts = ["⁰","¹","²","³","⁴","⁵","⁶","⁷","⁸","⁹"];
+
+    const powLabel = (base, exponent, unit) => `${base}${String(exponent).split("").map(digit => superscripts[Number(digit)]).join("")} ${unit}`;
+    const expanded10 = exponent => (10n ** BigInt(exponent)).toString();
+    const expanded2 = exponent => (2n ** BigInt(exponent)).toString();
+    const valueAnswers = (base, exponent, unit) => {
+      const expanded = base === 10 ? expanded10(exponent) : expanded2(exponent);
+      return [`${base}^${exponent}${unit}`, `${expanded}${unit}`];
+    };
+
+    const decimalNames = [
+      ["kilobyte","KB",3], ["megabyte","MB",6], ["gigabyte","GB",9], ["terabyte","TB",12],
+      ["petabyte","PB",15], ["exabyte","EB",18], ["zettabyte","ZB",21]
+    ];
+    const binaryNames = [
+      ["kibibyte","KiB",10], ["mebibyte","MiB",20], ["gibibyte","GiB",30], ["tebibyte","TiB",40],
+      ["pebibyte","PiB",50], ["exbibyte","EiB",60], ["zebibyte","ZiB",70]
+    ];
+    const rateBits = [
+      ["bit por segundo","b/s",0], ["kilobit por segundo","kb/s",3], ["megabit por segundo","Mb/s",6],
+      ["gigabit por segundo","Gb/s",9], ["terabit por segundo","Tb/s",12], ["petabit por segundo","Pb/s",15],
+      ["exabit por segundo","Eb/s",18], ["zettabit por segundo","Zb/s",21]
+    ];
+    const pixelNames = [
+      ["píxel","px",0], ["kilopíxel","kpx",3], ["megapíxel","Mpx",6], ["gigapíxel","Gpx",9],
+      ["terapíxel","Tpx",12], ["petapíxel","Ppx",15], ["exapíxel","Epx",18], ["zettapíxel","Zpx",21]
+    ];
+
+    const row = (name, symbol, value, acceptedValue) => ({
+      name,
+      symbol,
+      value,
+      answers: { name: [name], symbol: [symbol], value: acceptedValue }
+    });
+
+    const tables = [
+      {
+        id: "decimal",
+        title: "1 · Almacenamiento decimal",
+        description: "Unidades basadas en potencias de 10. Comienza en el bit y llega al zettabyte.",
+        rows: [
+          row("bit", "b", "1 bit", ["1bit", "1b"]),
+          row("byte", "B", "8 bits", ["8bits", "8b"]),
+          ...decimalNames.map(([name, symbol, exponent]) => row(name, symbol, powLabel(10, exponent, "B"), valueAnswers(10, exponent, "B")))
+        ]
+      },
+      {
+        id: "binary",
+        title: "2 · Almacenamiento binario",
+        description: "Unidades IEC basadas en potencias de 2. Comienza en el bit y llega al zebibyte.",
+        rows: [
+          row("bit", "b", "1 bit", ["1bit", "1b"]),
+          row("byte", "B", "8 bits", ["8bits", "8b"]),
+          ...binaryNames.map(([name, symbol, exponent]) => row(name, symbol, powLabel(2, exponent, "B"), valueAnswers(2, exponent, "B")))
+        ]
+      },
+      {
+        id: "bitrate",
+        title: "3 · Transmisión en bits por segundo",
+        description: "Velocidad de transmisión medida en bit/s y sus múltiplos decimales.",
+        rows: rateBits.map(([name, symbol, exponent]) => exponent === 0
+          ? row(name, symbol, "1 bit/s", ["1bit/s", "1b/s"])
+          : row(name, symbol, powLabel(10, exponent, "bit/s"), valueAnswers(10, exponent, "bit/s").concat(valueAnswers(10, exponent, "b/s"))))
+      },
+      {
+        id: "byterate",
+        title: "4 · Transmisión en bytes por segundo",
+        description: "Velocidad expresada en B/s. Observa que una B mayúscula equivale a 8 bits.",
+        rows: [
+          row("bit por segundo", "b/s", "1 bit/s", ["1bit/s", "1b/s"]),
+          row("byte por segundo", "B/s", "8 bit/s", ["8bit/s", "8bits/s", "8b/s"]),
+          ...decimalNames.map(([name, symbol, exponent]) => row(`${name} por segundo`, `${symbol}/s`, powLabel(10, exponent, "B/s"), valueAnswers(10, exponent, "B/s")))
+        ]
+      },
+      {
+        id: "pixels",
+        title: "Reto extra · Unidades de imagen",
+        description: "Cantidad de píxeles de una imagen: desde el píxel hasta el zettapíxel. Estos prefijos siguen la escala decimal.",
+        rows: pixelNames.map(([name, symbol, exponent]) => exponent === 0
+          ? row(name, symbol, "1 px", ["1px", "1pixel", "1píxel"])
+          : row(name, symbol, powLabel(10, exponent, "px"), valueAnswers(10, exponent, "px")))
+      }
+    ];
+
+    const totalQuestions = tables.reduce((sum, table) => sum + table.rows.length, 0);
+    const scores = new Map(tables.map(table => [table.id, 0]));
+    let resultPlainText = "";
+
+    function normalizeName(value) {
+      return value.trim().toLocaleLowerCase("es")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ");
+    }
+
+    function normalizeValue(value) {
+      const digitMap = {"⁰":"0","¹":"1","²":"2","³":"3","⁴":"4","⁵":"5","⁶":"6","⁷":"7","⁸":"8","⁹":"9"};
+      return value.trim()
+        .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, match => `^${Array.from(match).map(character => digitMap[character]).join("")}`)
+        .replace(/bytes?/gi, "B")
+        .replace(/bits?/gi, "b")
+        .replace(/píxeles?|pixels?/gi, "px")
+        .replace(/[×·*]/g, "")
+        .replace(/[\s\u00a0\u202f]/g, "")
+        .replace(/(?<=\d)[.,](?=\d{3}(?:\D|$))/g, "");
+    }
+
+    function isAnswerCorrect(input, rowData, field) {
+      if (field === "name") {
+        return rowData.answers.name.some(answer => normalizeName(input.value) === normalizeName(answer));
+      }
+      if (field === "symbol") {
+        return rowData.answers.symbol.some(answer => input.value.trim() === answer);
+      }
+      return rowData.answers.value.some(answer => normalizeValue(input.value) === normalizeValue(answer));
+    }
+
+    function createCellContent(value, className = "") {
+      const span = document.createElement("span");
+      span.className = className;
+      span.textContent = value;
+      return span;
+    }
+
+    function renderTables() {
+      const container = $("#exerciseList");
+      const fragment = document.createDocumentFragment();
+
+      tables.forEach((tableData, tableIndex) => {
+        const article = document.createElement("section");
+        article.className = "exercise-card";
+        article.id = `card-${tableData.id}`;
+        article.setAttribute("aria-labelledby", `title-${tableData.id}`);
+
+        const head = document.createElement("div");
+        head.className = "exercise-head";
+        const headingGroup = document.createElement("div");
+        const heading = document.createElement("h2");
+        heading.id = `title-${tableData.id}`;
+        heading.textContent = tableData.title;
+        const description = document.createElement("p");
+        description.textContent = tableData.description;
+        headingGroup.append(heading, description);
+        const chip = document.createElement("span");
+        chip.className = "score-chip";
+        chip.id = `score-${tableData.id}`;
+        chip.textContent = `0 / ${tableData.rows.length}`;
+        head.append(headingGroup, chip);
+
+        const scroll = document.createElement("div");
+        scroll.className = "table-scroll";
+        const table = document.createElement("table");
+        const caption = document.createElement("caption");
+        caption.textContent = `${tableData.title}. ${tableData.description}`;
+        const thead = document.createElement("thead");
+        const headerRow = document.createElement("tr");
+        ["Nombre de la unidad", "Iniciales", "Valor"].forEach(label => {
+          const th = document.createElement("th");
+          th.scope = "col";
+          th.textContent = label;
+          headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        const tbody = document.createElement("tbody");
+
+        tableData.rows.forEach((rowData, rowIndex) => {
+          const tr = document.createElement("tr");
+          const fields = ["name", "symbol", "value"];
+          const blankField = fields[(rowIndex + tableIndex) % fields.length];
+          fields.forEach(field => {
+            const td = document.createElement("td");
+            if (field === blankField) {
+              const input = document.createElement("input");
+              input.type = "text";
+              input.className = "table-input";
+              input.autocomplete = "off";
+              input.spellcheck = false;
+              input.dataset.table = tableData.id;
+              input.dataset.row = String(rowIndex);
+              input.dataset.field = field;
+              input.setAttribute("aria-label", `${field === "name" ? "Nombre" : field === "symbol" ? "Iniciales" : "Valor"}, fila ${rowIndex + 1} de ${tableData.title}`);
+              input.placeholder = field === "name" ? "Nombre" : field === "symbol" ? "Símbolo" : "Ej.: 10^3 B";
+              input.addEventListener("input", handleInputChange);
+              td.appendChild(input);
+            } else {
+              td.appendChild(createCellContent(rowData[field], field === "value" || field === "symbol" ? "unit-value" : ""));
+            }
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+
+        table.append(caption, thead, tbody);
+        scroll.appendChild(table);
+
+        const actions = document.createElement("div");
+        actions.className = "exercise-actions";
+        const checkButton = document.createElement("button");
+        checkButton.className = "button button-primary";
+        checkButton.type = "button";
+        checkButton.textContent = "Comprobar esta tabla";
+        checkButton.addEventListener("click", () => checkTable(tableData.id));
+        const hintButton = document.createElement("button");
+        hintButton.className = "button button-secondary";
+        hintButton.type = "button";
+        hintButton.textContent = "Mostrar una pista";
+        hintButton.addEventListener("click", () => showHint(tableData.id));
+        const feedback = document.createElement("p");
+        feedback.className = "feedback";
+        feedback.id = `feedback-${tableData.id}`;
+        feedback.setAttribute("role", "status");
+        feedback.setAttribute("aria-live", "polite");
+        actions.append(checkButton, hintButton, feedback);
+
+        article.append(head, scroll, actions);
+        fragment.appendChild(article);
+      });
+
+      container.appendChild(fragment);
+      $("#progressText").textContent = `0 / ${totalQuestions}`;
+      $(".progress-track").setAttribute("aria-valuemax", String(totalQuestions));
+    }
+
+    function setFeedback(element, message = "", type = "") {
+      element.textContent = message;
+      element.className = "feedback" + (type ? ` ${type}` : "");
+    }
+
+    function handleInputChange(event) {
+      event.target.classList.remove("is-correct", "is-wrong");
+      event.target.removeAttribute("aria-invalid");
+      const tableId = event.target.dataset.table;
+      scores.set(tableId, countCorrect(tableId));
+      updateProgress();
+      invalidateResult();
+      setFeedback($(`#feedback-${tableId}`));
+    }
+
+    function tableInputs(tableId) {
+      return $$(`.table-input[data-table="${tableId}"]`);
+    }
+
+    function countCorrect(tableId) {
+      const tableData = tables.find(table => table.id === tableId);
+      return tableInputs(tableId).filter(input => {
+        const rowData = tableData.rows[Number(input.dataset.row)];
+        return isAnswerCorrect(input, rowData, input.dataset.field);
+      }).length;
+    }
+
+    function checkTable(tableId, focusError = true) {
+      const tableData = tables.find(table => table.id === tableId);
+      const inputs = tableInputs(tableId);
+      let correct = 0;
+      let firstWrong = null;
+
+      inputs.forEach(input => {
+        const rowData = tableData.rows[Number(input.dataset.row)];
+        const isCorrect = isAnswerCorrect(input, rowData, input.dataset.field);
+        input.classList.toggle("is-correct", isCorrect);
+        input.classList.toggle("is-wrong", !isCorrect);
+        input.setAttribute("aria-invalid", String(!isCorrect));
+        if (isCorrect) correct += 1;
+        else if (!firstWrong) firstWrong = input;
+      });
+
+      scores.set(tableId, correct);
+      const complete = correct === inputs.length;
+      $(`#score-${tableId}`).textContent = `${correct} / ${inputs.length}`;
+      $(`#card-${tableId}`).classList.toggle("is-complete", complete);
+      setFeedback(
+        $(`#feedback-${tableId}`),
+        complete ? "¡Tabla completa! Todas las respuestas son correctas." : `${correct} de ${inputs.length} correctas. Revisa las casillas rojas.`,
+        complete ? "success" : "error"
+      );
+      updateProgress();
+      if (!complete && focusError) firstWrong?.focus();
+      return { correct, total: inputs.length };
+    }
+
+    function showHint(tableId) {
+      const tableData = tables.find(table => table.id === tableId);
+      const unresolved = tableInputs(tableId).find(input => {
+        const rowData = tableData.rows[Number(input.dataset.row)];
+        return !isAnswerCorrect(input, rowData, input.dataset.field) && input.dataset.hinted !== "true";
+      }) || tableInputs(tableId).find(input => {
+        const rowData = tableData.rows[Number(input.dataset.row)];
+        return !isAnswerCorrect(input, rowData, input.dataset.field);
+      });
+
+      if (!unresolved) {
+        setFeedback($(`#feedback-${tableId}`), "No necesitas más pistas: comprueba la tabla.", "info");
+        return;
+      }
+      const rowData = tableData.rows[Number(unresolved.dataset.row)];
+      unresolved.dataset.hinted = "true";
+      unresolved.placeholder = `Pista: ${rowData[unresolved.dataset.field]}`;
+      unresolved.focus();
+      setFeedback($(`#feedback-${tableId}`), "He mostrado la respuesta de una casilla como pista. Escríbela tú.", "info");
+    }
+
+    function updateProgress() {
+      const correct = Array.from(scores.values()).reduce((sum, value) => sum + value, 0);
+      $("#progressText").textContent = `${correct} / ${totalQuestions}`;
+      $("#progressFill").style.width = `${(correct / totalQuestions) * 100}%`;
+      $(".progress-track").setAttribute("aria-valuenow", String(correct));
+    }
+
+    function invalidateResult() {
+      $("#resultCard").hidden = true;
+      resultPlainText = "";
+      setFeedback($("#finalFeedback"));
+    }
+
+    function buildResult() {
+      const name = $("#studentName").value.trim();
+      const surname = $("#studentSurname").value.trim();
+      if (!name) {
+        setFeedback($("#finalFeedback"), "Escribe tu nombre antes de generar el resultado.", "error");
+        $("#studentName").focus();
+        return;
+      }
+      if (!surname) {
+        setFeedback($("#finalFeedback"), "Escribe tus apellidos antes de generar el resultado.", "error");
+        $("#studentSurname").focus();
+        return;
+      }
+
+      const results = tables.map(table => ({ table, ...checkTable(table.id, false) }));
+      const correct = results.reduce((sum, result) => sum + result.correct, 0);
+      const percentage = Math.round((correct / totalQuestions) * 100);
+      const completed = correct === totalQuestions;
+      const date = new Intl.DateTimeFormat("es-ES", { dateStyle: "long" }).format(new Date());
+      const lines = [
+        "PRÁCTICA P0102 · UNIDADES DIGITALES",
+        `Alumno/a: ${name} ${surname}`,
+        `Fecha: ${date}`,
+        "",
+        ...results.map(result => `${result.table.title.replace(/^\d+ · |^Reto extra · /, "")}: ${result.correct}/${result.total}`),
+        "",
+        `RESULTADO TOTAL: ${correct}/${totalQuestions} (${percentage} %)`,
+        completed ? "ESTADO: práctica completada correctamente" : "ESTADO: práctica en revisión"
+      ];
+      resultPlainText = lines.join("\n");
+      $("#resultText").textContent = resultPlainText;
+      $("#resultSubtitle").textContent = `${name} ${surname}`;
+      $("#resultStamp").textContent = completed ? "Completada" : `${percentage} %`;
+      $("#resultCard").hidden = false;
+      setFeedback(
+        $("#finalFeedback"),
+        completed ? "¡Excelente! Todas las respuestas son correctas." : `Has obtenido ${correct} de ${totalQuestions}. Puedes corregir las casillas rojas y volver a generar el informe.`,
+        completed ? "success" : "info"
+      );
+      $("#resultCard").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    async function copyResult() {
+      try {
+        await navigator.clipboard.writeText(resultPlainText);
+        setFeedback($("#finalFeedback"), "Texto de resultados copiado.", "success");
+      } catch (error) {
+        const helper = document.createElement("textarea");
+        helper.value = resultPlainText;
+        helper.style.position = "fixed";
+        helper.style.opacity = "0";
+        document.body.appendChild(helper);
+        helper.select();
+        const copied = typeof document.execCommand === "function" && document.execCommand("copy");
+        helper.remove();
+        setFeedback($("#finalFeedback"), copied ? "Texto de resultados copiado." : "No se pudo copiar automáticamente.", copied ? "success" : "error");
+      }
+    }
+
+    function downloadResult() {
+      const blob = new Blob([resultPlainText], { type: "text/plain;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "resultado-p0102.txt";
+      document.body.appendChild(link);
+      link.click();
+      URL.revokeObjectURL(link.href);
+      link.remove();
+    }
+
+    function printResult() {
+      document.body.classList.add("print-result");
+      const cleanup = () => document.body.classList.remove("print-result");
+      window.addEventListener("afterprint", cleanup, { once: true });
+      window.print();
+      window.setTimeout(cleanup, 1000);
+    }
+
+    function connectEvents() {
+      $("#checkAll").addEventListener("click", buildResult);
+      $("#copyResult").addEventListener("click", copyResult);
+      $("#downloadResult").addEventListener("click", downloadResult);
+      $("#printResult").addEventListener("click", printResult);
+      $("#studentName").addEventListener("input", invalidateResult);
+      $("#studentSurname").addEventListener("input", invalidateResult);
+      $("#resetPractice").addEventListener("click", () => {
+        if (window.confirm("¿Quieres borrar todas las respuestas y comenzar de nuevo?")) window.location.reload();
+      });
+    }
+
+    function initialize() {
+      renderTables();
+      connectEvents();
+    }
+
+    window.__P0102_TEST__ = { tables, normalizeName, normalizeValue, totalQuestions };
+    initialize();
+  </script>
+</body>
+</html>
