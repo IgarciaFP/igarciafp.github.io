@@ -3,11 +3,12 @@ from __future__ import annotations
 import os
 import re
 import sys
-import time
 from pathlib import Path
 
+import torch
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
-from deep_translator import GoogleTranslator
+from bs4.element import Tag
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 
 ARCHIVOS_ORIGEN = [
@@ -16,162 +17,135 @@ ARCHIVOS_ORIGEN = [
     "ciclos/ssii/u01_es.html",
 ]
 
-# GoogleTranslator usa un servicio no autenticado y limita la frecuencia.
-# Un margen de 0,6 s evita superar las 5 peticiones por segundo indicadas
-# por el propio servicio, incluso si el runner comparte la IP con otros jobs.
-INTERVALO_MINIMO = 0.6
-MAX_INTENTOS = 6
-MAX_CARACTERES = 4000
-MAX_ELEMENTOS_POR_LOTE = 20
-SEPARADOR = "[[[9F3A7C1D]]]"
+MODELO = "Helsinki-NLP/opus-mt-es-en"
+REVISION_MODELO = "c96e2c5399ebfae4fc43d9669556b9afa74bb69d"
+TAMANO_LOTE = 16
+MAX_TOKENS_ENTRADA = 450
+MAX_TOKENS_SALIDA = 512
 ETIQUETAS_NO_TRADUCIBLES = {"script", "style", "code", "pre", "kbd", "samp", "noscript"}
 ATRIBUTOS_TRADUCIBLES = ("alt", "title", "aria-label", "placeholder")
 
 
-class TraductorConReintentos:
+class TraductorOffline:
     def __init__(self) -> None:
-        self._translator = GoogleTranslator(source="es", target="en")
-        self._ultima_peticion = 0.0
+        hilos = max(1, min(os.cpu_count() or 2, 4))
+        torch.set_num_threads(hilos)
+
+        print(f"Cargando modelo offline: {MODELO}", flush=True)
+        solo_archivos_locales = os.environ.get("HF_HUB_OFFLINE") == "1"
+        self._tokenizer = AutoTokenizer.from_pretrained(
+            MODELO,
+            revision=REVISION_MODELO,
+            local_files_only=solo_archivos_locales,
+        )
+        self._model = AutoModelForSeq2SeqLM.from_pretrained(
+            MODELO,
+            revision=REVISION_MODELO,
+            local_files_only=solo_archivos_locales,
+        )
+        self._model.eval()
         self._cache: dict[str, str] = {}
+        print(f"Modelo cargado; usando {hilos} hilos de CPU.", flush=True)
 
-    def _esperar_turno(self) -> None:
-        espera = INTERVALO_MINIMO - (time.monotonic() - self._ultima_peticion)
-        if espera > 0:
-            time.sleep(espera)
+    def _numero_tokens(self, texto: str) -> int:
+        return len(self._tokenizer.encode(texto, add_special_tokens=True))
 
-    def traducir_fragmento(self, texto: str) -> str:
-        if texto in self._cache:
-            return self._cache[texto]
+    def _dividir_por_palabras(self, texto: str) -> list[str]:
+        fragmentos: list[str] = []
+        actual = ""
 
-        for intento in range(1, MAX_INTENTOS + 1):
-            self._esperar_turno()
-            self._ultima_peticion = time.monotonic()
+        for palabra in texto.split():
+            candidato = f"{actual} {palabra}".strip()
+            if actual and self._numero_tokens(candidato) > MAX_TOKENS_ENTRADA:
+                fragmentos.append(actual)
+                actual = palabra
+            else:
+                actual = candidato
 
-            try:
-                traduccion = self._translator.translate(texto)
-                if not traduccion:
-                    raise RuntimeError("El servicio devolvió una traducción vacía")
-                self._cache[texto] = traduccion
-                return traduccion
-            except Exception as error:
-                if intento == MAX_INTENTOS:
-                    raise RuntimeError(
-                        f"No se pudo traducir tras {MAX_INTENTOS} intentos: {texto[:80]!r}"
-                    ) from error
+        if actual:
+            fragmentos.append(actual)
+        return fragmentos
 
-                espera = min(60, 5 * 2 ** (intento - 1))
-                print(
-                    f"  Intento {intento}/{MAX_INTENTOS} fallido: {error}. "
-                    f"Reintentando en {espera} s...",
-                    file=sys.stderr,
-                    flush=True,
+    def _dividir_texto(self, texto: str) -> list[str]:
+        if self._numero_tokens(texto) <= MAX_TOKENS_ENTRADA:
+            return [texto]
+
+        unidades = re.split(r"(?<=[.!?;:])\s+", texto)
+        fragmentos: list[str] = []
+        actual = ""
+
+        for unidad in unidades:
+            if self._numero_tokens(unidad) > MAX_TOKENS_ENTRADA:
+                if actual:
+                    fragmentos.append(actual)
+                    actual = ""
+                fragmentos.extend(self._dividir_por_palabras(unidad))
+                continue
+
+            candidato = f"{actual} {unidad}".strip()
+            if actual and self._numero_tokens(candidato) > MAX_TOKENS_ENTRADA:
+                fragmentos.append(actual)
+                actual = unidad
+            else:
+                actual = candidato
+
+        if actual:
+            fragmentos.append(actual)
+        return fragmentos
+
+    def _traducir_fragmentos(self, fragmentos: list[str]) -> list[str]:
+        traducciones: list[str] = []
+        total_lotes = (len(fragmentos) + TAMANO_LOTE - 1) // TAMANO_LOTE
+
+        for inicio in range(0, len(fragmentos), TAMANO_LOTE):
+            lote = fragmentos[inicio : inicio + TAMANO_LOTE]
+            entradas = self._tokenizer(
+                lote,
+                return_tensors="pt",
+                padding=True,
+                truncation=True,
+                max_length=MAX_TOKENS_ENTRADA,
+            )
+
+            with torch.inference_mode():
+                salidas = self._model.generate(
+                    **entradas,
+                    max_length=MAX_TOKENS_SALIDA,
+                    num_beams=2,
+                    early_stopping=True,
                 )
-                time.sleep(espera)
 
-        raise AssertionError("Bucle de reintentos agotado")
+            traducidas = self._tokenizer.batch_decode(salidas, skip_special_tokens=True)
+            if len(traducidas) != len(lote) or any(not texto.strip() for texto in traducidas):
+                raise RuntimeError("El modelo offline devolvió un lote incompleto")
+            traducciones.extend(texto.strip() for texto in traducidas)
 
-    def traducir(self, texto: str) -> str:
-        fragmentos = dividir_texto(texto)
-        return " ".join(self.traducir_fragmento(fragmento) for fragmento in fragmentos)
+            numero_lote = inicio // TAMANO_LOTE + 1
+            if numero_lote % 10 == 0 or numero_lote == total_lotes:
+                print(f"  Lotes traducidos: {numero_lote}/{total_lotes}", flush=True)
 
-    def traducir_lote(self, textos: list[str]) -> list[str]:
-        """Agrupa textos en pocas peticiones y conserva la correspondencia 1:1."""
-        traducciones = [""] * len(textos)
-        pendientes: list[tuple[int, str]] = []
-
-        for indice, texto in enumerate(textos):
-            if texto in self._cache:
-                traducciones[indice] = self._cache[texto]
-            elif len(texto) > MAX_CARACTERES or SEPARADOR in texto:
-                traducciones[indice] = self.traducir(texto)
-            else:
-                pendientes.append((indice, texto))
-
-        lote: list[tuple[int, str]] = []
-        longitud = 0
-
-        def procesar_lote() -> None:
-            nonlocal lote, longitud
-            if not lote:
-                return
-
-            originales = [texto for _, texto in lote]
-            if len(originales) == 1:
-                traducidos = [self.traducir_fragmento(originales[0])]
-            else:
-                entrada = SEPARADOR.join(originales)
-                salida = self.traducir_fragmento(entrada)
-                traducidos = [parte.strip() for parte in salida.split(SEPARADOR)]
-
-                # Si el servicio altera el separador, se prioriza la integridad
-                # del documento y se repite el lote elemento a elemento.
-                if len(traducidos) != len(originales):
-                    print(
-                        "  El servicio alteró el separador; repitiendo el lote "
-                        "elemento a elemento.",
-                        file=sys.stderr,
-                        flush=True,
-                    )
-                    traducidos = [self.traducir(texto) for texto in originales]
-
-            for (indice, original), traduccion in zip(lote, traducidos):
-                self._cache[original] = traduccion
-                traducciones[indice] = traduccion
-
-            lote = []
-            longitud = 0
-
-        for pendiente in pendientes:
-            _, texto = pendiente
-            longitud_candidata = longitud + len(texto)
-            if lote:
-                longitud_candidata += len(SEPARADOR)
-
-            if lote and (
-                len(lote) >= MAX_ELEMENTOS_POR_LOTE
-                or longitud_candidata > MAX_CARACTERES
-            ):
-                procesar_lote()
-
-            lote.append(pendiente)
-            longitud += len(texto) + (len(SEPARADOR) if len(lote) > 1 else 0)
-
-        procesar_lote()
         return traducciones
 
+    def traducir_lote(self, textos: list[str]) -> list[str]:
+        pendientes = [
+            texto for texto in dict.fromkeys(textos)
+            if texto not in self._cache
+        ]
+        fragmentos: list[str] = []
+        rangos: dict[str, tuple[int, int]] = {}
 
-def dividir_texto(texto: str) -> list[str]:
-    """Divide textos largos sin superar el máximo por petición."""
-    if len(texto) <= MAX_CARACTERES:
-        return [texto]
+        for texto in pendientes:
+            partes = self._dividir_texto(texto)
+            inicio = len(fragmentos)
+            fragmentos.extend(partes)
+            rangos[texto] = (inicio, len(fragmentos))
 
-    oraciones = re.split(r"(?<=[.!?])\s+", texto)
-    fragmentos: list[str] = []
-    actual = ""
+        if fragmentos:
+            traducidos = self._traducir_fragmentos(fragmentos)
+            for original, (inicio, fin) in rangos.items():
+                self._cache[original] = " ".join(traducidos[inicio:fin])
 
-    for oracion in oraciones:
-        if len(oracion) > MAX_CARACTERES:
-            if actual:
-                fragmentos.append(actual)
-                actual = ""
-            while len(oracion) > MAX_CARACTERES:
-                corte = oracion.rfind(" ", 0, MAX_CARACTERES + 1)
-                if corte < MAX_CARACTERES // 2:
-                    corte = MAX_CARACTERES
-                fragmentos.append(oracion[:corte].strip())
-                oracion = oracion[corte:].strip()
-
-        candidato = f"{actual} {oracion}".strip()
-        if actual and len(candidato) > MAX_CARACTERES:
-            fragmentos.append(actual)
-            actual = oracion
-        else:
-            actual = candidato
-
-    if actual:
-        fragmentos.append(actual)
-
-    return fragmentos
+        return [self._cache[texto] for texto in textos]
 
 
 def nodo_traducible(nodo: NavigableString) -> bool:
@@ -186,6 +160,14 @@ def nodo_traducible(nodo: NavigableString) -> bool:
         if getattr(padre, "attrs", {}).get("translate") == "no":
             return False
     return True
+
+
+def etiqueta_traducible(etiqueta: Tag) -> bool:
+    return not any(
+        getattr(ancestro, "name", None) in ETIQUETAS_NO_TRADUCIBLES
+        or getattr(ancestro, "attrs", {}).get("translate") == "no"
+        for ancestro in [etiqueta, *etiqueta.parents]
+    )
 
 
 def restaurar_espacios(texto: str, traduccion: str) -> str:
@@ -218,61 +200,84 @@ def configurar_documento_ingles(soup: BeautifulSoup, ruta_es: Path) -> None:
         selector_idioma.append(" Español")
 
 
-def traducir_archivo(ruta_es: Path, traductor: TraductorConReintentos) -> None:
+def traducir_archivo(ruta_es: Path, traductor: TraductorOffline) -> None:
     if not ruta_es.exists():
         raise FileNotFoundError(f"No existe el archivo de origen: {ruta_es}")
+    if not ruta_es.name.endswith("_es.html"):
+        raise ValueError(f"El archivo debe terminar en _es.html: {ruta_es}")
 
     print(f"Procesando: {ruta_es}", flush=True)
     soup = BeautifulSoup(ruta_es.read_text(encoding="utf-8"), "html.parser")
 
     nodos = [nodo for nodo in soup.find_all(string=True) if nodo_traducible(nodo)]
+    originales = [str(nodo).strip() for nodo in nodos]
     print(f"  Nodos de texto: {len(nodos)}", flush=True)
 
-    originales = [str(nodo).strip() for nodo in nodos]
     traducciones = traductor.traducir_lote(originales)
     if originales and not any(
-        original != traduccion
+        original.casefold() != traduccion.casefold()
         for original, traduccion in zip(originales, traducciones)
     ):
-        raise RuntimeError(f"El servicio no tradujo ningún texto de {ruta_es}")
+        raise RuntimeError(f"El modelo no tradujo ningún texto de {ruta_es}")
 
     for nodo, traduccion in zip(nodos, traducciones):
         nodo.replace_with(restaurar_espacios(str(nodo), traduccion))
 
-    print(f"  Traducidos: {len(nodos)}/{len(nodos)}", flush=True)
-
-    referencias_atributos: list[tuple[object, str]] = []
-    valores_atributos: list[str] = []
+    referencias: list[tuple[Tag, str]] = []
+    valores: list[str] = []
     for etiqueta in soup.find_all(True):
-        if any(
-            getattr(ancestro, "name", None) in ETIQUETAS_NO_TRADUCIBLES
-            or getattr(ancestro, "attrs", {}).get("translate") == "no"
-            for ancestro in [etiqueta, *etiqueta.parents]
-        ):
+        if not etiqueta_traducible(etiqueta):
             continue
         for atributo in ATRIBUTOS_TRADUCIBLES:
             valor = etiqueta.get(atributo)
             if isinstance(valor, str) and valor.strip() and any(c.isalpha() for c in valor):
-                referencias_atributos.append((etiqueta, atributo))
-                valores_atributos.append(valor.strip())
+                referencias.append((etiqueta, atributo))
+                valores.append(valor.strip())
 
     for (etiqueta, atributo), traduccion in zip(
-        referencias_atributos, traductor.traducir_lote(valores_atributos)
+        referencias, traductor.traducir_lote(valores)
     ):
         etiqueta[atributo] = traduccion
 
     configurar_documento_ingles(soup, ruta_es)
 
-    ruta_en = Path(str(ruta_es).replace("_es.html", "_en.html"))
+    ruta_en = ruta_es.with_name(ruta_es.name.replace("_es.html", "_en.html"))
     ruta_temporal = ruta_en.with_suffix(f"{ruta_en.suffix}.tmp")
     ruta_temporal.write_text(str(soup), encoding="utf-8")
     os.replace(ruta_temporal, ruta_en)
     print(f"Creado con éxito: {ruta_en}", flush=True)
 
 
+def probar_motor() -> None:
+    traductor = TraductorOffline()
+    originales = [
+        "Hola, mundo.",
+        "Diseño de interfaces web.",
+        "Este texto se traduce sin utilizar una API externa.",
+    ]
+    traducciones = traductor.traducir_lote(originales)
+
+    for original, traduccion in zip(originales, traducciones):
+        print(f"{original} -> {traduccion}", flush=True)
+
+    if any(
+        not traduccion or original.casefold() == traduccion.casefold()
+        for original, traduccion in zip(originales, traducciones)
+    ):
+        raise RuntimeError("La prueba del modelo offline no produjo traducciones válidas")
+    print("Prueba del traductor offline superada.", flush=True)
+
+
 def main() -> None:
+    if sys.argv[1:] == ["--smoke-test"]:
+        probar_motor()
+        return
+
+    if any(argumento.startswith("-") for argumento in sys.argv[1:]):
+        raise ValueError("Argumento no reconocido")
+
     rutas = [Path(ruta) for ruta in (sys.argv[1:] or ARCHIVOS_ORIGEN)]
-    traductor = TraductorConReintentos()
+    traductor = TraductorOffline()
     for ruta in rutas:
         traducir_archivo(ruta, traductor)
 
