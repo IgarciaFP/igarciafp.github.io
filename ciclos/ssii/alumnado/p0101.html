@@ -1,0 +1,2443 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Práctica interactiva para aprender codificación ASCII, cifrado César y los elementos de la comunicación.">
+  <meta name="theme-color" content="#12324b">
+  <title>P0101 · Misión mensaje secreto</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2312324b'/%3E%3Crect x='10' y='16' width='44' height='34' rx='7' fill='%23ffd447'/%3E%3Cpath d='M14 21l18 14 18-14' fill='none' stroke='%2312324b' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #12324b;
+      --ink-soft: #385469;
+      --paper: #ffffff;
+      --canvas: #eef5f8;
+      --line: #c8d9e2;
+      --blue: #1668e3;
+      --blue-dark: #0b4eae;
+      --cyan: #31c7c5;
+      --yellow: #ffd447;
+      --yellow-soft: #fff6c7;
+      --green: #087f5b;
+      --green-soft: #e6f8f1;
+      --red: #c2413b;
+      --red-soft: #fff0ef;
+      --shadow: 0 16px 40px rgba(18, 50, 75, 0.11);
+      --radius: 22px;
+      --mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --sans: Inter, ui-rounded, "Nunito Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background-color: var(--canvas);
+      background-image:
+        linear-gradient(rgba(18, 50, 75, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(18, 50, 75, 0.045) 1px, transparent 1px);
+      background-size: 28px 28px;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button,
+    select,
+    input[type="range"] {
+      cursor: pointer;
+    }
+
+    button:disabled,
+    input:disabled,
+    select:disabled,
+    textarea:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    :focus-visible {
+      outline: 4px solid rgba(22, 104, 227, 0.25);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: fixed;
+      z-index: 100;
+      top: 10px;
+      left: 10px;
+      transform: translateY(-160%);
+      border-radius: 10px;
+      background: var(--paper);
+      color: var(--ink);
+      padding: 0.7rem 1rem;
+      font-weight: 800;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    .site-header {
+      position: relative;
+      overflow: hidden;
+      background: var(--ink);
+      color: white;
+      border-bottom: 7px solid var(--yellow);
+    }
+
+    .site-header::after {
+      content: "01000001   +3   01011010";
+      position: absolute;
+      right: -1.5rem;
+      bottom: -1.3rem;
+      color: rgba(255, 255, 255, 0.055);
+      font-family: var(--mono);
+      font-size: clamp(2.5rem, 8vw, 7.5rem);
+      font-weight: 900;
+      white-space: nowrap;
+      transform: rotate(-4deg);
+      pointer-events: none;
+    }
+
+    .header-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 2rem;
+      padding-block: 1.35rem 1.5rem;
+    }
+
+    .eyebrow {
+      margin: 0 0 0.25rem;
+      color: var(--yellow);
+      font-size: 0.82rem;
+      font-weight: 900;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 0.35rem;
+      font-size: clamp(1.8rem, 4vw, 3.1rem);
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+    }
+
+    .header-copy {
+      max-width: 720px;
+      margin-bottom: 0;
+      color: #d9e7ef;
+      font-size: 1.02rem;
+    }
+
+    .reset-button {
+      flex: 0 0 auto;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      padding: 0.65rem 1rem;
+      font-weight: 800;
+    }
+
+    .reset-button:hover {
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .lesson-strip {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0.7rem;
+      align-items: stretch;
+      margin: 1.25rem auto 0;
+    }
+
+    .lesson-card {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.8rem;
+      align-items: center;
+      min-height: 76px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 0.85rem 1rem;
+      box-shadow: 0 8px 22px rgba(18, 50, 75, 0.07);
+    }
+
+    .lesson-card strong,
+    .lesson-card span {
+      display: block;
+    }
+
+    .lesson-card strong {
+      margin-bottom: 0.08rem;
+      font-size: 1.02rem;
+    }
+
+    .lesson-card span {
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+    }
+
+    .lesson-icon {
+      display: grid;
+      width: 48px;
+      height: 48px;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--yellow-soft);
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 0.92rem;
+      font-weight: 900;
+    }
+
+    .lesson-arrow {
+      align-self: center;
+      color: var(--ink-soft);
+      font-size: 1.4rem;
+      font-weight: 900;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 235px minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+      margin-block: 1.25rem 3rem;
+    }
+
+    .mission-nav {
+      position: sticky;
+      top: 1rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.93);
+      padding: 1rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .progress-copy {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.45rem;
+      color: var(--ink-soft);
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+
+    .progress-track {
+      height: 9px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #dfeaf0;
+    }
+
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+      transition: width 250ms ease;
+    }
+
+    .step-list {
+      display: grid;
+      gap: 0.4rem;
+      margin: 1rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .step-button {
+      display: grid;
+      width: 100%;
+      grid-template-columns: 36px 1fr auto;
+      gap: 0.65rem;
+      align-items: center;
+      border: 0;
+      border-radius: 14px;
+      background: transparent;
+      color: var(--ink);
+      padding: 0.65rem;
+      text-align: left;
+    }
+
+    .step-button:hover {
+      background: #edf5fb;
+    }
+
+    .step-button[aria-current="step"] {
+      background: var(--ink);
+      color: white;
+    }
+
+    .step-number {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+      font-family: var(--mono);
+      font-size: 0.92rem;
+      font-weight: 900;
+    }
+
+    .step-name {
+      font-size: 0.94rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .step-status {
+      visibility: hidden;
+      color: var(--green);
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    .step-button[aria-current="step"] .step-status {
+      color: var(--yellow);
+    }
+
+    .step-button.is-complete .step-status {
+      visibility: visible;
+    }
+
+    .nav-note {
+      margin: 0.9rem 0 0;
+      color: var(--ink-soft);
+      font-size: 0.79rem;
+      line-height: 1.4;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .panel[hidden] {
+      display: none;
+    }
+
+    .panel-head {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: clamp(1.2rem, 3vw, 2rem);
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(120deg, #ffffff 0%, #f1fbfb 100%);
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    .stage-badge {
+      display: grid;
+      flex: 0 0 auto;
+      width: 54px;
+      height: 54px;
+      place-items: center;
+      border-radius: 17px;
+      background: var(--ink);
+      color: var(--yellow);
+      font-family: var(--mono);
+      font-size: 1.2rem;
+      font-weight: 900;
+      box-shadow: 5px 5px 0 var(--yellow);
+    }
+
+    .panel-head h2 {
+      margin-bottom: 0.25rem;
+      font-size: clamp(1.45rem, 3vw, 2rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .panel-head p {
+      max-width: 730px;
+      margin-bottom: 0;
+      color: var(--ink-soft);
+    }
+
+    .panel-body {
+      display: grid;
+      gap: 1.2rem;
+      padding: clamp(1.2rem, 3vw, 2rem);
+    }
+
+    .field-group {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .field-label,
+    legend {
+      color: var(--ink);
+      font-weight: 850;
+    }
+
+    .field-help {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 0.91rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+      border: 2px solid #a9c0cc;
+      border-radius: 13px;
+      background: #fff;
+      color: var(--ink);
+      padding: 0.8rem 0.9rem;
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--blue);
+      outline: 4px solid rgba(22, 104, 227, 0.13);
+    }
+
+    .code-input {
+      font-family: var(--mono);
+      font-size: 1.05rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .counter-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .character-count {
+      color: var(--ink-soft);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      align-items: center;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 46px;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      border: 2px solid transparent;
+      border-radius: 13px;
+      padding: 0.65rem 1rem;
+      font-weight: 850;
+      text-decoration: none;
+      transition: transform 120ms ease, background 120ms ease, box-shadow 120ms ease;
+    }
+
+    .button:not(:disabled):hover {
+      transform: translateY(-1px);
+    }
+
+    .button-primary {
+      background: var(--blue);
+      color: white;
+      box-shadow: 0 5px 0 var(--blue-dark);
+    }
+
+    .button-primary:not(:disabled):active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 var(--blue-dark);
+    }
+
+    .button-secondary {
+      border-color: #9eb7c4;
+      background: white;
+      color: var(--ink);
+    }
+
+    .button-secondary:hover {
+      background: #edf5fb;
+    }
+
+    .button-dark {
+      background: var(--ink);
+      color: white;
+      box-shadow: 0 5px 0 #071d2b;
+    }
+
+    .button-quiet {
+      border-color: transparent;
+      background: transparent;
+      color: var(--blue-dark);
+    }
+
+    .button-success {
+      background: var(--green);
+      color: white;
+      box-shadow: 0 5px 0 #04513a;
+    }
+
+    .notice {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.8rem;
+      align-items: start;
+      border: 1px solid #e1bd32;
+      border-left: 6px solid var(--yellow);
+      border-radius: 14px;
+      background: var(--yellow-soft);
+      padding: 0.9rem 1rem;
+    }
+
+    .notice-icon {
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--ink);
+      color: var(--yellow);
+      font-weight: 900;
+    }
+
+    .notice p {
+      margin: 0;
+    }
+
+    .feedback {
+      min-height: 0;
+      margin: 0;
+      border-radius: 13px;
+      font-weight: 750;
+    }
+
+    .feedback:not(:empty) {
+      padding: 0.8rem 0.95rem;
+    }
+
+    .feedback.success {
+      border: 1px solid #86d0b8;
+      background: var(--green-soft);
+      color: #075e45;
+    }
+
+    .feedback.error {
+      border: 1px solid #efb4af;
+      background: var(--red-soft);
+      color: #922e2a;
+    }
+
+    .feedback.info {
+      border: 1px solid #b5ccec;
+      background: #edf5ff;
+      color: #164d8b;
+    }
+
+    .challenge-box {
+      display: grid;
+      gap: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #f8fbfc;
+      padding: clamp(1rem, 2.5vw, 1.4rem);
+    }
+
+    .challenge-title {
+      margin-bottom: 0.1rem;
+      font-size: 1.15rem;
+    }
+
+    .phrase-ticket {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      align-items: center;
+      border: 2px dashed #95b5c4;
+      border-radius: 15px;
+      background: white;
+      padding: 0.9rem 1rem;
+    }
+
+    .ticket-label {
+      color: var(--ink-soft);
+      font-size: 0.82rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .phrase-ticket code {
+      overflow-wrap: anywhere;
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 1.08rem;
+      font-weight: 900;
+    }
+
+    details.reference {
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: white;
+    }
+
+    details.reference summary {
+      padding: 0.85rem 1rem;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .reference-content {
+      display: grid;
+      gap: 0.9rem;
+      padding: 0 1rem 1rem;
+    }
+
+    .reference-content p {
+      margin-bottom: 0;
+      color: var(--ink-soft);
+      font-size: 0.91rem;
+    }
+
+    .reference-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(47px, 1fr));
+      gap: 0.35rem;
+    }
+
+    .reference-item {
+      display: grid;
+      place-items: center;
+      min-height: 50px;
+      border: 1px solid #cddbe2;
+      border-radius: 9px;
+      background: #f6fafc;
+      line-height: 1.15;
+    }
+
+    .reference-item b {
+      font-family: var(--mono);
+      font-size: 0.98rem;
+    }
+
+    .reference-item small {
+      color: var(--ink-soft);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+    }
+
+    .ascii-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+      gap: 0.6rem;
+    }
+
+    .ascii-cell {
+      display: grid;
+      gap: 0.35rem;
+      justify-items: center;
+      border: 2px solid #cfdee5;
+      border-radius: 13px;
+      background: white;
+      padding: 0.55rem;
+      transition: border-color 120ms ease, background 120ms ease;
+    }
+
+    .ascii-cell.is-correct {
+      border-color: #68bd9f;
+      background: var(--green-soft);
+    }
+
+    .ascii-cell.is-wrong {
+      border-color: #e29994;
+      background: var(--red-soft);
+    }
+
+    .ascii-symbol {
+      min-height: 25px;
+      font-family: var(--mono);
+      font-size: 1.06rem;
+      font-weight: 900;
+    }
+
+    .ascii-symbol.space {
+      color: var(--ink-soft);
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+    }
+
+    .ascii-code-input {
+      width: 100% !important;
+      min-width: 0;
+      border: 1.5px solid #9db7c3 !important;
+      border-radius: 8px !important;
+      padding: 0.42rem 0.25rem !important;
+      font-family: var(--mono) !important;
+      font-size: 0.95rem !important;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .ascii-hint {
+      min-height: 1em;
+      color: var(--blue-dark);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 900;
+    }
+
+    .ascii-sequence {
+      overflow-wrap: anywhere;
+      border-radius: 13px;
+      background: var(--ink);
+      color: #dff7f5;
+      padding: 0.9rem 1rem;
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .range-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 1rem;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: #f7fbfd;
+      padding: 1rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--blue);
+    }
+
+    .shift-output {
+      display: grid;
+      width: 66px;
+      height: 66px;
+      place-items: center;
+      border-radius: 18px;
+      background: var(--yellow);
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 1.5rem;
+      font-weight: 950;
+      box-shadow: 5px 5px 0 var(--ink);
+    }
+
+    .alphabet-board {
+      display: grid;
+      gap: 0.5rem;
+      overflow-x: auto;
+      border-radius: 16px;
+      background: var(--ink);
+      color: white;
+      padding: 1rem;
+      scrollbar-color: var(--cyan) transparent;
+    }
+
+    .alphabet-row {
+      display: grid;
+      grid-template-columns: 92px repeat(26, 29px);
+      gap: 0.25rem;
+      align-items: center;
+      min-width: 950px;
+    }
+
+    .alphabet-label {
+      color: #b8d3df;
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .alphabet-letter {
+      display: grid;
+      width: 29px;
+      height: 29px;
+      place-items: center;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.1);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      font-weight: 900;
+    }
+
+    .alphabet-row.shifted .alphabet-letter {
+      background: var(--yellow);
+      color: var(--ink);
+    }
+
+    .locked-card {
+      border: 2px dashed #9fb8c5;
+      border-radius: 17px;
+      background: #f5f9fb;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .locked-card p {
+      margin-bottom: 0.75rem;
+    }
+
+    .handoff-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 0.7fr);
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .handoff-card {
+      position: relative;
+      overflow: hidden;
+      border: 3px solid var(--ink);
+      border-radius: 18px;
+      background: var(--yellow);
+      padding: 1.25rem;
+      box-shadow: 8px 8px 0 var(--ink);
+    }
+
+    .handoff-card::before {
+      content: "P0101";
+      position: absolute;
+      top: 0.5rem;
+      right: 0.75rem;
+      color: rgba(18, 50, 75, 0.24);
+      font-family: var(--mono);
+      font-size: 1.5rem;
+      font-weight: 950;
+      transform: rotate(5deg);
+    }
+
+    .handoff-card h3 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .handoff-data {
+      display: grid;
+      gap: 0.35rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .handoff-data span {
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .handoff-data code {
+      overflow-wrap: anywhere;
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.67);
+      color: var(--ink);
+      padding: 0.65rem;
+      font-family: var(--mono);
+      font-size: 1.1rem;
+      font-weight: 950;
+    }
+
+    .handoff-tip {
+      display: grid;
+      gap: 0.65rem;
+      border-radius: 16px;
+      background: #eef6fa;
+      padding: 1rem;
+    }
+
+    .handoff-tip h3 {
+      margin-bottom: 0;
+      font-size: 1rem;
+    }
+
+    .handoff-tip ol {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    .check-row {
+      display: flex;
+      gap: 0.65rem;
+      align-items: flex-start;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: white;
+      padding: 0.85rem;
+      font-weight: 750;
+    }
+
+    .check-row input {
+      flex: 0 0 auto;
+      width: 22px;
+      height: 22px;
+      margin-top: 0.1rem;
+      accent-color: var(--green);
+    }
+
+    .split-fields {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(150px, 0.34fr);
+      gap: 0.8rem;
+    }
+
+    .concept-list {
+      display: grid;
+      gap: 0.6rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: concept;
+    }
+
+    .concept-item {
+      display: grid;
+      grid-template-columns: 34px minmax(180px, 1fr) minmax(205px, 0.75fr);
+      gap: 0.8rem;
+      align-items: center;
+      border: 2px solid #d2e0e7;
+      border-radius: 14px;
+      background: white;
+      padding: 0.75rem;
+      counter-increment: concept;
+    }
+
+    .concept-item::before {
+      content: counter(concept);
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border-radius: 50%;
+      background: #e7f0f5;
+      font-family: var(--mono);
+      font-weight: 900;
+    }
+
+    .concept-item.is-correct {
+      border-color: #68bd9f;
+      background: var(--green-soft);
+    }
+
+    .concept-item.is-wrong {
+      border-color: #e29994;
+      background: var(--red-soft);
+    }
+
+    .concept-item p {
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .concept-item select {
+      padding: 0.6rem 0.7rem;
+      font-size: 0.92rem;
+    }
+
+    fieldset {
+      min-width: 0;
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 1rem;
+    }
+
+    legend {
+      padding-inline: 0.35rem;
+    }
+
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+
+    .scenario-grid .wide {
+      grid-column: 1 / -1;
+    }
+
+    .fixed-answer {
+      min-height: 48px;
+      border: 1px dashed #9fb8c5;
+      border-radius: 12px;
+      background: #f4f8fa;
+      padding: 0.7rem 0.8rem;
+      overflow-wrap: anywhere;
+      font-family: var(--mono);
+      font-weight: 800;
+    }
+
+    .report-card {
+      display: grid;
+      gap: 0.9rem;
+      border: 3px solid var(--ink);
+      border-radius: 18px;
+      background: white;
+      padding: 1.2rem;
+      box-shadow: 8px 8px 0 var(--cyan);
+    }
+
+    .report-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-start;
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 0.75rem;
+    }
+
+    .report-head h3 {
+      margin-bottom: 0.1rem;
+      font-size: 1.3rem;
+    }
+
+    .mission-stamp {
+      flex: 0 0 auto;
+      border: 3px solid var(--green);
+      border-radius: 10px;
+      color: var(--green);
+      padding: 0.35rem 0.55rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 950;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transform: rotate(-3deg);
+    }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.7rem;
+      margin: 0;
+    }
+
+    .report-grid div {
+      border-radius: 11px;
+      background: #f1f6f9;
+      padding: 0.7rem;
+    }
+
+    .report-grid .wide {
+      grid-column: 1 / -1;
+    }
+
+    .report-grid dt {
+      color: var(--ink-soft);
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .report-grid dd {
+      margin: 0.15rem 0 0;
+      overflow-wrap: anywhere;
+      font-weight: 800;
+    }
+
+    .panel-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.8rem;
+      align-items: center;
+      border-top: 1px solid var(--line);
+      padding-top: 1rem;
+    }
+
+    .footer {
+      padding: 0 1rem 2rem;
+      color: var(--ink-soft);
+      text-align: center;
+      font-size: 0.84rem;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 850px) {
+      .header-inner {
+        display: grid;
+      }
+
+      .reset-button {
+        justify-self: start;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .mission-nav {
+        position: static;
+        overflow-x: auto;
+      }
+
+      .step-list {
+        grid-template-columns: repeat(5, minmax(118px, 1fr));
+      }
+
+      .nav-note {
+        display: none;
+      }
+
+      .handoff-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .shell {
+        width: min(100% - 20px, 1180px);
+      }
+
+      .lesson-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-arrow {
+        justify-self: center;
+        transform: rotate(90deg);
+      }
+
+      .panel-head {
+        display: grid;
+      }
+
+      .stage-badge {
+        width: 48px;
+        height: 48px;
+      }
+
+      .split-fields,
+      .scenario-grid,
+      .report-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .scenario-grid .wide,
+      .report-grid .wide {
+        grid-column: auto;
+      }
+
+      .concept-item {
+        grid-template-columns: 34px minmax(0, 1fr);
+      }
+
+      .concept-item select {
+        grid-column: 1 / -1;
+      }
+
+      .range-card {
+        grid-template-columns: 1fr;
+      }
+
+      .shift-output {
+        justify-self: start;
+      }
+
+      .panel-actions {
+        align-items: stretch;
+        flex-direction: column-reverse;
+      }
+
+      .panel-actions .button {
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    @media print {
+      @page {
+        margin: 14mm;
+      }
+
+      body {
+        background: white;
+        color: #000;
+      }
+
+      body.print-slip > *:not(.workspace),
+      body.print-report > *:not(.workspace),
+      body.print-slip .mission-nav,
+      body.print-report .mission-nav,
+      body.print-slip .panel:not(#step3),
+      body.print-report .panel:not(#step5),
+      body.print-slip #step3 > *:not(.panel-body),
+      body.print-report #step5 > *:not(.panel-body),
+      body.print-slip #step3 .panel-body > *:not(#handoffCard),
+      body.print-report #step5 .panel-body > *:not(#reportCard) {
+        display: none !important;
+      }
+
+      body.print-slip .workspace,
+      body.print-report .workspace {
+        display: block;
+        width: 100%;
+        margin: 0;
+      }
+
+      body.print-slip #step3,
+      body.print-report #step5,
+      body.print-slip #step3 .panel-body,
+      body.print-report #step5 .panel-body {
+        display: block !important;
+        border: 0;
+        padding: 0;
+        box-shadow: none;
+      }
+
+      .handoff-card,
+      .report-card {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Saltar a la actividad</a>
+
+  <header class="site-header">
+    <div class="shell header-inner">
+      <div>
+        <p class="eyebrow">Sistemas informáticos · Práctica P0101</p>
+        <h1>Misión: mensaje secreto</h1>
+        <p class="header-copy">Convierte una frase a ASCII, cífrala con César, envíala y descifra la que recibas.</p>
+      </div>
+      <button class="reset-button" id="resetMission" type="button">Reiniciar misión</button>
+    </div>
+  </header>
+
+  <div class="shell lesson-strip" aria-label="Idea clave">
+    <div class="lesson-card">
+      <span class="lesson-icon" aria-hidden="true">A→65</span>
+      <div><strong>Codificar</strong><span>Representar los caracteres con números ASCII.</span></div>
+    </div>
+    <span class="lesson-arrow" aria-hidden="true">→</span>
+    <div class="lesson-card">
+      <span class="lesson-icon" aria-hidden="true">A→D</span>
+      <div><strong>Cifrar</strong><span>Ocultar el texto desplazando las letras con César.</span></div>
+    </div>
+  </div>
+
+  <div class="shell workspace">
+    <nav class="mission-nav" aria-label="Pasos de la misión">
+      <div class="progress-copy">
+        <span>Progreso</span>
+        <span id="progressText">0 de 5</span>
+      </div>
+      <div class="progress-track" role="progressbar" aria-label="Progreso de la práctica" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <ol class="step-list">
+        <li><button class="step-button" type="button" data-go-step="1" aria-current="step"><span class="step-number">01</span><span class="step-name">Codifica</span><span class="step-status" aria-label="Completado">✓</span></button></li>
+        <li><button class="step-button" type="button" data-go-step="2"><span class="step-number">02</span><span class="step-name">Cifra</span><span class="step-status" aria-label="Completado">✓</span></button></li>
+        <li><button class="step-button" type="button" data-go-step="3"><span class="step-number">03</span><span class="step-name">Envía</span><span class="step-status" aria-label="Completado">✓</span></button></li>
+        <li><button class="step-button" type="button" data-go-step="4"><span class="step-number">04</span><span class="step-name">Descifra</span><span class="step-status" aria-label="Completado">✓</span></button></li>
+        <li><button class="step-button" type="button" data-go-step="5"><span class="step-number">05</span><span class="step-name">Analiza</span><span class="step-status" aria-label="Completado">✓</span></button></li>
+      </ol>
+      <p class="nav-note">Puedes ir directamente a «Descifra» cuando te llegue el mensaje de otro equipo.</p>
+    </nav>
+
+    <main id="main-content" tabindex="-1">
+      <section class="panel" id="step1" data-panel="1" aria-labelledby="step1-title">
+        <div class="panel-head">
+          <span class="stage-badge" aria-hidden="true">01</span>
+          <div>
+            <h2 id="step1-title" tabindex="-1">Prepara y codifica tu frase</h2>
+            <p>Trabajaremos con ASCII básico: letras mayúsculas, números, espacios y signos sencillos.</p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="notice">
+            <span class="notice-icon" aria-hidden="true">i</span>
+            <p><strong>ASCII básico no contiene tildes ni la Ñ.</strong> Al preparar la frase, «SEÑAL» se convertirá en «SENAL» y «¿QUÉ?» en «?QUE?».</p>
+          </div>
+
+          <div class="field-group">
+            <div class="counter-row">
+              <label class="field-label" for="plainPhrase">Tu frase secreta</label>
+              <span class="character-count" id="characterCount">0 / 40</span>
+            </div>
+            <input class="code-input" id="plainPhrase" type="text" maxlength="40" autocomplete="off" spellcheck="false" placeholder="Ejemplo: NOS VEMOS EN EL PATIO">
+            <p class="field-help">Escribe entre 3 y 40 caracteres. No compartas todavía esta frase.</p>
+          </div>
+
+          <div class="button-row">
+            <button class="button button-primary" id="preparePhrase" type="button">Preparar frase</button>
+          </div>
+          <p class="feedback" id="prepareFeedback" role="status" aria-live="polite"></p>
+
+          <div class="challenge-box" id="asciiChallenge" hidden>
+            <div>
+              <h3 class="challenge-title">Reto ASCII</h3>
+              <p class="field-help">Busca cada símbolo en la tabla y escribe su número. Puedes pegar una serie de números en la primera casilla.</p>
+            </div>
+
+            <div class="phrase-ticket">
+              <span class="ticket-label">Frase preparada</span>
+              <code id="preparedPhrase"></code>
+            </div>
+
+            <details class="reference">
+              <summary>Consultar la tabla ASCII</summary>
+              <div class="reference-content">
+                <p>Las letras mayúsculas van de 65 a 90 y los números, de 48 a 57.</p>
+                <div class="reference-grid" id="asciiReference"></div>
+              </div>
+            </details>
+
+            <div class="ascii-grid" id="asciiCells" aria-label="Casillas para los códigos ASCII"></div>
+
+            <div class="button-row">
+              <button class="button button-primary" id="checkAscii" type="button">Comprobar ASCII</button>
+              <button class="button button-secondary" id="hintAscii" type="button">Dame una pista</button>
+              <button class="button button-secondary" id="copyAscii" type="button" disabled>Copiar números</button>
+            </div>
+            <p class="feedback" id="asciiFeedback" role="status" aria-live="polite"></p>
+            <div id="asciiSolution" hidden>
+              <p class="field-label">Tu frase en ASCII decimal</p>
+              <div class="ascii-sequence" id="asciiSequence"></div>
+            </div>
+          </div>
+
+          <div class="panel-actions">
+            <span class="field-help">Primero representa; después oculta.</span>
+            <button class="button button-dark" id="toStep2" type="button" disabled>Siguiente: cifrar →</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="step2" data-panel="2" aria-labelledby="step2-title" hidden>
+        <div class="panel-head">
+          <span class="stage-badge" aria-hidden="true">02</span>
+          <div>
+            <h2 id="step2-title" tabindex="-1">Cifra con el método César</h2>
+            <p>Mueve cada letra el mismo número de posiciones. Los espacios, números y signos no cambian.</p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="locked-card" id="cipherLocked">
+            <p>Necesitas preparar y resolver primero la frase en ASCII.</p>
+            <button class="button button-secondary" type="button" data-go-step="1">Ir al paso 1</button>
+          </div>
+
+          <div id="cipherWorkspace" hidden>
+            <div class="phrase-ticket">
+              <span class="ticket-label">Texto original</span>
+              <code id="cipherOriginal"></code>
+            </div>
+
+            <div class="range-card">
+              <div class="field-group">
+                <label class="field-label" for="shiftRange">Elige un desplazamiento entre 1 y 10</label>
+                <input id="shiftRange" type="range" min="1" max="10" value="3" step="1">
+                <p class="field-help">Con +3, A se convierte en D, B en E… y Z vuelve a C.</p>
+              </div>
+              <output class="shift-output" id="shiftOutput" for="shiftRange">+3</output>
+            </div>
+
+            <div class="alphabet-board" id="encryptAlphabet" aria-label="Alfabeto para cifrar"></div>
+
+            <div class="field-group">
+              <label class="field-label" for="cipherGuess">Escribe aquí tu frase cifrada</label>
+              <input class="code-input" id="cipherGuess" type="text" maxlength="40" autocomplete="off" spellcheck="false" placeholder="Desplaza una a una las letras">
+            </div>
+
+            <div class="button-row">
+              <button class="button button-primary" id="checkCipher" type="button">Comprobar cifrado</button>
+              <button class="button button-secondary" id="hintCipher" type="button">Dame una pista</button>
+            </div>
+            <p class="feedback" id="cipherFeedback" role="status" aria-live="polite"></p>
+          </div>
+
+          <div class="panel-actions">
+            <button class="button button-quiet" type="button" data-go-step="1">← Volver a ASCII</button>
+            <button class="button button-dark" id="toStep3" type="button" disabled>Siguiente: enviar →</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="step3" data-panel="3" aria-labelledby="step3-title" hidden>
+        <div class="panel-head">
+          <span class="stage-badge" aria-hidden="true">03</span>
+          <div>
+            <h2 id="step3-title" tabindex="-1">Entrega el mensaje</h2>
+            <p>Comparte únicamente el texto cifrado y el desplazamiento. Puedes hacerlo en papel o por un medio digital.</p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="locked-card" id="sendLocked">
+            <p>Completa el cifrado para preparar la tarjeta de entrega.</p>
+            <button class="button button-secondary" type="button" data-go-step="2">Ir al paso 2</button>
+          </div>
+
+          <div id="sendWorkspace" hidden>
+            <div class="notice">
+              <span class="notice-icon" aria-hidden="true">→</span>
+              <p>Pásalo a la persona de tu derecha. Si no hay nadie, pásalo a la primera persona de la izquierda de la fila siguiente.</p>
+            </div>
+
+            <div class="handoff-layout">
+              <article class="handoff-card" id="handoffCard" aria-label="Tarjeta para entregar">
+                <h3>Mensaje para descifrar</h3>
+                <div class="handoff-data">
+                  <span>Texto cifrado</span>
+                  <code id="handoffCipher">—</code>
+                </div>
+                <div class="handoff-data">
+                  <span>Desplazamiento César</span>
+                  <code id="handoffShift">—</code>
+                </div>
+                <p class="field-help">No incluye la frase original ni los números ASCII.</p>
+              </article>
+
+              <div class="handoff-tip">
+                <h3>Elige cómo enviarlo</h3>
+                <label class="sr-only" for="outgoingMedium">Medio de envío</label>
+                <select id="outgoingMedium">
+                  <option value="">Selecciona un medio…</option>
+                  <option>Nota escrita en papel</option>
+                  <option>Mensaje o chat digital</option>
+                  <option>Correo electrónico</option>
+                  <option>Documento compartido</option>
+                  <option>De viva voz</option>
+                  <option>Otro medio</option>
+                </select>
+                <ol>
+                  <li>Copia o imprime la tarjeta.</li>
+                  <li>Entrégala sin revelar el original.</li>
+                  <li>Espera el mensaje de la persona de tu izquierda.</li>
+                </ol>
+                <p class="field-help">En esta práctica enviamos también la clave para aprender el método. Un cifrado real debe protegerla mejor.</p>
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button class="button button-primary" id="copyHandoff" type="button">Copiar tarjeta</button>
+              <button class="button button-secondary" id="downloadHandoff" type="button">Descargar .txt</button>
+              <button class="button button-secondary" id="printHandoff" type="button">Imprimir tarjeta</button>
+            </div>
+            <p class="feedback" id="handoffFeedback" role="status" aria-live="polite"></p>
+
+            <label class="check-row" for="sentCheck">
+              <input id="sentCheck" type="checkbox">
+              <span>He enviado la tarjeta y no he enseñado la frase original.</span>
+            </label>
+          </div>
+
+          <div class="panel-actions">
+            <button class="button button-quiet" type="button" data-go-step="2">← Volver a cifrar</button>
+            <button class="button button-dark" id="toStep4" type="button">Ir a recibir y descifrar →</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="step4" data-panel="4" aria-labelledby="step4-title" hidden>
+        <div class="panel-head">
+          <span class="stage-badge" aria-hidden="true">04</span>
+          <div>
+            <h2 id="step4-title" tabindex="-1">Descifra lo que recibas</h2>
+            <p>Introduce la tarjeta que te han entregado. Para volver al original, mueve las letras en sentido contrario.</p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="notice">
+            <span class="notice-icon" aria-hidden="true">−</span>
+            <p>Si la tarjeta dice <strong>+4</strong>, para descifrar debes retroceder <strong>4 posiciones</strong> en el alfabeto.</p>
+          </div>
+
+          <div class="split-fields">
+            <div class="field-group">
+              <label class="field-label" for="receivedCipher">Texto cifrado recibido</label>
+              <input class="code-input" id="receivedCipher" type="text" maxlength="40" autocomplete="off" spellcheck="false" placeholder="Escribe exactamente lo recibido">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="receivedShift">Desplazamiento</label>
+              <select id="receivedShift">
+                <option value="1">+1</option>
+                <option value="2">+2</option>
+                <option value="3" selected>+3</option>
+                <option value="4">+4</option>
+                <option value="5">+5</option>
+                <option value="6">+6</option>
+                <option value="7">+7</option>
+                <option value="8">+8</option>
+                <option value="9">+9</option>
+                <option value="10">+10</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="alphabet-board" id="decryptAlphabet" aria-label="Alfabeto para descifrar"></div>
+
+          <div class="field-group">
+            <label class="field-label" for="plainGuess">¿Cuál era la frase original?</label>
+            <input class="code-input" id="plainGuess" type="text" maxlength="40" autocomplete="off" spellcheck="false" placeholder="Retrocede las letras y escribe tu respuesta">
+          </div>
+
+          <div class="button-row">
+            <button class="button button-primary" id="checkPlain" type="button">Comprobar descifrado</button>
+            <button class="button button-secondary" id="hintPlain" type="button">Dame una pista</button>
+          </div>
+          <p class="feedback" id="plainFeedback" role="status" aria-live="polite"></p>
+
+          <details class="reference" id="recoveredAscii" hidden>
+            <summary>Ver el ASCII de la frase recuperada</summary>
+            <div class="reference-content">
+              <div class="ascii-sequence" id="recoveredAsciiSequence"></div>
+            </div>
+          </details>
+
+          <div class="panel-actions">
+            <button class="button button-quiet" type="button" data-go-step="3">← Volver al envío</button>
+            <button class="button button-dark" id="toStep5" type="button" disabled>Siguiente: analizar →</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="step5" data-panel="5" aria-labelledby="step5-title" hidden>
+        <div class="panel-head">
+          <span class="stage-badge" aria-hidden="true">05</span>
+          <div>
+            <h2 id="step5-title" tabindex="-1">Identifica la comunicación</h2>
+            <p>Relaciona cada descripción con su elemento y completa el mapa de la comunicación que acabas de vivir.</p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="challenge-box">
+            <div>
+              <h3 class="challenge-title">Reto de conceptos</h3>
+              <p class="field-help">Selecciona el nombre correcto en las nueve filas.</p>
+            </div>
+
+            <ol class="concept-list" id="conceptList">
+              <li class="concept-item"><p>Persona que crea y envía el mensaje.</p><select aria-label="Persona que crea y envía" data-answer="emisor"><option value="">Elige…</option></select></li>
+              <li class="concept-item"><p>Persona que recibe e interpreta el mensaje.</p><select aria-label="Persona que recibe" data-answer="receptor"><option value="">Elige…</option></select></li>
+              <li class="concept-item"><p>Información que se transmite.</p><select aria-label="Información transmitida" data-answer="mensaje"><option value="">Elige…</option></select></li>
+              <li class="concept-item"><p>Soporte o camino por el que viaja.</p><select aria-label="Soporte o camino" data-answer="canal"><option value="">Elige…</option></select></li>
+              <li class="concept-item"><p>Dificultad que puede alterar o impedir la comunicación.</p><select aria-label="Dificultad que altera" data-answer="ruido"><option value="">Elige…</option></select></li>
+              <li class="concept-item"><p>Reglas que representan los caracteres como números.</p><select aria-label="Reglas de representación numérica" data-answer="ascii"><option value="">Elige…</option></select></li>
+              <li class="concept-item"><p>Método que oculta el texto desplazando letras.</p><select aria-label="Método que oculta el texto" data-answer="cesar"><option value="">Elige…</option></select></li>
+              <li class="concept-item"><p>Respuesta que confirma si el mensaje se entendió.</p><select aria-label="Respuesta de confirmación" data-answer="retroalimentacion"><option value="">Elige…</option></select></li>
+              <li class="concept-item"><p>Situación y propósito en los que ocurre todo.</p><select aria-label="Situación y propósito" data-answer="contexto"><option value="">Elige…</option></select></li>
+            </ol>
+
+            <div class="button-row">
+              <button class="button button-primary" id="checkConcepts" type="button">Comprobar conceptos</button>
+            </div>
+            <p class="feedback" id="conceptFeedback" role="status" aria-live="polite"></p>
+          </div>
+
+          <fieldset>
+            <legend>Mapa de tu comunicación</legend>
+            <div class="scenario-grid">
+              <div class="field-group">
+                <label class="field-label" for="incomingSender">Emisor o emisora</label>
+                <input id="incomingSender" type="text" maxlength="40" autocomplete="name" placeholder="Quien te envió el mensaje">
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="incomingReceiver">Receptor o receptora</label>
+                <input id="incomingReceiver" type="text" maxlength="40" autocomplete="name" placeholder="Tu nombre">
+              </div>
+              <div class="field-group wide">
+                <span class="field-label">Mensaje transmitido</span>
+                <div class="fixed-answer" id="scenarioMessage">Completa antes el paso 4.</div>
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="incomingMedium">Canal o medio</label>
+                <select id="incomingMedium">
+                  <option value="">Selecciona…</option>
+                  <option>Nota escrita en papel</option>
+                  <option>Mensaje o chat digital</option>
+                  <option>Correo electrónico</option>
+                  <option>Documento compartido</option>
+                  <option>De viva voz</option>
+                  <option>Otro medio</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <span class="field-label">Codificación y cifrado</span>
+                <div class="fixed-answer" id="scenarioCode">ASCII decimal · César</div>
+              </div>
+              <div class="field-group wide">
+                <label class="field-label" for="incomingNoise">Ruido posible</label>
+                <input id="incomingNoise" type="text" maxlength="100" placeholder="Ejemplo: una letra mal copiada o mala conexión">
+              </div>
+              <div class="field-group wide">
+                <label class="field-label" for="incomingContext">Contexto e intención</label>
+                <input id="incomingContext" type="text" maxlength="120" placeholder="¿Dónde ocurre y para qué se comunica?">
+              </div>
+              <div class="field-group wide">
+                <label class="field-label" for="incomingFeedback">Retroalimentación</label>
+                <input id="incomingFeedback" type="text" maxlength="100" placeholder="¿Cómo confirmarás que lo has entendido?">
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="button-row">
+            <button class="button button-success" id="buildReport" type="button">Terminar y crear mi ficha</button>
+          </div>
+          <p class="feedback" id="reportFeedback" role="status" aria-live="polite"></p>
+
+          <article class="report-card" id="reportCard" hidden aria-label="Ficha final de comunicación">
+            <div class="report-head">
+              <div>
+                <h3>Ficha de comunicación</h3>
+                <p class="field-help">Práctica P0101 · ASCII y César</p>
+              </div>
+              <span class="mission-stamp">Misión superada</span>
+            </div>
+            <dl class="report-grid" id="reportGrid"></dl>
+          </article>
+
+          <div class="button-row" id="reportActions" hidden>
+            <button class="button button-primary" id="copyReport" type="button">Copiar ficha</button>
+            <button class="button button-secondary" id="printReport" type="button">Imprimir ficha</button>
+          </div>
+
+          <div class="panel-actions">
+            <button class="button button-quiet" type="button" data-go-step="4">← Volver a descifrar</button>
+            <span class="field-help">Comprueba, explica y aprende de los errores.</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <p>Consejo: una codificación representa datos; un cifrado intenta ocultar su contenido.</p>
+  </footer>
+
+  <script>
+    "use strict";
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const conceptOptions = [
+      ["emisor", "Emisor/a"],
+      ["receptor", "Receptor/a"],
+      ["mensaje", "Mensaje"],
+      ["canal", "Canal o medio"],
+      ["ruido", "Ruido"],
+      ["ascii", "Codificación ASCII"],
+      ["cesar", "Cifrado César"],
+      ["retroalimentacion", "Retroalimentación"],
+      ["contexto", "Contexto"]
+    ];
+
+    const state = {
+      currentStep: 1,
+      phrase: "",
+      asciiComplete: false,
+      shift: 3,
+      cipher: "",
+      cipherComplete: false,
+      sent: false,
+      receivedCipher: "",
+      receivedShift: 3,
+      recoveredPhrase: "",
+      receiveComplete: false,
+      conceptsComplete: false,
+      reportComplete: false
+    };
+
+    function normalizeBasicAscii(value) {
+      return value
+        .replace(/[¿]/g, "?")
+        .replace(/[¡]/g, "!")
+        .replace(/[‘’]/g, "'")
+        .replace(/[“”]/g, '"')
+        .replace(/[–—]/g, "-")
+        .replace(/…/g, "...")
+        .toUpperCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^A-Z0-9 .,;:!?"'()\-]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function caesarTransform(text, shift) {
+      const safeShift = ((Number(shift) % 26) + 26) % 26;
+      return Array.from(text).map((character) => {
+        const code = character.charCodeAt(0);
+        if (code >= 65 && code <= 90) {
+          return String.fromCharCode(65 + ((code - 65 + safeShift) % 26));
+        }
+        return character;
+      }).join("");
+    }
+
+    function asciiOf(text) {
+      return Array.from(text).map((character) => character.charCodeAt(0));
+    }
+
+    function readableCharacter(character) {
+      if (character === " ") return "ESPACIO";
+      if (character === "\"") return "COMILLAS";
+      return character;
+    }
+
+    function setFeedback(element, message = "", type = "") {
+      element.textContent = message;
+      element.className = "feedback" + (type ? ` ${type}` : "");
+    }
+
+    function escapeReportValue(value) {
+      return String(value || "—");
+    }
+
+    async function copyText(text, feedbackElement, successMessage) {
+      try {
+        await navigator.clipboard.writeText(text);
+        setFeedback(feedbackElement, successMessage, "success");
+      } catch (error) {
+        const helper = document.createElement("textarea");
+        helper.value = text;
+        helper.setAttribute("readonly", "");
+        helper.style.position = "fixed";
+        helper.style.opacity = "0";
+        document.body.appendChild(helper);
+        helper.select();
+        const copied = typeof document.execCommand === "function" && document.execCommand("copy");
+        helper.remove();
+        setFeedback(
+          feedbackElement,
+          copied ? successMessage : "No se pudo copiar. Selecciona el texto y cópialo manualmente.",
+          copied ? "success" : "error"
+        );
+      }
+    }
+
+    function downloadText(filename, text) {
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function switchStep(step, focusHeading = true) {
+      const nextStep = Math.min(5, Math.max(1, Number(step)));
+      state.currentStep = nextStep;
+      $$('[data-panel]').forEach((panel) => {
+        panel.hidden = Number(panel.dataset.panel) !== nextStep;
+      });
+      $$('[data-go-step]').forEach((button) => {
+        if (Number(button.dataset.goStep) === nextStep && button.classList.contains("step-button")) {
+          button.setAttribute("aria-current", "step");
+        } else if (button.classList.contains("step-button")) {
+          button.removeAttribute("aria-current");
+        }
+      });
+      if (nextStep === 2) updateCipherWorkspace();
+      if (nextStep === 3) updateSendWorkspace();
+      if (nextStep === 5) updateScenario();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (focusHeading) {
+        const heading = $(`#step${nextStep}-title`);
+        window.setTimeout(() => heading && heading.focus({ preventScroll: true }), 80);
+      }
+    }
+
+    function updateProgress() {
+      const complete = [
+        state.asciiComplete,
+        state.cipherComplete,
+        state.sent,
+        state.receiveComplete,
+        state.reportComplete
+      ];
+      const count = complete.filter(Boolean).length;
+      $("#progressText").textContent = `${count} de 5`;
+      $("#progressFill").style.width = `${count * 20}%`;
+      const progressTrack = $(".progress-track");
+      progressTrack.setAttribute("aria-valuenow", String(count));
+      $$(".step-button").forEach((button, index) => {
+        button.classList.toggle("is-complete", complete[index]);
+      });
+    }
+
+    function buildAsciiReference() {
+      const characters = [" ", ..."0123456789", ...alphabet, ".", ",", ";", ":", "!", "?", "-", "(", ")", "'", '"'];
+      const fragment = document.createDocumentFragment();
+      characters.forEach((character) => {
+        const item = document.createElement("span");
+        item.className = "reference-item";
+        const symbol = document.createElement("b");
+        symbol.textContent = character === " " ? "ESP" : character;
+        const code = document.createElement("small");
+        code.textContent = String(character.charCodeAt(0));
+        item.append(symbol, code);
+        fragment.appendChild(item);
+      });
+      $("#asciiReference").appendChild(fragment);
+    }
+
+    function renderAsciiChallenge() {
+      const container = $("#asciiCells");
+      container.replaceChildren();
+      const fragment = document.createDocumentFragment();
+
+      Array.from(state.phrase).forEach((character, index) => {
+        const cell = document.createElement("label");
+        cell.className = "ascii-cell";
+        cell.dataset.index = String(index);
+
+        const symbol = document.createElement("span");
+        symbol.className = "ascii-symbol" + (character === " " ? " space" : "");
+        symbol.textContent = readableCharacter(character);
+
+        const input = document.createElement("input");
+        input.className = "ascii-code-input";
+        input.type = "text";
+        input.inputMode = "numeric";
+        input.maxLength = 3;
+        input.autocomplete = "off";
+        input.setAttribute("aria-label", `Código ASCII de ${readableCharacter(character)}, posición ${index + 1}`);
+        input.addEventListener("input", () => {
+          input.value = input.value.replace(/\D/g, "").slice(0, 3);
+          cell.classList.remove("is-correct", "is-wrong");
+          state.asciiComplete = false;
+          $("#toStep2").disabled = true;
+          $("#copyAscii").disabled = true;
+          $("#asciiSolution").hidden = true;
+          setFeedback($("#asciiFeedback"));
+          updateProgress();
+        });
+        input.addEventListener("paste", (event) => distributeAsciiPaste(event, index));
+
+        const hint = document.createElement("span");
+        hint.className = "ascii-hint";
+        hint.setAttribute("aria-hidden", "true");
+
+        cell.append(symbol, input, hint);
+        fragment.appendChild(cell);
+      });
+
+      container.appendChild(fragment);
+    }
+
+    function distributeAsciiPaste(event, startIndex) {
+      const raw = event.clipboardData && event.clipboardData.getData("text");
+      if (!raw) return;
+      const numbers = raw.trim().split(/[\s,;]+/).filter(Boolean);
+      if (numbers.length < 2 || numbers.some((value) => !/^\d{1,3}$/.test(value))) return;
+      event.preventDefault();
+      const inputs = $$(".ascii-code-input");
+      numbers.forEach((number, offset) => {
+        const input = inputs[startIndex + offset];
+        if (input) input.value = number.slice(0, 3);
+      });
+      inputs[Math.min(startIndex + numbers.length, inputs.length - 1)]?.focus();
+    }
+
+    function preparePhrase() {
+      const raw = $("#plainPhrase").value;
+      const normalized = normalizeBasicAscii(raw).slice(0, 40);
+      if (normalized.length < 3) {
+        setFeedback($("#prepareFeedback"), "Escribe una frase de al menos 3 caracteres.", "error");
+        return;
+      }
+
+      const changed = raw !== normalized;
+      state.phrase = normalized;
+      state.asciiComplete = false;
+      state.cipherComplete = false;
+      state.cipher = "";
+      state.sent = false;
+      $("#plainPhrase").value = normalized;
+      $("#characterCount").textContent = `${normalized.length} / 40`;
+      $("#preparedPhrase").textContent = normalized;
+      $("#asciiChallenge").hidden = false;
+      $("#asciiSolution").hidden = true;
+      $("#toStep2").disabled = true;
+      $("#copyAscii").disabled = true;
+      renderAsciiChallenge();
+      setFeedback(
+        $("#prepareFeedback"),
+        changed ? "He adaptado la frase a MAYÚSCULAS y ASCII básico. Revisa el resultado antes de continuar." : "Frase lista. Ahora busca sus códigos ASCII.",
+        changed ? "info" : "success"
+      );
+      setFeedback($("#asciiFeedback"));
+      updateCipherWorkspace();
+      updateSendWorkspace();
+      updateProgress();
+      $("#asciiChallenge").scrollIntoView({ behavior: "smooth", block: "start" });
+      $(".ascii-code-input")?.focus({ preventScroll: true });
+    }
+
+    function checkAscii() {
+      const inputs = $$(".ascii-code-input");
+      if (!inputs.length) return;
+      let correct = 0;
+      let firstWrong = null;
+      inputs.forEach((input, index) => {
+        const expected = String(state.phrase.charCodeAt(index));
+        const isCorrect = input.value.trim() === expected;
+        const cell = input.closest(".ascii-cell");
+        cell.classList.toggle("is-correct", isCorrect);
+        cell.classList.toggle("is-wrong", !isCorrect);
+        input.setAttribute("aria-invalid", String(!isCorrect));
+        if (isCorrect) correct += 1;
+        else if (!firstWrong) firstWrong = input;
+      });
+
+      if (correct === inputs.length) {
+        state.asciiComplete = true;
+        const sequence = asciiOf(state.phrase).join(" ");
+        $("#asciiSequence").textContent = sequence;
+        $("#asciiSolution").hidden = false;
+        $("#copyAscii").disabled = false;
+        $("#toStep2").disabled = false;
+        setFeedback($("#asciiFeedback"), `¡Correcto! Has codificado ${inputs.length} caracteres en ASCII.`, "success");
+      } else {
+        state.asciiComplete = false;
+        $("#toStep2").disabled = true;
+        $("#copyAscii").disabled = true;
+        $("#asciiSolution").hidden = true;
+        setFeedback($("#asciiFeedback"), `Tienes ${correct} de ${inputs.length} códigos correctos. Revisa las casillas rojas.`, "error");
+        firstWrong?.focus();
+      }
+      updateCipherWorkspace();
+      updateProgress();
+    }
+
+    function hintAscii() {
+      const cells = $$(".ascii-cell");
+      const unresolved = cells.find((cell, index) => {
+        const input = $("input", cell);
+        return input.value.trim() !== String(state.phrase.charCodeAt(index)) && !cell.dataset.hinted;
+      }) || cells.find((cell, index) => $("input", cell).value.trim() !== String(state.phrase.charCodeAt(index)));
+
+      if (!unresolved) {
+        setFeedback($("#asciiFeedback"), "No necesitas más pistas: comprueba tu respuesta.", "info");
+        return;
+      }
+      const index = Number(unresolved.dataset.index);
+      unresolved.dataset.hinted = "true";
+      $(".ascii-hint", unresolved).textContent = `Pista: ${state.phrase.charCodeAt(index)}`;
+      $("input", unresolved).focus();
+      setFeedback($("#asciiFeedback"), `Pista para la posición ${index + 1}. Escríbela y sigue tú.`, "info");
+    }
+
+    function renderAlphabet(container, shift, decrypting = false) {
+      container.replaceChildren();
+      const firstRow = document.createElement("div");
+      const secondRow = document.createElement("div");
+      firstRow.className = "alphabet-row";
+      secondRow.className = "alphabet-row shifted";
+
+      const firstLabel = document.createElement("span");
+      firstLabel.className = "alphabet-label";
+      firstLabel.textContent = decrypting ? "Cifrado" : "Original";
+      const secondLabel = document.createElement("span");
+      secondLabel.className = "alphabet-label";
+      secondLabel.textContent = decrypting ? "Original" : "Cifrado";
+      firstRow.appendChild(firstLabel);
+      secondRow.appendChild(secondLabel);
+
+      Array.from(alphabet).forEach((letter) => {
+        const top = document.createElement("span");
+        top.className = "alphabet-letter";
+        top.textContent = letter;
+        const bottom = document.createElement("span");
+        bottom.className = "alphabet-letter";
+        bottom.textContent = caesarTransform(letter, decrypting ? -shift : shift);
+        firstRow.appendChild(top);
+        secondRow.appendChild(bottom);
+      });
+      container.append(firstRow, secondRow);
+    }
+
+    function updateCipherWorkspace() {
+      const ready = Boolean(state.asciiComplete && state.phrase);
+      $("#cipherLocked").hidden = ready;
+      $("#cipherWorkspace").hidden = !ready;
+      if (!ready) return;
+      $("#cipherOriginal").textContent = state.phrase;
+      $("#shiftRange").value = String(state.shift);
+      $("#shiftOutput").textContent = `+${state.shift}`;
+      renderAlphabet($("#encryptAlphabet"), state.shift, false);
+    }
+
+    function updateShift() {
+      state.shift = Number($("#shiftRange").value);
+      state.cipherComplete = false;
+      state.cipher = "";
+      state.sent = false;
+      $("#shiftOutput").textContent = `+${state.shift}`;
+      $("#cipherGuess").value = "";
+      $("#toStep3").disabled = true;
+      $("#sentCheck").checked = false;
+      renderAlphabet($("#encryptAlphabet"), state.shift, false);
+      setFeedback($("#cipherFeedback"), "Has cambiado la clave. Cifra de nuevo con el nuevo desplazamiento.", "info");
+      updateSendWorkspace();
+      updateProgress();
+    }
+
+    function normalizeAnswer(input) {
+      const normalized = normalizeBasicAscii(input.value).slice(0, 40);
+      input.value = normalized;
+      return normalized;
+    }
+
+    function firstDifference(actual, expected) {
+      const length = Math.max(actual.length, expected.length);
+      for (let index = 0; index < length; index += 1) {
+        if (actual[index] !== expected[index]) return index;
+      }
+      return -1;
+    }
+
+    function checkCipher() {
+      const answer = normalizeAnswer($("#cipherGuess"));
+      const expected = caesarTransform(state.phrase, state.shift);
+      if (!answer) {
+        setFeedback($("#cipherFeedback"), "Escribe primero tu frase cifrada.", "error");
+        return;
+      }
+      if (answer === expected) {
+        state.cipher = expected;
+        state.cipherComplete = true;
+        $("#toStep3").disabled = false;
+        setFeedback($("#cipherFeedback"), `¡Cifrado correcto con desplazamiento +${state.shift}!`, "success");
+      } else {
+        const index = firstDifference(answer, expected);
+        state.cipherComplete = false;
+        state.cipher = "";
+        $("#toStep3").disabled = true;
+        setFeedback($("#cipherFeedback"), `Todavía no coincide. Revisa desde la posición ${index + 1}.`, "error");
+      }
+      updateSendWorkspace();
+      updateProgress();
+    }
+
+    function hintCipher() {
+      const answer = normalizeAnswer($("#cipherGuess"));
+      const expected = caesarTransform(state.phrase, state.shift);
+      const index = firstDifference(answer, expected);
+      if (index === -1) {
+        setFeedback($("#cipherFeedback"), "Parece correcto. Pulsa «Comprobar cifrado».", "info");
+        return;
+      }
+      const original = state.phrase[index];
+      const encrypted = expected[index];
+      const explanation = original === " "
+        ? `La posición ${index + 1} es un espacio y no cambia.`
+        : /[A-Z]/.test(original)
+          ? `En la posición ${index + 1}, ${original} se convierte en ${encrypted}.`
+          : `En la posición ${index + 1}, «${original}» no cambia.`;
+      setFeedback($("#cipherFeedback"), explanation, "info");
+    }
+
+    function handoffText() {
+      return `MENSAJE CIFRADO: ${state.cipher}\nDESPLAZAMIENTO CÉSAR: +${state.shift}`;
+    }
+
+    function updateSendWorkspace() {
+      const ready = Boolean(state.cipherComplete && state.cipher);
+      $("#sendLocked").hidden = ready;
+      $("#sendWorkspace").hidden = !ready;
+      if (!ready) return;
+      $("#handoffCipher").textContent = state.cipher;
+      $("#handoffShift").textContent = `+${state.shift}`;
+    }
+
+    function updateReceivedAlphabet() {
+      state.receivedShift = Number($("#receivedShift").value);
+      renderAlphabet($("#decryptAlphabet"), state.receivedShift, true);
+    }
+
+    function resetReceiveResult() {
+      state.receiveComplete = false;
+      state.recoveredPhrase = "";
+      state.reportComplete = false;
+      $("#toStep5").disabled = true;
+      $("#recoveredAscii").hidden = true;
+      $("#reportCard").hidden = true;
+      $("#reportActions").hidden = true;
+      setFeedback($("#plainFeedback"));
+      updateScenario();
+      updateProgress();
+    }
+
+    function checkPlain() {
+      const encrypted = normalizeAnswer($("#receivedCipher"));
+      const answer = normalizeAnswer($("#plainGuess"));
+      if (!encrypted) {
+        setFeedback($("#plainFeedback"), "Escribe el texto cifrado que has recibido.", "error");
+        $("#receivedCipher").focus();
+        return;
+      }
+      if (!answer) {
+        setFeedback($("#plainFeedback"), "Escribe tu propuesta de frase original.", "error");
+        $("#plainGuess").focus();
+        return;
+      }
+      const expected = caesarTransform(encrypted, -state.receivedShift);
+      if (answer === expected) {
+        state.receivedCipher = encrypted;
+        state.recoveredPhrase = expected;
+        state.receiveComplete = true;
+        $("#toStep5").disabled = false;
+        $("#recoveredAsciiSequence").textContent = asciiOf(expected).join(" ");
+        $("#recoveredAscii").hidden = false;
+        setFeedback($("#plainFeedback"), "¡Mensaje descifrado! Ya puedes analizar esta comunicación.", "success");
+      } else {
+        const index = firstDifference(answer, expected);
+        state.receiveComplete = false;
+        state.recoveredPhrase = "";
+        state.reportComplete = false;
+        $("#toStep5").disabled = true;
+        $("#recoveredAscii").hidden = true;
+        $("#reportCard").hidden = true;
+        $("#reportActions").hidden = true;
+        setFeedback($("#plainFeedback"), `Aún hay alguna diferencia. Revisa desde la posición ${index + 1}.`, "error");
+      }
+      updateScenario();
+      updateProgress();
+    }
+
+    function hintPlain() {
+      const encrypted = normalizeAnswer($("#receivedCipher"));
+      if (!encrypted) {
+        setFeedback($("#plainFeedback"), "Necesito el texto cifrado para darte una pista.", "error");
+        return;
+      }
+      const answer = normalizeAnswer($("#plainGuess"));
+      const expected = caesarTransform(encrypted, -state.receivedShift);
+      const index = firstDifference(answer, expected);
+      if (index === -1) {
+        setFeedback($("#plainFeedback"), "Parece correcto. Pulsa «Comprobar descifrado».", "info");
+        return;
+      }
+      const encoded = encrypted[index];
+      const decoded = expected[index];
+      const explanation = encoded === " "
+        ? `La posición ${index + 1} es un espacio.`
+        : /[A-Z]/.test(encoded)
+          ? `En la posición ${index + 1}, retrocede desde ${encoded} hasta ${decoded}.`
+          : `En la posición ${index + 1}, «${encoded}» no cambia.`;
+      setFeedback($("#plainFeedback"), explanation, "info");
+    }
+
+    function populateConceptOptions() {
+      $$("#conceptList select").forEach((select) => {
+        conceptOptions.forEach(([value, label]) => {
+          const option = document.createElement("option");
+          option.value = value;
+          option.textContent = label;
+          select.appendChild(option);
+        });
+        select.addEventListener("change", () => {
+          select.closest(".concept-item").classList.remove("is-correct", "is-wrong");
+          state.conceptsComplete = false;
+          state.reportComplete = false;
+          $("#reportCard").hidden = true;
+          $("#reportActions").hidden = true;
+          updateProgress();
+        });
+      });
+    }
+
+    function checkConcepts() {
+      const selects = $$("#conceptList select");
+      let correct = 0;
+      let firstWrong = null;
+      selects.forEach((select) => {
+        const isCorrect = select.value === select.dataset.answer;
+        const item = select.closest(".concept-item");
+        item.classList.toggle("is-correct", isCorrect);
+        item.classList.toggle("is-wrong", !isCorrect);
+        select.setAttribute("aria-invalid", String(!isCorrect));
+        if (isCorrect) correct += 1;
+        else if (!firstWrong) firstWrong = select;
+      });
+      state.conceptsComplete = correct === selects.length;
+      setFeedback(
+        $("#conceptFeedback"),
+        state.conceptsComplete ? "¡Los nueve elementos están bien identificados!" : `Tienes ${correct} de ${selects.length}. Revisa las filas rojas.`,
+        state.conceptsComplete ? "success" : "error"
+      );
+      if (!state.conceptsComplete) firstWrong?.focus();
+      updateProgress();
+    }
+
+    function updateScenario() {
+      if (state.receiveComplete) {
+        $("#scenarioMessage").textContent = `${state.receivedCipher} · clave +${state.receivedShift}`;
+        $("#scenarioCode").textContent = `ASCII decimal · César con desplazamiento +${state.receivedShift}`;
+      } else {
+        $("#scenarioMessage").textContent = "Completa antes el paso 4.";
+        $("#scenarioCode").textContent = "ASCII decimal · César";
+      }
+    }
+
+    function reportData() {
+      return [
+        ["Emisor/a", $("#incomingSender").value.trim()],
+        ["Receptor/a", $("#incomingReceiver").value.trim()],
+        ["Mensaje transmitido", state.receiveComplete ? `${state.receivedCipher} · clave +${state.receivedShift}` : ""],
+        ["Contenido recuperado", state.recoveredPhrase],
+        ["Canal o medio", $("#incomingMedium").value],
+        ["Codificación", "ASCII decimal"],
+        ["Cifrado", state.receiveComplete ? `César, desplazamiento +${state.receivedShift}` : "César"],
+        ["Ruido posible", $("#incomingNoise").value.trim()],
+        ["Contexto e intención", $("#incomingContext").value.trim()],
+        ["Retroalimentación", $("#incomingFeedback").value.trim()]
+      ];
+    }
+
+    function validateScenario() {
+      const required = ["#incomingSender", "#incomingReceiver", "#incomingMedium", "#incomingNoise", "#incomingContext", "#incomingFeedback"];
+      const missing = required.find((selector) => !$(selector).value.trim());
+      if (!state.receiveComplete) {
+        setFeedback($("#reportFeedback"), "Completa primero el descifrado del paso 4.", "error");
+        return false;
+      }
+      if (!state.conceptsComplete) {
+        setFeedback($("#reportFeedback"), "Comprueba primero los nueve conceptos.", "error");
+        return false;
+      }
+      if (missing) {
+        setFeedback($("#reportFeedback"), "Completa todos los campos del mapa de comunicación.", "error");
+        $(missing).focus();
+        return false;
+      }
+      return true;
+    }
+
+    function buildReport() {
+      if (!validateScenario()) return;
+      const grid = $("#reportGrid");
+      grid.replaceChildren();
+      reportData().forEach(([label, value], index) => {
+        const wrapper = document.createElement("div");
+        if ([2, 3, 7, 8, 9].includes(index)) wrapper.className = "wide";
+        const term = document.createElement("dt");
+        term.textContent = label;
+        const description = document.createElement("dd");
+        description.textContent = escapeReportValue(value);
+        wrapper.append(term, description);
+        grid.appendChild(wrapper);
+      });
+      state.reportComplete = true;
+      $("#reportCard").hidden = false;
+      $("#reportActions").hidden = false;
+      setFeedback($("#reportFeedback"), "¡Misión completa! Ya puedes explicar cómo viajó y se protegió el mensaje.", "success");
+      updateProgress();
+      $("#reportCard").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function reportText() {
+      return ["FICHA DE COMUNICACIÓN · P0101", ...reportData().map(([label, value]) => `${label}: ${value || "—"}`)].join("\n");
+    }
+
+    function printOnly(className) {
+      document.body.classList.add(className);
+      const cleanup = () => document.body.classList.remove(className);
+      window.addEventListener("afterprint", cleanup, { once: true });
+      window.print();
+      window.setTimeout(cleanup, 1000);
+    }
+
+    function connectEvents() {
+      $$('[data-go-step]').forEach((button) => {
+        button.addEventListener("click", () => switchStep(button.dataset.goStep));
+      });
+
+      $("#plainPhrase").addEventListener("input", (event) => {
+        $("#characterCount").textContent = `${Array.from(event.target.value).length} / 40`;
+        if (state.phrase && event.target.value !== state.phrase) {
+          state.phrase = "";
+          state.asciiComplete = false;
+          state.cipherComplete = false;
+          state.cipher = "";
+          state.sent = false;
+          $("#asciiChallenge").hidden = true;
+          $("#toStep2").disabled = true;
+          $("#toStep3").disabled = true;
+          $("#sentCheck").checked = false;
+          setFeedback($("#prepareFeedback"), "La frase ha cambiado. Pulsa «Preparar frase» otra vez.", "info");
+          updateProgress();
+        }
+      });
+
+      $("#plainPhrase").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") preparePhrase();
+      });
+      $("#preparePhrase").addEventListener("click", preparePhrase);
+      $("#checkAscii").addEventListener("click", checkAscii);
+      $("#hintAscii").addEventListener("click", hintAscii);
+      $("#copyAscii").addEventListener("click", () => copyText(asciiOf(state.phrase).join(" "), $("#asciiFeedback"), "Números ASCII copiados."));
+      $("#toStep2").addEventListener("click", () => switchStep(2));
+
+      $("#shiftRange").addEventListener("input", updateShift);
+      $("#cipherGuess").addEventListener("input", () => {
+        if (state.cipherComplete) {
+          state.cipherComplete = false;
+          state.cipher = "";
+          state.sent = false;
+          $("#toStep3").disabled = true;
+          $("#sentCheck").checked = false;
+          updateProgress();
+        }
+        setFeedback($("#cipherFeedback"));
+      });
+      $("#cipherGuess").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") checkCipher();
+      });
+      $("#checkCipher").addEventListener("click", checkCipher);
+      $("#hintCipher").addEventListener("click", hintCipher);
+      $("#toStep3").addEventListener("click", () => switchStep(3));
+
+      $("#copyHandoff").addEventListener("click", () => copyText(handoffText(), $("#handoffFeedback"), "Tarjeta copiada. Ya puedes pegarla en un mensaje."));
+      $("#downloadHandoff").addEventListener("click", () => {
+        downloadText("mensaje-cifrado-p0101.txt", handoffText());
+        setFeedback($("#handoffFeedback"), "Tarjeta descargada como archivo de texto.", "success");
+      });
+      $("#printHandoff").addEventListener("click", () => printOnly("print-slip"));
+      $("#sentCheck").addEventListener("change", (event) => {
+        state.sent = event.target.checked;
+        updateProgress();
+      });
+      $("#toStep4").addEventListener("click", () => switchStep(4));
+
+      $("#receivedShift").addEventListener("change", () => {
+        updateReceivedAlphabet();
+        resetReceiveResult();
+      });
+      $("#receivedCipher").addEventListener("input", resetReceiveResult);
+      $("#plainGuess").addEventListener("input", resetReceiveResult);
+      $("#plainGuess").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") checkPlain();
+      });
+      $("#checkPlain").addEventListener("click", checkPlain);
+      $("#hintPlain").addEventListener("click", hintPlain);
+      $("#toStep5").addEventListener("click", () => switchStep(5));
+
+      $("#checkConcepts").addEventListener("click", checkConcepts);
+      $("#buildReport").addEventListener("click", buildReport);
+      $("#copyReport").addEventListener("click", () => copyText(reportText(), $("#reportFeedback"), "Ficha copiada."));
+      $("#printReport").addEventListener("click", () => printOnly("print-report"));
+
+      ["#incomingSender", "#incomingReceiver", "#incomingMedium", "#incomingNoise", "#incomingContext", "#incomingFeedback"].forEach((selector) => {
+        $(selector).addEventListener("input", () => {
+          if (state.reportComplete) {
+            state.reportComplete = false;
+            $("#reportCard").hidden = true;
+            $("#reportActions").hidden = true;
+            setFeedback($("#reportFeedback"), "Has cambiado el mapa. Vuelve a crear la ficha para actualizarla.", "info");
+            updateProgress();
+          }
+        });
+      });
+
+      $("#resetMission").addEventListener("click", () => {
+        const confirmed = window.confirm("¿Quieres borrar las respuestas y comenzar de nuevo?");
+        if (confirmed) window.location.reload();
+      });
+    }
+
+    function initialize() {
+      buildAsciiReference();
+      populateConceptOptions();
+      renderAlphabet($("#decryptAlphabet"), state.receivedShift, true);
+      connectEvents();
+      updateProgress();
+      switchStep(1, false);
+    }
+
+    window.__P0101_TEST__ = { normalizeBasicAscii, caesarTransform, asciiOf, firstDifference };
+    initialize();
+  </script>
+</body>
+</html>
