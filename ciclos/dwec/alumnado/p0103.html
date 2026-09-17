@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Práctica interactiva para investigar navegadores web, motores, compatibilidad y cuota de mercado.">
+<title>P01.03 · Detectives de navegadores</title>
+<style>
+:root{color-scheme:light;--page-bg:#edf4fb;--page-ink:#17233b}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:linear-gradient(145deg,#edf5ff,#fff9e9);color:var(--page-ink);font:17px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;min-height:100vh}
+button,input,textarea,select{font:inherit}
+code{font-family:"Fira Code",ui-monospace,SFMono-Regular,Consolas,monospace}
+.practice-shell{margin:0 auto;max-width:1220px;padding:1rem clamp(.7rem,3vw,2rem) 3rem}
+.practice-nav{align-items:center;display:flex;justify-content:space-between;margin:.25rem 0 1rem}
+.practice-nav a{background:#fff;border:2px solid #b8cae3;border-radius:999px;color:#174da6;font-weight:800;padding:.55rem .85rem;text-decoration:none}
+.practice-nav a:hover{text-decoration:underline}
+.practice-footer{color:#526077;font-size:.9rem;padding:1rem;text-align:center}
+.skip-link{background:#101e36;color:#fff;left:.75rem;padding:.65rem .85rem;position:fixed;top:-5rem;z-index:50}
+.skip-link:focus{top:.75rem}
+.browser-lab{margin:0}
+@media print{body{background:#fff}.practice-nav,.skip-link,.practice-footer{display:none!important}.practice-shell{max-width:none;padding:0}}
+
+.browser-lab{--lab-ink:#17233b;--lab-muted:#526077;--lab-blue:#2056c9;--lab-cyan:#e8f6ff;--lab-green:#daf7e4;--lab-yellow:#fff4c7;--lab-pink:#ffe8ef;--lab-line:#c8d5e6;--lab-white:#fff;background:linear-gradient(145deg,#f8fbff,#fffdf7);border:2px solid var(--lab-line);border-radius:22px;box-shadow:0 14px 34px #17345a16;color:var(--lab-ink);margin:2rem 0;padding:0;overflow:hidden}
+.browser-lab *{box-sizing:border-box}
+.browser-lab-hero{background:linear-gradient(135deg,#173c86,#2574d8);color:#fff;padding:clamp(1.25rem,4vw,2.4rem)}
+.browser-lab .browser-lab-hero p{color:#fff}
+.browser-lab-kicker{font-size:.88rem;font-weight:800;letter-spacing:.04em;margin:0 0 .45rem;text-transform:uppercase}
+.browser-lab h3{color:inherit;font-size:clamp(1.65rem,4vw,2.4rem);line-height:1.08;margin:.2rem 0 .65rem}
+.browser-lab-hero p:last-child{font-size:1.05rem;margin-bottom:0;max-width:70ch}
+.browser-lab-body{padding:clamp(1rem,3vw,2rem)}
+.browser-lab-note{background:var(--lab-yellow);border:2px solid #e9c849;border-radius:14px;margin:0 0 1rem;padding:.9rem 1rem}
+.browser-lab-note strong{display:block;margin-bottom:.2rem}
+.browser-lab-note--safe{background:var(--lab-pink);border-color:#e9a9bc}
+.browser-lab-note--key{background:var(--lab-green);border-color:#8ad4a4}
+.browser-lab-student{display:grid;grid-template-columns:2fr 1fr;gap:.8rem;margin:1rem 0}
+.browser-lab label{font-weight:700}
+.browser-lab input:not([type="checkbox"]):not([type="file"]),.browser-lab textarea,.browser-lab select{background:#fff;border:2px solid #aebfd6;border-radius:9px;color:var(--lab-ink);font:inherit;padding:.62rem .7rem;width:100%}
+.browser-lab textarea{min-height:7rem;resize:vertical}
+.browser-lab input:focus,.browser-lab textarea:focus,.browser-lab select:focus,.browser-lab button:focus-visible,.browser-lab summary:focus-visible{outline:4px solid #8ac5ff;outline-offset:2px}
+.browser-lab small{color:var(--lab-muted);display:block;font-weight:400;margin-top:.25rem}
+.browser-lab-progress{background:#101e36;border-radius:15px;color:#fff;margin:1rem 0 1.25rem;padding:1rem}
+.browser-lab-progress-head{align-items:center;display:flex;gap:.8rem;justify-content:space-between}
+.browser-lab-progress-track{background:#ffffff2b;border-radius:999px;height:12px;margin-top:.7rem;overflow:hidden}
+.browser-lab-progress-fill{background:linear-gradient(90deg,#62e89a,#ffd45e);display:block;height:100%;transition:width .25s;width:0}
+.browser-lab-tools{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:.85rem}
+.browser-lab button,.browser-lab-link{align-items:center;background:var(--lab-blue);border:0;border-radius:10px;color:#fff;cursor:pointer;display:inline-flex;font:inherit;font-weight:800;gap:.35rem;padding:.65rem .9rem;text-decoration:none}
+.browser-lab button:hover,.browser-lab-link:hover{filter:brightness(1.08)}
+.browser-lab button.browser-lab-secondary{background:#eaf1fb;color:#173c86}
+.browser-lab button.browser-lab-danger{background:#fff0f1;color:#9b2431}
+.browser-lab details{background:#fff;border:2px solid var(--lab-line);border-radius:16px;margin:1rem 0;overflow:hidden}
+.browser-lab summary{align-items:center;background:#edf5ff;cursor:pointer;display:flex;font-size:1.08rem;font-weight:850;gap:.7rem;padding:1rem}
+.browser-lab-step-number{align-items:center;background:#1f5fc5;border-radius:999px;color:#fff;display:inline-flex;flex:0 0 2rem;height:2rem;justify-content:center}
+.browser-lab-step{padding:1rem}
+.browser-lab-step h4{color:#173c86;font-size:1.12rem;margin:1.1rem 0 .5rem}
+.browser-lab-resources{display:flex;flex-wrap:wrap;gap:.6rem;margin:.8rem 0}
+.browser-lab-resources a{background:#edf5ff;border:1px solid #b8cae3;border-radius:999px;color:#174da6;font-weight:750;padding:.45rem .75rem;text-decoration:none}
+.browser-lab-resources a:hover{text-decoration:underline}
+.browser-lab-table-wrap{border:1px solid var(--lab-line);border-radius:12px;margin:.8rem 0;overflow-x:auto}
+.browser-lab table{border-collapse:collapse;margin:0;min-width:820px;width:100%}
+.browser-lab th,.browser-lab td{border:1px solid var(--lab-line);padding:.55rem;vertical-align:top}
+.browser-lab th{background:#173c86;color:#fff;font-size:.9rem;text-align:left}
+.browser-lab td:first-child{background:#f5f8fc;font-weight:800;text-align:center;width:3rem}
+.browser-lab td input,.browser-lab td select{min-width:7rem}
+.browser-lab-question-grid{display:grid;gap:.8rem;grid-template-columns:1fr 1fr;margin-top:1rem}
+.browser-lab-question-grid .browser-lab-wide{grid-column:1/-1}
+.browser-lab-done{align-items:flex-start;background:var(--lab-green);border:2px solid #8ad4a4;border-radius:12px;display:flex;gap:.7rem;margin-top:1rem;padding:.8rem}
+.browser-lab-done input{accent-color:#147a3d;height:1.25rem;margin-top:.1rem;width:1.25rem}
+.browser-lab-checks{display:grid;gap:.45rem;grid-template-columns:repeat(2,minmax(0,1fr));list-style:none;padding:0}
+.browser-lab-checks li{background:#f5f8fc;border-radius:9px;padding:.6rem}
+.browser-lab-upload{border:2px dashed #8ca5c7;border-radius:14px;margin-top:.8rem;padding:1rem}
+.browser-lab-preview{display:none;margin-top:.8rem;max-height:360px;max-width:100%;object-fit:contain}
+.browser-lab-status{border-radius:12px;margin-top:1rem;padding:.8rem}
+.browser-lab-status:empty{display:none}
+.browser-lab-status[data-kind="ok"]{background:var(--lab-green);border:2px solid #8ad4a4}
+.browser-lab-status[data-kind="warn"]{background:var(--lab-yellow);border:2px solid #e9c849}
+.browser-lab-report{background:#fff;border:2px solid var(--lab-line);border-radius:14px;margin-top:1rem;padding:1.2rem}
+.browser-lab-report[hidden]{display:none}
+.browser-lab-report img{height:auto;max-width:100%}
+.browser-lab-report table{min-width:0}
+.browser-lab-report input,.browser-lab-report select{display:none}
+.browser-lab-noscript{background:#fff0f1;border:2px solid #e9a9bc;border-radius:12px;padding:.8rem}
+@media(max-width:760px){.browser-lab-student,.browser-lab-question-grid,.browser-lab-checks{grid-template-columns:1fr}.browser-lab-question-grid .browser-lab-wide{grid-column:auto}.browser-lab-progress-head{align-items:flex-start;flex-direction:column}}
+@media print{.browser-lab-tools,.browser-lab-done,.browser-lab-upload input,.browser-lab-progress{display:none!important}.browser-lab details:not([open])>:not(summary){display:block}.browser-lab{box-shadow:none}.browser-lab-report{border:0}.browser-lab summary{background:#eee;color:#000}}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#actividad-investigacion-navegadores">Saltar a la práctica</a>
+<div class="practice-shell">
+<nav class="practice-nav" aria-label="Navegación de la práctica">
+<a href="../u01_es.html#actividad-investigacion-navegadores">← Volver a la unidad 1</a>
+</nav>
+<main class="browser-lab" id="actividad-investigacion-navegadores" data-browser-lab>
+
+
+<header class="browser-lab-hero">
+<p class="browser-lab-kicker">Práctica interactiva · 3 sesiones · equipos de 2 o 3</p>
+<h3>Detectives de navegadores: ¿quién muestra la Web?</h3>
+<p>Investigaréis qué navegadores usa la gente, qué “motor” hay dentro de ellos y cuáles conviene elegir para comprobar una página web. Al final prepararéis un informe para Word con vuestras tablas, decisiones y una captura.</p>
+</header>
+
+<div class="browser-lab-body">
+<div class="browser-lab-note browser-lab-note--safe" role="note">
+<strong>🛡️ Regla de seguridad</strong>
+Instala programas solamente con permiso de una persona adulta y desde la web oficial o la tienda del sistema. No visites páginas <code>.onion</code>, no añadas extensiones y no escribas datos personales. Para esta práctica no hace falta instalar Tor ni ningún navegador desconocido.
+</div>
+
+<div class="browser-lab-student">
+<label>Nombre o equipo
+<input type="text" name="student-name" autocomplete="name" placeholder="Ej.: Equipo Web" data-lab-required>
+</label>
+<label>Clase
+<input type="text" name="student-class" placeholder="Ej.: 5.º A" data-lab-required>
+</label>
+</div>
+
+<div class="browser-lab-progress">
+<div class="browser-lab-progress-head">
+<strong>Progreso de la investigación</strong>
+<output data-lab-progress-text>0 de 6 misiones</output>
+</div>
+<div class="browser-lab-progress-track" role="progressbar" aria-label="Progreso de la práctica" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" data-lab-progress>
+<span class="browser-lab-progress-fill" data-lab-progress-fill></span>
+</div>
+<div class="browser-lab-tools">
+<button type="button" data-lab-save>💾 Guardar en este navegador</button>
+<button type="button" class="browser-lab-secondary" data-lab-check>🔎 Comprobar lo que falta</button>
+<button type="button" class="browser-lab-danger" data-lab-reset>↺ Borrar mis respuestas</button>
+</div>
+</div>
+
+<details open>
+<summary><span class="browser-lab-step-number">1</span> Cuota de mercado: ¿qué navegador usa más gente?</summary>
+<div class="browser-lab-step">
+<p><strong>Cuota de mercado</strong> significa qué parte de las personas utiliza cada navegador. Si un navegador tiene un 60 %, sería parecido a decir que, de cada 100 usos medidos, aproximadamente 60 corresponden a ese navegador.</p>
+<div class="browser-lab-resources">
+<a href="https://kinsta.com/es/cuota-mercado-mundial-navegadores/" target="_blank" rel="noopener noreferrer">Lectura inicial: Kinsta ↗</a>
+<a href="https://gs.statcounter.com/browser-market-share" target="_blank" rel="noopener noreferrer">Datos actuales: StatCounter ↗</a>
+</div>
+<div class="browser-lab-note" role="note">
+<strong>⚠️ Mira la fecha</strong>
+El artículo de Kinsta contiene también cifras históricas. Para hablar de datos actuales, anota el mes y el año de la gráfica y contrástala con StatCounter. No mezcles porcentajes de fechas o tipos de pantalla diferentes.
+</div>
+<h4>A. Completa los cinco primeros puestos</h4>
+<div class="browser-lab-table-wrap" role="region" aria-label="Tabla de cuota de mercado" tabindex="0">
+<table data-report-table="market">
+<thead><tr><th>Puesto</th><th>Navegador</th><th>Cuota (%)</th><th>Tipo de pantalla o dispositivo</th><th>Mes y año</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><input name="market-browser-1" aria-label="Navegador en el puesto 1"></td><td><input name="market-share-1" type="number" min="0" max="100" step="0.01" inputmode="decimal" aria-label="Cuota del puesto 1"></td><td><input name="market-screen-1" placeholder="Todos / ordenador / móvil" aria-label="Pantalla del puesto 1"></td><td><input name="market-date-1" placeholder="Mes y año" aria-label="Fecha del puesto 1"></td></tr>
+<tr><td>2</td><td><input name="market-browser-2" aria-label="Navegador en el puesto 2"></td><td><input name="market-share-2" type="number" min="0" max="100" step="0.01" inputmode="decimal" aria-label="Cuota del puesto 2"></td><td><input name="market-screen-2" placeholder="Todos / ordenador / móvil" aria-label="Pantalla del puesto 2"></td><td><input name="market-date-2" placeholder="Mes y año" aria-label="Fecha del puesto 2"></td></tr>
+<tr><td>3</td><td><input name="market-browser-3" aria-label="Navegador en el puesto 3"></td><td><input name="market-share-3" type="number" min="0" max="100" step="0.01" inputmode="decimal" aria-label="Cuota del puesto 3"></td><td><input name="market-screen-3" placeholder="Todos / ordenador / móvil" aria-label="Pantalla del puesto 3"></td><td><input name="market-date-3" placeholder="Mes y año" aria-label="Fecha del puesto 3"></td></tr>
+<tr><td>4</td><td><input name="market-browser-4" aria-label="Navegador en el puesto 4"></td><td><input name="market-share-4" type="number" min="0" max="100" step="0.01" inputmode="decimal" aria-label="Cuota del puesto 4"></td><td><input name="market-screen-4" placeholder="Todos / ordenador / móvil" aria-label="Pantalla del puesto 4"></td><td><input name="market-date-4" placeholder="Mes y año" aria-label="Fecha del puesto 4"></td></tr>
+<tr><td>5</td><td><input name="market-browser-5" aria-label="Navegador en el puesto 5"></td><td><input name="market-share-5" type="number" min="0" max="100" step="0.01" inputmode="decimal" aria-label="Cuota del puesto 5"></td><td><input name="market-screen-5" placeholder="Todos / ordenador / móvil" aria-label="Pantalla del puesto 5"></td><td><input name="market-date-5" placeholder="Mes y año" aria-label="Fecha del puesto 5"></td></tr>
+</tbody>
+</table>
+</div>
+<label>Fuente exacta utilizada
+<input type="url" name="market-source" placeholder="https://…" data-lab-required>
+<small>Copia el enlace de la gráfica o página consultada.</small>
+</label>
+<div class="browser-lab-question-grid">
+<label>¿Qué cambia al comparar ordenador, móvil y tableta?
+<textarea name="screen-interpretation" placeholder="Explica con tus palabras por qué el orden puede cambiar según la pantalla…" data-lab-required></textarea>
+<small>Pista: piensa en el navegador que viene instalado en cada tipo de dispositivo.</small>
+</label>
+<label>Ventajas del navegador que aparece primero
+<textarea name="leader-advantages" placeholder="Escribe al menos tres ventajas y explica por qué pueden ayudar a que lo use más gente…" data-lab-required></textarea>
+<small>Ejemplos de aspectos que puedes comprobar: facilidad, velocidad, compatibilidad, actualizaciones, sincronización o extensiones.</small>
+</label>
+<label class="browser-lab-wide">Conclusión: ¿el más usado es siempre el mejor?
+<textarea name="market-conclusion" placeholder="Distingue entre un dato (cuota de uso) y una opinión razonada (qué navegador prefieres y para qué)…" data-lab-required></textarea>
+</label>
+</div>
+<label class="browser-lab-done"><input type="checkbox" data-lab-complete="1"> He anotado fuente y fecha, he comparado pantallas y he explicado las ventajas sin confundir popularidad con calidad.</label>
+</div>
+</details>
+
+<details>
+<summary><span class="browser-lab-step-number">2</span> Los motores de cinco navegadores actuales</summary>
+<div class="browser-lab-step">
+<p>El <strong>motor de renderizado</strong> es como la máquina que lee HTML y CSS y dibuja la página. El <strong>motor JavaScript</strong> ejecuta las instrucciones del programa. Investiga cinco navegadores actuales y usa, siempre que sea posible, documentación oficial.</p>
+<div class="browser-lab-table-wrap" role="region" aria-label="Motores de navegadores actuales" tabindex="0">
+<table data-report-table="engines-current">
+<thead><tr><th>N.º</th><th>Navegador</th><th>Motor de páginas</th><th>Motor JavaScript</th><th>Sistemas o dispositivos</th><th>Fuente fiable</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><input name="engine-browser-1" aria-label="Navegador actual 1"></td><td><input name="engine-render-1" aria-label="Motor de páginas 1"></td><td><input name="engine-js-1" aria-label="Motor JavaScript 1"></td><td><input name="engine-device-1" aria-label="Dispositivos del navegador 1"></td><td><input name="engine-source-1" type="url" placeholder="https://…" aria-label="Fuente del navegador 1"></td></tr>
+<tr><td>2</td><td><input name="engine-browser-2" aria-label="Navegador actual 2"></td><td><input name="engine-render-2" aria-label="Motor de páginas 2"></td><td><input name="engine-js-2" aria-label="Motor JavaScript 2"></td><td><input name="engine-device-2" aria-label="Dispositivos del navegador 2"></td><td><input name="engine-source-2" type="url" placeholder="https://…" aria-label="Fuente del navegador 2"></td></tr>
+<tr><td>3</td><td><input name="engine-browser-3" aria-label="Navegador actual 3"></td><td><input name="engine-render-3" aria-label="Motor de páginas 3"></td><td><input name="engine-js-3" aria-label="Motor JavaScript 3"></td><td><input name="engine-device-3" aria-label="Dispositivos del navegador 3"></td><td><input name="engine-source-3" type="url" placeholder="https://…" aria-label="Fuente del navegador 3"></td></tr>
+<tr><td>4</td><td><input name="engine-browser-4" aria-label="Navegador actual 4"></td><td><input name="engine-render-4" aria-label="Motor de páginas 4"></td><td><input name="engine-js-4" aria-label="Motor JavaScript 4"></td><td><input name="engine-device-4" aria-label="Dispositivos del navegador 4"></td><td><input name="engine-source-4" type="url" placeholder="https://…" aria-label="Fuente del navegador 4"></td></tr>
+<tr><td>5</td><td><input name="engine-browser-5" aria-label="Navegador actual 5"></td><td><input name="engine-render-5" aria-label="Motor de páginas 5"></td><td><input name="engine-js-5" aria-label="Motor JavaScript 5"></td><td><input name="engine-device-5" aria-label="Dispositivos del navegador 5"></td><td><input name="engine-source-5" type="url" placeholder="https://…" aria-label="Fuente del navegador 5"></td></tr>
+</tbody>
+</table>
+</div>
+<div class="browser-lab-note browser-lab-note--key" role="note"><strong>💡 Idea clave</strong>Dos navegadores con nombres diferentes pueden compartir motor. Por eso probar Chrome y Edge no aporta la misma variedad que probar motores diferentes.</div>
+<label class="browser-lab-done"><input type="checkbox" data-lab-complete="2"> He completado cinco filas y cada dato tiene una fuente que puedo explicar.</label>
+</div>
+</details>
+
+<details>
+<summary><span class="browser-lab-step-number">3</span> Navegadores especiales: otras formas de entrar en la Web</summary>
+<div class="browser-lab-step">
+<p>Continúa la tabla con navegadores creados para necesidades distintas. Busca al menos uno de cada tipo. Puedes investigar ejemplos como <strong>Brave</strong>, <strong>Tor Browser</strong>, <strong>Lynx</strong> o <strong>WebbIE</strong>, pero comprueba si siguen mantenidos y cuál es su motor actual.</p>
+<div class="browser-lab-table-wrap" role="region" aria-label="Motores de navegadores especiales" tabindex="0">
+<table data-report-table="engines-special">
+<thead><tr><th>N.º</th><th>Tipo o necesidad</th><th>Navegador</th><th>Motor de páginas</th><th>¿Qué lo hace especial?</th><th>Fuente fiable</th></tr></thead>
+<tbody>
+<tr><td>6</td><td>Privacidad o seguridad</td><td><input name="special-browser-1" aria-label="Navegador de privacidad"></td><td><input name="special-engine-1" aria-label="Motor del navegador de privacidad"></td><td><input name="special-feature-1" aria-label="Característica de privacidad"></td><td><input name="special-source-1" type="url" placeholder="https://…" aria-label="Fuente del navegador de privacidad"></td></tr>
+<tr><td>7</td><td>Accesibilidad para personas ciegas o uso con voz</td><td><input name="special-browser-2" aria-label="Navegador de accesibilidad"></td><td><input name="special-engine-2" aria-label="Motor del navegador de accesibilidad"></td><td><input name="special-feature-2" aria-label="Característica de accesibilidad"></td><td><input name="special-source-2" type="url" placeholder="https://…" aria-label="Fuente del navegador de accesibilidad"></td></tr>
+<tr><td>8</td><td>Solo texto</td><td><input name="special-browser-3" aria-label="Navegador de texto"></td><td><input name="special-engine-3" aria-label="Motor del navegador de texto"></td><td><input name="special-feature-3" aria-label="Característica del navegador de texto"></td><td><input name="special-source-3" type="url" placeholder="https://…" aria-label="Fuente del navegador de texto"></td></tr>
+<tr><td>9</td><td>Tor o anonimato</td><td><input name="special-browser-4" aria-label="Navegador Tor"></td><td><input name="special-engine-4" aria-label="Motor del navegador Tor"></td><td><input name="special-feature-4" aria-label="Característica del navegador Tor"></td><td><input name="special-source-4" type="url" placeholder="https://…" aria-label="Fuente del navegador Tor"></td></tr>
+<tr><td>10</td><td>Otro uso especial</td><td><input name="special-browser-5" aria-label="Otro navegador especial"></td><td><input name="special-engine-5" aria-label="Motor de otro navegador especial"></td><td><input name="special-feature-5" aria-label="Característica de otro navegador especial"></td><td><input name="special-source-5" type="url" placeholder="https://…" aria-label="Fuente de otro navegador especial"></td></tr>
+</tbody>
+</table>
+</div>
+<label>¿Qué necesidad te ha parecido más importante y por qué?
+<textarea name="special-reflection" placeholder="Elige un navegador especial y explica a quién ayuda…" data-lab-required></textarea>
+</label>
+<label class="browser-lab-done"><input type="checkbox" data-lab-complete="3"> He investigado al menos cuatro tipos, incluido uno relacionado con accesibilidad.</label>
+</div>
+</details>
+
+<details>
+<summary><span class="browser-lab-step-number">4</span> Elegir navegadores para auditar páginas web</summary>
+<div class="browser-lab-step">
+<p>Elige <strong>tres o cuatro navegadores</strong> para revisar páginas web. Una buena selección cubre personas, pantallas y motores diferentes. Evita escoger tres navegadores casi iguales solo porque ya están instalados.</p>
+<ul class="browser-lab-checks">
+<li>✓ Al menos dos motores distintos</li>
+<li>✓ Ordenador y pantalla pequeña</li>
+<li>✓ Un navegador muy utilizado</li>
+<li>✓ Una necesidad especial o de accesibilidad</li>
+</ul>
+<div class="browser-lab-table-wrap" role="region" aria-label="Selección de navegadores para auditoría" tabindex="0">
+<table data-report-table="audit">
+<thead><tr><th>Opción</th><th>Navegador</th><th>Motor</th><th>Pantalla o dispositivo</th><th>Motivo de la selección</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><input name="audit-browser-1" aria-label="Navegador de auditoría 1"></td><td><input name="audit-engine-1" aria-label="Motor de auditoría 1"></td><td><input name="audit-device-1" placeholder="Ordenador / móvil…" aria-label="Pantalla de auditoría 1"></td><td><input name="audit-reason-1" aria-label="Motivo de auditoría 1"></td></tr>
+<tr><td>2</td><td><input name="audit-browser-2" aria-label="Navegador de auditoría 2"></td><td><input name="audit-engine-2" aria-label="Motor de auditoría 2"></td><td><input name="audit-device-2" placeholder="Ordenador / móvil…" aria-label="Pantalla de auditoría 2"></td><td><input name="audit-reason-2" aria-label="Motivo de auditoría 2"></td></tr>
+<tr><td>3</td><td><input name="audit-browser-3" aria-label="Navegador de auditoría 3"></td><td><input name="audit-engine-3" aria-label="Motor de auditoría 3"></td><td><input name="audit-device-3" placeholder="Ordenador / móvil…" aria-label="Pantalla de auditoría 3"></td><td><input name="audit-reason-3" aria-label="Motivo de auditoría 3"></td></tr>
+<tr><td>4</td><td><input name="audit-browser-4" aria-label="Navegador de auditoría 4 opcional"></td><td><input name="audit-engine-4" aria-label="Motor de auditoría 4 opcional"></td><td><input name="audit-device-4" placeholder="Opcional" aria-label="Pantalla de auditoría 4 opcional"></td><td><input name="audit-reason-4" placeholder="Opcional" aria-label="Motivo de auditoría 4 opcional"></td></tr>
+</tbody>
+</table>
+</div>
+<label class="browser-lab-done"><input type="checkbox" data-lab-complete="4"> He elegido al menos tres navegadores y he escrito un motivo concreto para cada uno.</label>
+</div>
+</details>
+
+<details>
+<summary><span class="browser-lab-step-number">5</span> Instalar al menos tres navegadores</summary>
+<div class="browser-lab-step">
+<div class="browser-lab-note browser-lab-note--safe" role="note"><strong>Antes de instalar</strong>Pide permiso. Comprueba que el dominio sea oficial, rechaza programas añadidos y no conviertas un navegador en predeterminado si el equipo no es tuyo.</div>
+<div class="browser-lab-table-wrap" role="region" aria-label="Registro de navegadores instalados" tabindex="0">
+<table data-report-table="installed">
+<thead><tr><th>N.º</th><th>Navegador</th><th>Web oficial utilizada</th><th>Versión instalada</th><th>Comprobado</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><input name="install-browser-1" aria-label="Navegador instalado 1"></td><td><input name="install-source-1" type="url" placeholder="https://…" aria-label="Web oficial 1"></td><td><input name="install-version-1" aria-label="Versión instalada 1"></td><td><label><input type="checkbox" name="install-ok-1"> Sí</label></td></tr>
+<tr><td>2</td><td><input name="install-browser-2" aria-label="Navegador instalado 2"></td><td><input name="install-source-2" type="url" placeholder="https://…" aria-label="Web oficial 2"></td><td><input name="install-version-2" aria-label="Versión instalada 2"></td><td><label><input type="checkbox" name="install-ok-2"> Sí</label></td></tr>
+<tr><td>3</td><td><input name="install-browser-3" aria-label="Navegador instalado 3"></td><td><input name="install-source-3" type="url" placeholder="https://…" aria-label="Web oficial 3"></td><td><input name="install-version-3" aria-label="Versión instalada 3"></td><td><label><input type="checkbox" name="install-ok-3"> Sí</label></td></tr>
+<tr><td>4</td><td><input name="install-browser-4" placeholder="Opcional" aria-label="Navegador instalado 4 opcional"></td><td><input name="install-source-4" type="url" placeholder="Opcional" aria-label="Web oficial 4 opcional"></td><td><input name="install-version-4" placeholder="Opcional" aria-label="Versión instalada 4 opcional"></td><td><label><input type="checkbox" name="install-ok-4"> Sí</label></td></tr>
+</tbody>
+</table>
+</div>
+<div class="browser-lab-upload">
+<label for="browser-lab-screenshot">📷 Añade una captura donde se vean juntos los navegadores instalados</label>
+<input id="browser-lab-screenshot" type="file" accept="image/png,image/jpeg,image/webp" data-lab-image>
+<small>La imagen se procesa en este dispositivo y no se sube a Internet. Si recargas la página tendrás que seleccionarla de nuevo. Tamaño máximo recomendado: 8 MB.</small>
+<img class="browser-lab-preview" data-lab-image-preview alt="Vista previa de la captura de los navegadores instalados">
+</div>
+<label class="browser-lab-done"><input type="checkbox" data-lab-complete="5"> He instalado al menos tres navegadores con permiso y he preparado la captura.</label>
+</div>
+</details>
+
+<details>
+<summary><span class="browser-lab-step-number">6</span> Preparar y entregar el documento de Word</summary>
+<div class="browser-lab-step">
+<p>Tu documento debe poder entenderse sin abrir esta página. Revisa que contiene:</p>
+<ul class="browser-lab-checks">
+<li>□ Nombre, clase y título</li>
+<li>□ Cuota, fecha y fuente</li>
+<li>□ Interpretación de las pantallas</li>
+<li>□ Tabla de motores completa</li>
+<li>□ Navegadores especiales</li>
+<li>□ Selección para la auditoría</li>
+<li>□ Tres instalaciones y versiones</li>
+<li>□ Captura y conclusión final</li>
+</ul>
+<label>Conclusión final
+<textarea name="final-conclusion" placeholder="¿Qué has descubierto? ¿Por qué una página debe probarse con navegadores, motores y pantallas diferentes?" data-lab-required></textarea>
+</label>
+<div class="browser-lab-tools">
+<button type="button" data-lab-preview-report>👁️ Crear vista previa</button>
+<button type="button" class="browser-lab-secondary" data-lab-copy-report>📋 Copiar para pegar en Word</button>
+<button type="button" data-lab-download-report>⬇️ Descargar borrador para Word (.doc)</button>
+</div>
+<p><small>Abre el borrador con Word, revisa la imagen y usa <strong>Guardar como → Documento de Word (.docx)</strong>. También puedes copiar la vista previa y pegarla en un documento nuevo.</small></p>
+<label class="browser-lab-done"><input type="checkbox" data-lab-complete="6"> He revisado el documento, la captura se ve y las fuentes están escritas.</label>
+</div>
+</details>
+
+<p class="browser-lab-status" role="status" aria-live="polite" data-lab-status></p>
+<article class="browser-lab-report" data-lab-report hidden aria-label="Vista previa del informe"></article>
+<noscript><p class="browser-lab-noscript">La ficha puede leerse sin JavaScript, pero necesita JavaScript para guardar respuestas y preparar el borrador para Word.</p></noscript>
+</div>
+
+
+</main>
+<footer class="practice-footer">DWEC · P01.03 · Detectives de navegadores</footer>
+</div>
+<script>
+(function () {
+  "use strict";
+  var root = document.querySelector("[data-browser-lab]");
+  if (!root || root.dataset.ready === "true") return;
+  root.dataset.ready = "true";
+
+  var storageKey = "dwec-browser-lab-v1";
+  var statusBox = root.querySelector("[data-lab-status]");
+  var reportBox = root.querySelector("[data-lab-report]");
+  var imageInput = root.querySelector("[data-lab-image]");
+  var imagePreview = root.querySelector("[data-lab-image-preview]");
+  var screenshotData = "";
+
+  function namedControls() {
+    return Array.prototype.slice.call(root.querySelectorAll("input[name], textarea[name], select[name]"));
+  }
+
+  function getValue(name) {
+    var field = root.querySelector('[name="' + name + '"]');
+    if (!field) return "";
+    if (field.type === "checkbox") return field.checked ? "Sí" : "No";
+    return field.value.trim();
+  }
+
+  function saveDraft(showMessage) {
+    var data = {};
+    namedControls().forEach(function (field) {
+      data[field.name] = field.type === "checkbox" ? field.checked : field.value;
+    });
+    Array.prototype.slice.call(root.querySelectorAll("[data-lab-complete]")).forEach(function (field) {
+      data["complete-" + field.dataset.labComplete] = field.checked;
+    });
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(data));
+      if (showMessage) showStatus("Borrador guardado en este navegador.", "ok");
+    } catch (error) {
+      if (showMessage) showStatus("No se ha podido guardar el borrador. Puedes continuar y copiar el informe al final.", "warn");
+    }
+  }
+
+  function loadDraft() {
+    var data;
+    try {
+      data = JSON.parse(localStorage.getItem(storageKey) || "{}");
+    } catch (error) {
+      data = {};
+    }
+    namedControls().forEach(function (field) {
+      if (!Object.prototype.hasOwnProperty.call(data, field.name)) return;
+      if (field.type === "checkbox") field.checked = Boolean(data[field.name]);
+      else field.value = data[field.name];
+    });
+    Array.prototype.slice.call(root.querySelectorAll("[data-lab-complete]")).forEach(function (field) {
+      field.checked = Boolean(data["complete-" + field.dataset.labComplete]);
+    });
+  }
+
+  function updateProgress() {
+    var completed = Array.prototype.slice.call(root.querySelectorAll("[data-lab-complete]")).filter(function (field) {
+      return field.checked;
+    }).length;
+    var progress = root.querySelector("[data-lab-progress]");
+    var fill = root.querySelector("[data-lab-progress-fill]");
+    root.querySelector("[data-lab-progress-text]").textContent = completed + " de 6 misiones";
+    progress.setAttribute("aria-valuenow", String(completed));
+    fill.style.width = (completed / 6 * 100) + "%";
+  }
+
+  function showStatus(message, kind) {
+    statusBox.textContent = message;
+    statusBox.dataset.kind = kind || "warn";
+  }
+
+  function countFilled(prefix, total) {
+    var count = 0;
+    for (var i = 1; i <= total; i += 1) {
+      if (getValue(prefix + i)) count += 1;
+    }
+    return count;
+  }
+
+  function checkWork() {
+    var missing = [];
+    if (!getValue("student-name") || !getValue("student-class")) missing.push("nombre o equipo y clase");
+    if (countFilled("market-browser-", 5) < 5 || countFilled("market-share-", 5) < 5) missing.push("los cinco navegadores y sus cuotas");
+    if (!getValue("market-source")) missing.push("la fuente y fecha de la cuota");
+    if (getValue("screen-interpretation").length < 50) missing.push("una interpretación más completa sobre las pantallas");
+    if (getValue("leader-advantages").length < 50) missing.push("tres ventajas explicadas del primer navegador");
+    if (countFilled("engine-browser-", 5) < 5 || countFilled("engine-render-", 5) < 5) missing.push("los motores de cinco navegadores actuales");
+    if (countFilled("special-browser-", 5) < 4 || countFilled("special-engine-", 5) < 4) missing.push("al menos cuatro navegadores especiales y sus motores");
+    if (countFilled("audit-browser-", 4) < 3 || countFilled("audit-reason-", 4) < 3) missing.push("tres navegadores de auditoría con sus motivos");
+    var installed = [1, 2, 3, 4].filter(function (number) {
+      var box = root.querySelector('[name="install-ok-' + number + '"]');
+      return box && box.checked && getValue("install-browser-" + number) && getValue("install-version-" + number);
+    }).length;
+    if (installed < 3) missing.push("tres navegadores instalados y sus versiones");
+    if (!screenshotData) missing.push("la captura de los navegadores");
+    if (getValue("final-conclusion").length < 50) missing.push("una conclusión final más completa");
+
+    if (missing.length) {
+      showStatus("Todavía falta: " + missing.join("; ") + ".", "warn");
+      return false;
+    }
+    showStatus("¡Muy bien! Están todos los elementos necesarios para preparar la entrega.", "ok");
+    return true;
+  }
+
+  function escapeHtml(value) {
+    return String(value || "").replace(/[&<>"']/g, function (character) {
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[character];
+    });
+  }
+
+  function plainTable(selector) {
+    var source = root.querySelector(selector);
+    if (!source) return "";
+    var copy = source.cloneNode(true);
+    Array.prototype.slice.call(copy.querySelectorAll("input, textarea, select")).forEach(function (field) {
+      var value = field.type === "checkbox" ? (field.checked ? "Sí" : "No") : field.value;
+      var span = document.createElement("span");
+      span.textContent = value || "—";
+      if (field.type === "checkbox" && field.parentElement && field.parentElement.tagName === "LABEL") {
+        field.parentElement.parentNode.replaceChild(span, field.parentElement);
+      } else {
+        field.parentNode.replaceChild(span, field);
+      }
+    });
+    return copy.outerHTML;
+  }
+
+  function buildReport() {
+    var image = screenshotData
+      ? '<h2>Captura de los navegadores instalados</h2><img src="' + screenshotData + '" alt="Navegadores instalados">'
+      : '<h2>Captura de los navegadores instalados</h2><p><strong>Pendiente:</strong> añade la captura antes de entregar.</p>';
+
+    reportBox.innerHTML = [
+      '<h1>Práctica: Detectives de navegadores</h1>',
+      '<p><strong>Nombre o equipo:</strong> ' + escapeHtml(getValue("student-name") || "—") + '<br>',
+      '<strong>Clase:</strong> ' + escapeHtml(getValue("student-class") || "—") + '<br>',
+      '<strong>Fecha:</strong> ' + escapeHtml(new Date().toLocaleDateString("es-ES")) + '</p>',
+      '<h2>1. Cuota de mercado</h2>',
+      plainTable('[data-report-table="market"]'),
+      '<p><strong>Fuente:</strong> ' + escapeHtml(getValue("market-source") || "—") + '</p>',
+      '<h3>Relación entre navegadores y pantallas</h3><p>' + escapeHtml(getValue("screen-interpretation") || "—") + '</p>',
+      '<h3>Ventajas del navegador situado en primer lugar</h3><p>' + escapeHtml(getValue("leader-advantages") || "—") + '</p>',
+      '<h3>¿El más usado es siempre el mejor?</h3><p>' + escapeHtml(getValue("market-conclusion") || "—") + '</p>',
+      '<h2>2. Motores de navegadores actuales</h2>',
+      plainTable('[data-report-table="engines-current"]'),
+      '<h2>3. Navegadores especiales y sus motores</h2>',
+      plainTable('[data-report-table="engines-special"]'),
+      '<p><strong>Necesidad destacada:</strong> ' + escapeHtml(getValue("special-reflection") || "—") + '</p>',
+      '<h2>4. Selección para auditar páginas web</h2>',
+      plainTable('[data-report-table="audit"]'),
+      '<h2>5. Navegadores instalados</h2>',
+      plainTable('[data-report-table="installed"]'),
+      image,
+      '<h2>6. Conclusión final</h2><p>' + escapeHtml(getValue("final-conclusion") || "—") + '</p>'
+    ].join("");
+    reportBox.hidden = false;
+    reportBox.scrollIntoView({behavior:"smooth", block:"start"});
+    return reportBox.innerHTML;
+  }
+
+  function copyReport() {
+    var html = buildReport();
+    var plain = reportBox.innerText;
+    if (navigator.clipboard && window.ClipboardItem) {
+      var item = new ClipboardItem({
+        "text/html": new Blob([html], {type:"text/html"}),
+        "text/plain": new Blob([plain], {type:"text/plain"})
+      });
+      navigator.clipboard.write([item]).then(function () {
+        showStatus("Informe copiado. Abre Word y pulsa Ctrl + V.", "ok");
+      }).catch(fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+  }
+
+  function fallbackCopy() {
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(reportBox);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    var copied = false;
+    try { copied = document.execCommand("copy"); } catch (error) { copied = false; }
+    selection.removeAllRanges();
+    showStatus(copied ? "Informe copiado. Abre Word y pulsa Ctrl + V." : "Selecciona la vista previa y cópiala manualmente en Word.", copied ? "ok" : "warn");
+  }
+
+  function downloadWordDraft() {
+    var report = buildReport();
+    var documentHtml = [
+      '<!DOCTYPE html><html><head><meta charset="utf-8">',
+      '<title>Práctica de navegadores</title>',
+      '<style>body{font-family:Arial,sans-serif;color:#17233b;line-height:1.45}h1{color:#173c86}h2{color:#2056c9;margin-top:24px}table{border-collapse:collapse;width:100%;margin:10px 0 18px}th,td{border:1px solid #777;padding:6px;text-align:left;vertical-align:top}th{background:#eaf1fb}img{max-width:100%;height:auto}</style>',
+      '</head><body>', report, '</body></html>'
+    ].join("");
+    var blob = new Blob(["\ufeff", documentHtml], {type:"application/msword"});
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement("a");
+    var safeName = (getValue("student-name") || "equipo").replace(/[^a-z0-9áéíóúüñ_-]+/gi, "-");
+    link.href = url;
+    link.download = "practica-navegadores-" + safeName + ".doc";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    showStatus("Borrador descargado. Ábrelo en Word, revisa la captura y guárdalo como .docx.", "ok");
+  }
+
+  imageInput.addEventListener("change", function () {
+    var file = imageInput.files && imageInput.files[0];
+    if (!file) return;
+    if (!/^image\/(png|jpeg|webp)$/.test(file.type)) {
+      showStatus("Elige una imagen PNG, JPG o WebP.", "warn");
+      imageInput.value = "";
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      showStatus("La imagen supera 8 MB. Haz una captura más pequeña.", "warn");
+      imageInput.value = "";
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function () {
+      screenshotData = reader.result;
+      imagePreview.src = screenshotData;
+      imagePreview.style.display = "block";
+      showStatus("Captura añadida al borrador del informe.", "ok");
+    };
+    reader.readAsDataURL(file);
+  });
+
+  root.addEventListener("input", function (event) {
+    if (event.target !== imageInput) saveDraft(false);
+  });
+  root.addEventListener("change", function (event) {
+    if (event.target.matches("[data-lab-complete]")) updateProgress();
+    if (event.target !== imageInput) saveDraft(false);
+  });
+  root.querySelector("[data-lab-save]").addEventListener("click", function () { saveDraft(true); });
+  root.querySelector("[data-lab-check]").addEventListener("click", checkWork);
+  root.querySelector("[data-lab-preview-report]").addEventListener("click", buildReport);
+  root.querySelector("[data-lab-copy-report]").addEventListener("click", copyReport);
+  root.querySelector("[data-lab-download-report]").addEventListener("click", downloadWordDraft);
+  root.querySelector("[data-lab-reset]").addEventListener("click", function () {
+    if (!window.confirm("¿Seguro que quieres borrar todas las respuestas guardadas de esta práctica?")) return;
+    localStorage.removeItem(storageKey);
+    namedControls().forEach(function (field) {
+      if (field.type === "checkbox") field.checked = false;
+      else field.value = "";
+    });
+    Array.prototype.slice.call(root.querySelectorAll("[data-lab-complete]")).forEach(function (field) { field.checked = false; });
+    screenshotData = "";
+    imageInput.value = "";
+    imagePreview.removeAttribute("src");
+    imagePreview.style.display = "none";
+    reportBox.hidden = true;
+    reportBox.innerHTML = "";
+    updateProgress();
+    showStatus("Respuestas borradas.", "ok");
+  });
+
+  loadDraft();
+  updateProgress();
+}());
+</script>
+</body>
+</html>
