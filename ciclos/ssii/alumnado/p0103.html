@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <title>P0103 · Velocidad efectiva de transmisión</title>
+  <style>
+    :root{--ink:#172033;--muted:#526079;--blue:#155eef;--blue2:#eaf2ff;--teal:#087f6a;--teal2:#e9fbf6;--amber:#9a5b00;--amber2:#fff7df;--red:#b42318;--line:#d9e1ec;--paper:#fff;--bg:#f4f7fb}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+    a{color:var(--blue)} button,input,textarea{font:inherit} header{background:linear-gradient(130deg,#102a56,#155eef);color:#fff;padding:2.7rem 1rem}
+    header .wrap{max-width:1120px;margin:auto} .tag{display:inline-block;padding:.3rem .7rem;border:1px solid #ffffff70;border-radius:999px;font-size:.82rem;font-weight:700;letter-spacing:.05em}
+    h1{font-size:clamp(2rem,5vw,3.35rem);line-height:1.08;margin:.8rem 0} header p{max-width:760px;margin:0;color:#e9f0ff;font-size:1.08rem}
+    main{max-width:1120px;margin:1.5rem auto 4rem;padding:0 1rem} nav,.card{background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:0 5px 18px #18315312}
+    nav{padding:.8rem 1rem;margin-bottom:1rem;display:flex;gap:.65rem;flex-wrap:wrap} nav a{text-decoration:none;font-weight:700;padding:.35rem .65rem;border-radius:8px} nav a:hover{background:var(--blue2)}
+    .card{padding:clamp(1rem,3vw,1.6rem);margin:1rem 0} h2{font-size:1.45rem;margin:0 0 .9rem;color:#12366c} h3{font-size:1.1rem;margin:1.2rem 0 .5rem} p{margin:.55rem 0 1rem}
+    .goal{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}.pill{padding:.85rem;border-radius:12px;background:var(--blue2);border:1px solid #bdd3ff}.pill strong{display:block;color:#12366c}
+    .notice{background:var(--amber2);border-left:5px solid #e6a100;padding:.9rem 1rem;border-radius:8px;margin:1rem 0}.success{background:var(--teal2);border-left:5px solid var(--teal);padding:.9rem 1rem;border-radius:8px}
+    .steps{counter-reset:step;list-style:none;padding:0}.steps>li{counter-increment:step;margin:1rem 0;padding-left:3.1rem;position:relative}.steps>li::before{content:counter(step);position:absolute;left:0;top:0;width:2.2rem;height:2.2rem;display:grid;place-items:center;background:var(--blue);color:#fff;border-radius:50%;font-weight:800}
+    code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.terminal{position:relative;background:#111827;color:#e5eefc;border-radius:12px;padding:1rem;overflow:auto;white-space:pre;line-height:1.8}.copy{position:absolute;right:.7rem;top:.7rem;border:0;border-radius:7px;padding:.42rem .7rem;background:#fff;color:#172033;cursor:pointer;font-weight:700}
+    .formula{background:#f7f4ff;border:1px solid #d7c8ff;padding:1rem;border-radius:12px;display:grid;gap:.35rem}.formula code{font-weight:700;color:#4c1d95}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.field{display:grid;gap:.35rem}.field label{font-weight:700}.field input,.field textarea{width:100%;border:1px solid #aebbd0;border-radius:8px;padding:.65rem;background:#fff}.field input:focus,.field textarea:focus{outline:3px solid #bcd2ff;border-color:var(--blue)}
+    .field small{color:var(--muted)} textarea{min-height:100px;resize:vertical}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;margin:1rem 0}table{width:100%;border-collapse:collapse;min-width:930px}caption{text-align:left;padding:.85rem;font-weight:800;background:#eef4ff;color:#12366c}th,td{padding:.62rem;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle}th{background:#f7f9fc;font-size:.9rem}tbody th{text-align:left}.time{width:92px}.calc{font-variant-numeric:tabular-nums;font-weight:700}.calc.pending{font-weight:400;color:#6d7789}.negative{color:var(--red)}.positive{color:var(--teal)}
+    .questions{display:grid;gap:.9rem}.question{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:1rem}.question label{font-weight:700;display:block;margin-bottom:.45rem}
+    .actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1rem}.btn{border:0;border-radius:9px;padding:.7rem 1rem;font-weight:800;cursor:pointer;background:var(--blue);color:#fff}.btn.secondary{background:#e8eef8;color:#173561}.btn:hover{filter:brightness(.96)}
+    #status{min-height:1.5rem;color:var(--red);font-weight:700;margin-top:.7rem}#report{white-space:pre-wrap;background:#101827;color:#edf4ff;border-radius:12px;padding:1rem;min-height:150px;overflow:auto}
+    footer{text-align:center;color:var(--muted);margin-top:1.5rem}.screen-only{}
+    @media(max-width:760px){.goal,.grid2{grid-template-columns:1fr}header{padding:2rem 1rem}.steps>li{padding-left:2.8rem}}
+    @media print{header{background:#fff;color:#000;padding:0}header p{color:#333}.screen-only,nav,.actions{display:none!important}body{background:#fff}.card{box-shadow:none;break-inside:avoid}main{margin:0;max-width:none}textarea,input{border:0!important;padding:0!important}#report{color:#000;background:#fff;border:1px solid #aaa}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <span class="tag">PRÁCTICA P0103 · POR PAREJAS</span>
+    <h1>¿A qué velocidad viajan nuestros archivos?</h1>
+    <p>Medid la subida y la bajada de tres archivos, comparad el resultado con un test de velocidad y explicad por qué no siempre coinciden.</p>
+  </div>
+</header>
+<main>
+  <nav aria-label="Índice de la práctica" class="screen-only">
+    <a href="#preparacion">1. Preparación</a><a href="#estimacion">2. Estimación</a><a href="#medicion">3. Medición</a><a href="#conclusiones">4. Conclusiones</a><a href="#informe">5. Informe</a>
+  </nav>
+
+  <section class="card">
+    <h2>Objetivo y reparto del trabajo</h2>
+    <div class="goal">
+      <div class="pill"><strong>Integrante A</strong>Controla el cronómetro en la primera medición.</div>
+      <div class="pill"><strong>Integrante B</strong>Realiza la transferencia y repite la segunda medición.</div>
+      <div class="pill"><strong>Los dos</strong>Calculáis, contrastáis y redactáis las conclusiones.</div>
+    </div>
+    <p class="notice"><strong>Privacidad:</strong> los archivos contienen datos aleatorios, no información personal. Usad solo una cuenta y un servicio autorizados por el centro.</p>
+    <div class="grid2">
+      <div class="field"><label for="studentA">Nombre y apellidos del integrante A</label><input id="studentA" autocomplete="name"></div>
+      <div class="field"><label for="studentB">Nombre y apellidos del integrante B</label><input id="studentB" autocomplete="name"></div>
+    </div>
+  </section>
+
+  <section class="card" id="preparacion">
+    <h2>1. Preparad tres archivos en Ubuntu</h2>
+    <p>Abrid la Terminal con <strong>Ctrl + Alt + T</strong> y ejecutad estas órdenes. Los archivos aparecerán en <strong>Carpeta personal → p0103</strong>. Se usan datos aleatorios para evitar que la compresión altere demasiado la prueba.</p>
+    <div class="terminal"><button class="copy screen-only" type="button" id="copyCommands">Copiar</button><code id="commands">mkdir -p ~/p0103
+cd ~/p0103
+head -c 10000 /dev/urandom &gt; p0103-10KB.bin
+head -c 1000000 /dev/urandom &gt; p0103-1MB.bin
+head -c 100000000 /dev/urandom &gt; p0103-100MB.bin
+ls -lh</code></div>
+    <p>Si preferís la interfaz gráfica, los encontraréis en el gestor de archivos. Las copias descargadas aparecerán normalmente en <strong>Descargas</strong>.</p>
+    <div class="success"><strong>Tamaños usados en los cálculos:</strong> 10 KB = 0,08 Mb; 1 MB = 8 Mb; 100 MB = 800 Mb. Aquí se emplean unidades decimales: 1 byte = 8 bits.</div>
+  </section>
+
+  <section class="card" id="estimacion">
+    <h2>2. Estimad la velocidad de la conexión</h2>
+    <ol class="steps">
+      <li>Cerrad descargas, vídeos y sincronizaciones. Permaneced en el mismo lugar y con la misma red durante toda la práctica.</li>
+      <li>Abrid <a href="https://www.speedtest.net/" target="_blank" rel="noopener noreferrer">Speedtest de Ookla</a> (u otro test autorizado), realizad una prueba y copiad sus resultados.</li>
+      <li>Antes de transferir los archivos, observad el tiempo teórico que se calcula en las tablas.</li>
+    </ol>
+    <div class="grid2">
+      <div class="field"><label for="estimatedDown">Descarga estimada (Mb/s)</label><input type="number" id="estimatedDown" min="0.01" step="0.01" inputmode="decimal" placeholder="Ej.: 300"></div>
+      <div class="field"><label for="estimatedUp">Subida estimada (Mb/s)</label><input type="number" id="estimatedUp" min="0.01" step="0.01" inputmode="decimal" placeholder="Ej.: 100"></div>
+      <div class="field"><label for="ping">Latencia o ping (ms)</label><input type="number" id="ping" min="0" step="0.01" inputmode="decimal" placeholder="Ej.: 18"></div>
+      <div class="field"><label for="testName">Test utilizado</label><input id="testName" value="Speedtest de Ookla"></div>
+    </div>
+    <div class="formula">
+      <span><code>Tiempo estimado (s) = tamaño (Mb) ÷ velocidad estimada (Mb/s)</code></span>
+      <span><code>Velocidad efectiva (Mb/s) = tamaño (Mb) ÷ tiempo medio (s)</code></span>
+      <span><code>Diferencia (%) = (efectiva − estimada) ÷ estimada × 100</code></span>
+    </div>
+  </section>
+
+  <section class="card" id="medicion">
+    <h2>3. Medid primero la subida y después la bajada</h2>
+    <ol class="steps">
+      <li>Abrid <a href="https://www.google.com/search?q=cron%C3%B3metro" target="_blank" rel="noopener noreferrer">el cronómetro de Google</a> y vuestro espacio de <a href="https://drive.google.com/" target="_blank" rel="noopener noreferrer">Google Drive</a> (o el servicio autorizado).</li>
+      <li><strong>Subida:</strong> iniciad el cronómetro al comenzar la carga y detenedlo cuando el servicio indique que ha terminado. Subid un solo archivo cada vez.</li>
+      <li>Repetid cada tamaño dos veces: una medición la realiza A y otra B. Escribid los segundos con decimales si los necesitáis.</li>
+      <li><strong>Bajada:</strong> cuando hayan terminado todas las subidas, descargad uno a uno esos mismos archivos. Iniciad el cronómetro al pulsar descargar y detenedlo cuando el navegador muestre la descarga completa.</li>
+    </ol>
+    <p class="notice"><strong>No cronometraéis la selección del archivo ni el tiempo que tardéis en reaccionar antes de pulsar.</strong> Aun así, vuestro tiempo de reacción influirá especialmente en el archivo de 10 KB: anotadlo después.</p>
+
+    <div class="table-wrap"><table>
+      <caption>Subida a Internet</caption>
+      <thead><tr><th>Archivo</th><th>Tamaño (Mb)</th><th>Tiempo estimado</th><th>A (s)</th><th>B (s)</th><th>Media (s)</th><th>Efectiva (Mb/s)</th><th>Diferencia</th></tr></thead>
+      <tbody id="uploadRows"></tbody>
+    </table></div>
+    <div class="table-wrap"><table>
+      <caption>Bajada desde Internet</caption>
+      <thead><tr><th>Archivo</th><th>Tamaño (Mb)</th><th>Tiempo estimado</th><th>A (s)</th><th>B (s)</th><th>Media (s)</th><th>Efectiva (Mb/s)</th><th>Diferencia</th></tr></thead>
+      <tbody id="downloadRows"></tbody>
+    </table></div>
+    <p><strong>Media:</strong> sumad las dos mediciones y dividid entre 2. La página hace el cálculo automáticamente cuando ambos tiempos son válidos.</p>
+  </section>
+
+  <section class="card" id="conclusiones">
+    <h2>4. Interpretad los resultados</h2>
+    <div class="questions">
+      <div class="question"><label for="q1">1. ¿Qué tamaño produjo la medida más estable o creíble? Justificadlo con datos.</label><textarea id="q1"></textarea></div>
+      <div class="question"><label for="q2">2. ¿Por qué el archivo de 10 KB puede dar un resultado muy distinto del test?</label><textarea id="q2" placeholder="Pensad en latencia, tiempo de reacción y datos de control."></textarea></div>
+      <div class="question"><label for="q3">3. Comparad subida y bajada. ¿Son simétricas? ¿Qué indican vuestros números?</label><textarea id="q3"></textarea></div>
+      <div class="question"><label for="q4">4. Explicad al menos tres causas de la diferencia entre la velocidad efectiva y la estimada.</label><textarea id="q4" placeholder="Servidor, Wi-Fi, congestión, protocolo, cifrado, navegador, disco, tareas en segundo plano..."></textarea></div>
+      <div class="question"><label for="q5">5. ¿Qué partes del tiempo medido no corresponden estrictamente al viaje por Internet?</label><textarea id="q5"></textarea></div>
+      <div class="question"><label for="q6">6. Explicad la diferencia entre Mb/s y MB/s. ¿Cuántos Mb/s son 25 MB/s?</label><textarea id="q6"></textarea></div>
+      <div class="question"><label for="q7">7. ¿Cómo mejoraríais el experimento para obtener un resultado más fiable?</label><textarea id="q7"></textarea></div>
+    </div>
+  </section>
+
+  <section class="card" id="informe">
+    <h2>5. Generad y entregad el informe</h2>
+    <p>Revisad los nombres, el test inicial, los doce tiempos y las respuestas. Después generad el texto, copiadlo o descargadlo.</p>
+    <div class="actions screen-only"><button class="btn" type="button" id="generate">Generar informe</button><button class="btn secondary" type="button" id="copyReport">Copiar informe</button><button class="btn secondary" type="button" id="downloadReport">Descargar .txt</button><button class="btn secondary" type="button" onclick="window.print()">Imprimir / PDF</button></div>
+    <div id="status" role="alert" aria-live="polite"></div>
+    <pre id="report" aria-label="Informe generado">El informe aparecerá aquí.</pre>
+  </section>
+  <footer>P0103 · Sistemas Informáticos · Velocidad efectiva de transmisión</footer>
+</main>
+<script>
+  const files=[
+    {id:'10kb',name:'p0103-10KB.bin',mb:0.08},
+    {id:'1mb',name:'p0103-1MB.bin',mb:8},
+    {id:'100mb',name:'p0103-100MB.bin',mb:800}
+  ];
+  const $=id=>document.getElementById(id);
+  const number=id=>{const v=Number($(id).value);return Number.isFinite(v)&&v>0?v:null};
+  const fmt=(n,d=2)=>Number(n).toLocaleString('es-ES',{maximumFractionDigits:d,minimumFractionDigits:d});
+  function row(direction,file){
+    return `<tr><th scope="row">${file.name}</th><td>${fmt(file.mb,2)}</td><td id="${direction}-${file.id}-estimate" class="calc pending">—</td><td><input class="time" aria-label="${file.name}, medición A de ${direction}" type="number" min="0.01" step="0.01" inputmode="decimal" id="${direction}-${file.id}-a"></td><td><input class="time" aria-label="${file.name}, medición B de ${direction}" type="number" min="0.01" step="0.01" inputmode="decimal" id="${direction}-${file.id}-b"></td><td id="${direction}-${file.id}-mean" class="calc pending">—</td><td id="${direction}-${file.id}-effective" class="calc pending">—</td><td id="${direction}-${file.id}-diff" class="calc pending">—</td></tr>`;
+  }
+  $('uploadRows').innerHTML=files.map(f=>row('up',f)).join('');
+  $('downloadRows').innerHTML=files.map(f=>row('down',f)).join('');
+  function calculations(direction,file){
+    const estimated=number(direction==='up'?'estimatedUp':'estimatedDown');
+    const a=number(`${direction}-${file.id}-a`),b=number(`${direction}-${file.id}-b`);
+    const mean=a&&b?(a+b)/2:null;
+    const effective=mean?file.mb/mean:null;
+    const diff=effective&&estimated?((effective-estimated)/estimated)*100:null;
+    return {estimated,a,b,mean,effective,diff};
+  }
+  function show(id,value,suffix,digits=2){const el=$(id);if(value===null){el.textContent='—';el.className='calc pending';return}el.textContent=`${fmt(value,digits)} ${suffix}`;el.className='calc';}
+  function update(){
+    ['up','down'].forEach(direction=>files.forEach(file=>{
+      const c=calculations(direction,file);
+      show(`${direction}-${file.id}-estimate`,c.estimated?file.mb/c.estimated:null,'s',3);
+      show(`${direction}-${file.id}-mean`,c.mean,'s',3);
+      show(`${direction}-${file.id}-effective`,c.effective,'Mb/s',2);
+      show(`${direction}-${file.id}-diff`,c.diff,'%',1);
+      if(c.diff!==null)$(`${direction}-${file.id}-diff`).classList.add(c.diff<0?'negative':'positive');
+    }));
+  }
+  document.addEventListener('input',update);
+  function tableText(direction,label){
+    return [label,...files.map(file=>{
+      const c=calculations(direction,file);
+      return `- ${file.name}: A ${fmt(c.a,2)} s; B ${fmt(c.b,2)} s; media ${fmt(c.mean,3)} s; velocidad efectiva ${fmt(c.effective,2)} Mb/s; diferencia ${c.diff>=0?'+':''}${fmt(c.diff,1)} %.`;
+    })].join('\n');
+  }
+  function validate(){
+    const missing=[];
+    if(!$('studentA').value.trim())missing.push('nombre del integrante A');
+    if(!$('studentB').value.trim())missing.push('nombre del integrante B');
+    if(!number('estimatedDown'))missing.push('velocidad estimada de bajada');
+    if(!number('estimatedUp'))missing.push('velocidad estimada de subida');
+    ['up','down'].forEach(d=>files.forEach(f=>['a','b'].forEach(p=>{if(!number(`${d}-${f.id}-${p}`))missing.push(`tiempo ${d==='up'?'de subida':'de bajada'} ${f.name} (${p.toUpperCase()})`)})));
+    for(let i=1;i<=7;i++)if(!$(`q${i}`).value.trim())missing.push(`respuesta ${i}`);
+    return missing;
+  }
+  function generate(){
+    const missing=validate();
+    if(missing.length){$('status').textContent=`Falta completar: ${missing.slice(0,5).join(', ')}${missing.length>5?` y ${missing.length-5} campo(s) más`:''}.`;return false}
+    const questions=[...document.querySelectorAll('.question')].map((box,i)=>`${i+1}. ${box.querySelector('label').textContent.replace(/^\d+\.\s*/, '')}\n${$(`q${i+1}`).value.trim()}`).join('\n\n');
+    $('report').textContent=`P0103 · VELOCIDAD EFECTIVA DE TRANSMISIÓN\n\nIntegrantes: ${$('studentA').value.trim()} y ${$('studentB').value.trim()}\nTest inicial: ${$('testName').value.trim()||'No indicado'}\nEstimación: descarga ${fmt(number('estimatedDown'),2)} Mb/s; subida ${fmt(number('estimatedUp'),2)} Mb/s; ping ${number('ping')===null?'no indicado':fmt(number('ping'),2)+' ms'}.\n\n${tableText('up','RESULTADOS DE SUBIDA')}\n\n${tableText('down','RESULTADOS DE BAJADA')}\n\nCONCLUSIONES\n${questions}`;
+    $('status').textContent='Informe generado correctamente.';return true;
+  }
+  $('generate').addEventListener('click',generate);
+  $('copyCommands').addEventListener('click',async()=>{await navigator.clipboard.writeText($('commands').innerText);$('copyCommands').textContent='Copiado'});
+  $('copyReport').addEventListener('click',async()=>{if(generate()){await navigator.clipboard.writeText($('report').textContent);$('status').textContent='Informe copiado al portapapeles.'}});
+  $('downloadReport').addEventListener('click',()=>{if(!generate())return;const blob=new Blob([$('report').textContent],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='p0103-informe.txt';a.click();URL.revokeObjectURL(a.href)});
+  update();
+</script>
+</body>
+</html>
