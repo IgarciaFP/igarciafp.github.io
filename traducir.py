@@ -23,6 +23,7 @@ TAMANO_LOTE = 16
 MAX_TOKENS_ENTRADA = 450
 MAX_TOKENS_SALIDA = 512
 ETIQUETAS_NO_TRADUCIBLES = {"script", "style", "code", "pre", "kbd", "samp", "noscript"}
+CLASES_NO_TRADUCIBLES = {"axis-label", "code-number", "glyph", "hex-number"}
 ATRIBUTOS_TRADUCIBLES = ("alt", "title", "aria-label", "placeholder")
 
 
@@ -116,8 +117,22 @@ class TraductorOffline:
                 )
 
             traducidas = self._tokenizer.batch_decode(salidas, skip_special_tokens=True)
-            if len(traducidas) != len(lote) or any(not texto.strip() for texto in traducidas):
-                raise RuntimeError("El modelo offline devolvió un lote incompleto")
+            if len(traducidas) != len(lote):
+                raise RuntimeError(
+                    "El modelo offline devolvió un lote con un número incorrecto de resultados: "
+                    f"esperados {len(lote)}, recibidos {len(traducidas)}"
+                )
+
+            entradas_sin_salida = [
+                repr(original)
+                for original, traduccion in zip(lote, traducidas)
+                if not traduccion.strip()
+            ]
+            if entradas_sin_salida:
+                detalle = ", ".join(entradas_sin_salida[:3])
+                raise RuntimeError(
+                    f"El modelo offline devolvió traducciones vacías para: {detalle}"
+                )
             traducciones.extend(texto.strip() for texto in traducidas)
 
             numero_lote = inicio // TAMANO_LOTE + 1
@@ -148,24 +163,30 @@ class TraductorOffline:
         return [self._cache[texto] for texto in textos]
 
 
+def elemento_no_traducible(elemento: Tag) -> bool:
+    atributos = getattr(elemento, "attrs", {})
+    clases = atributos.get("class", [])
+    if isinstance(clases, str):
+        clases = clases.split()
+
+    return (
+        getattr(elemento, "name", None) in ETIQUETAS_NO_TRADUCIBLES
+        or atributos.get("translate") == "no"
+        or bool(set(clases) & CLASES_NO_TRADUCIBLES)
+    )
+
+
 def nodo_traducible(nodo: NavigableString) -> bool:
     if isinstance(nodo, (Comment, Doctype)) or not nodo.strip():
         return False
     if not any(caracter.isalpha() for caracter in nodo):
         return False
-
-    for padre in nodo.parents:
-        if getattr(padre, "name", None) in ETIQUETAS_NO_TRADUCIBLES:
-            return False
-        if getattr(padre, "attrs", {}).get("translate") == "no":
-            return False
-    return True
+    return not any(elemento_no_traducible(padre) for padre in nodo.parents)
 
 
 def etiqueta_traducible(etiqueta: Tag) -> bool:
     return not any(
-        getattr(ancestro, "name", None) in ETIQUETAS_NO_TRADUCIBLES
-        or getattr(ancestro, "attrs", {}).get("translate") == "no"
+        elemento_no_traducible(ancestro)
         for ancestro in [etiqueta, *etiqueta.parents]
     )
 
@@ -248,7 +269,24 @@ def traducir_archivo(ruta_es: Path, traductor: TraductorOffline) -> None:
     print(f"Creado con éxito: {ruta_en}", flush=True)
 
 
+def probar_filtro_html() -> None:
+    ejemplo = BeautifulSoup(
+        "<svg><title>Tabla de caracteres</title>"
+        '<text class="glyph">Σ</text>'
+        '<text class="hex-number">E4</text></svg>',
+        "html.parser",
+    )
+    if nodo_traducible(ejemplo.select_one(".glyph").string):
+        raise RuntimeError("La prueba del filtro intentó traducir un glifo técnico")
+    if nodo_traducible(ejemplo.select_one(".hex-number").string):
+        raise RuntimeError("La prueba del filtro intentó traducir un código hexadecimal")
+    if not nodo_traducible(ejemplo.title.string):
+        raise RuntimeError("La prueba del filtro omitió una leyenda traducible")
+    print("Prueba del filtro HTML superada.", flush=True)
+
+
 def probar_motor() -> None:
+    probar_filtro_html()
     traductor = TraductorOffline()
     originales = [
         "Hola, mundo.",
