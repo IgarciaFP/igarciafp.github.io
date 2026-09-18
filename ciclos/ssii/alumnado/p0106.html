@@ -25,7 +25,7 @@ h2{margin:0 0 .8rem;color:#12366c;font-size:1.45rem}h3{margin:.2rem 0 .6rem;font
 <section class="card" id="referencia"><h2>Unidades y fórmulas de apoyo</h2><div class="ref-grid"><div class="ladder"><div class="ladder-row"><span>1 TB</span><code>× 1000</code><span>1000 GB</span></div><div class="ladder-row"><span>1 GB</span><code>× 1000</code><span>1000 MB</span></div><div class="ladder-row"><span>1 MB</span><code>× 1000</code><span>1000 KB</span></div><div class="ladder-row"><span>1 byte</span><code>× 8</code><span>8 bits</span></div></div><div class="formula"><code>soportes = tamaño total ÷ capacidad de uno</code><span>Si no es entero, redondea <strong>hacia arriba</strong>.</span><code>tiempo (s) = tamaño (Mb) ÷ velocidad (Mb/s)</code><span>Antes: MB × 8 = Mb.</span></div></div><div class="worked"><strong>Ejemplo resuelto: 500 KB + 1,5 MB</strong><ol><li>Elegimos MB.</li><li>500 KB ÷ 1000 = 0,5 MB.</li><li>0,5 + 1,5 = <strong>2 MB</strong>.</li></ol></div></section>
 <template id="folderVisual"><figure class="folder-figure"><svg viewBox="0 0 900 390" role="img" aria-labelledby="folderTitle folderDesc" xmlns="http://www.w3.org/2000/svg"><title id="folderTitle">Carpeta proyecto con cuatro archivos</title><desc id="folderDesc">Vídeo de 2,1 GB, fotos de 950 MB, audio de 750 MB y documentos de 500 MB.</desc><rect width="900" height="390" fill="#f8fafc"/><path d="M70 92h260l48 54h452v190a24 24 0 0 1-24 24H94a24 24 0 0 1-24-24z" fill="#f9c74f" stroke="#c0841a" stroke-width="4"/><path d="M70 142h760v42H70z" fill="#ffe49a"/><g font-family="system-ui,sans-serif"><text x="88" y="125" font-size="25" font-weight="800" fill="#624105">proyecto-clase</text><g transform="translate(110 205)"><rect width="150" height="105" rx="12" fill="#fff" stroke="#cbd5e1" stroke-width="2"/><path d="M48 22h54l18 18v44H48z" fill="#fee2e2"/><text x="75" y="76" text-anchor="middle" font-size="13" font-weight="700">vídeo.mp4</text><text x="75" y="98" text-anchor="middle" font-size="15" font-weight="800">2,1 GB</text></g><g transform="translate(290 205)"><rect width="150" height="105" rx="12" fill="#fff" stroke="#cbd5e1" stroke-width="2"/><rect x="45" y="22" width="60" height="50" rx="6" fill="#dbeafe"/><circle cx="88" cy="36" r="7" fill="#f59e0b"/><path d="M51 65l18-18 12 12 10-9 9 15z" fill="#3b82f6"/><text x="75" y="84" text-anchor="middle" font-size="13" font-weight="700">fotos.zip</text><text x="75" y="101" text-anchor="middle" font-size="15" font-weight="800">950 MB</text></g><g transform="translate(470 205)"><rect width="150" height="105" rx="12" fill="#fff" stroke="#cbd5e1" stroke-width="2"/><circle cx="75" cy="47" r="29" fill="#dcfce7"/><path d="M63 38h9l14-12v42L72 56h-9z" fill="#16a34a"/><text x="75" y="84" text-anchor="middle" font-size="13" font-weight="700">audio.wav</text><text x="75" y="101" text-anchor="middle" font-size="15" font-weight="800">750 MB</text></g><g transform="translate(650 205)"><rect width="150" height="105" rx="12" fill="#fff" stroke="#cbd5e1" stroke-width="2"/><path d="M50 19h50v54H50z" fill="#ede9fe"/><path d="M60 34h30M60 44h30M60 54h22" stroke="#7c3aed" stroke-width="3"/><text x="75" y="84" text-anchor="middle" font-size="13" font-weight="700">docs.pdf</text><text x="75" y="101" text-anchor="middle" font-size="15" font-weight="800">500 MB</text></g></g></svg></figure><div class="options"><span>2 GB</span><span>4 GB</span><span>8 GB</span><span>16 GB</span></div></template>
 <section class="card" id="ejercicios"><h2>Los 10 retos</h2><p>Escribe números sin separador de millares. Puedes usar coma o punto decimal. Comprueba cada reto y consulta sus pistas cuando las necesites.</p><div class="exercises" id="exerciseList"></div></section>
-<section class="card" id="entrega"><h2>Identifica y entrega tu trabajo</h2><div class="name-row"><div class="field"><label for="studentName">Nombre y apellidos</label><div class="input-unit"><input id="studentName" autocomplete="name"><span>Alumno/a</span></div></div><button class="btn secondary screen" type="button" onclick="window.print()">Imprimir / guardar en PDF</button></div><div class="actions screen"><button class="btn" type="button" id="checkAll">Comprobar los 10 retos</button><button class="btn secondary" type="button" id="resetAll">Borrar respuestas</button></div></section>
+<section class="card" id="entrega"><h2>Identifica y entrega tu trabajo</h2><div class="name-row"><div class="field"><label for="studentName">Nombre y apellidos</label><div class="input-unit"><input id="studentName" autocomplete="name"><span>Alumno/a</span></div></div><button class="btn secondary screen" type="button" id="downloadTxt">Descargar resultado en TXT</button></div><div class="actions screen"><button class="btn" type="button" id="checkAll">Comprobar los 10 retos</button><button class="btn secondary" type="button" id="resetAll">Borrar respuestas</button></div></section>
 <div class="progress screen" aria-live="polite"><strong id="progressText">Progreso: 0 de 10</strong><div class="bar"><span id="progressBar"></span></div></div>
 <footer>P0106 · Sistemas Informáticos · Unidades, soportes y tiempos de transmisión</footer>
 </main>
@@ -54,6 +54,40 @@ function progress(){const n=exercises.filter(x=>[...x.querySelectorAll('[data-an
 document.querySelectorAll('.check-one').forEach(b=>b.addEventListener('click',()=>{check(b.closest('.exercise'));progress()}));
 $('checkAll').addEventListener('click',()=>{exercises.forEach(x=>check(x));progress();const first=exercises.find(x=>!x.classList.contains('solved'));if(first)first.scrollIntoView({behavior:'smooth',block:'center'})});
 $('resetAll').addEventListener('click',()=>{document.querySelectorAll('[data-answer]').forEach(f=>{f.value='';f.removeAttribute('aria-invalid')});exercises.forEach(x=>{x.classList.remove('solved');const f=x.querySelector('.feedback');f.textContent='';f.className='feedback'});progress()});
+function downloadResults(){
+  const name=$('studentName').value.trim()||'Sin nombre';
+  const completed=exercises.filter(card=>[...card.querySelectorAll('[data-answer]')].every(fieldOK)).length;
+  const lines=[
+    'P0106 · Sumar tamaños, elegir soportes y calcular tiempos',
+    'Alumno/a: '+name,
+    'Resultado: '+completed+' de '+exercises.length+' retos completos',
+    ''
+  ];
+  exercises.forEach((card,index)=>{
+    const task=tasks[index];
+    const fields=[...card.querySelectorAll('[data-answer]')];
+    const ok=fields.every(fieldOK);
+    lines.push(task.n+'. '+task.title+' — '+(ok?'CORRECTO':'PENDIENTE O INCORRECTO'));
+    fields.forEach(field=>{
+      const label=field.closest('.field').querySelector('label').textContent.trim();
+      const unit=field.tagName==='SELECT'?'':field.closest('.input-unit').querySelector('span').textContent.trim();
+      const value=field.value.trim()||'Sin respuesta';
+      lines.push('  - '+label+': '+value+(unit?' '+unit:''));
+    });
+    lines.push('');
+  });
+  const safeName=name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'')||'alumno';
+  const blob=new Blob(['\uFEFF'+lines.join('\n')],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement('a');
+  link.href=url;
+  link.download='P0106_'+safeName+'.txt';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),0);
+}
+$('downloadTxt').addEventListener('click',downloadResults);
 document.querySelectorAll('[data-answer]').forEach(f=>f.addEventListener('input',()=>{f.closest('.exercise').classList.remove('solved');progress()}));
 progress();
 </script>
