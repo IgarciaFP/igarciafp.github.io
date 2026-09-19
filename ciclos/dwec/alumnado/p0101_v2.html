@@ -122,6 +122,11 @@
     .steps { margin: 0; padding-left: 1.25rem; }
     .steps li + li { margin-top: .4rem; }
     .evidence { margin: .8rem 0 0; padding: .68rem .8rem; border-left: 4px solid var(--green); border-radius: 7px; background: var(--green-soft); }
+    .response-field { margin-top: .8rem; }
+    .response-field label { display: block; margin-bottom: .3rem; font-weight: 800; }
+    .ticket-response { width: 100%; min-height: 92px; padding: .65rem .72rem; resize: vertical; border: 1px solid #94a3b8; border-radius: 8px; color: var(--ink); background: #fff; }
+    .ticket-response:focus { outline: 3px solid var(--blue-soft); border-color: var(--blue); }
+    .response-help { display: block; margin-top: .25rem; color: var(--muted); font-size: .84rem; }
     .done-row { display: flex; gap: .5rem; align-items: center; margin-top: .8rem; }
     .done-row input { width: 1.15rem; height: 1.15rem; accent-color: var(--green); }
     .done-row label { font-weight: 800; }
@@ -314,9 +319,10 @@ Hipótesis → evidencia → corrección</pre>
           <li>Abre DevTools con <kbd>F12</kbd> o <kbd>Ctrl</kbd> + <kbd>Mayús</kbd> + <kbd>I</kbd> y activa el selector de elementos.</li>
           <li>Selecciona la métrica <strong>Facturación calculada</strong>. Identifica su <code>&lt;article&gt;</code>, clases y nodo de valor.</li>
           <li>Edita el texto visible a <code>Facturación revisada</code> y añade el atributo <code>data-reviewed="true"</code>.</li>
-          <li>Recarga y explica por qué desaparece el cambio.</li>
+          <li>Abre el archivo en <strong>Sources</strong>, compáralo con el DOM modificado y explica por qué el cambio no altera el código fuente.</li>
         </ol>
         <p class="evidence"><strong>Evidencia:</strong> selector CSS del valor y explicación de la diferencia entre DOM vivo y archivo fuente.</p>
+        <div class="response-field"><label for="r1">Respuesta del ticket DEV-101</label><textarea class="ticket-response" id="r1" placeholder="Selector utilizado y explicación técnica..."></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
         <div class="done-row"><input class="done" id="d1" type="checkbox"><label for="d1">Ticket documentado</label></div>
       </div></article>
 
@@ -330,6 +336,7 @@ Hipótesis → evidencia → corrección</pre>
           <li>Usa el filtro de estilos para localizar qué regla establece el color de la métrica destacada.</li>
         </ol>
         <p class="evidence"><strong>Evidencia:</strong> propiedad causante, valor original, valor propuesto y ancho de viewport usado.</p>
+        <div class="response-field"><label for="r2">Respuesta del ticket DEV-102</label><textarea class="ticket-response" id="r2" placeholder="Propiedad, valores y viewport de comprobación..."></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
         <div class="done-row"><input class="done" id="d2" type="checkbox"><label for="d2">Ticket documentado</label></div>
       </div></article>
 
@@ -344,6 +351,7 @@ Hipótesis → evidencia → corrección</pre>
         </ol>
         <p class="evidence"><strong>Evidencia:</strong> número de filas, contenido de <code>$0.dataset</code> y mensaje exacto del error.</p>
         <details><summary>Comando útil</summary><code class="command">console.table(window.devtoolsLab.orders);</code></details>
+        <div class="response-field"><label for="r3">Respuesta del ticket DEV-103</label><textarea class="ticket-response" id="r3" placeholder="Filas, dataset y error observado..."></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
         <div class="done-row"><input class="done" id="d3" type="checkbox"><label for="d3">Ticket documentado</label></div>
       </div></article>
 
@@ -357,6 +365,7 @@ Hipótesis → evidencia → corrección</pre>
           <li>Avanza con <em>Step over</em> y formula la corrección. Compruébala temporalmente con un <strong>Local override</strong> o un <strong>Snip&shy;pet</strong>.</li>
         </ol>
         <p class="evidence"><strong>Evidencia:</strong> línea defectuosa, valor en dos iteraciones y operador que debería utilizarse.</p>
+        <div class="response-field"><label for="r4">Respuesta del ticket DEV-104</label><textarea class="ticket-response" id="r4" placeholder="Línea, valores inspeccionados y corrección propuesta..."></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
         <div class="done-row"><input class="done" id="d4" type="checkbox"><label for="d4">Ticket documentado</label></div>
       </div></article>
 
@@ -370,6 +379,7 @@ Hipótesis → evidencia → corrección</pre>
           <li>Provoca el error HTTP, compara ambas solicitudes y usa <strong>Copy as fetch</strong> sobre una de ellas.</li>
         </ol>
         <p class="evidence"><strong>Evidencia:</strong> tabla comparativa de las respuestas correcta y fallida con al menos cuatro campos.</p>
+        <div class="response-field"><label for="r5">Respuesta del ticket DEV-105</label><textarea class="ticket-response" id="r5" placeholder="Comparación de método, estado, tipo, tamaño o tiempo..."></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
         <div class="done-row"><input class="done" id="d5" type="checkbox"><label for="d5">Ticket documentado</label></div>
       </div></article>
 
@@ -383,6 +393,7 @@ Hipótesis → evidencia → corrección</pre>
           <li>Compara el tiempo con la carga sin limitación y captura el cambio de la columna <em>Waterfall</em>.</li>
         </ol>
         <p class="evidence"><strong>Evidencia:</strong> viewport, perfil de red y diferencia de tiempo observada. No afirmes causalidad con una sola medición.</p>
+        <div class="response-field"><label for="r6">Respuesta del ticket DEV-106</label><textarea class="ticket-response" id="r6" placeholder="Viewport, perfil de red y mediciones..."></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
         <div class="done-row"><input class="done" id="d6" type="checkbox"><label for="d6">Ticket documentado</label></div>
       </div></article>
 
@@ -393,10 +404,11 @@ Hipótesis → evidencia → corrección</pre>
           <li>En <strong>Application</strong>, localiza <code>opsboard.theme</code> en Local Storage y <code>opsboard.session</code> en Session Storage.</li>
           <li>Busca la cookie <code>opsboard_lab</code> y compara su fecha de caducidad y alcance con los dos almacenes anteriores.</li>
           <li>Edita el tema a <code>contrast</code> y ejecuta <code>aplicarPreferencias()</code> en Console.</li>
-          <li>Elimina solo los datos de este laboratorio y recarga para comprobar cuáles se recrean.</li>
+          <li>Elimina una de las claves, comprueba inmediatamente su desaparición y restáurala desde Console con <code>setItem()</code>.</li>
         </ol>
         <p class="evidence"><strong>Evidencia:</strong> matriz con mecanismo, clave, valor, persistencia y alcance.</p>
         <details><summary>Si trabajas con file://</summary><p>Las cookies y el Service Worker requieren un origen HTTP(S). Usa la versión publicada de esta práctica.</p></details>
+        <div class="response-field"><label for="r7">Respuesta del ticket DEV-107</label><textarea class="ticket-response" id="r7" placeholder="Matriz de almacenes y resultado de la edición..."></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
         <div class="done-row"><input class="done" id="d7" type="checkbox"><label for="d7">Ticket documentado</label></div>
       </div></article>
 
@@ -410,6 +422,7 @@ Hipótesis → evidencia → corrección</pre>
           <li>Recorre la barra de acciones solo con teclado y verifica el indicador de foco.</li>
         </ol>
         <p class="evidence"><strong>Evidencia:</strong> dos defectos, usuarios afectados, criterio de validación y corrección propuesta.</p>
+        <div class="response-field"><label for="r8">Respuesta del ticket DEV-108</label><textarea class="ticket-response" id="r8" placeholder="Defectos, impacto y correcciones de accesibilidad..."></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
         <div class="done-row"><input class="done" id="d8" type="checkbox"><label for="d8">Ticket documentado</label></div>
       </div></article>
 
@@ -423,6 +436,7 @@ Hipótesis → evidencia → corrección</pre>
           <li>Anota duración aproximada, impacto percibido y una estrategia para dividir o trasladar el trabajo.</li>
         </ol>
         <p class="evidence"><strong>Evidencia:</strong> captura de la traza con función, duración y propuesta: fragmentación, <code>requestIdleCallback</code> o Web Worker.</p>
+        <div class="response-field"><label for="r9">Respuesta del ticket DEV-109</label><textarea class="ticket-response" id="r9" placeholder="Función, duración e intervención propuesta..."></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
         <div class="done-row"><input class="done" id="d9" type="checkbox"><label for="d9">Ticket documentado</label></div>
       </div></article>
 
@@ -436,6 +450,7 @@ Hipótesis → evidencia → corrección</pre>
           <li>Vacía la colección con <code>window.devtoolsLab.retenciones.length = 0</code>, fuerza GC desde DevTools y toma una tercera instantánea.</li>
         </ol>
         <p class="evidence"><strong>Evidencia:</strong> recuento/tamaño antes y después, ruta de retención y cambio de código que evitaría la fuga.</p>
+        <div class="response-field"><label for="r10">Respuesta del ticket DEV-110</label><textarea class="ticket-response" id="r10" placeholder="Comparación de instantáneas y ruta de retención..."></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
         <div class="done-row"><input class="done" id="d10" type="checkbox"><label for="d10">Ticket documentado</label></div>
       </div></article>
 
@@ -446,9 +461,10 @@ Hipótesis → evidencia → corrección</pre>
           <li>En <strong>Application → Service Workers</strong>, verifica que <code>p0101_v2_sw.js</code> está activado y controla la página.</li>
           <li>Abre <strong>Manifest</strong> y anota nombre, <code>start_url</code>, modo de visualización y cualquier advertencia.</li>
           <li>Revisa <strong>Cache Storage</strong>, identifica la caché <code>opsboard-lab-*</code> y enumera sus recursos.</li>
-          <li>Activa <em>Offline</em>, recarga y distingue qué funciona desde caché y qué petición falla.</li>
+          <li>Activa <em>Offline</em> y pulsa <strong>Sincronizar pedidos</strong>; distingue el contenido ya disponible de la petición que falla.</li>
         </ol>
         <p class="evidence"><strong>Evidencia:</strong> estado del worker, versión de caché, tres recursos cacheados y resultado offline.</p>
+        <div class="response-field"><label for="r11">Respuesta del ticket DEV-111</label><textarea class="ticket-response" id="r11" placeholder="Worker, caché, recursos y comportamiento offline..."></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
         <div class="done-row"><input class="done" id="d11" type="checkbox"><label for="d11">Ticket documentado</label></div>
       </div></article>
 
@@ -462,6 +478,7 @@ Hipótesis → evidencia → corrección</pre>
           <li>Prioriza tres acciones según impacto y coste. Indica una limitación de la auditoría automática.</li>
         </ol>
         <p class="evidence"><strong>Evidencia:</strong> tabla de puntuaciones, tres acciones priorizadas y una comprobación manual complementaria.</p>
+        <div class="response-field"><label for="r12">Respuesta del ticket DEV-112</label><textarea class="ticket-response" id="r12" placeholder="Puntuaciones, prioridades y limitación de la auditoría..."></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
         <div class="done-row"><input class="done" id="d12" type="checkbox"><label for="d12">Ticket documentado</label></div>
       </div></article>
     </section>
@@ -495,7 +512,7 @@ Hipótesis → evidencia → corrección</pre>
 
     <section class="panel delivery" id="entrega">
       <h2>Informe de diagnóstico</h2>
-      <p>El generador incorpora el estado observable de la aplicación y deja espacio para las conclusiones técnicas. Revisa el contenido antes de entregarlo.</p>
+      <p>El generador incorpora el estado observable de la aplicación, las respuestas escritas en los 12 tickets y las conclusiones técnicas. Revisa el contenido antes de entregarlo.</p>
       <div class="delivery-grid">
         <form id="report-form">
           <label for="student-id">Nombre, alias o equipo</label>
@@ -703,11 +720,13 @@ Hipótesis → evidencia → corrección</pre>
 
     (() => {
       const boxes = [...document.querySelectorAll('.done')];
+      const responses = [...document.querySelectorAll('.ticket-response')];
       const incident = document.querySelector('#incident-done');
       const bar = document.querySelector('#progress-bar');
       const text = document.querySelector('#progress-text');
       const key = 'devtools-cfgs-v2-progress';
       const incidentKey = 'devtools-cfgs-v2-incident';
+      const responseKey = 'devtools-cfgs-v2-responses';
 
       function read(storageKey, fallback) {
         try { return JSON.parse(localStorage.getItem(storageKey)) ?? fallback; }
@@ -729,6 +748,14 @@ Hipótesis → evidencia → corrección</pre>
           renderProgress();
         });
       });
+      const savedResponses = read(responseKey, {});
+      responses.forEach(field => {
+        field.value = savedResponses[field.id] || '';
+        field.addEventListener('input', () => {
+          const state = Object.fromEntries(responses.map(item => [item.id, item.value]));
+          localStorage.setItem(responseKey, JSON.stringify(state));
+        });
+      });
       incident.checked = read(incidentKey, false);
       incident.addEventListener('change', () => {
         localStorage.setItem(incidentKey, JSON.stringify(incident.checked));
@@ -736,9 +763,11 @@ Hipótesis → evidencia → corrección</pre>
       });
       document.querySelector('#reset-progress').addEventListener('click', () => {
         boxes.forEach(box => { box.checked = false; });
+        responses.forEach(field => { field.value = ''; });
         incident.checked = false;
         localStorage.removeItem(key);
         localStorage.removeItem(incidentKey);
+        localStorage.removeItem(responseKey);
         renderProgress();
       });
       renderProgress();
@@ -761,6 +790,12 @@ Hipótesis → evidencia → corrección</pre>
         const findings = document.querySelector('#findings').value.trim();
         const recommendations = document.querySelector('#recommendations').value.trim();
         const completed = document.querySelectorAll('.done:checked').length;
+        const ticketResponses = [...document.querySelectorAll('.ticket')].map(ticket => {
+          const id = ticket.querySelector('.ticket-id').textContent.trim();
+          const title = ticket.querySelector('h3').textContent.trim();
+          const answer = ticket.querySelector('.ticket-response').value.trim() || '[Sin respuesta]';
+          return `${id} · ${title}\n${answer}`;
+        }).join('\n\n');
         report = [
           'INFORME DE DIAGNÓSTICO · CHROME DEVTOOLS',
           '=========================================',
@@ -775,6 +810,8 @@ Hipótesis → evidencia → corrección</pre>
           `Estado de red: ${ui.network.textContent}`,
           `Objetos retenidos: ${window.devtoolsLab.retenciones.length}`,
           `Service Worker: ${ui.serviceWorker.textContent}`,
+          '',
+          'RESPUESTAS DE LOS TICKETS', ticketResponses,
           '',
           'HALLAZGOS', findings,
           '',
