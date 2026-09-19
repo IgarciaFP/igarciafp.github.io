@@ -19,7 +19,10 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
+  const requestUrl = new URL(event.request.url);
+  const labFiles = new Set(['p0101_v2.html', 'p0101_v2_data.json', 'p0101_v2.webmanifest', 'p0101_v2_sw.js']);
+  const fileName = requestUrl.pathname.split('/').pop();
+  if (event.request.method !== 'GET' || requestUrl.origin !== self.location.origin || !labFiles.has(fileName)) return;
   event.respondWith(
     fetch(event.request)
       .then(response => {
