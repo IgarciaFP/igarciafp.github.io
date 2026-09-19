@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#8de0b8">
+<meta name="description" content="DWEC · Aula de Ignacio García. Programa del curso, recursos y siete unidades para explorar el desarrollo frontend.">
+<title>DWEC — Ignacio García</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%238de0b8'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-family='monospace' font-size='32' font-weight='bold'%3E%26lt%3B/%26gt%3B%3C/text%3E%3C/svg%3E">
+<style>
+:root{--mint:#8de0b8;--ink:#183d30;--paper:#f5fff9;--line:rgba(24,61,48,.25)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--mint);color:var(--ink);font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}button{font:inherit}a:focus-visible,button:focus-visible{outline:3px solid #374fc5;outline-offset:6px}
+.wrap{width:min(1240px,calc(100% - 96px));margin:auto}
+header{height:100px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--ink)}
+.brand{font-size:26px;font-weight:900;letter-spacing:-1.5px;display:flex;align-items:center;gap:12px}.brand-icon{font:700 21px monospace;background:var(--ink);color:var(--mint);padding:9px 8px;border-radius:9px;letter-spacing:-3px}
+.header-note,.eyebrow,.label,.quarter-top,.unit-number,footer,.badge{font-family:"Courier New",monospace;font-size:12px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase}
+.header-note{display:flex;align-items:center;gap:10px}.dot{width:7px;height:7px;border-radius:50%;background:var(--ink)}
+.hero{display:grid;grid-template-columns:1.25fr 1fr;gap:50px;align-items:center;padding:72px 0 64px}
+.eyebrow{display:flex;align-items:center;gap:12px;margin:0 0 24px}.eyebrow:before{content:"";width:28px;height:2px;background:var(--ink)}
+h1{font-size:clamp(60px,6.9vw,96px);line-height:.98;letter-spacing:-6px;margin:0 0 25px;font-weight:850}h1 span{display:block}.outline{color:transparent;-webkit-text-stroke:1.6px var(--ink)}
+.intro{font-size:17px;line-height:1.6;max-width:420px;margin:0;color:#305c49}
+.hero-art{overflow:clip;position:relative;height:310px;display:grid;place-items:center;isolation:isolate}.orbit{position:absolute;width:295px;height:295px;border:1px solid var(--line);border-radius:50%;transform:rotate(-25deg) scaleX(1.4)}.orbit.two{transform:rotate(40deg) scaleX(1.3)}
+.code-window{width:min(340px,88%);background:var(--paper);border:2px solid var(--ink);border-radius:13px;box-shadow:12px 12px 0 var(--ink);transform:rotate(-5deg);animation:float 6s ease-in-out 2}
+.window-bar{height:39px;border-bottom:2px solid var(--ink);display:flex;align-items:center;padding:0 15px;gap:6px}.window-bar i{width:7px;height:7px;border:1px solid var(--ink);border-radius:50%}.window-bar small{margin-left:auto;font:11px monospace;color:#456657}
+.code{padding:26px;font:14px/1.9 "Courier New",monospace;white-space:nowrap}.code .muted{color:#526b5f}.code .purple{color:#6750a2}.code .green{color:#397651}.code strong{font-weight:700}.indent{padding-left:21px}.cursor{display:inline-block;width:8px;height:16px;background:var(--ink);vertical-align:middle;animation:blink 1s step-end 5}
+.sticker{position:absolute;right:0;bottom:12px;width:95px;height:95px;border-radius:50%;background:var(--ink);color:var(--mint);display:grid;place-content:center;text-align:center;transform:rotate(12deg);border:5px solid var(--mint);font:700 11px/1.5 monospace;letter-spacing:.5px}.sticker b{font:700 28px monospace}
+.spark{position:absolute;left:3px;top:1px;font-size:65px;line-height:1;animation:spin 12s linear 1}
+.info{display:grid;grid-template-columns:1.2fr 1.4fr .8fr 1.15fr .85fr;border:1px solid var(--ink);border-radius:12px;overflow:hidden;margin-bottom:68px;background:rgba(255,255,255,.13)}
+.info-item{padding:22px 20px;min-width:0}.info-item+.info-item{border-left:1px solid var(--line)}.label{display:block;font-size:10px;letter-spacing:1.4px;margin-bottom:11px;color:#305c49}.value{font-size:14px;font-weight:700;line-height:1.45;overflow-wrap:anywhere}.info a{display:inline-flex;gap:9px;align-items:center}.info a:hover{text-decoration:underline;text-underline-offset:4px}.pending{font-size:13px;font-weight:400;color:#305c49}
+.program-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:28px;gap:20px}.program-head .eyebrow{margin-bottom:13px}h2{font-size:42px;letter-spacing:-1.9px;margin:0}.program-count{font:12px "Courier New",monospace;letter-spacing:.5px;margin:0 0 5px}
+.quarters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;padding-bottom:66px}.quarter{background:var(--paper);border:1.5px solid var(--ink);border-radius:13px;overflow:hidden;transition:transform .25s,box-shadow .25s}.quarter:hover{transform:translateY(-5px);box-shadow:5px 6px 0 var(--ink)}
+.quarter-top{padding:21px 23px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);letter-spacing:.8px}.quarter-top span:last-child{font-size:10px;font-weight:400;color:#526b5f}
+.unit{display:grid;grid-template-columns:28px 1fr 21px;gap:11px;align-items:start;padding:24px 22px;min-height:119px;transition:background .2s}.unit+.unit{border-top:1px solid #cfe5d9}.unit:hover{background:#e0f5e9}.unit-number{font-size:11px;letter-spacing:0;color:#526b5f;padding-top:4px}.unit-title{font-size:17px;font-weight:700;line-height:1.38;letter-spacing:-.4px}.arrow{font-size:21px;transition:transform .2s}.unit:hover .arrow{transform:translate(3px,-3px)}
+footer{display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--ink);padding:26px 0 34px;font-size:10px;letter-spacing:.7px;font-weight:400}.footer-mark{font-weight:700}
+.reveal{animation:enter .7s ease-out both}.info{animation-delay:.1s}.program{animation-delay:.2s}
+@keyframes enter{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-12px) rotate(-2deg)}}
+@keyframes blink{50%{opacity:0}}@keyframes spin{to{transform:rotate(180deg)}}
+@media(min-width:1500px){.hero{padding-top:90px;padding-bottom:80px}}
+@media(max-width:1000px){.wrap{width:calc(100% - 56px)}.hero{gap:20px}h1{font-size:72px}.info{grid-template-columns:repeat(3,1fr)}.info-item:nth-child(4){border-left:0}.info-item:nth-child(n+4){border-top:1px solid var(--line)}.quarters{gap:14px}.unit{padding:22px 16px;gap:6px}.unit-title{font-size:15px}.quarter-top{padding:20px 16px}.hero-art{transform:scale(.9)}}
+@media(max-width:700px){.wrap{width:calc(100% - 36px)}header{height:78px}.header-note{font-size:9px;letter-spacing:.5px}.brand{font-size:23px}.hero{grid-template-columns:1fr;padding:42px 0 30px;gap:27px}h1{font-size:clamp(59px,12vw,82px);letter-spacing:-4px}.intro{font-size:16px;max-width:360px}.hero-art{height:275px;max-width:370px;width:100%;margin:auto;transform:scale(.95)}.orbit{width:250px;height:250px}.spark{left:8px}.info{grid-template-columns:1fr 1fr;margin-bottom:44px}.info-item{padding:19px 15px}.info-item:nth-child(3){border-left:0;border-top:1px solid var(--line)}.info-item:nth-child(4){border-left:1px solid var(--line)}.info-item:nth-child(5){grid-column:1/-1;border-left:0}.value{font-size:13px}.program-head{align-items:start;flex-direction:column;gap:13px}h2{font-size:35px}.quarters{grid-template-columns:1fr;gap:20px;padding-bottom:40px}.quarter-top{padding:19px 22px}.unit{min-height:auto;padding:24px 22px;grid-template-columns:28px 1fr 21px;gap:11px}.unit-title{font-size:17px}footer{flex-direction:column;gap:12px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}.quarter:hover{transform:none}}
+.unit-date{display:block;margin-top:10px;font:11px 'Courier New',monospace;color:#456657;letter-spacing:0}.header-note{text-align:right}@media(max-width:700px){.header-note{max-width:160px;line-height:1.5;letter-spacing:0;font-size:9px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="brand"><span class="brand-icon" aria-hidden="true">&lt;/&gt;</span> DWEC<span style="font-weight:400">.</span></div>
+<div class="header-note"><span class="dot" aria-hidden="true"></span> Desarrollo web · Entorno cliente</div>
+</header>
+<main>
+<section class="hero reveal" aria-labelledby="hero-title">
+<div>
+<p class="eyebrow">JavaScript, interacción y creatividad</p>
+<h1 id="hero-title"><span>Ideas que</span><span>cobran <em class="outline" style="font-style:normal">vida.</em></span></h1>
+<p class="intro">Da vida a la web con JavaScript.<br>Explora el navegador, conecta datos y crea experiencias que responden.</p>
+</div>
+<div class="hero-art" aria-hidden="true">
+<div class="orbit"></div><div class="orbit two"></div><div class="spark">✳</div>
+<div class="code-window">
+<div class="window-bar"><i></i><i></i><i></i><small>hello, javascript.</small></div>
+<div class="code"><span class="muted">// Todo empieza con una idea.</span><br><span class="purple">const</span> learning = {<br><span class="indent">curiosity: <span class="green">true</span>,</span><br><span class="indent">creativity: <span class="green">'unlimited'</span>,</span><br><span class="indent">nextStep: <span class="green">'build'</span></span><br>};<br><strong>let’s create.</strong> <span class="cursor"></span></div>
+</div>
+<div class="sticker"><b>&lt;/&gt;</b>LEARN.<br>BUILD. REPEAT.</div>
+</div>
+</section>
+<section class="info reveal" aria-label="Información del curso">
+<div class="info-item"><span class="label">Teacher</span><span class="value">Ignacio García</span></div>
+<div class="info-item"><span class="label">E-mail</span><!-- Sustituye # por el enlace que quieras usar. --><a class="value" href="#">igarcas306@g.educaand.es</a></div>
+<div class="info-item"><span class="label">Schedule</span><span class="value pending">Por confirmar</span></div>
+<div class="info-item"><span class="label">Training cycle</span><a class="value" href="#">Informática y comunicaciones <span aria-hidden="true">↗</span></a></div>
+<div class="info-item"><span class="label">Link</span><a class="value" href="#">bit.ly/dwec26 <span aria-hidden="true">↗</span></a></div>
+</section>
+<section class="program reveal" aria-labelledby="program-title">
+<div class="program-head"><div><p class="eyebrow">El recorrido</p><h2 id="program-title">Del código a la interacción.</h2></div><p class="program-count">03 trimestres &nbsp; / &nbsp; 07 unidades</p></div>
+<div class="quarters">
+<section class="quarter" aria-labelledby="q1">
+<div class="quarter-top"><span id="q1">01 / Primer trimestre</span><span>2 unidades</span></div>
+<!-- Edita el href de cada unidad para añadir tus recursos. -->
+<a class="unit" href="#"><span class="unit-number">U01</span><span class="unit-title" lang="en">Frontend Architecture<time class="unit-date" datetime="2026-09-15">15/9/2026</time></span><span class="arrow" aria-hidden="true">↗</span></a>
+<a class="unit" href="#"><span class="unit-number">U02</span><span class="unit-title" lang="en">Predefined object model in Javascript</span><span class="arrow" aria-hidden="true">↗</span></a>
+</section>
+<section class="quarter" aria-labelledby="q2">
+<div class="quarter-top"><span id="q2">02 / Segundo trimestre</span><span>2 unidades</span></div>
+<a class="unit" href="#"><span class="unit-number">U03</span><span class="unit-title" lang="en">User-defined structures in Javascript</span><span class="arrow" aria-hidden="true">↗</span></a>
+<a class="unit" href="#"><span class="unit-number">U04</span><span class="unit-title" lang="en">DOM, Event and Form Management in Javascript</span><span class="arrow" aria-hidden="true">↗</span></a>
+</section>
+<section class="quarter" aria-labelledby="q3">
+<div class="quarter-top"><span id="q3">03 / Tercer trimestre</span><span>3 unidades</span></div>
+<a class="unit" href="#"><span class="unit-number">U05</span><span class="unit-title" lang="en">Client-Server Programming. jQuery + Ajax</span><span class="arrow" aria-hidden="true">↗</span></a>
+<a class="unit" href="#"><span class="unit-number">U06</span><span class="unit-title" lang="en">JavaScript Libraries (Angular, React, Vue.js)</span><span class="arrow" aria-hidden="true">↗</span></a>
+<a class="unit" href="#"><span class="unit-number">U07</span><span class="unit-title" lang="en">Systems Installation and Configuration</span><span class="arrow" aria-hidden="true">↗</span></a>
+</section>
+</div>
+</section>
+</main>
+<footer><span class="footer-mark">DWEC · Ignacio García</span><span>Un espacio para aprender haciendo <span aria-hidden="true">↗</span></span></footer>
+</div>
+</body>
+</html>
