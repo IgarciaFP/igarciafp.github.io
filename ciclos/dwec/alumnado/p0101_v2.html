@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratorio práctico de Chrome DevTools para CFGS DAW: depuración, red, rendimiento, accesibilidad, almacenamiento y PWA.">
+  <meta name="theme-color" content="#111827">
+  <link rel="manifest" href="./p0101_v2.webmanifest">
+  <title>Chrome DevTools · Laboratorio CFGS DAW</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172033;
+      --muted: #5f6b7c;
+      --paper: #ffffff;
+      --surface: #f6f8fb;
+      --line: #d9e0ea;
+      --navy: #111827;
+      --blue: #1d4ed8;
+      --blue-soft: #dbeafe;
+      --cyan: #0e7490;
+      --green: #047857;
+      --green-soft: #d1fae5;
+      --amber: #a16207;
+      --amber-soft: #fef3c7;
+      --red: #b91c1c;
+      --red-soft: #fee2e2;
+      --violet: #6d28d9;
+      --shadow: 0 14px 34px rgba(15, 23, 42, .09);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--surface);
+      font: 16px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: var(--blue); }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    code, kbd, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    code { padding: .1rem .32rem; border-radius: .3rem; background: #edf1f7; color: #8a341f; overflow-wrap: anywhere; }
+    kbd { display: inline-block; padding: .08rem .38rem; border: 1px solid #aeb8ca; border-bottom-width: 3px; border-radius: .35rem; background: #fff; font-size: .88em; line-height: 1.3; }
+    .wrap { width: min(1180px, calc(100% - 2rem)); margin-inline: auto; }
+    .skip { position: absolute; left: -9999px; top: .75rem; z-index: 50; padding: .6rem .85rem; border-radius: .5rem; background: white; }
+    .skip:focus { left: .75rem; }
+
+    .site-header { color: white; background: var(--navy); }
+    .hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr); gap: 2rem; align-items: center; padding: clamp(2rem, 6vw, 4.8rem) 0; }
+    .eyebrow { margin: 0 0 .8rem; color: #93c5fd; font-size: .82rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { max-width: 13ch; margin: 0; font-size: clamp(2.5rem, 7vw, 5.2rem); line-height: .98; letter-spacing: -.055em; }
+    .lede { max-width: 62ch; margin: 1.2rem 0 0; color: #cbd5e1; font-size: 1.08rem; }
+    .hero-meta { display: grid; gap: .65rem; margin: 1.4rem 0 0; padding: 0; list-style: none; }
+    .hero-meta li { display: flex; gap: .6rem; align-items: baseline; color: #e5e7eb; }
+    .hero-meta strong { color: white; }
+    .terminal { overflow: hidden; border: 1px solid #334155; border-radius: 16px; background: #020617; box-shadow: 0 24px 55px rgba(0,0,0,.28); }
+    .terminal-bar { display: flex; gap: .4rem; padding: .7rem .85rem; border-bottom: 1px solid #334155; background: #0f172a; }
+    .terminal-bar i { width: 10px; height: 10px; border-radius: 50%; background: #64748b; }
+    .terminal pre { min-height: 250px; margin: 0; padding: 1rem; color: #bfdbfe; font-size: .87rem; white-space: pre-wrap; }
+    .prompt { color: #86efac; }
+    .error-text { color: #fca5a5; }
+
+    .progress-panel { position: sticky; top: .5rem; z-index: 20; display: grid; grid-template-columns: auto 1fr auto; gap: .8rem; align-items: center; margin: 1rem auto; padding: .7rem .9rem; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.96); box-shadow: 0 6px 20px rgba(15,23,42,.08); backdrop-filter: blur(10px); }
+    .progress-track { height: 10px; overflow: hidden; border-radius: 999px; background: #e5e7eb; }
+    .progress-bar { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--blue), #06b6d4); transition: width .2s; }
+    .reset { padding: .38rem .65rem; border: 1px solid #fecaca; border-radius: 8px; color: #991b1b; background: #fff1f2; font-weight: 750; }
+
+    .panel { margin: 1rem 0; padding: 1.25rem; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); box-shadow: 0 7px 22px rgba(15,23,42,.05); }
+    .panel > :first-child { margin-top: 0; }
+    .intro-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 1rem; }
+    .outcomes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; margin: 0; padding: 0; list-style: none; }
+    .outcomes li { padding: .65rem .75rem; border-radius: 10px; background: #eef2ff; }
+    .note { padding: .75rem .9rem; border-left: 4px solid var(--cyan); border-radius: 8px; background: #ecfeff; }
+    .warning { border-left-color: var(--amber); background: var(--amber-soft); }
+
+    .app-lab { scroll-margin-top: 5rem; padding: 0; overflow: hidden; border-color: #94a3b8; }
+    .app-topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; padding: 1rem 1.2rem; color: white; background: #1e293b; }
+    .app-topbar h2 { margin: 0; font-size: 1.25rem; }
+    .env { align-self: center; padding: .22rem .55rem; border: 1px solid #64748b; border-radius: 999px; color: #dbeafe; font: 700 .78rem/1.3 ui-monospace, monospace; }
+    .app-body { padding: 1.2rem; }
+    .lab-context { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .8rem; align-items: center; }
+    .lab-context p { margin: 0; color: var(--muted); }
+    .toolbar { display: flex; flex-wrap: wrap; gap: .55rem; margin: 1rem 0; }
+    .tool-button { padding: .55rem .75rem; border: 1px solid #94a3b8; border-radius: 8px; color: #0f172a; background: #fff; font-weight: 720; }
+    .tool-button.primary { color: white; border-color: var(--blue); background: var(--blue); }
+    .tool-button.danger { color: #991b1b; border-color: #fca5a5; background: #fff1f2; }
+    .tool-button:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+    .status-line { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+    .status { padding: .28rem .55rem; border-radius: 999px; background: #e2e8f0; color: #334155; font-size: .82rem; font-weight: 750; }
+    .status.ok { background: var(--green-soft); color: #065f46; }
+    .status.bad { background: var(--red-soft); color: #991b1b; }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; }
+    .metric { padding: .9rem; border: 1px solid #dbe3ee; border-radius: 11px; background: #f8fafc; }
+    .metric span { display: block; color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
+    .metric strong { display: block; margin-top: .25rem; font-size: 1.55rem; }
+    .metric.highlight { border-color: #60a5fa; background: #eff6ff; }
+    #legacy-widget { min-width: 720px; }
+    .orders-table-wrap { margin-top: 1rem; overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: .68rem .75rem; border-bottom: 1px solid #e5e7eb; text-align: left; white-space: nowrap; }
+    th { background: #f1f5f9; font-size: .8rem; letter-spacing: .04em; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+    .search-row { display: flex; gap: .55rem; margin-top: 1rem; }
+    .search-row input { flex: 1; min-width: 12rem; padding: .58rem .7rem; border: 1px solid #94a3b8; border-radius: 8px; }
+    .icon-button { width: 42px; border: 1px solid #cbd5e1; border-radius: 8px; background: white; }
+    .a11y-issue { margin: .7rem 0 0; color: #bac2cd; font-size: .86rem; }
+
+    .coverage { display: grid; grid-template-columns: repeat(6, 1fr); gap: .55rem; margin: 0; padding: 0; list-style: none; }
+    .coverage a { display: block; min-height: 100%; padding: .58rem .65rem; border: 1px solid var(--line); border-radius: 9px; color: #334155; background: white; text-decoration: none; font-size: .88rem; font-weight: 750; }
+    .coverage a:hover, .coverage a:focus-visible { border-color: var(--blue); outline: 3px solid var(--blue-soft); }
+
+    .tickets { display: grid; gap: 1rem; margin: 1rem 0; }
+    .ticket { scroll-margin-top: 5rem; display: grid; grid-template-columns: 88px minmax(0,1fr); gap: 1rem; padding: 1.15rem; border: 1px solid var(--line); border-radius: 16px; background: white; box-shadow: var(--shadow); }
+    .ticket-id { align-self: start; padding: .6rem .45rem; border-radius: 10px; color: #dbeafe; background: #172554; text-align: center; font: 800 .82rem/1.25 ui-monospace, monospace; letter-spacing: .04em; }
+    .ticket-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .65rem; align-items: start; }
+    .ticket h3 { margin: 0; font-size: 1.3rem; line-height: 1.25; }
+    .meta { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .tag { padding: .22rem .5rem; border-radius: 999px; color: #334155; background: #e2e8f0; font-size: .76rem; font-weight: 800; }
+    .tag.core { color: #1e40af; background: #dbeafe; }
+    .objective { margin: .4rem 0 .7rem; color: var(--muted); }
+    .steps { margin: 0; padding-left: 1.25rem; }
+    .steps li + li { margin-top: .4rem; }
+    .evidence { margin: .8rem 0 0; padding: .68rem .8rem; border-left: 4px solid var(--green); border-radius: 7px; background: var(--green-soft); }
+    .done-row { display: flex; gap: .5rem; align-items: center; margin-top: .8rem; }
+    .done-row input { width: 1.15rem; height: 1.15rem; accent-color: var(--green); }
+    .done-row label { font-weight: 800; }
+    details { margin-top: .65rem; border: 1px dashed #aeb8ca; border-radius: 8px; background: #fafcff; }
+    summary { padding: .55rem .7rem; cursor: pointer; font-weight: 760; }
+    details p, details ul { margin: 0; padding: 0 .8rem .75rem; }
+    details ul { padding-left: 2rem; }
+    .command { display: block; margin: .6rem 0; padding: .72rem .8rem; overflow-x: auto; border-radius: 8px; color: #e2e8f0; background: #0f172a; white-space: pre; font-size: .88rem; }
+
+    .incident { margin: 1.2rem 0; padding: clamp(1.2rem, 4vw, 2rem); border: 2px solid #f59e0b; border-radius: 18px; background: #fffbeb; box-shadow: var(--shadow); }
+    .incident-badge { display: inline-block; padding: .3rem .62rem; border-radius: 999px; color: white; background: #92400e; font-weight: 850; font-size: .8rem; letter-spacing: .04em; }
+    .incident h2 { margin: .65rem 0 .25rem; }
+    .incident-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .incident-card { padding: 1rem; border: 1px solid #fcd34d; border-radius: 10px; background: white; }
+    .incident-card h3 { margin-top: 0; }
+
+    .delivery { border-color: #a78bfa; background: #faf5ff; }
+    .delivery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .delivery label { display: block; margin-top: .7rem; font-weight: 760; }
+    .delivery input, .delivery textarea, .delivery select { width: 100%; margin-top: .3rem; padding: .62rem .7rem; border: 1px solid #a78bfa; border-radius: 8px; background: white; color: var(--ink); }
+    .delivery textarea { min-height: 105px; resize: vertical; }
+    .form-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .9rem; }
+    .form-actions button { padding: .58rem .8rem; border: 0; border-radius: 8px; color: white; background: var(--violet); font-weight: 800; }
+    .form-actions button.secondary { color: #5b21b6; border: 1px solid #c4b5fd; background: #ede9fe; }
+    .form-actions button:disabled { opacity: .5; cursor: not-allowed; }
+    .report-preview { min-height: 290px; margin: 0; padding: .85rem; overflow: auto; border-radius: 9px; color: #e2e8f0; background: #111827; white-space: pre-wrap; font: .84rem/1.5 ui-monospace, monospace; }
+
+    footer { padding: 1rem 0 3rem; color: var(--muted); }
+    .small { font-size: .9rem; }
+    @media (max-width: 900px) {
+      .hero, .intro-grid, .delivery-grid, .incident-grid { grid-template-columns: 1fr; }
+      .terminal { max-width: 620px; }
+      .coverage { grid-template-columns: repeat(3, 1fr); }
+      .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 1rem, 1180px); }
+      .hero { padding: 2.2rem 0; }
+      h1 { font-size: clamp(2.2rem, 14vw, 3.5rem); }
+      .progress-panel { grid-template-columns: 1fr auto; }
+      .progress-track { grid-column: 1 / -1; grid-row: 2; }
+      .outcomes, .dashboard-grid, .coverage { grid-template-columns: 1fr; }
+      .ticket { grid-template-columns: 1fr; }
+      .ticket-id { width: max-content; }
+    }
+    @media print {
+      body { background: white; font-size: 10pt; }
+      .wrap { width: 100%; }
+      .site-header { color: black; background: white; }
+      .lede, .hero-meta li { color: #334155; }
+      .terminal, .progress-panel, .toolbar, .done-row, .form-actions { display: none; }
+      .panel, .ticket, .incident { box-shadow: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#entorno-practicas">Saltar al entorno de prácticas</a>
+
+  <header class="site-header">
+    <div class="wrap hero">
+      <div>
+        <p class="eyebrow">Desarrollo Web en Entorno Cliente · CFGS DAW</p>
+        <h1>Chrome DevTools: laboratorio de diagnóstico</h1>
+        <p class="lede">Doce tickets breves sobre una aplicación con incidencias intencionadas. El objetivo no es “tocar botones”, sino obtener evidencias, formular hipótesis y justificar una corrección.</p>
+        <ul class="hero-meta">
+          <li><strong>Duración:</strong> 90–120 minutos</li>
+          <li><strong>Modalidad:</strong> individual o parejas</li>
+          <li><strong>Entrega:</strong> informe técnico + capturas seleccionadas</li>
+        </ul>
+      </div>
+      <div class="terminal" aria-label="Ejemplo de sesión de depuración">
+        <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+        <pre><span class="prompt">devtools@daw:~$</span> diagnosticar panel
+
+[Network] GET /pedidos.json 200
+[Sources] breakpoint → calcularTotal()
+[Performance] Long task: 548 ms
+<span class="error-text">[Console] TypeError: respuesta.items...</span>
+
+Hipótesis → evidencia → corrección</pre>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="progress-panel" aria-label="Progreso del laboratorio">
+      <strong id="progress-text">0 de 12 tickets</strong>
+      <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
+      <button class="reset" id="reset-progress" type="button">Reiniciar</button>
+    </section>
+
+    <section class="intro-grid">
+      <article class="panel">
+        <h2>Resultados de aprendizaje</h2>
+        <ul class="outcomes">
+          <li>Relacionar DOM, CSS y renderizado.</li>
+          <li>Depurar JavaScript con breakpoints.</li>
+          <li>Interpretar tráfico HTTP y tiempos.</li>
+          <li>Analizar rendimiento y memoria.</li>
+          <li>Auditar accesibilidad y calidad.</li>
+          <li>Validar almacenamiento y PWA.</li>
+        </ul>
+      </article>
+      <article class="panel">
+        <h2>Protocolo de trabajo</h2>
+        <ol>
+          <li>Reproduce el comportamiento.</li>
+          <li>Recoge una evidencia observable.</li>
+          <li>Formula una causa probable.</li>
+          <li>Prueba una corrección temporal en DevTools.</li>
+          <li>Documenta el cambio que llevarías al código.</li>
+        </ol>
+        <p class="note warning"><strong>Seguridad:</strong> ejecuta únicamente código que entiendas. No pegues secretos, tokens ni datos personales en Console.</p>
+      </article>
+    </section>
+
+    <section class="panel app-lab" id="entorno-practicas">
+      <div class="app-topbar">
+        <h2>OpsBoard · Panel de pedidos</h2>
+        <span class="env">ENTORNO DE PRÁCTICAS</span>
+      </div>
+      <div class="app-body">
+        <div class="lab-context">
+          <p>Aplicación de demostración con defectos deliberados y acciones instrumentadas.</p>
+          <span id="clock" class="status">Sin sincronizar</span>
+        </div>
+
+        <div class="toolbar" aria-label="Acciones de prueba">
+          <button class="tool-button primary" id="sync-orders" type="button">Sincronizar pedidos</button>
+          <button class="tool-button" id="recalculate" type="button">Recalcular total</button>
+          <button class="tool-button danger" id="trigger-error" type="button">Provocar error HTTP</button>
+          <button class="tool-button" id="run-long-task" type="button">Ejecutar tarea lenta</button>
+          <button class="tool-button" id="create-leak" type="button">Retener memoria</button>
+        </div>
+
+        <div class="status-line" aria-live="polite">
+          <span class="status" id="network-status">Red: pendiente</span>
+          <span class="status" id="calc-status">Cálculo: pendiente</span>
+          <span class="status" id="memory-status">Retenciones: 0</span>
+          <span class="status" id="sw-status">Service Worker: comprobando</span>
+        </div>
+
+        <div id="legacy-widget">
+          <div class="dashboard-grid">
+            <article class="metric"><span>Pedidos</span><strong id="orders-count">—</strong></article>
+            <article class="metric"><span>Pendientes</span><strong id="pending-count">—</strong></article>
+            <article class="metric highlight"><span>Facturación calculada</span><strong id="invoice-total">—</strong></article>
+            <article class="metric"><span>Tiempo de respuesta</span><strong id="response-time">—</strong></article>
+          </div>
+
+          <div class="search-row">
+            <input id="order-filter" type="search" placeholder="Filtrar por cliente">
+            <button class="icon-button" id="delete-last" type="button"><span aria-hidden="true">🗑️</span></button>
+          </div>
+          <p class="a11y-issue">Consejo del sistema: utiliza el buscador y el botón de acción para gestionar la lista.</p>
+
+          <div class="orders-table-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>Cliente</th><th>Unidades</th><th>Precio</th><th>Estado</th></tr></thead>
+              <tbody id="orders-body"><tr><td colspan="5">Pulsa «Sincronizar pedidos».</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="panel" aria-label="Índice de tickets">
+      <h2>Cobertura del laboratorio</h2>
+      <ol class="coverage">
+        <li><a href="#t1">01 · Elements</a></li>
+        <li><a href="#t2">02 · CSS</a></li>
+        <li><a href="#t3">03 · Console</a></li>
+        <li><a href="#t4">04 · Sources</a></li>
+        <li><a href="#t5">05 · Network</a></li>
+        <li><a href="#t6">06 · Device Mode</a></li>
+        <li><a href="#t7">07 · Storage</a></li>
+        <li><a href="#t8">08 · Accessibility</a></li>
+        <li><a href="#t9">09 · Performance</a></li>
+        <li><a href="#t10">10 · Memory</a></li>
+        <li><a href="#t11">11 · PWA</a></li>
+        <li><a href="#t12">12 · Lighthouse</a></li>
+      </ol>
+    </nav>
+
+    <section class="tickets" aria-label="Doce tickets técnicos">
+      <article class="ticket" id="t1"><div class="ticket-id">DEV-101</div><div>
+        <div class="ticket-head"><h3>Inspección y edición del DOM</h3><div class="meta"><span class="tag core">Elements</span><span class="tag">6 min</span></div></div>
+        <p class="objective">Relaciona la interfaz renderizada con su estructura HTML y prueba un cambio no persistente.</p>
+        <ol class="steps">
+          <li>Abre DevTools con <kbd>F12</kbd> o <kbd>Ctrl</kbd> + <kbd>Mayús</kbd> + <kbd>I</kbd> y activa el selector de elementos.</li>
+          <li>Selecciona la métrica <strong>Facturación calculada</strong>. Identifica su <code>&lt;article&gt;</code>, clases y nodo de valor.</li>
+          <li>Edita el texto visible a <code>Facturación revisada</code> y añade el atributo <code>data-reviewed="true"</code>.</li>
+          <li>Recarga y explica por qué desaparece el cambio.</li>
+        </ol>
+        <p class="evidence"><strong>Evidencia:</strong> selector CSS del valor y explicación de la diferencia entre DOM vivo y archivo fuente.</p>
+        <div class="done-row"><input class="done" id="d1" type="checkbox"><label for="d1">Ticket documentado</label></div>
+      </div></article>
+
+      <article class="ticket" id="t2"><div class="ticket-id">DEV-102</div><div>
+        <div class="ticket-head"><h3>Cascada, estilos calculados y box model</h3><div class="meta"><span class="tag core">Styles</span><span class="tag">8 min</span></div></div>
+        <p class="objective">Diagnostica el desbordamiento horizontal del componente heredado.</p>
+        <ol class="steps">
+          <li>Selecciona <code>#legacy-widget</code> y localiza en <strong>Styles</strong> la regla que impone el ancho mínimo.</li>
+          <li>Desactiva temporalmente <code>min-width</code> y observa el efecto. Revisa <strong>Computed</strong> y el diagrama del box model.</li>
+          <li>Activa el modo móvil y prueba una alternativa: <code>min-width: 0</code>.</li>
+          <li>Usa el filtro de estilos para localizar qué regla establece el color de la métrica destacada.</li>
+        </ol>
+        <p class="evidence"><strong>Evidencia:</strong> propiedad causante, valor original, valor propuesto y ancho de viewport usado.</p>
+        <div class="done-row"><input class="done" id="d2" type="checkbox"><label for="d2">Ticket documentado</label></div>
+      </div></article>
+
+      <article class="ticket" id="t3"><div class="ticket-id">DEV-103</div><div>
+        <div class="ticket-head"><h3>Console: consultas, registros y errores</h3><div class="meta"><span class="tag core">Console</span><span class="tag">8 min</span></div></div>
+        <p class="objective">Usa Console como herramienta de observación y no solo como ejecutor de código.</p>
+        <ol class="steps">
+          <li>Sincroniza los pedidos y filtra los mensajes por nivel: <em>Info</em>, <em>Warnings</em> y <em>Errors</em>.</li>
+          <li>Ejecuta <code>document.querySelectorAll('#orders-body tr').length</code>.</li>
+          <li>Selecciona una fila en Elements y usa <code>$0.dataset</code> desde Console.</li>
+          <li>Pulsa <strong>Provocar error HTTP</strong>, expande el error y localiza el archivo y la línea de origen.</li>
+        </ol>
+        <p class="evidence"><strong>Evidencia:</strong> número de filas, contenido de <code>$0.dataset</code> y mensaje exacto del error.</p>
+        <details><summary>Comando útil</summary><code class="command">console.table(window.devtoolsLab.orders);</code></details>
+        <div class="done-row"><input class="done" id="d3" type="checkbox"><label for="d3">Ticket documentado</label></div>
+      </div></article>
+
+      <article class="ticket" id="t4"><div class="ticket-id">DEV-104</div><div>
+        <div class="ticket-head"><h3>Depuración con breakpoints</h3><div class="meta"><span class="tag core">Sources</span><span class="tag">10 min</span></div></div>
+        <p class="objective">Encuentra por qué el total mostrado solo coincide con el último pedido.</p>
+        <ol class="steps">
+          <li>En <strong>Sources</strong>, abre este HTML y busca <code>calcularTotalConBug</code>.</li>
+          <li>Coloca un breakpoint dentro del bucle y pulsa <strong>Recalcular total</strong>.</li>
+          <li>Inspecciona <code>pedido</code>, <code>subtotal</code> y <code>total</code> en <strong>Scope</strong>; añade <code>total</code> a <strong>Watch</strong>.</li>
+          <li>Avanza con <em>Step over</em> y formula la corrección. Compruébala temporalmente con un <strong>Local override</strong> o un <strong>Snip&shy;pet</strong>.</li>
+        </ol>
+        <p class="evidence"><strong>Evidencia:</strong> línea defectuosa, valor en dos iteraciones y operador que debería utilizarse.</p>
+        <div class="done-row"><input class="done" id="d4" type="checkbox"><label for="d4">Ticket documentado</label></div>
+      </div></article>
+
+      <article class="ticket" id="t5"><div class="ticket-id">DEV-105</div><div>
+        <div class="ticket-head"><h3>Diagnóstico de peticiones HTTP</h3><div class="meta"><span class="tag core">Network</span><span class="tag">10 min</span></div></div>
+        <p class="objective">Distingue una respuesta correcta de un fallo y analiza su coste.</p>
+        <ol class="steps">
+          <li>Abre <strong>Network</strong>, activa <em>Preserve log</em>, limpia el registro y sincroniza.</li>
+          <li>Filtra por <code>Fetch/XHR</code> y abre <code>p0101_v2_data.json</code>.</li>
+          <li>Anota método, código de estado, tipo MIME, tamaño transferido, <em>Timing</em> y un encabezado de respuesta.</li>
+          <li>Provoca el error HTTP, compara ambas solicitudes y usa <strong>Copy as fetch</strong> sobre una de ellas.</li>
+        </ol>
+        <p class="evidence"><strong>Evidencia:</strong> tabla comparativa de las respuestas correcta y fallida con al menos cuatro campos.</p>
+        <div class="done-row"><input class="done" id="d5" type="checkbox"><label for="d5">Ticket documentado</label></div>
+      </div></article>
+
+      <article class="ticket" id="t6"><div class="ticket-id">DEV-106</div><div>
+        <div class="ticket-head"><h3>Responsive y condiciones de red</h3><div class="meta"><span class="tag core">Device Mode</span><span class="tag">8 min</span></div></div>
+        <p class="objective">Reproduce una incidencia en un contexto móvil limitado.</p>
+        <ol class="steps">
+          <li>Activa la barra de dispositivos con <kbd>Ctrl</kbd> + <kbd>Mayús</kbd> + <kbd>M</kbd>.</li>
+          <li>Prueba 360 × 800 px, zoom 100 % y orientación vertical. Localiza el desbordamiento del panel.</li>
+          <li>En Network selecciona una limitación móvil, desactiva la caché y vuelve a sincronizar.</li>
+          <li>Compara el tiempo con la carga sin limitación y captura el cambio de la columna <em>Waterfall</em>.</li>
+        </ol>
+        <p class="evidence"><strong>Evidencia:</strong> viewport, perfil de red y diferencia de tiempo observada. No afirmes causalidad con una sola medición.</p>
+        <div class="done-row"><input class="done" id="d6" type="checkbox"><label for="d6">Ticket documentado</label></div>
+      </div></article>
+
+      <article class="ticket" id="t7"><div class="ticket-id">DEV-107</div><div>
+        <div class="ticket-head"><h3>Cookies y almacenamiento del cliente</h3><div class="meta"><span class="tag core">Application</span><span class="tag">8 min</span></div></div>
+        <p class="objective">Inspecciona persistencia, alcance y limpieza de datos.</p>
+        <ol class="steps">
+          <li>En <strong>Application</strong>, localiza <code>opsboard.theme</code> en Local Storage y <code>opsboard.session</code> en Session Storage.</li>
+          <li>Busca la cookie <code>opsboard_lab</code> y compara su fecha de caducidad y alcance con los dos almacenes anteriores.</li>
+          <li>Edita el tema a <code>contrast</code> y ejecuta <code>aplicarPreferencias()</code> en Console.</li>
+          <li>Elimina solo los datos de este laboratorio y recarga para comprobar cuáles se recrean.</li>
+        </ol>
+        <p class="evidence"><strong>Evidencia:</strong> matriz con mecanismo, clave, valor, persistencia y alcance.</p>
+        <details><summary>Si trabajas con file://</summary><p>Las cookies y el Service Worker requieren un origen HTTP(S). Usa la versión publicada de esta práctica.</p></details>
+        <div class="done-row"><input class="done" id="d7" type="checkbox"><label for="d7">Ticket documentado</label></div>
+      </div></article>
+
+      <article class="ticket" id="t8"><div class="ticket-id">DEV-108</div><div>
+        <div class="ticket-head"><h3>Inspección de accesibilidad</h3><div class="meta"><span class="tag core">Accessibility</span><span class="tag">10 min</span></div></div>
+        <p class="objective">Detecta problemas que no siempre son visibles y propone una corrección semántica.</p>
+        <ol class="steps">
+          <li>Selecciona el botón con icono de papelera y abre el panel <strong>Accessibility</strong>.</li>
+          <li>Comprueba su rol, nombre accesible y posición en el árbol. Añade temporalmente <code>aria-label="Eliminar último pedido"</code>.</li>
+          <li>Inspecciona el texto gris bajo el buscador y abre el selector de color para revisar el contraste.</li>
+          <li>Recorre la barra de acciones solo con teclado y verifica el indicador de foco.</li>
+        </ol>
+        <p class="evidence"><strong>Evidencia:</strong> dos defectos, usuarios afectados, criterio de validación y corrección propuesta.</p>
+        <div class="done-row"><input class="done" id="d8" type="checkbox"><label for="d8">Ticket documentado</label></div>
+      </div></article>
+
+      <article class="ticket" id="t9"><div class="ticket-id">DEV-109</div><div>
+        <div class="ticket-head"><h3>Perfil de rendimiento</h3><div class="meta"><span class="tag core">Performance</span><span class="tag">10 min</span></div></div>
+        <p class="objective">Aísla una tarea larga que bloquea el hilo principal.</p>
+        <ol class="steps">
+          <li>Abre <strong>Performance</strong>, inicia una grabación y pulsa <strong>Ejecutar tarea lenta</strong>.</li>
+          <li>Detén la grabación y localiza la <em>Long task</em> en el hilo <strong>Main</strong>.</li>
+          <li>Revisa <strong>Bottom-up</strong> o <strong>Call tree</strong> e identifica <code>ejecutarTareaLenta</code>.</li>
+          <li>Anota duración aproximada, impacto percibido y una estrategia para dividir o trasladar el trabajo.</li>
+        </ol>
+        <p class="evidence"><strong>Evidencia:</strong> captura de la traza con función, duración y propuesta: fragmentación, <code>requestIdleCallback</code> o Web Worker.</p>
+        <div class="done-row"><input class="done" id="d9" type="checkbox"><label for="d9">Ticket documentado</label></div>
+      </div></article>
+
+      <article class="ticket" id="t10"><div class="ticket-id">DEV-110</div><div>
+        <div class="ticket-head"><h3>Detección de una retención de memoria</h3><div class="meta"><span class="tag core">Memory</span><span class="tag">12 min</span></div></div>
+        <p class="objective">Compara instantáneas y diferencia asignación temporal de crecimiento retenido.</p>
+        <ol class="steps">
+          <li>En <strong>Memory</strong>, toma un <em>Heap snapshot</em> inicial.</li>
+          <li>Pulsa <strong>Retener memoria</strong> cinco veces y toma una segunda instantánea.</li>
+          <li>Compara ambas, busca <code>Detached</code> y revisa el tamaño de <code>window.devtoolsLab.retenciones</code>.</li>
+          <li>Vacía la colección con <code>window.devtoolsLab.retenciones.length = 0</code>, fuerza GC desde DevTools y toma una tercera instantánea.</li>
+        </ol>
+        <p class="evidence"><strong>Evidencia:</strong> recuento/tamaño antes y después, ruta de retención y cambio de código que evitaría la fuga.</p>
+        <div class="done-row"><input class="done" id="d10" type="checkbox"><label for="d10">Ticket documentado</label></div>
+      </div></article>
+
+      <article class="ticket" id="t11"><div class="ticket-id">DEV-111</div><div>
+        <div class="ticket-head"><h3>Service Worker, caché y manifiesto PWA</h3><div class="meta"><span class="tag core">Application</span><span class="tag">10 min</span></div></div>
+        <p class="objective">Comprueba los componentes instalables y el comportamiento sin conexión.</p>
+        <ol class="steps">
+          <li>En <strong>Application → Service Workers</strong>, verifica que <code>p0101_v2_sw.js</code> está activado y controla la página.</li>
+          <li>Abre <strong>Manifest</strong> y anota nombre, <code>start_url</code>, modo de visualización y cualquier advertencia.</li>
+          <li>Revisa <strong>Cache Storage</strong>, identifica la caché <code>opsboard-lab-*</code> y enumera sus recursos.</li>
+          <li>Activa <em>Offline</em>, recarga y distingue qué funciona desde caché y qué petición falla.</li>
+        </ol>
+        <p class="evidence"><strong>Evidencia:</strong> estado del worker, versión de caché, tres recursos cacheados y resultado offline.</p>
+        <div class="done-row"><input class="done" id="d11" type="checkbox"><label for="d11">Ticket documentado</label></div>
+      </div></article>
+
+      <article class="ticket" id="t12"><div class="ticket-id">DEV-112</div><div>
+        <div class="ticket-head"><h3>Auditoría integral con Lighthouse</h3><div class="meta"><span class="tag core">Lighthouse</span><span class="tag">10 min</span></div></div>
+        <p class="objective">Prioriza mejoras sin confundir una auditoría automática con una verificación completa.</p>
+        <ol class="steps">
+          <li>Ejecuta Lighthouse en modo navegación para móvil con Performance, Accessibility, Best Practices y SEO.</li>
+          <li>Guarda las cuatro puntuaciones y abre dos diagnósticos de categorías diferentes.</li>
+          <li>Relaciona al menos un hallazgo con una incidencia ya observada en otro panel.</li>
+          <li>Prioriza tres acciones según impacto y coste. Indica una limitación de la auditoría automática.</li>
+        </ol>
+        <p class="evidence"><strong>Evidencia:</strong> tabla de puntuaciones, tres acciones priorizadas y una comprobación manual complementaria.</p>
+        <div class="done-row"><input class="done" id="d12" type="checkbox"><label for="d12">Ticket documentado</label></div>
+      </div></article>
+    </section>
+
+    <section class="incident" id="reto-final">
+      <span class="incident-badge">INCIDENTE INTEGRADOR · 25 MIN</span>
+      <h2>El panel falla durante el cierre mensual</h2>
+      <p>Soporte informa de un total incorrecto, lentitud al ejecutar una operación y dificultades de uso en móvil. Debes preparar un diagnóstico reproducible sin modificar los archivos fuente.</p>
+      <div class="incident-grid">
+        <div class="incident-card">
+          <h3>Parte técnico</h3>
+          <ol>
+            <li>Reproduce las tres incidencias.</li>
+            <li>Recoge una evidencia de Sources, Network y Performance.</li>
+            <li>Incluye una comprobación de accesibilidad o almacenamiento.</li>
+            <li>Propón cambios concretos con prioridad P1, P2 o P3.</li>
+          </ol>
+        </div>
+        <div class="incident-card">
+          <h3>Criterios de aceptación</h3>
+          <ul>
+            <li>Los pasos son repetibles por otra persona.</li>
+            <li>Cada conclusión se apoya en datos observados.</li>
+            <li>Se separa causa, síntoma y propuesta.</li>
+            <li>No se incluyen tokens, cuentas ni datos personales.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="done-row"><input id="incident-done" type="checkbox"><label for="incident-done">Incidente diagnosticado y revisado</label></div>
+    </section>
+
+    <section class="panel delivery" id="entrega">
+      <h2>Informe de diagnóstico</h2>
+      <p>El generador incorpora el estado observable de la aplicación y deja espacio para las conclusiones técnicas. Revisa el contenido antes de entregarlo.</p>
+      <div class="delivery-grid">
+        <form id="report-form">
+          <label for="student-id">Nombre, alias o equipo</label>
+          <input id="student-id" name="student" maxlength="60" required placeholder="Ej.: Equipo 3">
+
+          <label for="priority">Prioridad global del incidente</label>
+          <select id="priority" name="priority"><option>P1 · Crítica</option><option selected>P2 · Alta</option><option>P3 · Media</option><option>P4 · Baja</option></select>
+
+          <label for="findings">Hallazgos principales</label>
+          <textarea id="findings" name="findings" maxlength="1200" required placeholder="Síntoma, evidencia y causa probable..."></textarea>
+
+          <label for="recommendations">Correcciones propuestas</label>
+          <textarea id="recommendations" name="recommendations" maxlength="1200" required placeholder="Cambio, prioridad y criterio de verificación..."></textarea>
+
+          <div class="form-actions">
+            <button type="submit">Generar informe</button>
+            <button class="secondary" id="download-report" type="button" disabled>Descargar TXT</button>
+          </div>
+        </form>
+        <div>
+          <h3>Vista previa</h3>
+          <pre class="report-preview" id="report-preview" aria-live="polite">Completa el formulario para generar el informe.</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Rúbrica breve</h2>
+      <ul>
+        <li><strong>40 % Diagnóstico:</strong> reproduce, mide e identifica la causa.</li>
+        <li><strong>30 % Evidencias:</strong> datos relevantes, legibles y sin información sensible.</li>
+        <li><strong>20 % Propuesta:</strong> cambio viable y criterio para comprobarlo.</li>
+        <li><strong>10 % Comunicación:</strong> terminología precisa y conclusiones proporcionadas.</li>
+      </ul>
+      <p class="small">Consulta recomendada: <a href="https://developer.chrome.com/docs/devtools/">documentación oficial de Chrome DevTools</a>. Los nombres de algunos paneles pueden aparecer traducidos o dentro del menú <strong>»</strong>.</p>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <p>Práctica autocontenida de DWEC. Los fallos del panel son intencionados y están diseñados para su análisis con DevTools.</p>
+  </footer>
+
+  <script>
+    'use strict';
+
+    window.devtoolsLab = {
+      orders: [],
+      retenciones: []
+    };
+
+    const ui = {
+      body: document.querySelector('#orders-body'),
+      count: document.querySelector('#orders-count'),
+      pending: document.querySelector('#pending-count'),
+      total: document.querySelector('#invoice-total'),
+      response: document.querySelector('#response-time'),
+      network: document.querySelector('#network-status'),
+      calculation: document.querySelector('#calc-status'),
+      memory: document.querySelector('#memory-status'),
+      serviceWorker: document.querySelector('#sw-status'),
+      clock: document.querySelector('#clock')
+    };
+
+    function euro(value) {
+      return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value);
+    }
+
+    function renderOrders(orders) {
+      ui.body.replaceChildren(...orders.map(order => {
+        const row = document.createElement('tr');
+        row.dataset.orderId = order.id;
+        row.innerHTML = `<td>${order.id}</td><td>${order.client}</td><td>${order.quantity}</td><td>${euro(order.price)}</td><td>${order.status}</td>`;
+        return row;
+      }));
+      ui.count.textContent = String(orders.length);
+      ui.pending.textContent = String(orders.filter(order => order.status === 'Pendiente').length);
+    }
+
+    async function cargarPedidos() {
+      const started = performance.now();
+      ui.network.textContent = 'Red: solicitando…';
+      ui.network.className = 'status';
+      console.info('[OpsBoard] Inicio de sincronización');
+      try {
+        const response = await fetch(`./p0101_v2_data.json?ts=${Date.now()}`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status} al cargar pedidos`);
+        const payload = await response.json();
+        window.devtoolsLab.orders = payload.orders;
+        renderOrders(payload.orders);
+        const elapsed = Math.round(performance.now() - started);
+        ui.response.textContent = `${elapsed} ms`;
+        ui.network.textContent = `Red: ${response.status} ${response.statusText}`;
+        ui.network.className = 'status ok';
+        ui.clock.textContent = `Última sincronización: ${new Date().toLocaleTimeString('es-ES')}`;
+        console.table(payload.orders);
+        console.info(`[OpsBoard] ${payload.orders.length} pedidos cargados en ${elapsed} ms`);
+      } catch (error) {
+        ui.network.textContent = `Red: ${error.message}`;
+        ui.network.className = 'status bad';
+        console.error('[OpsBoard] No se pudieron sincronizar los pedidos', error);
+      }
+    }
+
+    // Incidencia intencionada para el ticket DEV-104: se sustituye el total en cada iteración.
+    function calcularTotalConBug(orders) {
+      let total = 0;
+      for (const pedido of orders) {
+        const subtotal = pedido.price * pedido.quantity;
+        total = subtotal;
+      }
+      return total;
+    }
+
+    function recalcular() {
+      const total = calcularTotalConBug(window.devtoolsLab.orders);
+      ui.total.textContent = euro(total);
+      ui.calculation.textContent = 'Cálculo: completado';
+      ui.calculation.className = 'status bad';
+      console.warn('[OpsBoard] Total calculado. Validación funcional pendiente.');
+    }
+
+    async function provocarErrorHttp() {
+      console.group('[OpsBoard] Prueba de error controlado');
+      try {
+        const response = await fetch(`./p0101_v2_missing.json?ts=${Date.now()}`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}: recurso de prueba inexistente`);
+      } catch (error) {
+        console.error(error);
+        ui.network.textContent = `Red: ${error.message}`;
+        ui.network.className = 'status bad';
+      } finally {
+        console.groupEnd();
+      }
+    }
+
+    function ejecutarTareaLenta() {
+      const started = performance.now();
+      let checksum = 0;
+      while (performance.now() - started < 550) {
+        checksum = (checksum + Math.sqrt(checksum + 17)) % 100000;
+      }
+      const elapsed = Math.round(performance.now() - started);
+      console.warn(`[Performance] Tarea síncrona terminada en ${elapsed} ms`, { checksum });
+      return elapsed;
+    }
+
+    function retenerMemoria() {
+      const detached = document.createElement('section');
+      detached.className = 'detached-order-preview';
+      detached.textContent = `Vista previa ${Date.now()}`;
+      const payload = Array.from({ length: 12000 }, (_, index) => `pedido-${index}-${Date.now()}`);
+      window.devtoolsLab.retenciones.push({ detached, payload, createdAt: new Date() });
+      ui.memory.textContent = `Retenciones: ${window.devtoolsLab.retenciones.length}`;
+      console.info('[Memory] Objeto retenido deliberadamente', window.devtoolsLab.retenciones.at(-1));
+    }
+
+    function aplicarPreferencias() {
+      const contrast = localStorage.getItem('opsboard.theme') === 'contrast';
+      document.querySelector('.app-lab').style.outline = contrast ? '4px solid #111827' : '';
+      console.info(`[Storage] Tema aplicado: ${contrast ? 'contrast' : 'default'}`);
+    }
+    window.aplicarPreferencias = aplicarPreferencias;
+
+    document.querySelector('#sync-orders').addEventListener('click', cargarPedidos);
+    document.querySelector('#recalculate').addEventListener('click', recalcular);
+    document.querySelector('#trigger-error').addEventListener('click', provocarErrorHttp);
+    document.querySelector('#run-long-task').addEventListener('click', ejecutarTareaLenta);
+    document.querySelector('#create-leak').addEventListener('click', retenerMemoria);
+    document.querySelector('#delete-last').addEventListener('click', () => {
+      window.devtoolsLab.orders.pop();
+      renderOrders(window.devtoolsLab.orders);
+    });
+    document.querySelector('#order-filter').addEventListener('input', event => {
+      const query = event.target.value.trim().toLocaleLowerCase('es');
+      renderOrders(window.devtoolsLab.orders.filter(order => order.client.toLocaleLowerCase('es').includes(query)));
+    });
+
+    try {
+      localStorage.setItem('opsboard.theme', localStorage.getItem('opsboard.theme') || 'light');
+      sessionStorage.setItem('opsboard.session', 'training');
+      document.cookie = 'opsboard_lab=enabled; SameSite=Lax; path=/';
+    } catch (error) {
+      console.warn('[Storage] El origen actual limita el almacenamiento', error);
+    }
+
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      navigator.serviceWorker.register('./p0101_v2_sw.js')
+        .then(registration => navigator.serviceWorker.ready.then(() => {
+          ui.serviceWorker.textContent = `Service Worker: activo (${registration.scope})`;
+          ui.serviceWorker.className = 'status ok';
+        }))
+        .catch(error => {
+          ui.serviceWorker.textContent = 'Service Worker: error de registro';
+          ui.serviceWorker.className = 'status bad';
+          console.error('[PWA] Error al registrar el Service Worker', error);
+        });
+    } else {
+      ui.serviceWorker.textContent = 'Service Worker: requiere HTTP(S)';
+    }
+
+    (() => {
+      const boxes = [...document.querySelectorAll('.done')];
+      const incident = document.querySelector('#incident-done');
+      const bar = document.querySelector('#progress-bar');
+      const text = document.querySelector('#progress-text');
+      const key = 'devtools-cfgs-v2-progress';
+      const incidentKey = 'devtools-cfgs-v2-incident';
+
+      function read(storageKey, fallback) {
+        try { return JSON.parse(localStorage.getItem(storageKey)) ?? fallback; }
+        catch (_) { return fallback; }
+      }
+      function renderProgress() {
+        const completed = boxes.filter(box => box.checked).length;
+        bar.style.width = `${completed / boxes.length * 100}%`;
+        text.textContent = completed === boxes.length
+          ? (incident.checked ? '12 de 12 + incidente resuelto' : '12 de 12 · falta el incidente')
+          : `${completed} de ${boxes.length} tickets`;
+      }
+      const saved = read(key, []);
+      boxes.forEach((box, index) => {
+        box.checked = saved.includes(index + 1);
+        box.addEventListener('change', () => {
+          const state = boxes.map((item, i) => item.checked ? i + 1 : null).filter(Boolean);
+          localStorage.setItem(key, JSON.stringify(state));
+          renderProgress();
+        });
+      });
+      incident.checked = read(incidentKey, false);
+      incident.addEventListener('change', () => {
+        localStorage.setItem(incidentKey, JSON.stringify(incident.checked));
+        renderProgress();
+      });
+      document.querySelector('#reset-progress').addEventListener('click', () => {
+        boxes.forEach(box => { box.checked = false; });
+        incident.checked = false;
+        localStorage.removeItem(key);
+        localStorage.removeItem(incidentKey);
+        renderProgress();
+      });
+      renderProgress();
+    })();
+
+    (() => {
+      const form = document.querySelector('#report-form');
+      const preview = document.querySelector('#report-preview');
+      const download = document.querySelector('#download-report');
+      let report = '';
+
+      function filePart(value) {
+        return value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'equipo';
+      }
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const student = document.querySelector('#student-id').value.trim();
+        const priority = document.querySelector('#priority').value;
+        const findings = document.querySelector('#findings').value.trim();
+        const recommendations = document.querySelector('#recommendations').value.trim();
+        const completed = document.querySelectorAll('.done:checked').length;
+        report = [
+          'INFORME DE DIAGNÓSTICO · CHROME DEVTOOLS',
+          '=========================================',
+          `Autoría: ${student}`,
+          `Fecha: ${new Date().toLocaleString('es-ES')}`,
+          `Prioridad: ${priority}`,
+          `Tickets documentados: ${completed} de 12`,
+          '',
+          'ESTADO OBSERVADO',
+          `Pedidos cargados: ${window.devtoolsLab.orders.length}`,
+          `Total visible: ${ui.total.textContent}`,
+          `Estado de red: ${ui.network.textContent}`,
+          `Objetos retenidos: ${window.devtoolsLab.retenciones.length}`,
+          `Service Worker: ${ui.serviceWorker.textContent}`,
+          '',
+          'HALLAZGOS', findings,
+          '',
+          'CORRECCIONES PROPUESTAS', recommendations,
+          '',
+          'EVIDENCIAS A ADJUNTAR',
+          '[ ] Sources: breakpoint y variables',
+          '[ ] Network: solicitud y Timing',
+          '[ ] Performance o Memory: traza/instantánea',
+          '[ ] Accessibility, Application o Lighthouse',
+          '',
+          'Nota: se han revisado las capturas para excluir datos sensibles.'
+        ].join('\n');
+        preview.textContent = report;
+        download.disabled = false;
+        download.dataset.filename = `diagnostico-devtools-${filePart(student)}.txt`;
+      });
+      download.addEventListener('click', () => {
+        if (!report) return;
+        const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = download.dataset.filename || 'diagnostico-devtools.txt';
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+    })();
+  </script>
+</body>
+</html>
