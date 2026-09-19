@@ -682,7 +682,12 @@ Hipótesis → evidencia → corrección</pre>
     }
 
     if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-      navigator.serviceWorker.register('./p0101_v2_sw.js')
+      navigator.serviceWorker.getRegistrations()
+        .then(registrations => Promise.all(registrations
+          .filter(registration => registration.active?.scriptURL.endsWith('/p0101_v2_sw.js')
+            && !registration.scope.endsWith('/p0101_v2.html'))
+          .map(registration => registration.unregister())))
+        .then(() => navigator.serviceWorker.register('./p0101_v2_sw.js', { scope: './p0101_v2.html' }))
         .then(registration => navigator.serviceWorker.ready.then(() => {
           ui.serviceWorker.textContent = `Service Worker: activo (${registration.scope})`;
           ui.serviceWorker.className = 'status ok';
