@@ -1,4 +1,4 @@
-const CACHE_NAME = 'opsboard-lab-v1';
+const CACHE_NAME = 'opsboard-lab-v2';
 const APP_SHELL = [
   './p0101_v2.html',
   './p0101_v2_data.json',
