@@ -1,0 +1,1344 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Laboratorio de representación y formatos de imagen</title>
+  <meta name="description" content="Práctica interactiva sobre color RGB, mapas de bits, imágenes vectoriales, compresión, calidad y formatos web.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111a2e'/%3E%3Crect x='14' y='14' width='16' height='16' fill='%23ff4f64'/%3E%3Crect x='34' y='14' width='16' height='16' fill='%2346d37f'/%3E%3Crect x='14' y='34' width='16' height='16' fill='%233f7cff'/%3E%3Crect x='34' y='34' width='16' height='16' fill='white'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #182238;
+      --muted: #5c687d;
+      --line: #d6e0ed;
+      --paper: #ffffff;
+      --soft: #f2f6fb;
+      --navy: #111a2e;
+      --blue: #2f6fed;
+      --lime: #baf13c;
+      --green: #177b55;
+      --red: #b83b48;
+      --current-color: rgb(36, 107, 253);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background:
+        linear-gradient(#e7eef7 1px, transparent 1px),
+        linear-gradient(90deg, #e7eef7 1px, transparent 1px),
+        #f7faff;
+      background-size: 32px 32px;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    button, input, select, textarea, a { font: inherit; }
+    button { color: inherit; }
+    :focus-visible { outline: 3px solid #88adff; outline-offset: 3px; }
+    [hidden] { display: none !important; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      border-bottom: 1px solid #2b3853;
+      background: rgba(17, 26, 46, .96);
+      color: white;
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      width: min(1180px, calc(100% - 32px));
+      min-height: 68px;
+      margin: auto;
+    }
+
+    .brand { display: flex; align-items: center; gap: 11px; min-width: 0; }
+
+    .brand-mark {
+      display: grid;
+      grid-template-columns: repeat(2, 9px);
+      gap: 3px;
+      flex: 0 0 auto;
+      padding: 9px;
+      border-radius: 11px;
+      background: #202d48;
+    }
+
+    .brand-mark i { width: 9px; height: 9px; border-radius: 2px; }
+    .brand-mark i:nth-child(1) { background: #ff4f64; }
+    .brand-mark i:nth-child(2) { background: #46d37f; }
+    .brand-mark i:nth-child(3) { background: #3f7cff; }
+    .brand-mark i:nth-child(4) { background: white; }
+    .brand strong { display: block; line-height: 1.2; }
+    .brand small { display: block; color: #aebbd2; font-size: .76rem; }
+    .step-nav { display: flex; gap: 4px; }
+
+    .step-nav a {
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: #dbe5f6;
+      font-size: .78rem;
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    .step-nav a:hover { background: #2a3752; color: white; }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: auto;
+      padding: 28px 0 64px;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    .intro {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: #315d9e;
+      font-size: .8rem;
+      font-weight: 850;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 830px;
+      margin-bottom: 5px;
+      font-size: clamp(2rem, 5vw, 3.45rem);
+      line-height: 1.02;
+      letter-spacing: -.05em;
+    }
+
+    .intro-copy {
+      max-width: 800px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .time-chip {
+      flex: 0 0 auto;
+      padding: 10px 13px;
+      border: 1px solid #c6d3e4;
+      border-radius: 11px;
+      background: rgba(255,255,255,.9);
+      color: #40506a;
+      font-size: .84rem;
+      font-weight: 780;
+      box-shadow: 0 9px 22px rgba(33, 54, 87, .07);
+    }
+
+    .panel {
+      margin-top: 18px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--paper);
+      box-shadow: 0 16px 40px rgba(34, 56, 91, .09);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 17px 19px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-title { display: flex; align-items: center; gap: 11px; min-width: 0; }
+
+    .step {
+      display: grid;
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--navy);
+      color: white;
+      font-weight: 900;
+    }
+
+    .panel-head h2 { margin: 0; font-size: 1.08rem; letter-spacing: -.015em; }
+    .panel-head p { margin: 2px 0 0; color: var(--muted); font-size: .84rem; }
+
+    .concept-chip {
+      flex: 0 0 auto;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #eaf1ff;
+      color: #2754ad;
+      font-size: .73rem;
+      font-weight: 850;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .color-layout {
+      display: grid;
+      grid-template-columns: .8fr 1.2fr;
+      gap: 24px;
+      padding: 22px;
+    }
+
+    .concept-copy h3 { margin-bottom: 8px; font-size: 1.18rem; }
+    .concept-copy p { color: var(--muted); }
+
+    .formula {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin: 18px 0;
+    }
+
+    .formula-card {
+      padding: 12px;
+      border-radius: 12px;
+      color: white;
+      text-align: center;
+    }
+
+    .formula-card.r { background: #d94351; }
+    .formula-card.g { background: #168854; }
+    .formula-card.b { background: #326be1; }
+    .formula-card strong { display: block; font-size: 1.15rem; }
+    .formula-card span { font-size: .75rem; opacity: .88; }
+
+    .fact {
+      padding: 13px 14px;
+      border-left: 4px solid var(--lime);
+      border-radius: 0 11px 11px 0;
+      background: #f2f9dd;
+      color: #394817;
+      font-size: .88rem;
+    }
+
+    .fact strong { display: block; margin-bottom: 2px; }
+
+    .color-lab {
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 20px;
+      padding: 18px;
+      border-radius: 16px;
+      background: var(--navy);
+      color: white;
+    }
+
+    .pixel-column { display: flex; flex-direction: column; justify-content: space-between; gap: 12px; }
+
+    .pixel-preview {
+      display: grid;
+      width: 100%;
+      aspect-ratio: 1;
+      place-items: center;
+      border: 10px solid #273550;
+      border-radius: 18px;
+      background: var(--current-color);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.16);
+      transition: background 100ms linear;
+    }
+
+    .pixel-preview span {
+      padding: 4px 7px;
+      border-radius: 6px;
+      background: rgba(0,0,0,.62);
+      color: white;
+      font-size: .72rem;
+      font-weight: 850;
+    }
+
+    .code-readout { display: grid; gap: 7px; }
+    .code-line { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #aebbd1; font-size: .74rem; }
+    .code-line code { color: white; font-size: .83rem; font-weight: 800; }
+    .mixer { min-width: 0; }
+    .mixer h3 { margin-bottom: 13px; font-size: .95rem; }
+
+    .channel {
+      display: grid;
+      grid-template-columns: 22px 1fr 44px 36px;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .channel label { font-weight: 900; }
+    .channel input[type="range"] { width: 100%; accent-color: var(--channel); }
+    .channel output { color: white; text-align: right; font-variant-numeric: tabular-nums; font-size: .84rem; font-weight: 850; }
+    .channel code { color: #aebbd1; font-size: .78rem; }
+
+    .palette-label { margin: 15px 0 8px; color: #aebbd1; font-size: .76rem; font-weight: 750; }
+    .palette { display: grid; grid-template-columns: repeat(6, 1fr); gap: 7px; }
+
+    .swatch {
+      position: relative;
+      aspect-ratio: 1;
+      border: 2px solid #34425f;
+      border-radius: 9px;
+      background: var(--swatch);
+      cursor: pointer;
+    }
+
+    .swatch[aria-pressed="true"] { border-color: white; box-shadow: 0 0 0 2px var(--swatch); }
+
+    .source-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 22px;
+      padding: 22px;
+    }
+
+    .source-view {
+      min-width: 0;
+      padding: 18px;
+      border-radius: 16px;
+      background:
+        linear-gradient(45deg, #26314a 25%, transparent 25%),
+        linear-gradient(-45deg, #26314a 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #26314a 75%),
+        linear-gradient(-45deg, transparent 75%, #26314a 75%),
+        #141d31;
+      background-position: 0 0, 0 14px, 14px -14px, -14px 0;
+      background-size: 28px 28px;
+    }
+
+    .source-view img {
+      display: block;
+      width: min(100%, 720px);
+      height: auto;
+      margin: auto;
+      object-fit: contain;
+    }
+
+    .source-info { display: flex; flex-direction: column; justify-content: space-between; gap: 18px; }
+    .source-info h3 { margin-bottom: 7px; }
+    .source-info p { color: var(--muted); font-size: .9rem; }
+
+    .metadata {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px;
+      margin: 15px 0;
+    }
+
+    .meta {
+      padding: 10px 11px;
+      border-radius: 10px;
+      background: var(--soft);
+    }
+
+    .meta span { display: block; color: var(--muted); font-size: .69rem; font-weight: 800; text-transform: uppercase; }
+    .meta strong { display: block; margin-top: 2px; font-size: .88rem; }
+
+    .button-stack { display: grid; gap: 9px; }
+
+    .button, .button-link {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 840;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .button.primary, .button-link.primary { background: var(--blue); color: white; }
+    .button.primary:hover, .button-link.primary:hover { background: #1f5fd8; }
+    .button.secondary, .button-link.secondary { border: 1px solid #c4d1e1; background: white; color: var(--ink); }
+    .button.secondary:hover, .button-link.secondary:hover { background: #f3f7fc; }
+    .button.lime { background: var(--lime); color: var(--navy); }
+    .button.lime:hover { background: #ceff5e; }
+    .privacy { margin: 10px 0 0 !important; color: #728096 !important; font-size: .76rem !important; }
+
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin-bottom: 15px;
+    }
+
+    .workflow div {
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #fbfdff;
+      color: var(--muted);
+      font-size: .78rem;
+    }
+
+    .workflow strong { display: block; margin-bottom: 2px; color: var(--ink); }
+
+    .results-body { padding: 22px; }
+
+    .dropzone {
+      display: grid;
+      min-height: 112px;
+      margin-bottom: 17px;
+      padding: 18px;
+      place-items: center;
+      border: 2px dashed #9eb3ce;
+      border-radius: 14px;
+      background: #f7faff;
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 120ms ease, background 120ms ease;
+    }
+
+    .dropzone:hover, .dropzone.dragging { border-color: var(--blue); background: #edf4ff; }
+    .dropzone input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+    .dropzone strong { display: block; }
+    .dropzone span { display: block; margin-top: 3px; color: var(--muted); font-size: .82rem; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 13px; }
+
+    table { width: 100%; min-width: 750px; border-collapse: collapse; font-size: .84rem; }
+    th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; }
+    th { background: var(--soft); color: #4f5d72; font-size: .71rem; letter-spacing: .05em; text-transform: uppercase; }
+    tbody tr:last-child td { border-bottom: 0; }
+
+    .format { display: flex; align-items: center; gap: 8px; font-weight: 900; }
+    .format-icon { display: grid; width: 38px; height: 31px; place-items: center; border-radius: 8px; background: #eaf1ff; color: #2754ad; font-size: .62rem; }
+    .size { font-variant-numeric: tabular-nums; font-weight: 850; }
+    .pending { color: #8a95a6; font-weight: 600; }
+
+    .inspect-button {
+      min-height: 36px;
+      padding: 6px 10px;
+      border: 1px solid #b8c7da;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: .78rem;
+      font-weight: 800;
+    }
+
+    .inspect-button:hover:not(:disabled) { border-color: var(--blue); background: #edf4ff; color: #1e55be; }
+    .inspect-button:disabled { cursor: not-allowed; opacity: .45; }
+
+    .quality-select {
+      width: 100%;
+      min-width: 165px;
+      padding: 7px 28px 7px 8px;
+      border: 1px solid #c4d1e1;
+      border-radius: 8px;
+      background: white;
+      color: var(--ink);
+      font-size: .78rem;
+    }
+
+    .quality-select:disabled { background: #f1f4f8; color: #8490a2; }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin-top: 13px;
+    }
+
+    .summary-card { padding: 11px 12px; border-radius: 11px; background: var(--soft); }
+    .summary-card span { display: block; color: var(--muted); font-size: .69rem; font-weight: 800; text-transform: uppercase; }
+    .summary-card strong { display: block; margin-top: 3px; font-size: .9rem; }
+    .status-line { margin: 13px 0 0; color: var(--muted); font-size: .84rem; }
+
+    dialog {
+      width: min(1020px, calc(100% - 24px));
+      max-height: 92vh;
+      padding: 0;
+      overflow: hidden;
+      border: 0;
+      border-radius: 18px;
+      background: white;
+      color: var(--ink);
+      box-shadow: 0 30px 90px rgba(0,0,0,.38);
+    }
+
+    dialog::backdrop { background: rgba(7, 12, 24, .74); backdrop-filter: blur(4px); }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modal-head h2 { margin: 0; font-size: 1.04rem; }
+    .modal-head p { margin: 2px 0 0; color: var(--muted); font-size: .78rem; }
+
+    .close-button {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border: 1px solid #c7d3e2;
+      border-radius: 10px;
+      background: white;
+      cursor: pointer;
+      font-size: 1.25rem;
+    }
+
+    .modal-tools {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #f7faff;
+    }
+
+    .modal-tools label { font-size: .78rem; font-weight: 800; }
+    .modal-tools input[type="range"] { flex: 1; min-width: 120px; accent-color: var(--blue); }
+    .modal-tools output { min-width: 58px; color: #214fae; font-weight: 900; }
+
+    .zoom-presets { display: flex; gap: 5px; }
+    .zoom-presets button { padding: 5px 8px; border: 1px solid #c4d1e1; border-radius: 7px; background: white; cursor: pointer; font-size: .72rem; font-weight: 800; }
+
+    .inspection-viewport {
+      min-height: 340px;
+      max-height: 66vh;
+      overflow: auto;
+      background:
+        linear-gradient(45deg, #dfe5ed 25%, transparent 25%),
+        linear-gradient(-45deg, #dfe5ed 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #dfe5ed 75%),
+        linear-gradient(-45deg, transparent 75%, #dfe5ed 75%),
+        #f6f8fb;
+      background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+      background-size: 24px 24px;
+    }
+
+    .inspection-canvas { width: max-content; min-width: 100%; min-height: 340px; padding: 28px; }
+    .inspection-canvas img { display: block; width: 640px; max-width: none; height: auto; margin: auto; image-rendering: auto; box-shadow: 0 15px 35px rgba(18, 31, 55, .22); }
+    .modal-tip { margin: 0; padding: 10px 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: .79rem; }
+
+    .quiz-body { padding: 22px; }
+
+    .student-grid {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .field label { display: block; margin-bottom: 5px; font-size: .78rem; font-weight: 800; }
+    .field input, .field textarea {
+      width: 100%;
+      padding: 10px 11px;
+      border: 1px solid #c4d1e1;
+      border-radius: 9px;
+      background: white;
+      color: var(--ink);
+    }
+
+    .questions { display: grid; gap: 12px; }
+
+    .question {
+      margin: 0;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fbfdff;
+    }
+
+    .question.correct { border-color: #71bd99; background: #f1fbf6; }
+    .question.incorrect { border-color: #df9299; background: #fff6f7; }
+    .question legend { padding: 0 5px; font-weight: 850; }
+    .question-number { color: #2858b3; }
+    .answers { display: grid; gap: 7px; margin-top: 9px; }
+
+    .answers label {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 9px 10px;
+      border: 1px solid #d6e0ed;
+      border-radius: 9px;
+      background: white;
+      cursor: pointer;
+      font-size: .87rem;
+    }
+
+    .answers input { margin-top: 3px; accent-color: var(--blue); }
+    .explanation { margin: 10px 0 0; padding-top: 9px; border-top: 1px solid currentColor; color: var(--muted); font-size: .82rem; }
+    .question.correct .explanation { color: #176a4b; }
+    .question.incorrect .explanation { color: #9f303d; }
+
+    .quiz-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-top: 16px;
+    }
+
+    .score { margin: 0; color: var(--muted); font-size: .9rem; }
+    .score strong { color: var(--ink); }
+
+    .report-layout {
+      display: grid;
+      grid-template-columns: 1fr 330px;
+      gap: 20px;
+      padding: 22px;
+    }
+
+    .conclusion textarea { min-height: 150px; resize: vertical; }
+
+    .report-card {
+      padding: 18px;
+      border-radius: 15px;
+      background: var(--navy);
+      color: white;
+    }
+
+    .report-card h3 { margin-bottom: 7px; }
+    .report-card p { color: #b9c4d7; font-size: .86rem; }
+    .report-card .button { width: 100%; }
+    .report-status { margin: 10px 0 0 !important; color: #b9c4d7 !important; font-size: .76rem !important; }
+
+    @media (max-width: 900px) {
+      .color-layout, .source-layout, .report-layout { grid-template-columns: 1fr; }
+      .color-lab { grid-template-columns: 160px 1fr; }
+      .source-info { display: block; }
+    }
+
+    @media (max-width: 700px) {
+      .topbar-inner { width: min(100% - 22px, 1180px); min-height: 61px; }
+      .brand small, .step-nav { display: none; }
+      main { width: min(100% - 22px, 1180px); padding-top: 19px; }
+      .intro { align-items: start; flex-direction: column; gap: 10px; }
+      .time-chip { align-self: flex-start; }
+      .panel-head { align-items: flex-start; }
+      .concept-chip { display: none; }
+      .color-lab { grid-template-columns: 1fr; }
+      .pixel-preview { width: min(180px, 100%); margin: auto; }
+      .formula, .workflow, .summary-grid, .student-grid { grid-template-columns: 1fr; }
+      .modal-tools { align-items: stretch; flex-wrap: wrap; }
+      .modal-tools input[type="range"] { flex-basis: 55%; }
+      .quiz-actions { align-items: stretch; flex-direction: column; }
+      .quiz-actions .button { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .pixel-preview { transition: none; }
+    }
+
+    @media print {
+      .topbar, .button-stack, .dropzone, .inspect-button, .quiz-actions, .report-card { display: none !important; }
+      body { background: white; }
+      main { width: 100%; padding: 0; }
+      .panel { break-inside: avoid; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span><strong>Laboratorio de imagen digital</strong><small>Color · formatos · compresión · calidad</small></span>
+      </div>
+      <nav class="step-nav" aria-label="Apartados">
+        <a href="#color">1 · Color</a>
+        <a href="#convierte">2 · Convierte</a>
+        <a href="#compara">3 · Compara</a>
+        <a href="#preguntas">4 · Comprueba</a>
+        <a href="#informe">5 · Informe</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Sistemas informáticos · Representación de imágenes</p>
+        <h1 id="page-title">De un píxel a una imagen para la web</h1>
+        <p class="intro-copy">Construye un color, transforma una imagen BMP y usa tus propios resultados para decidir qué formato conserva mejor la calidad con el menor tamaño.</p>
+      </div>
+      <div class="time-chip">⏱ 55–65 min · Trabajo en parejas</div>
+    </section>
+
+    <section class="panel" id="color" aria-labelledby="color-title">
+      <header class="panel-head">
+        <div class="panel-title">
+          <span class="step">1</span>
+          <div><h2 id="color-title">¿Cómo se forma un color en pantalla?</h2><p>Mezcla luz roja, verde y azul y observa cómo se codifica.</p></div>
+        </div>
+        <span class="concept-chip">RGB · 24 bits</span>
+      </header>
+      <div class="color-layout">
+        <div class="concept-copy">
+          <h3>Tres cantidades forman cada píxel</h3>
+          <p>Una pantalla mezcla luz <strong>roja, verde y azul</strong>. Cada componente puede tomar 256 valores, desde 0 (apagado) hasta 255 (máxima intensidad).</p>
+          <div class="formula" aria-label="Canales RGB">
+            <div class="formula-card r"><strong>R</strong><span>0–255 · 8 bits</span></div>
+            <div class="formula-card g"><strong>G</strong><span>0–255 · 8 bits</span></div>
+            <div class="formula-card b"><strong>B</strong><span>0–255 · 8 bits</span></div>
+          </div>
+          <div class="fact">
+            <strong>Profundidad de color</strong>
+            Con 8 bits por canal tenemos 24 bits: 256 × 256 × 256 = 16.777.216 colores posibles. Un cuarto canal, alfa, puede indicar transparencia.
+          </div>
+        </div>
+
+        <div class="color-lab">
+          <div class="pixel-column">
+            <div class="pixel-preview" id="pixelPreview"><span>1 píxel ampliado</span></div>
+            <div class="code-readout" aria-live="polite">
+              <div class="code-line"><span>RGB</span><code id="rgbCode">rgb(36, 107, 253)</code></div>
+              <div class="code-line"><span>HEX</span><code id="hexCode">#246BFD</code></div>
+            </div>
+          </div>
+          <div class="mixer">
+            <h3>Laboratorio de mezcla</h3>
+            <div class="channel" style="--channel:#ff4f64">
+              <label for="redRange">R</label>
+              <input id="redRange" type="range" min="0" max="255" value="36">
+              <output id="redValue" for="redRange">36</output>
+              <code id="redHex">24</code>
+            </div>
+            <div class="channel" style="--channel:#46d37f">
+              <label for="greenRange">G</label>
+              <input id="greenRange" type="range" min="0" max="255" value="107">
+              <output id="greenValue" for="greenRange">107</output>
+              <code id="greenHex">6B</code>
+            </div>
+            <div class="channel" style="--channel:#3f7cff">
+              <label for="blueRange">B</label>
+              <input id="blueRange" type="range" min="0" max="255" value="253">
+              <output id="blueValue" for="blueRange">253</output>
+              <code id="blueHex">FD</code>
+            </div>
+            <p class="palette-label">Prueba una combinación preparada</p>
+            <div class="palette" aria-label="Paleta de colores">
+              <button class="swatch" type="button" style="--swatch:#246BFD" data-color="36,107,253" aria-label="Azul" aria-pressed="true"></button>
+              <button class="swatch" type="button" style="--swatch:#7C3AED" data-color="124,58,237" aria-label="Violeta" aria-pressed="false"></button>
+              <button class="swatch" type="button" style="--swatch:#E83E6D" data-color="232,62,109" aria-label="Rosa" aria-pressed="false"></button>
+              <button class="swatch" type="button" style="--swatch:#F97316" data-color="249,115,22" aria-label="Naranja" aria-pressed="false"></button>
+              <button class="swatch" type="button" style="--swatch:#16A36A" data-color="22,163,106" aria-label="Verde" aria-pressed="false"></button>
+              <button class="swatch" type="button" style="--swatch:#FFFFFF" data-color="255,255,255" aria-label="Blanco" aria-pressed="false"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="convierte" aria-labelledby="source-title">
+      <header class="panel-head">
+        <div class="panel-title">
+          <span class="step">2</span>
+          <div><h2 id="source-title">Parte de una imagen sin comprimir</h2><p>Usa esta mariposa BMP como referencia para todas las conversiones.</p></div>
+        </div>
+        <span class="concept-chip">BMP · mapa de bits</span>
+      </header>
+      <div class="source-layout">
+        <div class="source-view">
+          <img src="imagen-vectorial.bmp" alt="Mariposa multicolor formada por figuras sobre fondo transparente" width="640" height="440">
+        </div>
+        <aside class="source-info">
+          <div>
+            <h3>Archivo original</h3>
+            <p>Un BMP describe una cuadrícula de píxeles. Este archivo conserva mucha información directa y por eso sirve como referencia de calidad, aunque ocupa bastante espacio.</p>
+            <div class="metadata">
+              <div class="meta"><span>Dimensiones</span><strong>640 × 440 px</strong></div>
+              <div class="meta"><span>Profundidad</span><strong>32 bits/píxel</strong></div>
+              <div class="meta"><span>Tamaño</span><strong>1,07 MiB</strong></div>
+              <div class="meta"><span>Color</span><strong>RGBA</strong></div>
+            </div>
+            <div class="workflow">
+              <div><strong>1. Descarga</strong>Guarda el BMP original.</div>
+              <div><strong>2. Convierte</strong>Crea PNG, JPG, GIF, WebP y SVG.</div>
+              <div><strong>3. Compara</strong>Mide y amplía cada resultado.</div>
+            </div>
+            <div class="fact">
+              <strong>Atención con SVG</strong>
+              Cambiar un BMP a extensión SVG no garantiza que sus píxeles se conviertan en formas matemáticas. Puede ser solamente el mismo mapa de bits dentro de un contenedor SVG.
+            </div>
+          </div>
+          <div>
+            <div class="button-stack">
+              <a class="button-link primary" href="imagen-vectorial.bmp" download>↓ Descargar imagen BMP</a>
+              <a class="button-link secondary" href="https://cloudconvert.com/bmp-converter" target="_blank" rel="noopener noreferrer">Abrir conversor de imágenes ↗</a>
+            </div>
+            <p class="privacy">Mantén 640 × 440 píxeles y, si el conversor pregunta por calidad, usa 90. No subas fotografías personales.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="panel" id="compara" aria-labelledby="results-title">
+      <header class="panel-head">
+        <div class="panel-title">
+          <span class="step">3</span>
+          <div><h2 id="results-title">Mide e inspecciona los formatos</h2><p>Abre cada archivo en el visor, aumenta el zoom y observa bordes, degradados y transparencias.</p></div>
+        </div>
+        <span class="concept-chip">6 formatos</span>
+      </header>
+      <div class="results-body">
+        <label class="dropzone" id="dropzone">
+          <input id="fileInput" type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.svg" multiple>
+          <span><strong>Añade PNG, JPG, GIF, WebP y SVG</strong><span>Puedes seleccionar los cinco a la vez. Los archivos se analizan localmente en el navegador.</span></span>
+        </label>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th scope="col">Formato</th><th scope="col">Tamaño</th><th scope="col">Inspeccionar</th><th scope="col">Calidad respecto al BMP</th></tr>
+            </thead>
+            <tbody>
+              <tr data-row="bmp">
+                <td><span class="format"><span class="format-icon">BMP</span>BMP</span></td>
+                <td><span class="size" data-size="bmp">1,07 MiB</span></td>
+                <td><button class="inspect-button" type="button" data-inspect="bmp">Abrir y ampliar</button></td>
+                <td><select class="quality-select" disabled aria-label="Calidad del BMP"><option>Referencia original</option></select></td>
+              </tr>
+              <tr data-row="png">
+                <td><span class="format"><span class="format-icon">PNG</span>PNG</span></td>
+                <td><span class="size pending" data-size="png">Sin añadir</span></td>
+                <td><button class="inspect-button" type="button" data-inspect="png" disabled>Abrir y ampliar</button></td>
+                <td><select class="quality-select" data-quality="png" disabled aria-label="Calidad del PNG"><option value="">Elige…</option><option>Sin diferencia visible</option><option>Diferencia leve</option><option>Pérdida notable</option><option>No se visualiza correctamente</option></select></td>
+              </tr>
+              <tr data-row="jpg">
+                <td><span class="format"><span class="format-icon">JPG</span>JPG</span></td>
+                <td><span class="size pending" data-size="jpg">Sin añadir</span></td>
+                <td><button class="inspect-button" type="button" data-inspect="jpg" disabled>Abrir y ampliar</button></td>
+                <td><select class="quality-select" data-quality="jpg" disabled aria-label="Calidad del JPG"><option value="">Elige…</option><option>Sin diferencia visible</option><option>Diferencia leve</option><option>Pérdida notable</option><option>No se visualiza correctamente</option></select></td>
+              </tr>
+              <tr data-row="gif">
+                <td><span class="format"><span class="format-icon">GIF</span>GIF</span></td>
+                <td><span class="size pending" data-size="gif">Sin añadir</span></td>
+                <td><button class="inspect-button" type="button" data-inspect="gif" disabled>Abrir y ampliar</button></td>
+                <td><select class="quality-select" data-quality="gif" disabled aria-label="Calidad del GIF"><option value="">Elige…</option><option>Sin diferencia visible</option><option>Diferencia leve</option><option>Pérdida notable</option><option>No se visualiza correctamente</option></select></td>
+              </tr>
+              <tr data-row="webp">
+                <td><span class="format"><span class="format-icon">WEBP</span>WebP</span></td>
+                <td><span class="size pending" data-size="webp">Sin añadir</span></td>
+                <td><button class="inspect-button" type="button" data-inspect="webp" disabled>Abrir y ampliar</button></td>
+                <td><select class="quality-select" data-quality="webp" disabled aria-label="Calidad del WebP"><option value="">Elige…</option><option>Sin diferencia visible</option><option>Diferencia leve</option><option>Pérdida notable</option><option>No se visualiza correctamente</option></select></td>
+              </tr>
+              <tr data-row="svg">
+                <td><span class="format"><span class="format-icon">SVG</span>SVG</span></td>
+                <td><span class="size pending" data-size="svg">Sin añadir</span></td>
+                <td><button class="inspect-button" type="button" data-inspect="svg" disabled>Abrir y ampliar</button></td>
+                <td><select class="quality-select" data-quality="svg" disabled aria-label="Calidad del SVG"><option value="">Elige…</option><option>Sin diferencia visible</option><option>Diferencia leve</option><option>Pérdida notable</option><option>No se visualiza correctamente</option></select></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="summary-grid" aria-live="polite">
+          <div class="summary-card"><span>Formatos disponibles</span><strong id="measuredCount">1 de 6</strong></div>
+          <div class="summary-card"><span>Archivo más pequeño</span><strong id="smallestResult">BMP · 1,07 MiB</strong></div>
+          <div class="summary-card"><span>Archivo más grande</span><strong id="largestResult">BMP · 1,07 MiB</strong></div>
+        </div>
+        <p class="status-line" id="fileStatus" aria-live="polite">Faltan las cinco conversiones.</p>
+      </div>
+    </section>
+
+    <dialog id="imageDialog" aria-labelledby="dialogTitle">
+      <div class="modal-head">
+        <div><h2 id="dialogTitle">Inspección de imagen</h2><p id="dialogMeta">Formato · tamaño · dimensiones</p></div>
+        <button class="close-button" id="closeDialog" type="button" aria-label="Cerrar visor">×</button>
+      </div>
+      <div class="modal-tools">
+        <label for="modalZoom">Zoom</label>
+        <input id="modalZoom" type="range" min="25" max="800" step="25" value="100">
+        <output id="modalZoomValue" for="modalZoom">100 %</output>
+        <div class="zoom-presets" aria-label="Zoom rápido">
+          <button type="button" data-modal-zoom="100">100 %</button>
+          <button type="button" data-modal-zoom="400">400 %</button>
+          <button type="button" data-modal-zoom="800">800 %</button>
+        </div>
+      </div>
+      <div class="inspection-viewport" id="inspectionViewport">
+        <div class="inspection-canvas"><img id="modalImage" alt=""></div>
+      </div>
+      <p class="modal-tip" id="modalTip">Aumenta hasta 800 % y busca píxeles, bordes dentados, cambios en los degradados o pérdida de transparencia.</p>
+    </dialog>
+
+    <section class="panel" id="preguntas" aria-labelledby="quiz-title">
+      <header class="panel-head">
+        <div class="panel-title">
+          <span class="step">4</span>
+          <div><h2 id="quiz-title">Comprueba lo que has aprendido</h2><p>Responde a partir de lo que has observado, no solo de memoria.</p></div>
+        </div>
+        <span class="concept-chip">10 preguntas</span>
+      </header>
+      <div class="quiz-body">
+        <div class="student-grid">
+          <div class="field"><label for="studentName">Nombre y apellidos</label><input id="studentName" type="text" autocomplete="name"></div>
+          <div class="field"><label for="studentGroup">Grupo</label><input id="studentGroup" type="text"></div>
+        </div>
+
+        <form id="quizForm" class="questions">
+          <fieldset class="question" data-correct="b">
+            <legend><span class="question-number">1.</span> ¿Cómo se representa normalmente el color de un píxel en pantalla?</legend>
+            <div class="answers">
+              <label><input type="radio" name="q1" value="a"> Con un único número que indica el brillo.</label>
+              <label><input type="radio" name="q1" value="b"> Con tres cantidades: rojo, verde y azul, normalmente entre 0 y 255.</label>
+              <label><input type="radio" name="q1" value="c"> Mediante una lista de vértices y polígonos.</label>
+            </div>
+            <p class="explanation" hidden>RGB combina tres canales. Con 8 bits por canal cada uno admite 256 valores.</p>
+          </fieldset>
+
+          <fieldset class="question" data-correct="c">
+            <legend><span class="question-number">2.</span> ¿Qué diferencia principal hay entre una imagen sin comprimir y una comprimida?</legend>
+            <div class="answers">
+              <label><input type="radio" name="q2" value="a"> La comprimida siempre tiene menos píxeles.</label>
+              <label><input type="radio" name="q2" value="b"> La imagen sin comprimir siempre se ve mejor, aunque las dos ocupen lo mismo.</label>
+              <label><input type="radio" name="q2" value="c"> La compresión representa la información usando menos datos; puede conservarla toda o descartar parte.</label>
+            </div>
+            <p class="explanation" hidden>La compresión reduce el tamaño de archivo. Puede ser sin pérdida o con pérdida.</p>
+          </fieldset>
+
+          <fieldset class="question" data-correct="a">
+            <legend><span class="question-number">3.</span> ¿Qué significa «compresión sin pérdida»?</legend>
+            <div class="answers">
+              <label><input type="radio" name="q3" value="a"> Al descomprimir se puede reconstruir exactamente la información original.</label>
+              <label><input type="radio" name="q3" value="b"> El archivo no reduce su tamaño.</label>
+              <label><input type="radio" name="q3" value="c"> La imagen nunca puede tener transparencia.</label>
+            </div>
+            <p class="explanation" hidden>PNG es un ejemplo habitual de compresión sin pérdida: reduce datos sin eliminar información visual.</p>
+          </fieldset>
+
+          <fieldset class="question" data-correct="b">
+            <legend><span class="question-number">4.</span> ¿Qué distingue a un mapa de bits de una imagen vectorial?</legend>
+            <div class="answers">
+              <label><input type="radio" name="q4" value="a"> El mapa de bits siempre está comprimido y el vector nunca.</label>
+              <label><input type="radio" name="q4" value="b"> El mapa de bits guarda una cuadrícula de píxeles; el vector describe formas mediante datos matemáticos.</label>
+              <label><input type="radio" name="q4" value="c"> Solo se diferencian por la extensión del archivo.</label>
+            </div>
+            <p class="explanation" hidden>La estructura interna importa: píxeles en una imagen rasterizada y formas/curvas en una vectorial.</p>
+          </fieldset>
+
+          <fieldset class="question" data-correct="c">
+            <legend><span class="question-number">5.</span> ¿Qué suele ocurrir al ampliar mucho una imagen?</legend>
+            <div class="answers">
+              <label><input type="radio" name="q5" value="a"> Las dos clases ganan información nueva.</label>
+              <label><input type="radio" name="q5" value="b"> Un mapa de bits nunca cambia de aspecto.</label>
+              <label><input type="radio" name="q5" value="c"> En un mapa de bits pueden verse píxeles; un vector auténtico recalcula sus formas y conserva bordes definidos.</label>
+            </div>
+            <p class="explanation" hidden>El vector se vuelve a dibujar a cualquier escala. El mapa de bits solo dispone de sus píxeles originales.</p>
+          </fieldset>
+
+          <fieldset class="question" data-correct="b">
+            <legend><span class="question-number">6.</span> Si convertimos este BMP a un archivo llamado SVG, ¿se vuelve necesariamente vectorial?</legend>
+            <div class="answers">
+              <label><input type="radio" name="q6" value="a"> Sí, porque la extensión determina cómo está construida la imagen.</label>
+              <label><input type="radio" name="q6" value="b"> No; el SVG puede contener o envolver el mismo mapa de bits. Habría que vectorizar las formas.</label>
+              <label><input type="radio" name="q6" value="c"> Sí, pero solo si el archivo pesa menos.</label>
+            </div>
+            <p class="explanation" hidden>Un contenedor SVG puede incluir imágenes rasterizadas. Para obtener vectores reales hay que trazar o reconstruir sus formas.</p>
+          </fieldset>
+
+          <fieldset class="question" data-correct="a">
+            <legend><span class="question-number">7.</span> ¿Qué relación suele existir entre compresión con pérdida, tamaño y calidad?</legend>
+            <div class="answers">
+              <label><input type="radio" name="q7" value="a"> Más compresión puede producir un archivo menor, pero también artefactos o pérdida de detalle.</label>
+              <label><input type="radio" name="q7" value="b"> Más compresión siempre mejora la calidad.</label>
+              <label><input type="radio" name="q7" value="c"> La compresión solo cambia el nombre del archivo.</label>
+            </div>
+            <p class="explanation" hidden>Reducir datos tiene un coste cuando se usa compresión con pérdida: hay que buscar un equilibrio útil.</p>
+          </fieldset>
+
+          <fieldset class="question" data-correct="c">
+            <legend><span class="question-number">8.</span> Para una fotografía o imagen compleja en una página web, ¿qué opción inicial suele ser razonable?</legend>
+            <div class="answers">
+              <label><input type="radio" name="q8" value="a"> BMP, porque conserva muchos datos aunque sea muy pesado.</label>
+              <label><input type="radio" name="q8" value="b"> GIF, porque sus 256 colores siempre son suficientes.</label>
+              <label><input type="radio" name="q8" value="c"> WebP, comprobando que mantenga calidad suficiente con un tamaño reducido.</label>
+            </div>
+            <p class="explanation" hidden>WebP suele comprimir bien fotografías e imágenes complejas para la web. La elección debe verificarse con el contenido real.</p>
+          </fieldset>
+
+          <fieldset class="question" data-correct="a">
+            <legend><span class="question-number">9.</span> ¿Qué formato elegirías para un logotipo o icono que debe verse bien a cualquier tamaño?</legend>
+            <div class="answers">
+              <label><input type="radio" name="q9" value="a"> Un SVG formado realmente por vectores.</label>
+              <label><input type="radio" name="q9" value="b"> BMP sin comprimir.</label>
+              <label><input type="radio" name="q9" value="c"> JPG con calidad baja.</label>
+            </div>
+            <p class="explanation" hidden>Un SVG vectorial es adecuado para logotipos, iconos y diagramas escalables.</p>
+          </fieldset>
+
+          <fieldset class="question" data-correct="c">
+            <legend><span class="question-number">10.</span> ¿Existe un único formato que sea siempre el mejor para una página web?</legend>
+            <div class="answers">
+              <label><input type="radio" name="q10" value="a"> Sí: siempre debe usarse el archivo que menos ocupa.</label>
+              <label><input type="radio" name="q10" value="b"> Sí: SVG siempre es mejor, incluso para fotografías.</label>
+              <label><input type="radio" name="q10" value="c"> No: depende del contenido y del uso; hay que equilibrar calidad, tamaño, transparencia, animación y escalabilidad.</label>
+            </div>
+            <p class="explanation" hidden>WebP/JPG suelen servir para fotografías, PNG para gráficos sin pérdida o transparencia, SVG para vectores y GIF para animaciones sencillas o compatibilidad concreta.</p>
+          </fieldset>
+        </form>
+
+        <div class="quiz-actions">
+          <p class="score" id="scoreText" aria-live="polite">Aún no has comprobado las respuestas.</p>
+          <button class="button primary" id="checkQuiz" type="button">Comprobar respuestas</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="informe" aria-labelledby="report-title">
+      <header class="panel-head">
+        <div class="panel-title">
+          <span class="step">5</span>
+          <div><h2 id="report-title">Genera el informe de la práctica</h2><p>El TXT incluirá color elegido, tamaños, calidad observada, respuestas, puntuación y conclusión.</p></div>
+        </div>
+        <span class="concept-chip">TXT · UTF-8</span>
+      </header>
+      <div class="report-layout">
+        <div class="field conclusion">
+          <label for="conclusion">Conclusión personal</label>
+          <textarea id="conclusion" placeholder="Explica qué formato elegirías para una fotografía web y cuál para un logotipo. Justifica la decisión usando tamaño, calidad y tipo de representación."></textarea>
+        </div>
+        <aside class="report-card">
+          <h3>Informe descargable</h3>
+          <p>Comprueba las respuestas y descarga un archivo de texto para entregar o revisar.</p>
+          <button class="button lime" id="downloadReport" type="button">↓ Descargar informe TXT</button>
+          <p class="report-status" id="reportStatus" aria-live="polite">El informe puede generarse aunque falte algún formato; quedará indicado como «no añadido».</p>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var redRange = document.getElementById("redRange");
+      var greenRange = document.getElementById("greenRange");
+      var blueRange = document.getElementById("blueRange");
+      var rgbCode = document.getElementById("rgbCode");
+      var hexCode = document.getElementById("hexCode");
+      var pixelPreview = document.getElementById("pixelPreview");
+
+      function toHex(value) {
+        return Number(value).toString(16).padStart(2, "0").toUpperCase();
+      }
+
+      function updateColor() {
+        var r = Number(redRange.value);
+        var g = Number(greenRange.value);
+        var b = Number(blueRange.value);
+        var hex = "#" + toHex(r) + toHex(g) + toHex(b);
+        var rgb = "rgb(" + r + ", " + g + ", " + b + ")";
+        document.documentElement.style.setProperty("--current-color", rgb);
+        pixelPreview.style.background = rgb;
+        rgbCode.textContent = rgb;
+        hexCode.textContent = hex;
+        document.getElementById("redValue").textContent = r;
+        document.getElementById("greenValue").textContent = g;
+        document.getElementById("blueValue").textContent = b;
+        document.getElementById("redHex").textContent = toHex(r);
+        document.getElementById("greenHex").textContent = toHex(g);
+        document.getElementById("blueHex").textContent = toHex(b);
+        document.querySelectorAll("[data-color]").forEach(function (button) {
+          button.setAttribute("aria-pressed", String(button.dataset.color === [r, g, b].join(",")));
+        });
+      }
+
+      [redRange, greenRange, blueRange].forEach(function (input) {
+        input.addEventListener("input", updateColor);
+      });
+
+      document.querySelectorAll("[data-color]").forEach(function (button) {
+        button.addEventListener("click", function () {
+          var values = button.dataset.color.split(",");
+          redRange.value = values[0];
+          greenRange.value = values[1];
+          blueRange.value = values[2];
+          updateColor();
+        });
+      });
+
+      var formats = {
+        bmp: { label: "BMP", size: 1126538, url: "imagen-vectorial.bmp", filename: "imagen-vectorial.bmp" },
+        png: { label: "PNG" },
+        jpg: { label: "JPG" },
+        gif: { label: "GIF" },
+        webp: { label: "WebP" },
+        svg: { label: "SVG" }
+      };
+
+      function formatBytes(bytes) {
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1048576) return (bytes / 1024).toLocaleString("es-ES", { maximumFractionDigits: 1 }) + " KiB";
+        return (bytes / 1048576).toLocaleString("es-ES", { maximumFractionDigits: 2 }) + " MiB";
+      }
+
+      function extensionOf(file) {
+        var name = file.name.toLowerCase();
+        if (name.endsWith(".jpeg") || name.endsWith(".jpg")) return "jpg";
+        return name.split(".").pop();
+      }
+
+      var fileInput = document.getElementById("fileInput");
+      var dropzone = document.getElementById("dropzone");
+      var fileStatus = document.getElementById("fileStatus");
+
+      function updateFileSummary() {
+        var available = Object.keys(formats).filter(function (key) { return formats[key].url; });
+        document.getElementById("measuredCount").textContent = available.length + " de 6";
+        var sorted = available.map(function (key) {
+          return { key: key, size: formats[key].size };
+        }).sort(function (a, b) { return a.size - b.size; });
+        var smallest = sorted[0];
+        var largest = sorted[sorted.length - 1];
+        document.getElementById("smallestResult").textContent = formats[smallest.key].label + " · " + formatBytes(smallest.size);
+        document.getElementById("largestResult").textContent = formats[largest.key].label + " · " + formatBytes(largest.size);
+        var missing = 6 - available.length;
+        fileStatus.textContent = missing === 0 ? "Ya están disponibles los seis formatos. Inspecciónalos y valora su calidad." : "Faltan " + missing + " formato(s) por añadir.";
+      }
+
+      function addFiles(fileList) {
+        var accepted = 0;
+        var rejected = 0;
+        Array.from(fileList).forEach(function (file) {
+          var ext = extensionOf(file);
+          if (!formats[ext] || ext === "bmp") {
+            rejected += 1;
+            return;
+          }
+          if (formats[ext].url && formats[ext].url.indexOf("blob:") === 0) URL.revokeObjectURL(formats[ext].url);
+          formats[ext].url = URL.createObjectURL(file);
+          formats[ext].size = file.size;
+          formats[ext].filename = file.name;
+          var sizeCell = document.querySelector('[data-size="' + ext + '"]');
+          sizeCell.textContent = formatBytes(file.size);
+          sizeCell.classList.remove("pending");
+          document.querySelector('[data-inspect="' + ext + '"]').disabled = false;
+          document.querySelector('[data-quality="' + ext + '"]').disabled = false;
+          accepted += 1;
+        });
+        updateFileSummary();
+        if (!accepted) fileStatus.textContent = "No se encontró ningún archivo PNG, JPG, GIF, WebP o SVG.";
+        else if (rejected) fileStatus.textContent += " Se ignoró algún formato no solicitado.";
+        fileInput.value = "";
+      }
+
+      fileInput.addEventListener("change", function (event) { addFiles(event.target.files); });
+      ["dragenter", "dragover"].forEach(function (type) {
+        dropzone.addEventListener(type, function (event) {
+          event.preventDefault();
+          dropzone.classList.add("dragging");
+        });
+      });
+      ["dragleave", "drop"].forEach(function (type) {
+        dropzone.addEventListener(type, function (event) {
+          event.preventDefault();
+          dropzone.classList.remove("dragging");
+        });
+      });
+      dropzone.addEventListener("drop", function (event) { addFiles(event.dataTransfer.files); });
+
+      var dialog = document.getElementById("imageDialog");
+      var modalImage = document.getElementById("modalImage");
+      var modalZoom = document.getElementById("modalZoom");
+      var modalZoomValue = document.getElementById("modalZoomValue");
+      var inspectionViewport = document.getElementById("inspectionViewport");
+      var activeFormat = "bmp";
+      var naturalWidth = 640;
+      var naturalHeight = 440;
+
+      function setModalZoom(value) {
+        var zoom = Math.max(25, Math.min(800, Number(value) || 100));
+        modalZoom.value = zoom;
+        modalZoomValue.textContent = zoom + " %";
+        modalImage.style.width = Math.max(1, naturalWidth * zoom / 100) + "px";
+      }
+
+      function openInspection(format) {
+        var record = formats[format];
+        if (!record || !record.url) return;
+        activeFormat = format;
+        document.getElementById("dialogTitle").textContent = "Inspección · " + record.label;
+        document.getElementById("dialogMeta").textContent = record.filename + " · " + formatBytes(record.size);
+        document.getElementById("modalTip").textContent = format === "svg"
+          ? "Amplía hasta 800 %. Si aparecen píxeles, este SVG probablemente contiene el mapa de bits en lugar de formas vectoriales reales."
+          : "Amplía hasta 800 % y busca píxeles, bordes dentados, cambios en los degradados o pérdida de transparencia.";
+        modalImage.alt = "Vista ampliada del archivo " + record.label;
+        modalImage.src = record.url;
+        modalZoom.value = 100;
+        modalZoomValue.textContent = "100 %";
+        if (!dialog.open) dialog.showModal();
+      }
+
+      modalImage.addEventListener("load", function () {
+        naturalWidth = modalImage.naturalWidth || 640;
+        naturalHeight = modalImage.naturalHeight || 440;
+        var record = formats[activeFormat];
+        document.getElementById("dialogMeta").textContent = record.filename + " · " + formatBytes(record.size) + " · " + naturalWidth + " × " + naturalHeight + " px";
+        setModalZoom(100);
+        inspectionViewport.scrollTo(0, 0);
+      });
+
+      modalImage.addEventListener("error", function () {
+        document.getElementById("dialogMeta").textContent = "El navegador no ha podido mostrar este archivo.";
+      });
+
+      document.querySelectorAll("[data-inspect]").forEach(function (button) {
+        button.addEventListener("click", function () { openInspection(button.dataset.inspect); });
+      });
+      modalZoom.addEventListener("input", function () { setModalZoom(modalZoom.value); });
+      document.querySelectorAll("[data-modal-zoom]").forEach(function (button) {
+        button.addEventListener("click", function () { setModalZoom(button.dataset.modalZoom); });
+      });
+      document.getElementById("closeDialog").addEventListener("click", function () { dialog.close(); });
+      dialog.addEventListener("click", function (event) {
+        if (event.target === dialog) dialog.close();
+      });
+
+      var quizForm = document.getElementById("quizForm");
+      var questions = Array.from(document.querySelectorAll(".question"));
+      var lastScore = null;
+
+      function selectedAnswer(question) {
+        return question.querySelector("input[type=radio]:checked");
+      }
+
+      function evaluateQuiz(showFeedback) {
+        var correct = 0;
+        var answered = 0;
+        questions.forEach(function (question) {
+          var answer = selectedAnswer(question);
+          var explanation = question.querySelector(".explanation");
+          question.classList.remove("correct", "incorrect");
+          if (answer) {
+            answered += 1;
+            if (answer.value === question.dataset.correct) {
+              correct += 1;
+              if (showFeedback) question.classList.add("correct");
+            } else if (showFeedback) {
+              question.classList.add("incorrect");
+            }
+          } else if (showFeedback) {
+            question.classList.add("incorrect");
+          }
+          explanation.hidden = !showFeedback;
+        });
+        lastScore = correct;
+        if (showFeedback) {
+          document.getElementById("scoreText").innerHTML = "<strong>" + correct + " de " + questions.length + " correctas</strong> · " + answered + " respondidas.";
+        }
+        return { correct: correct, answered: answered, total: questions.length };
+      }
+
+      document.getElementById("checkQuiz").addEventListener("click", function () { evaluateQuiz(true); });
+      quizForm.addEventListener("change", function (event) {
+        var question = event.target.closest(".question");
+        if (question) {
+          question.classList.remove("correct", "incorrect");
+          question.querySelector(".explanation").hidden = true;
+        }
+      });
+
+      function answerLabel(question) {
+        var answer = selectedAnswer(question);
+        return answer ? answer.parentElement.textContent.trim() : "Sin responder";
+      }
+
+      function safeFilename(value) {
+        return String(value || "alumno").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_-]+/g, "-").replace(/^-|-$/g, "").toLowerCase() || "alumno";
+      }
+
+      function buildReport() {
+        var result = evaluateQuiz(true);
+        var name = document.getElementById("studentName").value.trim() || "No indicado";
+        var group = document.getElementById("studentGroup").value.trim() || "No indicado";
+        var lines = [];
+        lines.push("INFORME · LABORATORIO DE REPRESENTACIÓN Y FORMATOS DE IMAGEN");
+        lines.push("================================================================");
+        lines.push("Fecha: " + new Date().toLocaleString("es-ES"));
+        lines.push("Alumno/a: " + name);
+        lines.push("Grupo: " + group);
+        lines.push("");
+        lines.push("1. COLOR CONSTRUIDO");
+        lines.push("-------------------");
+        lines.push("RGB: " + rgbCode.textContent);
+        lines.push("Hexadecimal: " + hexCode.textContent);
+        lines.push("");
+        lines.push("2. COMPARACIÓN DE ARCHIVOS");
+        lines.push("--------------------------");
+        ["bmp", "png", "jpg", "gif", "webp", "svg"].forEach(function (key) {
+          var record = formats[key];
+          var quality = key === "bmp" ? "Referencia original" : (document.querySelector('[data-quality="' + key + '"]').value || "Sin valorar");
+          lines.push(record.label.padEnd(5, " ") + " | " + (record.size ? formatBytes(record.size) : "No añadido") + " | Calidad: " + quality);
+        });
+        var available = Object.keys(formats).filter(function (key) { return formats[key].size; }).map(function (key) { return { key: key, size: formats[key].size }; }).sort(function (a, b) { return a.size - b.size; });
+        if (available.length) {
+          lines.push("");
+          lines.push("Más pequeño: " + formats[available[0].key].label + " (" + formatBytes(available[0].size) + ")");
+          lines.push("Más grande: " + formats[available[available.length - 1].key].label + " (" + formatBytes(available[available.length - 1].size) + ")");
+        }
+        lines.push("");
+        lines.push("3. CUESTIONARIO");
+        lines.push("---------------");
+        questions.forEach(function (question, index) {
+          var answer = selectedAnswer(question);
+          var correct = answer && answer.value === question.dataset.correct;
+          lines.push((index + 1) + ". " + answerLabel(question) + " [" + (correct ? "Correcta" : "Incorrecta o sin responder") + "]");
+        });
+        lines.push("");
+        lines.push("Puntuación: " + result.correct + "/" + result.total + " · Respondidas: " + result.answered + "/" + result.total);
+        lines.push("");
+        lines.push("4. CONCLUSIÓN PERSONAL");
+        lines.push("----------------------");
+        lines.push(document.getElementById("conclusion").value.trim() || "No escrita");
+        lines.push("");
+        lines.push("Informe generado localmente por la práctica pimagenes.html.");
+        return { text: lines.join("\r\n"), name: name };
+      }
+
+      document.getElementById("downloadReport").addEventListener("click", function () {
+        var report = buildReport();
+        var blob = new Blob(["\uFEFF" + report.text], { type: "text/plain;charset=utf-8" });
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = "informe-imagenes-" + safeFilename(report.name) + ".txt";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+        document.getElementById("reportStatus").textContent = "Informe generado. Revisa la carpeta de descargas.";
+      });
+
+      window.addEventListener("beforeunload", function () {
+        ["png", "jpg", "gif", "webp", "svg"].forEach(function (key) {
+          if (formats[key].url && formats[key].url.indexOf("blob:") === 0) URL.revokeObjectURL(formats[key].url);
+        });
+      });
+
+      updateColor();
+      updateFileSummary();
+    })();
+  </script>
+</body>
+</html>
