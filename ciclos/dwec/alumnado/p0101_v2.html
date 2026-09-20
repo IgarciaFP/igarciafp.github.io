@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Laboratorio práctico de Chrome DevTools para CFGS DAW: depuración, red, rendimiento, accesibilidad, almacenamiento y PWA.">
   <meta name="theme-color" content="#111827">
-  <link rel="manifest" href="./p0101_v2.webmanifest">
   <title>Chrome DevTools · Laboratorio CFGS DAW</title>
   <style>
     :root {
@@ -136,8 +135,14 @@
     .ticket-response { width: 100%; min-height: 92px; padding: .65rem .72rem; resize: vertical; border: 1px solid #94a3b8; border-radius: 8px; color: var(--ink); background: #fff; }
     .ticket-response:focus { outline: 3px solid var(--blue-soft); border-color: var(--blue); }
     .response-help { display: block; margin-top: .25rem; color: var(--muted); font-size: .84rem; }
+    .response-actions { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin-top: .55rem; }
+    .check-answer { padding: .48rem .7rem; border: 0; border-radius: 7px; color: white; background: var(--blue); font-weight: 800; }
+    .answer-feedback { font-weight: 800; }
+    .answer-feedback.correct { color: var(--green); }
+    .answer-feedback.incorrect { color: var(--red); }
     .done-row { display: flex; gap: .5rem; align-items: center; margin-top: .8rem; }
     .done-row input { width: 1.15rem; height: 1.15rem; accent-color: var(--green); }
+    .done-row input:disabled { opacity: 1; }
     .done-row label { font-weight: 800; }
     details { margin-top: .65rem; border: 1px dashed #aeb8ca; border-radius: 8px; background: #fafcff; }
     summary { padding: .55rem .7rem; cursor: pointer; font-weight: 760; }
@@ -162,11 +167,16 @@
     .form-actions button.secondary { color: #5b21b6; border: 1px solid #c4b5fd; background: #ede9fe; }
     .form-actions button:disabled { opacity: .5; cursor: not-allowed; }
     .report-preview { min-height: 290px; margin: 0; padding: .85rem; overflow: auto; border-radius: 9px; color: #e2e8f0; background: #111827; white-space: pre-wrap; font: .84rem/1.5 ui-monospace, monospace; }
+    .practice-launch { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; border-color: #60a5fa; background: #eff6ff; }
+    .practice-launch h2 { margin-bottom: .25rem; }
+    .practice-launch p { margin-bottom: 0; }
+    .launch-button { display: inline-block; padding: .75rem 1rem; border-radius: 9px; color: white; background: var(--blue); text-decoration: none; font-weight: 850; white-space: nowrap; }
+    .launch-button:hover, .launch-button:focus-visible { background: #1e40af; outline: 3px solid #93c5fd; outline-offset: 2px; }
 
     footer { padding: 1rem 0 3rem; color: var(--muted); }
     .small { font-size: .9rem; }
     @media (max-width: 900px) {
-      .hero, .intro-grid, .orientation-grid, .delivery-grid, .incident-grid { grid-template-columns: 1fr; }
+      .hero, .intro-grid, .orientation-grid, .delivery-grid, .incident-grid, .practice-launch { grid-template-columns: 1fr; }
       .terminal { max-width: 620px; }
       .coverage { grid-template-columns: repeat(3, 1fr); }
       .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
@@ -193,7 +203,7 @@
   </style>
 </head>
 <body>
-  <a class="skip" href="#entorno-practicas">Saltar al entorno de prácticas</a>
+  <a class="skip" href="#cobertura">Saltar al índice de tickets</a>
 
   <header class="site-header">
     <div class="wrap hero">
@@ -225,121 +235,15 @@
 
   <main class="wrap">
     <section class="progress-panel" aria-label="Progreso del laboratorio">
-      <strong id="progress-text">0 de 12 tickets</strong>
+      <strong id="progress-text">0 de 13 respuestas verificadas</strong>
       <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
       <button class="reset" id="reset-progress" type="button">Reiniciar</button>
     </section>
 
-    <section class="intro-grid">
-      <article class="panel">
-        <h2>Qué vas a aprender</h2>
-        <ul class="outcomes">
-          <li>Encontrar una etiqueta HTML.</li>
-          <li>Probar cambios de CSS.</li>
-          <li>Leer mensajes y errores.</li>
-          <li>Detener JavaScript para observarlo.</li>
-          <li>Ver archivos descargados por la web.</li>
-          <li>Revisar móvil, datos y calidad.</li>
-        </ul>
-      </article>
-      <article class="panel">
-        <h2>Cómo completar un ticket</h2>
-        <ol>
-          <li>Lee todos los pasos antes de empezar.</li>
-          <li>Busca el panel indicado en la barra superior.</li>
-          <li>Realiza una sola acción cada vez.</li>
-          <li>Comprueba que aparece el resultado esperado.</li>
-          <li>Escribe una respuesta corta y marca el ticket.</li>
-        </ol>
-        <p class="note warning"><strong>Seguridad:</strong> escribe solo los comandos que aparecen en esta práctica. No introduzcas contraseñas ni datos personales.</p>
-      </article>
-    </section>
-
-    <section class="panel" aria-labelledby="orientacion-title">
-      <h2 id="orientacion-title">Antes de empezar: cómo orientarte</h2>
-      <p>DevTools es una ventana de herramientas que aparece junto a la página. No importa si se abre a la derecha o en la parte inferior: las funciones son las mismas.</p>
-      <div class="orientation-grid">
-        <article class="orientation-card">
-          <h3>1 · Abrir las herramientas</h3>
-          <ol>
-            <li>Usa Google Chrome y abre esta página.</li>
-            <li>Pulsa <kbd>F12</kbd>. Si no funciona, pulsa <kbd>Ctrl</kbd> + <kbd>Mayús</kbd> + <kbd>I</kbd>.</li>
-            <li>También puedes hacer clic derecho en la página y elegir <strong>Inspeccionar</strong>.</li>
-          </ol>
-        </article>
-        <article class="orientation-card">
-          <h3>2 · Encontrar un panel</h3>
-          <ol>
-            <li>Busca sus nombres en la barra superior de DevTools.</li>
-            <li>Si un nombre no aparece, pulsa <strong>»</strong> para ver los paneles ocultos.</li>
-            <li>Puedes ensanchar DevTools arrastrando el borde que lo separa de la página.</li>
-          </ol>
-        </article>
-      </div>
-      <div class="panel-map" aria-label="Mapa de paneles de DevTools">
-        <div><strong>Elements</strong><span>HTML a la izquierda y CSS en Styles, a la derecha.</span></div>
-        <div><strong>Console</strong><span>Mensajes y una línea inferior donde escribir comandos.</span></div>
-        <div><strong>Sources</strong><span>Archivos de la página y líneas de JavaScript.</span></div>
-        <div><strong>Network</strong><span>Lista de archivos y peticiones realizadas.</span></div>
-        <div><strong>Application</strong><span>Datos guardados, manifiesto, caché y Service Worker.</span></div>
-        <div><strong>Performance / Memory</strong><span>Grabaciones para estudiar tiempo y memoria.</span></div>
-      </div>
-      <p class="note"><strong>Importante:</strong> los cambios realizados desde DevTools son ensayos temporales. La práctica está preparada para que puedas experimentar sin estropear la página.</p>
-    </section>
-
-    <section class="panel app-lab" id="entorno-practicas">
-      <div class="app-topbar">
-        <h2>OpsBoard · Panel de pedidos</h2>
-        <span class="env">ENTORNO DE PRÁCTICAS</span>
-      </div>
-      <div class="app-body">
-        <div class="lab-context">
-          <p>Aplicación de demostración con defectos deliberados y acciones instrumentadas.</p>
-          <span id="clock" class="status">Sin sincronizar</span>
-        </div>
-
-        <div class="toolbar" aria-label="Acciones de prueba">
-          <button class="tool-button primary" id="sync-orders" type="button">Sincronizar pedidos</button>
-          <button class="tool-button" id="recalculate" type="button">Recalcular total</button>
-          <button class="tool-button danger" id="trigger-error" type="button">Provocar error HTTP</button>
-          <button class="tool-button" id="run-long-task" type="button">Ejecutar tarea lenta</button>
-          <button class="tool-button" id="create-leak" type="button">Retener memoria</button>
-        </div>
-
-        <div class="status-line" aria-live="polite">
-          <span class="status" id="network-status">Red: pendiente</span>
-          <span class="status" id="calc-status">Cálculo: pendiente</span>
-          <span class="status" id="memory-status">Retenciones: 0</span>
-          <span class="status" id="sw-status">Service Worker: comprobando</span>
-        </div>
-
-        <div id="legacy-widget">
-          <div class="dashboard-grid">
-            <article class="metric"><span>Pedidos</span><strong id="orders-count">—</strong></article>
-            <article class="metric"><span>Pendientes</span><strong id="pending-count">—</strong></article>
-            <article class="metric highlight"><span>Facturación calculada</span><strong id="invoice-total">—</strong></article>
-            <article class="metric"><span>Tiempo de respuesta</span><strong id="response-time">—</strong></article>
-          </div>
-
-          <div class="search-row">
-            <input id="order-filter" type="search" placeholder="Filtrar por cliente">
-            <button class="icon-button" id="delete-last" type="button"><span aria-hidden="true">🗑️</span></button>
-          </div>
-          <p class="a11y-issue">Consejo del sistema: utiliza el buscador y el botón de acción para gestionar la lista.</p>
-
-          <div class="orders-table-wrap">
-            <table>
-              <thead><tr><th>ID</th><th>Cliente</th><th>Unidades</th><th>Precio</th><th>Estado</th></tr></thead>
-              <tbody id="orders-body"><tr><td colspan="5">Pulsa «Sincronizar pedidos».</td></tr></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <nav class="panel" aria-label="Índice de tickets">
+    <nav class="panel" id="cobertura" aria-label="Índice de tickets">
       <h2>Cobertura del laboratorio</h2>
       <ol class="coverage">
+        <li><a href="#t0">00 · Buscar</a></li>
         <li><a href="#t1">01 · Elements</a></li>
         <li><a href="#t2">02 · CSS</a></li>
         <li><a href="#t3">03 · Console</a></li>
@@ -355,47 +259,72 @@
       </ol>
     </nav>
 
-    <section class="tickets" aria-label="Doce tickets guiados">
-      <article class="ticket" id="t1"><div class="ticket-id">DEV-101</div><div>
-        <div class="ticket-head"><h3>Abre DevTools y encuentra una etiqueta HTML</h3><div class="meta"><span class="tag core">Elements</span><span class="tag">8 min</span></div></div>
-        <p class="objective">Descubre que cada parte visible de una web corresponde a una etiqueta HTML.</p>
-        <p class="where"><strong>Dónde está:</strong> <strong>Elements</strong> suele ser la primera pestaña. El selector tiene forma de cursor dentro de un cuadrado y está en la esquina superior izquierda de DevTools.</p>
+    <section class="panel practice-launch" id="entorno-practicas">
+      <div>
+        <h2>Página de prácticas</h2>
+        <p>Ábrela en otra pestaña. Manipula esa página con DevTools y conserva aquí las instrucciones y respuestas.</p>
+      </div>
+      <a class="launch-button" href="./p0101_v2_lab/" target="_blank" rel="noopener">Abrir página de prácticas</a>
+    </section>
+
+    <section class="tickets" aria-label="Trece tickets guiados">
+      <article class="ticket" id="t0"><div class="ticket-id">DEV-100</div><div>
+        <div class="ticket-head"><h3>Busca un texto dentro de Elements</h3><div class="meta"><span class="tag core">Elements</span><span class="tag">5 min</span></div></div>
+        <p class="objective">Aprende a localizar una parte del HTML sin recorrer todas sus etiquetas.</p>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → <kbd>F12</kbd> → <strong>Elements</strong>.</p>
         <ol class="steps">
-          <li>Abre DevTools con <kbd>F12</kbd> y pulsa la pestaña <strong>Elements</strong>.</li>
-          <li>Pulsa el icono del selector. También puedes usar <kbd>Ctrl</kbd> + <kbd>Mayús</kbd> + <kbd>C</kbd>.</li>
-          <li>Mueve el ratón por la página: verás rectángulos de colores sobre cada elemento.</li>
-          <li>Haz clic sobre el texto <strong>Facturación calculada</strong>. En DevTools quedará marcada una línea que comienza por <code>&lt;article</code>.</li>
-          <li>Dentro de esa línea, abre la etiqueta y haz doble clic sobre el texto <code>Facturación calculada</code>. Escribe <code>Facturación revisada</code> y pulsa <kbd>Enter</kbd>.</li>
-          <li>Abre <strong>Sources</strong>, pulsa <kbd>Ctrl</kbd> + <kbd>F</kbd> y busca <code>Facturación calculada</code>. El archivo conserva el texto original porque solo has cambiado el DOM que Chrome muestra en este momento.</li>
+          <li>Abre la página de prácticas con el botón azul anterior.</li>
+          <li>En esa nueva pestaña, abre DevTools con <kbd>F12</kbd> y selecciona <strong>Elements</strong>.</li>
+          <li>Haz clic una vez dentro del árbol de etiquetas HTML.</li>
+          <li>Pulsa <kbd>Ctrl</kbd> + <kbd>F</kbd>. La caja de búsqueda aparecerá en la parte inferior de Elements.</li>
+          <li>Escribe <code>Facturación calculada</code> y pulsa <kbd>Enter</kbd>.</li>
+          <li>Chrome marcará el texto dentro de una etiqueta de apertura <code>&lt;span&gt;</code> y su cierre <code>&lt;/span&gt;</code>. Pueden aparecer en líneas distintas.</li>
+        </ol>
+        <p class="expected"><strong>Debes ver:</strong> el texto resaltado dentro de un elemento <code>span</code>.</p>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe únicamente el nombre de la etiqueta que contiene directamente el texto.</p>
+        <div class="response-field"><label for="r0">Respuesta del ticket DEV-100</label><textarea class="ticket-response" id="r0" placeholder="Nombre de la etiqueta"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d0" type="checkbox"><label for="d0">Respuesta verificada</label></div>
+      </div></article>
+
+      <article class="ticket" id="t1"><div class="ticket-id">DEV-101</div><div>
+        <div class="ticket-head"><h3>Distingue una etiqueta de su etiqueta padre</h3><div class="meta"><span class="tag core">Elements · Sources</span><span class="tag">8 min</span></div></div>
+        <p class="objective">Reconoce que <code>span</code> está dentro de <code>article</code>, aunque aparezcan en líneas diferentes.</p>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Elements</strong>.</p>
+        <ol class="steps">
+          <li>Mantén seleccionado el resultado del ticket anterior: <code>&lt;span&gt;Facturación calculada&lt;/span&gt;</code>.</li>
+          <li>Mira la sangría del árbol. La etiqueta situada un nivel por encima es <code>&lt;article class="metric highlight"&gt;</code>: es la etiqueta padre.</li>
+          <li>Haz doble clic sobre el texto <code>Facturación calculada</code>, escribe <code>Facturación revisada</code> y pulsa <kbd>Enter</kbd>.</li>
+          <li>Abre <strong>Sources</strong>. En el lado izquierdo, abre el árbol <strong>Page</strong> y selecciona primero el archivo <code>p0101_v2_lab/index.html</code>.</li>
+          <li>Solo después de seleccionar el archivo, pulsa <kbd>Ctrl</kbd> + <kbd>F</kbd>, busca <code>Facturación calculada</code> y pulsa <kbd>Enter</kbd>.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> el nuevo texto en la página y el texto original dentro de Sources.</p>
-        <p class="evidence"><strong>Responde:</strong> ¿qué etiqueta y qué clases tenía el elemento seleccionado?</p>
-        <div class="response-field"><label for="r1">Respuesta del ticket DEV-101</label><textarea class="ticket-response" id="r1" placeholder="Ejemplo: era una etiqueta… y sus clases eran…"></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
-        <div class="done-row"><input class="done" id="d1" type="checkbox"><label for="d1">Ticket terminado</label></div>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe las dos clases del <code>article</code> padre, separadas por un espacio y en el mismo orden.</p>
+        <div class="response-field"><label for="r1">Respuesta del ticket DEV-101</label><textarea class="ticket-response" id="r1" placeholder="clase1 clase2"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d1" type="checkbox"><label for="d1">Respuesta verificada</label></div>
       </div></article>
 
       <article class="ticket" id="t2"><div class="ticket-id">DEV-102</div><div>
         <div class="ticket-head"><h3>Prueba colores y tamaños con CSS</h3><div class="meta"><span class="tag core">Elements · Styles</span><span class="tag">8 min</span></div></div>
         <p class="objective">Comprueba cómo una regla CSS cambia el aspecto de un elemento.</p>
-        <p class="where"><strong>Dónde está:</strong> permanece en <strong>Elements</strong>. A la derecha del HTML busca la pestaña <strong>Styles</strong>. Si no la ves, ensancha DevTools.</p>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Elements → Styles</strong>.</p>
         <ol class="steps">
           <li>Usa el selector para elegir la tarjeta que muestra <strong>Facturación calculada</strong>.</li>
           <li>En <strong>Styles</strong>, busca el bloque <code>element.style { }</code>, situado normalmente arriba.</li>
           <li>Haz clic dentro de las llaves, escribe <code>color: crimson</code> y pulsa <kbd>Enter</kbd>.</li>
           <li>En la línea siguiente escribe <code>padding: 30px</code> y pulsa <kbd>Enter</kbd>.</li>
           <li>Pulsa la pestaña <strong>Computed</strong>, junto a Styles. Baja hasta el dibujo de una caja: las zonas son <em>content</em>, <em>padding</em>, <em>border</em> y <em>margin</em>.</li>
-          <li>Desmarca la casilla situada junto a <code>padding: 30px</code> y observa cómo vuelve el tamaño anterior.</li>
+          <li>En <strong>Styles</strong>, desmarca la casilla situada junto a <code>padding: 30px</code> y observa cómo vuelve el tamaño anterior.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> el texto de color rojo y la tarjeta más grande mientras la regla está activada.</p>
-        <p class="evidence"><strong>Responde:</strong> ¿qué propiedad cambió el color y qué zona del modelo de caja hizo crecer la tarjeta?</p>
-        <div class="response-field"><label for="r2">Respuesta del ticket DEV-102</label><textarea class="ticket-response" id="r2" placeholder="La propiedad… cambió el color y la zona… aumentó el tamaño."></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
-        <div class="done-row"><input class="done" id="d2" type="checkbox"><label for="d2">Ticket terminado</label></div>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe únicamente la propiedad que hizo crecer la tarjeta.</p>
+        <div class="response-field"><label for="r2">Respuesta del ticket DEV-102</label><textarea class="ticket-response" id="r2" placeholder="Nombre de la propiedad"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d2" type="checkbox"><label for="d2">Respuesta verificada</label></div>
       </div></article>
 
       <article class="ticket" id="t3"><div class="ticket-id">DEV-103</div><div>
         <div class="ticket-head"><h3>Escribe un comando y encuentra un error</h3><div class="meta"><span class="tag core">Console</span><span class="tag">8 min</span></div></div>
         <p class="objective">Usa Console para hacer una pregunta a la página y para leer un error.</p>
-        <p class="where"><strong>Dónde está:</strong> pulsa <strong>Console</strong> en la barra superior. La línea para escribir aparece abajo, junto al símbolo <code>&gt;</code>.</p>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Console</strong>.</p>
         <ol class="steps">
           <li>Pulsa <strong>Sincronizar pedidos</strong> en la página. Deben aparecer cuatro filas en la tabla.</li>
           <li>Abre <strong>Console</strong> y busca la línea inferior que comienza por <code>&gt;</code>.</li>
@@ -405,52 +334,52 @@
           <li>Busca el mensaje rojo que contiene <code>HTTP 404</code>. El enlace azul situado a la derecha indica el archivo y la línea donde se produjo.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> el número <code>4</code> y, después, un mensaje rojo con el código <code>404</code>.</p>
-        <p class="evidence"><strong>Responde:</strong> ¿cuántas filas encontró el comando y qué significa que el mensaje sea rojo?</p>
-        <div class="response-field"><label for="r3">Respuesta del ticket DEV-103</label><textarea class="ticket-response" id="r3" placeholder="El comando encontró… filas. El mensaje rojo indica…"></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
-        <div class="done-row"><input class="done" id="d3" type="checkbox"><label for="d3">Ticket terminado</label></div>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe primero el número de filas y después el código del error, separados por un espacio.</p>
+        <div class="response-field"><label for="r3">Respuesta del ticket DEV-103</label><textarea class="ticket-response" id="r3" placeholder="número número"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d3" type="checkbox"><label for="d3">Respuesta verificada</label></div>
       </div></article>
 
       <article class="ticket" id="t4"><div class="ticket-id">DEV-104</div><div>
         <div class="ticket-head"><h3>Detén JavaScript para mirar sus valores</h3><div class="meta"><span class="tag core">Sources</span><span class="tag">10 min</span></div></div>
         <p class="objective">Aprende qué es un breakpoint: una pausa colocada por ti dentro del programa.</p>
-        <p class="where"><strong>Dónde está:</strong> abre <strong>Sources</strong>. Los archivos aparecen a la izquierda, el código en el centro y las variables a la derecha.</p>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Sources</strong>.</p>
         <ol class="steps">
-          <li>Pulsa <kbd>Ctrl</kbd> + <kbd>P</kbd>, escribe <code>p0101_v2.html</code> y selecciona el archivo.</li>
-          <li>Pulsa <kbd>Ctrl</kbd> + <kbd>F</kbd>, busca <code>total = subtotal</code> y cierra la caja de búsqueda con <kbd>Esc</kbd>.</li>
+          <li>En el lado izquierdo, abre <strong>Page</strong> y selecciona <code>p0101_v2_lab/index.html</code>.</li>
+          <li>Con el archivo abierto en el centro, pulsa <kbd>Ctrl</kbd> + <kbd>F</kbd>, busca <code>total = subtotal</code> y cierra la búsqueda con <kbd>Esc</kbd>.</li>
           <li>Haz clic sobre el número de esa línea. Aparecerá una marca azul: es el breakpoint.</li>
           <li>Pulsa <strong>Recalcular total</strong> en la página. El programa se detendrá y la línea aparecerá resaltada.</li>
-          <li>En la zona derecha abre <strong>Scope</strong> y después <strong>Local</strong>. Busca las variables <code>subtotal</code> y <code>total</code>.</li>
-          <li>Pulsa el botón azul de continuar, con forma de triángulo ▶, situado arriba del código. Si vuelve a detenerse, púlsalo hasta que termine.</li>
+          <li>En la derecha abre <strong>Scope → Local</strong> y busca <code>subtotal</code> y <code>total</code>.</li>
+          <li>Pulsa el triángulo azul ▶ situado sobre el código hasta que el programa termine.</li>
           <li>Haz clic otra vez en el número de línea para quitar el breakpoint.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> el código detenido y los valores numéricos de <code>subtotal</code> y <code>total</code>.</p>
-        <p class="evidence"><strong>Responde:</strong> escribe los dos valores que viste. ¿Crees que <code>total = subtotal</code> suma o sustituye?</p>
-        <div class="response-field"><label for="r4">Respuesta del ticket DEV-104</label><textarea class="ticket-response" id="r4" placeholder="Subtotal valía… y total valía… La instrucción…"></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
-        <div class="done-row"><input class="done" id="d4" type="checkbox"><label for="d4">Ticket terminado</label></div>
+        <p class="evidence"><strong>Respuesta verificable:</strong> indica si <code>total = subtotal</code> <strong>suma</strong> o <strong>sustituye</strong>.</p>
+        <div class="response-field"><label for="r4">Respuesta del ticket DEV-104</label><textarea class="ticket-response" id="r4" placeholder="suma o sustituye"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d4" type="checkbox"><label for="d4">Respuesta verificada</label></div>
       </div></article>
 
       <article class="ticket" id="t5"><div class="ticket-id">DEV-105</div><div>
         <div class="ticket-head"><h3>Observa cómo llegan los datos</h3><div class="meta"><span class="tag core">Network</span><span class="tag">9 min</span></div></div>
         <p class="objective">Distingue una petición que funciona de otra que falla.</p>
-        <p class="where"><strong>Dónde está:</strong> abre <strong>Network</strong>. Las peticiones aparecen en una tabla central; los filtros, como <strong>Fetch/XHR</strong>, están encima.</p>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Network</strong>.</p>
         <ol class="steps">
           <li>Abre <strong>Network</strong> y pulsa el icono de limpiar, un círculo atravesado, situado arriba a la izquierda de la tabla.</li>
           <li>Pulsa el filtro <strong>Fetch/XHR</strong> y después <strong>Sincronizar pedidos</strong>.</li>
-          <li>Haz clic en la fila llamada <code>p0101_v2_data.json</code>.</li>
+          <li>Haz clic en la fila llamada <code>data.json</code>.</li>
           <li>En el panel que se abre, elige <strong>Headers</strong>. Busca <strong>Request Method</strong> y <strong>Status Code</strong>.</li>
           <li>Abre <strong>Response</strong> para ver los datos que llegaron.</li>
-          <li>Pulsa <strong>Provocar error HTTP</strong>. Selecciona la nueva fila <code>p0101_v2_missing.json</code> y comprueba su código.</li>
+          <li>Pulsa <strong>Provocar error HTTP</strong>. Selecciona la nueva fila <code>missing.json</code> y comprueba su código.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> una petición con estado <code>200</code> y otra con estado <code>404</code>.</p>
-        <p class="evidence"><strong>Responde:</strong> ¿qué archivo funcionó, cuál falló y qué código tuvo cada uno?</p>
-        <div class="response-field"><label for="r5">Respuesta del ticket DEV-105</label><textarea class="ticket-response" id="r5" placeholder="El archivo… devolvió… y el archivo… devolvió…"></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
-        <div class="done-row"><input class="done" id="d5" type="checkbox"><label for="d5">Ticket terminado</label></div>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe el código de <code>data.json</code> y el de <code>missing.json</code>, separados por un espacio.</p>
+        <div class="response-field"><label for="r5">Respuesta del ticket DEV-105</label><textarea class="ticket-response" id="r5" placeholder="código código"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d5" type="checkbox"><label for="d5">Respuesta verificada</label></div>
       </div></article>
 
       <article class="ticket" id="t6"><div class="ticket-id">DEV-106</div><div>
         <div class="ticket-head"><h3>Mira la página como si fuera un móvil</h3><div class="meta"><span class="tag core">Device Mode</span><span class="tag">8 min</span></div></div>
         <p class="objective">Comprueba la página con una pantalla estrecha y una conexión más lenta.</p>
-        <p class="where"><strong>Dónde está:</strong> el icono de móvil y tableta está en la esquina superior izquierda de DevTools, junto al selector de elementos.</p>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → icono de móvil y tableta.</p>
         <ol class="steps">
           <li>Pulsa el icono de móvil y tableta. También puedes usar <kbd>Ctrl</kbd> + <kbd>Mayús</kbd> + <kbd>M</kbd>.</li>
           <li>En la barra que aparece sobre la página, elige <strong>Responsive</strong>.</li>
@@ -461,15 +390,15 @@
           <li>Vuelve a seleccionar <strong>No throttling</strong> y desactiva el modo móvil con el mismo icono.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> una página estrecha, desplazamiento horizontal y un tiempo de respuesta medible.</p>
-        <p class="evidence"><strong>Responde:</strong> ¿qué tamaño de pantalla y qué conexión utilizaste? ¿Qué problema viste?</p>
-        <div class="response-field"><label for="r6">Respuesta del ticket DEV-106</label><textarea class="ticket-response" id="r6" placeholder="Usé… píxeles y la conexión… El problema fue…"></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
-        <div class="done-row"><input class="done" id="d6" type="checkbox"><label for="d6">Ticket terminado</label></div>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe el nombre del problema que aparece al usar una pantalla estrecha.</p>
+        <div class="response-field"><label for="r6">Respuesta del ticket DEV-106</label><textarea class="ticket-response" id="r6" placeholder="dos palabras"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d6" type="checkbox"><label for="d6">Respuesta verificada</label></div>
       </div></article>
 
       <article class="ticket" id="t7"><div class="ticket-id">DEV-107</div><div>
         <div class="ticket-head"><h3>Encuentra los datos guardados por la página</h3><div class="meta"><span class="tag core">Application</span><span class="tag">9 min</span></div></div>
         <p class="objective">Localiza un dato en Local Storage, otro en Session Storage y una cookie.</p>
-        <p class="where"><strong>Dónde está:</strong> abre <strong>Application</strong> desde la barra superior o desde <strong>»</strong>. Los almacenes están en la columna izquierda.</p>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Application</strong>.</p>
         <ol class="steps">
           <li>En la columna izquierda, abre <strong>Local Storage</strong> con su pequeño triángulo y pulsa la dirección de esta web.</li>
           <li>En la tabla de la derecha busca la clave <code>opsboard.theme</code>. Su valor inicial es <code>light</code>.</li>
@@ -478,15 +407,15 @@
           <li>Vuelve a <strong>Application</strong>. En <strong>Session Storage</strong> busca <code>opsboard.session</code> y en <strong>Cookies</strong> busca <code>opsboard_lab</code>.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> <code>opsboard.theme → contrast</code>, <code>opsboard.session → training</code> y <code>opsboard_lab → enabled</code>.</p>
-        <p class="evidence"><strong>Responde:</strong> copia las tres parejas de clave y valor e indica en qué apartado estaba cada una.</p>
-        <div class="response-field"><label for="r7">Respuesta del ticket DEV-107</label><textarea class="ticket-response" id="r7" placeholder="Local Storage: … / Session Storage: … / Cookies: …"></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
-        <div class="done-row"><input class="done" id="d7" type="checkbox"><label for="d7">Ticket terminado</label></div>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe los valores de Local Storage, Session Storage y Cookies, en ese orden y separados por espacios.</p>
+        <div class="response-field"><label for="r7">Respuesta del ticket DEV-107</label><textarea class="ticket-response" id="r7" placeholder="valor valor valor"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d7" type="checkbox"><label for="d7">Respuesta verificada</label></div>
       </div></article>
 
       <article class="ticket" id="t8"><div class="ticket-id">DEV-108</div><div>
         <div class="ticket-head"><h3>Comprueba si un botón tiene un nombre claro</h3><div class="meta"><span class="tag core">Accessibility</span><span class="tag">9 min</span></div></div>
         <p class="objective">Entiende que los lectores de pantalla necesitan nombres, no solo iconos.</p>
-        <p class="where"><strong>Dónde está:</strong> selecciona primero un elemento en <strong>Elements</strong>. Después busca <strong>Accessibility</strong> en la zona derecha; puede estar dentro de <strong>»</strong>.</p>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Elements → Accessibility</strong>.</p>
         <ol class="steps">
           <li>Usa el selector de elementos y pulsa el botón que solo muestra una papelera.</li>
           <li>Abre <strong>Accessibility</strong> y busca <strong>Computed Properties</strong>.</li>
@@ -496,15 +425,15 @@
           <li>Selecciona el texto gris que hay bajo el buscador. En <strong>Styles</strong>, pulsa el pequeño cuadrado de su propiedad <code>color</code> y observa el aviso de contraste.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> el botón pasa de no tener nombre a tener el nombre que has añadido.</p>
-        <p class="evidence"><strong>Responde:</strong> ¿por qué un botón con un dibujo necesita también un nombre accesible?</p>
-        <div class="response-field"><label for="r8">Respuesta del ticket DEV-108</label><textarea class="ticket-response" id="r8" placeholder="Necesita un nombre porque…"></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
-        <div class="done-row"><input class="done" id="d8" type="checkbox"><label for="d8">Ticket terminado</label></div>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe el nombre accesible que añadiste al botón.</p>
+        <div class="response-field"><label for="r8">Respuesta del ticket DEV-108</label><textarea class="ticket-response" id="r8" placeholder="Nombre accesible exacto"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d8" type="checkbox"><label for="d8">Respuesta verificada</label></div>
       </div></article>
 
       <article class="ticket" id="t9"><div class="ticket-id">DEV-109</div><div>
         <div class="ticket-head"><h3>Graba una tarea que bloquea la página</h3><div class="meta"><span class="tag core">Performance</span><span class="tag">10 min</span></div></div>
         <p class="objective">Observa qué ocurre cuando JavaScript mantiene ocupado el navegador demasiado tiempo.</p>
-        <p class="where"><strong>Dónde está:</strong> abre <strong>Performance</strong> desde la barra superior o desde <strong>»</strong>. El botón redondo de grabación está arriba a la izquierda.</p>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Performance</strong>.</p>
         <ol class="steps">
           <li>Pulsa el botón redondo <strong>Record</strong> para iniciar la grabación.</li>
           <li>En la página, pulsa <strong>Ejecutar tarea lenta</strong>. Durante medio segundo la página responderá peor.</li>
@@ -513,15 +442,15 @@
           <li>Haz clic en ese bloque. En la información inferior busca el nombre <code>ejecutarTareaLenta</code> y una duración cercana a 550 ms.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> una tarea larga de aproximadamente medio segundo.</p>
-        <p class="evidence"><strong>Responde:</strong> ¿cómo se llamaba la función y cuánto tiempo ocupó aproximadamente?</p>
-        <div class="response-field"><label for="r9">Respuesta del ticket DEV-109</label><textarea class="ticket-response" id="r9" placeholder="La función se llamaba… y duró aproximadamente…"></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
-        <div class="done-row"><input class="done" id="d9" type="checkbox"><label for="d9">Ticket terminado</label></div>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe únicamente el nombre de la función que produjo la tarea larga.</p>
+        <div class="response-field"><label for="r9">Respuesta del ticket DEV-109</label><textarea class="ticket-response" id="r9" placeholder="Nombre de la función"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d9" type="checkbox"><label for="d9">Respuesta verificada</label></div>
       </div></article>
 
       <article class="ticket" id="t10"><div class="ticket-id">DEV-110</div><div>
         <div class="ticket-head"><h3>Observa cómo aumenta la memoria</h3><div class="meta"><span class="tag core">Memory</span><span class="tag">10 min</span></div></div>
         <p class="objective">Comprueba que guardar objetos sin liberarlos hace crecer la memoria usada.</p>
-        <p class="where"><strong>Dónde está:</strong> abre <strong>Memory</strong> desde <strong>»</strong>. Si no aparece, usa el menú de tres puntos ⋮, <strong>More tools → Memory</strong>.</p>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>» → Memory</strong>.</p>
         <ol class="steps">
           <li>En Memory elige <strong>Heap snapshot</strong> y pulsa <strong>Take snapshot</strong>.</li>
           <li>Espera a que aparezca <strong>Snapshot 1</strong> en la columna izquierda.</li>
@@ -531,33 +460,33 @@
           <li>Abre Console, escribe <code>window.devtoolsLab.retenciones.length</code> y pulsa <kbd>Enter</kbd>.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> el número <code>3</code> en Console y una segunda instantánea de memoria.</p>
-        <p class="evidence"><strong>Responde:</strong> ¿cuántos objetos quedaron guardados y qué instantánea ocupaba más?</p>
-        <div class="response-field"><label for="r10">Respuesta del ticket DEV-110</label><textarea class="ticket-response" id="r10" placeholder="Quedaron… objetos. La instantánea… ocupaba más."></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
-        <div class="done-row"><input class="done" id="d10" type="checkbox"><label for="d10">Ticket terminado</label></div>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe el número devuelto por Console.</p>
+        <div class="response-field"><label for="r10">Respuesta del ticket DEV-110</label><textarea class="ticket-response" id="r10" placeholder="número"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d10" type="checkbox"><label for="d10">Respuesta verificada</label></div>
       </div></article>
 
       <article class="ticket" id="t11"><div class="ticket-id">DEV-111</div><div>
         <div class="ticket-head"><h3>Explora la parte PWA de la aplicación</h3><div class="meta"><span class="tag core">Application</span><span class="tag">10 min</span></div></div>
         <p class="objective">Encuentra el manifiesto, el Service Worker y los archivos guardados en caché.</p>
-        <p class="where"><strong>Dónde está:</strong> abre <strong>Application</strong>. Usa su columna izquierda para elegir <strong>Manifest</strong>, <strong>Service Workers</strong> y <strong>Cache Storage</strong>.</p>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Application</strong>.</p>
         <ol class="steps">
           <li>Pulsa <strong>Manifest</strong>. Busca <strong>App name</strong> y <strong>Start URL</strong>.</li>
-          <li>Pulsa <strong>Service Workers</strong>. Busca <code>p0101_v2_sw.js</code> y comprueba que su estado sea <em>activated</em> o <em>running</em>.</li>
+          <li>Pulsa <strong>Service Workers</strong>. Busca <code>sw.js</code> y comprueba que su estado sea <em>activated</em> o <em>running</em>.</li>
           <li>Abre <strong>Cache Storage</strong> con su triángulo y selecciona la caché que comienza por <code>opsboard-lab-</code>.</li>
           <li>En la tabla de la derecha deben aparecer el HTML, el JSON y el manifiesto.</li>
           <li>Vuelve a <strong>Service Workers</strong> y marca <strong>Offline</strong>. Pulsa <strong>Sincronizar pedidos</strong> y observa el mensaje de red.</li>
           <li>Desmarca <strong>Offline</strong> al terminar para recuperar la conexión normal.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> un Service Worker activo, tres recursos principales en caché y un error de red durante la prueba offline.</p>
-        <p class="evidence"><strong>Responde:</strong> escribe el nombre del Service Worker y los tres archivos que encontraste en la caché.</p>
-        <div class="response-field"><label for="r11">Respuesta del ticket DEV-111</label><textarea class="ticket-response" id="r11" placeholder="El Service Worker era… y la caché contenía…"></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
-        <div class="done-row"><input class="done" id="d11" type="checkbox"><label for="d11">Ticket terminado</label></div>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe únicamente el nombre del archivo del Service Worker.</p>
+        <div class="response-field"><label for="r11">Respuesta del ticket DEV-111</label><textarea class="ticket-response" id="r11" placeholder="archivo.js"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d11" type="checkbox"><label for="d11">Respuesta verificada</label></div>
       </div></article>
 
       <article class="ticket" id="t12"><div class="ticket-id">DEV-112</div><div>
         <div class="ticket-head"><h3>Pide a Lighthouse una revisión automática</h3><div class="meta"><span class="tag core">Lighthouse</span><span class="tag">10 min</span></div></div>
         <p class="objective">Obtén cuatro puntuaciones y lee una recomendación sencilla.</p>
-        <p class="where"><strong>Dónde está:</strong> abre <strong>Lighthouse</strong> desde <strong>»</strong>. Si no aparece, usa ⋮, <strong>More tools → Lighthouse</strong>.</p>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>» → Lighthouse</strong>.</p>
         <ol class="steps">
           <li>En <strong>Mode</strong> elige <strong>Navigation</strong> y en <strong>Device</strong> elige <strong>Mobile</strong>.</li>
           <li>Marca las categorías <strong>Performance</strong>, <strong>Accessibility</strong>, <strong>Best Practices</strong> y <strong>SEO</strong>.</li>
@@ -566,9 +495,9 @@
           <li>Busca una recomendación marcada en naranja o rojo, ábrela y lee su explicación.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> cuatro puntuaciones y una lista de recomendaciones.</p>
-        <p class="evidence"><strong>Responde:</strong> copia las cuatro puntuaciones y resume una recomendación con tus palabras.</p>
-        <div class="response-field"><label for="r12">Respuesta del ticket DEV-112</label><textarea class="ticket-response" id="r12" placeholder="Performance: … / Accessibility: … / Best Practices: … / SEO: …"></textarea><small class="response-help">Se guarda automáticamente en este navegador.</small></div>
-        <div class="done-row"><input class="done" id="d12" type="checkbox"><label for="d12">Ticket terminado</label></div>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe cuántas categorías has marcado antes de iniciar el análisis.</p>
+        <div class="response-field"><label for="r12">Respuesta del ticket DEV-112</label><textarea class="ticket-response" id="r12" placeholder="número"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d12" type="checkbox"><label for="d12">Respuesta verificada</label></div>
       </div></article>
     </section>
 
@@ -600,7 +529,8 @@
 
     <section class="panel delivery" id="entrega">
       <h2>Informe final</h2>
-      <p>El generador reúne automáticamente las respuestas de los 12 tickets. Solo tienes que añadir un resumen y las mejoras que propondrías.</p>
+      <p>El generador reúne las 13 respuestas comprobadas. Se habilitará cuando todas sean correctas.</p>
+      <p class="note" id="verification-summary">0 de 13 respuestas verificadas.</p>
       <div class="delivery-grid">
         <form id="report-form">
           <label for="student-id">Nombre, alias o equipo</label>
@@ -616,7 +546,7 @@
           <textarea id="recommendations" name="recommendations" maxlength="1200" required placeholder="Cambiaría… porque…"></textarea>
 
           <div class="form-actions">
-            <button type="submit">Generar informe</button>
+            <button id="generate-report" type="submit" disabled>Generar informe</button>
             <button class="secondary" id="download-report" type="button" disabled>Descargar TXT</button>
           </div>
         </form>
@@ -631,7 +561,7 @@
       <h2>Cómo se evaluará</h2>
       <ul>
         <li><strong>40 % Pasos:</strong> has seguido las instrucciones y encontrado el resultado indicado.</li>
-        <li><strong>30 % Respuestas:</strong> explicas con tus palabras lo que has observado.</li>
+        <li><strong>30 % Respuestas:</strong> las 13 respuestas superan la comprobación automática.</li>
         <li><strong>20 % Informe:</strong> incluye las respuestas y una mejora razonable.</li>
         <li><strong>10 % Seguridad:</strong> no muestras información personal ni ejecutas código desconocido.</li>
       </ul>
@@ -643,7 +573,7 @@
     <p>Práctica guiada de DWEC. Los fallos del panel son intencionados y están preparados para aprender DevTools desde cero.</p>
   </footer>
 
-  <script>
+  <script type="text/plain" id="legacy-script-disabled">
     'use strict';
 
     window.devtoolsLab = {
@@ -928,6 +858,199 @@
         URL.revokeObjectURL(url);
       });
     })();
+  </script>
+  <script>
+    'use strict';
+
+    (() => {
+      const responses = [...document.querySelectorAll('.ticket-response')];
+      const boxes = [...document.querySelectorAll('.done')];
+      const incident = document.querySelector('#incident-done');
+      const progressBar = document.querySelector('#progress-bar');
+      const progressText = document.querySelector('#progress-text');
+      const verificationSummary = document.querySelector('#verification-summary');
+      const generateButton = document.querySelector('#generate-report');
+      const responseKey = 'devtools-cfgs-v3-responses';
+      const incidentKey = 'devtools-cfgs-v3-incident';
+
+      function read(key, fallback) {
+        try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
+        catch (_) { return fallback; }
+      }
+
+      function normalize(value) {
+        return value.trim().toLowerCase().normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[<>]/g, '')
+          .replace(/[;,/|]+/g, ' ')
+          .replace(/\s+/g, ' ');
+      }
+
+      function numbers(value) {
+        return value.match(/\d+/g) || [];
+      }
+
+      const rules = {
+        r0: value => normalize(value) === 'span',
+        r1: value => normalize(value) === 'metric highlight',
+        r2: value => normalize(value) === 'padding',
+        r3: value => JSON.stringify(numbers(value)) === JSON.stringify(['4', '404']),
+        r4: value => ['sustituye', 'reemplaza'].includes(normalize(value)),
+        r5: value => JSON.stringify(numbers(value)) === JSON.stringify(['200', '404']),
+        r6: value => ['desbordamiento horizontal', 'overflow horizontal'].includes(normalize(value)),
+        r7: value => normalize(value) === 'contrast training enabled',
+        r8: value => normalize(value) === 'eliminar ultimo pedido',
+        r9: value => normalize(value).replace(/[^a-z0-9]/g, '') === 'ejecutartarealenta',
+        r10: value => normalize(value) === '3',
+        r11: value => normalize(value) === 'sw.js',
+        r12: value => normalize(value) === '4'
+      };
+
+      function saveResponses() {
+        const state = Object.fromEntries(responses.map(field => [field.id, field.value]));
+        localStorage.setItem(responseKey, JSON.stringify(state));
+      }
+
+      function renderProgress() {
+        const completed = boxes.filter(box => box.checked).length;
+        const total = boxes.length;
+        progressBar.style.width = `${completed / total * 100}%`;
+        progressText.textContent = `${completed} de ${total} respuestas verificadas`;
+        verificationSummary.textContent = completed === total
+          ? 'Las 13 respuestas están verificadas. Ya puedes generar el informe.'
+          : `${completed} de ${total} respuestas verificadas. Corrige las pendientes para habilitar el informe.`;
+        generateButton.disabled = completed !== total;
+      }
+
+      function validate(field, showError = true) {
+        const correct = Boolean(rules[field.id]?.(field.value));
+        const box = document.querySelector(`#d${field.id.slice(1)}`);
+        const feedback = document.querySelector(`#feedback-${field.id}`);
+        box.checked = correct;
+        feedback.className = `answer-feedback ${correct ? 'correct' : (showError ? 'incorrect' : '')}`;
+        feedback.textContent = correct ? 'Correcto. Respuesta verificada.' : (showError ? 'Todavía no. Revisa los pasos y vuelve a intentarlo.' : '');
+        renderProgress();
+        return correct;
+      }
+
+      const previousResponses = read('devtools-cfgs-v2-responses', {});
+      const savedResponses = read(responseKey, previousResponses);
+      if (!localStorage.getItem(responseKey)) {
+        localStorage.setItem(responseKey, JSON.stringify(savedResponses));
+      }
+      localStorage.removeItem('devtools-cfgs-v2-responses');
+      boxes.forEach(box => {
+        box.disabled = true;
+        box.checked = false;
+      });
+      responses.forEach(field => {
+        field.value = savedResponses[field.id] || '';
+        const actions = document.createElement('div');
+        actions.className = 'response-actions';
+        const button = document.createElement('button');
+        button.className = 'check-answer';
+        button.type = 'button';
+        button.textContent = 'Comprobar respuesta';
+        const feedback = document.createElement('output');
+        feedback.id = `feedback-${field.id}`;
+        feedback.className = 'answer-feedback';
+        feedback.setAttribute('aria-live', 'polite');
+        actions.append(button, feedback);
+        field.closest('.response-field').append(actions);
+        field.addEventListener('input', () => {
+          saveResponses();
+          validate(field, false);
+        });
+        button.addEventListener('click', () => validate(field, true));
+        validate(field, false);
+      });
+
+      incident.checked = read(incidentKey, false);
+      incident.addEventListener('change', () => {
+        localStorage.setItem(incidentKey, JSON.stringify(incident.checked));
+      });
+
+      document.querySelector('#reset-progress').addEventListener('click', () => {
+        responses.forEach(field => { field.value = ''; });
+        boxes.forEach(box => { box.checked = false; });
+        document.querySelectorAll('.answer-feedback').forEach(item => {
+          item.textContent = '';
+          item.className = 'answer-feedback';
+        });
+        incident.checked = false;
+        localStorage.removeItem(responseKey);
+        localStorage.removeItem(incidentKey);
+        renderProgress();
+      });
+
+      renderProgress();
+    })();
+
+    (() => {
+      const form = document.querySelector('#report-form');
+      const preview = document.querySelector('#report-preview');
+      const download = document.querySelector('#download-report');
+      let report = '';
+
+      function filePart(value) {
+        return value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'equipo';
+      }
+
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const boxes = [...document.querySelectorAll('.done')];
+        if (!boxes.every(box => box.checked)) return;
+        const student = document.querySelector('#student-id').value.trim();
+        const priority = document.querySelector('#priority').value;
+        const findings = document.querySelector('#findings').value.trim();
+        const recommendations = document.querySelector('#recommendations').value.trim();
+        const ticketResponses = [...document.querySelectorAll('.ticket')].map(ticket => {
+          const id = ticket.querySelector('.ticket-id').textContent.trim();
+          const title = ticket.querySelector('h3').textContent.trim();
+          const answer = ticket.querySelector('.ticket-response').value.trim();
+          return `${id} · ${title}\nRespuesta: ${answer}\nEstado: VERIFICADA`;
+        }).join('\n\n');
+        report = [
+          'INFORME DEL LABORATORIO · CHROME DEVTOOLS',
+          '==========================================',
+          `Autoría: ${student}`,
+          `Fecha: ${new Date().toLocaleString('es-ES')}`,
+          `Importancia del problema principal: ${priority}`,
+          `Respuestas verificadas: ${boxes.length} de ${boxes.length}`,
+          '',
+          'RESPUESTAS DE LOS TICKETS', ticketResponses,
+          '',
+          'LO QUE HE DESCUBIERTO', findings,
+          '',
+          'MEJORAS QUE PROPONGO', recommendations,
+          '',
+          'Nota: todas las respuestas de los tickets superaron la comprobación automática.'
+        ].join('\n');
+        preview.textContent = report;
+        download.disabled = false;
+        download.dataset.filename = `laboratorio-devtools-${filePart(student)}.txt`;
+      });
+
+      download.addEventListener('click', () => {
+        if (!report) return;
+        const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = download.dataset.filename || 'laboratorio-devtools.txt';
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+    })();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations
+          .filter(registration => registration.active?.scriptURL.endsWith('/p0101_v2_sw.js'))
+          .forEach(registration => registration.unregister());
+      });
+    }
   </script>
 </body>
 </html>
