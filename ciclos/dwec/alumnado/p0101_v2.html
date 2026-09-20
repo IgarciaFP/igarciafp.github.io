@@ -468,17 +468,20 @@
 
       <article class="ticket" id="t11"><div class="ticket-id">DEV-111</div><div>
         <div class="ticket-head"><h3>Explora la parte PWA de la aplicación</h3><div class="meta"><span class="tag core">Application</span><span class="tag">10 min</span></div></div>
-        <p class="objective">Encuentra el manifiesto, el Service Worker y los archivos guardados en caché.</p>
+        <p class="objective">Encuentra el Service Worker y comprueba que permite usar los datos guardados aunque no haya conexión.</p>
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Application</strong>.</p>
         <ol class="steps">
-          <li>Pulsa <strong>Manifest</strong>. Busca <strong>App name</strong> y <strong>Start URL</strong>.</li>
-          <li>Pulsa <strong>Service Workers</strong>. Busca <code>sw.js</code> y comprueba que su estado sea <em>activated</em> o <em>running</em>.</li>
-          <li>Abre <strong>Cache Storage</strong> con su triángulo y selecciona la caché que comienza por <code>opsboard-lab-</code>.</li>
-          <li>En la tabla de la derecha deben aparecer el HTML, el JSON y el manifiesto.</li>
-          <li>Vuelve a <strong>Service Workers</strong> y marca <strong>Offline</strong>. Pulsa <strong>Sincronizar pedidos</strong> y observa el mensaje de red.</li>
+          <li>Actualiza la página de prácticas y espera hasta que, en la propia página, aparezca <strong>Service Worker: activo</strong>.</li>
+          <li>Abre <strong>Application</strong>. En la columna izquierda, dentro del apartado <strong>Application</strong>, pulsa <strong>Manifest</strong>. En el panel central aparecerán <strong>App name</strong> y <strong>Start URL</strong>.</li>
+          <li>En esa misma columna izquierda, pulsa <strong>Service workers</strong>. Si no lo ves, desplázate hasta la parte superior de la columna.</li>
+          <li>En el panel central busca <strong>Source</strong>: el enlace debe terminar en <code>sw.js</code>. Junto a <strong>Status</strong> debe aparecer <em>activated</em> o <em>running</em>.</li>
+          <li>Vuelve a la columna izquierda y baja hasta <strong>Cache Storage</strong>. Pulsa el triángulo situado a su izquierda y después pulsa la caché <code>opsboard-lab-v4</code>.</li>
+          <li>En la tabla central, mira la columna <strong>Request</strong>. Debes encontrar tres direcciones terminadas en <code>index.html</code>, <code>data.json</code> y <code>manifest.webmanifest</code>.</li>
+          <li>Regresa a <strong>Service workers</strong> y marca la casilla <strong>Offline</strong>. Sin cerrar DevTools, pulsa <strong>Sincronizar pedidos</strong> en la página.</li>
+          <li>Aunque has desconectado la red, deben aparecer los cuatro pedidos y el indicador <strong>Red: 200</strong>: el Service Worker ha entregado <code>data.json</code> desde la caché.</li>
           <li>Desmarca <strong>Offline</strong> al terminar para recuperar la conexión normal.</li>
         </ol>
-        <p class="expected"><strong>Debes ver:</strong> un Service Worker activo, tres recursos principales en caché y un error de red durante la prueba offline.</p>
+        <p class="expected"><strong>Debes ver:</strong> <code>sw.js</code> activo, tres recursos en <strong>Cache Storage</strong> y cuatro pedidos cargados mientras <strong>Offline</strong> está marcado.</p>
         <p class="evidence"><strong>Respuesta verificable:</strong> escribe únicamente el nombre del archivo del Service Worker.</p>
         <div class="response-field"><label for="r11">Respuesta del ticket DEV-111</label><textarea class="ticket-response" id="r11" placeholder="archivo.js"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
         <div class="done-row"><input class="done" id="d11" type="checkbox"><label for="d11">Respuesta verificada</label></div>
