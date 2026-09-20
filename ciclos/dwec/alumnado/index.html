@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Primera sección de una ruta práctica para aprender HTML5: la estructura básica de un documento y el inicio de un proyecto web.">
+  <title>HTML5 · 01 El esqueleto de una página</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --white: #ffffff;
+      --ink: #15171c;
+      --muted: #626875;
+      --line: #dfe3ea;
+      --soft: #f6f7f9;
+      --blue: #2457f5;
+      --blue-dark: #1739a8;
+      --blue-soft: #edf2ff;
+      --green: #087857;
+      --green-soft: #e9f8f2;
+      --amber: #9a5b00;
+      --amber-soft: #fff7e4;
+      --red: #b3263c;
+      --red-soft: #fff0f2;
+      --code: #111827;
+      --radius: 20px;
+      --shadow: 0 18px 55px rgba(22, 31, 55, .09);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--white);
+      color: var(--ink);
+      font: 16px/1.65 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, input { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: var(--blue-dark); }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    code:not(pre code) {
+      padding: .14rem .38rem;
+      border: 1px solid #e1e5ed;
+      border-radius: .38rem;
+      background: var(--soft);
+      color: #8b2442;
+      font-size: .92em;
+    }
+    :focus-visible { outline: 3px solid #8aa7ff; outline-offset: 3px; }
+
+    .wrap { width: min(1120px, calc(100% - 2rem)); margin-inline: auto; }
+    .skip-link {
+      position: fixed;
+      top: .75rem;
+      left: -999px;
+      z-index: 100;
+      padding: .65rem 1rem;
+      border-radius: 10px;
+      background: var(--ink);
+      color: var(--white);
+    }
+    .skip-link:focus { left: .75rem; }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(223, 227, 234, .86);
+      background: rgba(255, 255, 255, .94);
+      backdrop-filter: blur(14px);
+    }
+    .topbar {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 850;
+      letter-spacing: -.02em;
+    }
+    .brand-mark {
+      display: grid;
+      width: 38px;
+      aspect-ratio: 1;
+      place-items: center;
+      border-radius: 11px;
+      background: var(--ink);
+      color: var(--white);
+      font: 800 .9rem/1 monospace;
+    }
+    .course-progress { display: flex; align-items: center; gap: .7rem; color: var(--muted); font-size: .9rem; }
+    .course-progress strong { color: var(--ink); }
+    .mini-track { width: 94px; height: 6px; overflow: hidden; border-radius: 99px; background: #e8ebf1; }
+    .mini-track span { display: block; width: 12.5%; height: 100%; border-radius: inherit; background: var(--blue); }
+
+    main { overflow: hidden; }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) minmax(360px, .94fr);
+      gap: clamp(2rem, 6vw, 5rem);
+      align-items: center;
+      min-height: 610px;
+      padding-block: clamp(4rem, 9vw, 7.5rem) 4rem;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      margin: 0 0 1rem;
+      color: var(--blue-dark);
+      font-weight: 850;
+      font-size: .8rem;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 28px; height: 2px; background: var(--blue); }
+    h1, h2, h3 { line-height: 1.12; letter-spacing: -.035em; }
+    h1 { max-width: 760px; margin: 0; font-size: clamp(3rem, 7vw, 6.15rem); }
+    h1 em { color: var(--blue); font-style: normal; }
+    .lede { max-width: 610px; margin: 1.45rem 0; color: var(--muted); font-size: clamp(1.08rem, 2vw, 1.28rem); }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: .55rem; margin: 0; padding: 0; list-style: none; }
+    .hero-meta li { padding: .42rem .72rem; border: 1px solid var(--line); border-radius: 999px; background: var(--white); font-size: .88rem; font-weight: 750; }
+
+    .browser {
+      overflow: hidden;
+      border: 1px solid #cfd5df;
+      border-radius: 22px;
+      background: var(--white);
+      box-shadow: 0 28px 80px rgba(25, 38, 77, .16);
+      transform: rotate(1.3deg);
+    }
+    .browser-bar { display: flex; align-items: center; gap: .8rem; padding: .75rem .9rem; border-bottom: 1px solid var(--line); background: #f4f5f7; }
+    .browser-dots { display: flex; gap: 5px; }
+    .browser-dots span { width: 9px; height: 9px; border-radius: 50%; background: #c9ced7; }
+    .address { flex: 1; padding: .35rem .7rem; border: 1px solid #d9dde5; border-radius: 7px; background: var(--white); color: #767d8a; font-size: .72rem; }
+    .browser-page { min-height: 300px; padding: clamp(2rem, 7vw, 4.5rem) clamp(1.4rem, 5vw, 3rem); }
+    .browser-label { margin: 0 0 1rem; color: var(--blue); font-size: .7rem; font-weight: 850; letter-spacing: .14em; text-transform: uppercase; }
+    .browser-page h2 { max-width: 360px; margin: 0 0 .7rem; font-size: clamp(2rem, 4vw, 3.25rem); }
+    .browser-page p { max-width: 360px; margin: 0; color: var(--muted); }
+    .cursor { display: inline-block; width: 3px; height: .9em; margin-left: 3px; background: var(--blue); vertical-align: -.04em; animation: blink 1.05s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .project-strip { border-block: 1px solid var(--line); background: var(--soft); }
+    .project-strip .wrap { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center; padding-block: 1.15rem; }
+    .project-icon { display: grid; width: 42px; aspect-ratio: 1; place-items: center; border-radius: 50%; background: var(--blue); color: var(--white); font-weight: 900; }
+    .project-strip p { margin: 0; color: var(--muted); }
+    .project-strip strong { color: var(--ink); }
+    .project-step { color: var(--blue-dark); font-size: .82rem; font-weight: 850; text-transform: uppercase; letter-spacing: .08em; white-space: nowrap; }
+
+    .section { padding-block: clamp(4.5rem, 9vw, 7rem); }
+    .section + .section { border-top: 1px solid var(--line); }
+    .section-head { display: grid; grid-template-columns: 76px minmax(0, 720px); gap: 1rem; align-items: start; margin-bottom: 2.2rem; }
+    .section-number { color: var(--blue); font-size: .88rem; font-weight: 900; letter-spacing: .12em; }
+    .section-head h2 { margin: -.3rem 0 .7rem; font-size: clamp(2rem, 4.5vw, 3.4rem); }
+    .section-head p { margin: 0; color: var(--muted); font-size: 1.08rem; }
+
+    .objectives { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+    .objective { min-height: 170px; padding: 1.4rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); }
+    .objective span { display: grid; width: 36px; aspect-ratio: 1; place-items: center; margin-bottom: 1.3rem; border-radius: 10px; background: var(--blue-soft); color: var(--blue-dark); font-weight: 900; }
+    .objective h3 { margin: 0 0 .45rem; font-size: 1.08rem; }
+    .objective p { margin: 0; color: var(--muted); font-size: .94rem; }
+
+    .anatomy { padding: clamp(1rem, 2vw, 1.4rem); border: 1px solid var(--line); border-radius: 26px; background: var(--soft); }
+    .anatomy-grid { display: grid; grid-template-columns: minmax(420px, 1.12fr) minmax(300px, .88fr); gap: 1rem; }
+    .code-window, .explanation { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: var(--white); }
+    .window-title { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 50px; padding: .6rem 1rem; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .82rem; }
+    .file-name { display: flex; align-items: center; gap: .55rem; color: var(--ink); font-weight: 800; }
+    .file-icon { color: #e34f26; font-size: .72rem; font-weight: 950; }
+    .code-lines { margin: 0; padding: .8rem 0 1rem; overflow-x: auto; background: var(--code); color: #e8edf8; }
+    .code-line {
+      width: 100%;
+      min-width: 540px;
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: .7rem;
+      align-items: center;
+      padding: .22rem 1rem .22rem 0;
+      border: 0;
+      border-left: 3px solid transparent;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+    .code-line:hover { background: #1a2435; }
+    .code-line[aria-pressed="true"] { border-left-color: #7aa2ff; background: #202b3f; }
+    .line-number { color: #667085; text-align: right; user-select: none; }
+    .line-code { white-space: pre; font: .86rem/1.55 "SFMono-Regular", Consolas, monospace; }
+    .tag { color: #7dd3fc; }
+    .attr { color: #fde68a; }
+    .value { color: #86efac; }
+    .text-token { color: #f1f5f9; }
+    .doctype { color: #c4b5fd; }
+    .explanation { display: flex; flex-direction: column; min-height: 480px; }
+    .explanation-body { display: flex; flex: 1; flex-direction: column; padding: clamp(1.5rem, 4vw, 2.2rem); }
+    .concept-type { align-self: flex-start; margin: 0 0 1rem; padding: .28rem .6rem; border-radius: 999px; background: var(--blue-soft); color: var(--blue-dark); font-size: .75rem; font-weight: 850; text-transform: uppercase; letter-spacing: .08em; }
+    .explanation h3 { margin: 0 0 .8rem; font-size: clamp(1.55rem, 3vw, 2.25rem); }
+    .explanation p { margin: 0 0 1rem; color: var(--muted); }
+    .explanation .why { margin-top: auto; padding: 1rem; border-radius: 13px; background: var(--soft); color: var(--ink); font-size: .92rem; }
+    .why strong { display: block; margin-bottom: .2rem; color: var(--blue-dark); }
+    .click-hint { margin: .8rem .4rem 0; color: var(--muted); font-size: .84rem; text-align: center; }
+
+    .vocabulary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.2rem; }
+    .vocabulary article { padding: 1.15rem 1.2rem; border-top: 3px solid var(--blue); border-radius: 4px 4px 14px 14px; background: var(--white); box-shadow: 0 8px 30px rgba(22, 31, 55, .07); }
+    .vocabulary h3 { margin: 0 0 .35rem; font-size: 1rem; }
+    .vocabulary p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .compare-card { overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); }
+    .compare-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.2rem; border-bottom: 1px solid var(--line); }
+    .compare-top strong { font-size: 1.05rem; }
+    .compare-top span { color: var(--muted); font-size: .82rem; }
+    .tab-demo { padding: 1.7rem 1.2rem; background: var(--soft); }
+    .fake-tab { width: min(260px, 90%); padding: .65rem .9rem; border: 1px solid var(--line); border-bottom-color: var(--white); border-radius: 10px 10px 0 0; background: var(--white); font-size: .84rem; box-shadow: 0 6px 20px rgba(22, 31, 55, .07); }
+    .page-demo { padding: 2rem 1.5rem; }
+    .page-demo h3 { margin: 0 0 .4rem; font-size: 2rem; }
+    .page-demo p { margin: 0; color: var(--muted); }
+    .compare-note { padding: 1rem 1.2rem; color: var(--muted); font-size: .92rem; }
+
+    .rules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.2rem; }
+    .rule { padding: 1.3rem; border: 1px solid var(--line); border-radius: var(--radius); }
+    .rule-number { color: var(--blue); font-weight: 900; }
+    .rule h3 { margin: .4rem 0 .5rem; font-size: 1.1rem; }
+    .rule p { margin: 0 0 .8rem; color: var(--muted); font-size: .92rem; }
+    .mini-code { display: block; padding: .7rem .8rem; overflow-x: auto; border-radius: 10px; background: var(--code); color: #e8edf8; font-size: .8rem; white-space: pre; }
+    .correct { color: #86efac; }
+    .incorrect { color: #fda4af; text-decoration: line-through; }
+
+    .exercise-section { background: var(--soft); }
+    .exercise-shell { overflow: hidden; border: 1px solid #cdd7f7; border-radius: 28px; background: var(--white); box-shadow: var(--shadow); }
+    .exercise-hero { display: grid; grid-template-columns: 1fr auto; gap: 2rem; padding: clamp(1.6rem, 5vw, 3rem); border-bottom: 1px solid var(--line); background: linear-gradient(135deg, #ffffff 50%, #edf2ff); }
+    .exercise-kicker { margin: 0 0 .7rem; color: var(--blue-dark); font-weight: 900; font-size: .78rem; letter-spacing: .11em; text-transform: uppercase; }
+    .exercise-hero h2 { max-width: 720px; margin: 0 0 .8rem; font-size: clamp(2rem, 4.5vw, 3.5rem); }
+    .exercise-hero p { max-width: 650px; margin: 0; color: var(--muted); }
+    .time-card { align-self: center; min-width: 130px; padding: 1rem; border: 1px solid #ccd8ff; border-radius: 16px; background: var(--white); text-align: center; }
+    .time-card strong { display: block; color: var(--blue); font-size: 1.7rem; line-height: 1; }
+    .time-card span { color: var(--muted); font-size: .78rem; }
+    .exercise-body { display: grid; grid-template-columns: minmax(0, .8fr) minmax(420px, 1.2fr); gap: clamp(1.6rem, 5vw, 3.5rem); padding: clamp(1.4rem, 5vw, 3rem); }
+    .brief { margin: 0 0 1.4rem; padding: 1rem 1.1rem; border-left: 4px solid var(--blue); background: var(--blue-soft); }
+    .steps { margin: 0; padding: 0; list-style: none; counter-reset: steps; }
+    .steps li { position: relative; padding: 0 0 1.35rem 2.9rem; counter-increment: steps; }
+    .steps li::before { content: counter(steps, decimal-leading-zero); position: absolute; top: -.05rem; left: 0; color: var(--blue); font-weight: 900; font-size: .82rem; }
+    .steps li:not(:last-child)::after { content: ""; position: absolute; top: 1.35rem; bottom: .35rem; left: .72rem; width: 1px; background: var(--line); }
+    .steps strong { display: block; margin-bottom: .18rem; }
+    .steps p { margin: 0; color: var(--muted); font-size: .92rem; }
+
+    .starter { overflow: hidden; border-radius: 18px; background: var(--code); box-shadow: 0 15px 35px rgba(17, 24, 39, .18); }
+    .starter-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .7rem .9rem; border-bottom: 1px solid #334155; color: #cbd5e1; font-size: .8rem; }
+    .copy-button { padding: .38rem .7rem; border: 1px solid #64748b; border-radius: 8px; background: #202a3a; color: var(--white); font-size: .78rem; font-weight: 800; cursor: pointer; }
+    .copy-button:hover { background: #2d3a50; }
+    .copy-button.copied { border-color: #5eead4; background: #0f766e; }
+    .starter pre { max-height: 500px; margin: 0; padding: 1.2rem; overflow: auto; color: #e8edf8; font-size: .82rem; line-height: 1.65; tab-size: 2; }
+    .todo { color: #fde68a; }
+
+    .check-area { padding: clamp(1.4rem, 5vw, 3rem); border-top: 1px solid var(--line); }
+    .check-head { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+    .check-head h3 { margin: 0 0 .3rem; font-size: 1.5rem; }
+    .check-head p { margin: 0; color: var(--muted); }
+    .check-count { color: var(--blue-dark); font-weight: 900; white-space: nowrap; }
+    .check-track { height: 8px; margin-bottom: 1.3rem; overflow: hidden; border-radius: 99px; background: #e8ebf1; }
+    .check-track span { display: block; width: 0; height: 100%; border-radius: inherit; background: var(--blue); transition: width .25s ease; }
+    .checklist { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; margin: 0; padding: 0; list-style: none; }
+    .checklist label { display: flex; align-items: flex-start; gap: .75rem; height: 100%; padding: 1rem; border: 1px solid var(--line); border-radius: 13px; cursor: pointer; }
+    .checklist label:hover { border-color: #afc0f8; background: #fafbff; }
+    .checklist input { flex: 0 0 auto; width: 1.18rem; height: 1.18rem; margin-top: .18rem; accent-color: var(--blue); }
+    .completion { display: none; margin: 1rem 0 0; padding: 1rem; border-radius: 13px; background: var(--green-soft); color: #075943; font-weight: 750; }
+    .completion.visible { display: block; }
+    .reset-button { margin-top: 1rem; padding: .35rem 0; border: 0; background: none; color: var(--muted); font-size: .82rem; text-decoration: underline; cursor: pointer; }
+
+    .next-step { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center; padding: 1.3rem; border: 1px dashed #bcc3cf; border-radius: 16px; }
+    .lock { display: grid; width: 42px; aspect-ratio: 1; place-items: center; border-radius: 12px; background: var(--soft); }
+    .next-step h3 { margin: 0 0 .2rem; font-size: 1rem; }
+    .next-step p { margin: 0; color: var(--muted); font-size: .9rem; }
+    .next-step span:last-child { color: var(--muted); font-size: .8rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+
+    footer { border-top: 1px solid var(--line); }
+    .footer-grid { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: start; padding-block: 2.2rem 3rem; }
+    footer p { max-width: 660px; margin: 0; color: var(--muted); font-size: .88rem; }
+    footer nav { display: flex; flex-wrap: wrap; gap: 1rem; }
+    footer a { font-size: .85rem; font-weight: 750; }
+
+    @media (max-width: 880px) {
+      .hero, .anatomy-grid, .exercise-body { grid-template-columns: 1fr; }
+      .hero { min-height: auto; }
+      .browser { width: min(620px, 100%); transform: none; }
+      .objectives, .rules { grid-template-columns: 1fr 1fr; }
+      .vocabulary { grid-template-columns: 1fr; }
+      .explanation { min-height: 360px; }
+    }
+    @media (max-width: 640px) {
+      .wrap { width: min(100% - 1.15rem, 1120px); }
+      .course-progress span:first-child, .mini-track { display: none; }
+      .hero { padding-top: 3.5rem; }
+      .browser-page { min-height: 250px; }
+      .project-strip .wrap, .section-head, .exercise-hero, .footer-grid { grid-template-columns: 1fr; }
+      .project-icon, .section-number { margin-bottom: .2rem; }
+      .project-step { white-space: normal; }
+      .objectives, .compare-grid, .rules, .checklist { grid-template-columns: 1fr; }
+      .section-head { gap: .45rem; }
+      .section-head h2 { margin-top: 0; }
+      .anatomy { padding: .55rem; }
+      .anatomy-grid { grid-template-columns: minmax(0, 1fr); }
+      .code-line { min-width: 520px; }
+      .exercise-hero { gap: 1.2rem; }
+      .time-card { justify-self: start; }
+      .check-head { align-items: start; flex-direction: column; }
+      .next-step { grid-template-columns: auto 1fr; }
+      .next-step span:last-child { grid-column: 2; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+    @media print {
+      .site-header, .copy-button, .reset-button, .click-hint, .next-step { display: none; }
+      .hero { min-height: auto; padding-block: 2rem; }
+      .browser { box-shadow: none; }
+      .section { padding-block: 2rem; }
+      .exercise-shell { box-shadow: none; }
+      .code-lines, .starter { print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <header class="site-header">
+    <div class="topbar wrap">
+      <a class="brand" href="#inicio" aria-label="HTML5 desde cero, volver al inicio">
+        <span class="brand-mark" aria-hidden="true">&lt;/&gt;</span>
+        <span>HTML5 · desde cero</span>
+      </a>
+      <div class="course-progress" aria-label="Progreso del curso: sección 1 de 8">
+        <span>Progreso del curso</span>
+        <div class="mini-track" aria-hidden="true"><span></span></div>
+        <strong>01 / 08</strong>
+      </div>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <section class="hero wrap" id="inicio">
+      <div>
+        <p class="eyebrow">Sección 01 · Fundamentos</p>
+        <h1>El esqueleto de una <em>página web</em></h1>
+        <p class="lede">Antes de añadir imágenes, enlaces o estilos, toda web necesita una estructura. Hoy aprenderás a leerla y crearás la base de un proyecto que irá creciendo sección a sección.</p>
+        <ul class="hero-meta" aria-label="Datos de la sección">
+          <li>⏱ 40–50 min</li>
+          <li>9 elementos clave</li>
+          <li>1 ejercicio práctico</li>
+        </ul>
+      </div>
+
+      <div class="browser" aria-label="Vista previa de la página que se creará">
+        <div class="browser-bar">
+          <span class="browser-dots" aria-hidden="true"><span></span><span></span><span></span></span>
+          <span class="address">mi-rincon.local/index.html</span>
+        </div>
+        <div class="browser-page">
+          <p class="browser-label">Tu primer resultado</p>
+          <h2>Mi rincón digital<span class="cursor" aria-hidden="true"></span></h2>
+          <p>Una web sobre algo que me interesa y quiero compartir.</p>
+        </div>
+      </div>
+    </section>
+
+    <aside class="project-strip" aria-label="Proyecto del curso">
+      <div class="wrap">
+        <span class="project-icon" aria-hidden="true">↗</span>
+        <p><strong>Proyecto del curso: Mi rincón digital.</strong> En cada sección incorporarás una parte nueva hasta obtener una página web completa.</p>
+        <span class="project-step">Hoy: la base</span>
+      </div>
+    </aside>
+
+    <section class="section wrap" aria-labelledby="objetivos-titulo">
+      <div class="section-head">
+        <span class="section-number">00</span>
+        <div>
+          <h2 id="objetivos-titulo">Tu misión de hoy</h2>
+          <p>Al terminar podrás explicar qué partes forman un documento HTML y crear uno válido desde un archivo vacío.</p>
+        </div>
+      </div>
+      <div class="objectives">
+        <article class="objective">
+          <span aria-hidden="true">01</span>
+          <h3>Reconocer</h3>
+          <p>Distinguirás la información que usa el navegador del contenido que ve la persona.</p>
+        </article>
+        <article class="objective">
+          <span aria-hidden="true">02</span>
+          <h3>Interpretar</h3>
+          <p>Sabrás qué función cumplen las etiquetas y los atributos de la estructura básica.</p>
+        </article>
+        <article class="objective">
+          <span aria-hidden="true">03</span>
+          <h3>Construir</h3>
+          <p>Crearás el archivo <code>index.html</code> que servirá de base para todo el proyecto.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section wrap" aria-labelledby="anatomia-titulo">
+      <div class="section-head">
+        <span class="section-number">01</span>
+        <div>
+          <h2 id="anatomia-titulo">Anatomía del documento</h2>
+          <p>Selecciona una línea del código. A la derecha descubrirás qué le comunica al navegador y por qué la necesitamos.</p>
+        </div>
+      </div>
+
+      <div class="anatomy">
+        <div class="anatomy-grid">
+          <div class="code-window">
+            <div class="window-title">
+              <span class="file-name"><span class="file-icon">◆</span> index.html</span>
+              <span>HTML</span>
+            </div>
+            <div class="code-lines" aria-label="Código HTML interactivo">
+              <button class="code-line" type="button" data-concept="doctype" aria-pressed="true"><span class="line-number">1</span><span class="line-code"><span class="doctype">&lt;!doctype html&gt;</span></span></button>
+              <button class="code-line" type="button" data-concept="html" aria-pressed="false"><span class="line-number">2</span><span class="line-code"><span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="value">&quot;es&quot;</span><span class="tag">&gt;</span></span></button>
+              <button class="code-line" type="button" data-concept="head" aria-pressed="false"><span class="line-number">3</span><span class="line-code">  <span class="tag">&lt;head&gt;</span></span></button>
+              <button class="code-line" type="button" data-concept="charset" aria-pressed="false"><span class="line-number">4</span><span class="line-code">    <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="value">&quot;UTF-8&quot;</span><span class="tag">&gt;</span></span></button>
+              <button class="code-line" type="button" data-concept="viewport" aria-pressed="false"><span class="line-number">5</span><span class="line-code">    <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="value">&quot;viewport&quot;</span> <span class="attr">content</span>=<span class="value">&quot;width=device-width, initial-scale=1.0&quot;</span><span class="tag">&gt;</span></span></button>
+              <button class="code-line" type="button" data-concept="title" aria-pressed="false"><span class="line-number">6</span><span class="line-code">    <span class="tag">&lt;title&gt;</span><span class="text-token">Mi rincón digital</span><span class="tag">&lt;/title&gt;</span></span></button>
+              <button class="code-line" type="button" data-concept="head" aria-pressed="false"><span class="line-number">7</span><span class="line-code">  <span class="tag">&lt;/head&gt;</span></span></button>
+              <button class="code-line" type="button" data-concept="body" aria-pressed="false"><span class="line-number">8</span><span class="line-code">  <span class="tag">&lt;body&gt;</span></span></button>
+              <button class="code-line" type="button" data-concept="h1" aria-pressed="false"><span class="line-number">9</span><span class="line-code">    <span class="tag">&lt;h1&gt;</span><span class="text-token">Mi rincón digital</span><span class="tag">&lt;/h1&gt;</span></span></button>
+              <button class="code-line" type="button" data-concept="p" aria-pressed="false"><span class="line-number">10</span><span class="line-code">    <span class="tag">&lt;p&gt;</span><span class="text-token">Una web sobre mi afición.</span><span class="tag">&lt;/p&gt;</span></span></button>
+              <button class="code-line" type="button" data-concept="body" aria-pressed="false"><span class="line-number">11</span><span class="line-code">  <span class="tag">&lt;/body&gt;</span></span></button>
+              <button class="code-line" type="button" data-concept="html" aria-pressed="false"><span class="line-number">12</span><span class="line-code"><span class="tag">&lt;/html&gt;</span></span></button>
+            </div>
+          </div>
+
+          <article class="explanation" aria-live="polite">
+            <div class="window-title"><span>¿Qué hace esta línea?</span><span id="concept-code">Línea 1</span></div>
+            <div class="explanation-body">
+              <p class="concept-type" id="concept-type">Declaración</p>
+              <h3 id="concept-title">Activa el HTML moderno</h3>
+              <p id="concept-description"><code>&lt;!doctype html&gt;</code> indica al navegador que debe interpretar el archivo según el estándar HTML actual.</p>
+              <div class="why" id="concept-why"><strong>Importante</strong>No es una etiqueta HTML. Es una declaración y debe ocupar la primera línea del archivo.</div>
+            </div>
+          </article>
+        </div>
+        <p class="click-hint">Pista: las etiquetas de cierre llevan una barra, por ejemplo <code>&lt;/body&gt;</code>.</p>
+      </div>
+
+      <div class="vocabulary" aria-label="Vocabulario básico">
+        <article><h3>Etiqueta</h3><p>La marca entre signos <code>&lt; &gt;</code>, como <code>&lt;p&gt;</code> o <code>&lt;/p&gt;</code>.</p></article>
+        <article><h3>Elemento</h3><p>La etiqueta de apertura, el contenido y el cierre forman juntos un elemento.</p></article>
+        <article><h3>Atributo</h3><p>Información adicional dentro de la apertura, como <code>lang="es"</code>.</p></article>
+      </div>
+    </section>
+
+    <section class="section wrap" aria-labelledby="donde-titulo">
+      <div class="section-head">
+        <span class="section-number">02</span>
+        <div>
+          <h2 id="donde-titulo">Dos lugares, dos funciones</h2>
+          <p><code>&lt;head&gt;</code> informa sobre la página. <code>&lt;body&gt;</code> contiene la página que vemos.</p>
+        </div>
+      </div>
+
+      <div class="compare-grid">
+        <article class="compare-card">
+          <div class="compare-top"><strong><code>&lt;title&gt;</code></strong><span>Dentro de &lt;head&gt;</span></div>
+          <div class="tab-demo"><div class="fake-tab">Mi rincón digital&nbsp;&nbsp; ×</div></div>
+          <p class="compare-note">Identifica la página en la pestaña del navegador y suele utilizarse también en marcadores y resultados de búsqueda.</p>
+        </article>
+        <article class="compare-card">
+          <div class="compare-top"><strong><code>&lt;h1&gt;</code> y <code>&lt;p&gt;</code></strong><span>Dentro de &lt;body&gt;</span></div>
+          <div class="page-demo"><h3>Mi rincón digital</h3><p>Una web sobre mi afición.</p></div>
+          <p class="compare-note">Forman parte del contenido visible. El <code>&lt;h1&gt;</code> presenta el tema principal y <code>&lt;p&gt;</code> crea un párrafo.</p>
+        </article>
+      </div>
+
+      <div class="rules" aria-label="Tres reglas para escribir HTML">
+        <article class="rule">
+          <span class="rule-number">Regla 01</span>
+          <h3>Abre y cierra</h3>
+          <p>La mayoría de los elementos tienen una etiqueta inicial y otra final.</p>
+          <span class="mini-code correct">&lt;p&gt;Contenido&lt;/p&gt;</span>
+        </article>
+        <article class="rule">
+          <span class="rule-number">Regla 02</span>
+          <h3>Anida en orden</h3>
+          <p>El último elemento que se abre debe ser el primero que se cierra.</p>
+          <span class="mini-code"><span class="correct">&lt;body&gt;&lt;p&gt;…&lt;/p&gt;&lt;/body&gt;</span>
+<span class="incorrect">&lt;body&gt;&lt;p&gt;…&lt;/body&gt;&lt;/p&gt;</span></span>
+        </article>
+        <article class="rule">
+          <span class="rule-number">Regla 03</span>
+          <h3>Usa sangría</h3>
+          <p>Los espacios iniciales muestran visualmente qué elemento está dentro de otro.</p>
+          <span class="mini-code">&lt;body&gt;
+  &lt;h1&gt;Título&lt;/h1&gt;
+&lt;/body&gt;</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="section exercise-section" aria-labelledby="ejercicio-titulo">
+      <div class="wrap">
+        <div class="exercise-shell">
+          <div class="exercise-hero">
+            <div>
+              <p class="exercise-kicker">Ejercicio práctico 01 · Proyecto acumulativo</p>
+              <h2 id="ejercicio-titulo">Construye la base de tu rincón digital</h2>
+              <p>Elige un tema que te interese. Este archivo será el punto de partida del proyecto y lo ampliarás en las próximas secciones.</p>
+            </div>
+            <div class="time-card"><strong>20–25</strong><span>minutos</span></div>
+          </div>
+
+          <div class="exercise-body">
+            <div>
+              <p class="brief"><strong>Resultado esperado:</strong> una página que se abra en el navegador, tenga un nombre en la pestaña y muestre un título y una breve presentación.</p>
+              <ol class="steps">
+                <li><strong>Elige el tema</strong><p>Puede ser música, deporte, videojuegos, naturaleza, tecnología o cualquier afición apropiada para clase.</p></li>
+                <li><strong>Crea el archivo</strong><p>Dentro de una carpeta nueva, crea un archivo llamado exactamente <code>index.html</code>.</p></li>
+                <li><strong>Escribe la estructura</strong><p>Usa la plantilla y sustituye cada texto marcado con <code>CAMBIA ESTO</code>.</p></li>
+                <li><strong>Comprueba el resultado</strong><p>Abre el archivo en un navegador y revisa tanto la pestaña como el contenido visible.</p></li>
+              </ol>
+            </div>
+
+            <div class="starter">
+              <div class="starter-head">
+                <span>index.html · plantilla inicial</span>
+                <button class="copy-button" type="button" data-copy="starter-code">Copiar plantilla</button>
+              </div>
+              <pre><code id="starter-code">&lt;!doctype html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport"
+        content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;<span class="todo">CAMBIA ESTO: título de la pestaña</span>&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;<span class="todo">CAMBIA ESTO: nombre del proyecto</span>&lt;/h1&gt;
+  &lt;p&gt;<span class="todo">CAMBIA ESTO: presentación del tema</span>&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+            </div>
+          </div>
+
+          <div class="check-area">
+            <div class="check-head">
+              <div><h3>Comprobación antes de continuar</h3><p>Marca cada evidencia cuando la hayas revisado de verdad.</p></div>
+              <span class="check-count" id="check-count">0 de 6</span>
+            </div>
+            <div class="check-track" aria-hidden="true"><span id="check-progress"></span></div>
+            <ul class="checklist">
+              <li><label><input class="evidence" type="checkbox"><span>El archivo se llama <code>index.html</code> y se abre en el navegador.</span></label></li>
+              <li><label><input class="evidence" type="checkbox"><span>La primera línea es <code>&lt;!doctype html&gt;</code>.</span></label></li>
+              <li><label><input class="evidence" type="checkbox"><span><code>&lt;head&gt;</code> y <code>&lt;body&gt;</code> están dentro de <code>&lt;html&gt;</code>.</span></label></li>
+              <li><label><input class="evidence" type="checkbox"><span>La pestaña muestra un título relacionado con el tema.</span></label></li>
+              <li><label><input class="evidence" type="checkbox"><span>La página muestra un <code>&lt;h1&gt;</code> y un <code>&lt;p&gt;</code> personalizados.</span></label></li>
+              <li><label><input class="evidence" type="checkbox"><span>No queda ningún texto <code>CAMBIA ESTO</code> en el archivo.</span></label></li>
+            </ul>
+            <p class="completion" id="completion" role="status">✓ Primera etapa completada. Ya tienes el esqueleto de tu proyecto.</p>
+            <button class="reset-button" id="reset-checks" type="button">Reiniciar esta lista</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap" aria-labelledby="continuara-titulo">
+      <div class="section-head">
+        <span class="section-number">03</span>
+        <div>
+          <h2 id="continuara-titulo">El proyecto continuará</h2>
+          <p>Conserva tu archivo: cada nuevo ejercicio partirá del resultado anterior.</p>
+        </div>
+      </div>
+      <div class="next-step">
+        <span class="lock" aria-hidden="true">🔒</span>
+        <div><h3>Próxima sección · Organizar y dar significado al texto</h3><p>Encabezados, párrafos, énfasis, listas y comentarios.</p></div>
+        <span>Próximamente</span>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-grid wrap">
+      <p>Material educativo basado en el estándar HTML y en la documentación de MDN. La validación final del archivo puede realizarse con el servicio oficial del W3C.</p>
+      <nav aria-label="Fuentes y referencias">
+        <a href="https://developer.mozilla.org/es/docs/Learn_web_development/Core/Structuring_content/Basic_HTML_syntax" target="_blank" rel="noopener noreferrer">Guía MDN ↗</a>
+        <a href="https://html.spec.whatwg.org/multipage/semantics.html" target="_blank" rel="noopener noreferrer">Estándar HTML ↗</a>
+        <a href="https://validator.w3.org/" target="_blank" rel="noopener noreferrer">Validador W3C ↗</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const concepts = {
+        doctype: {
+          line: "Línea 1",
+          type: "Declaración",
+          title: "Activa el HTML moderno",
+          description: "<code>&lt;!doctype html&gt;</code> indica al navegador que debe interpretar el archivo según el estándar HTML actual.",
+          why: "<strong>Importante</strong>No es una etiqueta HTML. Es una declaración y debe ocupar la primera línea del archivo."
+        },
+        html: {
+          line: "Líneas 2 y 12",
+          type: "Elemento raíz",
+          title: "Envuelve todo el documento",
+          description: "<code>&lt;html&gt;</code> es el elemento raíz: todos los demás elementos de la página están dentro de él. Su cierre es <code>&lt;/html&gt;</code>.",
+          why: "<strong>El atributo lang</strong><code>lang=\"es\"</code> comunica que el idioma principal es español. Ayuda a lectores de pantalla, traductores y buscadores."
+        },
+        head: {
+          line: "Líneas 3 a 7",
+          type: "Metadatos",
+          title: "Describe la página",
+          description: "<code>&lt;head&gt;</code> agrupa información que necesita el navegador: codificación, adaptación a pantallas y título de la pestaña.",
+          why: "<strong>No confundas</strong>Su contenido normalmente no aparece dentro de la página. El contenido visible se coloca en <code>&lt;body&gt;</code>."
+        },
+        charset: {
+          line: "Línea 4",
+          type: "Elemento vacío",
+          title: "Conserva tildes y símbolos",
+          description: "<code>&lt;meta charset=\"UTF-8\"&gt;</code> establece la codificación de caracteres. UTF-8 permite representar correctamente letras como ñ y una gran variedad de símbolos.",
+          why: "<strong>Observa</strong><code>&lt;meta&gt;</code> es un elemento vacío: no contiene texto y no necesita etiqueta de cierre."
+        },
+        viewport: {
+          line: "Línea 5",
+          type: "Metadatos",
+          title: "Prepara la vista móvil",
+          description: "Esta etiqueta hace que el ancho de la página coincida con el ancho del dispositivo y establece el nivel de zoom inicial.",
+          why: "<strong>Consecuencia</strong>Sin ella, un móvil puede mostrar la página como una versión de escritorio reducida."
+        },
+        title: {
+          line: "Línea 6",
+          type: "Metadatos",
+          title: "Nombra la pestaña",
+          description: "<code>&lt;title&gt;</code> identifica el documento en la pestaña del navegador. También se usa al guardar un marcador y puede aparecer en buscadores.",
+          why: "<strong>No es el título visible</strong>El gran título que aparece dentro de la página se crea con <code>&lt;h1&gt;</code>."
+        },
+        body: {
+          line: "Líneas 8 a 11",
+          type: "Contenido visible",
+          title: "Contiene lo que vemos",
+          description: "Dentro de <code>&lt;body&gt;</code> se coloca el contenido de la página: textos, imágenes, enlaces, listas y otros elementos.",
+          why: "<strong>Regla práctica</strong>Si esperas verlo dentro de la ventana del navegador, casi siempre debe estar en <code>&lt;body&gt;</code>."
+        },
+        h1: {
+          line: "Línea 9",
+          type: "Encabezado",
+          title: "Presenta el tema principal",
+          description: "<code>&lt;h1&gt;</code> representa el encabezado principal del contenido. Debe describir claramente de qué trata la página.",
+          why: "<strong>Buena práctica</strong>Utiliza un encabezado principal claro y organiza después los apartados con niveles inferiores."
+        },
+        p: {
+          line: "Línea 10",
+          type: "Texto",
+          title: "Crea un párrafo",
+          description: "<code>&lt;p&gt;</code> agrupa una unidad de texto. El navegador añade una separación visual antes y después del párrafo.",
+          why: "<strong>Semántica</strong>No lo uses solo para dejar espacio: úsalo cuando el contenido sea realmente un párrafo."
+        }
+      };
+
+      const lineButtons = [...document.querySelectorAll(".code-line")];
+      const conceptCode = document.querySelector("#concept-code");
+      const conceptType = document.querySelector("#concept-type");
+      const conceptTitle = document.querySelector("#concept-title");
+      const conceptDescription = document.querySelector("#concept-description");
+      const conceptWhy = document.querySelector("#concept-why");
+
+      lineButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const concept = concepts[button.dataset.concept];
+          lineButtons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+          conceptCode.textContent = concept.line;
+          conceptType.textContent = concept.type;
+          conceptTitle.textContent = concept.title;
+          conceptDescription.innerHTML = concept.description;
+          conceptWhy.innerHTML = concept.why;
+        });
+      });
+
+      const copyButton = document.querySelector("[data-copy='starter-code']");
+      const starterCode = document.querySelector("#starter-code");
+      const copyText = async (text) => {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return;
+        }
+        const area = document.createElement("textarea");
+        area.value = text;
+        area.style.position = "fixed";
+        area.style.opacity = "0";
+        document.body.append(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+      };
+      copyButton.addEventListener("click", async () => {
+        try {
+          await copyText(starterCode.textContent);
+          copyButton.textContent = "Copiada ✓";
+          copyButton.classList.add("copied");
+          setTimeout(() => {
+            copyButton.textContent = "Copiar plantilla";
+            copyButton.classList.remove("copied");
+          }, 1800);
+        } catch (_) {
+          copyButton.textContent = "Selecciona el código";
+        }
+      });
+
+      const checkboxes = [...document.querySelectorAll(".evidence")];
+      const checkCount = document.querySelector("#check-count");
+      const checkProgress = document.querySelector("#check-progress");
+      const completion = document.querySelector("#completion");
+      const resetChecks = document.querySelector("#reset-checks");
+      const storageKey = "html5-seccion-01-evidencias-v1";
+
+      const readSaved = () => {
+        try { return JSON.parse(localStorage.getItem(storageKey)) || []; }
+        catch (_) { return []; }
+      };
+      const renderProgress = () => {
+        const complete = checkboxes.filter((box) => box.checked).length;
+        checkCount.textContent = `${complete} de ${checkboxes.length}`;
+        checkProgress.style.width = `${(complete / checkboxes.length) * 100}%`;
+        completion.classList.toggle("visible", complete === checkboxes.length);
+      };
+
+      const saved = readSaved();
+      checkboxes.forEach((checkbox, index) => {
+        checkbox.checked = saved.includes(index);
+        checkbox.addEventListener("change", () => {
+          const completed = checkboxes.flatMap((box, itemIndex) => box.checked ? [itemIndex] : []);
+          try { localStorage.setItem(storageKey, JSON.stringify(completed)); } catch (_) { /* El progreso seguirá funcionando durante la sesión. */ }
+          renderProgress();
+        });
+      });
+      resetChecks.addEventListener("click", () => {
+        checkboxes.forEach((checkbox) => { checkbox.checked = false; });
+        try { localStorage.removeItem(storageKey); } catch (_) { /* Sin almacenamiento disponible. */ }
+        renderProgress();
+      });
+      renderProgress();
+    })();
+  </script>
+</body>
+</html>
