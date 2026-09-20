@@ -172,6 +172,7 @@
     .practice-launch p { margin-bottom: 0; }
     .launch-button { display: inline-block; padding: .75rem 1rem; border-radius: 9px; color: white; background: var(--blue); text-decoration: none; font-weight: 850; white-space: nowrap; }
     .launch-button:hover, .launch-button:focus-visible { background: #1e40af; outline: 3px solid #93c5fd; outline-offset: 2px; }
+    .notice { margin: 1rem 0; padding: .75rem .9rem; border-left: 4px solid var(--blue); border-radius: 8px; color: #1e3a8a; background: var(--blue-soft); }
 
     footer { padding: 1rem 0 3rem; color: var(--muted); }
     .small { font-size: .9rem; }
@@ -267,6 +268,8 @@
       <a class="launch-button" href="./p0101_v2_lab/" target="_blank" rel="noopener">Abrir página de prácticas</a>
     </section>
 
+    <p class="notice"><strong>Antes de empezar un nuevo ticket:</strong> actualiza la página de prácticas con el botón ↻ del navegador o con <kbd>Ctrl</kbd> + <kbd>R</kbd>. Así eliminas los cambios y errores del ticket anterior.</p>
+
     <section class="tickets" aria-label="Trece tickets guiados">
       <article class="ticket" id="t0"><div class="ticket-id">DEV-100</div><div>
         <div class="ticket-head"><h3>Busca un texto dentro de Elements</h3><div class="meta"><span class="tag core">Elements</span><span class="tag">5 min</span></div></div>
@@ -278,7 +281,6 @@
           <li>Haz clic una vez dentro del árbol de etiquetas HTML.</li>
           <li>Pulsa <kbd>Ctrl</kbd> + <kbd>F</kbd>. La caja de búsqueda aparecerá en la parte inferior de Elements.</li>
           <li>Escribe <code>Facturación calculada</code> y pulsa <kbd>Enter</kbd>.</li>
-          <li>Chrome marcará el texto dentro de una etiqueta de apertura <code>&lt;span&gt;</code> y su cierre <code>&lt;/span&gt;</code>. Pueden aparecer en líneas distintas.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> el texto resaltado dentro de un elemento <code>span</code>.</p>
         <p class="evidence"><strong>Respuesta verificable:</strong> escribe únicamente el nombre de la etiqueta que contiene directamente el texto.</p>
@@ -292,9 +294,8 @@
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Elements</strong>.</p>
         <ol class="steps">
           <li>Mantén seleccionado el resultado del ticket anterior: <code>&lt;span&gt;Facturación calculada&lt;/span&gt;</code>.</li>
-          <li>Mira la sangría del árbol. La etiqueta situada un nivel por encima es <code>&lt;article class="metric highlight"&gt;</code>: es la etiqueta padre.</li>
-          <li>Haz doble clic sobre el texto <code>Facturación calculada</code>, escribe <code>Facturación revisada</code> y pulsa <kbd>Enter</kbd>.</li>
-          <li>Abre <strong>Sources</strong>. En el lado izquierdo, abre el árbol <strong>Page</strong> y selecciona primero el archivo <code>p0101_v2_lab/index.html</code>.</li>
+          <li>Haz doble clic sobre el texto <code>Facturación calculada</code>, escribe <code>Facturación Revisada</code> y pulsa <kbd>Enter</kbd>.</li>
+          <li>Abre <strong>Sources</strong>. En el lado izquierdo, abre el árbol <strong>Page</strong> y selecciona primero <code>p0101_v2_lab/</code>.</li>
           <li>Solo después de seleccionar el archivo, pulsa <kbd>Ctrl</kbd> + <kbd>F</kbd>, busca <code>Facturación calculada</code> y pulsa <kbd>Enter</kbd>.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> el nuevo texto en la página y el texto original dentro de Sources.</p>
@@ -308,7 +309,7 @@
         <p class="objective">Comprueba cómo una regla CSS cambia el aspecto de un elemento.</p>
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Elements → Styles</strong>.</p>
         <ol class="steps">
-          <li>Usa el selector para elegir la tarjeta que muestra <strong>Facturación calculada</strong>.</li>
+          <li>Usa el selector para elegir la tarjeta que muestra <strong>Facturación Revisada</strong>.</li>
           <li>En <strong>Styles</strong>, busca el bloque <code>element.style { }</code>, situado normalmente arriba.</li>
           <li>Haz clic dentro de las llaves, escribe <code>color: crimson</code> y pulsa <kbd>Enter</kbd>.</li>
           <li>En la línea siguiente escribe <code>padding: 30px</code> y pulsa <kbd>Enter</kbd>.</li>
@@ -331,7 +332,7 @@
           <li>Escribe a mano <code>document.querySelectorAll('#orders-body tr').length</code> y pulsa <kbd>Enter</kbd>.</li>
           <li>Chrome contestará con el número de filas encontradas.</li>
           <li>Pulsa <strong>Provocar error HTTP</strong> en la página y vuelve a mirar Console.</li>
-          <li>Busca el mensaje rojo que contiene <code>HTTP 404</code>. El enlace azul situado a la derecha indica el archivo y la línea donde se produjo.</li>
+          <li>Busca el mensaje rojo que contiene <code>HTTP 404</code>. El enlace situado a la derecha indica el archivo y la línea donde se produjo.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> el número <code>4</code> y, después, un mensaje rojo con el código <code>404</code>.</p>
         <p class="evidence"><strong>Respuesta verificable:</strong> escribe primero el número de filas y después el código del error, separados por un espacio.</p>
@@ -344,11 +345,11 @@
         <p class="objective">Aprende qué es un breakpoint: una pausa colocada por ti dentro del programa.</p>
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Sources</strong>.</p>
         <ol class="steps">
-          <li>En el lado izquierdo, abre <strong>Page</strong> y selecciona <code>p0101_v2_lab/index.html</code>.</li>
+          <li>En el lado izquierdo, abre <strong>Page</strong> y selecciona <code>p0101_v2_lab/</code>.</li>
           <li>Con el archivo abierto en el centro, pulsa <kbd>Ctrl</kbd> + <kbd>F</kbd>, busca <code>total = subtotal</code> y cierra la búsqueda con <kbd>Esc</kbd>.</li>
           <li>Haz clic sobre el número de esa línea. Aparecerá una marca azul: es el breakpoint.</li>
           <li>Pulsa <strong>Recalcular total</strong> en la página. El programa se detendrá y la línea aparecerá resaltada.</li>
-          <li>En la derecha abre <strong>Scope → Local</strong> y busca <code>subtotal</code> y <code>total</code>.</li>
+          <li>En el panel inferior, abre <strong>Scope → Local</strong> y busca <code>subtotal</code> y <code>total</code>.</li>
           <li>Pulsa el triángulo azul ▶ situado sobre el código hasta que el programa termine.</li>
           <li>Haz clic otra vez en el número de línea para quitar el breakpoint.</li>
         </ol>
@@ -370,7 +371,7 @@
           <li>Abre <strong>Response</strong> para ver los datos que llegaron.</li>
           <li>Pulsa <strong>Provocar error HTTP</strong>. Selecciona la nueva fila <code>missing.json</code> y comprueba su código.</li>
         </ol>
-        <p class="expected"><strong>Debes ver:</strong> una petición con estado <code>200</code> y otra con estado <code>404</code>.</p>
+        <p class="expected"><strong>Debes observar que el código de estado ha cambiado.</strong></p>
         <p class="evidence"><strong>Respuesta verificable:</strong> escribe el código de <code>data.json</code> y el de <code>missing.json</code>, separados por un espacio.</p>
         <div class="response-field"><label for="r5">Respuesta del ticket DEV-105</label><textarea class="ticket-response" id="r5" placeholder="código código"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
         <div class="done-row"><input class="done" id="d5" type="checkbox"><label for="d5">Respuesta verificada</label></div>
@@ -381,17 +382,17 @@
         <p class="objective">Comprueba la página con una pantalla estrecha y una conexión más lenta.</p>
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → icono de móvil y tableta.</p>
         <ol class="steps">
+          <li>Actualiza la página de prácticas con el botón ↻ del navegador o con <kbd>Ctrl</kbd> + <kbd>R</kbd> para eliminar los errores y cambios de los tickets anteriores.</li>
           <li>Pulsa el icono de móvil y tableta. También puedes usar <kbd>Ctrl</kbd> + <kbd>Mayús</kbd> + <kbd>M</kbd>.</li>
           <li>En la barra que aparece sobre la página, elige <strong>Responsive</strong>.</li>
-          <li>Escribe <code>360</code> en el campo de anchura y <code>800</code> en el de altura.</li>
-          <li>Observa el panel de pedidos. La parte ancha obliga a desplazarse horizontalmente: esa es la incidencia que buscamos.</li>
+          <li>Escribe <code>360</code> en el campo de anchura y <code>800</code> en el de altura. Observa el panel de pedidos: la parte ancha produce un <strong>desbordamiento</strong> u <strong>overflow</strong> y obliga a desplazarse horizontalmente.</li>
           <li>Abre <strong>Network</strong>. En el menú que indica <strong>No throttling</strong>, elige una conexión lenta como <strong>Slow 4G</strong> o <strong>Fast 3G</strong>.</li>
-          <li>Pulsa <strong>Sincronizar pedidos</strong> y anota el tiempo mostrado en la tarjeta <strong>Tiempo de respuesta</strong>.</li>
+          <li>Actualiza la página y observa el valor <strong>Load</strong> en la barra inferior de Network.</li>
           <li>Vuelve a seleccionar <strong>No throttling</strong> y desactiva el modo móvil con el mismo icono.</li>
         </ol>
-        <p class="expected"><strong>Debes ver:</strong> una página estrecha, desplazamiento horizontal y un tiempo de respuesta medible.</p>
-        <p class="evidence"><strong>Respuesta verificable:</strong> escribe el nombre del problema que aparece al usar una pantalla estrecha.</p>
-        <div class="response-field"><label for="r6">Respuesta del ticket DEV-106</label><textarea class="ticket-response" id="r6" placeholder="dos palabras"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <p class="expected"><strong>Debes ver:</strong> una página estrecha, desplazamiento horizontal y el tiempo de carga indicado por <strong>Load</strong>.</p>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe únicamente la palabra inglesa que nombra el desbordamiento.</p>
+        <div class="response-field"><label for="r6">Respuesta del ticket DEV-106</label><textarea class="ticket-response" id="r6" placeholder="Palabra en inglés"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
         <div class="done-row"><input class="done" id="d6" type="checkbox"><label for="d6">Respuesta verificada</label></div>
       </div></article>
 
@@ -422,7 +423,7 @@
           <li>Comprueba que el rol es <code>button</code> y observa el campo <strong>Name</strong>. Está vacío porque el icono se oculta a los lectores de pantalla.</li>
           <li>Vuelve al HTML seleccionado. Haz doble clic en un espacio dentro de la etiqueta de apertura y añade <code>aria-label="Eliminar último pedido"</code>.</li>
           <li>Regresa a Accessibility: ahora <strong>Name</strong> debe mostrar <em>Eliminar último pedido</em>.</li>
-          <li>Selecciona el texto gris que hay bajo el buscador. En <strong>Styles</strong>, pulsa el pequeño cuadrado de su propiedad <code>color</code> y observa el aviso de contraste.</li>
+          <li>Con el selector de elementos, pulsa el texto gris «Consejo del sistema…» situado bajo el buscador. En <strong>Styles</strong>, localiza <code>color: #667085</code> y pulsa el cuadrado de color que aparece junto al valor. Se abrirá el selector de color con la información de contraste.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> el botón pasa de no tener nombre a tener el nombre que has añadido.</p>
         <p class="evidence"><strong>Respuesta verificable:</strong> escribe el nombre accesible que añadiste al botón.</p>
@@ -439,7 +440,7 @@
           <li>En la página, pulsa <strong>Ejecutar tarea lenta</strong>. Durante medio segundo la página responderá peor.</li>
           <li>Vuelve a Performance y pulsa <strong>Stop</strong>.</li>
           <li>Espera a que Chrome dibuje la grabación. Busca en la fila <strong>Main</strong> un bloque largo con una marca roja.</li>
-          <li>Haz clic en ese bloque. En la información inferior busca el nombre <code>ejecutarTareaLenta</code> y una duración cercana a 550 ms.</li>
+          <li>Haz clic en ese bloque. Explora los resultados y busca ahora la función responsable de dicha lentitud.</li>
         </ol>
         <p class="expected"><strong>Debes ver:</strong> una tarea larga de aproximadamente medio segundo.</p>
         <p class="evidence"><strong>Respuesta verificable:</strong> escribe únicamente el nombre de la función que produjo la tarea larga.</p>
@@ -897,7 +898,7 @@
         r3: value => JSON.stringify(numbers(value)) === JSON.stringify(['4', '404']),
         r4: value => ['sustituye', 'reemplaza'].includes(normalize(value)),
         r5: value => JSON.stringify(numbers(value)) === JSON.stringify(['200', '404']),
-        r6: value => ['desbordamiento horizontal', 'overflow horizontal'].includes(normalize(value)),
+        r6: value => normalize(value) === 'overflow',
         r7: value => normalize(value) === 'contrast training enabled',
         r8: value => normalize(value) === 'eliminar ultimo pedido',
         r9: value => normalize(value).replace(/[^a-z0-9]/g, '') === 'ejecutartarealenta',
