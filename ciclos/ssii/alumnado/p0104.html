@@ -33,7 +33,7 @@ h2{margin:0 0 .75rem;color:var(--dark);font-size:1.45rem}h3{margin:.2rem 0 .6rem
 </div></section>
 <section class="card" id="practica"><h2>3. Ahora practica</h2><p>Escribe solo el resultado, sin subíndices ni espacios. Puedes comprobar cada ejercicio o corregirlos todos al final.</p><div class="practice"><section class="block"><h3>Decimal → binario</h3><div id="decExercises"></div></section><section class="block"><h3>Binario → decimal</h3><div id="binExercises"></div></section></div><div class="actions screen"><button class="btn" id="checkAll" type="button">Comprobar todo</button><button class="btn secondary" id="reset" type="button">Borrar respuestas</button></div><div class="score" id="score" role="status" aria-live="polite">Resultado: 0 de 12 ejercicios correctos.</div></section>
 <section class="card" id="reto"><h2>4. Reto aleatorio</h2><p>Genera tantos ejercicios nuevos como necesites. Los valores estarán entre 0 y 255.</p><div class="actions screen"><button class="btn" id="newChallenge" type="button">Nuevo reto</button><button class="btn secondary" id="swapChallenge" type="button">Cambiar sentido</button></div><div class="challenge"><div class="field"><label for="challengeInput" id="challengeLabel">Convierte 75₁₀ a binario</label><input id="challengeInput" inputmode="numeric" autocomplete="off"></div><button class="btn screen" id="checkChallenge" type="button">Comprobar</button></div><div class="result" id="challengeResult" role="status" aria-live="polite"></div></section>
-<section class="card"><h2>5. Identifica tu trabajo</h2><div class="name-row"><div class="field"><label for="studentName">Nombre y apellidos</label><input id="studentName" autocomplete="name"></div><button class="btn secondary screen" type="button" onclick="window.print()">Imprimir / guardar en PDF</button></div></section>
+<section class="card"><h2>5. Genera tu informe</h2><p>Escribe tu nombre y descarga un archivo de texto con tus respuestas, soluciones, puntuación y el reto aleatorio.</p><div class="name-row"><div class="field"><label for="studentName">Nombre y apellidos</label><input id="studentName" autocomplete="name"></div><button class="btn secondary" id="downloadReport" type="button">Descargar informe TXT</button></div><p class="result" id="reportStatus" role="status" aria-live="polite"></p></section>
 <footer>P0104 · Sistemas Informáticos · Conversión decimal y binaria</footer>
 </main>
 <script>
@@ -60,6 +60,87 @@ function randomChallenge(){const n=Math.floor(Math.random()*256);challenge.value
 $('newChallenge').addEventListener('click',randomChallenge);
 $('swapChallenge').addEventListener('click',()=>{challenge.type=challenge.type==='dec'?'bin':'dec';randomChallenge()});
 $('checkChallenge').addEventListener('click',()=>{const a=$('challengeInput').value.trim(),want=challenge.type==='dec'?toBinary(challenge.value):String(toDecimal(challenge.value)),legal=challenge.type==='dec'?/^[01]+$/.test(a):/^(0|[1-9]\d*)$/.test(a);$('challengeResult').textContent=!legal?'Usa únicamente cifras válidas y números enteros.':a===want?'✓ Correcto. Genera otro reto cuando quieras.':'Todavía no. La respuesta correcta es '+want+'.';$('challengeResult').style.color=legal&&a===want?'var(--green)':'var(--red)'});
+function reportRow(box,index){
+  const answer=box.querySelector('input').value.trim();
+  const solution=expected(box);
+  const conversion=box.dataset.type==='dec'
+    ?box.dataset.value+' (decimal) → binario'
+    :box.dataset.value+' (binario) → decimal';
+  const state=!answer?'Sin responder':answer===solution?'Correcto':'Incorrecto';
+  return [
+    (index+1)+'. '+conversion,
+    '   Respuesta: '+(answer||'—'),
+    '   Solución: '+solution,
+    '   Resultado: '+state
+  ].join('\r\n');
+}
+function downloadTxtReport(){
+  const name=$('studentName').value.trim();
+  const status=$('reportStatus');
+  if(!name){
+    status.textContent='Escribe tu nombre y apellidos antes de descargar el informe.';
+    status.className='result bad';
+    $('studentName').focus();
+    return;
+  }
+  const boxes=[...document.querySelectorAll('.exercise')];
+  const correct=boxes.filter(box=>box.querySelector('input').value.trim()===expected(box)).length;
+  const answered=boxes.filter(box=>box.querySelector('input').value.trim()!=='').length;
+  const challengeAnswer=$('challengeInput').value.trim();
+  const challengeSolution=challenge.type==='dec'
+    ?toBinary(challenge.value)
+    :String(toDecimal(challenge.value));
+  const challengeConversion=challenge.type==='dec'
+    ?challenge.value+' (decimal) → binario'
+    :challenge.value+' (binario) → decimal';
+  const challengeState=!challengeAnswer
+    ?'Sin responder'
+    :challengeAnswer===challengeSolution?'Correcto':'Incorrecto';
+  updateScore();
+  const lines=[
+    'INFORME DE LA PRÁCTICA P0104',
+    'CONVERSIÓN DECIMAL Y BINARIA',
+    '========================================',
+    '',
+    'Alumno/a: '+name,
+    'Fecha: '+new Date().toLocaleString('es-ES'),
+    '',
+    'RESUMEN',
+    '----------------------------------------',
+    'Ejercicios correctos: '+correct+' de '+boxes.length,
+    'Ejercicios incorrectos: '+(answered-correct),
+    'Ejercicios sin responder: '+(boxes.length-answered),
+    '',
+    'EJERCICIOS',
+    '----------------------------------------',
+    boxes.map(reportRow).join('\r\n\r\n'),
+    '',
+    'RETO ALEATORIO',
+    '----------------------------------------',
+    'Conversión: '+challengeConversion,
+    'Respuesta: '+(challengeAnswer||'—'),
+    'Solución: '+challengeSolution,
+    'Resultado: '+challengeState,
+    '',
+    'Fin del informe.'
+  ];
+  const blob=new Blob(['\uFEFF'+lines.join('\r\n')],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const safeName=name.normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]+/gi,'_')
+    .replace(/^_+|_+$/g,'')||'alumno';
+  const link=document.createElement('a');
+  link.href=url;
+  link.download='P0104_informe_'+safeName+'.txt';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  status.textContent='✓ Informe TXT descargado correctamente.';
+  status.className='result ok';
+}
+$('downloadReport').addEventListener('click',downloadTxtReport);
 </script>
 </body>
 </html>
