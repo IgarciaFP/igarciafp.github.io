@@ -124,7 +124,9 @@
     .meta { display: flex; flex-wrap: wrap; gap: .4rem; }
     .tag { padding: .22rem .5rem; border-radius: 999px; color: #334155; background: #e2e8f0; font-size: .76rem; font-weight: 800; }
     .tag.core { color: #1e40af; background: #dbeafe; }
-    .objective { margin: .4rem 0 .7rem; color: var(--muted); }
+    .objective { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin: .6rem 0 .8rem; padding: .75rem .8rem; border: 1px solid #bfdbfe; border-radius: 10px; color: var(--muted); background: #f8fbff; }
+    .objective p { margin: 0; }
+    .objective strong { display: block; margin-bottom: .15rem; color: #1e3a8a; }
     .where { margin: .65rem 0; padding: .65rem .8rem; border-radius: 8px; color: #1e3a8a; background: var(--blue-soft); }
     .expected { margin: .75rem 0 0; padding: .65rem .8rem; border-left: 4px solid var(--amber); border-radius: 7px; background: var(--amber-soft); }
     .steps { margin: 0; padding-left: 1.25rem; }
@@ -189,7 +191,7 @@
       h1 { font-size: clamp(2.2rem, 14vw, 3.5rem); }
       .progress-panel { grid-template-columns: 1fr auto; }
       .progress-track { grid-column: 1 / -1; grid-row: 2; }
-      .outcomes, .dashboard-grid, .coverage, .panel-map { grid-template-columns: 1fr; }
+      .outcomes, .dashboard-grid, .coverage, .panel-map, .objective { grid-template-columns: 1fr; }
       .ticket { grid-template-columns: 1fr; }
       .ticket-id { width: max-content; }
     }
@@ -273,7 +275,10 @@
     <section class="tickets" aria-label="Trece tickets guiados">
       <article class="ticket" id="t0"><div class="ticket-id">DEV-100</div><div>
         <div class="ticket-head"><h3>Busca un texto dentro de Elements</h3><div class="meta"><span class="tag core">Elements</span><span class="tag">5 min</span></div></div>
-        <p class="objective">Aprende a localizar una parte del HTML sin recorrer todas sus etiquetas.</p>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Buscar el texto «Facturación calculada» dentro del árbol HTML de Elements.</p>
+          <p><strong>Objetivo didáctico</strong> Aprender a localizar rápidamente la etiqueta que contiene un texto visible.</p>
+        </div>
         <p class="where"><strong>Dónde:</strong> página de prácticas → <kbd>F12</kbd> → <strong>Elements</strong>.</p>
         <ol class="steps">
           <li>Abre la página de prácticas con el botón azul anterior.</li>
@@ -290,7 +295,10 @@
 
       <article class="ticket" id="t1"><div class="ticket-id">DEV-101</div><div>
         <div class="ticket-head"><h3>Distingue una etiqueta de su etiqueta padre</h3><div class="meta"><span class="tag core">Elements · Sources</span><span class="tag">8 min</span></div></div>
-        <p class="objective">Reconoce que <code>span</code> está dentro de <code>article</code>, aunque aparezcan en líneas diferentes.</p>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Identificar el <code>article</code> padre del <code>span</code> y cambiar temporalmente su texto.</p>
+          <p><strong>Objetivo didáctico</strong> Comprender la relación padre-hijo del HTML y distinguir el DOM actual del archivo original.</p>
+        </div>
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Elements</strong>.</p>
         <ol class="steps">
           <li>Mantén seleccionado el resultado del ticket anterior: <code>&lt;span&gt;Facturación calculada&lt;/span&gt;</code>.</li>
@@ -306,7 +314,10 @@
 
       <article class="ticket" id="t2"><div class="ticket-id">DEV-102</div><div>
         <div class="ticket-head"><h3>Prueba colores y tamaños con CSS</h3><div class="meta"><span class="tag core">Elements · Styles</span><span class="tag">8 min</span></div></div>
-        <p class="objective">Comprueba cómo una regla CSS cambia el aspecto de un elemento.</p>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Añadir reglas de color y espacio a una tarjeta desde Styles y después desactivar una de ellas.</p>
+          <p><strong>Objetivo didáctico</strong> Comprobar cómo CSS modifica un elemento e identificar el <code>padding</code> en el modelo de caja.</p>
+        </div>
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Elements → Styles</strong>.</p>
         <ol class="steps">
           <li>Usa el selector para elegir la tarjeta que muestra <strong>Facturación Revisada</strong>.</li>
@@ -324,7 +335,10 @@
 
       <article class="ticket" id="t3"><div class="ticket-id">DEV-103</div><div>
         <div class="ticket-head"><h3>Escribe un comando y encuentra un error</h3><div class="meta"><span class="tag core">Console</span><span class="tag">8 min</span></div></div>
-        <p class="objective">Usa Console para hacer una pregunta a la página y para leer un error.</p>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Contar filas mediante un comando y provocar un error HTTP 404.</p>
+          <p><strong>Objetivo didáctico</strong> Aprender a ejecutar una consulta sencilla y reconocer resultados y errores en Console.</p>
+        </div>
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Console</strong>.</p>
         <ol class="steps">
           <li>Pulsa <strong>Sincronizar pedidos</strong> en la página. Deben aparecer cuatro filas en la tabla.</li>
@@ -342,7 +356,10 @@
 
       <article class="ticket" id="t4"><div class="ticket-id">DEV-104</div><div>
         <div class="ticket-head"><h3>Detén JavaScript para mirar sus valores</h3><div class="meta"><span class="tag core">Sources</span><span class="tag">10 min</span></div></div>
-        <p class="objective">Aprende qué es un breakpoint: una pausa colocada por ti dentro del programa.</p>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Detener el programa en <code>total = subtotal</code> y observar los valores de sus variables.</p>
+          <p><strong>Objetivo didáctico</strong> Entender para qué sirve un breakpoint y descubrir por qué el cálculo sustituye el total.</p>
+        </div>
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Sources</strong>.</p>
         <ol class="steps">
           <li>En el lado izquierdo, abre <strong>Page</strong> y selecciona <code>p0101_v2_lab/</code>.</li>
@@ -361,7 +378,10 @@
 
       <article class="ticket" id="t5"><div class="ticket-id">DEV-105</div><div>
         <div class="ticket-head"><h3>Observa cómo llegan los datos</h3><div class="meta"><span class="tag core">Network</span><span class="tag">9 min</span></div></div>
-        <p class="objective">Distingue una petición que funciona de otra que falla.</p>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Inspeccionar una petición correcta a <code>data.json</code> y otra fallida a <code>missing.json</code>.</p>
+          <p><strong>Objetivo didáctico</strong> Aprender a interpretar el método, el código de estado y la respuesta de una petición.</p>
+        </div>
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Network</strong>.</p>
         <ol class="steps">
           <li>Abre <strong>Network</strong> y pulsa el icono de limpiar, un círculo atravesado, situado arriba a la izquierda de la tabla.</li>
@@ -379,7 +399,10 @@
 
       <article class="ticket" id="t6"><div class="ticket-id">DEV-106</div><div>
         <div class="ticket-head"><h3>Mira la página como si fuera un móvil</h3><div class="meta"><span class="tag core">Device Mode</span><span class="tag">8 min</span></div></div>
-        <p class="objective">Comprueba la página con una pantalla estrecha y una conexión más lenta.</p>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Simular una pantalla móvil y una conexión lenta para observar el overflow y el tiempo de carga.</p>
+          <p><strong>Objetivo didáctico</strong> Detectar problemas de diseño adaptable y relacionar la velocidad de red con la carga de la página.</p>
+        </div>
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → icono de móvil y tableta.</p>
         <ol class="steps">
           <li>Actualiza la página de prácticas con el botón ↻ del navegador o con <kbd>Ctrl</kbd> + <kbd>R</kbd> para eliminar los errores y cambios de los tickets anteriores.</li>
@@ -398,7 +421,10 @@
 
       <article class="ticket" id="t7"><div class="ticket-id">DEV-107</div><div>
         <div class="ticket-head"><h3>Encuentra los datos guardados por la página</h3><div class="meta"><span class="tag core">Application</span><span class="tag">9 min</span></div></div>
-        <p class="objective">Localiza un dato en Local Storage, otro en Session Storage y una cookie.</p>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Localizar y modificar datos guardados en Local Storage, Session Storage y Cookies.</p>
+          <p><strong>Objetivo didáctico</strong> Distinguir los principales lugares donde una aplicación web almacena información en el navegador.</p>
+        </div>
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Application</strong>.</p>
         <ol class="steps">
           <li>En la columna izquierda, abre <strong>Local Storage</strong> con su pequeño triángulo y pulsa la dirección de esta web.</li>
@@ -415,7 +441,10 @@
 
       <article class="ticket" id="t8"><div class="ticket-id">DEV-108</div><div>
         <div class="ticket-head"><h3>Comprueba si un botón tiene un nombre claro</h3><div class="meta"><span class="tag core">Accessibility</span><span class="tag">9 min</span></div></div>
-        <p class="objective">Entiende que los lectores de pantalla necesitan nombres, no solo iconos.</p>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Añadir un nombre accesible a un botón con icono y revisar el contraste de un texto.</p>
+          <p><strong>Objetivo didáctico</strong> Comprender por qué los controles necesitan un nombre y por qué el contraste facilita la lectura.</p>
+        </div>
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Elements → Accessibility</strong>.</p>
         <ol class="steps">
           <li>Usa el selector de elementos y pulsa el botón que solo muestra una papelera.</li>
@@ -433,7 +462,10 @@
 
       <article class="ticket" id="t9"><div class="ticket-id">DEV-109</div><div>
         <div class="ticket-head"><h3>Graba una tarea que bloquea la página</h3><div class="meta"><span class="tag core">Performance</span><span class="tag">10 min</span></div></div>
-        <p class="objective">Observa qué ocurre cuando JavaScript mantiene ocupado el navegador demasiado tiempo.</p>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Grabar la ejecución de una tarea lenta y localizar la función que la provoca.</p>
+          <p><strong>Objetivo didáctico</strong> Aprender a reconocer una tarea larga que bloquea temporalmente la página.</p>
+        </div>
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Performance</strong>.</p>
         <ol class="steps">
           <li>Pulsa el botón redondo <strong>Record</strong> para iniciar la grabación.</li>
@@ -450,7 +482,10 @@
 
       <article class="ticket" id="t10"><div class="ticket-id">DEV-110</div><div>
         <div class="ticket-head"><h3>Observa cómo aumenta la memoria</h3><div class="meta"><span class="tag core">Memory</span><span class="tag">10 min</span></div></div>
-        <p class="objective">Comprueba que guardar objetos sin liberarlos hace crecer la memoria usada.</p>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Comparar dos instantáneas de memoria antes y después de retener varios objetos.</p>
+          <p><strong>Objetivo didáctico</strong> Comprender que los objetos retenidos aumentan la memoria utilizada por una página.</p>
+        </div>
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>» → Memory</strong>.</p>
         <ol class="steps">
           <li>En Memory elige <strong>Heap snapshot</strong> y pulsa <strong>Take snapshot</strong>.</li>
@@ -468,7 +503,10 @@
 
       <article class="ticket" id="t11"><div class="ticket-id">DEV-111</div><div>
         <div class="ticket-head"><h3>Explora la parte PWA de la aplicación</h3><div class="meta"><span class="tag core">Application</span><span class="tag">10 min</span></div></div>
-        <p class="objective">Encuentra el Service Worker y comprueba que permite usar los datos guardados aunque no haya conexión.</p>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Localizar el manifiesto, el Service Worker y los archivos guardados en Cache Storage.</p>
+          <p><strong>Objetivo didáctico</strong> Comprender cómo una PWA puede recuperar recursos de la caché cuando no hay conexión.</p>
+        </div>
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Application</strong>.</p>
         <ol class="steps">
           <li>Actualiza la página de prácticas y espera hasta que, en la propia página, aparezca <strong>Service Worker: activo</strong>.</li>
@@ -489,7 +527,10 @@
 
       <article class="ticket" id="t12"><div class="ticket-id">DEV-112</div><div>
         <div class="ticket-head"><h3>Pide a Lighthouse una revisión automática</h3><div class="meta"><span class="tag core">Lighthouse</span><span class="tag">10 min</span></div></div>
-        <p class="objective">Obtén cuatro puntuaciones y lee una recomendación sencilla.</p>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Ejecutar Lighthouse en cuatro categorías y abrir una de sus recomendaciones.</p>
+          <p><strong>Objetivo didáctico</strong> Aprender a usar una auditoría automática como punto de partida para mejorar una web.</p>
+        </div>
         <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>» → Lighthouse</strong>.</p>
         <ol class="steps">
           <li>En <strong>Mode</strong> elige <strong>Navigation</strong> y en <strong>Device</strong> elige <strong>Mobile</strong>.</li>
