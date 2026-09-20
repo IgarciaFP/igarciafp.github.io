@@ -175,11 +175,22 @@
     .launch-button { display: inline-block; padding: .75rem 1rem; border-radius: 9px; color: white; background: var(--blue); text-decoration: none; font-weight: 850; white-space: nowrap; }
     .launch-button:hover, .launch-button:focus-visible { background: #1e40af; outline: 3px solid #93c5fd; outline-offset: 2px; }
     .notice { margin: 1rem 0; padding: .75rem .9rem; border-left: 4px solid var(--blue); border-radius: 8px; color: #1e3a8a; background: var(--blue-soft); }
+    .lab-sheet h2 { margin-bottom: .2rem; }
+    .lab-sheet > p { margin-top: 0; color: var(--muted); }
+    .lab-sheet-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr); gap: 1rem; }
+    .lab-sheet-card { padding: 1rem; border: 1px solid var(--line); border-radius: 12px; background: #f8fafc; }
+    .lab-sheet-card h3 { margin: 0 0 .55rem; font-size: 1rem; color: #1e3a8a; }
+    .quick-guide { font-size: .9rem; }
+    .quick-guide th, .quick-guide td { padding: .42rem .5rem; white-space: normal; vertical-align: top; }
+    .quick-guide th[scope="row"] { width: 36%; color: #1e3a8a; background: white; text-transform: none; letter-spacing: 0; }
+    .storage-guide { display: grid; grid-template-columns: max-content 1fr; gap: .35rem .6rem; margin: .55rem 0 0; font-size: .9rem; }
+    .storage-guide dt { font-weight: 800; color: #1e3a8a; }
+    .storage-guide dd { margin: 0; }
 
     footer { padding: 1rem 0 3rem; color: var(--muted); }
     .small { font-size: .9rem; }
     @media (max-width: 900px) {
-      .hero, .intro-grid, .orientation-grid, .delivery-grid, .incident-grid, .practice-launch { grid-template-columns: 1fr; }
+      .hero, .intro-grid, .orientation-grid, .delivery-grid, .incident-grid, .practice-launch, .lab-sheet-grid { grid-template-columns: 1fr; }
       .terminal { max-width: 620px; }
       .coverage { grid-template-columns: repeat(3, 1fr); }
       .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
@@ -268,6 +279,38 @@
         <p>Ábrela en otra pestaña. Manipula esa página con DevTools y conserva aquí las instrucciones y respuestas.</p>
       </div>
       <a class="launch-button" href="./p0101_v2_lab/" target="_blank" rel="noopener">Abrir página de prácticas</a>
+    </section>
+
+    <section class="panel lab-sheet" aria-labelledby="ficha-panel-pedidos">
+      <h2 id="ficha-panel-pedidos">Ficha rápida · Panel de pedidos</h2>
+      <p>Es una aplicación ficticia: JavaScript carga pedidos desde <code>data.json</code>, actualiza la pantalla y genera fallos preparados para practicar.</p>
+      <div class="lab-sheet-grid">
+        <div class="lab-sheet-card">
+          <h3>Qué hace cada botón</h3>
+          <table class="quick-guide">
+            <thead><tr><th>Botón</th><th>Acción</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Sincronizar pedidos</th><td>Carga cuatro pedidos desde <code>data.json</code>.</td></tr>
+              <tr><th scope="row">Recalcular total</th><td>Ejecuta un cálculo con un error intencionado.</td></tr>
+              <tr><th scope="row">Provocar error HTTP</th><td>Solicita <code>missing.json</code> y genera un 404.</td></tr>
+              <tr><th scope="row">Ejecutar tarea lenta</th><td>Bloquea JavaScript durante unos 550 ms.</td></tr>
+              <tr><th scope="row">Retener memoria</th><td>Conserva objetos en memoria y aumenta el contador.</td></tr>
+              <tr><th scope="row">🗑️</th><td>Elimina el último pedido; no tiene nombre accesible a propósito.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="lab-sheet-card">
+          <h3>Service Worker</h3>
+          <p><code>sw.js</code> trabaja en segundo plano, intercepta peticiones y guarda <code>index.html</code>, <code>data.json</code> y el manifiesto en caché para poder recuperarlos sin conexión.</p>
+          <h3>Almacenamiento</h3>
+          <dl class="storage-guide">
+            <dt>Cookie</dt><dd><code>opsboard_lab=enabled</code>: dato de demostración del laboratorio.</dd>
+            <dt>Local Storage</dt><dd><code>opsboard.theme=light</code>: preferencia de aspecto que permanece guardada.</dd>
+            <dt>Session Storage</dt><dd><code>opsboard.session=training</code>: identifica esta sesión de práctica.</dd>
+          </dl>
+          <p class="small"><strong>No se almacenan datos personales.</strong></p>
+        </div>
+      </div>
     </section>
 
     <p class="notice"><strong>Antes de empezar un nuevo ticket:</strong> actualiza la página de prácticas con el botón ↻ del navegador o con <kbd>Ctrl</kbd> + <kbd>R</kbd>. Así eliminas los cambios y errores del ticket anterior.</p>
