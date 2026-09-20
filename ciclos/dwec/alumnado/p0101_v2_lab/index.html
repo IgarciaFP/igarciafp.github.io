@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Página de prácticas del laboratorio guiado de Chrome DevTools.">
+  <meta name="theme-color" content="#111827">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <title>OpsBoard · Página de prácticas DevTools</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #5f6b7c;
+      --line: #d9e0ea;
+      --blue: #1d4ed8;
+      --green: #047857;
+      --green-soft: #d1fae5;
+      --red-soft: #fee2e2;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: #eef2f7; font: 16px/1.5 system-ui, sans-serif; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    code { padding: .08rem .28rem; border-radius: .3rem; background: #e2e8f0; }
+    .notice { padding: .65rem 1rem; color: #1e3a8a; background: #dbeafe; text-align: center; font-weight: 700; }
+    .app { width: min(1100px, calc(100% - 2rem)); margin: 1.5rem auto; overflow-x: auto; overflow-y: hidden; border: 1px solid #94a3b8; border-radius: 16px; background: white; box-shadow: 0 16px 36px rgba(15,23,42,.12); }
+    .app-topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; padding: 1rem 1.2rem; color: white; background: #1e293b; }
+    .app-topbar h1 { margin: 0; font-size: 1.35rem; }
+    .env { align-self: center; padding: .22rem .55rem; border: 1px solid #64748b; border-radius: 999px; color: #dbeafe; font: 700 .78rem/1.3 ui-monospace, monospace; }
+    .app-body { padding: 1.2rem; }
+    .context { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .8rem; align-items: center; }
+    .context p { margin: 0; color: var(--muted); }
+    .toolbar { display: flex; flex-wrap: wrap; gap: .55rem; margin: 1rem 0; }
+    .tool-button { padding: .55rem .75rem; border: 1px solid #94a3b8; border-radius: 8px; color: #0f172a; background: white; font-weight: 720; }
+    .tool-button.primary { color: white; border-color: var(--blue); background: var(--blue); }
+    .tool-button.danger { color: #991b1b; border-color: #fca5a5; background: #fff1f2; }
+    .tool-button:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+    .status-line { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+    .status { padding: .28rem .55rem; border-radius: 999px; color: #334155; background: #e2e8f0; font-size: .82rem; font-weight: 750; }
+    .status.ok { color: #065f46; background: var(--green-soft); }
+    .status.bad { color: #991b1b; background: var(--red-soft); }
+    #legacy-widget { min-width: 720px; }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; }
+    .metric { padding: .9rem; border: 1px solid #dbe3ee; border-radius: 11px; background: #f8fafc; }
+    .metric span { display: block; color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
+    .metric strong { display: block; margin-top: .25rem; font-size: 1.55rem; }
+    .metric.highlight { border-color: #60a5fa; background: #eff6ff; }
+    .search-row { display: flex; gap: .55rem; margin-top: 1rem; }
+    .search-row input { flex: 1; min-width: 12rem; padding: .58rem .7rem; border: 1px solid #94a3b8; border-radius: 8px; }
+    .icon-button { width: 42px; border: 1px solid #cbd5e1; border-radius: 8px; background: white; }
+    .a11y-issue { margin: .7rem 0 0; color: #bac2cd; font-size: .86rem; }
+    .table-wrap { margin-top: 1rem; overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: .68rem .75rem; border-bottom: 1px solid #e5e7eb; text-align: left; white-space: nowrap; }
+    th { background: #f1f5f9; font-size: .8rem; letter-spacing: .04em; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+    @media (max-width: 700px) {
+      .app { width: calc(100% - 1rem); }
+    }
+  </style>
+</head>
+<body>
+  <div class="notice">Página de prácticas: abre DevTools aquí. Las instrucciones permanecen en la otra pestaña.</div>
+  <main class="app app-lab">
+    <header class="app-topbar">
+      <h1>OpsBoard · Panel de pedidos</h1>
+      <span class="env">PRÁCTICA DEVTOOLS</span>
+    </header>
+    <div class="app-body">
+      <div class="context">
+        <p>Aplicación de demostración con fallos preparados para el laboratorio.</p>
+        <span id="clock" class="status">Sin sincronizar</span>
+      </div>
+
+      <div class="toolbar" aria-label="Acciones de prueba">
+        <button class="tool-button primary" id="sync-orders" type="button">Sincronizar pedidos</button>
+        <button class="tool-button" id="recalculate" type="button">Recalcular total</button>
+        <button class="tool-button danger" id="trigger-error" type="button">Provocar error HTTP</button>
+        <button class="tool-button" id="run-long-task" type="button">Ejecutar tarea lenta</button>
+        <button class="tool-button" id="create-leak" type="button">Retener memoria</button>
+      </div>
+
+      <div class="status-line" aria-live="polite">
+        <span class="status" id="network-status">Red: pendiente</span>
+        <span class="status" id="calc-status">Cálculo: pendiente</span>
+        <span class="status" id="memory-status">Retenciones: 0</span>
+        <span class="status" id="sw-status">Service Worker: comprobando</span>
+      </div>
+
+      <section id="legacy-widget">
+        <div class="dashboard-grid">
+          <article class="metric">
+            <span>Pedidos</span>
+            <strong id="orders-count">—</strong>
+          </article>
+          <article class="metric">
+            <span>Pendientes</span>
+            <strong id="pending-count">—</strong>
+          </article>
+          <article class="metric highlight">
+            <span>Facturación calculada</span>
+            <strong id="invoice-total">—</strong>
+          </article>
+          <article class="metric">
+            <span>Tiempo de respuesta</span>
+            <strong id="response-time">—</strong>
+          </article>
+        </div>
+
+        <div class="search-row">
+          <input id="order-filter" type="search" placeholder="Filtrar por cliente">
+          <button class="icon-button" id="delete-last" type="button"><span aria-hidden="true">🗑️</span></button>
+        </div>
+        <p class="a11y-issue">Consejo del sistema: utiliza el buscador y el botón de acción para gestionar la lista.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Cliente</th><th>Unidades</th><th>Precio</th><th>Estado</th></tr></thead>
+            <tbody id="orders-body"><tr><td colspan="5">Pulsa «Sincronizar pedidos».</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    'use strict';
+
+    window.devtoolsLab = { orders: [], retenciones: [] };
+
+    const ui = {
+      body: document.querySelector('#orders-body'),
+      count: document.querySelector('#orders-count'),
+      pending: document.querySelector('#pending-count'),
+      total: document.querySelector('#invoice-total'),
+      response: document.querySelector('#response-time'),
+      network: document.querySelector('#network-status'),
+      calculation: document.querySelector('#calc-status'),
+      memory: document.querySelector('#memory-status'),
+      serviceWorker: document.querySelector('#sw-status'),
+      clock: document.querySelector('#clock')
+    };
+
+    function euro(value) {
+      return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value);
+    }
+
+    function renderOrders(orders) {
+      ui.body.replaceChildren(...orders.map(order => {
+        const row = document.createElement('tr');
+        row.dataset.orderId = order.id;
+        row.innerHTML = `<td>${order.id}</td><td>${order.client}</td><td>${order.quantity}</td><td>${euro(order.price)}</td><td>${order.status}</td>`;
+        return row;
+      }));
+      ui.count.textContent = String(orders.length);
+      ui.pending.textContent = String(orders.filter(order => order.status === 'Pendiente').length);
+    }
+
+    async function cargarPedidos() {
+      const started = performance.now();
+      ui.network.textContent = 'Red: solicitando…';
+      ui.network.className = 'status';
+      console.info('[OpsBoard] Inicio de sincronización');
+      try {
+        const response = await fetch(`./data.json?ts=${Date.now()}`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status} al cargar pedidos`);
+        const payload = await response.json();
+        window.devtoolsLab.orders = payload.orders;
+        renderOrders(payload.orders);
+        const elapsed = Math.round(performance.now() - started);
+        ui.response.textContent = `${elapsed} ms`;
+        ui.network.textContent = `Red: ${response.status}`;
+        ui.network.className = 'status ok';
+        ui.clock.textContent = `Última sincronización: ${new Date().toLocaleTimeString('es-ES')}`;
+        console.table(payload.orders);
+        console.info(`[OpsBoard] ${payload.orders.length} pedidos cargados en ${elapsed} ms`);
+      } catch (error) {
+        ui.network.textContent = `Red: ${error.message}`;
+        ui.network.className = 'status bad';
+        console.error('[OpsBoard] No se pudieron sincronizar los pedidos', error);
+      }
+    }
+
+    function calcularTotalConBug(orders) {
+      let total = 0;
+      for (const pedido of orders) {
+        const subtotal = pedido.price * pedido.quantity;
+        total = subtotal;
+      }
+      return total;
+    }
+
+    function recalcular() {
+      const total = calcularTotalConBug(window.devtoolsLab.orders);
+      ui.total.textContent = euro(total);
+      ui.calculation.textContent = 'Cálculo: completado';
+      ui.calculation.className = 'status bad';
+      console.warn('[OpsBoard] Total calculado. Validación pendiente.');
+    }
+
+    async function provocarErrorHttp() {
+      console.group('[OpsBoard] Prueba de error controlado');
+      try {
+        const response = await fetch(`./missing.json?ts=${Date.now()}`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}: recurso de prueba inexistente`);
+      } catch (error) {
+        console.error(error);
+        ui.network.textContent = `Red: ${error.message}`;
+        ui.network.className = 'status bad';
+      } finally {
+        console.groupEnd();
+      }
+    }
+
+    function ejecutarTareaLenta() {
+      const started = performance.now();
+      let checksum = 0;
+      while (performance.now() - started < 550) {
+        checksum = (checksum + Math.sqrt(checksum + 17)) % 100000;
+      }
+      const elapsed = Math.round(performance.now() - started);
+      console.warn(`[Performance] Tarea síncrona terminada en ${elapsed} ms`, { checksum });
+      return elapsed;
+    }
+
+    function retenerMemoria() {
+      const detached = document.createElement('section');
+      detached.className = 'detached-order-preview';
+      detached.textContent = `Vista previa ${Date.now()}`;
+      const payload = Array.from({ length: 12000 }, (_, index) => `pedido-${index}-${Date.now()}`);
+      window.devtoolsLab.retenciones.push({ detached, payload, createdAt: new Date() });
+      ui.memory.textContent = `Retenciones: ${window.devtoolsLab.retenciones.length}`;
+      console.info('[Memory] Objeto retenido deliberadamente', window.devtoolsLab.retenciones.at(-1));
+    }
+
+    function aplicarPreferencias() {
+      const contrast = localStorage.getItem('opsboard.theme') === 'contrast';
+      document.querySelector('.app-lab').style.outline = contrast ? '4px solid #111827' : '';
+      console.info(`[Storage] Tema aplicado: ${contrast ? 'contrast' : 'default'}`);
+    }
+    window.aplicarPreferencias = aplicarPreferencias;
+
+    document.querySelector('#sync-orders').addEventListener('click', cargarPedidos);
+    document.querySelector('#recalculate').addEventListener('click', recalcular);
+    document.querySelector('#trigger-error').addEventListener('click', provocarErrorHttp);
+    document.querySelector('#run-long-task').addEventListener('click', ejecutarTareaLenta);
+    document.querySelector('#create-leak').addEventListener('click', retenerMemoria);
+    document.querySelector('#delete-last').addEventListener('click', () => {
+      window.devtoolsLab.orders.pop();
+      renderOrders(window.devtoolsLab.orders);
+    });
+    document.querySelector('#order-filter').addEventListener('input', event => {
+      const query = event.target.value.trim().toLocaleLowerCase('es');
+      renderOrders(window.devtoolsLab.orders.filter(order => order.client.toLocaleLowerCase('es').includes(query)));
+    });
+
+    try {
+      localStorage.setItem('opsboard.theme', localStorage.getItem('opsboard.theme') || 'light');
+      sessionStorage.setItem('opsboard.session', 'training');
+      document.cookie = 'opsboard_lab=enabled; SameSite=Lax; path=/ciclos/dwec/alumnado/p0101_v2_lab/';
+    } catch (error) {
+      console.warn('[Storage] El origen actual limita el almacenamiento', error);
+    }
+
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      navigator.serviceWorker.register('./sw.js')
+        .then(registration => navigator.serviceWorker.ready.then(() => {
+          ui.serviceWorker.textContent = `Service Worker: activo (${registration.scope})`;
+          ui.serviceWorker.className = 'status ok';
+        }))
+        .catch(error => {
+          ui.serviceWorker.textContent = 'Service Worker: error';
+          ui.serviceWorker.className = 'status bad';
+          console.error('[PWA] Error al registrar el Service Worker', error);
+        });
+    }
+  </script>
+</body>
+</html>
