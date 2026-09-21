@@ -351,7 +351,29 @@
     .quiz-summary { margin: 0; color: var(--muted); font-size: .88rem; }
     .quiz-summary.success { color: #075943; font-weight: 750; }
 
-    .next-step { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center; padding: 1.3rem; border: 1px dashed #bcc3cf; border-radius: 16px; }
+    .activity-report { margin-top: 2rem; padding: clamp(1.4rem, 5vw, 2.5rem); border: 1px solid var(--line); border-radius: 24px; background: var(--white); }
+    .report-heading { display: flex; align-items: start; justify-content: space-between; gap: 1rem; margin-bottom: 1.2rem; }
+    .report-heading h2 { margin: 0 0 .45rem; font-size: clamp(1.7rem, 3vw, 2.4rem); }
+    .report-heading p { max-width: 720px; margin: 0; color: var(--muted); }
+    .report-seal { padding: .35rem .65rem; border-radius: 999px; background: var(--blue-soft); color: var(--blue-dark); font-size: .76rem; font-weight: 850; white-space: nowrap; }
+    .report-grid { display: grid; grid-template-columns: minmax(260px, .7fr) minmax(0, 1.3fr); gap: 1rem; }
+    .report-form { padding: 1.15rem; border: 1px solid var(--line); border-radius: 15px; background: var(--soft); }
+    .report-form label { display: block; margin-top: .8rem; font-size: .86rem; font-weight: 800; }
+    .report-form label:first-child { margin-top: 0; }
+    .report-form input { width: 100%; margin-top: .3rem; padding: .65rem .7rem; border: 1px solid #bec5d0; border-radius: 9px; background: var(--white); color: var(--ink); }
+    .report-form input:focus { border-color: var(--blue); outline: 3px solid #dce5ff; }
+    .report-form .optional { font-weight: 400; }
+    .report-form .action-button.secondary { border-color: #aab3c2; background: var(--white); color: var(--blue-dark); }
+    .report-form .action-button.secondary:hover { background: var(--blue-soft); }
+    .report-actions { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: 1rem; }
+    .report-status { margin: .8rem 0 0; color: var(--muted); font-size: .8rem; }
+    .report-status.ready { color: #075943; font-weight: 750; }
+    .report-output { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 15px; }
+    .report-output h3 { margin: 0; padding: .8rem 1rem; border-bottom: 1px solid var(--line); font-size: 1rem; }
+    .report-preview { min-height: 310px; max-height: 500px; margin: 0; padding: 1rem; overflow: auto; background: var(--code); color: #dce5f2; font-size: .8rem; line-height: 1.55; white-space: pre-wrap; }
+
+    .next-step { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center; padding: 1.3rem; border: 1px solid #b9c8f7; border-radius: 16px; background: #fafbff; color: inherit; text-decoration: none; transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
+    .next-step:hover { border-color: var(--blue); box-shadow: 0 12px 32px rgba(36, 87, 245, .11); transform: translateY(-2px); }
     .lock { display: grid; width: 42px; aspect-ratio: 1; place-items: center; border-radius: 12px; background: var(--soft); }
     .next-step h3 { margin: 0 0 .2rem; font-size: 1rem; }
     .next-step p { margin: 0; color: var(--muted); font-size: .9rem; }
@@ -387,11 +409,12 @@
       .code-line { min-width: 520px; }
       .exercise-hero { gap: 1.2rem; }
       .time-card { justify-self: start; }
-      .lab-heading, .diagnostic-head { align-items: start; grid-template-columns: 1fr; flex-direction: column; }
+      .lab-heading, .diagnostic-head, .report-heading { align-items: start; grid-template-columns: 1fr; flex-direction: column; }
       .typing-badge { white-space: normal; }
       .editor-actions { align-items: stretch; }
       .paste-status { flex-basis: 100%; text-align: left; }
       .preview-head { align-items: flex-start; flex-direction: column; }
+      .report-grid { grid-template-columns: 1fr; }
       .next-step { grid-template-columns: auto 1fr; }
       .next-step span:last-child { grid-column: 2; }
     }
@@ -400,7 +423,7 @@
       *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
     }
     @media print {
-      .site-header, .editor-actions, .download-button, .quiz-actions, .click-hint, .next-step { display: none; }
+      .site-header, .editor-actions, .download-button, .quiz-actions, .report-form, .click-hint, .next-step { display: none; }
       .hero { min-height: auto; padding-block: 2rem; }
       .browser { box-shadow: none; }
       .section { padding-block: 2rem; }
@@ -721,6 +744,30 @@
             </div>
           </form>
         </section>
+
+        <section class="activity-report" aria-labelledby="informe-titulo">
+          <div class="report-heading">
+            <div><h2 id="informe-titulo">Informe de actividad</h2><p>Genera una evidencia con tus puntuaciones, las pruebas superadas y el resultado global. El informe no contiene ni reproduce tu código HTML.</p></div>
+            <span class="report-seal">Sin código fuente</span>
+          </div>
+          <div class="report-grid">
+            <form class="report-form" id="report-form">
+              <label for="student-name">Nombre o alias</label>
+              <input id="student-name" name="student-name" type="text" maxlength="60" autocomplete="name" required>
+              <label for="student-group">Grupo <span aria-hidden="true">·</span> <span class="optional">opcional</span></label>
+              <input id="student-group" name="student-group" type="text" maxlength="40">
+              <div class="report-actions">
+                <button class="action-button primary" id="generate-report" type="submit" disabled>Generar informe</button>
+                <button class="action-button secondary" id="download-report" type="button" disabled>Descargar TXT</button>
+              </div>
+              <p class="report-status" id="report-status" role="status">Completa y corrige el laboratorio y el diagnóstico técnico.</p>
+            </form>
+            <div class="report-output">
+              <h3>Vista previa del informe</h3>
+              <pre class="report-preview" id="report-preview" aria-live="polite">El resultado aparecerá aquí cuando las dos pruebas estén corregidas y hayas indicado tu nombre o alias.</pre>
+            </div>
+          </div>
+        </section>
       </div>
     </section>
 
@@ -732,11 +779,11 @@
           <p>Conserva tu archivo: cada nuevo ejercicio partirá del resultado anterior.</p>
         </div>
       </div>
-      <div class="next-step">
-        <span class="lock" aria-hidden="true">🔒</span>
+      <a class="next-step" href="html5-02-texto.html">
+        <span class="lock" aria-hidden="true">02</span>
         <div><h3>Próxima sección · Organizar y dar significado al texto</h3><p>Encabezados, párrafos, énfasis, listas y comentarios.</p></div>
-        <span>Próximamente</span>
-      </div>
+        <span>Abrir sección →</span>
+      </a>
     </section>
   </main>
 
@@ -855,8 +902,36 @@
       const previewEmpty = document.querySelector("#preview-empty");
       const downloadButton = document.querySelector("#download-html");
       const editorStorageKey = "html5-seccion-01-codigo-v2";
+      const reportForm = document.querySelector("#report-form");
+      const studentName = document.querySelector("#student-name");
+      const studentGroup = document.querySelector("#student-group");
+      const generateReportButton = document.querySelector("#generate-report");
+      const downloadReportButton = document.querySelector("#download-report");
+      const reportStatus = document.querySelector("#report-status");
+      const reportPreview = document.querySelector("#report-preview");
       let hasValidation = false;
+      let latestTests = null;
+      let latestQuizResults = null;
+      let latestReport = "";
       let pasteTimer;
+
+      const invalidateGeneratedReport = () => {
+        if (latestReport) reportPreview.textContent = "Los resultados han cambiado. Genera de nuevo el informe cuando estén actualizados.";
+        latestReport = "";
+        downloadReportButton.disabled = true;
+      };
+
+      const updateReportAvailability = () => {
+        const missing = [];
+        if (!latestTests) missing.push("ejecutar las diez pruebas");
+        if (!latestQuizResults) missing.push("corregir el diagnóstico técnico");
+        if (!studentName.value.trim()) missing.push("indicar el nombre o alias");
+        generateReportButton.disabled = missing.length > 0;
+        reportStatus.classList.toggle("ready", missing.length === 0);
+        reportStatus.textContent = missing.length
+          ? `Falta: ${missing.join(", ")}.`
+          : "Resultados listos. Ya puedes generar el informe.";
+      };
 
       const updateStats = () => {
         const characters = editor.value.length;
@@ -866,6 +941,9 @@
 
       const markAsModified = () => {
         downloadButton.disabled = true;
+        latestTests = null;
+        invalidateGeneratedReport();
+        updateReportAvailability();
         if (!hasValidation) return;
         testResults.classList.add("stale");
         testScore.textContent = "Modificado";
@@ -1026,6 +1104,12 @@
           item.querySelector(".test-icon").textContent = test.passed ? "✓" : "!";
           item.querySelector("p").textContent = test.passed ? test.success : test.failure;
         });
+        latestTests = tests.map((test, index) => ({
+          name: testItems[index].querySelector("strong").textContent,
+          passed: test.passed
+        }));
+        invalidateGeneratedReport();
+        updateReportAvailability();
         hasValidation = true;
         testResults.classList.remove("stale");
         testScore.textContent = `${passedTests} / ${tests.length}`;
@@ -1050,6 +1134,9 @@
         preview.srcdoc = "";
         previewEmpty.classList.remove("hidden");
         hasValidation = false;
+        latestTests = null;
+        invalidateGeneratedReport();
+        updateReportAvailability();
         testItems.forEach((item, index) => {
           item.className = "";
           item.querySelector(".test-icon").textContent = String(index + 1);
@@ -1082,19 +1169,26 @@
       updateStats();
 
       const quizAnswers = {
-        q1: { answer: "b", explanation: "title nombra la pestaña; el encabezado visible se crea con h1 dentro de body." },
-        q2: { answer: "a", explanation: "UTF-8 define cómo se interpretan los caracteres; lang y viewport cumplen otras funciones." },
-        q3: { answer: "c", explanation: "p se abrió después de body, por lo que debe cerrarse antes que body." },
-        q4: { answer: "b", explanation: "Los navegadores intentan recuperar documentos incorrectos; por eso hay que revisar la estructura y validar." }
+        q1: { answer: "b", label: "Título visible frente a título de pestaña", explanation: "title nombra la pestaña; el encabezado visible se crea con h1 dentro de body." },
+        q2: { answer: "a", label: "Codificación de caracteres", explanation: "UTF-8 define cómo se interpretan los caracteres; lang y viewport cumplen otras funciones." },
+        q3: { answer: "c", label: "Orden de anidamiento", explanation: "p se abrió después de body, por lo que debe cerrarse antes que body." },
+        q4: { answer: "b", label: "Interpretación del navegador", explanation: "Los navegadores intentan recuperar documentos incorrectos; por eso hay que revisar la estructura y validar." }
       };
       const quizForm = document.querySelector("#concept-quiz");
       const quizScore = document.querySelector("#quiz-score");
       const quizSummary = document.querySelector("#quiz-summary");
 
+      quizForm.addEventListener("change", () => {
+        latestQuizResults = null;
+        invalidateGeneratedReport();
+        updateReportAvailability();
+      });
+
       quizForm.addEventListener("submit", (event) => {
         event.preventDefault();
         let score = 0;
         let answered = 0;
+        const quizRunResults = [];
         document.querySelectorAll(".quiz-case").forEach((field) => {
           const data = quizAnswers[field.dataset.question];
           const selected = field.querySelector("input:checked");
@@ -1103,6 +1197,11 @@
           field.classList.remove("correct", "incorrect");
           field.querySelectorAll(".quiz-option").forEach((option) => option.classList.remove("correct-answer", "wrong-answer"));
           correctInput.closest(".quiz-option").classList.add("correct-answer");
+          quizRunResults.push({
+            name: data.label,
+            answered: Boolean(selected),
+            correct: Boolean(selected && selected.value === data.answer)
+          });
           if (!selected) {
             field.classList.add("incorrect");
             feedback.textContent = `Sin respuesta. ${data.explanation}`;
@@ -1120,6 +1219,9 @@
           }
         });
         quizScore.textContent = `${score} / 4`;
+        latestQuizResults = quizRunResults;
+        invalidateGeneratedReport();
+        updateReportAvailability();
         quizSummary.classList.toggle("success", score === 4);
         quizSummary.textContent = score === 4
           ? "Dominio completo: has justificado correctamente los cuatro casos."
@@ -1127,6 +1229,86 @@
             ? `Has respondido ${answered} de 4 casos. Lee las explicaciones y completa los pendientes.`
             : `Resultado: ${score} de 4. Revisa las explicaciones y vuelve a intentarlo.`;
       });
+
+      const identityStorageKey = "html5-seccion-01-identidad-v1";
+      const cleanIdentity = (value) => value.replace(/\s+/g, " ").trim();
+      const saveIdentity = () => {
+        try {
+          localStorage.setItem(identityStorageKey, JSON.stringify({
+            name: studentName.value,
+            group: studentGroup.value
+          }));
+        } catch (_) { /* El informe funciona sin almacenamiento. */ }
+      };
+
+      [studentName, studentGroup].forEach((input) => {
+        input.addEventListener("input", () => {
+          saveIdentity();
+          invalidateGeneratedReport();
+          updateReportAvailability();
+        });
+      });
+
+      reportForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (generateReportButton.disabled || !latestTests || !latestQuizResults) return;
+        const testPasses = latestTests.filter((test) => test.passed).length;
+        const quizPasses = latestQuizResults.filter((answer) => answer.correct).length;
+        const overallResult = testPasses === latestTests.length && quizPasses >= 3 ? "SUPERADA" : "EN PROCESO";
+        const generatedAt = new Intl.DateTimeFormat("es-ES", { dateStyle: "long", timeStyle: "short" }).format(new Date());
+        const testLines = latestTests.map((test, index) => `${String(index + 1).padStart(2, "0")}. ${test.name}: ${test.passed ? "SUPERADA" : "PENDIENTE"}`);
+        const quizLines = latestQuizResults.map((answer, index) => {
+          const state = answer.correct ? "CORRECTO" : answer.answered ? "REVISAR" : "SIN RESPUESTA";
+          return `${String(index + 1).padStart(2, "0")}. ${answer.name}: ${state}`;
+        });
+        latestReport = [
+          "INFORME DE ACTIVIDAD",
+          "Ruta HTML5 · Sección 01: El esqueleto de una página",
+          "=".repeat(62),
+          `Alumno/a: ${cleanIdentity(studentName.value)}`,
+          `Grupo: ${cleanIdentity(studentGroup.value) || "No indicado"}`,
+          `Fecha de generación: ${generatedAt}`,
+          "",
+          `RESULTADO GLOBAL: ${overallResult}`,
+          "Criterio: 10/10 en construcción y al menos 3/4 en diagnóstico.",
+          "",
+          `CONSTRUCCIÓN DEL DOCUMENTO: ${testPasses}/${latestTests.length}`,
+          ...testLines,
+          "",
+          `DIAGNÓSTICO TÉCNICO: ${quizPasses}/${latestQuizResults.length}`,
+          ...quizLines,
+          "",
+          "Observación: este informe resume los resultados de la actividad.",
+          "No incluye ni reproduce el código HTML escrito por el alumno o alumna."
+        ].join("\n");
+        reportPreview.textContent = latestReport;
+        downloadReportButton.disabled = false;
+        reportStatus.classList.add("ready");
+        reportStatus.textContent = `Informe generado · Resultado: ${overallResult}.`;
+      });
+
+      downloadReportButton.addEventListener("click", () => {
+        if (!latestReport) return;
+        const safeName = cleanIdentity(studentName.value).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "alumno";
+        const file = new Blob([latestReport], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(file);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `informe-html5-seccion-01-${safeName}.txt`;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      });
+
+      try {
+        const savedIdentity = JSON.parse(localStorage.getItem(identityStorageKey) || "null");
+        if (savedIdentity) {
+          studentName.value = savedIdentity.name || "";
+          studentGroup.value = savedIdentity.group || "";
+        }
+      } catch (_) { /* Sin identidad guardada. */ }
+      updateReportAvailability();
     })();
   </script>
 </body>
