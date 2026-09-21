@@ -549,7 +549,7 @@
         const expression = closing ? `<\\/${name}\\s*>` : `<${name}\\b[^>]*>`;
         return (source.match(new RegExp(expression, "gi")) || []).length;
       };
-      const balanced = (source) => {
+      const inspectBalance = (source) => {
         const voids = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]);
         const cleaned = source.replace(/<!--[\s\S]*?-->/g, "").replace(/<!doctype[^>]*>/gi, "");
         const stack = [];
@@ -557,10 +557,36 @@
           const tag = token[0];
           const name = token[1].toLowerCase();
           if (tag.startsWith("</")) {
-            if (stack.pop() !== name) return false;
+            const openName = stack.pop();
+            if (!openName) return { valid: false, detail: `Sobra la etiqueta de cierre </${name}>.` };
+            if (openName !== name) return { valid: false, detail: `Se encuentra </${name}>, pero antes debe cerrarse <${openName}> con </${openName}>.` };
           } else if (!voids.has(name) && !tag.endsWith("/>")) stack.push(name);
         }
-        return stack.length === 0;
+        if (stack.length) {
+          const openName = stack.at(-1);
+          return { valid: false, detail: `Falta cerrar <${openName}> con </${openName}>.` };
+        }
+        return { valid: true, detail: "" };
+      };
+      const inspectSyntax = (source) => {
+        const syntaxSource = source.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
+        const balanceResult = inspectBalance(syntaxSource);
+        const htmlOpenCount = countTags(syntaxSource, "html");
+        const htmlCloseCount = countTags(syntaxSource, "html", true);
+        let finalMarkup = syntaxSource.trimEnd();
+        while (finalMarkup.endsWith("-->")) {
+          const commentStart = finalMarkup.lastIndexOf("<!--");
+          if (commentStart < 0) break;
+          finalMarkup = finalMarkup.slice(0, commentStart).trimEnd();
+        }
+        const problems = [];
+        if (htmlOpenCount !== 1) problems.push(`Debe haber una única apertura <html>; ahora hay ${htmlOpenCount}.`);
+        if (htmlCloseCount !== 1) problems.push(`Debe haber un único cierre </html>; ahora hay ${htmlCloseCount}.`);
+        if (!balanceResult.valid) problems.push(balanceResult.detail);
+        if (!/<\/html\s*>$/i.test(finalMarkup)) problems.push("El último elemento del documento debe ser </html>.");
+        if (/<\/?(?:font|center|big)\b/i.test(syntaxSource)) problems.push("No uses font, center o big: son elementos obsoletos.");
+        if (/<br\b[^>]*>\s*<br\b/i.test(syntaxSource)) problems.push("No uses dos br seguidos para crear separación visual.");
+        return { valid: problems.length === 0, detail: problems[0] || "" };
       };
       const directItems = (list) => [...list.children].filter((child) => child.tagName === "LI");
 
@@ -581,7 +607,7 @@
         const unordered = [...body.querySelectorAll("ul")];
         const ordered = [...body.querySelectorAll("ol")];
         const usefulComment = [...normalized.matchAll(/<!--([\s\S]*?)-->/g)].some((match) => match[1].trim().length >= 10);
-        const cleanSyntax = balanced(normalized) && /<\/html\s*>\s*$/i.test(normalized) && !/<\/?(?:font|center|big)\b/i.test(normalized) && !/<br\b[^>]*>\s*<br\b/i.test(normalized);
+        const syntaxResult = inspectSyntax(normalized);
         return [
           { passed: skeleton, ok: "La estructura HTML5, el idioma y los metadatos se conservan.", fail: "Recupera doctype, html lang=es, head, charset, viewport y body." },
           { passed: body.querySelectorAll("h1").length === 1 && body.querySelector("h1")?.textContent.trim().length >= 5, ok: "Existe un único h1 significativo.", fail: "Debe existir exactamente un h1 con un título significativo." },
@@ -594,7 +620,7 @@
           { passed: ordered.some((list) => directItems(list).length >= 3), ok: "Hay una lista ordenada con al menos tres elementos.", fail: "Crea un ol que contenga al menos tres li directos." },
           { passed: Boolean(body.querySelector("li ul, li ol")), ok: "Una lista secundaria está anidada dentro de un li.", fail: "Añade una sublista dentro de uno de los elementos li." },
           { passed: usefulComment, ok: "El código contiene un comentario explicativo.", fail: "Añade un comentario HTML de al menos diez caracteres." },
-          { passed: cleanSyntax && countTags(normalized, "html") === 1 && countTags(normalized, "html", true) === 1, ok: "Las etiquetas están equilibradas y no se usan recursos obsoletos para dar estilo.", fail: "Revisa los cierres y evita font, center, big o dobles br para crear espacio." }
+          { passed: syntaxResult.valid, ok: "Las etiquetas están equilibradas y no se usan recursos obsoletos para dar estilo.", fail: syntaxResult.detail || "Revisa la sintaxis del documento." }
         ];
       };
 
