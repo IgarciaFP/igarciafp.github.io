@@ -174,7 +174,7 @@
     .window-title { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 50px; padding: .6rem 1rem; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .82rem; }
     .file-name { display: flex; align-items: center; gap: .55rem; color: var(--ink); font-weight: 800; }
     .file-icon { color: #e34f26; font-size: .72rem; font-weight: 950; }
-    .code-lines { margin: 0; padding: .8rem 0 1rem; overflow-x: auto; background: var(--code); color: #e8edf8; }
+    .code-lines { margin: 0; padding: .8rem 0 1rem; overflow-x: auto; background: var(--code); color: #e8edf8; user-select: none; }
     .code-line {
       width: 100%;
       min-width: 540px;
@@ -252,28 +252,104 @@
     .steps strong { display: block; margin-bottom: .18rem; }
     .steps p { margin: 0; color: var(--muted); font-size: .92rem; }
 
-    .starter { overflow: hidden; border-radius: 18px; background: var(--code); box-shadow: 0 15px 35px rgba(17, 24, 39, .18); }
-    .starter-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .7rem .9rem; border-bottom: 1px solid #334155; color: #cbd5e1; font-size: .8rem; }
-    .copy-button { padding: .38rem .7rem; border: 1px solid #64748b; border-radius: 8px; background: #202a3a; color: var(--white); font-size: .78rem; font-weight: 800; cursor: pointer; }
-    .copy-button:hover { background: #2d3a50; }
-    .copy-button.copied { border-color: #5eead4; background: #0f766e; }
-    .starter pre { max-height: 500px; margin: 0; padding: 1.2rem; overflow: auto; color: #e8edf8; font-size: .82rem; line-height: 1.65; tab-size: 2; }
-    .todo { color: #fde68a; }
+    .requirements { padding: 1.25rem; border: 1px solid var(--line); border-radius: 16px; background: var(--soft); }
+    .requirements h3 { margin: 0 0 .8rem; font-size: 1.08rem; }
+    .requirements ul { margin: 0; padding-left: 1.2rem; }
+    .requirements li + li { margin-top: .45rem; }
+    .typing-rule { margin: 1rem 0 0; padding: .85rem 1rem; border-left: 4px solid var(--amber); border-radius: 8px; background: var(--amber-soft); color: #6f4300; font-size: .91rem; }
 
-    .check-area { padding: clamp(1.4rem, 5vw, 3rem); border-top: 1px solid var(--line); }
-    .check-head { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
-    .check-head h3 { margin: 0 0 .3rem; font-size: 1.5rem; }
-    .check-head p { margin: 0; color: var(--muted); }
-    .check-count { color: var(--blue-dark); font-weight: 900; white-space: nowrap; }
-    .check-track { height: 8px; margin-bottom: 1.3rem; overflow: hidden; border-radius: 99px; background: #e8ebf1; }
-    .check-track span { display: block; width: 0; height: 100%; border-radius: inherit; background: var(--blue); transition: width .25s ease; }
-    .checklist { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; margin: 0; padding: 0; list-style: none; }
-    .checklist label { display: flex; align-items: flex-start; gap: .75rem; height: 100%; padding: 1rem; border: 1px solid var(--line); border-radius: 13px; cursor: pointer; }
-    .checklist label:hover { border-color: #afc0f8; background: #fafbff; }
-    .checklist input { flex: 0 0 auto; width: 1.18rem; height: 1.18rem; margin-top: .18rem; accent-color: var(--blue); }
-    .completion { display: none; margin: 1rem 0 0; padding: 1rem; border-radius: 13px; background: var(--green-soft); color: #075943; font-weight: 750; }
-    .completion.visible { display: block; }
-    .reset-button { margin-top: 1rem; padding: .35rem 0; border: 0; background: none; color: var(--muted); font-size: .82rem; text-decoration: underline; cursor: pointer; }
+    .coding-lab { padding: 0 clamp(1.4rem, 5vw, 3rem) clamp(1.4rem, 5vw, 3rem); }
+    .lab-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+    .lab-heading h3 { margin: 0 0 .3rem; font-size: 1.5rem; }
+    .lab-heading p { margin: 0; color: var(--muted); }
+    .typing-badge { padding: .35rem .65rem; border: 1px solid #e7c886; border-radius: 999px; background: var(--amber-soft); color: #6f4300; font-size: .78rem; font-weight: 850; white-space: nowrap; }
+    .coding-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(310px, .8fr); gap: 1rem; align-items: stretch; }
+    .editor-panel, .test-panel { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: var(--white); }
+    .editor-panel { background: var(--code); box-shadow: 0 15px 35px rgba(17, 24, 39, .16); }
+    .editor-head, .test-head, .preview-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 52px; padding: .7rem 1rem; }
+    .editor-head { border-bottom: 1px solid #334155; color: #cbd5e1; font-size: .82rem; }
+    .editor-file { color: var(--white); font-weight: 800; }
+    .editor-file::before { content: "◆"; margin-right: .5rem; color: #f06529; font-size: .65rem; }
+    #editor-stats { color: #94a3b8; font-size: .76rem; }
+    .editor-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    #html-editor {
+      width: 100%;
+      min-height: 470px;
+      display: block;
+      resize: vertical;
+      padding: 1.2rem;
+      border: 0;
+      outline: 0;
+      background: var(--code);
+      color: #e8edf8;
+      caret-color: #7aa2ff;
+      font: .86rem/1.65 "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      tab-size: 2;
+    }
+    #html-editor::placeholder { color: #70809a; }
+    #html-editor:focus-visible { box-shadow: inset 0 0 0 3px #7aa2ff; }
+    .editor-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; padding: .8rem 1rem; border-top: 1px solid #334155; }
+    .action-button { padding: .62rem .9rem; border: 1px solid transparent; border-radius: 9px; font-weight: 850; cursor: pointer; }
+    .action-button.primary { background: var(--blue); color: var(--white); }
+    .action-button.primary:hover { background: var(--blue-dark); }
+    .action-button.secondary { border-color: #64748b; background: transparent; color: #dbe3ef; }
+    .action-button.secondary:hover { background: #202b3f; }
+    .action-button:disabled { cursor: not-allowed; opacity: .45; }
+    .paste-status { flex: 1 1 180px; color: #fcd58d; font-size: .78rem; text-align: right; }
+
+    .test-panel { display: flex; min-height: 100%; flex-direction: column; }
+    .test-head { border-bottom: 1px solid var(--line); }
+    .test-head h4 { margin: 0; font-size: 1rem; }
+    .test-score { color: var(--blue-dark); font-weight: 900; }
+    .test-progress { height: 6px; background: #e8ebf1; }
+    .test-progress span { display: block; width: 0; height: 100%; background: var(--blue); transition: width .25s ease; }
+    .test-results { flex: 1; margin: 0; padding: .55rem; list-style: none; }
+    .test-results li { display: grid; grid-template-columns: 24px 1fr; gap: .55rem; padding: .62rem .55rem; border-radius: 9px; }
+    .test-results li + li { border-top: 1px solid #edf0f4; }
+    .test-icon { display: grid; width: 20px; height: 20px; place-items: center; border: 1px solid #bec5d0; border-radius: 50%; color: #7d8592; font-size: .72rem; font-weight: 900; }
+    .test-results strong { display: block; font-size: .87rem; }
+    .test-results p { margin: .12rem 0 0; color: var(--muted); font-size: .77rem; line-height: 1.4; }
+    .test-results li.passed { background: var(--green-soft); }
+    .test-results li.passed .test-icon { border-color: var(--green); background: var(--green); color: var(--white); }
+    .test-results li.failed { background: var(--red-soft); }
+    .test-results li.failed .test-icon { border-color: var(--red); background: var(--red); color: var(--white); }
+    .test-results.stale { opacity: .56; }
+    .validation-message { margin: .5rem; padding: .8rem; border-radius: 10px; background: var(--soft); color: var(--muted); font-size: .84rem; }
+    .validation-message.success { background: var(--green-soft); color: #075943; font-weight: 750; }
+    .validation-message.error { background: var(--red-soft); color: #7f1d2d; }
+
+    .preview-panel { margin-top: 1rem; overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: var(--white); }
+    .preview-head { border-bottom: 1px solid var(--line); }
+    .preview-head div { min-width: 0; }
+    .preview-head h4 { margin: 0; font-size: 1rem; }
+    .preview-head p { margin: .12rem 0 0; color: var(--muted); font-size: .78rem; }
+    .download-button { padding: .55rem .8rem; border: 0; border-radius: 9px; background: var(--green); color: var(--white); font-size: .8rem; font-weight: 850; cursor: pointer; white-space: nowrap; }
+    .download-button:disabled { cursor: not-allowed; opacity: .38; }
+    .preview-stage { position: relative; min-height: 260px; background: var(--white); }
+    #html-preview { width: 100%; min-height: 260px; display: block; border: 0; background: var(--white); }
+    .preview-empty { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 2rem; color: var(--muted); text-align: center; pointer-events: none; }
+    .preview-empty.hidden { display: none; }
+
+    .diagnostic { margin-top: 2rem; padding: clamp(1.4rem, 5vw, 2.5rem); border: 1px solid var(--line); border-radius: 24px; background: var(--white); }
+    .diagnostic-head { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: end; margin-bottom: 1.2rem; }
+    .diagnostic-head h2 { margin: 0 0 .45rem; font-size: clamp(1.7rem, 3vw, 2.4rem); }
+    .diagnostic-head p { max-width: 720px; margin: 0; color: var(--muted); }
+    .quiz-score { min-width: 94px; padding: .65rem .8rem; border-radius: 12px; background: var(--soft); color: var(--blue-dark); font-weight: 900; text-align: center; }
+    .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .quiz-case { min-width: 0; margin: 0; padding: 1.15rem; border: 1px solid var(--line); border-radius: 15px; }
+    .quiz-case legend { padding: 0 .35rem; font-weight: 850; line-height: 1.35; }
+    .case-number { display: block; margin-bottom: .35rem; color: var(--blue); font-size: .72rem; letter-spacing: .09em; text-transform: uppercase; }
+    .quiz-option { display: flex; align-items: flex-start; gap: .6rem; margin-top: .55rem; padding: .65rem .7rem; border: 1px solid var(--line); border-radius: 9px; cursor: pointer; }
+    .quiz-option:hover { background: var(--soft); }
+    .quiz-option input { flex: 0 0 auto; margin-top: .28rem; accent-color: var(--blue); }
+    .quiz-option.correct-answer { border-color: #74bca6; background: var(--green-soft); }
+    .quiz-option.wrong-answer { border-color: #e29aa6; background: var(--red-soft); }
+    .quiz-feedback { min-height: 2.5em; margin: .7rem 0 0; color: var(--muted); font-size: .82rem; }
+    .quiz-case.correct .quiz-feedback { color: #075943; }
+    .quiz-case.incorrect .quiz-feedback { color: #8a2032; }
+    .quiz-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; margin-top: 1rem; }
+    .quiz-summary { margin: 0; color: var(--muted); font-size: .88rem; }
+    .quiz-summary.success { color: #075943; font-weight: 750; }
 
     .next-step { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center; padding: 1.3rem; border: 1px dashed #bcc3cf; border-radius: 16px; }
     .lock { display: grid; width: 42px; aspect-ratio: 1; place-items: center; border-radius: 12px; background: var(--soft); }
@@ -288,7 +364,7 @@
     footer a { font-size: .85rem; font-weight: 750; }
 
     @media (max-width: 880px) {
-      .hero, .anatomy-grid, .exercise-body { grid-template-columns: 1fr; }
+      .hero, .anatomy-grid, .exercise-body, .coding-grid { grid-template-columns: 1fr; }
       .hero { min-height: auto; }
       .browser { width: min(620px, 100%); transform: none; }
       .objectives, .rules { grid-template-columns: 1fr 1fr; }
@@ -303,7 +379,7 @@
       .project-strip .wrap, .section-head, .exercise-hero, .footer-grid { grid-template-columns: 1fr; }
       .project-icon, .section-number { margin-bottom: .2rem; }
       .project-step { white-space: normal; }
-      .objectives, .compare-grid, .rules, .checklist { grid-template-columns: 1fr; }
+      .objectives, .compare-grid, .rules, .quiz-grid { grid-template-columns: 1fr; }
       .section-head { gap: .45rem; }
       .section-head h2 { margin-top: 0; }
       .anatomy { padding: .55rem; }
@@ -311,7 +387,11 @@
       .code-line { min-width: 520px; }
       .exercise-hero { gap: 1.2rem; }
       .time-card { justify-self: start; }
-      .check-head { align-items: start; flex-direction: column; }
+      .lab-heading, .diagnostic-head { align-items: start; grid-template-columns: 1fr; flex-direction: column; }
+      .typing-badge { white-space: normal; }
+      .editor-actions { align-items: stretch; }
+      .paste-status { flex-basis: 100%; text-align: left; }
+      .preview-head { align-items: flex-start; flex-direction: column; }
       .next-step { grid-template-columns: auto 1fr; }
       .next-step span:last-child { grid-column: 2; }
     }
@@ -320,12 +400,12 @@
       *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
     }
     @media print {
-      .site-header, .copy-button, .reset-button, .click-hint, .next-step { display: none; }
+      .site-header, .editor-actions, .download-button, .quiz-actions, .click-hint, .next-step { display: none; }
       .hero { min-height: auto; padding-block: 2rem; }
       .browser { box-shadow: none; }
       .section { padding-block: 2rem; }
       .exercise-shell { box-shadow: none; }
-      .code-lines, .starter { print-color-adjust: exact; }
+      .code-lines, .editor-panel { print-color-adjust: exact; }
     }
   </style>
 </head>
@@ -353,9 +433,9 @@
         <h1>El esqueleto de una <em>página web</em></h1>
         <p class="lede">Antes de añadir imágenes, enlaces o estilos, toda web necesita una estructura. Hoy aprenderás a leerla y crearás la base de un proyecto que irá creciendo sección a sección.</p>
         <ul class="hero-meta" aria-label="Datos de la sección">
-          <li>⏱ 40–50 min</li>
+          <li>⏱ 55–70 min</li>
           <li>9 elementos clave</li>
-          <li>1 ejercicio práctico</li>
+          <li>2 pruebas autocorregibles</li>
         </ul>
       </div>
 
@@ -513,61 +593,134 @@
             <div>
               <p class="exercise-kicker">Ejercicio práctico 01 · Proyecto acumulativo</p>
               <h2 id="ejercicio-titulo">Construye la base de tu rincón digital</h2>
-              <p>Elige un tema que te interese. Este archivo será el punto de partida del proyecto y lo ampliarás en las próximas secciones.</p>
+              <p>Elige un tema, escribe el documento completo sin pegar código y somételo a pruebas automáticas. Este archivo será la base de las siguientes secciones.</p>
             </div>
-            <div class="time-card"><strong>20–25</strong><span>minutos</span></div>
+            <div class="time-card"><strong>35–45</strong><span>minutos</span></div>
           </div>
 
           <div class="exercise-body">
             <div>
-              <p class="brief"><strong>Resultado esperado:</strong> una página que se abra en el navegador, tenga un nombre en la pestaña y muestre un título y una breve presentación.</p>
+              <p class="brief"><strong>Encargo:</strong> crea desde cero una página válida sobre un tema de tu elección. Puedes consultar el ejemplo anterior, pero debes reconstruir la estructura razonando qué elemento corresponde en cada lugar.</p>
               <ol class="steps">
-                <li><strong>Elige el tema</strong><p>Puede ser música, deporte, videojuegos, naturaleza, tecnología o cualquier afición apropiada para clase.</p></li>
-                <li><strong>Crea el archivo</strong><p>Dentro de una carpeta nueva, crea un archivo llamado exactamente <code>index.html</code>.</p></li>
-                <li><strong>Escribe la estructura</strong><p>Usa la plantilla y sustituye cada texto marcado con <code>CAMBIA ESTO</code>.</p></li>
-                <li><strong>Comprueba el resultado</strong><p>Abre el archivo en un navegador y revisa tanto la pestaña como el contenido visible.</p></li>
+                <li><strong>Planifica el contenido</strong><p>Decide un título para la pestaña, un encabezado principal y una presentación precisa de entre 50 y 220 caracteres.</p></li>
+                <li><strong>Escribe sin copiar ni pegar</strong><p>Empieza por la declaración HTML5 y teclea después la estructura completa en el editor.</p></li>
+                <li><strong>Ejecuta las pruebas</strong><p>No te limites a la vista previa: el navegador puede corregir silenciosamente un documento mal escrito.</p></li>
+                <li><strong>Depura con las pistas</strong><p>Corrige el orden, el anidamiento, los metadatos y la sangría hasta superar las diez pruebas.</p></li>
+                <li><strong>Descarga y verifica</strong><p>Solo cuando obtengas 10/10 podrás descargar <code>index.html</code> y abrirlo fuera de esta ficha.</p></li>
               </ol>
             </div>
 
-            <div class="starter">
-              <div class="starter-head">
-                <span>index.html · plantilla inicial</span>
-                <button class="copy-button" type="button" data-copy="starter-code">Copiar plantilla</button>
+            <div>
+              <div class="requirements">
+                <h3>Contrato técnico</h3>
+                <ul>
+                  <li>Declaración HTML5 en la primera línea.</li>
+                  <li>Idioma español y codificación UTF-8.</li>
+                  <li>Configuración correcta para dispositivos móviles.</li>
+                  <li><code>&lt;head&gt;</code> antes de <code>&lt;body&gt;</code>, con cierre y anidamiento correctos.</li>
+                  <li>Un <code>&lt;title&gt;</code>, exactamente un <code>&lt;h1&gt;</code> y exactamente un <code>&lt;p&gt;</code>.</li>
+                  <li>Sangría coherente de dos espacios por nivel.</li>
+                </ul>
               </div>
-              <pre><code id="starter-code">&lt;!doctype html&gt;
-&lt;html lang="es"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport"
-        content="width=device-width, initial-scale=1.0"&gt;
-  &lt;title&gt;<span class="todo">CAMBIA ESTO: título de la pestaña</span>&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;h1&gt;<span class="todo">CAMBIA ESTO: nombre del proyecto</span>&lt;/h1&gt;
-  &lt;p&gt;<span class="todo">CAMBIA ESTO: presentación del tema</span>&lt;/p&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
+              <p class="typing-rule" id="typing-rule"><strong>Regla de aprendizaje:</strong> el editor bloquea el pegado y el arrastre de texto. Consultar el ejemplo está permitido; reproducirlo mecánicamente, no.</p>
             </div>
           </div>
 
-          <div class="check-area">
-            <div class="check-head">
-              <div><h3>Comprobación antes de continuar</h3><p>Marca cada evidencia cuando la hayas revisado de verdad.</p></div>
-              <span class="check-count" id="check-count">0 de 6</span>
+          <div class="coding-lab">
+            <div class="lab-heading">
+              <div><h3>Laboratorio de escritura</h3><p>Escribe, ejecuta las pruebas, interpreta los fallos y vuelve a intentarlo.</p></div>
+              <span class="typing-badge">Pegado deshabilitado</span>
             </div>
-            <div class="check-track" aria-hidden="true"><span id="check-progress"></span></div>
-            <ul class="checklist">
-              <li><label><input class="evidence" type="checkbox"><span>El archivo se llama <code>index.html</code> y se abre en el navegador.</span></label></li>
-              <li><label><input class="evidence" type="checkbox"><span>La primera línea es <code>&lt;!doctype html&gt;</code>.</span></label></li>
-              <li><label><input class="evidence" type="checkbox"><span><code>&lt;head&gt;</code> y <code>&lt;body&gt;</code> están dentro de <code>&lt;html&gt;</code>.</span></label></li>
-              <li><label><input class="evidence" type="checkbox"><span>La pestaña muestra un título relacionado con el tema.</span></label></li>
-              <li><label><input class="evidence" type="checkbox"><span>La página muestra un <code>&lt;h1&gt;</code> y un <code>&lt;p&gt;</code> personalizados.</span></label></li>
-              <li><label><input class="evidence" type="checkbox"><span>No queda ningún texto <code>CAMBIA ESTO</code> en el archivo.</span></label></li>
-            </ul>
-            <p class="completion" id="completion" role="status">✓ Primera etapa completada. Ya tienes el esqueleto de tu proyecto.</p>
-            <button class="reset-button" id="reset-checks" type="button">Reiniciar esta lista</button>
+
+            <div class="coding-grid">
+              <div class="editor-panel">
+                <div class="editor-head"><span class="editor-file">index.html</span><span id="editor-stats">0 líneas · 0 caracteres</span></div>
+                <label class="editor-label" for="html-editor">Código HTML del ejercicio</label>
+                <textarea id="html-editor" aria-describedby="typing-rule" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Empieza en la línea 1. Cada carácter cuenta."></textarea>
+                <div class="editor-actions">
+                  <button class="action-button primary" id="validate-code" type="button">Ejecutar 10 pruebas</button>
+                  <button class="action-button secondary" id="clear-editor" type="button">Vaciar editor</button>
+                  <span class="paste-status" id="paste-status" role="status"></span>
+                </div>
+              </div>
+
+              <aside class="test-panel" aria-labelledby="test-title">
+                <div class="test-head"><h4 id="test-title">Pruebas automáticas</h4><span class="test-score" id="test-score">Sin validar</span></div>
+                <div class="test-progress" aria-hidden="true"><span id="test-progress"></span></div>
+                <ol class="test-results" id="test-results">
+                  <li><span class="test-icon">1</span><div><strong>Declaración HTML5</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">2</span><div><strong>Raíz e idioma</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">3</span><div><strong>Estructura principal</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">4</span><div><strong>Codificación UTF-8</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">5</span><div><strong>Vista adaptable</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">6</span><div><strong>Título del documento</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">7</span><div><strong>Encabezado principal</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">8</span><div><strong>Párrafo de presentación</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">9</span><div><strong>Anidamiento y cierres</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">10</span><div><strong>Sangría de dos espacios</strong><p>Pendiente de comprobación.</p></div></li>
+                </ol>
+                <p class="validation-message" id="validation-message" role="status">Escribe el documento y ejecuta las pruebas cuando estés preparado.</p>
+              </aside>
+            </div>
+
+            <div class="preview-panel">
+              <div class="preview-head">
+                <div><h4>Resultado interpretado por el navegador</h4><p>Que algo se vea no demuestra que el código sea válido: consulta siempre las pruebas.</p></div>
+                <button class="download-button" id="download-html" type="button" disabled>Descargar index.html</button>
+              </div>
+              <div class="preview-stage">
+                <iframe id="html-preview" sandbox="" title="Vista previa del código HTML escrito"></iframe>
+                <p class="preview-empty" id="preview-empty">La vista previa aparecerá al ejecutar las pruebas.</p>
+              </div>
+            </div>
           </div>
         </div>
+
+        <section class="diagnostic" aria-labelledby="diagnostico-titulo">
+          <div class="diagnostic-head">
+            <div><h2 id="diagnostico-titulo">Diagnóstico técnico</h2><p>Cuatro situaciones reales para comprobar si entiendes la función de la estructura, no solo si eres capaz de repetirla.</p></div>
+            <span class="quiz-score" id="quiz-score">— / 4</span>
+          </div>
+          <form id="concept-quiz" novalidate>
+            <div class="quiz-grid">
+              <fieldset class="quiz-case" data-question="q1">
+                <legend><span class="case-number">Caso 01</span>La pestaña muestra «Astronomía», pero dentro de la página no aparece ningún encabezado. ¿Qué falta?</legend>
+                <label class="quiz-option"><input type="radio" name="q1" value="a"> Otro <code>&lt;title&gt;</code> dentro de <code>&lt;body&gt;</code>.</label>
+                <label class="quiz-option"><input type="radio" name="q1" value="b"> Un <code>&lt;h1&gt;</code> dentro de <code>&lt;body&gt;</code>.</label>
+                <label class="quiz-option"><input type="radio" name="q1" value="c"> Un atributo <code>visible</code> en <code>&lt;title&gt;</code>.</label>
+                <p class="quiz-feedback">Selecciona una respuesta.</p>
+              </fieldset>
+
+              <fieldset class="quiz-case" data-question="q2">
+                <legend><span class="case-number">Caso 02</span>El navegador muestra «programaciÃ³n» en lugar de «programación». ¿Qué revisarías primero?</legend>
+                <label class="quiz-option"><input type="radio" name="q2" value="a"> <code>&lt;meta charset="UTF-8"&gt;</code> dentro de <code>&lt;head&gt;</code>.</label>
+                <label class="quiz-option"><input type="radio" name="q2" value="b"> <code>lang="es"</code> dentro de <code>&lt;p&gt;</code>.</label>
+                <label class="quiz-option"><input type="radio" name="q2" value="c"> El valor de <code>initial-scale</code>.</label>
+                <p class="quiz-feedback">Selecciona una respuesta.</p>
+              </fieldset>
+
+              <fieldset class="quiz-case" data-question="q3">
+                <legend><span class="case-number">Caso 03</span>¿Por qué este orden es incorrecto? <code>&lt;body&gt;&lt;p&gt;Texto&lt;/body&gt;&lt;/p&gt;</code></legend>
+                <label class="quiz-option"><input type="radio" name="q3" value="a"> Porque <code>&lt;p&gt;</code> solo puede escribirse en <code>&lt;head&gt;</code>.</label>
+                <label class="quiz-option"><input type="radio" name="q3" value="b"> Porque todos los cierres deben ir al final del archivo.</label>
+                <label class="quiz-option"><input type="radio" name="q3" value="c"> Porque el último elemento abierto debe ser el primero que se cierre.</label>
+                <p class="quiz-feedback">Selecciona una respuesta.</p>
+              </fieldset>
+
+              <fieldset class="quiz-case" data-question="q4">
+                <legend><span class="case-number">Caso 04</span>La página parece correcta en el navegador, pero el validador detecta cierres mal ordenados. ¿Qué conclusión es válida?</legend>
+                <label class="quiz-option"><input type="radio" name="q4" value="a"> Si se ve bien, el HTML ya es correcto.</label>
+                <label class="quiz-option"><input type="radio" name="q4" value="b"> El navegador puede reparar errores; la apariencia no sustituye la validación.</label>
+                <label class="quiz-option"><input type="radio" name="q4" value="c"> Los cierres son opcionales en todos los elementos.</label>
+                <p class="quiz-feedback">Selecciona una respuesta.</p>
+              </fieldset>
+            </div>
+            <div class="quiz-actions">
+              <button class="action-button primary" type="submit">Corregir los cuatro casos</button>
+              <p class="quiz-summary" id="quiz-summary" role="status">Responde los cuatro casos antes de corregir.</p>
+            </div>
+          </form>
+        </section>
       </div>
     </section>
 
@@ -685,69 +838,295 @@
         });
       });
 
-      const copyButton = document.querySelector("[data-copy='starter-code']");
-      const starterCode = document.querySelector("#starter-code");
-      const copyText = async (text) => {
-        if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(text);
-          return;
-        }
-        const area = document.createElement("textarea");
-        area.value = text;
-        area.style.position = "fixed";
-        area.style.opacity = "0";
-        document.body.append(area);
-        area.select();
-        document.execCommand("copy");
-        area.remove();
+      const exampleCode = document.querySelector(".code-lines");
+      exampleCode.addEventListener("copy", (event) => event.preventDefault());
+
+      const editor = document.querySelector("#html-editor");
+      const editorStats = document.querySelector("#editor-stats");
+      const validateButton = document.querySelector("#validate-code");
+      const clearButton = document.querySelector("#clear-editor");
+      const pasteStatus = document.querySelector("#paste-status");
+      const testItems = [...document.querySelectorAll("#test-results li")];
+      const testResults = document.querySelector("#test-results");
+      const testScore = document.querySelector("#test-score");
+      const testProgress = document.querySelector("#test-progress");
+      const validationMessage = document.querySelector("#validation-message");
+      const preview = document.querySelector("#html-preview");
+      const previewEmpty = document.querySelector("#preview-empty");
+      const downloadButton = document.querySelector("#download-html");
+      const editorStorageKey = "html5-seccion-01-codigo-v2";
+      let hasValidation = false;
+      let pasteTimer;
+
+      const updateStats = () => {
+        const characters = editor.value.length;
+        const lines = characters ? editor.value.split(/\r?\n/).length : 0;
+        editorStats.textContent = `${lines} ${lines === 1 ? "línea" : "líneas"} · ${characters} caracteres`;
       };
-      copyButton.addEventListener("click", async () => {
-        try {
-          await copyText(starterCode.textContent);
-          copyButton.textContent = "Copiada ✓";
-          copyButton.classList.add("copied");
-          setTimeout(() => {
-            copyButton.textContent = "Copiar plantilla";
-            copyButton.classList.remove("copied");
-          }, 1800);
-        } catch (_) {
-          copyButton.textContent = "Selecciona el código";
-        }
+
+      const markAsModified = () => {
+        downloadButton.disabled = true;
+        if (!hasValidation) return;
+        testResults.classList.add("stale");
+        testScore.textContent = "Modificado";
+        validationMessage.className = "validation-message";
+        validationMessage.textContent = "El código ha cambiado. Ejecuta de nuevo las pruebas para actualizar el diagnóstico.";
+      };
+
+      const reportBlockedPaste = () => {
+        clearTimeout(pasteTimer);
+        pasteStatus.textContent = "Pegado bloqueado: reconstruye el código escribiéndolo.";
+        pasteTimer = setTimeout(() => { pasteStatus.textContent = ""; }, 3500);
+      };
+
+      editor.addEventListener("paste", (event) => {
+        event.preventDefault();
+        reportBlockedPaste();
+      });
+      editor.addEventListener("drop", (event) => {
+        event.preventDefault();
+        reportBlockedPaste();
+      });
+      editor.addEventListener("input", () => {
+        updateStats();
+        markAsModified();
+        try { localStorage.setItem(editorStorageKey, editor.value); } catch (_) { /* La práctica funciona sin almacenamiento. */ }
       });
 
-      const checkboxes = [...document.querySelectorAll(".evidence")];
-      const checkCount = document.querySelector("#check-count");
-      const checkProgress = document.querySelector("#check-progress");
-      const completion = document.querySelector("#completion");
-      const resetChecks = document.querySelector("#reset-checks");
-      const storageKey = "html5-seccion-01-evidencias-v1";
-
-      const readSaved = () => {
-        try { return JSON.parse(localStorage.getItem(storageKey)) || []; }
-        catch (_) { return []; }
-      };
-      const renderProgress = () => {
-        const complete = checkboxes.filter((box) => box.checked).length;
-        checkCount.textContent = `${complete} de ${checkboxes.length}`;
-        checkProgress.style.width = `${(complete / checkboxes.length) * 100}%`;
-        completion.classList.toggle("visible", complete === checkboxes.length);
+      const countTags = (source, name, closing = false) => {
+        const expression = closing ? `<\\/${name}\\s*>` : `<${name}\\b[^>]*>`;
+        return (source.match(new RegExp(expression, "gi")) || []).length;
       };
 
-      const saved = readSaved();
-      checkboxes.forEach((checkbox, index) => {
-        checkbox.checked = saved.includes(index);
-        checkbox.addEventListener("change", () => {
-          const completed = checkboxes.flatMap((box, itemIndex) => box.checked ? [itemIndex] : []);
-          try { localStorage.setItem(storageKey, JSON.stringify(completed)); } catch (_) { /* El progreso seguirá funcionando durante la sesión. */ }
-          renderProgress();
+      const tagsAreBalanced = (source) => {
+        const voidElements = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]);
+        const cleaned = source.replace(/<!--[\s\S]*?-->/g, "").replace(/<!doctype[^>]*>/gi, "");
+        const tokens = cleaned.matchAll(/<\/?([a-z][\w:-]*)\b[^>]*>/gi);
+        const stack = [];
+        for (const token of tokens) {
+          const completeTag = token[0];
+          const name = token[1].toLowerCase();
+          if (completeTag.startsWith("</")) {
+            if (stack.pop() !== name) return false;
+          } else if (!voidElements.has(name) && !completeTag.endsWith("/>")) {
+            stack.push(name);
+          }
+        }
+        return stack.length === 0;
+      };
+
+      const hasTwoSpaceIndentation = (source) => {
+        const lines = source.replace(/\r\n?/g, "\n").split("\n").filter((line) => line.trim());
+        const rules = [
+          { pattern: /^<!doctype html>$/i, spaces: 0 },
+          { pattern: /^<html\b[^>]*>$/i, spaces: 0 },
+          { pattern: /^<head>$/i, spaces: 2 },
+          { pattern: /^<meta\b[^>]*charset/i, spaces: 4 },
+          { pattern: /^<meta\b[^>]*name\s*=\s*["']viewport["']/i, spaces: 4 },
+          { pattern: /^<title\b/i, spaces: 4 },
+          { pattern: /^<\/head>$/i, spaces: 2 },
+          { pattern: /^<body>$/i, spaces: 2 },
+          { pattern: /^<h1\b/i, spaces: 4 },
+          { pattern: /^<p\b/i, spaces: 4 },
+          { pattern: /^<\/body>$/i, spaces: 2 },
+          { pattern: /^<\/html>$/i, spaces: 0 }
+        ];
+        return rules.every(({ pattern, spaces }) => {
+          const line = lines.find((candidate) => pattern.test(candidate.trim()));
+          return line && line.length - line.trimStart().length === spaces;
         });
+      };
+
+      const analyseCode = (source) => {
+        const normalized = source.replace(/\r\n?/g, "\n").trim();
+        const parser = new DOMParser();
+        const parsed = parser.parseFromString(normalized, "text/html");
+        const headMatch = normalized.match(/<head\b[^>]*>([\s\S]*?)<\/head\s*>/i);
+        const bodyMatch = normalized.match(/<body\b[^>]*>([\s\S]*?)<\/body\s*>/i);
+        const headSource = headMatch ? headMatch[1] : "";
+        const bodySource = bodyMatch ? bodyMatch[1] : "";
+        const htmlOpening = normalized.match(/<html\b[^>]*>/i);
+        const metaTags = headSource.match(/<meta\b[^>]*>/gi) || [];
+        const charsetIsUtf8 = metaTags.some((tag) => /\bcharset\s*=\s*(?:"utf-8"|'utf-8'|utf-8)(?=\s|\/?>)/i.test(tag));
+        const viewportTag = metaTags.find((tag) => /\bname\s*=\s*(?:"viewport"|'viewport'|viewport)(?=\s|\/?>)/i.test(tag));
+        const viewportContent = viewportTag ? viewportTag.match(/\bcontent\s*=\s*(["'])(.*?)\1/i) : null;
+        const viewportValue = viewportContent ? viewportContent[2].toLowerCase().replace(/\s/g, "") : "";
+        const titleText = parsed.querySelector("title")?.textContent.trim() || "";
+        const bodyDocument = parser.parseFromString(`<!doctype html><html><body>${bodySource}</body></html>`, "text/html");
+        const headings = [...bodyDocument.body.querySelectorAll("h1")];
+        const paragraphs = [...bodyDocument.body.querySelectorAll("p")];
+        const headingText = headings[0]?.textContent.replace(/\s+/g, " ").trim() || "";
+        const paragraphText = paragraphs[0]?.textContent.replace(/\s+/g, " ").trim() || "";
+        const structureOrder = ["<html", "<head", "</head", "<body", "</body", "</html"].map((token) => normalized.toLowerCase().indexOf(token));
+        const hasOrderedStructure = structureOrder.every((position) => position >= 0) && structureOrder.every((position, index) => index === 0 || position > structureOrder[index - 1]);
+        const exactStructure = ["html", "head", "body"].every((name) => countTags(normalized, name) === 1 && countTags(normalized, name, true) === 1);
+        const exactHeading = countTags(bodySource, "h1") === 1 && countTags(bodySource, "h1", true) === 1;
+        const exactParagraph = countTags(bodySource, "p") === 1 && countTags(bodySource, "p", true) === 1;
+        const exactContentElements = exactHeading && exactParagraph;
+
+        return [
+          {
+            passed: normalized.split("\n")[0]?.trim().toLowerCase() === "<!doctype html>",
+            success: "La declaración HTML5 ocupa la primera línea.",
+            failure: "La primera línea debe ser exactamente <!doctype html>."
+          },
+          {
+            passed: Boolean(htmlOpening && /\blang\s*=\s*["']es["']/i.test(htmlOpening[0])),
+            success: "El elemento raíz declara correctamente el español.",
+            failure: "Añade lang=\"es\" a la etiqueta de apertura <html>."
+          },
+          {
+            passed: Boolean(headMatch && bodyMatch && hasOrderedStructure && exactStructure),
+            success: "head y body aparecen una vez y en el orden correcto.",
+            failure: "Comprueba que html contiene primero head y después body, cada uno con su cierre."
+          },
+          {
+            passed: charsetIsUtf8,
+            success: "La codificación UTF-8 está declarada dentro de head.",
+            failure: "Incluye <meta charset=\"UTF-8\"> dentro de head."
+          },
+          {
+            passed: Boolean(viewportTag && viewportValue.includes("width=device-width") && /(?:^|,)initial-scale=1(?:\.0)?(?:,|$)/.test(viewportValue)),
+            success: "La ventana gráfica está preparada para dispositivos móviles.",
+            failure: "Revisa meta viewport: necesita width=device-width e initial-scale=1.0."
+          },
+          {
+            passed: countTags(headSource, "title") === 1 && countTags(headSource, "title", true) === 1 && titleText.length >= 5 && titleText.length <= 60,
+            success: "El título de la pestaña es único y tiene una longitud adecuada.",
+            failure: "Escribe un único title de entre 5 y 60 caracteres dentro de head."
+          },
+          {
+            passed: exactHeading && headings.length === 1 && headingText.length >= 5 && headingText.length <= 70,
+            success: "Hay un único encabezado principal con contenido significativo.",
+            failure: "Incluye exactamente un h1 de entre 5 y 70 caracteres dentro de body."
+          },
+          {
+            passed: exactParagraph && paragraphs.length === 1 && paragraphText.length >= 50 && paragraphText.length <= 220,
+            success: "El párrafo presenta el proyecto con suficiente precisión.",
+            failure: "Incluye exactamente un párrafo de entre 50 y 220 caracteres dentro de body."
+          },
+          {
+            passed: tagsAreBalanced(normalized) && exactStructure && exactContentElements && /<\/html\s*>\s*$/i.test(normalized),
+            success: "Las etiquetas están anidadas y cerradas en orden inverso a su apertura.",
+            failure: "Revisa los cierres: el último elemento abierto debe ser el primero en cerrarse."
+          },
+          {
+            passed: hasTwoSpaceIndentation(normalized),
+            success: "La sangría representa correctamente los niveles de anidamiento.",
+            failure: "Usa 0 espacios para doctype/html, 2 para head/body y 4 para sus elementos hijos."
+          }
+        ];
+      };
+
+      const renderTests = (tests) => {
+        const passedTests = tests.filter((test) => test.passed).length;
+        testItems.forEach((item, index) => {
+          const test = tests[index];
+          item.className = test.passed ? "passed" : "failed";
+          item.querySelector(".test-icon").textContent = test.passed ? "✓" : "!";
+          item.querySelector("p").textContent = test.passed ? test.success : test.failure;
+        });
+        hasValidation = true;
+        testResults.classList.remove("stale");
+        testScore.textContent = `${passedTests} / ${tests.length}`;
+        testProgress.style.width = `${(passedTests / tests.length) * 100}%`;
+        downloadButton.disabled = passedTests !== tests.length;
+        validationMessage.className = `validation-message ${passedTests === tests.length ? "success" : "error"}`;
+        validationMessage.textContent = passedTests === tests.length
+          ? "Documento superado: ya puedes descargar index.html."
+          : `Has superado ${passedTests} de ${tests.length} pruebas. Corrige las pistas marcadas y vuelve a validar.`;
+      };
+
+      validateButton.addEventListener("click", () => {
+        const source = editor.value;
+        preview.srcdoc = source;
+        previewEmpty.classList.add("hidden");
+        renderTests(analyseCode(source));
       });
-      resetChecks.addEventListener("click", () => {
-        checkboxes.forEach((checkbox) => { checkbox.checked = false; });
-        try { localStorage.removeItem(storageKey); } catch (_) { /* Sin almacenamiento disponible. */ }
-        renderProgress();
+
+      clearButton.addEventListener("click", () => {
+        if (editor.value && !window.confirm("¿Vaciar todo el código escrito? Esta acción no se puede deshacer.")) return;
+        editor.value = "";
+        preview.srcdoc = "";
+        previewEmpty.classList.remove("hidden");
+        hasValidation = false;
+        testItems.forEach((item, index) => {
+          item.className = "";
+          item.querySelector(".test-icon").textContent = String(index + 1);
+          item.querySelector("p").textContent = "Pendiente de comprobación.";
+        });
+        testResults.classList.remove("stale");
+        testScore.textContent = "Sin validar";
+        testProgress.style.width = "0";
+        downloadButton.disabled = true;
+        validationMessage.className = "validation-message";
+        validationMessage.textContent = "Escribe el documento y ejecuta las pruebas cuando estés preparado.";
+        try { localStorage.removeItem(editorStorageKey); } catch (_) { /* Sin almacenamiento disponible. */ }
+        updateStats();
+        editor.focus();
       });
-      renderProgress();
+
+      downloadButton.addEventListener("click", () => {
+        const file = new Blob([editor.value], { type: "text/html;charset=utf-8" });
+        const url = URL.createObjectURL(file);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "index.html";
+        document.body.append(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      });
+
+      try { editor.value = localStorage.getItem(editorStorageKey) || ""; } catch (_) { editor.value = ""; }
+      updateStats();
+
+      const quizAnswers = {
+        q1: { answer: "b", explanation: "title nombra la pestaña; el encabezado visible se crea con h1 dentro de body." },
+        q2: { answer: "a", explanation: "UTF-8 define cómo se interpretan los caracteres; lang y viewport cumplen otras funciones." },
+        q3: { answer: "c", explanation: "p se abrió después de body, por lo que debe cerrarse antes que body." },
+        q4: { answer: "b", explanation: "Los navegadores intentan recuperar documentos incorrectos; por eso hay que revisar la estructura y validar." }
+      };
+      const quizForm = document.querySelector("#concept-quiz");
+      const quizScore = document.querySelector("#quiz-score");
+      const quizSummary = document.querySelector("#quiz-summary");
+
+      quizForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        let score = 0;
+        let answered = 0;
+        document.querySelectorAll(".quiz-case").forEach((field) => {
+          const data = quizAnswers[field.dataset.question];
+          const selected = field.querySelector("input:checked");
+          const correctInput = field.querySelector(`input[value="${data.answer}"]`);
+          const feedback = field.querySelector(".quiz-feedback");
+          field.classList.remove("correct", "incorrect");
+          field.querySelectorAll(".quiz-option").forEach((option) => option.classList.remove("correct-answer", "wrong-answer"));
+          correctInput.closest(".quiz-option").classList.add("correct-answer");
+          if (!selected) {
+            field.classList.add("incorrect");
+            feedback.textContent = `Sin respuesta. ${data.explanation}`;
+            return;
+          }
+          answered += 1;
+          if (selected.value === data.answer) {
+            score += 1;
+            field.classList.add("correct");
+            feedback.textContent = `Correcto. ${data.explanation}`;
+          } else {
+            field.classList.add("incorrect");
+            selected.closest(".quiz-option").classList.add("wrong-answer");
+            feedback.textContent = `Revisa la idea. ${data.explanation}`;
+          }
+        });
+        quizScore.textContent = `${score} / 4`;
+        quizSummary.classList.toggle("success", score === 4);
+        quizSummary.textContent = score === 4
+          ? "Dominio completo: has justificado correctamente los cuatro casos."
+          : answered < 4
+            ? `Has respondido ${answered} de 4 casos. Lee las explicaciones y completa los pendientes.`
+            : `Resultado: ${score} de 4. Revisa las explicaciones y vuelve a intentarlo.`;
+      });
     })();
   </script>
 </body>
