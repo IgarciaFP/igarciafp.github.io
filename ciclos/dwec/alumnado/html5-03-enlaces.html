@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tercera sección de la ruta HTML5: enlaces, rutas, fragmentos y navegación semántica mediante un proyecto autocorregible.">
+  <title>HTML5 · 03 Enlaces y navegación</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --white: #fff;
+      --ink: #15171c;
+      --muted: #626875;
+      --line: #dfe3ea;
+      --soft: #f6f7f9;
+      --blue: #2457f5;
+      --blue-dark: #1739a8;
+      --blue-soft: #edf2ff;
+      --green: #087857;
+      --green-soft: #e9f8f2;
+      --red: #b3263c;
+      --red-soft: #fff0f2;
+      --amber: #8b5600;
+      --amber-soft: #fff6df;
+      --cyan: #087f8c;
+      --cyan-soft: #e8f8fa;
+      --code: #111827;
+      --radius: 20px;
+      --shadow: 0 18px 55px rgba(22, 31, 55, .09);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--white); color: var(--ink); font: 16px/1.65 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button, input, textarea { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: var(--blue-dark); }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    code:not(pre code) { padding: .14rem .38rem; border: 1px solid #e1e5ed; border-radius: .38rem; background: var(--soft); color: #8b2442; font-size: .92em; }
+    :focus-visible { outline: 3px solid #8aa7ff; outline-offset: 3px; }
+    .wrap { width: min(1120px, calc(100% - 2rem)); margin-inline: auto; }
+    .skip-link { position: fixed; top: .75rem; left: -999px; z-index: 100; padding: .65rem 1rem; border-radius: 10px; background: var(--ink); color: var(--white); }
+    .skip-link:focus { left: .75rem; }
+
+    .site-header { position: sticky; top: 0; z-index: 20; border-bottom: 1px solid rgba(223, 227, 234, .86); background: rgba(255, 255, 255, .94); backdrop-filter: blur(14px); }
+    .topbar { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .brand { display: flex; align-items: center; gap: .7rem; color: var(--ink); text-decoration: none; font-weight: 850; letter-spacing: -.02em; }
+    .brand-mark { display: grid; width: 38px; aspect-ratio: 1; place-items: center; border-radius: 11px; background: var(--ink); color: var(--white); font: 800 .9rem/1 monospace; }
+    .course-progress { display: flex; align-items: center; gap: .7rem; color: var(--muted); font-size: .9rem; }
+    .course-progress strong { color: var(--ink); }
+    .mini-track { width: 94px; height: 6px; overflow: hidden; border-radius: 99px; background: #e8ebf1; }
+    .mini-track span { display: block; width: 37.5%; height: 100%; border-radius: inherit; background: var(--blue); }
+
+    main { overflow: hidden; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr); gap: clamp(2rem, 6vw, 5rem); align-items: center; min-height: 620px; padding-block: clamp(4rem, 9vw, 7rem); }
+    .back-link { display: inline-block; margin-bottom: 1.2rem; color: var(--muted); font-size: .86rem; font-weight: 750; text-decoration: none; }
+    .back-link:hover { color: var(--blue); }
+    .eyebrow { display: flex; align-items: center; gap: .5rem; margin: 0 0 1rem; color: var(--blue-dark); font-size: .8rem; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
+    .eyebrow::before { content: ""; width: 28px; height: 2px; background: var(--blue); }
+    h1, h2, h3, h4 { line-height: 1.12; letter-spacing: -.035em; }
+    h1 { margin: 0; font-size: clamp(3rem, 6.5vw, 5.7rem); }
+    h1 em { color: var(--blue); font-style: normal; }
+    .lede { max-width: 660px; margin: 1.4rem 0; color: var(--muted); font-size: clamp(1.08rem, 2vw, 1.27rem); }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: .55rem; margin: 0; padding: 0; list-style: none; }
+    .hero-meta li { padding: .42rem .72rem; border: 1px solid var(--line); border-radius: 999px; font-size: .88rem; font-weight: 750; }
+
+    .route-map { padding: 1.2rem; border: 1px solid #ccd6f5; border-radius: 25px; background: var(--soft); box-shadow: 0 28px 80px rgba(25, 38, 77, .14); transform: rotate(1deg); }
+    .route-window { overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: var(--white); }
+    .route-bar { display: flex; align-items: center; gap: .5rem; padding: .75rem 1rem; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .75rem; }
+    .route-dot { width: 8px; aspect-ratio: 1; border-radius: 50%; background: #cbd1db; }
+    .route-body { padding: 1.4rem; }
+    .route-body h2 { margin: 0 0 1rem; font-size: 1.45rem; }
+    .route-node { display: grid; grid-template-columns: 42px 1fr auto; gap: .75rem; align-items: center; margin-top: .7rem; padding: .75rem; border: 1px solid var(--line); border-radius: 12px; }
+    .route-icon { display: grid; width: 38px; aspect-ratio: 1; place-items: center; border-radius: 10px; background: var(--blue-soft); color: var(--blue-dark); font-weight: 900; }
+    .route-node strong, .route-node small { display: block; }
+    .route-node small { color: var(--muted); }
+    .route-kind { color: var(--cyan); font-size: .7rem; font-weight: 900; letter-spacing: .07em; text-transform: uppercase; }
+
+    .bridge { border-block: 1px solid var(--line); background: var(--soft); }
+    .bridge .wrap { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center; padding-block: 1.15rem; }
+    .bridge-number { display: grid; width: 42px; aspect-ratio: 1; place-items: center; border-radius: 50%; background: var(--blue); color: var(--white); font-weight: 900; }
+    .bridge p { margin: 0; color: var(--muted); }
+    .bridge strong { color: var(--ink); }
+    .bridge-state { color: var(--blue-dark); font-size: .8rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+
+    .section { padding-block: clamp(4.5rem, 9vw, 7rem); }
+    .section + .section { border-top: 1px solid var(--line); }
+    .section-head { display: grid; grid-template-columns: 76px minmax(0, 780px); gap: 1rem; align-items: start; margin-bottom: 2.2rem; }
+    .section-number { color: var(--blue); font-size: .88rem; font-weight: 900; letter-spacing: .12em; }
+    .section-head h2 { margin: -.3rem 0 .7rem; font-size: clamp(2rem, 4.5vw, 3.4rem); }
+    .section-head p { margin: 0; color: var(--muted); font-size: 1.08rem; }
+
+    .anchor-lab { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(300px, .9fr); gap: 1rem; padding: clamp(1.2rem, 3vw, 2rem); border: 1px solid var(--line); border-radius: 24px; background: var(--soft); }
+    .anchor-code { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; min-height: 250px; padding: 1.4rem; border-radius: 16px; background: var(--code); color: #e8edf8; font: clamp(.85rem, 2vw, 1.08rem)/1.8 monospace; user-select: none; }
+    .token-tag { color: #7dd3fc; }
+    .token-attr { color: #fde68a; }
+    .token-value { color: #86efac; }
+    .token-text { color: #f8fafc; }
+    .anchor-notes { display: grid; gap: .7rem; }
+    .anchor-note { padding: 1rem; border: 1px solid var(--line); border-radius: 13px; background: var(--white); }
+    .anchor-note strong { display: block; margin-bottom: .25rem; }
+    .anchor-note p { margin: 0; color: var(--muted); font-size: .88rem; }
+
+    .route-table { width: 100%; border-collapse: separate; border-spacing: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; }
+    .route-table th, .route-table td { padding: .9rem 1rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .route-table tr:last-child td { border-bottom: 0; }
+    .route-table th { background: var(--soft); font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; }
+    .route-table td:first-child { width: 150px; font-weight: 850; }
+    .route-table code { white-space: nowrap; }
+    .decision-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.2rem; }
+    .decision-card { padding: 1.2rem; border: 1px solid var(--line); border-radius: 15px; }
+    .decision-card span { color: var(--blue); font-size: .75rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+    .decision-card h3 { margin: .45rem 0; font-size: 1.08rem; }
+    .decision-card p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+    .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .code-card, .rules-card { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; }
+    .card-head { display: flex; justify-content: space-between; gap: 1rem; padding: .75rem 1rem; border-bottom: 1px solid var(--line); font-size: .82rem; font-weight: 800; }
+    .sample-code { margin: 0; padding: 1.2rem; overflow-x: auto; background: var(--code); color: #e8edf8; font-size: .81rem; line-height: 1.65; user-select: none; }
+    .rules-card { padding: 1.4rem; }
+    .rules-card h3 { margin: 0 0 1rem; }
+    .rules-list { margin: 0; padding: 0; list-style: none; }
+    .rules-list li { display: grid; grid-template-columns: 28px 1fr; gap: .65rem; padding-block: .65rem; }
+    .rules-list li + li { border-top: 1px solid var(--line); }
+    .rule-check { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 50%; background: var(--green-soft); color: var(--green); font-weight: 900; }
+    .rules-list strong, .rules-list small { display: block; }
+    .rules-list small { color: var(--muted); }
+    .security-note { margin-top: 1rem; padding: 1rem; border-left: 4px solid var(--amber); border-radius: 8px; background: var(--amber-soft); color: #6f4300; }
+
+    .exercise-section { background: var(--soft); }
+    .exercise-shell { overflow: hidden; border: 1px solid #cdd7f7; border-radius: 28px; background: var(--white); box-shadow: var(--shadow); }
+    .exercise-hero { display: grid; grid-template-columns: 1fr auto; gap: 2rem; padding: clamp(1.6rem, 5vw, 3rem); border-bottom: 1px solid var(--line); background: linear-gradient(135deg, #fff 50%, #edf2ff); }
+    .exercise-kicker { margin: 0 0 .7rem; color: var(--blue-dark); font-size: .78rem; font-weight: 900; letter-spacing: .11em; text-transform: uppercase; }
+    .exercise-hero h2 { max-width: 780px; margin: 0 0 .8rem; font-size: clamp(2rem, 4.5vw, 3.45rem); }
+    .exercise-hero p { max-width: 720px; margin: 0; color: var(--muted); }
+    .time-card { align-self: center; min-width: 130px; padding: 1rem; border: 1px solid #ccd8ff; border-radius: 16px; background: var(--white); text-align: center; }
+    .time-card strong { display: block; color: var(--blue); font-size: 1.7rem; line-height: 1; }
+    .time-card span { color: var(--muted); font-size: .78rem; }
+    .brief-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: clamp(1.4rem, 5vw, 2.5rem); }
+    .task-card { padding: 1.2rem; border: 1px solid var(--line); border-radius: 15px; }
+    .task-card h3 { margin: 0 0 .8rem; font-size: 1.1rem; }
+    .task-card ul, .task-card ol { margin: 0; padding-left: 1.25rem; }
+    .task-card li + li { margin-top: .4rem; }
+    .load-note { margin-top: .8rem; color: var(--muted); font-size: .84rem; }
+
+    .lab { padding: 0 clamp(1.4rem, 5vw, 2.5rem) clamp(1.4rem, 5vw, 2.5rem); }
+    .load-row { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; margin-bottom: 1rem; padding: .9rem 1rem; border: 1px solid #d5dcf5; border-radius: 13px; background: var(--blue-soft); }
+    .load-row strong { margin-right: auto; }
+    .file-label { padding: .55rem .8rem; border-radius: 9px; background: var(--blue); color: var(--white); font-size: .84rem; font-weight: 850; cursor: pointer; }
+    .file-label:hover { background: var(--blue-dark); }
+    #project-file { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+    .file-status { width: 100%; margin: 0; color: var(--muted); font-size: .8rem; }
+    .coding-grid { display: grid; grid-template-columns: minmax(0, 1.16fr) minmax(330px, .84fr); gap: 1rem; }
+    .editor-panel, .test-panel { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; }
+    .editor-panel { background: var(--code); box-shadow: 0 15px 35px rgba(17, 24, 39, .16); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 50px; padding: .7rem 1rem; }
+    .editor-panel .panel-head { border-bottom: 1px solid #334155; color: #cbd5e1; font-size: .8rem; }
+    .editor-file { color: var(--white); font-weight: 850; }
+    .editor-file::before { content: "◆"; margin-right: .5rem; color: #f06529; font-size: .65rem; }
+    #code-editor { width: 100%; min-height: 600px; display: block; resize: vertical; padding: 1.15rem; border: 0; outline: 0; background: var(--code); color: #e8edf8; caret-color: #7aa2ff; font: .84rem/1.62 "SFMono-Regular", Consolas, monospace; tab-size: 2; }
+    #code-editor:focus-visible { box-shadow: inset 0 0 0 3px #7aa2ff; }
+    #code-editor::placeholder { color: #72819a; }
+    .editor-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .editor-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; padding: .8rem 1rem; border-top: 1px solid #334155; }
+    .button { padding: .6rem .85rem; border: 1px solid transparent; border-radius: 9px; font-weight: 850; cursor: pointer; }
+    .button.primary { background: var(--blue); color: var(--white); }
+    .button.primary:hover { background: var(--blue-dark); }
+    .button.secondary { border-color: #64748b; background: transparent; color: #e2e8f0; }
+    .button:disabled { cursor: not-allowed; opacity: .4; }
+    .paste-status { flex: 1; color: #f5cd7f; font-size: .78rem; text-align: right; }
+    .test-panel { display: flex; flex-direction: column; background: var(--white); }
+    .test-panel .panel-head { border-bottom: 1px solid var(--line); }
+    .test-panel h3 { margin: 0; font-size: 1rem; }
+    .score { color: var(--blue-dark); font-weight: 900; }
+    .test-bar { height: 6px; background: #e8ebf1; }
+    .test-bar span { display: block; width: 0; height: 100%; background: var(--blue); transition: width .2s ease; }
+    .tests { flex: 1; margin: 0; padding: .55rem; list-style: none; }
+    .tests li { display: grid; grid-template-columns: 22px 1fr; gap: .55rem; padding: .58rem .5rem; border-radius: 9px; }
+    .tests li + li { border-top: 1px solid #edf0f4; }
+    .test-icon { display: grid; width: 20px; height: 20px; place-items: center; border: 1px solid #bdc5d1; border-radius: 50%; color: #737c8a; font-size: .68rem; font-weight: 900; }
+    .tests strong { display: block; font-size: .84rem; }
+    .tests p { margin: .1rem 0 0; color: var(--muted); font-size: .75rem; line-height: 1.35; }
+    .tests li.pass { background: var(--green-soft); }
+    .tests li.pass .test-icon { border-color: var(--green); background: var(--green); color: var(--white); }
+    .tests li.fail { background: var(--red-soft); }
+    .tests li.fail .test-icon { border-color: var(--red); background: var(--red); color: var(--white); }
+    .tests.stale { opacity: .55; }
+    .test-message { margin: .5rem; padding: .75rem; border-radius: 9px; background: var(--soft); color: var(--muted); font-size: .82rem; }
+    .test-message.success { background: var(--green-soft); color: #075943; font-weight: 750; }
+    .test-message.error { background: var(--red-soft); color: #802034; }
+    .preview-panel { margin-top: 1rem; overflow: hidden; border: 1px solid var(--line); border-radius: 17px; background: var(--white); }
+    .preview-panel .panel-head { border-bottom: 1px solid var(--line); }
+    .preview-panel h3 { margin: 0; font-size: 1rem; }
+    .preview-panel p { margin: .15rem 0 0; color: var(--muted); font-size: .78rem; }
+    .download { padding: .55rem .8rem; border: 0; border-radius: 9px; background: var(--green); color: var(--white); font-size: .8rem; font-weight: 850; cursor: pointer; }
+    .download:disabled { cursor: not-allowed; opacity: .4; }
+    #preview { width: 100%; min-height: 350px; display: block; border: 0; }
+
+    .assessment, .report { margin-top: 2rem; padding: clamp(1.4rem, 5vw, 2.4rem); border: 1px solid var(--line); border-radius: 24px; background: var(--white); }
+    .assessment-head, .report-head { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: end; margin-bottom: 1.2rem; }
+    .assessment h2, .report h2 { margin: 0 0 .4rem; font-size: clamp(1.7rem, 3vw, 2.35rem); }
+    .assessment-head p, .report-head p { margin: 0; color: var(--muted); }
+    .assessment-score, .report-badge { padding: .55rem .75rem; border-radius: 10px; background: var(--soft); color: var(--blue-dark); font-weight: 900; white-space: nowrap; }
+    .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .quiz-case { min-width: 0; margin: 0; padding: 1.1rem; border: 1px solid var(--line); border-radius: 14px; }
+    .quiz-case:last-child { grid-column: 1 / -1; }
+    .quiz-case legend { padding: 0 .3rem; font-weight: 850; line-height: 1.35; }
+    .case-label { display: block; margin-bottom: .3rem; color: var(--blue); font-size: .7rem; letter-spacing: .09em; text-transform: uppercase; }
+    .quiz-option { display: flex; gap: .55rem; margin-top: .5rem; padding: .6rem .65rem; border: 1px solid var(--line); border-radius: 9px; cursor: pointer; }
+    .quiz-option input { flex: 0 0 auto; margin-top: .28rem; accent-color: var(--blue); }
+    .quiz-option.correct-answer { border-color: #70bba3; background: var(--green-soft); }
+    .quiz-option.wrong-answer { border-color: #df98a4; background: var(--red-soft); }
+    .quiz-feedback { min-height: 2.5em; margin: .65rem 0 0; color: var(--muted); font-size: .8rem; }
+    .quiz-case.correct .quiz-feedback { color: #075943; }
+    .quiz-case.incorrect .quiz-feedback { color: #842338; }
+    .quiz-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; margin-top: 1rem; }
+    .quiz-summary { margin: 0; color: var(--muted); font-size: .86rem; }
+
+    .report-grid { display: grid; grid-template-columns: minmax(260px, .7fr) minmax(0, 1.3fr); gap: 1rem; }
+    .report-form { padding: 1.1rem; border: 1px solid var(--line); border-radius: 14px; background: var(--soft); }
+    .report-form label { display: block; margin-top: .75rem; font-size: .85rem; font-weight: 800; }
+    .report-form label:first-child { margin-top: 0; }
+    .report-form input { width: 100%; margin-top: .28rem; padding: .62rem .68rem; border: 1px solid #bdc5d1; border-radius: 8px; background: var(--white); }
+    .report-form .button.secondary { border-color: #aab3c2; background: var(--white); color: var(--blue-dark); }
+    .report-actions { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: 1rem; }
+    .report-status { margin: .75rem 0 0; color: var(--muted); font-size: .8rem; }
+    .report-status.ready { color: #075943; font-weight: 750; }
+    .report-output { overflow: hidden; border: 1px solid var(--line); border-radius: 14px; }
+    .report-output h3 { margin: 0; padding: .75rem 1rem; border-bottom: 1px solid var(--line); font-size: 1rem; }
+    #report-preview { min-height: 320px; max-height: 510px; margin: 0; padding: 1rem; overflow: auto; background: var(--code); color: #dce5f2; font-size: .78rem; line-height: 1.55; white-space: pre-wrap; }
+
+    .course-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .course-link { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.1rem 1.2rem; border: 1px solid var(--line); border-radius: 14px; color: inherit; text-decoration: none; }
+    .course-link:hover { border-color: var(--blue); background: #fafbff; }
+    .course-link strong { display: block; }
+    .course-link small { color: var(--muted); }
+    .course-link.locked { color: var(--muted); pointer-events: none; }
+    footer { border-top: 1px solid var(--line); }
+    .footer-grid { display: grid; grid-template-columns: 1fr auto; gap: 2rem; padding-block: 2.2rem 3rem; }
+    footer p { max-width: 660px; margin: 0; color: var(--muted); font-size: .87rem; }
+    footer nav { display: flex; flex-wrap: wrap; gap: 1rem; }
+    footer a { font-size: .84rem; font-weight: 750; }
+
+    @media (max-width: 920px) {
+      .hero, .anchor-lab, .coding-grid { grid-template-columns: 1fr; }
+      .hero { min-height: auto; }
+      .route-map { max-width: 680px; transform: none; }
+      .decision-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 680px) {
+      .wrap { width: min(100% - 1.1rem, 1120px); }
+      .course-progress span:first-child, .mini-track { display: none; }
+      .hero { padding-top: 3.3rem; }
+      .bridge .wrap, .section-head, .exercise-hero, .assessment-head, .report-head, .footer-grid { grid-template-columns: 1fr; }
+      .decision-grid, .nav-grid, .brief-grid, .quiz-grid, .report-grid, .course-nav { grid-template-columns: 1fr; }
+      .quiz-case:last-child { grid-column: auto; }
+      .section-head { gap: .4rem; }
+      .section-head h2 { margin-top: 0; }
+      .route-table { display: block; overflow-x: auto; }
+      .time-card { justify-self: start; }
+      .panel-head { align-items: flex-start; flex-direction: column; }
+      .paste-status { flex-basis: 100%; text-align: left; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+    @media print {
+      .site-header, .editor-actions, .load-row, .download, .quiz-actions, .report-form, .course-nav { display: none; }
+      .hero, .section { min-height: auto; padding-block: 2rem; }
+      .route-map, .exercise-shell { box-shadow: none; }
+      .sample-code, .editor-panel { print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <div class="topbar wrap">
+      <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">&lt;/&gt;</span><span>HTML5 · desde cero</span></a>
+      <div class="course-progress" role="group" aria-label="Progreso del curso: sección 3 de 8"><span>Progreso del curso</span><div class="mini-track" aria-hidden="true"><span></span></div><strong>03 / 08</strong></div>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <section class="hero wrap">
+      <div>
+        <a class="back-link" href="html5-02-texto.html">← Volver a la sección 02</a>
+        <p class="eyebrow">Sección 03 · Conectar contenidos</p>
+        <h1>Enlaces que <em>orientan</em>, no que confunden</h1>
+        <p class="lede">Un enlace no es solo texto azul. Define un destino, establece una relación entre recursos y debe anticipar con claridad qué ocurrirá al activarlo.</p>
+        <ul class="hero-meta"><li>70–90 min</li><li>Rutas y fragmentos</li><li>12 pruebas automáticas</li></ul>
+      </div>
+      <div class="route-map" role="group" aria-label="Mapa visual de diferentes destinos de enlace">
+        <div class="route-window">
+          <div class="route-bar"><span class="route-dot"></span><span class="route-dot"></span><span class="route-dot"></span><span>proyecto/index.html</span></div>
+          <div class="route-body">
+            <h2>¿Adónde puede llevar un enlace?</h2>
+            <div class="route-node"><span class="route-icon">#</span><span><strong>Equipo necesario</strong><small>Una zona de esta página</small></span><span class="route-kind">Fragmento</span></div>
+            <div class="route-node"><span class="route-icon">./</span><span><strong>index.html</strong><small>Un archivo del proyecto</small></span><span class="route-kind">Relativa</span></div>
+            <div class="route-node"><span class="route-icon">↗</span><span><strong>Documentación MDN</strong><small>Otro sitio web</small></span><span class="route-kind">Absoluta</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="bridge">
+      <div class="wrap"><span class="bridge-number">03</span><p><strong>Continúa tu proyecto.</strong> La estructura textual de la sección 02 se convertirá ahora en un documento navegable, sin sustituir el contenido que ya has escrito.</p><span class="bridge-state">Hoy: conectar y orientar</span></div>
+    </aside>
+
+    <section class="section wrap" aria-labelledby="anatomia-titulo">
+      <div class="section-head"><span class="section-number">01</span><div><h2 id="anatomia-titulo">Anatomía de un enlace</h2><p>El elemento <code>&lt;a&gt;</code> necesita un destino en <code>href</code> y un texto que permita decidir si merece la pena seguirlo.</p></div></div>
+      <div class="anchor-lab">
+        <div class="anchor-code" aria-label="Ejemplo de la sintaxis de un enlace"><span class="token-tag">&lt;a</span>&nbsp;<span class="token-attr">href</span>=<span class="token-value">"#equipo"</span><span class="token-tag">&gt;</span><span class="token-text">Consultar el equipo necesario</span><span class="token-tag">&lt;/a&gt;</span></div>
+        <div class="anchor-notes">
+          <article class="anchor-note"><strong><code>&lt;a&gt;…&lt;/a&gt;</code></strong><p>Delimita el contenido interactivo. Puede contener texto y otros elementos en contextos permitidos.</p></article>
+          <article class="anchor-note"><strong><code>href</code></strong><p>Indica la dirección del recurso o del fragmento. Un enlace sin destino no cumple su función.</p></article>
+          <article class="anchor-note"><strong>Texto descriptivo</strong><p>Debe tener sentido fuera de contexto. «Consultar el equipo necesario» informa mejor que «haz clic aquí».</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap" aria-labelledby="rutas-titulo">
+      <div class="section-head"><span class="section-number">02</span><div><h2 id="rutas-titulo">Tres formas de expresar el destino</h2><p>La forma de escribir <code>href</code> depende de si el destino está dentro del documento, dentro del proyecto o fuera del sitio.</p></div></div>
+      <table class="route-table">
+        <thead><tr><th>Tipo</th><th>Ejemplo</th><th>Cuándo utilizarlo</th></tr></thead>
+        <tbody>
+          <tr><td>Fragmento</td><td><code>href="#equipo"</code></td><td>Desplaza hasta el elemento cuyo identificador es <code>id="equipo"</code>.</td></tr>
+          <tr><td>Relativa</td><td><code>href="index.html"</code></td><td>Busca un archivo tomando como referencia la ubicación del documento actual.</td></tr>
+          <tr><td>Absoluta</td><td><code>href="https://developer.mozilla.org/"</code></td><td>Incluye protocolo y dominio para llegar a un recurso externo.</td></tr>
+        </tbody>
+      </table>
+      <div class="decision-grid">
+        <article class="decision-card"><span>Misma página</span><h3>Usa un fragmento</h3><p>El valor que sigue a <code>#</code> debe coincidir exactamente con un <code>id</code> único.</p></article>
+        <article class="decision-card"><span>Mismo proyecto</span><h3>Usa una ruta relativa</h3><p>Así el proyecto puede cambiar de dominio sin tener que reescribir todos sus enlaces.</p></article>
+        <article class="decision-card"><span>Otro sitio</span><h3>Usa una URL absoluta</h3><p>Emplea <code>https://</code> y describe la fuente o el recurso que encontrará el usuario.</p></article>
+      </div>
+    </section>
+
+    <section class="section wrap" aria-labelledby="navegacion-titulo">
+      <div class="section-head"><span class="section-number">03</span><div><h2 id="navegacion-titulo">Una navegación es un conjunto con propósito</h2><p><code>&lt;nav&gt;</code> identifica enlaces de navegación importantes. No debe envolver cualquier enlace aislado de la página.</p></div></div>
+      <div class="nav-grid">
+        <article class="code-card">
+          <div class="card-head"><span>Ejemplo de consulta</span><span>No copiar</span></div>
+          <pre class="sample-code"><code><span class="token-tag">&lt;nav</span> <span class="token-attr">aria-label</span>=<span class="token-value">"Contenido"</span><span class="token-tag">&gt;</span>
+  <span class="token-tag">&lt;ul&gt;</span>
+    <span class="token-tag">&lt;li&gt;&lt;a</span> <span class="token-attr">href</span>=<span class="token-value">"#equipo"</span><span class="token-tag">&gt;</span>Equipo<span class="token-tag">&lt;/a&gt;&lt;/li&gt;</span>
+    <span class="token-tag">&lt;li&gt;&lt;a</span> <span class="token-attr">href</span>=<span class="token-value">"#proceso"</span><span class="token-tag">&gt;</span>Proceso<span class="token-tag">&lt;/a&gt;&lt;/li&gt;</span>
+    <span class="token-tag">&lt;li&gt;&lt;a</span> <span class="token-attr">href</span>=<span class="token-value">"#fuentes"</span><span class="token-tag">&gt;</span>Fuentes<span class="token-tag">&lt;/a&gt;&lt;/li&gt;</span>
+  <span class="token-tag">&lt;/ul&gt;</span>
+<span class="token-tag">&lt;/nav&gt;</span></code></pre>
+        </article>
+        <article class="rules-card">
+          <h3>Contrato de una navegación fiable</h3>
+          <ul class="rules-list">
+            <li><span class="rule-check">✓</span><span><strong>Destino existente</strong><small>Cada fragmento coincide con un identificador único.</small></span></li>
+            <li><span class="rule-check">✓</span><span><strong>Texto comprensible</strong><small>El propósito se entiende sin recurrir a «aquí» o «clic».</small></span></li>
+            <li><span class="rule-check">✓</span><span><strong>Estructura reconocible</strong><small>Los enlaces relacionados se agrupan mediante una lista dentro de nav.</small></span></li>
+            <li><span class="rule-check">✓</span><span><strong>Comportamiento seguro</strong><small>Una pestaña nueva exige informar y proteger la referencia de origen.</small></span></li>
+          </ul>
+          <p class="security-note"><strong>Si utilizas <code>target="_blank"</code>:</strong> añade <code>rel="noopener noreferrer"</code>. En general, abre otra pestaña solo cuando haya una razón clara.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section exercise-section" aria-labelledby="ejercicio-titulo">
+      <div class="wrap">
+        <div class="exercise-shell">
+          <div class="exercise-hero"><div><p class="exercise-kicker">Ejercicio práctico 03 · Proyecto acumulativo</p><h2 id="ejercicio-titulo">Construye un sistema de navegación verificable</h2><p>Carga el <code>index.html</code> de la sección 02. Debes decidir los identificadores, redactar los textos de enlace y comprobar que todos los destinos funcionen; no hay una plantilla para copiar.</p></div><div class="time-card"><strong>45–60</strong><span>minutos</span></div></div>
+          <div class="brief-grid">
+            <article class="task-card"><h3>Contrato funcional</h3><ul><li>Conserva el esqueleto, el contenido y la jerarquía anterior.</li><li>Marca el comienzo con <code>id="inicio"</code>.</li><li>Crea una navegación con una lista y tres fragmentos.</li><li>Asigna identificadores únicos a los tres destinos.</li><li>Añade una fuente externa segura y un enlace relativo a <code>index.html</code>.</li><li>Incluye al final un enlace de regreso a <code>#inicio</code>.</li></ul></article>
+            <article class="task-card"><h3>Criterios profesionales</h3><ol><li>Planifica primero el mapa de destinos.</li><li>Usa textos que expliquen qué encontrará la persona.</li><li>No emplees <code>href="#"</code> ni protocolos <code>javascript:</code>.</li><li>Si abres una pestaña, usa <code>rel="noopener noreferrer"</code>.</li><li>Prueba cada enlace en la vista y depura las doce comprobaciones.</li></ol><p class="load-note">El archivo se procesa localmente. No se envía a ningún servidor.</p></article>
+          </div>
+
+          <div class="lab">
+            <div class="load-row"><strong>Continúa desde tu propio archivo</strong><label class="file-label" for="project-file">Cargar index.html</label><input id="project-file" type="file" accept=".html,text/html"><p class="file-status" id="file-status" role="status">También puedes reconstruir el documento escribiéndolo en el editor.</p></div>
+            <div class="coding-grid">
+              <div class="editor-panel">
+                <div class="panel-head"><span class="editor-file">index.html</span><span id="editor-stats">0 líneas · 0 caracteres</span></div>
+                <label class="editor-label" for="code-editor">Código HTML del proyecto</label>
+                <textarea id="code-editor" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Carga tu index.html anterior o escribe el documento desde cero."></textarea>
+                <div class="editor-actions"><button class="button primary" id="run-tests" type="button">Ejecutar 12 pruebas</button><button class="button secondary" id="clear-code" type="button">Vaciar editor</button><span class="paste-status" id="paste-status" role="status"></span></div>
+              </div>
+              <aside class="test-panel" aria-labelledby="tests-title">
+                <div class="panel-head"><h3 id="tests-title">Pruebas automáticas</h3><span class="score" id="test-score">Sin validar</span></div>
+                <div class="test-bar" aria-hidden="true"><span id="test-progress"></span></div>
+                <ol class="tests" id="test-list">
+                  <li><span class="test-icon">1</span><div><strong>Base del proyecto</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">2</span><div><strong>Jerarquía conservada</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">3</span><div><strong>Navegación con lista</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">4</span><div><strong>Identificadores válidos</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">5</span><div><strong>Fragmentos resueltos</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">6</span><div><strong>Fuente externa HTTPS</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">7</span><div><strong>Nueva pestaña segura</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">8</span><div><strong>Ruta relativa HTML</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">9</span><div><strong>Regreso al inicio</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">10</span><div><strong>Textos descriptivos</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">11</span><div><strong>Destinos utilizables</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">12</span><div><strong>Sintaxis de enlaces limpia</strong><p>Pendiente de comprobación.</p></div></li>
+                </ol>
+                <p class="test-message" id="test-message" role="status">Carga o escribe el documento y ejecuta las pruebas.</p>
+              </aside>
+            </div>
+            <div class="preview-panel"><div class="panel-head"><div><h3>Vista del navegador</h3><p>Comprueba aquí los fragmentos. La vista está aislada y no ejecuta scripts.</p></div><button class="download" id="download-html" type="button" disabled>Descargar index.html</button></div><iframe id="preview" sandbox="" title="Vista previa navegable del proyecto HTML"></iframe></div>
+          </div>
+        </div>
+
+        <section class="assessment" aria-labelledby="diagnostico-titulo">
+          <div class="assessment-head"><div><h2 id="diagnostico-titulo">Diagnóstico de navegación</h2><p>Cinco decisiones sobre rutas, accesibilidad, semántica y seguridad.</p></div><span class="assessment-score" id="quiz-score">— / 5</span></div>
+          <form id="quiz" novalidate>
+            <div class="quiz-grid">
+              <fieldset class="quiz-case" data-question="q1"><legend><span class="case-label">Caso 01</span>Desde <code>proyecto/index.html</code> quieres enlazar <code>proyecto/recursos.html</code>. ¿Qué destino es el más adecuado?</legend><label class="quiz-option"><input type="radio" name="q1" value="a"> <code>https://proyecto/recursos.html</code></label><label class="quiz-option"><input type="radio" name="q1" value="b"> <code>recursos.html</code></label><label class="quiz-option"><input type="radio" name="q1" value="c"> <code>#recursos.html</code></label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
+              <fieldset class="quiz-case" data-question="q2"><legend><span class="case-label">Caso 02</span><code>href="#equipo"</code> no desplaza la página. ¿Qué revisarías primero?</legend><label class="quiz-option"><input type="radio" name="q2" value="a"> Que exista un elemento con <code>id="equipo"</code>.</label><label class="quiz-option"><input type="radio" name="q2" value="b"> Que el enlace tenga <code>target="_blank"</code>.</label><label class="quiz-option"><input type="radio" name="q2" value="c"> Que el destino esté dentro de <code>&lt;head&gt;</code>.</label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
+              <fieldset class="quiz-case" data-question="q3"><legend><span class="case-label">Caso 03</span>Un enlace externo usa <code>target="_blank"</code>. ¿Qué complemento aplica la práctica más segura?</legend><label class="quiz-option"><input type="radio" name="q3" value="a"> <code>rel="stylesheet"</code></label><label class="quiz-option"><input type="radio" name="q3" value="b"> <code>download</code></label><label class="quiz-option"><input type="radio" name="q3" value="c"> <code>rel="noopener noreferrer"</code></label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
+              <fieldset class="quiz-case" data-question="q4"><legend><span class="case-label">Caso 04</span>¿Qué texto de enlace permite anticipar mejor el destino?</legend><label class="quiz-option"><input type="radio" name="q4" value="a"> Haz clic aquí</label><label class="quiz-option"><input type="radio" name="q4" value="b"> Consultar la guía de observación astronómica</label><label class="quiz-option"><input type="radio" name="q4" value="c"> Más</label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
+              <fieldset class="quiz-case" data-question="q5"><legend><span class="case-label">Caso 05</span>¿Cuándo está justificado utilizar <code>&lt;nav&gt;</code>?</legend><label class="quiz-option"><input type="radio" name="q5" value="a"> Para un conjunto importante de enlaces de navegación.</label><label class="quiz-option"><input type="radio" name="q5" value="b"> Para envolver cualquier enlace externo aislado.</label><label class="quiz-option"><input type="radio" name="q5" value="c"> Para crear automáticamente una barra con diseño.</label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
+            </div>
+            <div class="quiz-actions"><button class="button primary" type="submit">Corregir los cinco casos</button><p class="quiz-summary" id="quiz-summary" role="status">Responde y corrige para habilitar el informe.</p></div>
+          </form>
+        </section>
+
+        <section class="report" aria-labelledby="informe-titulo">
+          <div class="report-head"><div><h2 id="informe-titulo">Informe de actividad</h2><p>Recoge los resultados de navegación y del diagnóstico sin copiar enlaces ni fragmentos del documento.</p></div><span class="report-badge">Sin código fuente</span></div>
+          <div class="report-grid">
+            <form class="report-form" id="report-form"><label for="student-name">Nombre o alias</label><input id="student-name" type="text" maxlength="60" required><label for="student-group">Grupo · opcional</label><input id="student-group" type="text" maxlength="40"><div class="report-actions"><button class="button primary" id="generate-report" type="submit" disabled>Generar informe</button><button class="button secondary" id="download-report" type="button" disabled>Descargar TXT</button></div><p class="report-status" id="report-status" role="status">Completa y corrige las dos pruebas.</p></form>
+            <div class="report-output"><h3>Vista previa del informe</h3><pre id="report-preview">Aquí aparecerán las puntuaciones y el resultado global. El código HTML y los destinos escritos no se incluirán.</pre></div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <nav class="section wrap course-nav" aria-label="Navegación entre secciones">
+      <a class="course-link" href="html5-02-texto.html"><span><strong>← Sección 02</strong><small>Texto con estructura y significado</small></span><span>Volver</span></a>
+      <span class="course-link locked"><span><strong>Sección 04 →</strong><small>Imágenes y contenido multimedia</small></span><span>Próximamente</span></span>
+    </nav>
+  </main>
+
+  <footer><div class="footer-grid wrap"><p>Material educativo basado en el estándar HTML y en la documentación de MDN. Los archivos y los informes se procesan localmente en el navegador.</p><nav aria-label="Fuentes"><a href="https://developer.mozilla.org/es/docs/Web/HTML/Reference/Elements/a" target="_blank" rel="noopener noreferrer">Elemento a · MDN ↗</a><a href="https://developer.mozilla.org/es/docs/Web/HTML/Reference/Elements/nav" target="_blank" rel="noopener noreferrer">Elemento nav · MDN ↗</a><a href="https://html.spec.whatwg.org/multipage/links.html" target="_blank" rel="noopener noreferrer">Enlaces · HTML ↗</a></nav></div></footer>
+
+  <script>
+    (() => {
+      const editor = document.querySelector("#code-editor");
+      const fileInput = document.querySelector("#project-file");
+      const fileStatus = document.querySelector("#file-status");
+      const stats = document.querySelector("#editor-stats");
+      const runButton = document.querySelector("#run-tests");
+      const clearButton = document.querySelector("#clear-code");
+      const pasteStatus = document.querySelector("#paste-status");
+      const testItems = [...document.querySelectorAll("#test-list li")];
+      const testList = document.querySelector("#test-list");
+      const testScore = document.querySelector("#test-score");
+      const testProgress = document.querySelector("#test-progress");
+      const testMessage = document.querySelector("#test-message");
+      const preview = document.querySelector("#preview");
+      const downloadHtml = document.querySelector("#download-html");
+      const quiz = document.querySelector("#quiz");
+      const quizScore = document.querySelector("#quiz-score");
+      const quizSummary = document.querySelector("#quiz-summary");
+      const reportForm = document.querySelector("#report-form");
+      const studentName = document.querySelector("#student-name");
+      const studentGroup = document.querySelector("#student-group");
+      const generateReport = document.querySelector("#generate-report");
+      const downloadReport = document.querySelector("#download-report");
+      const reportStatus = document.querySelector("#report-status");
+      const reportPreview = document.querySelector("#report-preview");
+      const codeKey = "html5-seccion-03-codigo-v1";
+      const identityKey = "html5-identidad-v1";
+      let latestTests = null;
+      let latestQuiz = null;
+      let latestReport = "";
+      let hasRun = false;
+      let pasteTimer;
+
+      document.querySelector(".anchor-code").addEventListener("copy", (event) => event.preventDefault());
+      document.querySelector(".sample-code").addEventListener("copy", (event) => event.preventDefault());
+
+      const updateStats = () => {
+        const chars = editor.value.length;
+        const lines = chars ? editor.value.split(/\r?\n/).length : 0;
+        stats.textContent = `${lines} ${lines === 1 ? "línea" : "líneas"} · ${chars} caracteres`;
+      };
+      const invalidateReport = () => {
+        if (latestReport) reportPreview.textContent = "Los resultados han cambiado. Genera de nuevo el informe.";
+        latestReport = "";
+        downloadReport.disabled = true;
+      };
+      const updateReportAvailability = () => {
+        const missing = [];
+        if (!latestTests) missing.push("validar el proyecto");
+        if (!latestQuiz) missing.push("corregir el diagnóstico");
+        if (!studentName.value.trim()) missing.push("indicar el nombre o alias");
+        generateReport.disabled = missing.length > 0;
+        reportStatus.classList.toggle("ready", missing.length === 0);
+        reportStatus.textContent = missing.length ? `Falta: ${missing.join(", ")}.` : "Resultados listos para generar el informe.";
+      };
+      const markModified = () => {
+        latestTests = null;
+        downloadHtml.disabled = true;
+        invalidateReport();
+        updateReportAvailability();
+        if (hasRun) {
+          testList.classList.add("stale");
+          testScore.textContent = "Modificado";
+          testMessage.className = "test-message";
+          testMessage.textContent = "El código ha cambiado. Ejecuta de nuevo las pruebas.";
+        }
+      };
+      const blockPaste = (event) => {
+        event.preventDefault();
+        clearTimeout(pasteTimer);
+        pasteStatus.textContent = "Pegado bloqueado: carga tu archivo o escribe los cambios.";
+        pasteTimer = setTimeout(() => { pasteStatus.textContent = ""; }, 3500);
+      };
+      editor.addEventListener("paste", blockPaste);
+      editor.addEventListener("drop", blockPaste);
+      editor.addEventListener("input", () => {
+        updateStats();
+        markModified();
+        try { localStorage.setItem(codeKey, editor.value); } catch (_) { /* La actividad funciona sin almacenamiento. */ }
+      });
+
+      fileInput.addEventListener("change", async () => {
+        const file = fileInput.files?.[0];
+        if (!file) return;
+        if (!file.name.toLowerCase().endsWith(".html")) {
+          fileStatus.textContent = "Selecciona un archivo con extensión .html.";
+          fileInput.value = "";
+          return;
+        }
+        editor.value = await file.text();
+        fileStatus.textContent = `${file.name} cargado localmente · ${file.size} bytes.`;
+        updateStats();
+        markModified();
+        try { localStorage.setItem(codeKey, editor.value); } catch (_) { /* Sin almacenamiento disponible. */ }
+        editor.focus();
+      });
+
+      const countTags = (source, name, closing = false) => {
+        const expression = closing ? `<\\/${name}\\s*>` : `<${name}\\b[^>]*>`;
+        return (source.match(new RegExp(expression, "gi")) || []).length;
+      };
+      const inspectBalance = (source) => {
+        const voids = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]);
+        const cleaned = source.replace(/<!--[\s\S]*?-->/g, "").replace(/<!doctype[^>]*>/gi, "");
+        const stack = [];
+        for (const token of cleaned.matchAll(/<\/?([a-z][\w:-]*)\b[^>]*>/gi)) {
+          const tag = token[0];
+          const name = token[1].toLowerCase();
+          if (tag.startsWith("</")) {
+            const openName = stack.pop();
+            if (!openName) return { valid: false, detail: `Sobra la etiqueta de cierre </${name}>.` };
+            if (openName !== name) return { valid: false, detail: `Se encuentra </${name}>, pero antes debe cerrarse <${openName}> con </${openName}>.` };
+          } else if (!voids.has(name) && !tag.endsWith("/>")) stack.push(name);
+        }
+        if (stack.length) {
+          const openName = stack.at(-1);
+          return { valid: false, detail: `Falta cerrar <${openName}> con </${openName}>.` };
+        }
+        return { valid: true, detail: "" };
+      };
+      const inspectSyntax = (source) => {
+        const syntaxSource = source.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
+        const markupSource = syntaxSource.replace(/<!--[\s\S]*?-->/g, "");
+        const balanceResult = inspectBalance(syntaxSource);
+        const htmlOpenCount = countTags(markupSource, "html");
+        const htmlCloseCount = countTags(markupSource, "html", true);
+        const anchorTokens = markupSource.match(/<\/?a\b[^>]*>/gi) || [];
+        let anchorDepth = 0;
+        let nestedAnchors = false;
+        anchorTokens.forEach((tag) => {
+          if (/^<\/a/i.test(tag)) anchorDepth = Math.max(0, anchorDepth - 1);
+          else { if (anchorDepth > 0) nestedAnchors = true; anchorDepth += 1; }
+        });
+        let finalMarkup = syntaxSource.trimEnd();
+        while (finalMarkup.endsWith("-->")) {
+          const commentStart = finalMarkup.lastIndexOf("<!--");
+          if (commentStart < 0) break;
+          finalMarkup = finalMarkup.slice(0, commentStart).trimEnd();
+        }
+        const problems = [];
+        if (htmlOpenCount !== 1) problems.push(`Debe haber una única apertura <html>; ahora hay ${htmlOpenCount}.`);
+        if (htmlCloseCount !== 1) problems.push(`Debe haber un único cierre </html>; ahora hay ${htmlCloseCount}.`);
+        if (!balanceResult.valid) problems.push(balanceResult.detail);
+        if (!/<\/html\s*>$/i.test(finalMarkup)) problems.push("El último elemento del documento debe ser </html>.");
+        if (nestedAnchors) problems.push("Un enlace <a> no puede contener otro enlace <a>.");
+        return { valid: problems.length === 0, detail: problems[0] || "" };
+      };
+      const directItems = (list) => [...list.children].filter((child) => child.tagName === "LI");
+
+      const analyse = (source) => {
+        const normalized = source.replace(/\r\n?/g, "\n").trim();
+        const doc = new DOMParser().parseFromString(normalized, "text/html");
+        const body = doc.body;
+        const htmlOpen = normalized.match(/<html\b[^>]*>/i)?.[0] || "";
+        const headSource = normalized.match(/<head\b[^>]*>([\s\S]*?)<\/head\s*>/i)?.[1] || "";
+        const bodySource = normalized.match(/<body\b[^>]*>([\s\S]*?)<\/body\s*>/i)?.[1] || "";
+        const skeleton = normalized.split("\n")[0]?.trim().toLowerCase() === "<!doctype html>" && /\blang\s*=\s*["']es["']/i.test(htmlOpen) && /<meta\b[^>]*charset\s*=\s*["']?utf-8/i.test(headSource) && /<meta\b[^>]*name\s*=\s*["']viewport["']/i.test(headSource) && Boolean(bodySource);
+        const h1Elements = [...body.querySelectorAll("h1")];
+        const h2Elements = [...body.querySelectorAll("h2")];
+        const paragraphs = [...body.querySelectorAll("p")];
+        const contentLists = [...body.querySelectorAll("ul, ol")].filter((list) => !list.closest("nav"));
+        const previousComment = [...normalized.matchAll(/<!--([\s\S]*?)-->/g)].some((match) => match[1].trim().length >= 10);
+        const previousContent = h1Elements.length === 1 && h1Elements[0].textContent.trim().length >= 5 && h2Elements.length >= 2 && paragraphs.length >= 3 && Boolean(body.querySelector("p strong")) && Boolean(body.querySelector("p em")) && contentLists.some((list) => list.tagName === "UL") && contentLists.some((list) => list.tagName === "OL") && Boolean(body.querySelector("li ul, li ol")) && previousComment;
+        const navs = [...body.querySelectorAll("nav")];
+        const anchors = [...body.querySelectorAll("a")];
+        const fragmentLinks = [...body.querySelectorAll('nav a[href^="#"]')].filter((link) => (link.getAttribute("href") || "").length > 1);
+        const ids = [...body.querySelectorAll("[id]")].map((element) => element.id);
+        const idsValid = ids.length >= 4 && ids.every((id) => /^[A-Za-z][\w:.-]*$/.test(id)) && new Set(ids).size === ids.length;
+        const fragmentsResolve = fragmentLinks.length >= 3 && fragmentLinks.every((link) => {
+          try { return doc.getElementById(decodeURIComponent(link.getAttribute("href").slice(1))); }
+          catch (_) { return false; }
+        });
+        const externalLinks = anchors.filter((link) => /^https:\/\//i.test(link.getAttribute("href") || ""));
+        const blankLinks = anchors.filter((link) => (link.getAttribute("target") || "").toLowerCase() === "_blank");
+        const secureBlank = blankLinks.length >= 1 && blankLinks.every((link) => {
+          const rel = (link.getAttribute("rel") || "").toLowerCase().split(/\s+/);
+          return rel.includes("noopener") && rel.includes("noreferrer");
+        });
+        const relativeLinks = anchors.filter((link) => /^(?:\.\/)?[a-z0-9][^?#]*\.html(?:[?#].*)?$/i.test(link.getAttribute("href") || ""));
+        const genericText = /^(?:aquí|aqui|clic|click|haz clic|más|mas|enlace|leer más|leer mas)$/i;
+        const descriptive = anchors.length >= 6 && anchors.every((link) => {
+          const text = link.textContent.replace(/\s+/g, " ").trim();
+          return text.length >= 4 && !genericText.test(text);
+        });
+        const usableDestinations = anchors.length >= 6 && anchors.every((link) => {
+          const href = (link.getAttribute("href") || "").trim();
+          return href && href !== "#" && !/^(?:javascript:|data:)/i.test(href) && !/\s/.test(href);
+        });
+        const navWithList = navs.some((nav) => {
+          const list = nav.querySelector("ul, ol");
+          return list && directItems(list).length >= 3 && list.querySelectorAll("a").length >= 3;
+        });
+        const syntaxResult = inspectSyntax(normalized);
+        return [
+          { passed: skeleton, ok: "El documento conserva la base HTML5, el idioma y los metadatos.", fail: "Recupera doctype, html lang=es, head, charset, viewport y body." },
+          { passed: previousContent, ok: "Se conserva la estructura semántica completa de la sección anterior.", fail: "Conserva h1/h2, tres párrafos, strong, em, ul, ol, una sublista y un comentario explicativo." },
+          { passed: navWithList && fragmentLinks.length >= 3, ok: "nav agrupa mediante una lista tres o más enlaces internos.", fail: "Crea un nav con una lista que contenga al menos tres enlaces de fragmento." },
+          { passed: idsValid, ok: "Hay cuatro o más identificadores válidos y sin duplicados.", fail: "Usa al menos cuatro id únicos, sin espacios y comenzando por una letra." },
+          { passed: fragmentsResolve, ok: "Todos los fragmentos de nav encuentran un destino real.", fail: "Cada href de nav que empieza por # debe coincidir exactamente con un id existente." },
+          { passed: externalLinks.length >= 1, ok: "Existe al menos una fuente externa con protocolo HTTPS.", fail: "Añade un enlace externo cuyo href comience por https://." },
+          { passed: secureBlank, ok: "Los enlaces que abren pestaña nueva incluyen noopener y noreferrer.", fail: "Añade un enlace con target=\"_blank\" y rel=\"noopener noreferrer\"; protege todos los que usen _blank." },
+          { passed: relativeLinks.length >= 1, ok: "Existe una ruta relativa hacia un archivo HTML.", fail: "Añade un enlace relativo a index.html o ./index.html." },
+          { passed: Boolean(doc.getElementById("inicio") && anchors.some((link) => link.getAttribute("href") === "#inicio")), ok: "Existe un destino inicio y un enlace que regresa hasta él.", fail: "Crea id=\"inicio\" y un enlace final con href=\"#inicio\"." },
+          { passed: descriptive, ok: "Todos los enlaces tienen textos suficientemente descriptivos.", fail: "Usa al menos seis enlaces y evita textos genéricos como aquí, clic, más o enlace." },
+          { passed: usableDestinations, ok: "Todos los enlaces tienen destinos no vacíos y utilizables.", fail: "Revisa href: no puede faltar, estar vacío, ser solo # ni usar javascript: o data:." },
+          { passed: syntaxResult.valid, ok: "Las etiquetas están equilibradas y no hay enlaces anidados.", fail: syntaxResult.detail || "Revisa la sintaxis de los enlaces." }
+        ];
+      };
+
+      const renderTests = (tests) => {
+        const passed = tests.filter((test) => test.passed).length;
+        testItems.forEach((item, index) => {
+          const test = tests[index];
+          item.className = test.passed ? "pass" : "fail";
+          item.querySelector(".test-icon").textContent = test.passed ? "✓" : "!";
+          item.querySelector("p").textContent = test.passed ? test.ok : test.fail;
+        });
+        latestTests = tests.map((test, index) => ({ name: testItems[index].querySelector("strong").textContent, passed: test.passed }));
+        hasRun = true;
+        testList.classList.remove("stale");
+        testScore.textContent = `${passed} / ${tests.length}`;
+        testProgress.style.width = `${passed / tests.length * 100}%`;
+        downloadHtml.disabled = passed !== tests.length;
+        testMessage.className = `test-message ${passed === tests.length ? "success" : "error"}`;
+        testMessage.textContent = passed === tests.length ? "Navegación superada: puedes descargar la nueva versión." : `Has superado ${passed} de ${tests.length} pruebas. Sigue las pistas para localizar los destinos pendientes.`;
+        invalidateReport();
+        updateReportAvailability();
+      };
+      runButton.addEventListener("click", () => {
+        preview.srcdoc = editor.value;
+        renderTests(analyse(editor.value));
+      });
+      clearButton.addEventListener("click", () => {
+        if (editor.value && !window.confirm("¿Vaciar todo el código? Esta acción no se puede deshacer.")) return;
+        editor.value = "";
+        preview.srcdoc = "";
+        latestTests = null;
+        hasRun = false;
+        testItems.forEach((item, index) => { item.className = ""; item.querySelector(".test-icon").textContent = index + 1; item.querySelector("p").textContent = "Pendiente de comprobación."; });
+        testScore.textContent = "Sin validar";
+        testProgress.style.width = "0";
+        testMessage.className = "test-message";
+        testMessage.textContent = "Carga o escribe el documento y ejecuta las pruebas.";
+        downloadHtml.disabled = true;
+        try { localStorage.removeItem(codeKey); } catch (_) { /* Sin almacenamiento. */ }
+        invalidateReport();
+        updateReportAvailability();
+        updateStats();
+        editor.focus();
+      });
+      downloadHtml.addEventListener("click", () => {
+        const blob = new Blob([editor.value], { type: "text/html;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "index.html";
+        document.body.append(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      });
+
+      const quizData = {
+        q1: { answer: "b", label: "Ruta relativa", explanation: "Ambos archivos están en la misma carpeta, por lo que basta con indicar recursos.html." },
+        q2: { answer: "a", label: "Resolución de fragmentos", explanation: "El fragmento solo funciona si existe un id idéntico, sin incluir la almohadilla." },
+        q3: { answer: "c", label: "Nueva pestaña segura", explanation: "noopener evita el acceso a window.opener y noreferrer limita el envío de la referencia." },
+        q4: { answer: "b", label: "Texto descriptivo", explanation: "El texto debe anticipar el contenido incluso cuando se lee fuera de contexto." },
+        q5: { answer: "a", label: "Uso semántico de nav", explanation: "nav identifica bloques importantes de navegación; no aporta diseño por sí mismo." }
+      };
+      quiz.addEventListener("change", () => { latestQuiz = null; invalidateReport(); updateReportAvailability(); });
+      quiz.addEventListener("submit", (event) => {
+        event.preventDefault();
+        let score = 0;
+        const run = [];
+        document.querySelectorAll(".quiz-case").forEach((field) => {
+          const data = quizData[field.dataset.question];
+          const selected = field.querySelector("input:checked");
+          const correct = field.querySelector(`input[value="${data.answer}"]`);
+          const feedback = field.querySelector(".quiz-feedback");
+          field.classList.remove("correct", "incorrect");
+          field.querySelectorAll(".quiz-option").forEach((option) => option.classList.remove("correct-answer", "wrong-answer"));
+          correct.closest(".quiz-option").classList.add("correct-answer");
+          const isCorrect = Boolean(selected && selected.value === data.answer);
+          run.push({ name: data.label, answered: Boolean(selected), correct: isCorrect });
+          if (isCorrect) { score += 1; field.classList.add("correct"); feedback.textContent = `Correcto. ${data.explanation}`; }
+          else { field.classList.add("incorrect"); if (selected) selected.closest(".quiz-option").classList.add("wrong-answer"); feedback.textContent = `${selected ? "Revisa la decisión." : "Sin respuesta."} ${data.explanation}`; }
+        });
+        latestQuiz = run;
+        quizScore.textContent = `${score} / 5`;
+        quizSummary.textContent = score === 5 ? "Dominio completo de rutas, semántica y seguridad." : `Resultado: ${score}/5. Revisa las explicaciones y vuelve a intentarlo.`;
+        invalidateReport();
+        updateReportAvailability();
+      });
+
+      const clean = (value) => value.replace(/\s+/g, " ").trim();
+      [studentName, studentGroup].forEach((input) => input.addEventListener("input", () => {
+        try { localStorage.setItem(identityKey, JSON.stringify({ name: studentName.value, group: studentGroup.value })); } catch (_) { /* Sin almacenamiento. */ }
+        invalidateReport();
+        updateReportAvailability();
+      }));
+      reportForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (generateReport.disabled || !latestTests || !latestQuiz) return;
+        const testPasses = latestTests.filter((test) => test.passed).length;
+        const quizPasses = latestQuiz.filter((answer) => answer.correct).length;
+        const result = testPasses === latestTests.length && quizPasses >= 4 ? "SUPERADA" : "EN PROCESO";
+        const date = new Intl.DateTimeFormat("es-ES", { dateStyle: "long", timeStyle: "short" }).format(new Date());
+        latestReport = [
+          "INFORME DE ACTIVIDAD",
+          "Ruta HTML5 · Sección 03: Enlaces y navegación",
+          "=".repeat(62),
+          `Alumno/a: ${clean(studentName.value)}`,
+          `Grupo: ${clean(studentGroup.value) || "No indicado"}`,
+          `Fecha de generación: ${date}`,
+          "",
+          `RESULTADO GLOBAL: ${result}`,
+          "Criterio: 12/12 en el proyecto y al menos 4/5 en diagnóstico.",
+          "",
+          `NAVEGACIÓN DEL PROYECTO: ${testPasses}/${latestTests.length}`,
+          ...latestTests.map((test, index) => `${String(index + 1).padStart(2, "0")}. ${test.name}: ${test.passed ? "SUPERADA" : "PENDIENTE"}`),
+          "",
+          `DIAGNÓSTICO DE NAVEGACIÓN: ${quizPasses}/${latestQuiz.length}`,
+          ...latestQuiz.map((answer, index) => `${String(index + 1).padStart(2, "0")}. ${answer.name}: ${answer.correct ? "CORRECTO" : answer.answered ? "REVISAR" : "SIN RESPUESTA"}`),
+          "",
+          "Este informe contiene únicamente resultados de aprendizaje.",
+          "No incluye el archivo, el código HTML ni los destinos escritos."
+        ].join("\n");
+        reportPreview.textContent = latestReport;
+        downloadReport.disabled = false;
+        reportStatus.classList.add("ready");
+        reportStatus.textContent = `Informe generado · Resultado: ${result}.`;
+      });
+      downloadReport.addEventListener("click", () => {
+        if (!latestReport) return;
+        const slug = clean(studentName.value).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "alumno";
+        const blob = new Blob([latestReport], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `informe-html5-seccion-03-${slug}.txt`;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      });
+
+      try { editor.value = localStorage.getItem(codeKey) || ""; } catch (_) { editor.value = ""; }
+      try {
+        const identity = JSON.parse(localStorage.getItem(identityKey) || "null");
+        if (identity) { studentName.value = identity.name || ""; studentGroup.value = identity.group || ""; }
+      } catch (_) { /* Sin identidad guardada. */ }
+      updateStats();
+      updateReportAvailability();
+    })();
+  </script>
+</body>
+</html>
