@@ -127,6 +127,28 @@
     .rules-list small { color: var(--muted); }
     .security-note { margin-top: 1rem; padding: 1rem; border-left: 4px solid var(--amber); border-radius: 8px; background: var(--amber-soft); color: #6f4300; }
 
+    .target-layout { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr); gap: 1rem; align-items: start; }
+    .target-panel { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; }
+    .target-panel .route-table { border: 0; border-radius: 0; }
+    .target-panel .route-table td:first-child { width: 130px; }
+    .target-aside { padding: 1.3rem; border: 1px solid #c6e2e6; border-radius: 18px; background: var(--cyan-soft); }
+    .target-aside h3 { margin: 0 0 .7rem; font-size: 1.15rem; }
+    .target-aside p { margin: 0; color: #315f65; }
+    .target-aside p + p { margin-top: .8rem; }
+    .target-aside .advanced { padding-top: .8rem; border-top: 1px solid #b3d8dd; font-size: .84rem; }
+    .semantic-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.3rem; }
+    .choice-card { padding: 1.3rem; border: 1px solid var(--line); border-radius: 18px; }
+    .choice-card.link-card { border-top: 4px solid var(--blue); }
+    .choice-card.button-card { border-top: 4px solid var(--cyan); }
+    .choice-label { display: inline-block; padding: .25rem .55rem; border-radius: 999px; background: var(--blue-soft); color: var(--blue-dark); font-size: .72rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+    .button-card .choice-label { background: var(--cyan-soft); color: #12616a; }
+    .choice-card h3 { margin: .8rem 0 .45rem; }
+    .choice-card p { margin: 0; color: var(--muted); }
+    .choice-code { margin: 1rem 0 0; padding: .85rem; overflow-x: auto; border-radius: 10px; background: var(--code); color: #e8edf8; font-size: .78rem; white-space: pre-wrap; user-select: none; }
+    .decision-rule { grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr; gap: .8rem; align-items: center; padding: 1rem 1.2rem; border: 1px solid #cfd8f7; border-radius: 14px; background: var(--blue-soft); }
+    .decision-rule strong { color: var(--blue-dark); }
+    .decision-symbol { display: grid; width: 38px; aspect-ratio: 1; place-items: center; border-radius: 50%; background: var(--blue); color: var(--white); font-weight: 900; }
+
     .exercise-section { background: var(--soft); }
     .exercise-shell { overflow: hidden; border: 1px solid #cdd7f7; border-radius: 28px; background: var(--white); box-shadow: var(--shadow); }
     .exercise-hero { display: grid; grid-template-columns: 1fr auto; gap: 2rem; padding: clamp(1.6rem, 5vw, 3rem); border-bottom: 1px solid var(--line); background: linear-gradient(135deg, #fff 50%, #edf2ff); }
@@ -242,7 +264,7 @@
     footer a { font-size: .84rem; font-weight: 750; }
 
     @media (max-width: 920px) {
-      .hero, .anchor-lab, .coding-grid { grid-template-columns: 1fr; }
+      .hero, .anchor-lab, .coding-grid, .target-layout { grid-template-columns: 1fr; }
       .hero { min-height: auto; }
       .route-map { max-width: 680px; transform: none; }
       .decision-grid { grid-template-columns: 1fr 1fr; }
@@ -252,7 +274,8 @@
       .course-progress span:first-child, .mini-track { display: none; }
       .hero { padding-top: 3.3rem; }
       .bridge .wrap, .section-head, .exercise-hero, .assessment-head, .report-head, .footer-grid { grid-template-columns: 1fr; }
-      .decision-grid, .nav-grid, .brief-grid, .quiz-grid, .report-grid, .course-nav { grid-template-columns: 1fr; }
+      .decision-grid, .nav-grid, .semantic-choice, .brief-grid, .quiz-grid, .report-grid, .course-nav { grid-template-columns: 1fr; }
+      .decision-rule { grid-column: auto; }
       .quiz-case:last-child { grid-column: auto; }
       .section-head { gap: .4rem; }
       .section-head h2 { margin-top: 0; }
@@ -289,7 +312,7 @@
         <p class="eyebrow">Sección 03 · Conectar contenidos</p>
         <h1>Enlaces que <em>orientan</em>, no que confunden</h1>
         <p class="lede">Un enlace no es solo texto azul. Define un destino, establece una relación entre recursos y debe anticipar con claridad qué ocurrirá al activarlo.</p>
-        <ul class="hero-meta"><li>70–90 min</li><li>Rutas y fragmentos</li><li>12 pruebas automáticas</li></ul>
+        <ul class="hero-meta"><li>80–100 min</li><li>Rutas, targets y controles</li><li>14 pruebas automáticas</li></ul>
       </div>
       <div class="route-map" role="group" aria-label="Mapa visual de diferentes destinos de enlace">
         <div class="route-window">
@@ -363,13 +386,58 @@
       </div>
     </section>
 
+    <section class="section wrap" aria-labelledby="comportamiento-titulo">
+      <div class="section-head"><span class="section-number">04</span><div><h2 id="comportamiento-titulo">Dónde abrir y qué elemento elegir</h2><p><code>target</code> decide el contexto de navegación. La elección entre <code>&lt;a&gt;</code> y <code>&lt;button&gt;</code> depende del propósito, nunca de la apariencia visual.</p></div></div>
+      <div class="target-layout">
+        <div class="target-panel">
+          <div class="card-head"><span>Valores habituales de target</span><span>Contexto de navegación</span></div>
+          <table class="route-table">
+            <thead><tr><th>Valor</th><th>Resultado</th><th>Decisión práctica</th></tr></thead>
+            <tbody>
+              <tr><td>Sin atributo o <code>_self</code></td><td>Carga el destino en el contexto actual.</td><td>Es el comportamiento predeterminado y el más habitual.</td></tr>
+              <tr><td><code>_blank</code></td><td>Abre normalmente una pestaña nueva.</td><td>Úsalo con una razón clara, avisa en el texto y declara <code>rel="noopener noreferrer"</code>.</td></tr>
+              <tr><td><code>_parent</code></td><td>Navega el contexto padre.</td><td>Tiene sentido dentro de un <code>iframe</code>; sin padre se comporta como <code>_self</code>.</td></tr>
+              <tr><td><code>_top</code></td><td>Navega el contexto superior de la pestaña.</td><td>Permite salir de varios niveles de marcos; sin antecesores se comporta como <code>_self</code>.</td></tr>
+              <tr><td>Nombre propio</td><td>Abre o reutiliza un contexto con ese nombre.</td><td>Por ejemplo, <code>target="panel-ayuda"</code>; evita crear pestañas nuevas en cada activación.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <aside class="target-aside">
+          <h3>No confundas destino con seguridad</h3>
+          <p><code>target</code> indica dónde se muestra el recurso; <code>rel</code> describe la relación y puede limitar capacidades o información enviada.</p>
+          <p>Aunque los navegadores modernos protegen implícitamente muchos enlaces con <code>_blank</code>, en este proyecto se exige escribir <code>noopener noreferrer</code> para que la decisión sea explícita.</p>
+          <p class="advanced"><strong>Nivel avanzado:</strong> el estándar también contempla <code>_unfencedTop</code> para marcos aislados especiales. No se utiliza en una navegación convencional.</p>
+        </aside>
+      </div>
+
+      <div class="semantic-choice">
+        <article class="choice-card link-card">
+          <span class="choice-label">Navegación</span>
+          <h3>Usa <code>&lt;a href&gt;</code></h3>
+          <p>Cuando la activación lleva a otra URL, archivo, sección, correo o teléfono. El destino debe poder copiarse, abrirse en otra pestaña o guardarse.</p>
+          <pre class="choice-code no-copy"><code>&lt;a href="recursos.html" target="_self"&gt;
+  Consultar recursos
+&lt;/a&gt;</code></pre>
+        </article>
+        <article class="choice-card button-card">
+          <span class="choice-label">Acción</span>
+          <h3>Usa <code>&lt;button&gt;</code></h3>
+          <p>Cuando la activación cambia la interfaz: mostrar contenido, abrir un diálogo, iniciar una reproducción o ejecutar una función. Escribe <code>type="button"</code>: dentro de un formulario, omitir el tipo puede provocar un envío involuntario.</p>
+          <pre class="choice-code no-copy"><code>&lt;button type="button"&gt;
+  Activar modo nocturno
+&lt;/button&gt;</code></pre>
+        </article>
+        <div class="decision-rule"><span class="decision-symbol">?</span><span><strong>Pregunta de decisión:</strong> «¿Voy a algún sitio?» → enlace. «¿Hago algo en esta interfaz?» → botón. CSS puede hacer que ambos se parezcan, pero no cambia su significado.</span></div>
+      </div>
+    </section>
+
     <section class="section exercise-section" aria-labelledby="ejercicio-titulo">
       <div class="wrap">
         <div class="exercise-shell">
-          <div class="exercise-hero"><div><p class="exercise-kicker">Ejercicio práctico 03 · Proyecto acumulativo</p><h2 id="ejercicio-titulo">Construye un sistema de navegación verificable</h2><p>Carga el <code>index.html</code> de la sección 02. Debes decidir los identificadores, redactar los textos de enlace y comprobar que todos los destinos funcionen; no hay una plantilla para copiar.</p></div><div class="time-card"><strong>45–60</strong><span>minutos</span></div></div>
+          <div class="exercise-hero"><div><p class="exercise-kicker">Ejercicio práctico 03 · Proyecto acumulativo</p><h2 id="ejercicio-titulo">Construye una navegación y un control semánticamente correctos</h2><p>Carga el <code>index.html</code> de la sección 02. Debes decidir identificadores, destinos, valores de <code>target</code> y cuándo corresponde un enlace o un botón; no hay una plantilla para copiar.</p></div><div class="time-card"><strong>55–70</strong><span>minutos</span></div></div>
           <div class="brief-grid">
-            <article class="task-card"><h3>Contrato funcional</h3><ul><li>Conserva el esqueleto, el contenido y la jerarquía anterior.</li><li>Marca el comienzo con <code>id="inicio"</code>.</li><li>Crea una navegación con una lista y tres fragmentos.</li><li>Asigna identificadores únicos a los tres destinos.</li><li>Añade una fuente externa segura y un enlace relativo a <code>index.html</code>.</li><li>Incluye al final un enlace de regreso a <code>#inicio</code>.</li></ul></article>
-            <article class="task-card"><h3>Criterios profesionales</h3><ol><li>Planifica primero el mapa de destinos.</li><li>Usa textos que expliquen qué encontrará la persona.</li><li>No emplees <code>href="#"</code> ni protocolos <code>javascript:</code>.</li><li>Si abres una pestaña, usa <code>rel="noopener noreferrer"</code>.</li><li>Prueba cada enlace en la vista y depura las doce comprobaciones.</li></ol><p class="load-note">El archivo se procesa localmente. No se envía a ningún servidor.</p></article>
+            <article class="task-card"><h3>Contrato funcional</h3><ul><li>Conserva el esqueleto, el contenido y la jerarquía anterior.</li><li>Marca el comienzo con <code>id="inicio"</code>.</li><li>Crea una navegación con una lista, tres fragmentos y destinos únicos.</li><li>Añade una fuente HTTPS con <code>target="_blank"</code> y protección explícita.</li><li>Crea un enlace relativo a <code>index.html</code> con <code>target="_self"</code>.</li><li>Incluye un regreso a <code>#inicio</code> y un botón de acción futura con <code>type="button"</code>.</li></ul></article>
+            <article class="task-card"><h3>Criterios profesionales</h3><ol><li>Planifica primero el mapa de destinos.</li><li>Usa textos que expliquen qué encontrará la persona.</li><li>No emplees <code>href="#"</code> ni protocolos <code>javascript:</code>.</li><li>No coloques botones dentro de <code>nav</code> ni enlaces falsos para ejecutar acciones.</li><li>El botón puede preparar una acción futura —por ejemplo, «Activar modo nocturno»— aunque todavía no tenga JavaScript.</li><li>Prueba los destinos y depura las catorce comprobaciones.</li></ol><p class="load-note">El archivo se procesa localmente. No se envía a ningún servidor.</p></article>
           </div>
 
           <div class="lab">
@@ -379,7 +447,7 @@
                 <div class="panel-head"><span class="editor-file">index.html</span><span id="editor-stats">0 líneas · 0 caracteres</span></div>
                 <label class="editor-label" for="code-editor">Código HTML del proyecto</label>
                 <textarea id="code-editor" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Carga tu index.html anterior o escribe el documento desde cero."></textarea>
-                <div class="editor-actions"><button class="button primary" id="run-tests" type="button">Ejecutar 12 pruebas</button><button class="button secondary" id="clear-code" type="button">Vaciar editor</button><span class="paste-status" id="paste-status" role="status"></span></div>
+                <div class="editor-actions"><button class="button primary" id="run-tests" type="button">Ejecutar 14 pruebas</button><button class="button secondary" id="clear-code" type="button">Vaciar editor</button><span class="paste-status" id="paste-status" role="status"></span></div>
               </div>
               <aside class="test-panel" aria-labelledby="tests-title">
                 <div class="panel-head"><h3 id="tests-title">Pruebas automáticas</h3><span class="score" id="test-score">Sin validar</span></div>
@@ -392,11 +460,13 @@
                   <li><span class="test-icon">5</span><div><strong>Fragmentos resueltos</strong><p>Pendiente de comprobación.</p></div></li>
                   <li><span class="test-icon">6</span><div><strong>Fuente externa HTTPS</strong><p>Pendiente de comprobación.</p></div></li>
                   <li><span class="test-icon">7</span><div><strong>Nueva pestaña segura</strong><p>Pendiente de comprobación.</p></div></li>
-                  <li><span class="test-icon">8</span><div><strong>Ruta relativa HTML</strong><p>Pendiente de comprobación.</p></div></li>
-                  <li><span class="test-icon">9</span><div><strong>Regreso al inicio</strong><p>Pendiente de comprobación.</p></div></li>
-                  <li><span class="test-icon">10</span><div><strong>Textos descriptivos</strong><p>Pendiente de comprobación.</p></div></li>
-                  <li><span class="test-icon">11</span><div><strong>Destinos utilizables</strong><p>Pendiente de comprobación.</p></div></li>
-                  <li><span class="test-icon">12</span><div><strong>Sintaxis de enlaces limpia</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">8</span><div><strong>Targets coherentes</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">9</span><div><strong>Ruta relativa HTML</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">10</span><div><strong>Regreso al inicio</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">11</span><div><strong>Textos descriptivos</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">12</span><div><strong>Destinos utilizables</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">13</span><div><strong>Botón para una acción</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">14</span><div><strong>Sintaxis interactiva limpia</strong><p>Pendiente de comprobación.</p></div></li>
                 </ol>
                 <p class="test-message" id="test-message" role="status">Carga o escribe el documento y ejecuta las pruebas.</p>
               </aside>
@@ -406,7 +476,7 @@
         </div>
 
         <section class="assessment" aria-labelledby="diagnostico-titulo">
-          <div class="assessment-head"><div><h2 id="diagnostico-titulo">Diagnóstico de navegación</h2><p>Cinco decisiones sobre rutas, accesibilidad, semántica y seguridad.</p></div><span class="assessment-score" id="quiz-score">— / 5</span></div>
+          <div class="assessment-head"><div><h2 id="diagnostico-titulo">Diagnóstico de navegación</h2><p>Siete decisiones sobre rutas, contextos de navegación, accesibilidad y semántica.</p></div><span class="assessment-score" id="quiz-score">— / 7</span></div>
           <form id="quiz" novalidate>
             <div class="quiz-grid">
               <fieldset class="quiz-case" data-question="q1"><legend><span class="case-label">Caso 01</span>Desde <code>proyecto/index.html</code> quieres enlazar <code>proyecto/recursos.html</code>. ¿Qué destino es el más adecuado?</legend><label class="quiz-option"><input type="radio" name="q1" value="a"> <code>https://proyecto/recursos.html</code></label><label class="quiz-option"><input type="radio" name="q1" value="b"> <code>recursos.html</code></label><label class="quiz-option"><input type="radio" name="q1" value="c"> <code>#recursos.html</code></label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
@@ -414,13 +484,15 @@
               <fieldset class="quiz-case" data-question="q3"><legend><span class="case-label">Caso 03</span>Un enlace externo usa <code>target="_blank"</code>. ¿Qué complemento aplica la práctica más segura?</legend><label class="quiz-option"><input type="radio" name="q3" value="a"> <code>rel="stylesheet"</code></label><label class="quiz-option"><input type="radio" name="q3" value="b"> <code>download</code></label><label class="quiz-option"><input type="radio" name="q3" value="c"> <code>rel="noopener noreferrer"</code></label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
               <fieldset class="quiz-case" data-question="q4"><legend><span class="case-label">Caso 04</span>¿Qué texto de enlace permite anticipar mejor el destino?</legend><label class="quiz-option"><input type="radio" name="q4" value="a"> Haz clic aquí</label><label class="quiz-option"><input type="radio" name="q4" value="b"> Consultar la guía de observación astronómica</label><label class="quiz-option"><input type="radio" name="q4" value="c"> Más</label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
               <fieldset class="quiz-case" data-question="q5"><legend><span class="case-label">Caso 05</span>¿Cuándo está justificado utilizar <code>&lt;nav&gt;</code>?</legend><label class="quiz-option"><input type="radio" name="q5" value="a"> Para un conjunto importante de enlaces de navegación.</label><label class="quiz-option"><input type="radio" name="q5" value="b"> Para envolver cualquier enlace externo aislado.</label><label class="quiz-option"><input type="radio" name="q5" value="c"> Para crear automáticamente una barra con diseño.</label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
+              <fieldset class="quiz-case" data-question="q6"><legend><span class="case-label">Caso 06</span>Una página está dentro de varios <code>iframe</code> y el destino debe ocupar toda la pestaña. ¿Qué valor de <code>target</code> corresponde?</legend><label class="quiz-option"><input type="radio" name="q6" value="a"> <code>_self</code></label><label class="quiz-option"><input type="radio" name="q6" value="b"> <code>_parent</code></label><label class="quiz-option"><input type="radio" name="q6" value="c"> <code>_top</code></label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
+              <fieldset class="quiz-case" data-question="q7"><legend><span class="case-label">Caso 07</span>Quieres activar el modo nocturno sin abandonar la página. ¿Qué elemento expresa correctamente esa intención?</legend><label class="quiz-option"><input type="radio" name="q7" value="a"> <code>&lt;a href="#"&gt;Activar modo nocturno&lt;/a&gt;</code></label><label class="quiz-option"><input type="radio" name="q7" value="b"> <code>&lt;button type="button"&gt;Activar modo nocturno&lt;/button&gt;</code></label><label class="quiz-option"><input type="radio" name="q7" value="c"> <code>&lt;a href="modo-nocturno.html"&gt;Activar modo nocturno&lt;/a&gt;</code></label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
             </div>
-            <div class="quiz-actions"><button class="button primary" type="submit">Corregir los cinco casos</button><p class="quiz-summary" id="quiz-summary" role="status">Responde y corrige para habilitar el informe.</p></div>
+            <div class="quiz-actions"><button class="button primary" type="submit">Corregir los siete casos</button><p class="quiz-summary" id="quiz-summary" role="status">Responde y corrige para habilitar el informe.</p></div>
           </form>
         </section>
 
         <section class="report" aria-labelledby="informe-titulo">
-          <div class="report-head"><div><h2 id="informe-titulo">Informe de actividad</h2><p>Recoge los resultados de navegación y del diagnóstico sin copiar enlaces ni fragmentos del documento.</p></div><span class="report-badge">Sin código fuente</span></div>
+          <div class="report-head"><div><h2 id="informe-titulo">Informe de actividad</h2><p>Recoge los resultados sobre navegación, contextos y controles sin copiar enlaces ni fragmentos del documento.</p></div><span class="report-badge">Sin código fuente</span></div>
           <div class="report-grid">
             <form class="report-form" id="report-form"><label for="student-name">Nombre o alias</label><input id="student-name" type="text" maxlength="60" required><label for="student-group">Grupo · opcional</label><input id="student-group" type="text" maxlength="40"><div class="report-actions"><button class="button primary" id="generate-report" type="submit" disabled>Generar informe</button><button class="button secondary" id="download-report" type="button" disabled>Descargar TXT</button></div><p class="report-status" id="report-status" role="status">Completa y corrige las dos pruebas.</p></form>
             <div class="report-output"><h3>Vista previa del informe</h3><pre id="report-preview">Aquí aparecerán las puntuaciones y el resultado global. El código HTML y los destinos escritos no se incluirán.</pre></div>
@@ -435,7 +507,7 @@
     </nav>
   </main>
 
-  <footer><div class="footer-grid wrap"><p>Material educativo basado en el estándar HTML y en la documentación de MDN. Los archivos y los informes se procesan localmente en el navegador.</p><nav aria-label="Fuentes"><a href="https://developer.mozilla.org/es/docs/Web/HTML/Reference/Elements/a" target="_blank" rel="noopener noreferrer">Elemento a · MDN ↗</a><a href="https://developer.mozilla.org/es/docs/Web/HTML/Reference/Elements/nav" target="_blank" rel="noopener noreferrer">Elemento nav · MDN ↗</a><a href="https://html.spec.whatwg.org/multipage/links.html" target="_blank" rel="noopener noreferrer">Enlaces · HTML ↗</a></nav></div></footer>
+  <footer><div class="footer-grid wrap"><p>Material educativo basado en el estándar HTML y en la documentación de MDN. Los archivos y los informes se procesan localmente en el navegador.</p><nav aria-label="Fuentes"><a href="https://developer.mozilla.org/es/docs/Web/HTML/Reference/Elements/a" target="_blank" rel="noopener noreferrer">Elemento a · MDN ↗</a><a href="https://developer.mozilla.org/es/docs/Web/HTML/Reference/Elements/button" target="_blank" rel="noopener noreferrer">Elemento button · MDN ↗</a><a href="https://developer.mozilla.org/es/docs/Web/HTML/Reference/Elements/nav" target="_blank" rel="noopener noreferrer">Elemento nav · MDN ↗</a><a href="https://html.spec.whatwg.org/multipage/links.html" target="_blank" rel="noopener noreferrer">Enlaces · HTML ↗</a></nav></div></footer>
 
   <script>
     (() => {
@@ -473,6 +545,7 @@
 
       document.querySelector(".anchor-code").addEventListener("copy", (event) => event.preventDefault());
       document.querySelector(".sample-code").addEventListener("copy", (event) => event.preventDefault());
+      document.querySelectorAll(".no-copy").forEach((example) => example.addEventListener("copy", (event) => event.preventDefault()));
 
       const updateStats = () => {
         const chars = editor.value.length;
@@ -617,6 +690,9 @@
           return rel.includes("noopener") && rel.includes("noreferrer");
         });
         const relativeLinks = anchors.filter((link) => /^(?:\.\/)?[a-z0-9][^?#]*\.html(?:[?#].*)?$/i.test(link.getAttribute("href") || ""));
+        const targetValues = anchors.map((link) => (link.getAttribute("target") || "").trim()).filter(Boolean);
+        const validTargets = targetValues.every((value) => /^(?:_self|_blank|_parent|_top|_unfencedtop)$/i.test(value) || /^[A-Za-z][\w.-]*$/.test(value));
+        const relativeSelf = relativeLinks.some((link) => (link.getAttribute("target") || "").toLowerCase() === "_self");
         const genericText = /^(?:aquí|aqui|clic|click|haz clic|más|mas|enlace|leer más|leer mas)$/i;
         const descriptive = anchors.length >= 6 && anchors.every((link) => {
           const text = link.textContent.replace(/\s+/g, " ").trim();
@@ -630,6 +706,13 @@
           const list = nav.querySelector("ul, ol");
           return list && directItems(list).length >= 3 && list.querySelectorAll("a").length >= 3;
         });
+        const buttons = [...body.querySelectorAll("button")];
+        const semanticAction = buttons.length >= 1 && buttons.every((button) =>
+          (button.getAttribute("type") || "").toLowerCase() === "button" &&
+          !button.closest("nav") &&
+          !button.hasAttribute("href") &&
+          button.textContent.replace(/\s+/g, " ").trim().length >= 4
+        );
         const syntaxResult = inspectSyntax(normalized);
         return [
           { passed: skeleton, ok: "El documento conserva la base HTML5, el idioma y los metadatos.", fail: "Recupera doctype, html lang=es, head, charset, viewport y body." },
@@ -639,11 +722,13 @@
           { passed: fragmentsResolve, ok: "Todos los fragmentos de nav encuentran un destino real.", fail: "Cada href de nav que empieza por # debe coincidir exactamente con un id existente." },
           { passed: externalLinks.length >= 1, ok: "Existe al menos una fuente externa con protocolo HTTPS.", fail: "Añade un enlace externo cuyo href comience por https://." },
           { passed: secureBlank, ok: "Los enlaces que abren pestaña nueva incluyen noopener y noreferrer.", fail: "Añade un enlace con target=\"_blank\" y rel=\"noopener noreferrer\"; protege todos los que usen _blank." },
+          { passed: validTargets && relativeSelf, ok: "Los valores de target son reconocibles y la ruta relativa declara _self.", fail: "Usa target=\"_self\" en el enlace relativo y revisa que los demás target sean palabras clave válidas o nombres propios." },
           { passed: relativeLinks.length >= 1, ok: "Existe una ruta relativa hacia un archivo HTML.", fail: "Añade un enlace relativo a index.html o ./index.html." },
           { passed: Boolean(doc.getElementById("inicio") && anchors.some((link) => link.getAttribute("href") === "#inicio")), ok: "Existe un destino inicio y un enlace que regresa hasta él.", fail: "Crea id=\"inicio\" y un enlace final con href=\"#inicio\"." },
           { passed: descriptive, ok: "Todos los enlaces tienen textos suficientemente descriptivos.", fail: "Usa al menos seis enlaces y evita textos genéricos como aquí, clic, más o enlace." },
           { passed: usableDestinations, ok: "Todos los enlaces tienen destinos no vacíos y utilizables.", fail: "Revisa href: no puede faltar, estar vacío, ser solo # ni usar javascript: o data:." },
-          { passed: syntaxResult.valid, ok: "Las etiquetas están equilibradas y no hay enlaces anidados.", fail: syntaxResult.detail || "Revisa la sintaxis de los enlaces." }
+          { passed: semanticAction, ok: "Las acciones de interfaz usan button con type=\"button\" y quedan fuera de nav.", fail: "Añade fuera de nav un <button type=\"button\"> con un texto descriptivo; no le asignes href." },
+          { passed: syntaxResult.valid, ok: "Las etiquetas están equilibradas y no hay enlaces anidados.", fail: syntaxResult.detail || "Revisa la sintaxis de los elementos interactivos." }
         ];
       };
 
@@ -705,7 +790,9 @@
         q2: { answer: "a", label: "Resolución de fragmentos", explanation: "El fragmento solo funciona si existe un id idéntico, sin incluir la almohadilla." },
         q3: { answer: "c", label: "Nueva pestaña segura", explanation: "noopener evita el acceso a window.opener y noreferrer limita el envío de la referencia." },
         q4: { answer: "b", label: "Texto descriptivo", explanation: "El texto debe anticipar el contenido incluso cuando se lee fuera de contexto." },
-        q5: { answer: "a", label: "Uso semántico de nav", explanation: "nav identifica bloques importantes de navegación; no aporta diseño por sí mismo." }
+        q5: { answer: "a", label: "Uso semántico de nav", explanation: "nav identifica bloques importantes de navegación; no aporta diseño por sí mismo." },
+        q6: { answer: "c", label: "Target de contexto superior", explanation: "_top navega el contexto situado en la parte superior; _parent solo alcanza el padre inmediato." },
+        q7: { answer: "b", label: "Enlace frente a botón", explanation: "Un cambio en la interfaz es una acción y se expresa con button; a se reserva para navegación real." }
       };
       quiz.addEventListener("change", () => { latestQuiz = null; invalidateReport(); updateReportAvailability(); });
       quiz.addEventListener("submit", (event) => {
@@ -726,8 +813,8 @@
           else { field.classList.add("incorrect"); if (selected) selected.closest(".quiz-option").classList.add("wrong-answer"); feedback.textContent = `${selected ? "Revisa la decisión." : "Sin respuesta."} ${data.explanation}`; }
         });
         latestQuiz = run;
-        quizScore.textContent = `${score} / 5`;
-        quizSummary.textContent = score === 5 ? "Dominio completo de rutas, semántica y seguridad." : `Resultado: ${score}/5. Revisa las explicaciones y vuelve a intentarlo.`;
+        quizScore.textContent = `${score} / 7`;
+        quizSummary.textContent = score === 7 ? "Dominio completo de rutas, targets, semántica y seguridad." : `Resultado: ${score}/7. Revisa las explicaciones y vuelve a intentarlo.`;
         invalidateReport();
         updateReportAvailability();
       });
@@ -743,7 +830,7 @@
         if (generateReport.disabled || !latestTests || !latestQuiz) return;
         const testPasses = latestTests.filter((test) => test.passed).length;
         const quizPasses = latestQuiz.filter((answer) => answer.correct).length;
-        const result = testPasses === latestTests.length && quizPasses >= 4 ? "SUPERADA" : "EN PROCESO";
+        const result = testPasses === latestTests.length && quizPasses >= 6 ? "SUPERADA" : "EN PROCESO";
         const date = new Intl.DateTimeFormat("es-ES", { dateStyle: "long", timeStyle: "short" }).format(new Date());
         latestReport = [
           "INFORME DE ACTIVIDAD",
@@ -754,7 +841,7 @@
           `Fecha de generación: ${date}`,
           "",
           `RESULTADO GLOBAL: ${result}`,
-          "Criterio: 12/12 en el proyecto y al menos 4/5 en diagnóstico.",
+          "Criterio: 14/14 en el proyecto y al menos 6/7 en diagnóstico.",
           "",
           `NAVEGACIÓN DEL PROYECTO: ${testPasses}/${latestTests.length}`,
           ...latestTests.map((test, index) => `${String(index + 1).padStart(2, "0")}. ${test.name}: ${test.passed ? "SUPERADA" : "PENDIENTE"}`),
