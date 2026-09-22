@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Laboratorio interactivo para evaluar y comparar la usabilidad y la accesibilidad de tres sitios web mediante tareas, métricas y evidencias.">
+  <meta name="description" content="Laboratorio interactivo para comprobar y comparar el grado de cumplimiento de las diez heurísticas de usabilidad de Nielsen en tres sitios web reales.">
   <meta name="theme-color" content="#111a2c">
-  <title>Laboratorio de usabilidad y accesibilidad</title>
+  <title>Laboratorio de heurísticas de Nielsen</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111a2c'/%3E%3Cpath d='M14 17h36M14 32h23M14 47h16' stroke='%23d9ff52' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='47' cy='44' r='9' fill='%2359d5ff'/%3E%3C/svg%3E">
   <style>
     :root {
@@ -790,7 +790,7 @@
 
     .rubric-key strong { display: block; color: var(--ink); font-size: 1rem; }
 
-    .accessibility-probe {
+    .inspection-probe {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: .6rem;
@@ -892,6 +892,56 @@
       margin: 0;
       padding: 1rem 1.2rem;
       color: #d8e1ef;
+    }
+
+    .heuristic-map {
+      padding: 1.25rem;
+      border-top: 1px solid rgba(255, 255, 255, .14);
+      border-bottom: 1px solid rgba(255, 255, 255, .14);
+    }
+
+    .heuristic-map h3 { margin: 0; font-size: 1.25rem; }
+
+    .heuristic-map > p { margin: .25rem 0 1rem; color: #bfcadd; font-size: .9rem; }
+
+    .heuristic-table { min-width: 760px; }
+
+    .heuristic-table th,
+    .heuristic-table td { padding-block: .72rem; }
+
+    .heuristic-table tbody th { max-width: 360px; }
+
+    .heat-cell {
+      display: inline-flex;
+      min-width: 2.35rem;
+      min-height: 2.1rem;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, .24);
+      border-radius: .65rem;
+      background: rgba(255, 255, 255, .08);
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .heat-0 { background: #8f2018; }
+    .heat-1 { background: #a94721; }
+    .heat-2 { background: #735f0a; }
+    .heat-3 { background: #17657b; }
+    .heat-4 { background: #17654d; }
+
+    .heuristic-id {
+      display: inline-grid;
+      place-items: center;
+      min-width: 2rem;
+      min-height: 2rem;
+      margin-right: .45rem;
+      border-radius: .55rem;
+      background: var(--ink);
+      color: var(--lime);
+      font-size: .78rem;
+      font-weight: 950;
+      vertical-align: middle;
     }
 
     .conclusion-card {
@@ -1003,7 +1053,7 @@
       .site-grid { grid-template-columns: 1fr; }
       .site-card { min-height: 0; }
       .metric-grid { grid-template-columns: 1fr; }
-      .accessibility-probe { grid-template-columns: repeat(3, 1fr); }
+      .inspection-probe { grid-template-columns: repeat(3, 1fr); }
       .source-grid { grid-template-columns: 1fr; }
     }
 
@@ -1023,7 +1073,7 @@
       .measurement-fields { grid-template-columns: 1fr 1fr; }
       .measurement-fields .wide { grid-column: 1 / -1; }
       .rubric-key { grid-template-columns: repeat(2, 1fr); }
-      .accessibility-probe { grid-template-columns: 1fr 1fr; }
+      .inspection-probe { grid-template-columns: 1fr 1fr; }
       .site-evaluation > summary { grid-template-columns: auto 1fr auto; padding: 1rem; }
       .eval-score { grid-column: 2; justify-self: start; }
       .site-evaluation > summary::after { grid-column: 3; grid-row: 1 / span 2; }
@@ -1073,19 +1123,19 @@
   <header class="hero">
     <div class="hero-inner">
       <div class="topline">
-        <a class="lab-mark" href="#actividad">Laboratorio UX · 01</a>
+        <a class="lab-mark" href="#actividad">Laboratorio UX · Nielsen</a>
         <span class="save-state" id="save-state">El progreso se guarda en este navegador</span>
       </div>
 
       <div class="hero-grid">
         <div>
-          <p class="eyebrow">Observa · mide · argumenta</p>
-          <h1>Usabilidad bajo presión</h1>
-          <p class="hero-lede">Compara tres webs reales. No puntúes si son bonitas: comprueba si una persona puede cumplir su objetivo con eficacia, poco esfuerzo y sin barreras.</p>
+          <p class="eyebrow">Inspecciona · contrasta · argumenta</p>
+          <h1>Diez lentes para una interfaz</h1>
+          <p class="hero-lede">Compara tres webs reales con las diez heurísticas de Nielsen. Ejecuta las tareas, localiza evidencias y valora en qué grado cada interfaz cumple cada principio.</p>
           <ul class="hero-facts" aria-label="Datos de la práctica">
             <li>3 sitios</li>
-            <li>7 métricas</li>
-            <li>55 min recomendados</li>
+            <li>10 heurísticas</li>
+            <li>70 min recomendados</li>
             <li>Trabajo por parejas</li>
           </ul>
         </div>
@@ -1094,7 +1144,7 @@
           <div class="score-ring" id="score-ring">
             <output id="overall-score" aria-live="polite">—<small>media provisional</small></output>
           </div>
-          <p class="orbit-copy">La cifra resume la rúbrica; la conclusión debe apoyarse en hechos observables.</p>
+          <p class="orbit-copy">La cifra expresa el cumplimiento medio de H1–H10; la evidencia explica el resultado.</p>
         </aside>
       </div>
     </div>
@@ -1116,7 +1166,7 @@
         <div class="protocol-intro">
           <p class="section-kicker" style="color: var(--lime)">Protocolo</p>
           <h2 id="protocolo-titulo">Mismas reglas para los tres sitios</h2>
-          <p>Así podrás atribuir las diferencias a la interfaz y no a una forma distinta de hacer la prueba.</p>
+          <p>La inspección será comparable si mantenéis el mismo contexto y aplicáis los mismos diez principios.</p>
         </div>
         <div class="protocol-steps">
           <div class="protocol-step">
@@ -1129,11 +1179,11 @@
           </div>
           <div class="protocol-step">
             <span class="step-number" aria-hidden="true">3</span>
-            <div><strong>Medid antes de opinar</strong><p>Iniciad el cronómetro al abrir la web. Detenedlo al completar las tres tareas o a los 6 minutos.</p></div>
+            <div><strong>Recorred antes de puntuar</strong><p>Completad las tres tareas y provocad, solo si es seguro, una búsqueda vacía o sin resultados.</p></div>
           </div>
           <div class="protocol-step">
             <span class="step-number" aria-hidden="true">4</span>
-            <div><strong>Citad la evidencia</strong><p>Anotad qué elemento, acción y resultado justifican cada puntuación.</p></div>
+            <div><strong>Aplicad H1–H10</strong><p>Para cada heurística, anotad elemento observado, comportamiento e impacto antes de puntuar.</p></div>
           </div>
         </div>
       </div>
@@ -1223,17 +1273,17 @@
         <div class="section-heading">
           <div>
             <p class="section-kicker">02 · Cuaderno de campo</p>
-            <h2 id="cuaderno-titulo">Puntúa solo lo que puedas demostrar</h2>
+            <h2 id="cuaderno-titulo">Inspecciona las diez heurísticas</h2>
           </div>
-          <p>Escala común: 0 = barrera grave; 2 = se logra con esfuerzo; 4 = experiencia clara y fluida. Usa 1 y 3 para casos intermedios.</p>
+          <p>La escala mide cumplimiento, no gusto personal: 0 = contradice el principio; 2 = lo cumple parcialmente; 4 = lo cumple de forma clara y consistente.</p>
         </div>
 
         <ul class="rubric-key" aria-label="Escala de puntuación">
-          <li><strong>0</strong>Bloquea</li>
-          <li><strong>1</strong>Deficiente</li>
-          <li><strong>2</strong>Mejorable</li>
-          <li><strong>3</strong>Adecuada</li>
-          <li><strong>4</strong>Excelente</li>
+          <li><strong>0</strong>No cumple</li>
+          <li><strong>1</strong>Cumplimiento bajo</li>
+          <li><strong>2</strong>Cumplimiento parcial</li>
+          <li><strong>3</strong>Cumplimiento alto</li>
+          <li><strong>4</strong>Cumplimiento sólido</li>
         </ul>
 
         <noscript>Esta ficha necesita JavaScript para crear la rúbrica, calcular resultados y guardar el progreso.</noscript>
@@ -1245,8 +1295,8 @@
           <div class="summary-head">
             <div>
               <p class="section-kicker" style="color: var(--lime)">03 · Comparación</p>
-              <h2 id="resultados-titulo">Resultados de la observación</h2>
-              <p>Las puntuaciones son provisionales hasta completar las siete métricas.</p>
+              <h2 id="resultados-titulo">Perfil heurístico comparado</h2>
+              <p>Las diez heurísticas pesan lo mismo. La media orienta; el mapa H1–H10 muestra dónde está cada problema.</p>
             </div>
             <span class="completion-pill" id="completion-pill">0 de 3 fichas</span>
           </div>
@@ -1255,7 +1305,7 @@
               <thead>
                 <tr>
                   <th scope="col">Sitio</th>
-                  <th scope="col">Puntuación ponderada</th>
+                  <th scope="col">Cumplimiento medio</th>
                   <th scope="col">Tareas logradas</th>
                   <th scope="col">Tiempo</th>
                   <th scope="col">Desvíos</th>
@@ -1264,19 +1314,36 @@
               <tbody id="summary-body"></tbody>
             </table>
           </div>
-          <p class="leader-note" id="leader-note" aria-live="polite">Completa las métricas para poder comparar los sitios.</p>
+          <div class="heuristic-map">
+            <h3>Mapa H1–H10</h3>
+            <p>0 = no cumple · 4 = cumplimiento sólido. El color refuerza la lectura, pero cada celda muestra también su valor.</p>
+            <div class="summary-table-wrap">
+              <table class="summary-table heuristic-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Heurística</th>
+                    <th scope="col">Arngren</th>
+                    <th scope="col">BikeZona</th>
+                    <th scope="col">LINGsCARS</th>
+                  </tr>
+                </thead>
+                <tbody id="heuristic-summary-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <p class="leader-note" id="leader-note" aria-live="polite">Completa H1–H10 para poder comparar los sitios.</p>
         </div>
       </section>
 
       <section aria-labelledby="veredicto-titulo">
         <div class="conclusion-card">
           <p class="section-kicker">04 · Veredicto</p>
-          <h2 id="veredicto-titulo">Convierte la puntuación en una decisión</h2>
-          <p>No basta con elegir un ganador. Explica qué datos sostienen tu comparación y qué cambios tendrían mayor efecto.</p>
+          <h2 id="veredicto-titulo">Emite un diagnóstico heurístico</h2>
+          <p>No basta con ordenar los sitios. Identifica qué principios explican la diferencia y prioriza correcciones concretas.</p>
 
           <div class="conclusion-grid">
             <div class="conclusion-field">
-              <label class="field-label" for="best-site">Sitio más usable para su propósito</label>
+              <label class="field-label" for="best-site">Mayor cumplimiento global de H1–H10</label>
               <select id="best-site" name="best-site">
                 <option value="">Selecciona…</option>
                 <option value="arngren">Arngren</option>
@@ -1285,23 +1352,30 @@
               </select>
             </div>
             <div class="conclusion-field">
-              <label class="field-label" for="weakest-site">Sitio que necesita cambios más urgentes</label>
-              <select id="weakest-site" name="weakest-site">
+              <label class="field-label" for="priority-heuristic">Heurística peor cumplida en el conjunto</label>
+              <select id="priority-heuristic" name="priority-heuristic">
                 <option value="">Selecciona…</option>
-                <option value="arngren">Arngren</option>
-                <option value="bikezona">BikeZona</option>
-                <option value="lingscars">LINGsCARS Museum</option>
+                <option value="visibility">H1 · Visibilidad del estado</option>
+                <option value="match">H2 · Correspondencia con el mundo real</option>
+                <option value="control">H3 · Control y libertad</option>
+                <option value="consistency">H4 · Consistencia y estándares</option>
+                <option value="prevention">H5 · Prevención de errores</option>
+                <option value="recognition">H6 · Reconocer antes que recordar</option>
+                <option value="flexibility">H7 · Flexibilidad y eficiencia</option>
+                <option value="minimalism">H8 · Diseño estético y minimalista</option>
+                <option value="recovery">H9 · Reconocer y recuperarse de errores</option>
+                <option value="help">H10 · Ayuda y documentación</option>
               </select>
             </div>
             <div class="conclusion-field full">
               <label class="field-label" for="comparison">Conclusión comparativa</label>
-              <textarea id="comparison" name="comparison" placeholder="Compara al menos dos medidas: tareas logradas, tiempo, desvíos o una barrera concreta. Explica por qué importan." aria-describedby="comparison-hint"></textarea>
-              <small class="char-hint" id="comparison-hint">Mínimo orientativo: 80 caracteres y dos datos observables.</small>
+              <textarea id="comparison" name="comparison" placeholder="Compara los sitios mediante al menos tres heurísticas. Cita puntuaciones y evidencias concretas; usa tiempo o desvíos solo como apoyo." aria-describedby="comparison-hint"></textarea>
+              <small class="char-hint" id="comparison-hint">Mínimo orientativo: tres heurísticas y dos evidencias observables.</small>
             </div>
             <div class="conclusion-field full">
               <label class="field-label" for="improvements">Dos mejoras prioritarias</label>
-              <textarea id="improvements" name="improvements" placeholder="Propón dos cambios concretos para el sitio más débil. Relaciona cada cambio con una métrica y explica el efecto esperado." aria-describedby="improvements-hint"></textarea>
-              <small class="char-hint" id="improvements-hint">Evita «cambiar el diseño». Especifica qué elemento cambiarías, cómo y para qué.</small>
+              <textarea id="improvements" name="improvements" placeholder="Elige un sitio y propón dos cambios concretos. Para cada uno indica qué heurística corrige, qué elemento modificarías y qué efecto esperas." aria-describedby="improvements-hint"></textarea>
+              <small class="char-hint" id="improvements-hint">Prioriza por impacto, no por facilidad ni por preferencia estética.</small>
             </div>
           </div>
 
@@ -1319,26 +1393,26 @@
       <div class="section-heading">
         <div>
           <p class="section-kicker">Marco de referencia</p>
-          <h2 id="fuentes-titulo">Qué mide esta rúbrica</h2>
+          <h2 id="fuentes-titulo">Qué mide —y qué no— esta rúbrica</h2>
         </div>
-        <p>La puntuación organiza la observación; no es una certificación de conformidad ni sustituye una auditoría profesional.</p>
+        <p>Las heurísticas son principios generales para inspeccionar interfaces. La escala 0–4 es una adaptación didáctica para comparar evidencias.</p>
       </div>
 
       <div class="source-grid">
         <article class="source-card">
-          <h3>ISO 9241-11:2018</h3>
-          <p>Marco para entender la usabilidad como resultado del uso dentro de un contexto: eficacia, eficiencia y satisfacción.</p>
-          <a href="https://www.iso.org/standard/63500.html" target="_blank" rel="noopener noreferrer">Consultar la norma ↗</a>
+          <h3>Fuente principal · Nielsen</h3>
+          <p>Las diez heurísticas son reglas generales de interacción, no requisitos técnicos ni una lista cerrada de comprobaciones.</p>
+          <a href="https://www.nngroup.com/articles/ten-usability-heuristics/" target="_blank" rel="noopener noreferrer">Consultar las 10 heurísticas ↗</a>
         </article>
         <article class="source-card">
-          <h3>WCAG 2.2 · W3C</h3>
-          <p>Referencia para las pruebas de teclado, foco, contraste, redimensionado, reflujo, movimiento y comprensión.</p>
-          <a href="https://www.w3.org/WAI/WCAG22/quickref/" target="_blank" rel="noopener noreferrer">Abrir referencia rápida ↗</a>
+          <h3>Cómo interpretar el porcentaje</h3>
+          <p>Es la media de H1–H10 convertida a 100. No es una nota oficial de Nielsen: sirve para ver patrones y sostener una comparación.</p>
+          <a href="#resultados">Volver al mapa heurístico ↑</a>
         </article>
         <article class="source-card">
-          <h3>Heurísticas de Nielsen</h3>
-          <p>Principios generales que inspiran la orientación, la predictibilidad, el control, la prevención y la recuperación de errores.</p>
-          <a href="https://www.nngroup.com/articles/ten-usability-heuristics/" target="_blank" rel="noopener noreferrer">Revisar las 10 heurísticas ↗</a>
+          <h3>Accesibilidad: evaluación aparte</h3>
+          <p>Cumplir las heurísticas no demuestra conformidad WCAG. La accesibilidad necesita comprobaciones específicas adicionales.</p>
+          <a href="https://www.w3.org/WAI/WCAG22/quickref/" target="_blank" rel="noopener noreferrer">Consultar WCAG 2.2 ↗</a>
         </article>
       </div>
     </section>
@@ -1346,7 +1420,7 @@
 
   <footer>
     <div class="footer-inner">
-      <p>Laboratorio de usabilidad y accesibilidad · Ficha autocontenida</p>
+      <p>Laboratorio de inspección heurística · Nielsen H1–H10</p>
       <p>Los datos no salen del dispositivo salvo que descargues o imprimas el informe.</p>
     </div>
   </footer>
@@ -1355,7 +1429,7 @@
     (() => {
       'use strict';
 
-      const STORAGE_KEY = 'laboratorio-usabilidad-v1';
+      const STORAGE_KEY = 'laboratorio-nielsen-v2';
       const sites = [
         {
           id: 'arngren',
@@ -1397,60 +1471,104 @@
 
       const metrics = [
         {
-          id: 'effectiveness',
-          label: 'Eficacia',
-          weight: 25,
-          question: '¿Se completaron correctamente las tres tareas sin ayuda?',
-          anchors: '<span>0</span> ninguna o bloqueo · <span>2</span> parte con ayuda · <span>4</span> todas, sin ayuda',
-          prompt: 'Ej.: se lograron 2 de 3; no se encontró…'
-        },
-        {
-          id: 'efficiency',
-          label: 'Eficiencia',
-          weight: 15,
-          question: '¿Cuánto tiempo, navegación innecesaria y repetición exigió?',
-          anchors: '<span>0</span> no termina · <span>2</span> varios desvíos · <span>4</span> ruta directa y breve',
-          prompt: 'Cita tiempo, número de desvíos y un paso innecesario.'
-        },
-        {
-          id: 'orientation',
-          label: 'Orientación y arquitectura',
-          weight: 15,
-          question: '¿Menús, rótulos y estructura permiten saber dónde estás y qué hacer?',
-          anchors: '<span>0</span> desorienta · <span>2</span> exige ensayo-error · <span>4</span> ubicación y rutas claras',
-          prompt: 'Nombra un rótulo, menú, categoría o ausencia concreta.'
-        },
-        {
-          id: 'hierarchy',
-          label: 'Jerarquía y legibilidad',
+          number: 1,
+          id: 'visibility',
+          label: 'Visibilidad del estado del sistema',
+          shortLabel: 'Visibilidad del estado',
           weight: 10,
-          question: '¿Se distingue lo principal y se puede recorrer el contenido visualmente?',
-          anchors: '<span>0</span> información indistinguible · <span>2</span> mucha competencia · <span>4</span> orden claro',
-          prompt: 'Describe qué viste primero y qué compitió con la tarea.'
+          question: '¿La interfaz informa con rapidez de dónde está el usuario, qué ocurre y cuál fue el resultado de su acción?',
+          anchors: '<span>0</span> estado o resultado invisibles · <span>2</span> feedback parcial o tardío · <span>4</span> estado y resultado siempre claros',
+          prompt: 'Cita un indicador, cambio, mensaje o ausencia y explica su impacto.'
         },
         {
+          number: 2,
+          id: 'match',
+          label: 'Correspondencia con el mundo real',
+          shortLabel: 'Mundo real',
+          weight: 10,
+          question: '¿Usa palabras, conceptos y un orden comprensibles para su público, en lugar de jerga interna?',
+          anchors: '<span>0</span> lenguaje/orden ajenos · <span>2</span> mezcla comprensible y confusa · <span>4</span> lenguaje familiar y orden natural',
+          prompt: 'Cita una etiqueta, icono, categoría u orden y explica cómo se interpreta.'
+        },
+        {
+          number: 3,
           id: 'control',
-          label: 'Control y predictibilidad',
+          label: 'Control y libertad del usuario',
+          shortLabel: 'Control y libertad',
           weight: 10,
-          question: '¿Los enlaces y acciones responden como se espera y permiten recuperarse?',
-          anchors: '<span>0</span> bloqueo/sorpresa · <span>2</span> feedback ambiguo · <span>4</span> resultado claro y reversible',
-          prompt: 'Cita una acción, el resultado y cómo volviste o corregiste.'
+          question: '¿Es fácil retroceder, salir de una ruta no deseada o corregir una acción sin quedar atrapado?',
+          anchors: '<span>0</span> atrapa o no permite volver · <span>2</span> salida posible pero difícil · <span>4</span> salidas y recuperación evidentes',
+          prompt: 'Describe una entrada equivocada y cómo pudiste —o no— deshacerla.'
         },
         {
-          id: 'accessibility',
-          label: 'Accesibilidad básica',
-          weight: 20,
-          question: '¿Las tareas resisten teclado, foco, zoom, alternativas y movimiento?',
-          anchors: '<span>0</span> barrera crítica · <span>2</span> 2–3 pruebas superadas · <span>4</span> 5 pruebas superadas',
-          prompt: 'Indica qué pruebas pasaron/fallaron. Si teclado bloquea la misión, máximo 1.'
+          number: 4,
+          id: 'consistency',
+          label: 'Consistencia y estándares',
+          shortLabel: 'Consistencia',
+          weight: 10,
+          question: '¿Elementos semejantes se comportan igual y siguen convenciones habituales de la web?',
+          anchors: '<span>0</span> contradicciones frecuentes · <span>2</span> patrones mezclados · <span>4</span> patrones coherentes y convencionales',
+          prompt: 'Compara dos enlaces, menús, rótulos o páginas y explica la consistencia.'
         },
         {
-          id: 'satisfaction',
-          label: 'Satisfacción y confianza',
-          weight: 5,
-          question: '¿Qué carga mental, frustración y seguridad produjo la experiencia?',
-          anchors: '<span>0</span> frustración y duda altas · <span>2</span> esfuerzo notable · <span>4</span> confianza alta',
-          prompt: 'Describe una reacción y vincúlala con un elemento de la interfaz.'
+          number: 5,
+          id: 'prevention',
+          label: 'Prevención de errores',
+          shortLabel: 'Prevención de errores',
+          weight: 10,
+          question: '¿El diseño evita acciones equivocadas mediante restricciones, advertencias, valores claros o confirmación?',
+          anchors: '<span>0</span> induce errores graves · <span>2</span> evita algunos, deja otros probables · <span>4</span> anticipa y evita los errores relevantes',
+          prompt: 'Identifica un error probable y la protección presente o ausente.'
+        },
+        {
+          number: 6,
+          id: 'recognition',
+          label: 'Reconocer antes que recordar',
+          shortLabel: 'Reconocer, no recordar',
+          weight: 10,
+          question: '¿Las opciones e instrucciones necesarias están visibles o hay que memorizar datos entre páginas?',
+          anchors: '<span>0</span> obliga a recordar o adivinar · <span>2</span> parte visible, parte memorizada · <span>4</span> opciones e información recuperables',
+          prompt: 'Señala qué información tuviste que recordar o qué opción pudiste reconocer.'
+        },
+        {
+          number: 7,
+          id: 'flexibility',
+          label: 'Flexibilidad y eficiencia de uso',
+          shortLabel: 'Flexibilidad y eficiencia',
+          weight: 10,
+          question: '¿Ofrece rutas, búsqueda, filtros o atajos útiles tanto para personas nuevas como expertas?',
+          anchors: '<span>0</span> ruta única, lenta o rígida · <span>2</span> una ruta funcional sin ayudas · <span>4</span> varias rutas y aceleradores eficaces',
+          prompt: 'Cita una ruta alternativa, filtro, buscador, atajo o su ausencia.'
+        },
+        {
+          number: 8,
+          id: 'minimalism',
+          label: 'Diseño estético y minimalista',
+          shortLabel: 'Diseño minimalista',
+          weight: 10,
+          question: '¿Cada elemento apoya la tarea o el contenido irrelevante compite con la información necesaria?',
+          anchors: '<span>0</span> lo irrelevante domina · <span>2</span> hay competencia visual · <span>4</span> foco claro en lo esencial',
+          prompt: 'Nombra el contenido que recibió más atención y si ayudó a completar la tarea.'
+        },
+        {
+          number: 9,
+          id: 'recovery',
+          label: 'Reconocer, diagnosticar y recuperarse de errores',
+          shortLabel: 'Recuperación de errores',
+          weight: 10,
+          question: 'Cuando algo falla, ¿el mensaje explica en lenguaje claro qué ocurrió y cómo resolverlo?',
+          anchors: '<span>0</span> error invisible o sin salida · <span>2</span> identifica, pero orienta poco · <span>4</span> causa y solución claras',
+          prompt: 'Provoca solo un error seguro y cita el mensaje, la causa indicada y la solución.'
+        },
+        {
+          number: 10,
+          id: 'help',
+          label: 'Ayuda y documentación',
+          shortLabel: 'Ayuda y documentación',
+          weight: 10,
+          question: 'Si la tarea necesita ayuda, ¿es fácil encontrar instrucciones breves, concretas y centradas en el objetivo?',
+          anchors: '<span>0</span> ayuda necesaria e inexistente · <span>2</span> genérica o difícil de hallar · <span>4</span> ayuda localizada y accionable',
+          prompt: 'Indica qué ayuda necesitaste, dónde la buscaste y si resolvió la duda.'
         }
       ];
 
@@ -1471,13 +1589,13 @@
           <details class="site-evaluation" data-site="${site.id}" style="--site-accent: ${site.accent}" ${index === 0 ? 'open' : ''}>
             <summary>
               <span class="eval-number" aria-hidden="true">${site.short}</span>
-              <span class="eval-title"><strong>${site.label}</strong><span>Registro, medidas y siete métricas</span></span>
-              <span class="eval-score" id="${site.id}-summary-score">0/7 valoradas</span>
+              <span class="eval-title"><strong>${site.label}</strong><span>Tareas, medidas y diez heurísticas</span></span>
+              <span class="eval-score" id="${site.id}-summary-score">0/10 valoradas</span>
             </summary>
             <div class="evaluation-body">
               <section class="field-section" aria-labelledby="${site.id}-tasks-title">
-                <h3 id="${site.id}-tasks-title">1. Resultado de las tareas</h3>
-                <p>Marca solo los objetivos logrados sin ayuda. Un intento fallido también es un dato útil.</p>
+                <h3 id="${site.id}-tasks-title">1. Recorrido de tareas</h3>
+                <p>Marca solo los objetivos logrados sin ayuda. Este recorrido genera situaciones que después analizarás con H1–H10; no añade puntos por sí mismo.</p>
                 <div class="task-checklist">
                   ${site.tasks.map((task, taskIndex) => `
                     <label class="task-check">
@@ -1491,8 +1609,8 @@
               </section>
 
               <section class="field-section" aria-labelledby="${site.id}-measures-title">
-                <h3 id="${site.id}-measures-title">2. Medidas observables</h3>
-                <p>Un desvío es una página, clic o acción que no acerca al objetivo y obliga a retroceder o cambiar de estrategia.</p>
+                <h3 id="${site.id}-measures-title">2. Evidencia contextual</h3>
+                <p>Tiempo y desvíos no forman parte del porcentaje: sirven para justificar, sobre todo, H3, H6 y H7. Un desvío es una acción que no acerca al objetivo y obliga a cambiar de estrategia.</p>
                 <div class="observation-grid">
                   <div class="stopwatch">
                     <span class="stopwatch-label">Cronómetro</span>
@@ -1525,20 +1643,20 @@
               </section>
 
               <section class="field-section" aria-labelledby="${site.id}-metrics-title">
-                <h3 id="${site.id}-metrics-title">3. Rúbrica razonada</h3>
-                <p>Cada evidencia debe describir un hecho observable, no solo una impresión.</p>
-                <div class="accessibility-probe" aria-label="Cinco pruebas manuales de accesibilidad">
-                  <div class="probe"><b>Teclado</b>Llega a la acción principal sin ratón.</div>
-                  <div class="probe"><b>Foco</b>Siempre se ve qué elemento está activo.</div>
-                  <div class="probe"><b>Zoom 200 %</b>No se pierde información ni se solapa.</div>
-                  <div class="probe"><b>Alternativas</b>Enlaces e imágenes comunican su propósito.</div>
-                  <div class="probe"><b>Movimiento</b>Se puede pausar o evitar lo que distrae.</div>
+                <h3 id="${site.id}-metrics-title">3. Inspección H1–H10</h3>
+                <p>Busca tanto cumplimientos como incumplimientos. Para cada puntuación escribe elemento observado → comportamiento → impacto en la tarea.</p>
+                <div class="inspection-probe" aria-label="Secuencia de inspección heurística">
+                  <div class="probe"><b>Recorre</b>Completa primero las tres tareas.</div>
+                  <div class="probe"><b>Compara</b>Revisa dos páginas o estados del sitio.</div>
+                  <div class="probe"><b>Equivócate</b>Provoca solo un error inocuo y reversible.</div>
+                  <div class="probe"><b>Repite</b>Busca otra ruta hacia un mismo objetivo.</div>
+                  <div class="probe"><b>Argumenta</b>Relaciona el hecho con H1–H10.</div>
                 </div>
                 <div class="metric-grid">
                   ${metrics.map(metric => `
                     <article class="metric-card" id="${site.id}-${metric.id}-card">
                       <header>
-                        <h4>${metric.label}</h4>
+                        <h4><span class="heuristic-id">H${metric.number}</span>${metric.label}</h4>
                         <span class="weight">${metric.weight} %</span>
                       </header>
                       <p class="metric-question">${metric.question}</p>
@@ -1546,15 +1664,15 @@
                       <label class="field-label" for="${site.id}-${metric.id}-score">Puntuación</label>
                       <select id="${site.id}-${metric.id}-score" name="${site.id}-${metric.id}-score" aria-describedby="${site.id}-${metric.id}-anchors">
                         <option value="">Sin valorar</option>
-                        <option value="0">0 · Bloquea</option>
-                        <option value="1">1 · Deficiente</option>
-                        <option value="2">2 · Mejorable</option>
-                        <option value="3">3 · Adecuada</option>
-                        <option value="4">4 · Excelente</option>
+                        <option value="0">0 · No cumple</option>
+                        <option value="1">1 · Cumplimiento bajo</option>
+                        <option value="2">2 · Cumplimiento parcial</option>
+                        <option value="3">3 · Cumplimiento alto</option>
+                        <option value="4">4 · Cumplimiento sólido</option>
                       </select>
                       <label class="field-label" for="${site.id}-${metric.id}-evidence" style="margin-top: .75rem">Evidencia</label>
                       <textarea id="${site.id}-${metric.id}-evidence" name="${site.id}-${metric.id}-evidence" placeholder="${metric.prompt}" aria-describedby="${site.id}-${metric.id}-evidence-hint"></textarea>
-                      <small class="char-hint" id="${site.id}-${metric.id}-evidence-hint">Anota elemento + acción + resultado.</small>
+                      <small class="char-hint" id="${site.id}-${metric.id}-evidence-hint">Mínimo 35 caracteres: elemento → comportamiento → impacto.</small>
                     </article>
                   `).join('')}
                 </div>
@@ -1697,7 +1815,7 @@
           const summaryScore = document.querySelector(`#${result.site.id}-summary-score`);
           summaryScore.textContent = result.complete
             ? `${result.score.toLocaleString('es-ES')} / 100`
-            : `${result.rated}/7 valoradas · ${result.score.toLocaleString('es-ES')} provisional`;
+            : `${result.rated}/10 valoradas · ${result.score.toLocaleString('es-ES')} provisional`;
         });
 
         document.querySelector('#summary-body').innerHTML = results.map(result => `
@@ -1714,6 +1832,17 @@
             <td>${result.detours}</td>
           </tr>
         `).join('');
+
+        document.querySelector('#heuristic-summary-body').innerHTML = metrics.map(metric => {
+          const cells = sites.map(site => {
+            const value = field(`${site.id}-${metric.id}-score`).value;
+            const display = value === '' ? '—' : value;
+            const heatClass = value === '' ? '' : ` heat-${value}`;
+            const spoken = value === '' ? 'sin valorar' : `${value} de 4`;
+            return `<td><span class="heat-cell${heatClass}" aria-label="${site.label}: ${spoken}">${display}</span></td>`;
+          }).join('');
+          return `<tr><th scope="row">H${metric.number} · ${metric.shortLabel}</th>${cells}</tr>`;
+        }).join('');
 
         document.querySelector('#completion-pill').textContent = `${completeCount} de 3 fichas`;
         const totalRated = results.reduce((sum, result) => sum + result.rated, 0);
@@ -1732,11 +1861,17 @@
         if (completeCount === 3) {
           const ordered = [...results].sort((a, b) => b.score - a.score);
           const gap = Math.round((ordered[0].score - ordered[1].score) * 10) / 10;
-          leaderNote.textContent = gap === 0
-            ? `${ordered[0].site.label} y ${ordered[1].site.label} empatan. La evidencia cualitativa debe decidir la comparación.`
-            : `${ordered[0].site.label} obtiene la mayor puntuación (${ordered[0].score.toLocaleString('es-ES')}/100), con ${gap.toLocaleString('es-ES')} puntos de diferencia respecto al siguiente. Comprueba si tu conclusión coincide y explica por qué.`;
+          const heuristicAverages = metrics.map(metric => ({
+            metric,
+            average: sites.reduce((sum, site) => sum + Number(field(`${site.id}-${metric.id}-score`).value), 0) / sites.length
+          })).sort((a, b) => a.average - b.average);
+          const weakest = heuristicAverages[0];
+          const lead = gap === 0
+            ? `${ordered[0].site.label} y ${ordered[1].site.label} empatan en cumplimiento global.`
+            : `${ordered[0].site.label} obtiene el mayor cumplimiento global (${ordered[0].score.toLocaleString('es-ES')}/100), con ${gap.toLocaleString('es-ES')} puntos sobre el siguiente.`;
+          leaderNote.textContent = `${lead} La heurística con menor media es H${weakest.metric.number}, ${weakest.metric.label} (${weakest.average.toLocaleString('es-ES', { maximumFractionDigits: 1 })}/4). Contrasta este cálculo con tus evidencias.`;
         } else {
-          leaderNote.textContent = 'Completa las siete métricas de cada sitio para cerrar la comparación. El asterisco indica una puntuación provisional.';
+          leaderNote.textContent = 'Completa las diez heurísticas de cada sitio para cerrar la comparación. El asterisco indica una media provisional.';
         }
       }
 
@@ -1747,7 +1882,7 @@
           metrics.forEach(metric => {
             total += 2;
             if (field(`${site.id}-${metric.id}-score`).value !== '') done += 1;
-            if (field(`${site.id}-${metric.id}-evidence`).value.trim().length >= 20) done += 1;
+            if (field(`${site.id}-${metric.id}-evidence`).value.trim().length >= 35) done += 1;
           });
           total += 3;
           if (field(`${site.id}-task-notes`).value.trim().length >= 20) done += 1;
@@ -1756,7 +1891,7 @@
           if (minutes * 60 + seconds > 0) done += 1;
           if (field(`${site.id}-detours`).value !== '') done += 1;
         });
-        ['best-site', 'weakest-site'].forEach(name => {
+        ['best-site', 'priority-heuristic'].forEach(name => {
           total += 1;
           if (field(name).value) done += 1;
         });
@@ -1791,10 +1926,10 @@
             const score = field(`${site.id}-${metric.id}-score`);
             const evidence = field(`${site.id}-${metric.id}-evidence`);
             const card = document.querySelector(`#${site.id}-${metric.id}-card`);
-            if (score.value === '' || evidence.value.trim().length < 20) {
+            if (score.value === '' || evidence.value.trim().length < 35) {
               card.classList.add('invalid');
               if (score.value === '') score.setAttribute('aria-invalid', 'true');
-              if (evidence.value.trim().length < 20) evidence.setAttribute('aria-invalid', 'true');
+              if (evidence.value.trim().length < 35) evidence.setAttribute('aria-invalid', 'true');
               invalid.push(score.value === '' ? score : evidence);
             }
           });
@@ -1816,18 +1951,13 @@
           }
         });
 
-        ['best-site', 'weakest-site'].forEach(name => {
+        ['best-site', 'priority-heuristic'].forEach(name => {
           if (!field(name).value) {
             field(name).setAttribute('aria-invalid', 'true');
             field(name).closest('.conclusion-field').classList.add('invalid');
             invalid.push(field(name));
           }
         });
-        if (field('best-site').value && field('best-site').value === field('weakest-site').value) {
-          field('weakest-site').setAttribute('aria-invalid', 'true');
-          field('weakest-site').closest('.conclusion-field').classList.add('invalid');
-          invalid.push(field('weakest-site'));
-        }
         ['comparison', 'improvements'].forEach(name => {
           if (field(name).value.trim().length < 80) {
             field(name).setAttribute('aria-invalid', 'true');
@@ -1848,9 +1978,13 @@
 
       function reportText() {
         const siteName = value => sites.find(site => site.id === value)?.label || 'Sin seleccionar';
+        const heuristicName = value => {
+          const metric = metrics.find(item => item.id === value);
+          return metric ? `H${metric.number} · ${metric.label}` : 'Sin seleccionar';
+        };
         const lines = [
-          'LABORATORIO DE USABILIDAD Y ACCESIBILIDAD',
-          '===========================================',
+          'INSPECCIÓN HEURÍSTICA DE NIELSEN',
+          '================================',
           `Equipo: ${field('team').value || '—'}`,
           `Grupo: ${field('group').value || '—'}`,
           `Fecha: ${field('lab-date').value || '—'}`,
@@ -1869,12 +2003,12 @@
             `Estrategia/ayuda: ${field(`${site.id}-strategy`).value || '—'}`,
             `Resultados y obstáculos: ${field(`${site.id}-task-notes`).value || '—'}`,
             '',
-            `Puntuación ponderada: ${result.score.toLocaleString('es-ES')} / 100`,
+            `Cumplimiento medio H1–H10: ${result.score.toLocaleString('es-ES')} / 100`,
             ''
           );
           metrics.forEach(metric => {
             lines.push(
-              `${metric.label} (${metric.weight} %): ${field(`${site.id}-${metric.id}-score`).value} / 4`,
+              `H${metric.number} · ${metric.label}: ${field(`${site.id}-${metric.id}-score`).value} / 4`,
               `Evidencia: ${field(`${site.id}-${metric.id}-evidence`).value}`,
               ''
             );
@@ -1884,8 +2018,8 @@
         lines.push(
           'VEREDICTO',
           '---------',
-          `Más usable para su propósito: ${siteName(field('best-site').value)}`,
-          `Cambios más urgentes: ${siteName(field('weakest-site').value)}`,
+          `Mayor cumplimiento global: ${siteName(field('best-site').value)}`,
+          `Heurística prioritaria: ${heuristicName(field('priority-heuristic').value)}`,
           '',
           'Conclusión comparativa:',
           field('comparison').value,
@@ -1893,8 +2027,8 @@
           'Dos mejoras prioritarias:',
           field('improvements').value,
           '',
-          'Marco: ISO 9241-11:2018, WCAG 2.2 y heurísticas de Nielsen.',
-          'La puntuación corresponde a esta observación y no constituye una auditoría de conformidad.'
+          'Marco: diez heurísticas de usabilidad de Jakob Nielsen.',
+          'La escala 0–4 es una adaptación didáctica. El resultado no constituye una auditoría de accesibilidad ni una certificación.'
         );
         return lines.join('\n');
       }
