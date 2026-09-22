@@ -1,0 +1,1985 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratorio interactivo para evaluar y comparar la usabilidad y la accesibilidad de tres sitios web mediante tareas, métricas y evidencias.">
+  <meta name="theme-color" content="#111a2c">
+  <title>Laboratorio de usabilidad y accesibilidad</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111a2c'/%3E%3Cpath d='M14 17h36M14 32h23M14 47h16' stroke='%23d9ff52' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='47' cy='44' r='9' fill='%2359d5ff'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #111a2c;
+      --ink-soft: #26324a;
+      --paper: #f3f6fb;
+      --surface: #ffffff;
+      --surface-blue: #edf3ff;
+      --muted: #58657b;
+      --line: #ccd5e3;
+      --blue: #2456df;
+      --blue-dark: #173eb1;
+      --cyan: #59d5ff;
+      --lime: #d9ff52;
+      --orange: #ff744d;
+      --danger: #b42318;
+      --success: #13795b;
+      --shadow: 0 18px 50px rgba(17, 26, 44, .12);
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --radius-sm: 11px;
+      --content: 1180px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    button, input, select, textarea { font: inherit; }
+
+    button, select, input, textarea, a { -webkit-tap-highlight-color: transparent; }
+
+    a { color: var(--blue-dark); text-underline-offset: .2em; }
+
+    a:hover { text-decoration-thickness: .14em; }
+
+    :focus-visible {
+      outline: 4px solid var(--orange);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: fixed;
+      z-index: 100;
+      top: .75rem;
+      left: .75rem;
+      transform: translateY(-160%);
+      padding: .7rem 1rem;
+      border-radius: .5rem;
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .skip-link:focus { transform: translateY(0); }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(rgba(89, 213, 255, .08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(89, 213, 255, .08) 1px, transparent 1px),
+        var(--ink);
+      background-size: 34px 34px;
+      color: #fff;
+    }
+
+    .hero::after {
+      position: absolute;
+      right: -9rem;
+      bottom: -12rem;
+      width: 32rem;
+      height: 32rem;
+      border: 5rem solid rgba(217, 255, 82, .12);
+      border-radius: 50%;
+      content: "";
+      pointer-events: none;
+    }
+
+    .hero-inner,
+    main,
+    .footer-inner {
+      width: min(calc(100% - 2rem), var(--content));
+      margin-inline: auto;
+    }
+
+    .hero-inner { padding: 1.25rem 0 3.8rem; }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 3.4rem;
+    }
+
+    .lab-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: .75rem;
+      color: #fff;
+      font-size: .88rem;
+      font-weight: 850;
+      letter-spacing: .09em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .lab-mark::before {
+      width: .82rem;
+      height: .82rem;
+      border: 3px solid var(--lime);
+      border-radius: 50%;
+      content: "";
+    }
+
+    .save-state {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      color: #dfe7f6;
+      font-size: .9rem;
+    }
+
+    .save-state::before {
+      width: .55rem;
+      height: .55rem;
+      border-radius: 50%;
+      background: var(--lime);
+      content: "";
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(260px, .65fr);
+      gap: clamp(2rem, 6vw, 5rem);
+      align-items: end;
+    }
+
+    .eyebrow {
+      margin: 0 0 1rem;
+      color: var(--lime);
+      font-size: .83rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { line-height: 1.1; text-wrap: balance; }
+
+    h1 {
+      max-width: 850px;
+      margin: 0;
+      font-size: clamp(2.8rem, 7vw, 6.5rem);
+      letter-spacing: -.06em;
+    }
+
+    .hero-lede {
+      max-width: 770px;
+      margin: 1.4rem 0 0;
+      color: #dfe7f6;
+      font-size: clamp(1.08rem, 2vw, 1.35rem);
+    }
+
+    .hero-facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .55rem;
+      margin: 1.6rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .hero-facts li {
+      padding: .46rem .72rem;
+      border: 1px solid rgba(255, 255, 255, .25);
+      border-radius: 999px;
+      color: #fff;
+      font-size: .9rem;
+      font-weight: 750;
+    }
+
+    .score-orbit {
+      display: grid;
+      place-items: center;
+      min-height: 260px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, .08);
+      box-shadow: 0 18px 60px rgba(0, 0, 0, .18);
+      backdrop-filter: blur(10px);
+    }
+
+    .score-ring {
+      --score: 0deg;
+      display: grid;
+      place-items: center;
+      width: 164px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: conic-gradient(var(--lime) var(--score), rgba(255, 255, 255, .14) 0);
+    }
+
+    .score-ring::before {
+      grid-area: 1 / 1;
+      width: 126px;
+      aspect-ratio: 1;
+      border-radius: inherit;
+      background: #172239;
+      content: "";
+    }
+
+    .score-ring output {
+      z-index: 1;
+      display: block;
+      color: #fff;
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: -.04em;
+      text-align: center;
+    }
+
+    .score-ring output small {
+      display: block;
+      color: #bfc9db;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .orbit-copy {
+      margin: 1rem 0 0;
+      color: #cfd8e8;
+      font-size: .9rem;
+      text-align: center;
+    }
+
+    .progress-dock {
+      position: sticky;
+      z-index: 20;
+      top: 0;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .94);
+      box-shadow: 0 8px 24px rgba(17, 26, 44, .06);
+      backdrop-filter: blur(12px);
+    }
+
+    .progress-dock-inner {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      width: min(calc(100% - 2rem), var(--content));
+      min-height: 64px;
+      margin-inline: auto;
+    }
+
+    .progress-dock strong { font-size: .92rem; }
+
+    .progress-track {
+      height: .66rem;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e4e9f1;
+    }
+
+    .progress-track span {
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--blue);
+      transition: width .25s ease;
+    }
+
+    .progress-dock a {
+      font-size: .9rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    main { padding: 3.8rem 0 6rem; }
+
+    section + section { margin-top: 5rem; }
+
+    .section-kicker {
+      margin: 0 0 .6rem;
+      color: var(--blue);
+      font-size: .8rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, .55fr);
+      gap: 2rem;
+      align-items: end;
+      margin-bottom: 1.8rem;
+    }
+
+    .section-heading h2 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      letter-spacing: -.045em;
+    }
+
+    .section-heading > p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .protocol-card {
+      display: grid;
+      grid-template-columns: .75fr 1.25fr;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .protocol-intro {
+      padding: clamp(1.5rem, 4vw, 3rem);
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .protocol-intro h2 {
+      margin: 0 0 1rem;
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      letter-spacing: -.04em;
+    }
+
+    .protocol-intro p { margin: 0; color: #e5ebff; }
+
+    .protocol-steps {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0;
+      padding: 1rem;
+    }
+
+    .protocol-step {
+      display: grid;
+      grid-template-columns: 2.4rem 1fr;
+      gap: .8rem;
+      padding: 1.3rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .protocol-step strong { display: block; margin-bottom: .22rem; }
+
+    .protocol-step p { margin: 0; color: var(--muted); font-size: .94rem; }
+
+    .step-number {
+      display: grid;
+      place-items: center;
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: .7rem;
+      background: var(--lime);
+      color: var(--ink);
+      font-weight: 900;
+    }
+
+    .safety-note {
+      display: flex;
+      gap: .9rem;
+      align-items: flex-start;
+      margin-top: 1rem;
+      padding: 1.15rem 1.25rem;
+      border-left: .4rem solid var(--orange);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      background: #fff0eb;
+    }
+
+    .safety-note strong { display: block; }
+
+    .safety-note p { margin: .2rem 0 0; color: var(--ink-soft); }
+
+    .identity-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 190px;
+      gap: 1rem;
+      margin-top: 1.2rem;
+      padding: 1.3rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+    }
+
+    label { font-weight: 760; }
+
+    .field-label {
+      display: block;
+      margin-bottom: .4rem;
+      color: var(--ink-soft);
+      font-size: .88rem;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      min-height: 46px;
+      border: 1.5px solid #aeb9cb;
+      border-radius: .72rem;
+      background: #fff;
+      color: var(--ink);
+      padding: .68rem .78rem;
+    }
+
+    textarea { min-height: 106px; resize: vertical; }
+
+    input:hover, select:hover, textarea:hover { border-color: #6f7e97; }
+
+    .site-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .site-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      padding: 1.35rem;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      box-shadow: 0 10px 30px rgba(17, 26, 44, .08);
+    }
+
+    .site-card::before {
+      position: absolute;
+      inset: 0 0 auto;
+      height: .38rem;
+      background: var(--site-accent);
+      content: "";
+    }
+
+    .site-index {
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .site-card h3 { margin: .7rem 0 .15rem; font-size: 1.55rem; letter-spacing: -.025em; }
+
+    .site-url { margin: 0; color: var(--muted); font-size: .86rem; word-break: break-word; }
+
+    .site-card ol { margin: 1.2rem 0 1.4rem; padding-left: 1.35rem; }
+
+    .site-card li + li { margin-top: .55rem; }
+
+    .site-card .button { margin-top: auto; }
+
+    .context-chip {
+      align-self: flex-start;
+      margin-top: .9rem;
+      padding: .25rem .55rem;
+      border-radius: 999px;
+      background: #e9eef6;
+      color: var(--ink-soft);
+      font-size: .75rem;
+      font-weight: 800;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      min-height: 46px;
+      padding: .72rem 1rem;
+      border: 2px solid transparent;
+      border-radius: .8rem;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 850;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .button:hover { background: var(--blue-dark); text-decoration: none; }
+
+    .button.secondary {
+      border-color: var(--ink);
+      background: transparent;
+      color: var(--ink);
+    }
+
+    .button.secondary:hover { background: var(--ink); color: #fff; }
+
+    .button.ghost {
+      border-color: var(--line);
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .button.ghost:hover { border-color: var(--ink); background: #f7f9fc; }
+
+    .button.danger { color: var(--danger); }
+
+    .button.danger:hover { border-color: var(--danger); background: #fff4f2; color: var(--danger); }
+
+    .method-note {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: .9rem;
+      align-items: start;
+      margin-top: 1.2rem;
+      padding: 1.1rem 1.2rem;
+      border-radius: var(--radius-sm);
+      background: #eaf8ff;
+      color: var(--ink-soft);
+    }
+
+    .method-note b { color: var(--ink); }
+
+    .method-note p { margin: 0; }
+
+    .site-evaluation {
+      overflow: clip;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      box-shadow: 0 10px 30px rgba(17, 26, 44, .07);
+    }
+
+    .site-evaluation + .site-evaluation { margin-top: 1rem; }
+
+    .site-evaluation > summary {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      padding: 1.2rem 1.35rem;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .site-evaluation > summary::-webkit-details-marker { display: none; }
+
+    .site-evaluation > summary::after {
+      width: .7rem;
+      height: .7rem;
+      border-right: 2px solid var(--ink);
+      border-bottom: 2px solid var(--ink);
+      content: "";
+      transform: rotate(45deg);
+      transition: transform .2s ease;
+    }
+
+    .site-evaluation[open] > summary::after { transform: rotate(225deg); }
+
+    .eval-number {
+      display: grid;
+      place-items: center;
+      width: 2.6rem;
+      height: 2.6rem;
+      border-radius: .85rem;
+      background: var(--site-accent);
+      color: var(--ink);
+      font-weight: 950;
+    }
+
+    .eval-title strong { display: block; font-size: 1.15rem; }
+
+    .eval-title span { color: var(--muted); font-size: .86rem; }
+
+    .eval-score {
+      justify-self: end;
+      margin-right: .4rem;
+      padding: .35rem .6rem;
+      border-radius: 999px;
+      background: #eaf0fa;
+      color: var(--ink-soft);
+      font-size: .82rem;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .evaluation-body { border-top: 1px solid var(--line); }
+
+    .field-section { padding: clamp(1.2rem, 3vw, 2rem); }
+
+    .field-section + .field-section { border-top: 1px solid var(--line); }
+
+    .field-section h3 { margin: 0 0 .35rem; font-size: 1.35rem; }
+
+    .field-section > p { max-width: 780px; margin: 0 0 1rem; color: var(--muted); }
+
+    .task-checklist {
+      display: grid;
+      gap: .65rem;
+      margin: 1rem 0;
+    }
+
+    .task-check {
+      display: grid;
+      grid-template-columns: 1.35rem 1fr;
+      gap: .7rem;
+      align-items: start;
+      padding: .8rem .9rem;
+      border: 1px solid var(--line);
+      border-radius: .8rem;
+      background: #fafcff;
+      font-weight: 620;
+    }
+
+    .task-check input {
+      width: 1.22rem;
+      height: 1.22rem;
+      margin: .16rem 0 0;
+      accent-color: var(--blue);
+    }
+
+    .observation-grid {
+      display: grid;
+      grid-template-columns: minmax(250px, .85fr) 1.6fr;
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .stopwatch {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 1.2rem;
+      border-radius: var(--radius-sm);
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .stopwatch-label {
+      color: #bbc7da;
+      font-size: .76rem;
+      font-weight: 850;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .stopwatch output {
+      display: block;
+      margin: .2rem 0 .8rem;
+      font-variant-numeric: tabular-nums;
+      font-size: clamp(2.2rem, 6vw, 3.7rem);
+      font-weight: 900;
+      letter-spacing: -.04em;
+      line-height: 1;
+    }
+
+    .timer-actions { display: flex; flex-wrap: wrap; gap: .45rem; }
+
+    .timer-actions button {
+      flex: 1 1 80px;
+      min-height: 42px;
+      border: 1px solid rgba(255, 255, 255, .32);
+      border-radius: .65rem;
+      background: rgba(255, 255, 255, .1);
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .timer-actions button:hover { background: rgba(255, 255, 255, .2); }
+
+    .measurement-fields {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .8rem;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: #fff;
+    }
+
+    .measurement-fields .wide { grid-column: 1 / -1; }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .metric-card {
+      display: flex;
+      flex-direction: column;
+      padding: 1.1rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: #fff;
+    }
+
+    .metric-card header {
+      display: flex;
+      justify-content: space-between;
+      gap: .8rem;
+      align-items: start;
+    }
+
+    .metric-card h4 { margin: 0; font-size: 1.06rem; }
+
+    .weight {
+      flex: 0 0 auto;
+      padding: .25rem .5rem;
+      border-radius: 999px;
+      background: var(--surface-blue);
+      color: var(--blue-dark);
+      font-size: .73rem;
+      font-weight: 900;
+    }
+
+    .metric-question { margin: .55rem 0; color: var(--ink-soft); }
+
+    .anchors {
+      margin: 0 0 1rem;
+      padding: .75rem;
+      border-radius: .7rem;
+      background: #f3f6fa;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .anchors span { color: var(--ink); font-weight: 850; }
+
+    .metric-card textarea { min-height: 96px; margin-top: .75rem; }
+
+    .metric-card.invalid,
+    .conclusion-field.invalid { border-color: var(--danger); box-shadow: 0 0 0 2px rgba(180, 35, 24, .14); }
+
+    [aria-invalid="true"] { border-color: var(--danger) !important; }
+
+    .char-hint {
+      display: block;
+      margin-top: .35rem;
+      color: var(--muted);
+      font-size: .76rem;
+    }
+
+    .rubric-key {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: .5rem;
+      margin: 0 0 1.2rem;
+      padding: 0;
+      list-style: none;
+    }
+
+    .rubric-key li {
+      padding: .65rem .7rem;
+      border-radius: .75rem;
+      background: #eaf0fa;
+      color: var(--ink-soft);
+      font-size: .78rem;
+    }
+
+    .rubric-key strong { display: block; color: var(--ink); font-size: 1rem; }
+
+    .accessibility-probe {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: .6rem;
+      margin: 1rem 0;
+    }
+
+    .probe {
+      padding: .75rem;
+      border: 1px dashed #8ba0bd;
+      border-radius: .75rem;
+      background: #f9fbff;
+      font-size: .8rem;
+    }
+
+    .probe b { display: block; color: var(--blue-dark); }
+
+    .summary-board {
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      background: var(--ink);
+      color: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .summary-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: end;
+      padding: clamp(1.4rem, 4vw, 2.5rem);
+      border-bottom: 1px solid rgba(255, 255, 255, .14);
+    }
+
+    .summary-head h2 { margin: 0; font-size: clamp(1.8rem, 4vw, 3.2rem); letter-spacing: -.04em; }
+
+    .summary-head p { margin: .5rem 0 0; color: #c8d2e4; }
+
+    .completion-pill {
+      padding: .5rem .75rem;
+      border-radius: 999px;
+      background: var(--lime);
+      color: var(--ink);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .summary-table-wrap { overflow-x: auto; }
+
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    .summary-table th,
+    .summary-table td {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, .12);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .summary-table th {
+      color: #aebbd1;
+      font-size: .75rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .summary-table tbody th { color: #fff; font-size: .95rem; letter-spacing: 0; text-transform: none; }
+
+    .score-bar {
+      display: grid;
+      grid-template-columns: minmax(120px, 1fr) 4.6rem;
+      gap: .7rem;
+      align-items: center;
+    }
+
+    .score-bar-track {
+      height: .7rem;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .14);
+    }
+
+    .score-bar-track span {
+      display: block;
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: var(--site-accent);
+      transition: width .25s ease;
+    }
+
+    .score-value { font-variant-numeric: tabular-nums; font-weight: 900; }
+
+    .leader-note {
+      min-height: 3.6rem;
+      margin: 0;
+      padding: 1rem 1.2rem;
+      color: #d8e1ef;
+    }
+
+    .conclusion-card {
+      padding: clamp(1.3rem, 4vw, 2.4rem);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .conclusion-card h2 { margin: 0; font-size: clamp(1.8rem, 4vw, 3rem); letter-spacing: -.04em; }
+
+    .conclusion-card > p { max-width: 780px; color: var(--muted); }
+
+    .conclusion-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1.2rem;
+    }
+
+    .conclusion-field {
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: #fafcff;
+    }
+
+    .conclusion-field.full { grid-column: 1 / -1; }
+
+    .conclusion-field textarea { min-height: 130px; }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .7rem;
+      align-items: center;
+      margin-top: 1.2rem;
+    }
+
+    .action-row .status-message {
+      flex: 1 1 280px;
+      margin: 0 0 0 .4rem;
+      color: var(--muted);
+    }
+
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .source-card {
+      padding: 1.2rem;
+      border-top: .35rem solid var(--blue);
+      border-radius: .3rem .3rem var(--radius-sm) var(--radius-sm);
+      background: var(--surface);
+    }
+
+    .source-card h3 { margin: 0 0 .5rem; font-size: 1.05rem; }
+
+    .source-card p { margin: 0 0 .8rem; color: var(--muted); font-size: .9rem; }
+
+    .source-card a { font-weight: 850; }
+
+    footer { background: #e5eaf2; }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.5rem 0;
+      color: var(--muted);
+      font-size: .86rem;
+    }
+
+    .footer-inner p { margin: 0; }
+
+    noscript {
+      display: block;
+      padding: 1rem;
+      border: 2px solid var(--danger);
+      background: #fff4f2;
+      color: var(--danger);
+      font-weight: 800;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 900px) {
+      .hero-grid,
+      .section-heading,
+      .protocol-card { grid-template-columns: 1fr; }
+
+      .score-orbit { min-height: auto; grid-template-columns: auto 1fr; }
+      .orbit-copy { margin: 0; text-align: left; }
+      .score-ring { width: 130px; }
+      .score-ring::before { width: 100px; }
+      .site-grid { grid-template-columns: 1fr; }
+      .site-card { min-height: 0; }
+      .metric-grid { grid-template-columns: 1fr; }
+      .accessibility-probe { grid-template-columns: repeat(3, 1fr); }
+      .source-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 650px) {
+      .hero-inner { padding-bottom: 2.6rem; }
+      .topline { margin-bottom: 2.3rem; }
+      .save-state { font-size: 0; }
+      .save-state::after { content: "Autoguardado"; font-size: .8rem; }
+      .score-orbit { grid-template-columns: 1fr; }
+      .orbit-copy { text-align: center; }
+      .progress-dock-inner { grid-template-columns: auto 1fr; }
+      .progress-dock a { display: none; }
+      .protocol-steps,
+      .identity-grid,
+      .observation-grid,
+      .conclusion-grid { grid-template-columns: 1fr; }
+      .measurement-fields { grid-template-columns: 1fr 1fr; }
+      .measurement-fields .wide { grid-column: 1 / -1; }
+      .rubric-key { grid-template-columns: repeat(2, 1fr); }
+      .accessibility-probe { grid-template-columns: 1fr 1fr; }
+      .site-evaluation > summary { grid-template-columns: auto 1fr auto; padding: 1rem; }
+      .eval-score { grid-column: 2; justify-self: start; }
+      .site-evaluation > summary::after { grid-column: 3; grid-row: 1 / span 2; }
+      .summary-head { grid-template-columns: 1fr; }
+      .completion-pill { justify-self: start; }
+      .conclusion-field.full { grid-column: auto; }
+      .footer-inner { flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .001ms !important;
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+
+    @media print {
+      @page { margin: 1.3cm; }
+      body { background: #fff; color: #000; font-size: 10pt; }
+      .hero { background: #fff; color: #000; border-bottom: 2px solid #000; }
+      .hero::after, .score-orbit, .progress-dock, .button, .timer-actions, .save-state, .method-note { display: none !important; }
+      .hero-inner, main, .footer-inner { width: 100%; }
+      .hero-inner { padding: 0 0 1rem; }
+      .topline { margin-bottom: 1rem; }
+      .lab-mark, .eyebrow, .hero-lede { color: #000; }
+      h1 { font-size: 28pt; }
+      main { padding: 1rem 0; }
+      section + section { margin-top: 1.5rem; }
+      .protocol-card, .site-card, .site-evaluation, .conclusion-card, .summary-board { box-shadow: none; break-inside: avoid; }
+      .protocol-intro, .summary-board { background: #fff; color: #000; }
+      .protocol-intro p, .summary-head p, .leader-note { color: #333; }
+      .site-evaluation > summary::after { display: none; }
+      .evaluation-body { display: block !important; }
+      .metric-card { break-inside: avoid; }
+      .summary-table th, .summary-table td { border-color: #aaa; color: #000 !important; }
+      .score-bar-track { border: 1px solid #777; }
+      textarea { border: 1px solid #aaa; min-height: 70px; }
+      footer { background: #fff; border-top: 1px solid #aaa; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#actividad">Saltar a la actividad</a>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="topline">
+        <a class="lab-mark" href="#actividad">Laboratorio UX · 01</a>
+        <span class="save-state" id="save-state">El progreso se guarda en este navegador</span>
+      </div>
+
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">Observa · mide · argumenta</p>
+          <h1>Usabilidad bajo presión</h1>
+          <p class="hero-lede">Compara tres webs reales. No puntúes si son bonitas: comprueba si una persona puede cumplir su objetivo con eficacia, poco esfuerzo y sin barreras.</p>
+          <ul class="hero-facts" aria-label="Datos de la práctica">
+            <li>3 sitios</li>
+            <li>7 métricas</li>
+            <li>55 min recomendados</li>
+            <li>Trabajo por parejas</li>
+          </ul>
+        </div>
+
+        <aside class="score-orbit" aria-label="Progreso general">
+          <div class="score-ring" id="score-ring">
+            <output id="overall-score" aria-live="polite">—<small>media provisional</small></output>
+          </div>
+          <p class="orbit-copy">La cifra resume la rúbrica; la conclusión debe apoyarse en hechos observables.</p>
+        </aside>
+      </div>
+    </div>
+  </header>
+
+  <div class="progress-dock" aria-label="Progreso de la ficha">
+    <div class="progress-dock-inner">
+      <strong id="progress-label">0 % completado</strong>
+      <div class="progress-track" role="progressbar" aria-labelledby="progress-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <span id="progress-fill"></span>
+      </div>
+      <a href="#resultados">Ir al resumen ↓</a>
+    </div>
+  </div>
+
+  <main id="actividad">
+    <section aria-labelledby="protocolo-titulo">
+      <div class="protocol-card">
+        <div class="protocol-intro">
+          <p class="section-kicker" style="color: var(--lime)">Protocolo</p>
+          <h2 id="protocolo-titulo">Mismas reglas para los tres sitios</h2>
+          <p>Así podrás atribuir las diferencias a la interfaz y no a una forma distinta de hacer la prueba.</p>
+        </div>
+        <div class="protocol-steps">
+          <div class="protocol-step">
+            <span class="step-number" aria-hidden="true">1</span>
+            <div><strong>Repartid los roles</strong><p>Una persona navega; la otra cronometra, cuenta desvíos y no ayuda.</p></div>
+          </div>
+          <div class="protocol-step">
+            <span class="step-number" aria-hidden="true">2</span>
+            <div><strong>Conservad el contexto</strong><p>Mismo dispositivo, tamaño de ventana y navegador. Alternad el orden entre equipos.</p></div>
+          </div>
+          <div class="protocol-step">
+            <span class="step-number" aria-hidden="true">3</span>
+            <div><strong>Medid antes de opinar</strong><p>Iniciad el cronómetro al abrir la web. Detenedlo al completar las tres tareas o a los 6 minutos.</p></div>
+          </div>
+          <div class="protocol-step">
+            <span class="step-number" aria-hidden="true">4</span>
+            <div><strong>Citad la evidencia</strong><p>Anotad qué elemento, acción y resultado justifican cada puntuación.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="safety-note" role="note">
+        <span aria-hidden="true">⚠</span>
+        <div>
+          <strong>Navegación segura</strong>
+          <p>No introduzcas datos personales, no contactes con nadie y no completes compras. Evita enlaces ajenos a la tarea o que cambien de dominio. Algunas páginas contienen animación intensa; si te provoca malestar, detén la prueba y anótalo como barrera.</p>
+        </div>
+      </div>
+
+      <div class="identity-grid">
+        <div>
+          <label class="field-label" for="team">Equipo o nombres</label>
+          <input id="team" name="team" type="text" autocomplete="off" placeholder="Ej.: Ada y Alan">
+        </div>
+        <div>
+          <label class="field-label" for="group">Grupo / curso</label>
+          <input id="group" name="group" type="text" autocomplete="off" placeholder="Ej.: 2.º DAW">
+        </div>
+        <div>
+          <label class="field-label" for="lab-date">Fecha</label>
+          <input id="lab-date" name="lab-date" type="date">
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="escenarios-titulo">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">01 · Escenarios</p>
+          <h2 id="escenarios-titulo">Tres misiones concretas</h2>
+        </div>
+        <p>La traducción del navegador está permitida. No penalices que un sitio esté en otro idioma: evalúa la interfaz dentro de su propósito y público.</p>
+      </div>
+
+      <div class="site-grid">
+        <article class="site-card" style="--site-accent: var(--orange)">
+          <span class="site-index">Sitio A</span>
+          <h3>Arngren</h3>
+          <p class="site-url">arngren.net</p>
+          <span class="context-chip">Catálogo comercial · noruego</span>
+          <ol>
+            <li>Localiza una bicicleta eléctrica y anota el precio más bajo verificable.</li>
+            <li>Encuentra un dron con cámara y registra un dato que lo identifique.</li>
+            <li>Averigua cómo pagar o cómo contactar para realizar un pedido.</li>
+          </ol>
+          <a class="button" href="https://arngren.net/" target="_blank" rel="noopener noreferrer">Abrir Arngren <span aria-hidden="true">↗</span><span class="sr-only"> en una pestaña nueva</span></a>
+        </article>
+
+        <article class="site-card" style="--site-accent: var(--cyan)">
+          <span class="site-index">Sitio B</span>
+          <h3>BikeZona</h3>
+          <p class="site-url">bikezona.com/home/</p>
+          <span class="context-chip">Revista y catálogo · español</span>
+          <ol>
+            <li>Abre una noticia de MTB y anota su título y fecha.</li>
+            <li>Desde el catálogo, localiza una e-bike y anota marca y modelo.</li>
+            <li>En el calendario, encuentra una próxima carrera y registra fecha y modalidad.</li>
+          </ol>
+          <a class="button" href="https://www.bikezona.com/home/" target="_blank" rel="noopener noreferrer">Abrir BikeZona <span aria-hidden="true">↗</span><span class="sr-only"> en una pestaña nueva</span></a>
+        </article>
+
+        <article class="site-card" style="--site-accent: var(--lime)">
+          <span class="site-index">Sitio C</span>
+          <h3>LINGsCARS Museum</h3>
+          <p class="site-url">museum.lingscars.com</p>
+          <span class="context-chip">Copia histórica · inglés</span>
+          <ol>
+            <li>Identifica una oferta y anota vehículo, cuota mensual y pago inicial.</li>
+            <li>Decide si la oferta es real y vigente. Cita la pista que lo demuestra.</li>
+            <li>Encuentra un canal de contacto y la ruta hacia el sitio actual.</li>
+          </ol>
+          <a class="button" href="https://museum.lingscars.com/" target="_blank" rel="noopener noreferrer">Abrir LINGsCARS <span aria-hidden="true">↗</span><span class="sr-only"> en una pestaña nueva</span></a>
+        </article>
+      </div>
+
+      <div class="method-note" role="note">
+        <span aria-hidden="true">◎</span>
+        <p><b>Clave metodológica:</b> LINGsCARS se presenta como museo de una web clásica. No confundas un estilo deliberadamente antiguo con un fallo: comprueba si el sitio explica su contexto y permite completar la misión.</p>
+      </div>
+    </section>
+
+    <form id="lab-form" novalidate>
+      <section aria-labelledby="cuaderno-titulo">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">02 · Cuaderno de campo</p>
+            <h2 id="cuaderno-titulo">Puntúa solo lo que puedas demostrar</h2>
+          </div>
+          <p>Escala común: 0 = barrera grave; 2 = se logra con esfuerzo; 4 = experiencia clara y fluida. Usa 1 y 3 para casos intermedios.</p>
+        </div>
+
+        <ul class="rubric-key" aria-label="Escala de puntuación">
+          <li><strong>0</strong>Bloquea</li>
+          <li><strong>1</strong>Deficiente</li>
+          <li><strong>2</strong>Mejorable</li>
+          <li><strong>3</strong>Adecuada</li>
+          <li><strong>4</strong>Excelente</li>
+        </ul>
+
+        <noscript>Esta ficha necesita JavaScript para crear la rúbrica, calcular resultados y guardar el progreso.</noscript>
+        <div id="site-evaluations"></div>
+      </section>
+
+      <section id="resultados" aria-labelledby="resultados-titulo">
+        <div class="summary-board">
+          <div class="summary-head">
+            <div>
+              <p class="section-kicker" style="color: var(--lime)">03 · Comparación</p>
+              <h2 id="resultados-titulo">Resultados de la observación</h2>
+              <p>Las puntuaciones son provisionales hasta completar las siete métricas.</p>
+            </div>
+            <span class="completion-pill" id="completion-pill">0 de 3 fichas</span>
+          </div>
+          <div class="summary-table-wrap">
+            <table class="summary-table">
+              <thead>
+                <tr>
+                  <th scope="col">Sitio</th>
+                  <th scope="col">Puntuación ponderada</th>
+                  <th scope="col">Tareas logradas</th>
+                  <th scope="col">Tiempo</th>
+                  <th scope="col">Desvíos</th>
+                </tr>
+              </thead>
+              <tbody id="summary-body"></tbody>
+            </table>
+          </div>
+          <p class="leader-note" id="leader-note" aria-live="polite">Completa las métricas para poder comparar los sitios.</p>
+        </div>
+      </section>
+
+      <section aria-labelledby="veredicto-titulo">
+        <div class="conclusion-card">
+          <p class="section-kicker">04 · Veredicto</p>
+          <h2 id="veredicto-titulo">Convierte la puntuación en una decisión</h2>
+          <p>No basta con elegir un ganador. Explica qué datos sostienen tu comparación y qué cambios tendrían mayor efecto.</p>
+
+          <div class="conclusion-grid">
+            <div class="conclusion-field">
+              <label class="field-label" for="best-site">Sitio más usable para su propósito</label>
+              <select id="best-site" name="best-site">
+                <option value="">Selecciona…</option>
+                <option value="arngren">Arngren</option>
+                <option value="bikezona">BikeZona</option>
+                <option value="lingscars">LINGsCARS Museum</option>
+              </select>
+            </div>
+            <div class="conclusion-field">
+              <label class="field-label" for="weakest-site">Sitio que necesita cambios más urgentes</label>
+              <select id="weakest-site" name="weakest-site">
+                <option value="">Selecciona…</option>
+                <option value="arngren">Arngren</option>
+                <option value="bikezona">BikeZona</option>
+                <option value="lingscars">LINGsCARS Museum</option>
+              </select>
+            </div>
+            <div class="conclusion-field full">
+              <label class="field-label" for="comparison">Conclusión comparativa</label>
+              <textarea id="comparison" name="comparison" placeholder="Compara al menos dos medidas: tareas logradas, tiempo, desvíos o una barrera concreta. Explica por qué importan." aria-describedby="comparison-hint"></textarea>
+              <small class="char-hint" id="comparison-hint">Mínimo orientativo: 80 caracteres y dos datos observables.</small>
+            </div>
+            <div class="conclusion-field full">
+              <label class="field-label" for="improvements">Dos mejoras prioritarias</label>
+              <textarea id="improvements" name="improvements" placeholder="Propón dos cambios concretos para el sitio más débil. Relaciona cada cambio con una métrica y explica el efecto esperado." aria-describedby="improvements-hint"></textarea>
+              <small class="char-hint" id="improvements-hint">Evita «cambiar el diseño». Especifica qué elemento cambiarías, cómo y para qué.</small>
+            </div>
+          </div>
+
+          <div class="action-row">
+            <button class="button" type="button" id="download-report">Descargar informe (.txt)</button>
+            <button class="button secondary" type="button" id="print-report">Imprimir / guardar PDF</button>
+            <button class="button ghost danger" type="button" id="clear-data">Borrar mis datos</button>
+            <p class="status-message" id="form-status" role="status">El progreso se guarda automáticamente solo en este navegador.</p>
+          </div>
+        </div>
+      </section>
+    </form>
+
+    <section aria-labelledby="fuentes-titulo">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Marco de referencia</p>
+          <h2 id="fuentes-titulo">Qué mide esta rúbrica</h2>
+        </div>
+        <p>La puntuación organiza la observación; no es una certificación de conformidad ni sustituye una auditoría profesional.</p>
+      </div>
+
+      <div class="source-grid">
+        <article class="source-card">
+          <h3>ISO 9241-11:2018</h3>
+          <p>Marco para entender la usabilidad como resultado del uso dentro de un contexto: eficacia, eficiencia y satisfacción.</p>
+          <a href="https://www.iso.org/standard/63500.html" target="_blank" rel="noopener noreferrer">Consultar la norma ↗</a>
+        </article>
+        <article class="source-card">
+          <h3>WCAG 2.2 · W3C</h3>
+          <p>Referencia para las pruebas de teclado, foco, contraste, redimensionado, reflujo, movimiento y comprensión.</p>
+          <a href="https://www.w3.org/WAI/WCAG22/quickref/" target="_blank" rel="noopener noreferrer">Abrir referencia rápida ↗</a>
+        </article>
+        <article class="source-card">
+          <h3>Heurísticas de Nielsen</h3>
+          <p>Principios generales que inspiran la orientación, la predictibilidad, el control, la prevención y la recuperación de errores.</p>
+          <a href="https://www.nngroup.com/articles/ten-usability-heuristics/" target="_blank" rel="noopener noreferrer">Revisar las 10 heurísticas ↗</a>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <p>Laboratorio de usabilidad y accesibilidad · Ficha autocontenida</p>
+      <p>Los datos no salen del dispositivo salvo que descargues o imprimas el informe.</p>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const STORAGE_KEY = 'laboratorio-usabilidad-v1';
+      const sites = [
+        {
+          id: 'arngren',
+          label: 'Arngren',
+          short: 'A',
+          accent: '#ff744d',
+          url: 'https://arngren.net/',
+          tasks: [
+            'Bicicleta eléctrica y precio más bajo verificable',
+            'Dron con cámara y dato identificador',
+            'Forma de pago o canal para realizar un pedido'
+          ]
+        },
+        {
+          id: 'bikezona',
+          label: 'BikeZona',
+          short: 'B',
+          accent: '#59d5ff',
+          url: 'https://www.bikezona.com/home/',
+          tasks: [
+            'Noticia de MTB con título y fecha',
+            'E-bike del catálogo con marca y modelo',
+            'Próxima carrera con fecha y modalidad'
+          ]
+        },
+        {
+          id: 'lingscars',
+          label: 'LINGsCARS Museum',
+          short: 'C',
+          accent: '#d9ff52',
+          url: 'https://museum.lingscars.com/',
+          tasks: [
+            'Oferta con vehículo, cuota mensual y pago inicial',
+            'Vigencia de la oferta y pista que la demuestra',
+            'Canal de contacto y ruta hacia el sitio actual'
+          ]
+        }
+      ];
+
+      const metrics = [
+        {
+          id: 'effectiveness',
+          label: 'Eficacia',
+          weight: 25,
+          question: '¿Se completaron correctamente las tres tareas sin ayuda?',
+          anchors: '<span>0</span> ninguna o bloqueo · <span>2</span> parte con ayuda · <span>4</span> todas, sin ayuda',
+          prompt: 'Ej.: se lograron 2 de 3; no se encontró…'
+        },
+        {
+          id: 'efficiency',
+          label: 'Eficiencia',
+          weight: 15,
+          question: '¿Cuánto tiempo, navegación innecesaria y repetición exigió?',
+          anchors: '<span>0</span> no termina · <span>2</span> varios desvíos · <span>4</span> ruta directa y breve',
+          prompt: 'Cita tiempo, número de desvíos y un paso innecesario.'
+        },
+        {
+          id: 'orientation',
+          label: 'Orientación y arquitectura',
+          weight: 15,
+          question: '¿Menús, rótulos y estructura permiten saber dónde estás y qué hacer?',
+          anchors: '<span>0</span> desorienta · <span>2</span> exige ensayo-error · <span>4</span> ubicación y rutas claras',
+          prompt: 'Nombra un rótulo, menú, categoría o ausencia concreta.'
+        },
+        {
+          id: 'hierarchy',
+          label: 'Jerarquía y legibilidad',
+          weight: 10,
+          question: '¿Se distingue lo principal y se puede recorrer el contenido visualmente?',
+          anchors: '<span>0</span> información indistinguible · <span>2</span> mucha competencia · <span>4</span> orden claro',
+          prompt: 'Describe qué viste primero y qué compitió con la tarea.'
+        },
+        {
+          id: 'control',
+          label: 'Control y predictibilidad',
+          weight: 10,
+          question: '¿Los enlaces y acciones responden como se espera y permiten recuperarse?',
+          anchors: '<span>0</span> bloqueo/sorpresa · <span>2</span> feedback ambiguo · <span>4</span> resultado claro y reversible',
+          prompt: 'Cita una acción, el resultado y cómo volviste o corregiste.'
+        },
+        {
+          id: 'accessibility',
+          label: 'Accesibilidad básica',
+          weight: 20,
+          question: '¿Las tareas resisten teclado, foco, zoom, alternativas y movimiento?',
+          anchors: '<span>0</span> barrera crítica · <span>2</span> 2–3 pruebas superadas · <span>4</span> 5 pruebas superadas',
+          prompt: 'Indica qué pruebas pasaron/fallaron. Si teclado bloquea la misión, máximo 1.'
+        },
+        {
+          id: 'satisfaction',
+          label: 'Satisfacción y confianza',
+          weight: 5,
+          question: '¿Qué carga mental, frustración y seguridad produjo la experiencia?',
+          anchors: '<span>0</span> frustración y duda altas · <span>2</span> esfuerzo notable · <span>4</span> confianza alta',
+          prompt: 'Describe una reacción y vincúlala con un elemento de la interfaz.'
+        }
+      ];
+
+      const evaluationRoot = document.querySelector('#site-evaluations');
+      const form = document.querySelector('#lab-form');
+      const timers = Object.fromEntries(sites.map(site => [site.id, { elapsed: 0, startedAt: null, interval: null }]));
+      let saveTimer;
+
+      const escapeHtml = (value) => String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+
+      function renderEvaluations() {
+        evaluationRoot.innerHTML = sites.map((site, index) => `
+          <details class="site-evaluation" data-site="${site.id}" style="--site-accent: ${site.accent}" ${index === 0 ? 'open' : ''}>
+            <summary>
+              <span class="eval-number" aria-hidden="true">${site.short}</span>
+              <span class="eval-title"><strong>${site.label}</strong><span>Registro, medidas y siete métricas</span></span>
+              <span class="eval-score" id="${site.id}-summary-score">0/7 valoradas</span>
+            </summary>
+            <div class="evaluation-body">
+              <section class="field-section" aria-labelledby="${site.id}-tasks-title">
+                <h3 id="${site.id}-tasks-title">1. Resultado de las tareas</h3>
+                <p>Marca solo los objetivos logrados sin ayuda. Un intento fallido también es un dato útil.</p>
+                <div class="task-checklist">
+                  ${site.tasks.map((task, taskIndex) => `
+                    <label class="task-check">
+                      <input type="checkbox" name="${site.id}-task-${taskIndex + 1}">
+                      <span>${task}</span>
+                    </label>
+                  `).join('')}
+                </div>
+                <label class="field-label" for="${site.id}-task-notes">Resultados obtenidos y obstáculos</label>
+                <textarea id="${site.id}-task-notes" name="${site.id}-task-notes" placeholder="Anota los datos encontrados. Si una tarea falló, indica dónde se detuvo el intento."></textarea>
+              </section>
+
+              <section class="field-section" aria-labelledby="${site.id}-measures-title">
+                <h3 id="${site.id}-measures-title">2. Medidas observables</h3>
+                <p>Un desvío es una página, clic o acción que no acerca al objetivo y obliga a retroceder o cambiar de estrategia.</p>
+                <div class="observation-grid">
+                  <div class="stopwatch">
+                    <span class="stopwatch-label">Cronómetro</span>
+                    <output id="${site.id}-timer" aria-live="off">00:00</output>
+                    <div class="timer-actions">
+                      <button type="button" data-timer-action="start" data-site-id="${site.id}">Iniciar</button>
+                      <button type="button" data-timer-action="pause" data-site-id="${site.id}">Parar</button>
+                      <button type="button" data-timer-action="reset" data-site-id="${site.id}">Reiniciar</button>
+                    </div>
+                  </div>
+                  <div class="measurement-fields">
+                    <div>
+                      <label class="field-label" for="${site.id}-minutes">Minutos</label>
+                      <input id="${site.id}-minutes" name="${site.id}-minutes" type="number" min="0" max="99" inputmode="numeric" placeholder="0">
+                    </div>
+                    <div>
+                      <label class="field-label" for="${site.id}-seconds">Segundos</label>
+                      <input id="${site.id}-seconds" name="${site.id}-seconds" type="number" min="0" max="59" inputmode="numeric" placeholder="00">
+                    </div>
+                    <div>
+                      <label class="field-label" for="${site.id}-detours">Desvíos</label>
+                      <input id="${site.id}-detours" name="${site.id}-detours" type="number" min="0" max="99" inputmode="numeric" placeholder="0">
+                    </div>
+                    <div class="wide">
+                      <label class="field-label" for="${site.id}-strategy">Estrategia o ayuda usada</label>
+                      <input id="${site.id}-strategy" name="${site.id}-strategy" type="text" placeholder="Ej.: menú, buscador, Ctrl+F, traducción…">
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="field-section" aria-labelledby="${site.id}-metrics-title">
+                <h3 id="${site.id}-metrics-title">3. Rúbrica razonada</h3>
+                <p>Cada evidencia debe describir un hecho observable, no solo una impresión.</p>
+                <div class="accessibility-probe" aria-label="Cinco pruebas manuales de accesibilidad">
+                  <div class="probe"><b>Teclado</b>Llega a la acción principal sin ratón.</div>
+                  <div class="probe"><b>Foco</b>Siempre se ve qué elemento está activo.</div>
+                  <div class="probe"><b>Zoom 200 %</b>No se pierde información ni se solapa.</div>
+                  <div class="probe"><b>Alternativas</b>Enlaces e imágenes comunican su propósito.</div>
+                  <div class="probe"><b>Movimiento</b>Se puede pausar o evitar lo que distrae.</div>
+                </div>
+                <div class="metric-grid">
+                  ${metrics.map(metric => `
+                    <article class="metric-card" id="${site.id}-${metric.id}-card">
+                      <header>
+                        <h4>${metric.label}</h4>
+                        <span class="weight">${metric.weight} %</span>
+                      </header>
+                      <p class="metric-question">${metric.question}</p>
+                      <p class="anchors" id="${site.id}-${metric.id}-anchors">${metric.anchors}</p>
+                      <label class="field-label" for="${site.id}-${metric.id}-score">Puntuación</label>
+                      <select id="${site.id}-${metric.id}-score" name="${site.id}-${metric.id}-score" aria-describedby="${site.id}-${metric.id}-anchors">
+                        <option value="">Sin valorar</option>
+                        <option value="0">0 · Bloquea</option>
+                        <option value="1">1 · Deficiente</option>
+                        <option value="2">2 · Mejorable</option>
+                        <option value="3">3 · Adecuada</option>
+                        <option value="4">4 · Excelente</option>
+                      </select>
+                      <label class="field-label" for="${site.id}-${metric.id}-evidence" style="margin-top: .75rem">Evidencia</label>
+                      <textarea id="${site.id}-${metric.id}-evidence" name="${site.id}-${metric.id}-evidence" placeholder="${metric.prompt}" aria-describedby="${site.id}-${metric.id}-evidence-hint"></textarea>
+                      <small class="char-hint" id="${site.id}-${metric.id}-evidence-hint">Anota elemento + acción + resultado.</small>
+                    </article>
+                  `).join('')}
+                </div>
+              </section>
+            </div>
+          </details>
+        `).join('');
+      }
+
+      function allControls() {
+        return [...document.querySelectorAll('input[name], select[name], textarea[name]')];
+      }
+
+      function serialize() {
+        const fields = {};
+        allControls().forEach(control => {
+          fields[control.name] = control.type === 'checkbox' ? control.checked : control.value;
+        });
+        const savedTimers = Object.fromEntries(Object.entries(timers).map(([id, timer]) => [id, currentElapsed(timer)]));
+        return { fields, timers: savedTimers };
+      }
+
+      function save() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(serialize()));
+          const state = document.querySelector('#save-state');
+          state.textContent = 'Guardado automáticamente';
+          window.clearTimeout(saveTimer);
+          saveTimer = window.setTimeout(() => {
+            state.textContent = 'El progreso se guarda en este navegador';
+          }, 1800);
+        } catch (error) {
+          document.querySelector('#save-state').textContent = 'No se pudo guardar localmente';
+        }
+      }
+
+      function restore() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (!saved) return;
+          allControls().forEach(control => {
+            if (!(control.name in (saved.fields || {}))) return;
+            if (control.type === 'checkbox') control.checked = Boolean(saved.fields[control.name]);
+            else control.value = saved.fields[control.name];
+          });
+          sites.forEach(site => {
+            const elapsed = Number(saved.timers?.[site.id]);
+            if (Number.isFinite(elapsed) && elapsed >= 0) timers[site.id].elapsed = elapsed;
+            paintTimer(site.id);
+          });
+        } catch (error) {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      }
+
+      function field(name) {
+        return document.querySelector(`[name="${name}"]`);
+      }
+
+      function currentElapsed(timer) {
+        if (timer.startedAt === null) return timer.elapsed;
+        return timer.elapsed + Math.floor((Date.now() - timer.startedAt) / 1000);
+      }
+
+      function formatTime(totalSeconds) {
+        const safe = Math.max(0, Number(totalSeconds) || 0);
+        const minutes = Math.floor(safe / 60);
+        const seconds = Math.floor(safe % 60);
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      }
+
+      function paintTimer(siteId) {
+        document.querySelector(`#${siteId}-timer`).textContent = formatTime(currentElapsed(timers[siteId]));
+      }
+
+      function stopTimer(siteId, copyToFields = true) {
+        const timer = timers[siteId];
+        if (timer.startedAt !== null) {
+          timer.elapsed = currentElapsed(timer);
+          timer.startedAt = null;
+        }
+        window.clearInterval(timer.interval);
+        timer.interval = null;
+        if (copyToFields) {
+          field(`${siteId}-minutes`).value = Math.floor(timer.elapsed / 60);
+          field(`${siteId}-seconds`).value = timer.elapsed % 60;
+        }
+        paintTimer(siteId);
+      }
+
+      function startTimer(siteId) {
+        sites.forEach(site => {
+          if (site.id !== siteId && timers[site.id].startedAt !== null) stopTimer(site.id);
+        });
+        const timer = timers[siteId];
+        if (timer.startedAt !== null) return;
+        timer.startedAt = Date.now();
+        timer.interval = window.setInterval(() => paintTimer(siteId), 1000);
+        paintTimer(siteId);
+        document.querySelector('#form-status').textContent = `Cronómetro de ${sites.find(site => site.id === siteId).label} iniciado.`;
+      }
+
+      function resetTimer(siteId) {
+        stopTimer(siteId, false);
+        timers[siteId].elapsed = 0;
+        field(`${siteId}-minutes`).value = '';
+        field(`${siteId}-seconds`).value = '';
+        paintTimer(siteId);
+        updateAll();
+        save();
+      }
+
+      function siteResult(site) {
+        const values = metrics.map(metric => field(`${site.id}-${metric.id}-score`).value);
+        const rated = values.filter(value => value !== '').length;
+        const score = metrics.reduce((sum, metric, index) => {
+          if (values[index] === '') return sum;
+          return sum + (Number(values[index]) / 4) * metric.weight;
+        }, 0);
+        const tasks = site.tasks.filter((task, index) => field(`${site.id}-task-${index + 1}`).checked).length;
+        const minutes = Number(field(`${site.id}-minutes`).value) || 0;
+        const seconds = Number(field(`${site.id}-seconds`).value) || 0;
+        const detoursRaw = field(`${site.id}-detours`).value;
+        return {
+          rated,
+          complete: rated === metrics.length,
+          score: Math.round(score * 10) / 10,
+          tasks,
+          time: minutes * 60 + seconds,
+          detours: detoursRaw === '' ? '—' : Number(detoursRaw)
+        };
+      }
+
+      function updateScores() {
+        const results = sites.map(site => ({ site, ...siteResult(site) }));
+        let completeCount = 0;
+
+        results.forEach(result => {
+          if (result.complete) completeCount += 1;
+          const summaryScore = document.querySelector(`#${result.site.id}-summary-score`);
+          summaryScore.textContent = result.complete
+            ? `${result.score.toLocaleString('es-ES')} / 100`
+            : `${result.rated}/7 valoradas · ${result.score.toLocaleString('es-ES')} provisional`;
+        });
+
+        document.querySelector('#summary-body').innerHTML = results.map(result => `
+          <tr style="--site-accent: ${result.site.accent}">
+            <th scope="row">${result.site.label}</th>
+            <td>
+              <div class="score-bar">
+                <div class="score-bar-track" aria-hidden="true"><span style="width: ${result.score}%"></span></div>
+                <span class="score-value">${result.score.toLocaleString('es-ES')} / 100${result.complete ? '' : '*'}</span>
+              </div>
+            </td>
+            <td>${result.tasks} / 3</td>
+            <td>${result.time ? formatTime(result.time) : '—'}</td>
+            <td>${result.detours}</td>
+          </tr>
+        `).join('');
+
+        document.querySelector('#completion-pill').textContent = `${completeCount} de 3 fichas`;
+        const totalRated = results.reduce((sum, result) => sum + result.rated, 0);
+        const provisionalAverage = totalRated
+          ? results.reduce((sum, result) => sum + result.score, 0) / 3
+          : 0;
+        const overallOutput = document.querySelector('#overall-score');
+        const displayAverage = Math.round(provisionalAverage);
+        overallOutput.innerHTML = `${totalRated ? displayAverage : '—'}<small>${completeCount === 3 ? 'media final / 100' : 'media provisional'}</small>`;
+        document.querySelector('#score-ring').style.setProperty('--score', `${displayAverage * 3.6}deg`);
+
+        const leaderNote = document.querySelector('#leader-note');
+        if (completeCount === 3) {
+          const ordered = [...results].sort((a, b) => b.score - a.score);
+          const gap = Math.round((ordered[0].score - ordered[1].score) * 10) / 10;
+          leaderNote.textContent = gap === 0
+            ? `${ordered[0].site.label} y ${ordered[1].site.label} empatan. La evidencia cualitativa debe decidir la comparación.`
+            : `${ordered[0].site.label} obtiene la mayor puntuación (${ordered[0].score.toLocaleString('es-ES')}/100), con ${gap.toLocaleString('es-ES')} puntos de diferencia respecto al siguiente. Comprueba si tu conclusión coincide y explica por qué.`;
+        } else {
+          leaderNote.textContent = 'Completa las siete métricas de cada sitio para cerrar la comparación. El asterisco indica una puntuación provisional.';
+        }
+      }
+
+      function completionState() {
+        let done = 0;
+        let total = 0;
+        sites.forEach(site => {
+          metrics.forEach(metric => {
+            total += 2;
+            if (field(`${site.id}-${metric.id}-score`).value !== '') done += 1;
+            if (field(`${site.id}-${metric.id}-evidence`).value.trim().length >= 20) done += 1;
+          });
+          total += 2;
+          if (field(`${site.id}-task-notes`).value.trim().length >= 20) done += 1;
+          const minutes = Number(field(`${site.id}-minutes`).value) || 0;
+          const seconds = Number(field(`${site.id}-seconds`).value) || 0;
+          if (minutes * 60 + seconds > 0) done += 1;
+        });
+        ['best-site', 'weakest-site'].forEach(name => {
+          total += 1;
+          if (field(name).value) done += 1;
+        });
+        ['comparison', 'improvements'].forEach(name => {
+          total += 1;
+          if (field(name).value.trim().length >= 80) done += 1;
+        });
+        return { done, total, percent: Math.round((done / total) * 100) };
+      }
+
+      function updateProgress() {
+        const state = completionState();
+        const label = document.querySelector('#progress-label');
+        const track = document.querySelector('.progress-track');
+        label.textContent = `${state.percent} % completado`;
+        track.setAttribute('aria-valuenow', String(state.percent));
+        document.querySelector('#progress-fill').style.width = `${state.percent}%`;
+      }
+
+      function updateAll() {
+        updateScores();
+        updateProgress();
+      }
+
+      function validateForExport() {
+        document.querySelectorAll('.invalid').forEach(element => element.classList.remove('invalid'));
+        document.querySelectorAll('[aria-invalid="true"]').forEach(element => element.removeAttribute('aria-invalid'));
+        const invalid = [];
+
+        sites.forEach(site => {
+          metrics.forEach(metric => {
+            const score = field(`${site.id}-${metric.id}-score`);
+            const evidence = field(`${site.id}-${metric.id}-evidence`);
+            const card = document.querySelector(`#${site.id}-${metric.id}-card`);
+            if (score.value === '' || evidence.value.trim().length < 20) {
+              card.classList.add('invalid');
+              if (score.value === '') score.setAttribute('aria-invalid', 'true');
+              if (evidence.value.trim().length < 20) evidence.setAttribute('aria-invalid', 'true');
+              invalid.push(score.value === '' ? score : evidence);
+            }
+          });
+          const notes = field(`${site.id}-task-notes`);
+          const minutes = Number(field(`${site.id}-minutes`).value) || 0;
+          const seconds = Number(field(`${site.id}-seconds`).value) || 0;
+          if (notes.value.trim().length < 20) {
+            notes.setAttribute('aria-invalid', 'true');
+            invalid.push(notes);
+          }
+          if (minutes * 60 + seconds <= 0) {
+            field(`${site.id}-minutes`).setAttribute('aria-invalid', 'true');
+            invalid.push(field(`${site.id}-minutes`));
+          }
+        });
+
+        ['best-site', 'weakest-site'].forEach(name => {
+          if (!field(name).value) {
+            field(name).setAttribute('aria-invalid', 'true');
+            field(name).closest('.conclusion-field').classList.add('invalid');
+            invalid.push(field(name));
+          }
+        });
+        ['comparison', 'improvements'].forEach(name => {
+          if (field(name).value.trim().length < 80) {
+            field(name).setAttribute('aria-invalid', 'true');
+            field(name).closest('.conclusion-field').classList.add('invalid');
+            invalid.push(field(name));
+          }
+        });
+
+        if (invalid.length) {
+          const hiddenDetails = invalid[0].closest('details');
+          if (hiddenDetails) hiddenDetails.open = true;
+          invalid[0].focus();
+          document.querySelector('#form-status').textContent = `Faltan ${invalid.length} campos o evidencias. Se ha señalado el primero.`;
+          return false;
+        }
+        return true;
+      }
+
+      function reportText() {
+        const siteName = value => sites.find(site => site.id === value)?.label || 'Sin seleccionar';
+        const lines = [
+          'LABORATORIO DE USABILIDAD Y ACCESIBILIDAD',
+          '===========================================',
+          `Equipo: ${field('team').value || '—'}`,
+          `Grupo: ${field('group').value || '—'}`,
+          `Fecha: ${field('lab-date').value || '—'}`,
+          ''
+        ];
+
+        sites.forEach(site => {
+          const result = siteResult(site);
+          lines.push(site.label.toUpperCase(), '-'.repeat(site.label.length));
+          site.tasks.forEach((task, index) => {
+            lines.push(`[${field(`${site.id}-task-${index + 1}`).checked ? 'Sí' : 'No'}] ${task}`);
+          });
+          lines.push(
+            `Tiempo: ${result.time ? formatTime(result.time) : '—'}`,
+            `Desvíos: ${result.detours}`,
+            `Estrategia/ayuda: ${field(`${site.id}-strategy`).value || '—'}`,
+            `Resultados y obstáculos: ${field(`${site.id}-task-notes`).value || '—'}`,
+            '',
+            `Puntuación ponderada: ${result.score.toLocaleString('es-ES')} / 100`,
+            ''
+          );
+          metrics.forEach(metric => {
+            lines.push(
+              `${metric.label} (${metric.weight} %): ${field(`${site.id}-${metric.id}-score`).value} / 4`,
+              `Evidencia: ${field(`${site.id}-${metric.id}-evidence`).value}`,
+              ''
+            );
+          });
+        });
+
+        lines.push(
+          'VEREDICTO',
+          '---------',
+          `Más usable para su propósito: ${siteName(field('best-site').value)}`,
+          `Cambios más urgentes: ${siteName(field('weakest-site').value)}`,
+          '',
+          'Conclusión comparativa:',
+          field('comparison').value,
+          '',
+          'Dos mejoras prioritarias:',
+          field('improvements').value,
+          '',
+          'Marco: ISO 9241-11:2018, WCAG 2.2 y heurísticas de Nielsen.',
+          'La puntuación corresponde a esta observación y no constituye una auditoría de conformidad.'
+        );
+        return lines.join('\n');
+      }
+
+      function downloadReport() {
+        if (!validateForExport()) return;
+        const slug = (field('team').value || 'equipo')
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '') || 'equipo';
+        const blob = new Blob([reportText()], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = `informe-usabilidad-${slug}.txt`;
+        document.body.append(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+        document.querySelector('#form-status').textContent = 'Informe descargado. Comprueba el archivo antes de entregarlo.';
+      }
+
+      function printReport() {
+        const details = [...document.querySelectorAll('details')];
+        const previous = details.map(detail => detail.open);
+        details.forEach(detail => { detail.open = true; });
+        window.print();
+        window.setTimeout(() => details.forEach((detail, index) => { detail.open = previous[index]; }), 250);
+      }
+
+      function clearData() {
+        const confirmed = window.confirm('¿Borrar todas las respuestas y cronómetros de esta práctica? Esta acción no se puede deshacer.');
+        if (!confirmed) return;
+        sites.forEach(site => resetTimer(site.id));
+        allControls().forEach(control => {
+          if (control.type === 'checkbox') control.checked = false;
+          else control.value = '';
+          control.removeAttribute('aria-invalid');
+        });
+        document.querySelectorAll('.invalid').forEach(element => element.classList.remove('invalid'));
+        localStorage.removeItem(STORAGE_KEY);
+        const today = new Date();
+        const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+        field('lab-date').value = localDate;
+        updateAll();
+        document.querySelector('#form-status').textContent = 'Se han borrado las respuestas y los cronómetros.';
+      }
+
+      renderEvaluations();
+      restore();
+
+      if (!field('lab-date').value) {
+        const today = new Date();
+        field('lab-date').value = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+      }
+
+      document.addEventListener('click', event => {
+        const timerButton = event.target.closest('[data-timer-action]');
+        if (!timerButton) return;
+        const siteId = timerButton.dataset.siteId;
+        const action = timerButton.dataset.timerAction;
+        if (action === 'start') startTimer(siteId);
+        if (action === 'pause') {
+          stopTimer(siteId);
+          document.querySelector('#form-status').textContent = `Cronómetro de ${sites.find(site => site.id === siteId).label} detenido.`;
+          updateAll();
+          save();
+        }
+        if (action === 'reset') resetTimer(siteId);
+      });
+
+      document.addEventListener('input', event => {
+        if (!event.target.matches('input[name], select[name], textarea[name]')) return;
+        event.target.removeAttribute('aria-invalid');
+        event.target.closest('.invalid')?.classList.remove('invalid');
+        updateAll();
+        save();
+      });
+
+      document.addEventListener('change', event => {
+        if (!event.target.matches('input[name], select[name], textarea[name]')) return;
+        updateAll();
+        save();
+      });
+
+      document.querySelector('#download-report').addEventListener('click', downloadReport);
+      document.querySelector('#print-report').addEventListener('click', printReport);
+      document.querySelector('#clear-data').addEventListener('click', clearData);
+
+      window.addEventListener('beforeunload', () => {
+        sites.forEach(site => stopTimer(site.id));
+        save();
+      });
+
+      updateAll();
+      save();
+    })();
+  </script>
+</body>
+</html>
