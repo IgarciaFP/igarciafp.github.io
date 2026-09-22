@@ -1717,8 +1717,11 @@
 
         document.querySelector('#completion-pill').textContent = `${completeCount} de 3 fichas`;
         const totalRated = results.reduce((sum, result) => sum + result.rated, 0);
-        const provisionalAverage = totalRated
-          ? results.reduce((sum, result) => sum + result.score, 0) / 3
+        const ratedWeight = sites.reduce((siteSum, site) => siteSum + metrics.reduce((metricSum, metric) => {
+          return metricSum + (field(`${site.id}-${metric.id}-score`).value === '' ? 0 : metric.weight);
+        }, 0), 0);
+        const provisionalAverage = ratedWeight
+          ? (results.reduce((sum, result) => sum + result.score, 0) / ratedWeight) * 100
           : 0;
         const overallOutput = document.querySelector('#overall-score');
         const displayAverage = Math.round(provisionalAverage);
@@ -1746,11 +1749,12 @@
             if (field(`${site.id}-${metric.id}-score`).value !== '') done += 1;
             if (field(`${site.id}-${metric.id}-evidence`).value.trim().length >= 20) done += 1;
           });
-          total += 2;
+          total += 3;
           if (field(`${site.id}-task-notes`).value.trim().length >= 20) done += 1;
           const minutes = Number(field(`${site.id}-minutes`).value) || 0;
           const seconds = Number(field(`${site.id}-seconds`).value) || 0;
           if (minutes * 60 + seconds > 0) done += 1;
+          if (field(`${site.id}-detours`).value !== '') done += 1;
         });
         ['best-site', 'weakest-site'].forEach(name => {
           total += 1;
@@ -1797,6 +1801,7 @@
           const notes = field(`${site.id}-task-notes`);
           const minutes = Number(field(`${site.id}-minutes`).value) || 0;
           const seconds = Number(field(`${site.id}-seconds`).value) || 0;
+          const detours = field(`${site.id}-detours`);
           if (notes.value.trim().length < 20) {
             notes.setAttribute('aria-invalid', 'true');
             invalid.push(notes);
@@ -1804,6 +1809,10 @@
           if (minutes * 60 + seconds <= 0) {
             field(`${site.id}-minutes`).setAttribute('aria-invalid', 'true');
             invalid.push(field(`${site.id}-minutes`));
+          }
+          if (detours.value === '') {
+            detours.setAttribute('aria-invalid', 'true');
+            invalid.push(detours);
           }
         });
 
@@ -1814,6 +1823,11 @@
             invalid.push(field(name));
           }
         });
+        if (field('best-site').value && field('best-site').value === field('weakest-site').value) {
+          field('weakest-site').setAttribute('aria-invalid', 'true');
+          field('weakest-site').closest('.conclusion-field').classList.add('invalid');
+          invalid.push(field('weakest-site'));
+        }
         ['comparison', 'improvements'].forEach(name => {
           if (field(name).value.trim().length < 80) {
             field(name).setAttribute('aria-invalid', 'true');
