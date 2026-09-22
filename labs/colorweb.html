@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Uso del Color en Diseño Web | Código Creativo UI/UX</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .dark .custom-scrollbar::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+    /* Smooth transitions for interactive state highlights */
+    .color-card-transition {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .wheel-node {
+      transition: transform 0.2s ease, fill 0.3s ease;
+      cursor: pointer;
+    }
+    .wheel-node:hover {
+      transform: scale(1.15);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+  <header class="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white shadow-md shadow-purple-500/20 font-bold text-xl">
+            C
+          </div>
+          <div>
+            <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">Código Creativo</span>
+            <span class="hidden sm:inline-block text-xs text-slate-400 dark:text-slate-500 ml-2 border-l border-slate-200 dark:border-slate-700 pl-2">Guía Interactivas UI/UX</span>
+          </div>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-680 dark:text-slate-300">
+          <a href="#rueda" class="hover:text-brand-600 dark:hover:text-brand-500 transition-colors">Rueda Cromática</a>
+          <a href="#regla60" class="hover:text-brand-600 dark:hover:text-brand-500 transition-colors">Regla 60-30-10</a>
+          <a href="#contraste" class="hover:text-brand-600 dark:hover:text-brand-500 transition-colors">Contraste</a>
+          <a href="#psicologia" class="hover:text-brand-600 dark:hover:text-brand-500 transition-colors">Psicología</a>
+          <a href="#espacios" class="hover:text-brand-600 dark:hover:text-brand-500 transition-colors">Espacios de Color</a>
+          <a href="#quiz" class="hover:text-brand-600 dark:hover:text-brand-500 transition-colors">Test Evaluativo</a>
+        </nav>
+
+        <button id="themeToggle" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Cambiar Tema">
+          <!-- Sun Icon -->
+          <svg id="sunIcon" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          <!-- Moon Icon -->
+          <svg id="moonIcon" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+    
+    <section class="text-center py-12 px-6 rounded-3xl bg-gradient-to-b from-indigo-500/10 via-purple-500/5 to-transparent border border-slate-200/80 dark:border-slate-800 relative overflow-hidden">
+      <div class="absolute inset-0 -z-10 opacity-30 blur-3xl bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500"></div>
+      <div class="max-w-3xl mx-auto space-y-4">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20">
+          Basado en "Armonía cromática y otros delirios en diseño UI"
+        </span>
+        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+          El Arte y la Ciencia del <span class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">Color en Diseño Web</span>
+        </h1>
+        <p class="text-lg text-slate-600 dark:text-slate-300 font-normal leading-relaxed">
+          El color en las interfaces digitales no es mera decoración: es jerarquía, emoción, accesibilidad y usabilidad. Explora los principios visuales fundamentales mediante esta guía pedagógica e interactiva.
+        </p>
+      </div>
+    </section>
+
+    <section id="rueda" class="scroll-mt-24 space-y-6">
+      <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+        <h2 class="text-2xl font-bold flex items-center gap-2">
+          <span class="text-indigo-500">01.</span> Armonía Cromática y Rueda de Color
+        </h2>
+        <p class="text-slate-600 dark:text-slate-400 text-sm mt-1">
+          Las relaciones de color predecibles ayudan a generar equilibrio estético. Selecciona una regla de armonía para explorar la rueda cromática interactiva.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white dark:bg-slate-800/60 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        
+        <!-- Left Controls / Interactive Info -->
+        <div class="lg:col-span-5 space-y-6">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Esquema de Armonía</label>
+            <div class="grid grid-cols-2 gap-2" id="harmonyButtons">
+              <button data-harmony="complementary" class="harmony-btn active px-3 py-2 rounded-xl text-xs font-semibold border border-indigo-500 bg-indigo-500 text-white transition">Complementario</button>
+              <button data-harmony="analogous" class="harmony-btn px-3 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Análogos</button>
+              <button data-harmony="triadic" class="harmony-btn px-3 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Triádico</button>
+              <button data-harmony="monochromatic" class="harmony-btn px-3 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Monocromático</button>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200/60 dark:border-slate-800">
+            <h3 id="harmonyTitle" class="font-semibold text-base text-indigo-600 dark:text-indigo-400 mb-1">Complementario</h3>
+            <p id="harmonyDesc" class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Utiliza dos colores opuestos en el círculo cromático. Crea el mayor contraste visual posible, excelente para llamadas a la acción (CTAs) y captar la atención de inmediato.
+            </p>
+          </div>
+
+          <!-- Color Swatches Output -->
+          <div>
+            <span class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Muestras Generadas</span>
+            <div id="swatchContainer" class="flex gap-2 h-14">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right SVG Wheel Display -->
+        <div class="lg:col-span-7 flex justify-center items-center relative">
+          <svg id="colorWheelSvg" viewBox="0 0 400 400" class="w-full max-w-[360px] sm:max-w-[400px] h-auto drop-shadow-xl overflow-visible">
+            <!-- Center Pivot Guidelines -->
+            <circle cx="200" cy="200" r="180" fill="none" stroke="currentColor" class="text-slate-200 dark:text-slate-800" stroke-width="1" stroke-dasharray="4 4"/>
+            <circle cx="200" cy="200" r="120" fill="none" stroke="currentColor" class="text-slate-200 dark:text-slate-800" stroke-width="1" stroke-dasharray="4 4"/>
+            
+            <!-- Lines connecting selected nodes -->
+            <g id="wheelConnections" stroke-width="2.5" stroke-linecap="round" class="transition-all duration-300"></g>
+
+            <!-- Color Segment Nodes (12 Hue Wheel) -->
+            <g id="wheelNodes"></g>
+
+            <!-- Center Badge -->
+            <circle cx="200" cy="200" r="32" class="fill-white dark:fill-slate-900 stroke-slate-200 dark:stroke-slate-700" stroke-width="2"/>
+            <text x="200" y="204" text-anchor="middle" class="text-[11px] font-bold fill-slate-700 dark:fill-slate-200 uppercase font-mono">UI COLOR</text>
+          </svg>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="regla60" class="scroll-mt-24 space-y-6">
+      <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+        <h2 class="text-2xl font-bold flex items-center gap-2">
+          <span class="text-purple-500">02.</span> La Regla Proporcional 60-30-10
+        </h2>
+        <p class="text-slate-600 dark:text-slate-400 text-sm mt-1">
+          Una distribución balanceada evita la fatiga visual. El 60% corresponde al color dominante/neutro, 30% al secundario y 10% al color de acento o llamada a la acción.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 bg-white dark:bg-slate-800/60 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        
+        <!-- Controls & Sliders -->
+        <div class="lg:col-span-5 space-y-6 flex flex-col justify-between">
+          <div class="space-y-4">
+            <!-- 60% Dominant Color Picker -->
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
+              <div>
+                <span class="block text-xs font-bold text-slate-800 dark:text-slate-200">60% Dominante / Fondo</span>
+                <span class="text-xs text-slate-500">Espacio de trabajo y estructura</span>
+              </div>
+              <input type="color" id="picker60" value="#f8fafc" class="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent">
+            </div>
+
+            <!-- 30% Secondary Color Picker -->
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
+              <div>
+                <span class="block text-xs font-bold text-slate-800 dark:text-slate-200">30% Secundario / Tarjetas</span>
+                <span class="text-xs text-slate-500">Agrupación visual de contenidos</span>
+              </div>
+              <input type="color" id="picker30" value="#1e293b" class="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent">
+            </div>
+
+            <!-- 10% Accent Color Picker -->
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
+              <div>
+                <span class="block text-xs font-bold text-slate-800 dark:text-slate-200">10% Acento / Botones</span>
+                <span class="text-xs text-slate-500">Focalización y acciones clave</span>
+              </div>
+              <input type="color" id="picker10" value="#2563eb" class="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent">
+            </div>
+          </div>
+
+          <!-- Proportion Visual Bar -->
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs font-semibold">
+              <span class="text-slate-600 dark:text-slate-400">Distribución Porcentual</span>
+              <span class="font-mono text-indigo-500">60% - 30% - 10%</span>
+            </div>
+            <div class="h-4 w-full rounded-full overflow-hidden flex shadow-inner">
+              <div class="h-full bg-slate-200 dark:bg-slate-700 w-[60%] transition-all" id="bar60"></div>
+              <div class="h-full bg-slate-700 dark:bg-slate-300 w-[30%] transition-all" id="bar30"></div>
+              <div class="h-full bg-blue-600 w-[10%] transition-all" id="bar10"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SVG 2 - Live Interactive UI Layout Simulation -->
+        <div class="lg:col-span-7 flex justify-center">
+          <div class="w-full max-w-md rounded-2xl overflow-hidden border border-slate-300 dark:border-slate-700 shadow-xl">
+            <svg id="sim603010Svg" viewBox="0 0 500 400" class="w-full h-auto bg-slate-100 transition-colors">
+              <!-- 60% Dominant Background Area -->
+              <rect id="svgBg60" x="0" y="0" width="500" height="400" fill="#f8fafc" />
+
+              <!-- App Header Bar (Part of 30% structure or secondary element) -->
+              <rect id="svgHeader30" x="20" y="20" width="460" height="50" rx="12" fill="#1e293b" />
+              <circle cx="50" cy="45" r="10" fill="#ffffff" opacity="0.3"/>
+              <rect x="75" y="40" width="120" height="10" rx="5" fill="#ffffff" opacity="0.8"/>
+
+              <!-- Card 1 (30% Secondary Color) -->
+              <g>
+                <rect id="svgCard1_30" x="20" y="90" width="220" height="200" rx="16" fill="#1e293b" />
+                <rect x="40" y="115" width="100" height="12" rx="4" fill="#ffffff" opacity="0.9"/>
+                <rect x="40" y="140" width="160" height="8" rx="4" fill="#ffffff" opacity="0.4"/>
+                <rect x="40" y="156" width="140" height="8" rx="4" fill="#ffffff" opacity="0.4"/>
+                <!-- 10% Accent Button -->
+                <rect id="svgBtn1_10" x="40" y="220" width="120" height="40" rx="10" fill="#2563eb"/>
+                <text x="100" y="245" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle" font-family="sans-serif">Comprar</text>
+              </g>
+
+              <!-- Card 2 (30% Secondary Color) -->
+              <g>
+                <rect id="svgCard2_30" x="260" y="90" width="220" height="200" rx="16" fill="#1e293b" />
+                <rect x="280" y="115" width="110" height="12" rx="4" fill="#ffffff" opacity="0.9"/>
+                <rect x="280" y="140" width="160" height="8" rx="4" fill="#ffffff" opacity="0.4"/>
+                <rect x="280" y="156" width="130" height="8" rx="4" fill="#ffffff" opacity="0.4"/>
+                <!-- 10% Accent Badge / Icon -->
+                <circle id="svgBadge_10" cx="305" cy="240" r="18" fill="#2563eb" />
+                <path d="M300 240 L304 244 L311 235" stroke="#ffffff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+              </g>
+
+              <!-- Bottom Footer Banner -->
+              <rect id="svgFooter30" x="20" y="305" width="460" height="75" rx="12" fill="#1e293b" />
+              <rect x="40" y="335" width="200" height="10" rx="5" fill="#ffffff" opacity="0.7"/>
+              <rect id="svgBtn2_10" x="360" y="323" width="100" height="34" rx="8" fill="#2563eb" />
+              <text x="410" y="344" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle" font-family="sans-serif">Acción</text>
+            </svg>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="contraste" class="scroll-mt-24 space-y-6">
+      <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+        <h2 class="text-2xl font-bold flex items-center gap-2">
+          <span class="text-pink-500">03.</span> Ley del Contraste y Accesibilidad WCAG
+        </h2>
+        <p class="text-slate-600 dark:text-slate-400 text-sm mt-1">
+          Garantizar la legibilidad no es opcional. Las pautas WCAG 2.1 exigen un ratio mínimo de 4.5:1 para texto normal y 3:1 para texto grande.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 bg-white dark:bg-slate-800/60 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        
+        <!-- Interactive Tester Form -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Color Texto</label>
+              <div class="flex items-center gap-2">
+                <input type="color" id="contrastTextColor" value="#0f172a" class="w-9 h-9 rounded-lg border-0 cursor-pointer">
+                <input type="text" id="contrastTextHex" value="#0f172a" class="w-full text-xs font-mono p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 uppercase">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Color Fondo</label>
+              <div class="flex items-center gap-2">
+                <input type="color" id="contrastBgColor" value="#ffffff" class="w-9 h-9 rounded-lg border-0 cursor-pointer">
+                <input type="text" id="contrastBgHex" value="#ffffff" class="w-full text-xs font-mono p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 uppercase">
+              </div>
+            </div>
+          </div>
+
+          <!-- Score Card -->
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 space-y-4">
+            <div class="flex justify-between items-baseline">
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Ratio de Contraste</span>
+              <span id="contrastRatioValue" class="text-3xl font-extrabold font-mono text-emerald-600 dark:text-emerald-400">21.0:1</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-200 dark:border-slate-800">
+              <div class="p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">WCAG AA</span>
+                <span id="badgeAA" class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">PASA</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">WCAG AAA</span>
+                <span id="badgeAAA" class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">PASA</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SVG 4 - Live Preview Box -->
+        <div class="lg:col-span-7 flex flex-col justify-center">
+          <div id="contrastPreviewBox" class="w-full p-8 rounded-2xl border border-slate-300 dark:border-slate-700 shadow-md flex flex-col justify-between space-y-6 transition-colors" style="background-color: #ffffff; color: #0f172a;">
+            
+            <div class="flex items-center justify-between border-b pb-4 border-current/20">
+              <span class="font-bold text-lg">Vista Previa de Componente UI</span>
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            </div>
+
+            <div class="space-y-2">
+              <h4 class="text-xl font-extrabold tracking-tight">Texto Grande de Encabezado (18pt+)</h4>
+              <p class="text-sm font-normal opacity-90 leading-relaxed">
+                Este es un párrafo con tamaño de cuerpo de texto común (14px/16px). Si el contraste es demasiado bajo, la lectura resultará dificultosa para personas con baja visión o bajo condiciones de luz solar directa.
+              </p>
+            </div>
+
+            <!-- SVG UI Indicators / Badges inline inside box -->
+            <div class="flex items-center gap-3 pt-2">
+              <div class="px-4 py-2 rounded-xl text-xs font-bold border border-current flex items-center gap-2">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                Botón Primario
+              </div>
+              <span class="text-xs opacity-75 font-mono">Prueba de Legibilidad</span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="psicologia" class="scroll-mt-24 space-y-6">
+      <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+        <h2 class="text-2xl font-bold flex items-center gap-2">
+          <span class="text-emerald-500">04.</span> Psicología del Color en Productos Digitales
+        </h2>
+        <p class="text-slate-600 dark:text-slate-400 text-sm mt-1">
+          Los colores evocan asociaciones subconscientes inmediatas. Haz clic en cada tono para examinar su impacto emocional y casos de uso en diseño UI/UX.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Red Card -->
+        <div onclick="selectPsychology('red')" class="psychology-card cursor-pointer p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 hover:border-red-500 dark:hover:border-red-500 transition-all shadow-sm group">
+          <div class="w-12 h-12 rounded-xl bg-red-500 text-white flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-md shadow-red-500/20">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h3 class="font-bold text-lg text-slate-800 dark:text-white">Rojo</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Urgencia, Pasión, Alerta</p>
+        </div>
+
+        <!-- Blue Card -->
+        <div onclick="selectPsychology('blue')" class="psychology-card cursor-pointer p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 hover:border-blue-500 dark:hover:border-blue-500 transition-all shadow-sm group">
+          <div class="w-12 h-12 rounded-xl bg-blue-500 text-white flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-md shadow-blue-500/20">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <h3 class="font-bold text-lg text-slate-800 dark:text-white">Azul</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Confianza, Seguridad, Calma</p>
+        </div>
+
+        <!-- Green Card -->
+        <div onclick="selectPsychology('green')" class="psychology-card cursor-pointer p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 transition-all shadow-sm group">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500 text-white flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-md shadow-emerald-500/20">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <h3 class="font-bold text-lg text-slate-800 dark:text-white">Verde</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Naturaleza, Éxito, Salud</p>
+        </div>
+
+        <!-- Yellow/Orange Card -->
+        <div onclick="selectPsychology('amber')" class="psychology-card cursor-pointer p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 hover:border-amber-500 dark:hover:border-amber-500 transition-all shadow-sm group">
+          <div class="w-12 h-12 rounded-xl bg-amber-500 text-white flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-md shadow-amber-500/20">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          </div>
+          <h3 class="font-bold text-lg text-slate-800 dark:text-white">Naranja / Amarillo</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Optimismo, Advertencia, Energía</p>
+        </div>
+
+      </div>
+
+      <!-- Psychology Detail Modal/Box -->
+      <div id="psychologyDetail" class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 shadow-md flex flex-col md:flex-row gap-6 items-center">
+        <!-- Dynamic content filled by JS -->
+      </div>
+    </section>
+
+    <section id="espacios" class="scroll-mt-24 space-y-6">
+      <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+        <h2 class="text-2xl font-bold flex items-center gap-2">
+          <span class="text-amber-500">05.</span> Espacios de Color Digitales (RGB, CMYK, HSL, HEX)
+        </h2>
+        <p class="text-slate-600 dark:text-slate-400 text-sm mt-1">
+          Comprender la representación matemática del color permite manipular con precisión la paleta UI.
+        </p>
+      </div>
+
+      <!-- SVG 3 - Color Space Comparison Graphic -->
+      <div class="bg-white dark:bg-slate-800/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+        <div class="flex justify-center">
+          <svg viewBox="0 0 800 240" class="w-full max-w-3xl h-auto">
+            <!-- RGB Block -->
+            <g transform="translate(20,20)">
+              <rect x="0" y="0" width="170" height="200" rx="16" fill="#1e293b" />
+              <circle cx="85" cy="65" r="30" fill="#3b82f6" opacity="0.8"/>
+              <circle cx="70" cy="80" r="30" fill="#ef4444" opacity="0.8"/>
+              <circle cx="100" cy="80" r="30" fill="#10b981" opacity="0.8"/>
+              <text x="85" y="145" fill="#ffffff" font-size="16" font-weight="bold" text-anchor="middle">RGB</text>
+              <text x="85" y="165" fill="#94a3b8" font-size="11" text-anchor="middle">Pantallas y LUZ</text>
+              <text x="85" y="180" fill="#94a3b8" font-size="10" text-anchor="middle">(0 a 255 por canal)</text>
+            </g>
+
+            <!-- CMYK Block -->
+            <g transform="translate(215,20)">
+              <rect x="0" y="0" width="170" height="200" rx="16" fill="#1e293b" />
+              <circle cx="85" cy="65" r="30" fill="#06b6d4" opacity="0.8"/>
+              <circle cx="70" cy="80" r="30" fill="#ec4899" opacity="0.8"/>
+              <circle cx="100" cy="80" r="30" fill="#eab308" opacity="0.8"/>
+              <text x="85" y="145" fill="#ffffff" font-size="16" font-weight="bold" text-anchor="middle">CMYK</text>
+              <text x="85" y="165" fill="#94a3b8" font-size="11" text-anchor="middle">Imprenta y PIGMENTO</text>
+              <text x="85" y="180" fill="#94a3b8" font-size="10" text-anchor="middle">Sustractivo (0-100%)</text>
+            </g>
+
+            <!-- HSL Block -->
+            <g transform="translate(410,20)">
+              <rect x="0" y="0" width="170" height="200" rx="16" fill="#1e293b" />
+              <!-- Spectrum Bar -->
+              <rect x="35" y="55" width="100" height="35" rx="8" fill="url(#hslGradientSvg)"/>
+              <defs>
+                <linearGradient id="hslGradientSvg" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#ff0000"/>
+                  <stop offset="33%" stop-color="#00ff00"/>
+                  <stop offset="66%" stop-color="#0000ff"/>
+                  <stop offset="100%" stop-color="#ff0000"/>
+                </linearGradient>
+              </defs>
+              <text x="85" y="145" fill="#ffffff" font-size="16" font-weight="bold" text-anchor="middle">HSL</text>
+              <text x="85" y="165" fill="#94a3b8" font-size="11" text-anchor="middle">Matiz, Sat, Lum</text>
+              <text x="85" y="180" fill="#94a3b8" font-size="10" text-anchor="middle">Intuitivo para UI</text>
+            </g>
+
+            <!-- HEX Block -->
+            <g transform="translate(605,20)">
+              <rect x="0" y="0" width="170" height="200" rx="16" fill="#1e293b" />
+              <text x="85" y="75" fill="#38bdf8" font-size="20" font-weight="bold" font-family="monospace" text-anchor="middle">#3B82F6</text>
+              <text x="85" y="145" fill="#ffffff" font-size="16" font-weight="bold" text-anchor="middle">HEX</text>
+              <text x="85" y="165" fill="#94a3b8" font-size="11" text-anchor="middle">Base Hexadecimal</text>
+              <text x="85" y="180" fill="#94a3b8" font-size="10" text-anchor="middle">Estándar Código Web</text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- HSL Interactive Slider Playground -->
+        <div class="bg-slate-50 dark:bg-slate-900/60 p-6 rounded-xl border border-slate-200 dark:border-slate-800 space-y-6">
+          <h3 class="font-bold text-base text-slate-800 dark:text-slate-200">Experimentador y Convertidor HSL en Tiempo Real</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            
+            <div class="md:col-span-7 space-y-4">
+              <!-- Hue Slider -->
+              <div>
+                <div class="flex justify-between text-xs font-semibold mb-1">
+                  <label for="hueInput">Matiz (Hue - H)</label>
+                  <span id="hueVal" class="font-mono text-brand-600">210°</span>
+                </div>
+                <input type="range" id="hueInput" min="0" max="360" value="210" class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
+              </div>
+
+              <!-- Saturation Slider -->
+              <div>
+                <div class="flex justify-between text-xs font-semibold mb-1">
+                  <label for="satInput">Saturación (Saturation - S)</label>
+                  <span id="satVal" class="font-mono text-brand-600">90%</span>
+                </div>
+                <input type="range" id="satInput" min="0" max="100" value="90" class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
+              </div>
+
+              <!-- Lightness Slider -->
+              <div>
+                <div class="flex justify-between text-xs font-semibold mb-1">
+                  <label for="lightInput">Luminosidad (Lightness - L)</label>
+                  <span id="lightVal" class="font-mono text-brand-600">56%</span>
+                </div>
+                <input type="range" id="lightInput" min="0" max="100" value="56" class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
+              </div>
+            </div>
+
+            <!-- Real-time Conversion Card -->
+            <div class="md:col-span-5 flex flex-col items-center justify-center p-6 rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 text-white transition-colors" id="hslPreviewBox">
+              <div class="w-full space-y-3 font-mono text-xs">
+                <div class="bg-black/30 backdrop-blur-md p-2.5 rounded-lg flex justify-between items-center">
+                  <span class="opacity-75">HEX:</span>
+                  <span id="hexResult" class="font-bold text-sm">#2563EB</span>
+                </div>
+                <div class="bg-black/30 backdrop-blur-md p-2.5 rounded-lg flex justify-between items-center">
+                  <span class="opacity-75">RGB:</span>
+                  <span id="rgbResult" class="font-bold">rgb(37, 99, 235)</span>
+                </div>
+                <div class="bg-black/30 backdrop-blur-md p-2.5 rounded-lg flex justify-between items-center">
+                  <span class="opacity-75">HSL:</span>
+                  <span id="hslResult" class="font-bold">hsl(210, 90%, 56%)</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="space-y-6">
+      <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+        <h2 class="text-2xl font-bold flex items-center gap-2">
+          <span class="text-cyan-500">06.</span> Buenas Prácticas UI/UX y Herramientas
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center font-bold">
+            01
+          </div>
+          <h3 class="font-bold text-slate-800 dark:text-white">Consistencia de Sistema</h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            Define tokens de diseño centralizados (Design Tokens) para colores primarios, secundarios, estados neutros y semánticos (éxito, error, advertencia).
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
+            02
+          </div>
+          <h3 class="font-bold text-slate-800 dark:text-white">Pruebas A/B y Accesibilidad</h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            Evalúa cómo reaccionan los usuarios ante distintos botones de acción y verifica el daltonismo utilizando simuladores de deuteranopia y protanopia.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-pink-500/10 text-pink-600 dark:text-pink-400 flex items-center justify-center font-bold">
+            03
+          </div>
+          <h3 class="font-bold text-slate-800 dark:text-white">Herramientas Recomendadas</h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            Utiliza generadores profesionales como <strong class="text-slate-800 dark:text-slate-200">Coolors.co</strong> y consulta literatura de referencia como el libro <em class="text-slate-800 dark:text-slate-200">"La Paleta Perfecta"</em> de Sara Caldas.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="quiz" class="scroll-mt-24 space-y-6">
+      <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+        <h2 class="text-2xl font-bold flex items-center gap-2">
+          <span class="text-amber-500">07.</span> Evaluador de Conocimiento
+        </h2>
+        <p class="text-slate-600 dark:text-slate-400 text-sm mt-1">
+          Pon a prueba tus conocimientos sobre la teoría del color aplicada al diseño de interfaz.
+        </p>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800/80 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm max-w-3xl mx-auto space-y-6">
+        <div id="quizContainer" class="space-y-6">
+          <!-- Quiz Questions inserted dynamically -->
+        </div>
+
+        <div id="quizResult" class="hidden p-6 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 text-center space-y-3">
+          <h3 class="text-xl font-bold text-indigo-900 dark:text-indigo-200">¡Cuestionario Completado!</h3>
+          <p id="quizScoreText" class="text-sm text-indigo-700 dark:text-indigo-300 font-medium"></p>
+          <button onclick="resetQuiz()" class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold text-xs hover:bg-indigo-700 transition">Intentar de nuevo</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-8 transition-colors mt-12">
+    <div class="max-w-7xl mx-auto px-4 text-center space-y-3">
+      <p class="text-xs text-slate-500 dark:text-slate-400">
+        Plataforma educativa inspirada en el artículo <a href="https://codigocreativo.uscmarketingdigital.com/colores-diseno-web/" target="_blank" rel="noopener" class="underline hover:text-brand-500">"Armonía cromática y otros delirios en diseño UI"</a> de Código Creativo.
+      </p>
+      <p class="text-xs text-slate-400 dark:text-slate-500">
+        © 2026 Código Creativo UI/UX. Todos los gráficos e ilustraciones son código SVG vectorial independiente.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    /* ==========================================
+       GLOBAL STATE & COLOR HELPERS
+       ========================================== */
+    const wheelHues = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
+    let selectedHueIndex = 7; // Default Blue (210 deg)
+    let currentHarmony = 'complementary';
+
+    // Helper: Convert HSL to HEX
+    function hslToHex(h, s, l) {
+      s /= 100;
+      l /= 100;
+      const a = s * Math.min(l, 1 - l);
+      const f = n => {
+        const k = (n + h / 30) % 12;
+        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+        return Math.round(255 * color).toString(16).padStart(2, '0');
+      };
+      return `#${f(0)}${f(8)}${f(4)}`;
+    }
+
+    // Helper: Convert HEX to RGB Object
+    function hexToRgb(hex) {
+      let c = hex.replace('#', '');
+      if (c.length === 3) c = c.split('').map(x => x + x).join('');
+      const num = parseInt(c, 16);
+      return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+    }
+
+    // Helper: Calculate WCAG Luminance and Contrast Ratio
+    function getLuminance(r, g, b) {
+      const a = [r, g, b].map(v => {
+        v /= 255;
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+      });
+      return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+    }
+
+    function calculateContrastRatio(hex1, hex2) {
+      const rgb1 = hexToRgb(hex1);
+      const rgb2 = hexToRgb(hex2);
+      const lum1 = getLuminance(rgb1.r, rgb1.g, rgb1.b);
+      const lum2 = getLuminance(rgb2.r, rgb2.g, rgb2.b);
+      const brightest = Math.max(lum1, lum2);
+      const darkest = Math.min(lum1, lum2);
+      return (brightest + 0.05) / (darkest + 0.05);
+    }
+
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+    });
+
+    function renderColorWheel() {
+      const nodesGroup = document.getElementById('wheelNodes');
+      const linesGroup = document.getElementById('wheelConnections');
+      nodesGroup.innerHTML = '';
+      linesGroup.innerHTML = '';
+
+      const cx = 200, cy = 200, radius = 140;
+
+      // Calculate indices according to selected harmony
+      let selectedIndices = [selectedHueIndex];
+      if (currentHarmony === 'complementary') {
+        selectedIndices.push((selectedHueIndex + 6) % 12);
+      } else if (currentHarmony === 'analogous') {
+        selectedIndices.push((selectedHueIndex + 1) % 12);
+        selectedIndices.push((selectedHueIndex + 11) % 12);
+      } else if (currentHarmony === 'triadic') {
+        selectedIndices.push((selectedHueIndex + 4) % 12);
+        selectedIndices.push((selectedHueIndex + 8) % 12);
+      } else if (currentHarmony === 'monochromatic') {
+        // Same hue index, represented by lighter/darker swatches in UI
+      }
+
+      // Draw connection lines in SVG wheel
+      if (selectedIndices.length > 1) {
+        let points = selectedIndices.map(idx => {
+          const angle = (wheelHues[idx] - 90) * (Math.PI / 180);
+          return {
+            x: cx + radius * Math.cos(angle),
+            y: cy + radius * Math.sin(angle)
+          };
+        });
+
+        if (selectedIndices.length === 2) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', points[0].x);
+          line.setAttribute('y1', points[0].y);
+          line.setAttribute('x2', points[1].x);
+          line.setAttribute('y2', points[1].y);
+          line.setAttribute('stroke', '#6366f1');
+          linesGroup.appendChild(line);
+        } else {
+          const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+          const ptsStr = points.map(p => `${p.x},${p.y}`).join(' ');
+          polygon.setAttribute('points', ptsStr);
+          polygon.setAttribute('fill', 'rgba(99, 102, 241, 0.15)');
+          polygon.setAttribute('stroke', '#6366f1');
+          linesGroup.appendChild(polygon);
+        }
+      }
+
+      // Render 12 Hue Nodes
+      wheelHues.forEach((hue, idx) => {
+        const angle = (hue - 90) * (Math.PI / 180);
+        const x = cx + radius * Math.cos(angle);
+        const y = cy + radius * Math.sin(angle);
+        const isSelected = selectedIndices.includes(idx);
+        const hexColor = hslToHex(hue, 90, 50);
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', x);
+        circle.setAttribute('cy', y);
+        circle.setAttribute('r', isSelected ? 18 : 12);
+        circle.setAttribute('fill', hexColor);
+        circle.setAttribute('stroke', isSelected ? '#ffffff' : 'transparent');
+        circle.setAttribute('stroke-width', '3');
+        circle.setAttribute('class', 'wheel-node shadow-md');
+        
+        circle.addEventListener('click', () => {
+          selectedHueIndex = idx;
+          renderColorWheel();
+        });
+
+        nodesGroup.appendChild(circle);
+      });
+
+      // Update Info Text and Swatches
+      const swatchContainer = document.getElementById('swatchContainer');
+      swatchContainer.innerHTML = '';
+
+      selectedIndices.forEach(idx => {
+        const hex = hslToHex(wheelHues[idx], 90, 50);
+        const swatch = document.createElement('div');
+        swatch.className = 'flex-1 rounded-xl shadow-inner flex flex-col justify-end p-2 text-[10px] font-mono text-white font-bold transition-all';
+        swatch.style.backgroundColor = hex;
+        swatch.innerHTML = `<span>${hex}</span>`;
+        swatchContainer.appendChild(swatch);
+      });
+    }
+
+    // Harmony button click listeners
+    document.querySelectorAll('.harmony-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.harmony-btn').forEach(b => {
+          b.classList.remove('active', 'bg-indigo-500', 'text-white', 'border-indigo-500');
+          b.classList.add('border-slate-200', 'dark:border-slate-700');
+        });
+        e.target.classList.add('active', 'bg-indigo-500', 'text-white', 'border-indigo-500');
+        currentHarmony = e.target.getAttribute('data-harmony');
+
+        // Update Text Descriptions
+        const titleEl = document.getElementById('harmonyTitle');
+        const descEl = document.getElementById('harmonyDesc');
+
+        if (currentHarmony === 'complementary') {
+          titleEl.innerText = 'Complementario';
+          descEl.innerText = 'Utiliza colores opuestos en el círculo cromático. Genera máximo contraste visual, perfecto para llamadas a la acción primarias (CTAs).';
+        } else if (currentHarmony === 'analogous') {
+          titleEl.innerText = 'Análogos';
+          descEl.innerText = 'Colores contiguos en la rueda cromática. Crean combinaciones serenas, armónicas y muy agradables a la vista.';
+        } else if (currentHarmony === 'triadic') {
+          titleEl.innerText = 'Triádico';
+          descEl.innerText = 'Tres colores equidistantes en el círculo cromático (120° de separación). Mantiene un alto dinamismo manteniendo el equilibrio.';
+        } else if (currentHarmony === 'monochromatic') {
+          titleEl.innerText = 'Monocromático';
+          descEl.innerText = 'Variaciones de saturación y luminosidad de un mismo matiz. Aporta cohesión visual y una apariencia limpia e higiénica.';
+        }
+
+        renderColorWheel();
+      });
+    });
+
+    const picker60 = document.getElementById('picker60');
+    const picker30 = document.getElementById('picker30');
+    const picker10 = document.getElementById('picker10');
+
+    function updateSim603010() {
+      const c60 = picker60.value;
+      const c30 = picker30.value;
+      const c10 = picker10.value;
+
+      document.getElementById('svgBg60').setAttribute('fill', c60);
+      document.getElementById('svgHeader30').setAttribute('fill', c30);
+      document.getElementById('svgCard1_30').setAttribute('fill', c30);
+      document.getElementById('svgCard2_30').setAttribute('fill', c30);
+      document.getElementById('svgFooter30').setAttribute('fill', c30);
+
+      document.getElementById('svgBtn1_10').setAttribute('fill', c10);
+      document.getElementById('svgBtn2_10').setAttribute('fill', c10);
+      document.getElementById('svgBadge_10').setAttribute('fill', c10);
+
+      document.getElementById('bar60').style.backgroundColor = c60;
+      document.getElementById('bar30').style.backgroundColor = c30;
+      document.getElementById('bar10').style.backgroundColor = c10;
+    }
+
+    picker60.addEventListener('input', updateSim603010);
+    picker30.addEventListener('input', updateSim603010);
+    picker10.addEventListener('input', updateSim603010);
+
+    const contrastTextColor = document.getElementById('contrastTextColor');
+    const contrastTextHex = document.getElementById('contrastTextHex');
+    const contrastBgColor = document.getElementById('contrastBgColor');
+    const contrastBgHex = document.getElementById('contrastBgHex');
+    const contrastRatioValue = document.getElementById('contrastRatioValue');
+    const contrastPreviewBox = document.getElementById('contrastPreviewBox');
+    const badgeAA = document.getElementById('badgeAA');
+    const badgeAAA = document.getElementById('badgeAAA');
+
+    function updateContrast() {
+      const txt = contrastTextColor.value;
+      const bg = contrastBgColor.value;
+
+      contrastTextHex.value = txt;
+      contrastBgHex.value = bg;
+
+      contrastPreviewBox.style.color = txt;
+      contrastPreviewBox.style.backgroundColor = bg;
+
+      const ratio = calculateContrastRatio(txt, bg);
+      contrastRatioValue.innerText = `${ratio.toFixed(1)}:1`;
+
+      if (ratio >= 4.5) {
+        badgeAA.innerText = 'PASA';
+        badgeAA.className = 'px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300';
+      } else {
+        badgeAA.innerText = 'FALLA';
+        badgeAA.className = 'px-2 py-0.5 text-[10px] font-bold rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300';
+      }
+
+      if (ratio >= 7.0) {
+        badgeAAA.innerText = 'PASA';
+        badgeAAA.className = 'px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300';
+      } else {
+        badgeAAA.innerText = 'FALLA';
+        badgeAAA.className = 'px-2 py-0.5 text-[10px] font-bold rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300';
+      }
+    }
+
+    contrastTextColor.addEventListener('input', updateContrast);
+    contrastBgColor.addEventListener('input', updateContrast);
+
+    const psychologyData = {
+      red: {
+        title: 'Psicología del Rojo',
+        colorClass: 'bg-red-500',
+        textClass: 'text-red-600 dark:text-red-400',
+        desc: 'El rojo desencadena respuestas fisiológicas inmediatas. Aumenta el ritmo cardíaco y transmite sentido de urgencia. Ideal para ofertas de tiempo limitado, llamadas a la acción de compra directa y notificaciones críticas de error.',
+        examples: ['E-commerce (Ofertas y Carrito)', 'Alertas de error UI', 'Botones de Destrucción/Borrado']
+      },
+      blue: {
+        title: 'Psicología del Azul',
+        colorClass: 'bg-blue-500',
+        textClass: 'text-blue-600 dark:text-blue-400',
+        desc: 'Es el color más utilizado en la web corporativa y tecnológica. Evoca profesionalismo, calma, estabilidad y seguridad financiera. Reduce la ansiedad percibida durante transacciones monetarias.',
+        examples: ['Banca digital y FinTech', 'Redes Sociales (Facebook, LinkedIn)', 'Software SaaS B2B']
+      },
+      green: {
+        title: 'Psicología del Verde',
+        colorClass: 'bg-emerald-500',
+        textClass: 'text-emerald-600 dark:text-emerald-400',
+        desc: 'Asociado directamente con la naturaleza, el crecimiento y la confirmación positiva. En interfaces web se utiliza universalmente para indicar éxito, tareas completadas e hitos alcanzados.',
+        examples: ['Mensajes de Éxito / Confirmación', 'Aplicaciones de Salud y Deporte', 'Productos Ecológicos o Sustentables']
+      },
+      amber: {
+        title: 'Psicología del Naranja y Amarillo',
+        colorClass: 'bg-amber-500',
+        textClass: 'text-amber-600 dark:text-amber-400',
+        desc: 'El naranja y amarillo transmiten calidez, entusiasmo y dinamismo. En UI se aprovecha el amarillo para avisos preventivos sin la agresividad del rojo, y el naranja para acciones secundarias alegres.',
+        examples: ['Estados de Advertencia/Warning', 'Subscripciones y CTAs creativos', 'Reseñas y Calificaciones (Estrellas)']
+      }
+    };
+
+    function selectPsychology(colorKey) {
+      const data = psychologyData[colorKey];
+      const detailBox = document.getElementById('psychologyDetail');
+
+      detailBox.innerHTML = `
+        <div class="w-16 h-16 rounded-2xl ${data.colorClass} flex-shrink-0 flex items-center justify-center text-white shadow-lg">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <div class="space-y-2">
+          <h4 class="text-xl font-extrabold ${data.textClass}">${data.title}</h4>
+          <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">${data.desc}</p>
+          <div class="pt-2 flex flex-wrap gap-2">
+            ${data.examples.map(ex => `<span class="px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">${ex}</span>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    const hueInput = document.getElementById('hueInput');
+    const satInput = document.getElementById('satInput');
+    const lightInput = document.getElementById('lightInput');
+
+    function updateHslConverter() {
+      const h = parseInt(hueInput.value);
+      const s = parseInt(satInput.value);
+      const l = parseInt(lightInput.value);
+
+      document.getElementById('hueVal').innerText = `${h}°`;
+      document.getElementById('satVal').innerText = `${s}%`;
+      document.getElementById('lightVal').innerText = `${l}%`;
+
+      const hex = hslToHex(h, s, l);
+      const rgb = hexToRgb(hex);
+
+      document.getElementById('hslPreviewBox').style.backgroundColor = hex;
+      document.getElementById('hexResult').innerText = hex.toUpperCase();
+      document.getElementById('rgbResult').innerText = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+      document.getElementById('hslResult').innerText = `hsl(${h}, ${s}%, ${l}%)`;
+    }
+
+    hueInput.addEventListener('input', updateHslConverter);
+    satInput.addEventListener('input', updateHslConverter);
+    lightInput.addEventListener('input', updateHslConverter);
+
+    const quizQuestions = [
+      {
+        question: "¿Qué porcentaje de color de acento o llamada a la acción propone la regla 60-30-10?",
+        options: ["60%", "30%", "10%", "50%"],
+        answer: 2
+      },
+      {
+        question: "¿Cuál es el ratio de contraste mínimo exigido por la pauta WCAG AA para texto normal?",
+        options: ["3.0:1", "4.5:1", "7.0:1", "2.1:1"],
+        answer: 1
+      },
+      {
+        question: "¿Qué espacio de color es ideal para manipulación intuitiva de matiz y saturación en UI?",
+        options: ["CMYK", "RGB", "HSL", "Pantone"],
+        answer: 2
+      },
+      {
+        question: "¿Qué emoción o atributo se asocia primordialmente con el color azul en productos digitales?",
+        options: ["Urgencia y peligro", "Confianza y seguridad", "Naturaleza y ecología", "Advertencia"],
+        answer: 1
+      }
+    ];
+
+    let userAnswers = {};
+
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+
+      quizQuestions.forEach((q, qIndex) => {
+        const qBox = document.createElement('div');
+        qBox.className = 'space-y-3 pb-4 border-b border-slate-200 dark:border-slate-800 last:border-0';
+        qBox.innerHTML = `
+          <p class="font-bold text-sm text-slate-800 dark:text-slate-200">${qIndex + 1}. ${q.question}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            ${q.options.map((opt, optIndex) => `
+              <button onclick="selectQuizAnswer(${qIndex}, ${optIndex})" id="quiz-opt-${qIndex}-${optIndex}" class="quiz-opt-btn text-left p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium hover:border-indigo-500 transition">
+                ${opt}
+              </button>
+            `).join('')}
+          </div>
+        `;
+        container.appendChild(qBox);
+      });
+
+      const submitBtn = document.createElement('button');
+      submitBtn.className = 'w-full py-3 rounded-xl bg-indigo-600 text-white font-bold text-sm shadow-md hover:bg-indigo-700 transition mt-4';
+      submitBtn.innerText = 'Enviar Respuestas';
+      submitBtn.onclick = evaluateQuiz;
+      container.appendChild(submitBtn);
+    }
+
+    function selectQuizAnswer(qIndex, optIndex) {
+      userAnswers[qIndex] = optIndex;
+      // Clear highlight for this question
+      for (let i = 0; i < 4; i++) {
+        const btn = document.getElementById(`quiz-opt-${qIndex}-${i}`);
+        if (btn) {
+          btn.classList.remove('bg-indigo-500', 'text-white', 'border-indigo-500');
+          btn.classList.add('border-slate-200', 'dark:border-slate-700');
+        }
+      }
+      // Set active
+      const activeBtn = document.getElementById(`quiz-opt-${qIndex}-${optIndex}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-indigo-500', 'text-white', 'border-indigo-500');
+      }
+    }
+
+    function evaluateQuiz() {
+      let score = 0;
+      quizQuestions.forEach((q, i) => {
+        if (userAnswers[i] === q.answer) score++;
+      });
+
+      const resultBox = document.getElementById('quizResult');
+      const scoreText = document.getElementById('quizScoreText');
+
+      resultBox.classList.remove('hidden');
+      scoreText.innerText = `Has acertado ${score} de ${quizQuestions.length} preguntas (${(score / quizQuestions.length) * 100}%).`;
+    }
+
+    function resetQuiz() {
+      userAnswers = {};
+      document.getElementById('quizResult').classList.add('hidden');
+      renderQuiz();
+    }
+
+    window.onload = function() {
+      renderColorWheel();
+      updateSim603010();
+      updateContrast();
+      selectPsychology('blue');
+      updateHslConverter();
+      renderQuiz();
+    };
+  </script>
+</body>
+</html>
