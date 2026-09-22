@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Quinta sección de la ruta HTML5: tablas accesibles, encabezados, agrupación y datos legibles por máquina mediante un proyecto autocorregible.">
+  <title>HTML5 · 05 Tablas y datos estructurados</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --white: #fff;
+      --ink: #17201d;
+      --muted: #626d68;
+      --line: #dce4e0;
+      --soft: #f5f8f6;
+      --green: #08765d;
+      --green-dark: #075847;
+      --green-soft: #e8f7f1;
+      --lime-soft: #f2f9df;
+      --blue: #2457f5;
+      --blue-soft: #edf2ff;
+      --red: #b3263c;
+      --red-soft: #fff0f2;
+      --amber: #855500;
+      --amber-soft: #fff6dd;
+      --code: #111827;
+      --shadow: 0 18px 55px rgba(20, 52, 42, .1);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--white); color: var(--ink); font: 16px/1.65 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button, input, textarea { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: var(--green-dark); }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    code:not(pre code) { padding: .14rem .38rem; border: 1px solid #dfe6e2; border-radius: .38rem; background: var(--soft); color: #8a2443; font-size: .92em; }
+    :focus-visible { outline: 3px solid #78a0ff; outline-offset: 3px; }
+    .wrap { width: min(1120px, calc(100% - 2rem)); margin-inline: auto; }
+    .skip-link { position: fixed; top: .75rem; left: -999px; z-index: 100; padding: .65rem 1rem; border-radius: 10px; background: var(--ink); color: var(--white); }
+    .skip-link:focus { left: .75rem; }
+
+    .site-header { position: sticky; top: 0; z-index: 20; border-bottom: 1px solid rgba(220, 228, 224, .9); background: rgba(255, 255, 255, .95); backdrop-filter: blur(14px); }
+    .topbar { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .brand { display: flex; align-items: center; gap: .7rem; color: var(--ink); text-decoration: none; font-weight: 850; letter-spacing: -.02em; }
+    .brand-mark { display: grid; width: 38px; aspect-ratio: 1; place-items: center; border-radius: 11px; background: var(--ink); color: var(--white); font: 800 .9rem/1 monospace; }
+    .course-progress { display: flex; align-items: center; gap: .7rem; color: var(--muted); font-size: .9rem; }
+    .course-progress strong { color: var(--ink); }
+    .mini-track { width: 94px; height: 6px; overflow: hidden; border-radius: 99px; background: #e4ebe7; }
+    .mini-track span { display: block; width: 62.5%; height: 100%; border-radius: inherit; background: var(--green); }
+
+    main { overflow: hidden; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1.02fr) minmax(370px, .98fr); gap: clamp(2rem, 6vw, 5rem); align-items: center; min-height: 620px; padding-block: clamp(4rem, 9vw, 7rem); }
+    .back-link { display: inline-block; margin-bottom: 1.2rem; color: var(--muted); font-size: .86rem; font-weight: 750; text-decoration: none; }
+    .back-link:hover { color: var(--green); }
+    .eyebrow { display: flex; align-items: center; gap: .5rem; margin: 0 0 1rem; color: var(--green-dark); font-size: .8rem; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
+    .eyebrow::before { content: ""; width: 28px; height: 2px; background: var(--green); }
+    h1, h2, h3, h4 { line-height: 1.12; letter-spacing: -.035em; }
+    h1 { margin: 0; font-size: clamp(3rem, 6.5vw, 5.7rem); }
+    h1 em { color: var(--green); font-style: normal; }
+    .lede { max-width: 660px; margin: 1.4rem 0; color: var(--muted); font-size: clamp(1.08rem, 2vw, 1.27rem); }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: .55rem; margin: 0; padding: 0; list-style: none; }
+    .hero-meta li { padding: .42rem .72rem; border: 1px solid var(--line); border-radius: 999px; font-size: .88rem; font-weight: 750; }
+
+    .matrix-board { padding: 1.1rem; border: 1px solid #bfdfd3; border-radius: 26px; background: linear-gradient(145deg, var(--green-soft), #fbfefd); box-shadow: 0 28px 80px rgba(11, 89, 70, .14); transform: rotate(1deg); }
+    .matrix-window { overflow: hidden; border: 1px solid var(--line); border-radius: 17px; background: var(--white); }
+    .matrix-bar { display: flex; align-items: center; gap: .5rem; padding: .75rem 1rem; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .75rem; }
+    .matrix-dot { width: 8px; aspect-ratio: 1; border-radius: 50%; background: #c7d2cd; }
+    .matrix { display: grid; grid-template-columns: 1.25fr repeat(3, 1fr); gap: 1px; padding: 1rem; background: var(--line); }
+    .matrix span { min-height: 54px; display: grid; align-content: center; padding: .62rem; background: var(--white); font-size: .73rem; }
+    .matrix .head { background: var(--ink); color: var(--white); font-weight: 850; }
+    .matrix .row-head { background: var(--green-soft); color: var(--green-dark); font-weight: 850; }
+    .matrix .summary { grid-column: span 3; background: var(--lime-soft); color: #496316; font-weight: 800; }
+    .matrix-key { display: flex; flex-wrap: wrap; gap: .55rem; padding: 0 1rem 1rem; }
+    .matrix-key span { padding: .25rem .48rem; border-radius: 6px; background: var(--soft); color: var(--muted); font: 700 .69rem/1.2 monospace; }
+
+    .bridge { border-block: 1px solid var(--line); background: var(--soft); }
+    .bridge .wrap { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center; padding-block: 1.15rem; }
+    .bridge-number { display: grid; width: 42px; aspect-ratio: 1; place-items: center; border-radius: 50%; background: var(--green); color: var(--white); font-weight: 900; }
+    .bridge p { margin: 0; color: var(--muted); }
+    .bridge strong { color: var(--ink); }
+    .bridge-state { color: var(--green); font-size: .8rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+
+    .section { padding-block: clamp(4.5rem, 9vw, 7rem); }
+    .section + .section { border-top: 1px solid var(--line); }
+    .section-head { display: grid; grid-template-columns: 76px minmax(0, 820px); gap: 1rem; align-items: start; margin-bottom: 2.2rem; }
+    .section-number { color: var(--green); font-size: .88rem; font-weight: 900; letter-spacing: .12em; }
+    .section-head h2 { margin: -.3rem 0 .7rem; font-size: clamp(2rem, 4.5vw, 3.4rem); }
+    .section-head p { margin: 0; color: var(--muted); font-size: 1.08rem; }
+
+    .decision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .decision-card { padding: 1.3rem; border: 1px solid var(--line); border-radius: 18px; }
+    .decision-card.yes { background: var(--green-soft); }
+    .decision-card.no { background: var(--amber-soft); }
+    .decision-card span { font-size: .72rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+    .decision-card.yes span { color: var(--green-dark); }
+    .decision-card.no span { color: var(--amber); }
+    .decision-card h3 { margin: .5rem 0; }
+    .decision-card p { margin: 0; color: var(--muted); }
+    .decision-rule { margin-top: 1rem; padding: 1rem 1.1rem; border-left: 4px solid var(--green); border-radius: 8px; background: var(--soft); }
+
+    .anatomy-grid { display: grid; grid-template-columns: minmax(0, 1.16fr) minmax(300px, .84fr); gap: 1rem; padding: clamp(1.2rem, 3vw, 2rem); border: 1px solid var(--line); border-radius: 24px; background: var(--soft); }
+    .code-stage, .sample-code { margin: 0; overflow-x: auto; border-radius: 16px; background: var(--code); color: #e8edf8; font: clamp(.76rem, 1.45vw, .91rem)/1.7 "SFMono-Regular", Consolas, monospace; white-space: pre-wrap; user-select: none; }
+    .code-stage { display: grid; min-height: 520px; align-content: center; padding: 1.3rem; }
+    .sample-code { padding: 1.2rem; }
+    .token-tag { color: #7dd3fc; }
+    .token-attr { color: #fde68a; }
+    .token-value { color: #86efac; }
+    .anatomy-notes { display: grid; gap: .7rem; }
+    .anatomy-note { padding: 1rem; border: 1px solid var(--line); border-radius: 13px; background: var(--white); }
+    .anatomy-note strong { display: block; margin-bottom: .25rem; }
+    .anatomy-note p { margin: 0; color: var(--muted); font-size: .88rem; }
+
+    .scope-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .concept-card, .code-card { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; }
+    .concept-card { padding: 1.35rem; }
+    .concept-card h3 { margin: 0 0 .8rem; }
+    .concept-list { margin: 0; padding: 0; list-style: none; }
+    .concept-list li { display: grid; grid-template-columns: 31px 1fr; gap: .65rem; padding-block: .72rem; }
+    .concept-list li + li { border-top: 1px solid var(--line); }
+    .concept-check { display: grid; width: 27px; height: 27px; place-items: center; border-radius: 50%; background: var(--green-soft); color: var(--green); font-weight: 900; }
+    .concept-list strong, .concept-list small { display: block; }
+    .concept-list small { color: var(--muted); }
+    .card-head { display: flex; justify-content: space-between; gap: 1rem; padding: .75rem 1rem; border-bottom: 1px solid var(--line); font-size: .82rem; font-weight: 800; }
+    .warning { margin-top: 1rem; padding: 1rem; border-radius: 12px; background: var(--amber-soft); color: #684200; }
+
+    .data-table { width: 100%; margin-top: 1.2rem; border-collapse: collapse; border: 1px solid var(--line); }
+    .data-table caption { padding: .8rem; color: var(--muted); font-weight: 800; text-align: left; }
+    .data-table th, .data-table td { padding: .8rem 1rem; border: 1px solid var(--line); text-align: left; }
+    .data-table thead, .data-table tfoot { background: var(--green-soft); }
+    .data-table tbody th { background: var(--soft); }
+    .semantics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
+    .semantic-card { padding: 1.1rem; border: 1px solid var(--line); border-radius: 14px; }
+    .semantic-card code { color: var(--green-dark); font-size: 1rem; font-weight: 900; }
+    .semantic-card p { margin: .55rem 0 0; color: var(--muted); font-size: .87rem; }
+
+    .exercise-section { background: var(--soft); }
+    .exercise-shell { overflow: hidden; border: 1px solid #c9dfd6; border-radius: 28px; background: var(--white); box-shadow: var(--shadow); }
+    .exercise-hero { display: grid; grid-template-columns: 1fr auto; gap: 2rem; padding: clamp(1.6rem, 5vw, 3rem); border-bottom: 1px solid var(--line); background: linear-gradient(135deg, #fff 50%, var(--green-soft)); }
+    .exercise-kicker { margin: 0 0 .7rem; color: var(--green-dark); font-size: .78rem; font-weight: 900; letter-spacing: .11em; text-transform: uppercase; }
+    .exercise-hero h2 { max-width: 800px; margin: 0 0 .8rem; font-size: clamp(2rem, 4.5vw, 3.45rem); }
+    .exercise-hero p { max-width: 760px; margin: 0; color: var(--muted); }
+    .time-card { align-self: center; min-width: 130px; padding: 1rem; border: 1px solid #bddbd0; border-radius: 16px; background: var(--white); text-align: center; }
+    .time-card strong { display: block; color: var(--green); font-size: 1.7rem; line-height: 1; }
+    .time-card span { color: var(--muted); font-size: .78rem; }
+    .brief-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: clamp(1.4rem, 5vw, 2.5rem); }
+    .task-card { padding: 1.2rem; border: 1px solid var(--line); border-radius: 15px; }
+    .task-card h3 { margin: 0 0 .8rem; font-size: 1.1rem; }
+    .task-card ul, .task-card ol { margin: 0; padding-left: 1.25rem; }
+    .task-card li + li { margin-top: .4rem; }
+    .load-note { margin-top: .8rem; color: var(--muted); font-size: .84rem; }
+
+    .lab { padding: 0 clamp(1.4rem, 5vw, 2.5rem) clamp(1.4rem, 5vw, 2.5rem); }
+    .load-row { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; margin-bottom: 1rem; padding: .9rem 1rem; border: 1px solid #cce1d8; border-radius: 13px; background: var(--green-soft); }
+    .load-row strong { margin-right: auto; }
+    .file-label { padding: .55rem .8rem; border-radius: 9px; background: var(--green); color: var(--white); font-size: .84rem; font-weight: 850; cursor: pointer; }
+    .file-label:hover { background: var(--green-dark); }
+    #project-file { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+    .file-status { width: 100%; margin: 0; color: var(--muted); font-size: .8rem; }
+    .coding-grid { display: grid; grid-template-columns: minmax(0, 1.16fr) minmax(330px, .84fr); gap: 1rem; }
+    .editor-panel, .test-panel { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; }
+    .editor-panel { background: var(--code); box-shadow: 0 15px 35px rgba(17, 24, 39, .16); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 50px; padding: .7rem 1rem; }
+    .editor-panel .panel-head { border-bottom: 1px solid #334155; color: #cbd5e1; font-size: .8rem; }
+    .editor-file { color: var(--white); font-weight: 850; }
+    .editor-file::before { content: "◆"; margin-right: .5rem; color: #f06529; font-size: .65rem; }
+    #code-editor { width: 100%; min-height: 720px; display: block; resize: vertical; padding: 1.15rem; border: 0; outline: 0; background: var(--code); color: #e8edf8; caret-color: #6ee7b7; font: .84rem/1.62 "SFMono-Regular", Consolas, monospace; tab-size: 2; }
+    #code-editor:focus-visible { box-shadow: inset 0 0 0 3px #6ee7b7; }
+    #code-editor::placeholder { color: #72819a; }
+    .editor-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .editor-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; padding: .8rem 1rem; border-top: 1px solid #334155; }
+    .button { padding: .6rem .85rem; border: 1px solid transparent; border-radius: 9px; font-weight: 850; cursor: pointer; }
+    .button.primary { background: var(--green); color: var(--white); }
+    .button.primary:hover { background: var(--green-dark); }
+    .button.secondary { border-color: #64748b; background: transparent; color: #e2e8f0; }
+    .button:disabled { cursor: not-allowed; opacity: .4; }
+    .paste-status { flex: 1; color: #f5cd7f; font-size: .78rem; text-align: right; }
+    .test-panel { display: flex; flex-direction: column; background: var(--white); }
+    .test-panel .panel-head { border-bottom: 1px solid var(--line); }
+    .test-panel h3 { margin: 0; font-size: 1rem; }
+    .score { color: var(--green-dark); font-weight: 900; }
+    .test-bar { height: 6px; background: #e8ebe9; }
+    .test-bar span { display: block; width: 0; height: 100%; background: var(--green); transition: width .2s ease; }
+    .tests { flex: 1; margin: 0; padding: .55rem; list-style: none; }
+    .tests li { display: grid; grid-template-columns: 22px 1fr; gap: .55rem; padding: .55rem .5rem; border-radius: 9px; }
+    .tests li + li { border-top: 1px solid #edf0ee; }
+    .test-icon { display: grid; width: 20px; height: 20px; place-items: center; border: 1px solid #bdc7c2; border-radius: 50%; color: #737c78; font-size: .68rem; font-weight: 900; }
+    .tests strong { display: block; font-size: .82rem; }
+    .tests p { margin: .1rem 0 0; color: var(--muted); font-size: .73rem; line-height: 1.32; }
+    .tests li.pass { background: var(--green-soft); }
+    .tests li.pass .test-icon { border-color: var(--green); background: var(--green); color: var(--white); }
+    .tests li.fail { background: var(--red-soft); }
+    .tests li.fail .test-icon { border-color: var(--red); background: var(--red); color: var(--white); }
+    .tests.stale { opacity: .55; }
+    .test-message { margin: .5rem; padding: .75rem; border-radius: 9px; background: var(--soft); color: var(--muted); font-size: .82rem; }
+    .test-message.success { background: var(--green-soft); color: var(--green-dark); font-weight: 750; }
+    .test-message.error { background: var(--red-soft); color: #802034; }
+    .preview-panel { margin-top: 1rem; overflow: hidden; border: 1px solid var(--line); border-radius: 17px; background: var(--white); }
+    .preview-panel .panel-head { border-bottom: 1px solid var(--line); }
+    .preview-panel h3 { margin: 0; font-size: 1rem; }
+    .preview-panel p { margin: .15rem 0 0; color: var(--muted); font-size: .78rem; }
+    .download { padding: .55rem .8rem; border: 0; border-radius: 9px; background: var(--green); color: var(--white); font-size: .8rem; font-weight: 850; cursor: pointer; }
+    .download:disabled { cursor: not-allowed; opacity: .4; }
+    #preview { width: 100%; min-height: 410px; display: block; border: 0; }
+
+    .assessment, .report { margin-top: 2rem; padding: clamp(1.4rem, 5vw, 2.4rem); border: 1px solid var(--line); border-radius: 24px; background: var(--white); }
+    .assessment-head, .report-head { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: end; margin-bottom: 1.2rem; }
+    .assessment h2, .report h2 { margin: 0 0 .4rem; font-size: clamp(1.7rem, 3vw, 2.35rem); }
+    .assessment-head p, .report-head p { margin: 0; color: var(--muted); }
+    .assessment-score, .report-badge { padding: .55rem .75rem; border-radius: 10px; background: var(--green-soft); color: var(--green-dark); font-weight: 900; white-space: nowrap; }
+    .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .quiz-case { min-width: 0; margin: 0; padding: 1.1rem; border: 1px solid var(--line); border-radius: 14px; }
+    .quiz-case legend { padding: 0 .3rem; font-weight: 850; line-height: 1.35; }
+    .case-label { display: block; margin-bottom: .3rem; color: var(--green); font-size: .7rem; letter-spacing: .09em; text-transform: uppercase; }
+    .quiz-option { display: flex; gap: .55rem; margin-top: .5rem; padding: .6rem .65rem; border: 1px solid var(--line); border-radius: 9px; cursor: pointer; }
+    .quiz-option input { flex: 0 0 auto; margin-top: .28rem; accent-color: var(--green); }
+    .quiz-option.correct-answer { border-color: #70bba3; background: var(--green-soft); }
+    .quiz-option.wrong-answer { border-color: #df98a4; background: var(--red-soft); }
+    .quiz-feedback { min-height: 2.5em; margin: .65rem 0 0; color: var(--muted); font-size: .8rem; }
+    .quiz-case.correct .quiz-feedback { color: var(--green-dark); }
+    .quiz-case.incorrect .quiz-feedback { color: #842338; }
+    .quiz-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; margin-top: 1rem; }
+    .quiz-summary { margin: 0; color: var(--muted); }
+
+    .report-grid { display: grid; grid-template-columns: minmax(260px, .7fr) minmax(0, 1.3fr); gap: 1rem; }
+    .report-form { padding: 1.1rem; border-radius: 14px; background: var(--soft); }
+    .report-form label { display: block; margin-bottom: .25rem; font-size: .8rem; font-weight: 850; }
+    .report-form input { width: 100%; margin-bottom: .8rem; padding: .65rem .75rem; border: 1px solid #bcc8c2; border-radius: 9px; background: var(--white); }
+    .report-actions { display: flex; flex-wrap: wrap; gap: .55rem; }
+    .report-form .button.secondary { border-color: #7a8b83; color: var(--ink); }
+    .report-status { margin: .8rem 0 0; color: var(--muted); font-size: .78rem; }
+    .report-status.ready { color: var(--green-dark); font-weight: 750; }
+    .report-output { min-width: 0; padding: 1.1rem; border: 1px solid var(--line); border-radius: 14px; }
+    .report-output h3 { margin: 0 0 .6rem; font-size: .92rem; }
+    #report-preview { min-height: 255px; max-height: 430px; margin: 0; padding: 1rem; overflow: auto; border-radius: 10px; background: var(--code); color: #e8edf8; font-size: .76rem; line-height: 1.55; white-space: pre-wrap; }
+
+    .course-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .course-link { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.2rem; border: 1px solid var(--line); border-radius: 15px; color: var(--ink); text-decoration: none; }
+    .course-link:hover { border-color: #8fbbae; background: var(--green-soft); }
+    .course-link strong, .course-link small { display: block; }
+    .course-link small { margin-top: .2rem; color: var(--muted); }
+    .course-link.locked { color: #777f7b; background: var(--soft); }
+    footer { border-top: 1px solid var(--line); background: var(--soft); }
+    .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; padding-block: 2rem; }
+    footer p { margin: 0; color: var(--muted); font-size: .82rem; }
+    footer nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .8rem 1rem; }
+    footer a { font-size: .82rem; font-weight: 750; }
+
+    @media (max-width: 920px) {
+      .hero, .anatomy-grid, .scope-grid, .coding-grid { grid-template-columns: 1fr; }
+      .hero { min-height: auto; }
+      .matrix-board { max-width: 680px; transform: none; }
+      .semantics-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 680px) {
+      .wrap { width: min(100% - 1.1rem, 1120px); }
+      .course-progress span:first-child, .mini-track { display: none; }
+      .hero { padding-top: 3.3rem; }
+      .bridge .wrap, .section-head, .exercise-hero, .assessment-head, .report-head, .footer-grid { grid-template-columns: 1fr; }
+      .decision-grid, .brief-grid, .quiz-grid, .report-grid, .course-nav, .semantics-grid { grid-template-columns: 1fr; }
+      .section-head { gap: .4rem; }
+      .section-head h2 { margin-top: 0; }
+      .matrix { padding: .5rem; }
+      .matrix span { min-height: 48px; padding: .4rem; font-size: .63rem; }
+      .time-card { justify-self: start; }
+      .panel-head { align-items: flex-start; flex-direction: column; }
+      .paste-status { flex-basis: 100%; text-align: left; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+    @media print {
+      .site-header, .editor-actions, .load-row, .download, .quiz-actions, .report-form, .course-nav { display: none; }
+      .hero, .section { min-height: auto; padding-block: 2rem; }
+      .matrix-board, .exercise-shell { box-shadow: none; }
+      .sample-code, .editor-panel { print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <div class="topbar wrap">
+      <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">&lt;/&gt;</span><span>HTML5 · desde cero</span></a>
+      <div class="course-progress" role="group" aria-label="Progreso del curso: sección 5 de 8"><span>Progreso del curso</span><div class="mini-track" aria-hidden="true"><span></span></div><strong>05 / 08</strong></div>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <section class="hero wrap">
+      <div>
+        <a class="back-link" href="html5-04-multimedia.html">← Volver a la sección 04</a>
+        <p class="eyebrow">Sección 05 · Comparar sin perder el significado</p>
+        <h1>Datos con <em>relaciones</em></h1>
+        <p class="lede">Una tabla no es una cuadrícula decorativa: es una red de relaciones entre encabezados y datos. Cuando la estructura HTML es precisa, una persona puede comparar la información aunque no vea sus bordes.</p>
+        <ul class="hero-meta"><li>105–125 min</li><li>Tablas accesibles</li><li>16 pruebas automáticas</li></ul>
+      </div>
+      <div class="matrix-board" role="img" aria-label="Tabla esquemática con encabezados de columna, encabezados de fila, datos y una fila de resumen">
+        <div class="matrix-window">
+          <div class="matrix-bar"><span class="matrix-dot"></span><span class="matrix-dot"></span><span class="matrix-dot"></span><span>registro-observaciones.html</span></div>
+          <div class="matrix" aria-hidden="true">
+            <span class="head">Sesión</span><span class="head">Fecha</span><span class="head">Cielo</span><span class="head">Objetos</span>
+            <span class="row-head">Norte</span><span>14 oct.</span><span>Despejado</span><span>7</span>
+            <span class="row-head">Este</span><span>21 oct.</span><span>Parcial</span><span>4</span>
+            <span class="row-head">Sur</span><span>28 oct.</span><span>Despejado</span><span>9</span>
+            <span class="row-head">Total</span><span class="summary">3 sesiones registradas · 20 objetos</span>
+          </div>
+          <div class="matrix-key"><span>scope="col"</span><span>scope="row"</span><span>colspan="3"</span></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="bridge">
+      <div class="wrap"><span class="bridge-number">05</span><p><strong>Tu proyecto empieza a publicar información comparable.</strong> Mantendrás el contenido multimedia anterior y añadirás un registro que conserve el sentido en pantalla, con lector de pantalla y al procesarlo como datos.</p><span class="bridge-state">Hoy: relacionar y verificar</span></div>
+    </aside>
+
+    <section class="section wrap" aria-labelledby="decision-titulo">
+      <div class="section-head"><span class="section-number">01</span><div><h2 id="decision-titulo">Primero decide si realmente hay una tabla</h2><p><code>&lt;table&gt;</code> representa datos en dos dimensiones. Si cada valor necesita cruzarse con un encabezado de fila o columna para entenderse, probablemente es una tabla.</p></div></div>
+      <div class="decision-grid">
+        <article class="decision-card yes"><span>Sí es una tabla</span><h3>Hay datos que se comparan</h3><p>Horarios, resultados, inventarios o mediciones tienen categorías estables en filas y columnas. Cambiar el orden visual no elimina esas relaciones.</p></article>
+        <article class="decision-card no"><span>No es una tabla</span><h3>Solo quieres colocar elementos</h3><p>Una cabecera, una galería o dos columnas de una interfaz se organizan con CSS. Usar celdas para maquetar inventa relaciones que no existen.</p></article>
+      </div>
+      <p class="decision-rule"><strong>Prueba de intercambio:</strong> si puedes formular preguntas como «¿qué valor corresponde a esta fila y esta columna?», los datos son tabulares. Si solo buscas una posición visual, no lo son.</p>
+    </section>
+
+    <section class="section wrap" aria-labelledby="anatomia-titulo">
+      <div class="section-head"><span class="section-number">02</span><div><h2 id="anatomia-titulo">La gramática de una tabla</h2><p>La tabla tiene título propio, grupos de filas y dos tipos de celda. Cada etiqueta explica una parte de la estructura; ninguna se elige por negrita o por bordes.</p></div></div>
+      <div class="anatomy-grid">
+        <pre class="code-stage no-copy" aria-label="Ejemplo de una tabla accesible"><code><span class="token-tag">&lt;table&gt;</span>
+  <span class="token-tag">&lt;caption&gt;</span>Sesiones de observación de octubre<span class="token-tag">&lt;/caption&gt;</span>
+  <span class="token-tag">&lt;thead&gt;</span>
+    <span class="token-tag">&lt;tr&gt;</span>
+      <span class="token-tag">&lt;th</span> <span class="token-attr">scope</span>=<span class="token-value">"col"</span><span class="token-tag">&gt;</span>Zona<span class="token-tag">&lt;/th&gt;</span>
+      <span class="token-tag">&lt;th</span> <span class="token-attr">scope</span>=<span class="token-value">"col"</span><span class="token-tag">&gt;</span>Fecha<span class="token-tag">&lt;/th&gt;</span>
+      <span class="token-tag">&lt;th</span> <span class="token-attr">scope</span>=<span class="token-value">"col"</span><span class="token-tag">&gt;</span>Objetos<span class="token-tag">&lt;/th&gt;</span>
+    <span class="token-tag">&lt;/tr&gt;</span>
+  <span class="token-tag">&lt;/thead&gt;</span>
+  <span class="token-tag">&lt;tbody&gt;</span>
+    <span class="token-tag">&lt;tr&gt;</span>
+      <span class="token-tag">&lt;th</span> <span class="token-attr">scope</span>=<span class="token-value">"row"</span><span class="token-tag">&gt;</span>Norte<span class="token-tag">&lt;/th&gt;</span>
+      <span class="token-tag">&lt;td&gt;&lt;time</span> <span class="token-attr">datetime</span>=<span class="token-value">"2026-10-14"</span><span class="token-tag">&gt;</span>14/10<span class="token-tag">&lt;/time&gt;&lt;/td&gt;</span>
+      <span class="token-tag">&lt;td&gt;&lt;data</span> <span class="token-attr">value</span>=<span class="token-value">"7"</span><span class="token-tag">&gt;</span>7<span class="token-tag">&lt;/data&gt;&lt;/td&gt;</span>
+    <span class="token-tag">&lt;/tr&gt;</span>
+  <span class="token-tag">&lt;/tbody&gt;</span>
+  <span class="token-tag">&lt;tfoot&gt;</span>
+    <span class="token-tag">&lt;tr&gt;</span>
+      <span class="token-tag">&lt;th</span> <span class="token-attr">scope</span>=<span class="token-value">"row"</span><span class="token-tag">&gt;</span>Resumen<span class="token-tag">&lt;/th&gt;</span>
+      <span class="token-tag">&lt;td</span> <span class="token-attr">colspan</span>=<span class="token-value">"2"</span><span class="token-tag">&gt;</span>Una sesión registrada<span class="token-tag">&lt;/td&gt;</span>
+    <span class="token-tag">&lt;/tr&gt;</span>
+  <span class="token-tag">&lt;/tfoot&gt;</span>
+<span class="token-tag">&lt;/table&gt;</span></code></pre>
+        <div class="anatomy-notes">
+          <article class="anatomy-note"><strong><code>table</code> + <code>caption</code></strong><p>La tabla delimita el conjunto de datos y el título identifica con precisión qué se compara.</p></article>
+          <article class="anatomy-note"><strong><code>thead</code>, <code>tbody</code>, <code>tfoot</code></strong><p>Agrupan cabecera, datos principales y resumen. No sustituyen a las filas.</p></article>
+          <article class="anatomy-note"><strong><code>tr</code></strong><p>Crea una fila. Sus celdas deben formar una cuadrícula coherente con las demás filas.</p></article>
+          <article class="anatomy-note"><strong><code>th</code></strong><p>Es un encabezado que nombra un conjunto de datos. Su función no es «poner texto en negrita».</p></article>
+          <article class="anatomy-note"><strong><code>td</code></strong><p>Contiene un dato asociado a encabezados. No debe usarse cuando la celda nombra una fila o columna.</p></article>
+          <article class="anatomy-note"><strong><code>colspan</code> y <code>rowspan</code></strong><p>Hacen que una celda ocupe varias columnas o filas; cambian la geometría y deben usarse con cálculo.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap" aria-labelledby="encabezados-titulo">
+      <div class="section-head"><span class="section-number">03</span><div><h2 id="encabezados-titulo">Una celda debe saber quién la explica</h2><p><code>scope</code> declara si un <code>th</code> encabeza una columna o una fila. Esa relación permite recorrer los datos sin depender de su posición visual.</p></div></div>
+      <div class="scope-grid">
+        <article class="concept-card">
+          <h3>Tabla sencilla: usa <code>scope</code></h3>
+          <ul class="concept-list">
+            <li><span class="concept-check">↓</span><span><strong><code>scope="col"</code></strong><small>El encabezado describe las celdas situadas debajo en esa columna.</small></span></li>
+            <li><span class="concept-check">→</span><span><strong><code>scope="row"</code></strong><small>El encabezado describe las celdas situadas a su derecha en esa fila.</small></span></li>
+            <li><span class="concept-check">≠</span><span><strong><code>th</code> no equivale a estilo</strong><small>Si algo no encabeza datos, no es <code>th</code>, aunque visualmente deba destacarse.</small></span></li>
+          </ul>
+        </article>
+        <article class="code-card">
+          <div class="card-head"><span>Tabla compleja</span><span>Asociación explícita</span></div>
+          <pre class="sample-code no-copy"><code>&lt;th id="meteo" colspan="2"&gt;Meteorología&lt;/th&gt;
+...
+&lt;th id="cielo" headers="meteo"&gt;Cielo&lt;/th&gt;
+&lt;th id="viento" headers="meteo"&gt;Viento&lt;/th&gt;
+...
+&lt;td headers="zona-norte meteo cielo"&gt;
+  Despejado
+&lt;/td&gt;</code></pre>
+        </article>
+      </div>
+      <p class="warning"><strong>Complejidad con coste:</strong> cuando hay encabezados irregulares o de varios niveles, <code>id</code> y <code>headers</code> pueden declarar cada asociación. Antes de hacerlo, comprueba si dos tablas más sencillas comunicarían mejor la información.</p>
+    </section>
+
+    <section class="section wrap" aria-labelledby="datos-titulo">
+      <div class="section-head"><span class="section-number">04</span><div><h2 id="datos-titulo">Texto visible y valor procesable</h2><p>Una persona puede preferir «14 de octubre» o «7 objetos», mientras que el navegador necesita formatos inequívocos. <code>time</code> y <code>data</code> permiten conservar ambas versiones.</p></div></div>
+      <table class="data-table">
+        <caption>Qué aporta cada elemento semántico dentro de una celda</caption>
+        <thead><tr><th scope="col">Elemento</th><th scope="col">Texto para la persona</th><th scope="col">Valor para software</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><code>time</code></th><td>14 de octubre</td><td><code>datetime="2026-10-14"</code></td></tr>
+          <tr><th scope="row"><code>data</code></th><td>7 objetos</td><td><code>value="7"</code></td></tr>
+          <tr><th scope="row">Texto normal</th><td>Cielo despejado</td><td>No necesita otra representación</td></tr>
+        </tbody>
+      </table>
+      <div class="semantics-grid">
+        <article class="semantic-card"><code>&lt;time datetime&gt;</code><p>Fechas y horas en un formato válido y sin ambigüedad, aunque el texto visible esté localizado.</p></article>
+        <article class="semantic-card"><code>&lt;data value&gt;</code><p>Relaciona una expresión visible con un valor que puede procesarse, clasificarse o identificarse.</p></article>
+        <article class="semantic-card"><code>CSS, no atributos antiguos</code><p><code>border</code>, <code>cellpadding</code>, <code>cellspacing</code>, <code>align</code> y <code>bgcolor</code> son presentación obsoleta.</p></article>
+      </div>
+    </section>
+
+    <section class="section exercise-section" aria-labelledby="ejercicio-titulo">
+      <div class="wrap">
+        <div class="exercise-shell">
+          <div class="exercise-hero"><div><p class="exercise-kicker">Ejercicio práctico 05 · Proyecto acumulativo</p><h2 id="ejercicio-titulo">Publica un registro de observaciones que pueda interpretarse</h2><p>Carga tu <code>index.html</code> de la sección 04. Añadirás una única tabla con datos propios sobre las sesiones, eventos o recursos de tu proyecto, sin eliminar su estructura, navegación ni contenido multimedia.</p></div><div class="time-card"><strong>70–90</strong><span>minutos</span></div></div>
+          <div class="brief-grid">
+            <article class="task-card"><h3>Contrato funcional</h3><ul><li>Conserva la estructura, la navegación, el botón, la figura, el vídeo y el audio de la sección 04.</li><li>Añade una tabla de datos con un <code>caption</code> descriptivo.</li><li>Escribe cuatro encabezados de columna y al menos tres filas de datos.</li><li>Cada fila tendrá un encabezado propio y tres celdas de datos.</li><li>Agrupa explícitamente la tabla con <code>thead</code>, <code>tbody</code> y <code>tfoot</code>.</li><li>Cierra con una fila de resumen que use un <code>colspan</code> coherente.</li></ul></article>
+            <article class="task-card"><h3>Criterios profesionales</h3><ol><li>Usa <code>scope="col"</code> y <code>scope="row"</code> para declarar las relaciones.</li><li>Incluye en cada fila una fecha mediante <code>time datetime</code> y una medida mediante <code>data value</code>.</li><li>No dejes celdas vacías: escribe «No disponible» si ese dato tiene significado.</li><li>No anides tablas ni uses una tabla para maquetar.</li><li>No emplees atributos visuales obsoletos; el aspecto se resolverá más adelante con CSS.</li><li>Redacta tus datos: los ejemplos se pueden consultar, pero no copiar desde esta ficha.</li></ol><p class="load-note">La comprobación analiza estructura y relaciones, no un texto concreto. Puedes adaptar las categorías al tema de tu proyecto.</p></article>
+          </div>
+
+          <div class="lab">
+            <div class="load-row"><strong>Continúa desde tu propio archivo</strong><label class="file-label" for="project-file">Cargar index.html</label><input id="project-file" type="file" accept=".html,text/html"><p class="file-status" id="file-status" role="status">También puedes reconstruir el documento escribiéndolo en el editor.</p></div>
+            <div class="coding-grid">
+              <div class="editor-panel">
+                <div class="panel-head"><span class="editor-file">index.html</span><span id="editor-stats">0 líneas · 0 caracteres</span></div>
+                <label class="editor-label" for="code-editor">Código HTML del proyecto</label>
+                <textarea id="code-editor" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Carga tu index.html de la sección 04 o escribe el documento desde cero."></textarea>
+                <div class="editor-actions"><button class="button primary" id="run-tests" type="button">Ejecutar 16 pruebas</button><button class="button secondary" id="clear-code" type="button">Vaciar editor</button><span class="paste-status" id="paste-status" role="status"></span></div>
+              </div>
+              <aside class="test-panel" aria-labelledby="tests-title">
+                <div class="panel-head"><h3 id="tests-title">Pruebas automáticas</h3><span class="score" id="test-score">Sin validar</span></div>
+                <div class="test-bar" aria-hidden="true"><span id="test-progress"></span></div>
+                <ol class="tests" id="test-list">
+                  <li><span class="test-icon">1</span><div><strong>Base HTML5</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">2</span><div><strong>Proyecto anterior conservado</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">3</span><div><strong>Tabla con propósito</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">4</span><div><strong>Título descriptivo</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">5</span><div><strong>Grupos explícitos</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">6</span><div><strong>Encabezados de columna</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">7</span><div><strong>Tres registros</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">8</span><div><strong>Encabezados de fila</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">9</span><div><strong>Cuadrícula coherente</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">10</span><div><strong>Resumen final</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">11</span><div><strong>Combinación calculada</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">12</span><div><strong>Fechas procesables</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">13</span><div><strong>Medidas procesables</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">14</span><div><strong>Celdas completas</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">15</span><div><strong>Contenido sin presentación</strong><p>Pendiente de comprobación.</p></div></li>
+                  <li><span class="test-icon">16</span><div><strong>Sintaxis tabular limpia</strong><p>Pendiente de comprobación.</p></div></li>
+                </ol>
+                <p class="test-message" id="test-message" role="status">Carga o escribe el documento y ejecuta las pruebas.</p>
+              </aside>
+            </div>
+            <div class="preview-panel"><div class="panel-head"><div><h3>Vista del navegador</h3><p>La ausencia de bordes no es un error: aquí se evalúa el significado HTML, no el diseño CSS.</p></div><button class="download" id="download-html" type="button" disabled>Descargar index.html</button></div><iframe id="preview" sandbox="" title="Vista previa aislada del proyecto con tabla de datos"></iframe></div>
+          </div>
+        </div>
+
+        <section class="assessment" aria-labelledby="diagnostico-titulo">
+          <div class="assessment-head"><div><h2 id="diagnostico-titulo">Diagnóstico de datos tabulares</h2><p>Ocho decisiones autocorregibles sobre propósito, encabezados, asociaciones y complejidad.</p></div><span class="assessment-score" id="quiz-score">— / 8</span></div>
+          <form id="quiz" novalidate>
+            <div class="quiz-grid">
+              <fieldset class="quiz-case" data-question="q1"><legend><span class="case-label">Caso 01</span>Quieres colocar un logotipo a la izquierda y el menú a la derecha. ¿Qué solución expresa mejor el contenido?</legend><label class="quiz-option"><input type="radio" name="q1" value="a"> Una tabla con una fila y dos celdas.</label><label class="quiz-option"><input type="radio" name="q1" value="b"> Elementos semánticos y CSS para la disposición.</label><label class="quiz-option"><input type="radio" name="q1" value="c"> Una tabla con <code>role="presentation"</code>.</label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
+              <fieldset class="quiz-case" data-question="q2"><legend><span class="case-label">Caso 02</span>¿Qué aporta <code>caption</code> a una tabla?</legend><label class="quiz-option"><input type="radio" name="q2" value="a"> Un título que identifica el conjunto de datos.</label><label class="quiz-option"><input type="radio" name="q2" value="b"> Un borde alrededor de todas las celdas.</label><label class="quiz-option"><input type="radio" name="q2" value="c"> Una columna adicional.</label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
+              <fieldset class="quiz-case" data-question="q3"><legend><span class="case-label">Caso 03</span>La primera celda de cada registro nombra la zona a la que pertenecen los demás datos. ¿Qué debe ser?</legend><label class="quiz-option"><input type="radio" name="q3" value="a"> <code>&lt;td&gt;</code> porque está en el cuerpo.</label><label class="quiz-option"><input type="radio" name="q3" value="b"> <code>&lt;th scope="row"&gt;</code>.</label><label class="quiz-option"><input type="radio" name="q3" value="c"> <code>&lt;caption&gt;</code>.</label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
+              <fieldset class="quiz-case" data-question="q4"><legend><span class="case-label">Caso 04</span>¿Qué relación declara <code>&lt;th scope="col"&gt;Fecha&lt;/th&gt;</code>?</legend><label class="quiz-option"><input type="radio" name="q4" value="a"> Encabeza los datos situados debajo en esa columna.</label><label class="quiz-option"><input type="radio" name="q4" value="b"> Encabeza solo la celda que tiene a su izquierda.</label><label class="quiz-option"><input type="radio" name="q4" value="c"> Combina todas las fechas en una celda.</label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
+              <fieldset class="quiz-case" data-question="q5"><legend><span class="case-label">Caso 05</span>Una fila tiene cuatro columnas lógicas. Ya contiene un <code>th</code> y quieres que una celda ocupe el resto. ¿Qué valor corresponde?</legend><label class="quiz-option"><input type="radio" name="q5" value="a"> <code>rowspan="4"</code></label><label class="quiz-option"><input type="radio" name="q5" value="b"> <code>colspan="4"</code></label><label class="quiz-option"><input type="radio" name="q5" value="c"> <code>colspan="3"</code></label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
+              <fieldset class="quiz-case" data-question="q6"><legend><span class="case-label">Caso 06</span>Los encabezados tienen varios niveles e intersecciones irregulares. ¿Qué decisión debes valorar primero?</legend><label class="quiz-option"><input type="radio" name="q6" value="a"> Añadir más colores para distinguirlos.</label><label class="quiz-option"><input type="radio" name="q6" value="b"> Dividir la información en tablas más sencillas; si no, asociar con <code>id</code> y <code>headers</code>.</label><label class="quiz-option"><input type="radio" name="q6" value="c"> Convertir todos los <code>th</code> en <code>td</code>.</label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
+              <fieldset class="quiz-case" data-question="q7"><legend><span class="case-label">Caso 07</span>Quieres mostrar «14 de octubre» y conservar una fecha inequívoca. ¿Qué marcado sirve?</legend><label class="quiz-option"><input type="radio" name="q7" value="a"> <code>&lt;time datetime="2026-10-14"&gt;14 de octubre&lt;/time&gt;</code></label><label class="quiz-option"><input type="radio" name="q7" value="b"> <code>&lt;data value="octubre"&gt;14&lt;/data&gt;</code></label><label class="quiz-option"><input type="radio" name="q7" value="c"> <code>&lt;date&gt;14 de octubre&lt;/date&gt;</code></label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
+              <fieldset class="quiz-case" data-question="q8"><legend><span class="case-label">Caso 08</span>La tabla no tiene líneas visibles. ¿Qué solución pertenece a HTML moderno?</legend><label class="quiz-option"><input type="radio" name="q8" value="a"> Añadir <code>border="1" cellpadding="8"</code>.</label><label class="quiz-option"><input type="radio" name="q8" value="b"> Repetir cada dato con guiones.</label><label class="quiz-option"><input type="radio" name="q8" value="c"> Mantener la semántica y definir bordes y espaciado con CSS.</label><p class="quiz-feedback">Selecciona una respuesta.</p></fieldset>
+            </div>
+            <div class="quiz-actions"><button class="button primary" type="submit">Corregir los ocho casos</button><p class="quiz-summary" id="quiz-summary" role="status">Responde y corrige para habilitar el informe.</p></div>
+          </form>
+        </section>
+
+        <section class="report" aria-labelledby="informe-titulo">
+          <div class="report-head"><div><h2 id="informe-titulo">Informe de actividad</h2><p>Resume los resultados de estructura, asociaciones y datos semánticos sin incluir el código ni el contenido escrito en las celdas.</p></div><span class="report-badge">Sin código fuente</span></div>
+          <div class="report-grid">
+            <form class="report-form" id="report-form"><label for="student-name">Nombre o alias</label><input id="student-name" type="text" maxlength="60" required><label for="student-group">Grupo · opcional</label><input id="student-group" type="text" maxlength="40"><div class="report-actions"><button class="button primary" id="generate-report" type="submit" disabled>Generar informe</button><button class="button secondary" id="download-report" type="button" disabled>Descargar TXT</button></div><p class="report-status" id="report-status" role="status">Completa y corrige las dos pruebas.</p></form>
+            <div class="report-output"><h3>Vista previa del informe</h3><pre id="report-preview">Aquí aparecerán las puntuaciones y el resultado global. No se incluirán el código HTML, los textos de las celdas ni las rutas del proyecto.</pre></div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <nav class="section wrap course-nav" aria-label="Navegación entre secciones">
+      <a class="course-link" href="html5-04-multimedia.html"><span><strong>← Sección 04</strong><small>Imágenes y multimedia</small></span><span>Volver</span></a>
+      <a class="course-link" href="html5-06-formularios.html"><span><strong>Sección 06 →</strong><small>Formularios y validación nativa</small></span><span>Continuar</span></a>
+    </nav>
+  </main>
+
+  <footer><div class="footer-grid wrap"><p>Material educativo basado en el estándar HTML, MDN y las pautas de accesibilidad de W3C WAI. Los archivos y los informes se procesan localmente en el navegador.</p><nav aria-label="Fuentes"><a href="https://developer.mozilla.org/es/docs/Web/HTML/Reference/Elements/table" target="_blank" rel="noopener noreferrer">table · MDN ↗</a><a href="https://developer.mozilla.org/es/docs/Web/HTML/Reference/Elements/th" target="_blank" rel="noopener noreferrer">th · MDN ↗</a><a href="https://www.w3.org/WAI/tutorials/tables/" target="_blank" rel="noopener noreferrer">Tablas · W3C WAI ↗</a></nav></div></footer>
+
+  <script>
+    (() => {
+      const editor = document.querySelector("#code-editor");
+      const fileInput = document.querySelector("#project-file");
+      const fileStatus = document.querySelector("#file-status");
+      const stats = document.querySelector("#editor-stats");
+      const runButton = document.querySelector("#run-tests");
+      const clearButton = document.querySelector("#clear-code");
+      const pasteStatus = document.querySelector("#paste-status");
+      const testItems = [...document.querySelectorAll("#test-list li")];
+      const testList = document.querySelector("#test-list");
+      const testScore = document.querySelector("#test-score");
+      const testProgress = document.querySelector("#test-progress");
+      const testMessage = document.querySelector("#test-message");
+      const preview = document.querySelector("#preview");
+      const downloadHtml = document.querySelector("#download-html");
+      const quiz = document.querySelector("#quiz");
+      const quizScore = document.querySelector("#quiz-score");
+      const quizSummary = document.querySelector("#quiz-summary");
+      const reportForm = document.querySelector("#report-form");
+      const studentName = document.querySelector("#student-name");
+      const studentGroup = document.querySelector("#student-group");
+      const generateReport = document.querySelector("#generate-report");
+      const downloadReport = document.querySelector("#download-report");
+      const reportStatus = document.querySelector("#report-status");
+      const reportPreview = document.querySelector("#report-preview");
+      const codeKey = "html5-seccion-05-codigo-v1";
+      const identityKey = "html5-identidad-v1";
+      let latestTests = null;
+      let latestQuiz = null;
+      let latestReport = "";
+      let hasRun = false;
+      let pasteTimer;
+
+      document.querySelectorAll(".no-copy").forEach((example) => {
+        example.addEventListener("copy", (event) => event.preventDefault());
+        example.addEventListener("dragstart", (event) => event.preventDefault());
+      });
+
+      const updateStats = () => {
+        const chars = editor.value.length;
+        const lines = chars ? editor.value.split(/\r?\n/).length : 0;
+        stats.textContent = `${lines} ${lines === 1 ? "línea" : "líneas"} · ${chars} caracteres`;
+      };
+      const invalidateReport = () => {
+        if (latestReport) reportPreview.textContent = "Los resultados han cambiado. Genera de nuevo el informe.";
+        latestReport = "";
+        downloadReport.disabled = true;
+      };
+      const updateReportAvailability = () => {
+        const missing = [];
+        if (!latestTests) missing.push("validar el proyecto");
+        if (!latestQuiz) missing.push("corregir el diagnóstico");
+        if (!studentName.value.trim()) missing.push("indicar el nombre o alias");
+        generateReport.disabled = missing.length > 0;
+        reportStatus.classList.toggle("ready", missing.length === 0);
+        reportStatus.textContent = missing.length ? `Falta: ${missing.join(", ")}.` : "Resultados listos para generar el informe.";
+      };
+      const markModified = () => {
+        latestTests = null;
+        downloadHtml.disabled = true;
+        invalidateReport();
+        updateReportAvailability();
+        if (hasRun) {
+          testList.classList.add("stale");
+          testScore.textContent = "Modificado";
+          testMessage.className = "test-message";
+          testMessage.textContent = "El código ha cambiado. Ejecuta de nuevo las pruebas.";
+        }
+      };
+      const blockPaste = (event) => {
+        event.preventDefault();
+        clearTimeout(pasteTimer);
+        pasteStatus.textContent = "Pegado bloqueado: carga tu archivo o escribe los cambios.";
+        pasteTimer = setTimeout(() => { pasteStatus.textContent = ""; }, 3500);
+      };
+      editor.addEventListener("paste", blockPaste);
+      editor.addEventListener("drop", blockPaste);
+      editor.addEventListener("keydown", (event) => {
+        if (event.key !== "Tab") return;
+        event.preventDefault();
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        editor.setRangeText("  ", start, end, "end");
+        editor.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+      editor.addEventListener("input", () => {
+        updateStats();
+        markModified();
+        try { localStorage.setItem(codeKey, editor.value); } catch (_) { /* La actividad funciona sin almacenamiento. */ }
+      });
+
+      fileInput.addEventListener("change", async () => {
+        const file = fileInput.files?.[0];
+        if (!file) return;
+        if (!file.name.toLowerCase().endsWith(".html")) {
+          fileStatus.textContent = "Selecciona un archivo con extensión .html.";
+          fileInput.value = "";
+          return;
+        }
+        editor.value = await file.text();
+        fileStatus.textContent = `${file.name} cargado localmente · ${file.size} bytes.`;
+        updateStats();
+        markModified();
+        try { localStorage.setItem(codeKey, editor.value); } catch (_) { /* Sin almacenamiento disponible. */ }
+        editor.focus();
+      });
+
+      const cleanText = (value) => (value || "").replace(/\s+/g, " ").trim();
+      const directChildren = (element, tagName) => element ? [...element.children].filter((child) => child.tagName === tagName) : [];
+      const directCells = (row) => row ? [...row.children].filter((child) => child.tagName === "TH" || child.tagName === "TD") : [];
+      const directItems = (list) => [...list.children].filter((child) => child.tagName === "LI");
+      const countTags = (source, name, closing = false) => {
+        const expression = closing ? `<\\/${name}\\s*>` : `<${name}\\b[^>]*>`;
+        return (source.match(new RegExp(expression, "gi")) || []).length;
+      };
+      const withoutRawText = (source) => source.replace(/<(script|style|textarea)\b([^>]*)>[\s\S]*?<\/\1\s*>/gi, "<$1$2></$1>");
+      const inspectBalance = (source) => {
+        const voids = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]);
+        const cleaned = withoutRawText(source).replace(/<!--[\s\S]*?-->/g, "").replace(/<!doctype[^>]*>/gi, "");
+        const stack = [];
+        for (const token of cleaned.matchAll(/<\/?([a-z][\w:-]*)\b[^>]*>/gi)) {
+          const tag = token[0];
+          const name = token[1].toLowerCase();
+          if (tag.startsWith("</")) {
+            const openName = stack.pop();
+            if (!openName) return { valid: false, detail: `Sobra la etiqueta de cierre </${name}>.` };
+            if (openName !== name) return { valid: false, detail: `Se encuentra </${name}>, pero antes debe cerrarse <${openName}> con </${openName}>.` };
+          } else if (!voids.has(name) && !tag.endsWith("/>")) stack.push(name);
+        }
+        if (stack.length) {
+          const openName = stack.at(-1);
+          return { valid: false, detail: `Falta cerrar <${openName}> con </${openName}>.` };
+        }
+        return { valid: true, detail: "" };
+      };
+      const inspectSyntax = (source) => {
+        const syntaxSource = source.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
+        const markupSource = withoutRawText(syntaxSource).replace(/<!--[\s\S]*?-->/g, "");
+        const balanceResult = inspectBalance(syntaxSource);
+        const htmlOpenCount = countTags(markupSource, "html");
+        const htmlCloseCount = countTags(markupSource, "html", true);
+        const forbiddenVoidClosings = markupSource.match(/<\/(?:area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)\s*>/gi) || [];
+        let finalMarkup = syntaxSource.trimEnd();
+        while (finalMarkup.endsWith("-->")) {
+          const commentStart = finalMarkup.lastIndexOf("<!--");
+          if (commentStart < 0) break;
+          finalMarkup = finalMarkup.slice(0, commentStart).trimEnd();
+        }
+        const problems = [];
+        if (htmlOpenCount !== 1) problems.push(`Debe haber una única apertura <html>; ahora hay ${htmlOpenCount}.`);
+        if (htmlCloseCount !== 1) problems.push(`Debe haber un único cierre </html>; ahora hay ${htmlCloseCount}.`);
+        if (!balanceResult.valid) problems.push(balanceResult.detail);
+        if (forbiddenVoidClosings.length) problems.push(`${forbiddenVoidClosings[0]} no existe: los elementos vacíos no llevan cierre.`);
+        if (!/<\/html\s*>$/i.test(finalMarkup)) problems.push("El último elemento del documento debe ser </html>.");
+        return { valid: problems.length === 0, detail: problems[0] || "" };
+      };
+      const validDate = (value) => {
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+        if (!match) return false;
+        const date = new Date(`${value}T00:00:00Z`);
+        return !Number.isNaN(date.getTime()) && date.getUTCFullYear() === Number(match[1]) && date.getUTCMonth() + 1 === Number(match[2]) && date.getUTCDate() === Number(match[3]);
+      };
+
+      const analyse = (source) => {
+        const normalized = source.replace(/\r\n?/g, "\n").trim();
+        const doc = new DOMParser().parseFromString(normalized, "text/html");
+        const body = doc.body;
+        const htmlOpen = normalized.match(/<html\b[^>]*>/i)?.[0] || "";
+        const headSource = normalized.match(/<head\b[^>]*>([\s\S]*?)<\/head\s*>/i)?.[1] || "";
+        const bodySource = normalized.match(/<body\b[^>]*>([\s\S]*?)<\/body\s*>/i)?.[1] || "";
+        const skeleton = normalized.split("\n")[0]?.trim().toLowerCase() === "<!doctype html>" &&
+          /\blang\s*=\s*["']es["']/i.test(htmlOpen) &&
+          /<meta\b[^>]*charset\s*=\s*["']?utf-8/i.test(headSource) &&
+          /<meta\b[^>]*name\s*=\s*["']viewport["']/i.test(headSource) &&
+          Boolean(bodySource);
+
+        const navs = [...body.querySelectorAll("nav")];
+        const fragmentLinks = [...body.querySelectorAll('nav a[href^="#"]')].filter((link) => (link.getAttribute("href") || "").length > 1);
+        const navigationPreserved = navs.some((nav) => {
+          const list = nav.querySelector("ul, ol");
+          return list && directItems(list).length >= 3 && list.querySelectorAll("a").length >= 3;
+        });
+        const fragmentsResolve = fragmentLinks.length >= 3 && fragmentLinks.every((link) => {
+          try { return Boolean(doc.getElementById(decodeURIComponent(link.getAttribute("href").slice(1)))); }
+          catch (_) { return false; }
+        });
+        const previousProject = body.querySelectorAll("h1").length === 1 && body.querySelectorAll("h2").length >= 2 && body.querySelectorAll("p").length >= 3 &&
+          navigationPreserved && fragmentsResolve && body.querySelectorAll("a").length >= 6 &&
+          [...body.querySelectorAll('button[type="button"]')].some((button) => !button.closest("nav")) &&
+          Boolean(body.querySelector("figure picture img[alt]")) &&
+          Boolean(body.querySelector("video[controls]")) && Boolean(body.querySelector("audio[controls]"));
+
+        const tables = [...body.querySelectorAll("table")];
+        const table = tables[0] || null;
+        const tablePurpose = tables.length === 1 && table?.getAttribute("role") !== "presentation" && !table?.querySelector("table");
+        const caption = directChildren(table, "CAPTION")[0] || null;
+        const captionReady = Boolean(caption && table.firstElementChild === caption && cleanText(caption.textContent).length >= 12);
+
+        const authoredGroups = /<thead\b/i.test(bodySource) && /<tbody\b/i.test(bodySource) && /<tfoot\b/i.test(bodySource);
+        const thead = directChildren(table, "THEAD")[0] || null;
+        const tbody = directChildren(table, "TBODY")[0] || null;
+        const tfoot = directChildren(table, "TFOOT")[0] || null;
+        const groupsReady = Boolean(authoredGroups && directChildren(table, "THEAD").length === 1 && directChildren(table, "TBODY").length === 1 && directChildren(table, "TFOOT").length === 1);
+
+        const headRows = directChildren(thead, "TR");
+        const headCells = headRows.length === 1 ? directCells(headRows[0]) : [];
+        const columnHeaders = headCells.length === 4 && headCells.every((cell) => cell.tagName === "TH" && (cell.getAttribute("scope") || "").toLowerCase() === "col" && cleanText(cell.textContent));
+        const bodyRows = directChildren(tbody, "TR");
+        const enoughRows = bodyRows.length >= 3;
+        const rowHeaders = enoughRows && bodyRows.every((row) => {
+          const cells = directCells(row);
+          return cells[0]?.tagName === "TH" && (cells[0].getAttribute("scope") || "").toLowerCase() === "row" && cleanText(cells[0].textContent).length >= 2;
+        });
+        const uniqueRowHeaders = new Set(bodyRows.map((row) => cleanText(directCells(row)[0]?.textContent).toLowerCase())).size === bodyRows.length;
+        const regularGrid = enoughRows && bodyRows.every((row) => {
+          const cells = directCells(row);
+          return cells.length === 4 && cells[0].tagName === "TH" && cells.slice(1).every((cell) => cell.tagName === "TD") && cells.every((cell) => !cell.hasAttribute("colspan") && !cell.hasAttribute("rowspan"));
+        });
+
+        const footRows = directChildren(tfoot, "TR");
+        const footCells = footRows.length === 1 ? directCells(footRows[0]) : [];
+        const summaryReady = footCells.length === 2 && footCells[0].tagName === "TH" && (footCells[0].getAttribute("scope") || "").toLowerCase() === "row" && cleanText(footCells[0].textContent).length >= 3 && footCells[1].tagName === "TD" && cleanText(footCells[1].textContent).length >= 8;
+        const spanReady = summaryReady && footCells[0].colSpan === 1 && footCells[1].colSpan === 3 && !footCells.some((cell) => cell.hasAttribute("rowspan"));
+
+        const datesReady = enoughRows && bodyRows.every((row) => {
+          const time = row.querySelector("td time[datetime]");
+          return time && validDate((time.getAttribute("datetime") || "").trim()) && cleanText(time.textContent).length >= 3;
+        });
+        const valuesReady = enoughRows && bodyRows.every((row) => {
+          const data = row.querySelector("td data[value]");
+          const value = (data?.getAttribute("value") || "").trim();
+          return data && value !== "" && Number.isFinite(Number(value)) && cleanText(data.textContent).length >= 1;
+        });
+        const allCells = table ? [...table.querySelectorAll("th, td")] : [];
+        const completeCells = allCells.length >= 18 && allCells.every((cell) => cleanText(cell.textContent).length > 0) && uniqueRowHeaders;
+        const obsoleteAttributes = ["align", "bgcolor", "border", "cellpadding", "cellspacing", "frame", "rules", "summary", "valign", "width", "height"];
+        const cleanPresentation = Boolean(table && ![table, ...table.querySelectorAll("*")].some((element) => obsoleteAttributes.some((attribute) => element.hasAttribute(attribute))) && !table.querySelector("center, font"));
+        const syntaxResult = inspectSyntax(normalized);
+
+        return [
+          { passed: skeleton, ok: "El documento conserva la base HTML5, el idioma y los metadatos.", fail: "Recupera doctype, html lang=es, head, charset UTF-8, viewport y body." },
+          { passed: previousProject, ok: "La estructura, la navegación, el control y el contenido multimedia anteriores siguen presentes.", fail: "Conserva un h1, dos h2, tres párrafos, seis enlaces, nav con tres destinos internos, un button type=button, figure/picture, vídeo y audio con controles." },
+          { passed: tablePurpose, ok: "Existe una única tabla de datos, sin anidación ni función de presentación.", fail: "Añade una única table de datos; no anides tablas ni uses role=\"presentation\"." },
+          { passed: captionReady, ok: "caption es el primer hijo de la tabla y describe el conjunto de datos.", fail: "Coloca como primer hijo un caption descriptivo de al menos doce caracteres." },
+          { passed: groupsReady, ok: "thead, tbody y tfoot están escritos y agrupan directamente las filas.", fail: "Escribe explícitamente un thead, un tbody y un tfoot como hijos directos de table." },
+          { passed: columnHeaders, ok: "La cabecera define cuatro columnas mediante th con scope=\"col\".", fail: "Crea una sola fila en thead con exactamente cuatro th no vacíos y scope=\"col\"." },
+          { passed: enoughRows, ok: "tbody contiene al menos tres registros.", fail: "Añade al menos tres tr dentro de tbody." },
+          { passed: rowHeaders && uniqueRowHeaders, ok: "Cada registro tiene un encabezado de fila propio con scope=\"row\".", fail: "La primera celda de cada fila debe ser un th scope=\"row\", no vacío y distinto de los demás." },
+          { passed: regularGrid, ok: "Cada registro ocupa cuatro columnas lógicas: un encabezado y tres datos.", fail: "Cada tr de tbody debe tener un th seguido de tres td, sin colspan ni rowspan." },
+          { passed: summaryReady, ok: "tfoot contiene una fila de resumen con encabezado y dato.", fail: "Crea en tfoot una sola fila: th scope=\"row\" y td con un resumen descriptivo." },
+          { passed: spanReady, ok: "El resumen calcula el espacio restante con colspan=\"3\".", fail: "Tras el th del resumen quedan tres columnas: usa un td con colspan=\"3\" y no uses rowspan." },
+          { passed: datesReady, ok: "Cada registro contiene una fecha visible y procesable.", fail: "Incluye en un td de cada fila un time con texto y datetime en formato AAAA-MM-DD válido." },
+          { passed: valuesReady, ok: "Cada registro contiene una medida con valor numérico procesable.", fail: "Incluye en un td de cada fila un data con texto y un atributo value numérico." },
+          { passed: completeCells, ok: "Todas las celdas contienen información y los encabezados de fila no se repiten.", fail: "No dejes th ni td vacíos y utiliza un nombre diferente para cada encabezado de fila." },
+          { passed: cleanPresentation, ok: "La tabla no mezcla los datos con atributos visuales obsoletos.", fail: "Elimina border, cellpadding, cellspacing, align, bgcolor, width y demás atributos de presentación; el diseño corresponde a CSS." },
+          { passed: syntaxResult.valid, ok: "Las etiquetas están equilibradas y el documento termina correctamente.", fail: syntaxResult.detail || "Revisa la apertura, el anidamiento y el cierre de las etiquetas." }
+        ];
+      };
+
+      const renderTests = (tests) => {
+        const passed = tests.filter((test) => test.passed).length;
+        testItems.forEach((item, index) => {
+          const test = tests[index];
+          item.className = test.passed ? "pass" : "fail";
+          item.querySelector(".test-icon").textContent = test.passed ? "✓" : "!";
+          item.querySelector("p").textContent = test.passed ? test.ok : test.fail;
+        });
+        latestTests = tests.map((test, index) => ({ name: testItems[index].querySelector("strong").textContent, passed: test.passed }));
+        hasRun = true;
+        testList.classList.remove("stale");
+        testScore.textContent = `${passed} / ${tests.length}`;
+        testProgress.style.width = `${passed / tests.length * 100}%`;
+        downloadHtml.disabled = passed !== tests.length;
+        testMessage.className = `test-message ${passed === tests.length ? "success" : "error"}`;
+        testMessage.textContent = passed === tests.length ? "Proyecto de datos superado: puedes descargar la nueva versión." : `Has superado ${passed} de ${tests.length} pruebas. Sigue las pistas y revisa una relación cada vez.`;
+        invalidateReport();
+        updateReportAvailability();
+      };
+      runButton.addEventListener("click", () => {
+        preview.srcdoc = editor.value;
+        renderTests(analyse(editor.value));
+      });
+      clearButton.addEventListener("click", () => {
+        if (editor.value && !window.confirm("¿Vaciar todo el código? Esta acción no se puede deshacer.")) return;
+        editor.value = "";
+        preview.srcdoc = "";
+        latestTests = null;
+        hasRun = false;
+        testItems.forEach((item, index) => {
+          item.className = "";
+          item.querySelector(".test-icon").textContent = index + 1;
+          item.querySelector("p").textContent = "Pendiente de comprobación.";
+        });
+        testScore.textContent = "Sin validar";
+        testProgress.style.width = "0";
+        testMessage.className = "test-message";
+        testMessage.textContent = "Carga o escribe el documento y ejecuta las pruebas.";
+        downloadHtml.disabled = true;
+        try { localStorage.removeItem(codeKey); } catch (_) { /* Sin almacenamiento. */ }
+        invalidateReport();
+        updateReportAvailability();
+        updateStats();
+        editor.focus();
+      });
+      downloadHtml.addEventListener("click", () => {
+        const blob = new Blob([editor.value], { type: "text/html;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "index.html";
+        document.body.append(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      });
+
+      const quizData = {
+        q1: { answer: "b", label: "Tabla frente a maquetación", explanation: "La tabla expresa relaciones entre datos; la posición visual de una interfaz corresponde a CSS." },
+        q2: { answer: "a", label: "Título de la tabla", explanation: "caption identifica el propósito o conjunto de datos y ayuda a decidir si interesa recorrerlo." },
+        q3: { answer: "b", label: "Encabezado de fila", explanation: "La zona explica los datos de su fila, por eso es th con scope=\"row\" aunque esté dentro de tbody." },
+        q4: { answer: "a", label: "Alcance de columna", explanation: "scope=\"col\" asocia el encabezado con los datos de esa columna." },
+        q5: { answer: "c", label: "Cálculo de colspan", explanation: "Si una de cuatro columnas ya está ocupada, la celda siguiente debe abarcar las tres restantes." },
+        q6: { answer: "b", label: "Complejidad de encabezados", explanation: "Una estructura sencilla suele ser más comprensible; si no puede simplificarse, id y headers explicitan asociaciones complejas." },
+        q7: { answer: "a", label: "Fecha procesable", explanation: "time conserva el texto localizado y datetime aporta una fecha inequívoca en formato normalizado." },
+        q8: { answer: "c", label: "Separación de presentación", explanation: "La estructura pertenece a HTML; bordes, espaciado y colores deben definirse con CSS." }
+      };
+      quiz.addEventListener("change", () => {
+        latestQuiz = null;
+        invalidateReport();
+        updateReportAvailability();
+      });
+      quiz.addEventListener("submit", (event) => {
+        event.preventDefault();
+        let score = 0;
+        const run = [];
+        document.querySelectorAll(".quiz-case").forEach((field) => {
+          const data = quizData[field.dataset.question];
+          const selected = field.querySelector("input:checked");
+          const correct = field.querySelector(`input[value="${data.answer}"]`);
+          const feedback = field.querySelector(".quiz-feedback");
+          field.classList.remove("correct", "incorrect");
+          field.querySelectorAll(".quiz-option").forEach((option) => option.classList.remove("correct-answer", "wrong-answer"));
+          correct.closest(".quiz-option").classList.add("correct-answer");
+          const isCorrect = Boolean(selected && selected.value === data.answer);
+          run.push({ name: data.label, answered: Boolean(selected), correct: isCorrect });
+          if (isCorrect) {
+            score += 1;
+            field.classList.add("correct");
+            feedback.textContent = `Correcto. ${data.explanation}`;
+          } else {
+            field.classList.add("incorrect");
+            if (selected) selected.closest(".quiz-option").classList.add("wrong-answer");
+            feedback.textContent = `${selected ? "Revisa la decisión." : "Sin respuesta."} ${data.explanation}`;
+          }
+        });
+        latestQuiz = run;
+        quizScore.textContent = `${score} / 8`;
+        quizSummary.textContent = score === 8 ? "Dominio completo de tablas y datos estructurados." : `Resultado: ${score}/8. Revisa las explicaciones y vuelve a intentarlo.`;
+        invalidateReport();
+        updateReportAvailability();
+      });
+
+      const clean = (value) => value.replace(/\s+/g, " ").trim();
+      [studentName, studentGroup].forEach((input) => input.addEventListener("input", () => {
+        try { localStorage.setItem(identityKey, JSON.stringify({ name: studentName.value, group: studentGroup.value })); } catch (_) { /* Sin almacenamiento. */ }
+        invalidateReport();
+        updateReportAvailability();
+      }));
+      reportForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (generateReport.disabled || !latestTests || !latestQuiz) return;
+        const testPasses = latestTests.filter((test) => test.passed).length;
+        const quizPasses = latestQuiz.filter((answer) => answer.correct).length;
+        const result = testPasses === latestTests.length && quizPasses >= 7 ? "SUPERADA" : "EN PROCESO";
+        const date = new Intl.DateTimeFormat("es-ES", { dateStyle: "long", timeStyle: "short" }).format(new Date());
+        latestReport = [
+          "INFORME DE ACTIVIDAD",
+          "Ruta HTML5 · Sección 05: Tablas y datos estructurados",
+          "=".repeat(62),
+          `Alumno/a: ${clean(studentName.value)}`,
+          `Grupo: ${clean(studentGroup.value) || "No indicado"}`,
+          `Fecha de generación: ${date}`,
+          "",
+          `RESULTADO GLOBAL: ${result}`,
+          "Criterio: 16/16 en el proyecto y al menos 7/8 en diagnóstico.",
+          "",
+          `ESTRUCTURA DEL PROYECTO: ${testPasses}/${latestTests.length}`,
+          ...latestTests.map((test, index) => `${String(index + 1).padStart(2, "0")}. ${test.name}: ${test.passed ? "SUPERADA" : "PENDIENTE"}`),
+          "",
+          `DIAGNÓSTICO DE DATOS: ${quizPasses}/${latestQuiz.length}`,
+          ...latestQuiz.map((answer, index) => `${String(index + 1).padStart(2, "0")}. ${answer.name}: ${answer.correct ? "CORRECTO" : answer.answered ? "REVISAR" : "SIN RESPUESTA"}`),
+          "",
+          "Este informe contiene únicamente resultados de aprendizaje.",
+          "No incluye el archivo, el código HTML, los textos de las celdas ni las rutas del proyecto."
+        ].join("\n");
+        reportPreview.textContent = latestReport;
+        downloadReport.disabled = false;
+        reportStatus.classList.add("ready");
+        reportStatus.textContent = `Informe generado · Resultado: ${result}.`;
+      });
+      downloadReport.addEventListener("click", () => {
+        if (!latestReport) return;
+        const slug = clean(studentName.value).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "alumno";
+        const blob = new Blob([latestReport], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `informe-html5-seccion-05-${slug}.txt`;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      });
+
+      try {
+        const storedCode = localStorage.getItem(codeKey);
+        if (storedCode) editor.value = storedCode;
+        const identity = JSON.parse(localStorage.getItem(identityKey) || "{}");
+        if (typeof identity.name === "string") studentName.value = identity.name;
+        if (typeof identity.group === "string") studentGroup.value = identity.group;
+      } catch (_) { /* La actividad funciona sin almacenamiento local. */ }
+      updateStats();
+      updateReportAvailability();
+    })();
+  </script>
+</body>
+</html>
