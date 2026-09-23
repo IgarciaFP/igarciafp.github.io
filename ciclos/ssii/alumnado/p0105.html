@@ -44,7 +44,7 @@ h2{margin:0 0 .8rem;color:#243b7a;font-size:1.45rem}h3{margin:.2rem 0 .6rem;font
 <div class="quiz-item" data-answer="4"><strong>¿Por qué cada cifra hexadecimal corresponde a 4 bits?</strong><div class="choices"><button class="choice" type="button" data-value="4">Porque 2⁴ = 16</button><button class="choice" type="button" data-value="16">Porque hacen falta 16 bits</button><button class="choice" type="button" data-value="2">Porque 16 ÷ 8 = 2</button></div><p class="concept-feedback"></p></div>
 <div class="quiz-item" data-answer="left"><strong>Si falta algún bit para completar el primer grupo, ¿dónde añadimos ceros?</strong><div class="choices"><button class="choice" type="button" data-value="right">A la derecha</button><button class="choice" type="button" data-value="both">A ambos lados</button><button class="choice" type="button" data-value="left">A la izquierda</button></div><p class="concept-feedback"></p></div>
 </div></section>
-<section class="card"><h2>7. Identifica tu trabajo</h2><div class="lab-input"><div class="field"><label for="studentName">Nombre y apellidos</label><input id="studentName" autocomplete="name"></div><button class="btn secondary screen" type="button" onclick="window.print()">Imprimir / guardar en PDF</button></div></section>
+<section class="card"><h2>7. Identifica tu trabajo</h2><div class="lab-input"><div class="field"><label for="studentName">Nombre y apellidos</label><input id="studentName" autocomplete="name"></div><button class="btn secondary screen" type="button" id="downloadReport">Descargar informe TXT</button></div></section>
 <footer>P0105 · Sistemas Informáticos · Binario como código intermedio</footer>
 </main>
 <script>
@@ -74,7 +74,40 @@ function updateScore(){const ex=[...document.querySelectorAll('.exercise')],n=ex
 document.querySelectorAll('.exercise').forEach(ex=>ex.querySelector('button').addEventListener('click',()=>{checkExercise(ex);updateScore()}));
 $('checkAll').addEventListener('click',()=>{document.querySelectorAll('.exercise').forEach(checkExercise);updateScore()});
 $('reset').addEventListener('click',()=>{document.querySelectorAll('.exercise input').forEach(x=>x.value='');document.querySelectorAll('.feedback').forEach(x=>{x.textContent='';x.className='feedback'});updateScore()});
-document.querySelectorAll('.quiz-item').forEach(q=>q.querySelectorAll('.choice').forEach(b=>b.addEventListener('click',()=>{const ok=b.dataset.value===q.dataset.answer,f=q.querySelector('.concept-feedback');f.textContent=ok?'✓ Correcto. Esa equivalencia permite agrupar sin cambiar el valor.':'Todavía no. Revisa las reglas de agrupación del principio.';f.className='concept-feedback '+(ok?'ok':'bad')})));
+document.querySelectorAll('.quiz-item').forEach(q=>q.querySelectorAll('.choice').forEach(b=>b.addEventListener('click',()=>{q.dataset.selected=b.dataset.value;const ok=b.dataset.value===q.dataset.answer,f=q.querySelector('.concept-feedback');f.textContent=ok?'✓ Correcto. Esa equivalencia permite agrupar sin cambiar el valor.':'Todavía no. Revisa las reglas de agrupación del principio.';f.className='concept-feedback '+(ok?'ok':'bad')})));
+
+$('downloadReport').addEventListener('click',()=>{
+ const student=$('studentName').value.trim()||'Sin identificar';
+ const exercises=[...document.querySelectorAll('.exercise')];
+ const results=exercises.map(ex=>{
+  const inputs=ex.querySelectorAll('input');
+  checkExercise(ex);
+  return [sourceLabel(ex.dataset.type,ex.dataset.source)+' → '+resultBase(ex.dataset.type),
+   'Binario intermedio: '+(inputs[0].value.trim()||'[Sin respuesta]'),
+   'Resultado final: '+(inputs[1].value.trim()||'[Sin respuesta]'),
+   'Comprobación: '+ex.querySelector('.feedback').textContent].join('\n');
+ });
+ updateScore();
+ const concepts=[...document.querySelectorAll('.quiz-item')].map(q=>{
+  const selected=[...q.querySelectorAll('.choice')].find(b=>b.dataset.value===q.dataset.selected);
+  return [q.querySelector('strong').textContent,
+   'Respuesta: '+(selected?selected.textContent:'[Sin respuesta]'),
+   'Estado: '+(selected?(q.dataset.selected===q.dataset.answer?'Correcto':'Incorrecto'):'Pendiente')].join('\n');
+ });
+ const report=['INFORME P0105 · SISTEMAS INFORMÁTICOS',
+  'Decimal, octal y hexadecimal mediante binario',
+  'Nombre y apellidos: '+student,
+  'Fecha: '+new Date().toLocaleString('es-ES'),
+  '',$('score').textContent,'','EJERCICIOS','==========',results.join('\n\n'),
+  '','PREGUNTAS DE COMPRENSIÓN','=======================',concepts.join('\n\n')].join('\n');
+ const blob=new Blob(['\uFEFF',report,'\n'],{type:'text/plain;charset=utf-8'});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement('a');
+ const name=student.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'alumno';
+ link.href=url;link.download='informe-p0105-'+name+'.txt';
+ document.body.append(link);link.click();link.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
 renderLab(45);
 </script>
 </body>
