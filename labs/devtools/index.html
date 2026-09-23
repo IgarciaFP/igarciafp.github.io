@@ -1,0 +1,1144 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratorio práctico de Chrome DevTools para CFGS DAW: depuración, red, rendimiento, accesibilidad, almacenamiento y PWA.">
+  <meta name="theme-color" content="#111827">
+  <title>Chrome DevTools · Laboratorio CFGS DAW</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172033;
+      --muted: #5f6b7c;
+      --paper: #ffffff;
+      --surface: #f6f8fb;
+      --line: #d9e0ea;
+      --navy: #111827;
+      --blue: #1d4ed8;
+      --blue-soft: #dbeafe;
+      --cyan: #0e7490;
+      --green: #047857;
+      --green-soft: #d1fae5;
+      --amber: #a16207;
+      --amber-soft: #fef3c7;
+      --red: #b91c1c;
+      --red-soft: #fee2e2;
+      --violet: #6d28d9;
+      --shadow: 0 14px 34px rgba(15, 23, 42, .09);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--surface);
+      font: 16px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: var(--blue); }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    code, kbd, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    code { padding: .1rem .32rem; border-radius: .3rem; background: #edf1f7; color: #8a341f; overflow-wrap: anywhere; }
+    kbd { display: inline-block; padding: .08rem .38rem; border: 1px solid #aeb8ca; border-bottom-width: 3px; border-radius: .35rem; background: #fff; font-size: .88em; line-height: 1.3; }
+    .wrap { width: min(1180px, calc(100% - 2rem)); margin-inline: auto; }
+    .skip { position: absolute; left: -9999px; top: .75rem; z-index: 50; padding: .6rem .85rem; border-radius: .5rem; background: white; }
+    .skip:focus { left: .75rem; }
+
+    .site-header { color: white; background: var(--navy); }
+    .hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr); gap: 2rem; align-items: center; padding: clamp(2rem, 6vw, 4.8rem) 0; }
+    .eyebrow { margin: 0 0 .8rem; color: #93c5fd; font-size: .82rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { max-width: 13ch; margin: 0; font-size: clamp(2.5rem, 7vw, 5.2rem); line-height: .98; letter-spacing: -.055em; }
+    .lede { max-width: 62ch; margin: 1.2rem 0 0; color: #cbd5e1; font-size: 1.08rem; }
+    .hero-meta { display: grid; gap: .65rem; margin: 1.4rem 0 0; padding: 0; list-style: none; }
+    .hero-meta li { display: flex; gap: .6rem; align-items: baseline; color: #e5e7eb; }
+    .hero-meta strong { color: white; }
+    .terminal { overflow: hidden; border: 1px solid #334155; border-radius: 16px; background: #020617; box-shadow: 0 24px 55px rgba(0,0,0,.28); }
+    .terminal-bar { display: flex; gap: .4rem; padding: .7rem .85rem; border-bottom: 1px solid #334155; background: #0f172a; }
+    .terminal-bar i { width: 10px; height: 10px; border-radius: 50%; background: #64748b; }
+    .terminal pre { min-height: 250px; margin: 0; padding: 1rem; color: #bfdbfe; font-size: .87rem; white-space: pre-wrap; }
+    .prompt { color: #86efac; }
+    .error-text { color: #fca5a5; }
+
+    .progress-panel { position: sticky; top: .5rem; z-index: 20; display: grid; grid-template-columns: auto 1fr auto; gap: .8rem; align-items: center; margin: 1rem auto; padding: .7rem .9rem; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.96); box-shadow: 0 6px 20px rgba(15,23,42,.08); backdrop-filter: blur(10px); }
+    .progress-track { height: 10px; overflow: hidden; border-radius: 999px; background: #e5e7eb; }
+    .progress-bar { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--blue), #06b6d4); transition: width .2s; }
+    .reset { padding: .38rem .65rem; border: 1px solid #fecaca; border-radius: 8px; color: #991b1b; background: #fff1f2; font-weight: 750; }
+
+    .panel { margin: 1rem 0; padding: 1.25rem; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); box-shadow: 0 7px 22px rgba(15,23,42,.05); }
+    .panel > :first-child { margin-top: 0; }
+    .intro-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 1rem; }
+    .outcomes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; margin: 0; padding: 0; list-style: none; }
+    .outcomes li { padding: .65rem .75rem; border-radius: 10px; background: #eef2ff; }
+    .note { padding: .75rem .9rem; border-left: 4px solid var(--cyan); border-radius: 8px; background: #ecfeff; }
+    .warning { border-left-color: var(--amber); background: var(--amber-soft); }
+    .orientation-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .orientation-card { padding: 1rem; border: 1px solid var(--line); border-radius: 12px; background: #f8fafc; }
+    .orientation-card h3 { margin-top: 0; }
+    .panel-map { display: grid; grid-template-columns: repeat(3, 1fr); gap: .65rem; margin-top: 1rem; }
+    .panel-map div { padding: .7rem; border: 1px solid #bfdbfe; border-radius: 9px; background: #eff6ff; }
+    .panel-map strong { display: block; color: #1e3a8a; }
+    .panel-map span { color: var(--muted); font-size: .9rem; }
+
+    .app-lab { scroll-margin-top: 5rem; padding: 0; overflow: hidden; border-color: #94a3b8; }
+    .app-topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; padding: 1rem 1.2rem; color: white; background: #1e293b; }
+    .app-topbar h2 { margin: 0; font-size: 1.25rem; }
+    .env { align-self: center; padding: .22rem .55rem; border: 1px solid #64748b; border-radius: 999px; color: #dbeafe; font: 700 .78rem/1.3 ui-monospace, monospace; }
+    .app-body { padding: 1.2rem; }
+    .lab-context { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .8rem; align-items: center; }
+    .lab-context p { margin: 0; color: var(--muted); }
+    .toolbar { display: flex; flex-wrap: wrap; gap: .55rem; margin: 1rem 0; }
+    .tool-button { padding: .55rem .75rem; border: 1px solid #94a3b8; border-radius: 8px; color: #0f172a; background: #fff; font-weight: 720; }
+    .tool-button.primary { color: white; border-color: var(--blue); background: var(--blue); }
+    .tool-button.danger { color: #991b1b; border-color: #fca5a5; background: #fff1f2; }
+    .tool-button:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+    .status-line { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+    .status { padding: .28rem .55rem; border-radius: 999px; background: #e2e8f0; color: #334155; font-size: .82rem; font-weight: 750; }
+    .status.ok { background: var(--green-soft); color: #065f46; }
+    .status.bad { background: var(--red-soft); color: #991b1b; }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; }
+    .metric { padding: .9rem; border: 1px solid #dbe3ee; border-radius: 11px; background: #f8fafc; }
+    .metric span { display: block; color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
+    .metric strong { display: block; margin-top: .25rem; font-size: 1.55rem; }
+    .metric.highlight { border-color: #60a5fa; background: #eff6ff; }
+    #legacy-widget { min-width: 720px; }
+    .orders-table-wrap { margin-top: 1rem; overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: .68rem .75rem; border-bottom: 1px solid #e5e7eb; text-align: left; white-space: nowrap; }
+    th { background: #f1f5f9; font-size: .8rem; letter-spacing: .04em; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+    .search-row { display: flex; gap: .55rem; margin-top: 1rem; }
+    .search-row input { flex: 1; min-width: 12rem; padding: .58rem .7rem; border: 1px solid #94a3b8; border-radius: 8px; }
+    .icon-button { width: 42px; border: 1px solid #cbd5e1; border-radius: 8px; background: white; }
+    .a11y-issue { margin: .7rem 0 0; color: #bac2cd; font-size: .86rem; }
+
+    .coverage { display: grid; grid-template-columns: repeat(6, 1fr); gap: .55rem; margin: 0; padding: 0; list-style: none; }
+    .coverage a { display: block; min-height: 100%; padding: .58rem .65rem; border: 1px solid var(--line); border-radius: 9px; color: #334155; background: white; text-decoration: none; font-size: .88rem; font-weight: 750; }
+    .coverage a:hover, .coverage a:focus-visible { border-color: var(--blue); outline: 3px solid var(--blue-soft); }
+
+    .tickets { display: grid; gap: 1rem; margin: 1rem 0; }
+    .ticket { scroll-margin-top: 5rem; display: grid; grid-template-columns: 88px minmax(0,1fr); gap: 1rem; padding: 1.15rem; border: 1px solid var(--line); border-radius: 16px; background: white; box-shadow: var(--shadow); }
+    .ticket-id { align-self: start; padding: .6rem .45rem; border-radius: 10px; color: #dbeafe; background: #172554; text-align: center; font: 800 .82rem/1.25 ui-monospace, monospace; letter-spacing: .04em; }
+    .ticket-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .65rem; align-items: start; }
+    .ticket h3 { margin: 0; font-size: 1.3rem; line-height: 1.25; }
+    .meta { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .tag { padding: .22rem .5rem; border-radius: 999px; color: #334155; background: #e2e8f0; font-size: .76rem; font-weight: 800; }
+    .tag.core { color: #1e40af; background: #dbeafe; }
+    .objective { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin: .6rem 0 .8rem; padding: .75rem .8rem; border: 1px solid #bfdbfe; border-radius: 10px; color: var(--muted); background: #f8fbff; }
+    .objective p { margin: 0; }
+    .objective strong { display: block; margin-bottom: .15rem; color: #1e3a8a; }
+    .where { margin: .65rem 0; padding: .65rem .8rem; border-radius: 8px; color: #1e3a8a; background: var(--blue-soft); }
+    .expected { margin: .75rem 0 0; padding: .65rem .8rem; border-left: 4px solid var(--amber); border-radius: 7px; background: var(--amber-soft); }
+    .steps { margin: 0; padding-left: 1.25rem; }
+    .steps li + li { margin-top: .4rem; }
+    .evidence { margin: .8rem 0 0; padding: .68rem .8rem; border-left: 4px solid var(--green); border-radius: 7px; background: var(--green-soft); }
+    .response-field { margin-top: .8rem; }
+    .response-field label { display: block; margin-bottom: .3rem; font-weight: 800; }
+    .ticket-response { width: 100%; min-height: 92px; padding: .65rem .72rem; resize: vertical; border: 1px solid #94a3b8; border-radius: 8px; color: var(--ink); background: #fff; }
+    .ticket-response:focus { outline: 3px solid var(--blue-soft); border-color: var(--blue); }
+    .response-help { display: block; margin-top: .25rem; color: var(--muted); font-size: .84rem; }
+    .response-actions { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin-top: .55rem; }
+    .check-answer { padding: .48rem .7rem; border: 0; border-radius: 7px; color: white; background: var(--blue); font-weight: 800; }
+    .answer-feedback { font-weight: 800; }
+    .answer-feedback.correct { color: var(--green); }
+    .answer-feedback.incorrect { color: var(--red); }
+    .done-row { display: flex; gap: .5rem; align-items: center; margin-top: .8rem; }
+    .done-row input { width: 1.15rem; height: 1.15rem; accent-color: var(--green); }
+    .done-row input:disabled { opacity: 1; }
+    .done-row label { font-weight: 800; }
+    details { margin-top: .65rem; border: 1px dashed #aeb8ca; border-radius: 8px; background: #fafcff; }
+    summary { padding: .55rem .7rem; cursor: pointer; font-weight: 760; }
+    details p, details ul { margin: 0; padding: 0 .8rem .75rem; }
+    details ul { padding-left: 2rem; }
+    .command { display: block; margin: .6rem 0; padding: .72rem .8rem; overflow-x: auto; border-radius: 8px; color: #e2e8f0; background: #0f172a; white-space: pre; font-size: .88rem; }
+
+    .incident { margin: 1.2rem 0; padding: clamp(1.2rem, 4vw, 2rem); border: 2px solid #f59e0b; border-radius: 18px; background: #fffbeb; box-shadow: var(--shadow); }
+    .incident-badge { display: inline-block; padding: .3rem .62rem; border-radius: 999px; color: white; background: #92400e; font-weight: 850; font-size: .8rem; letter-spacing: .04em; }
+    .incident h2 { margin: .65rem 0 .25rem; }
+    .incident-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .incident-card { padding: 1rem; border: 1px solid #fcd34d; border-radius: 10px; background: white; }
+    .incident-card h3 { margin-top: 0; }
+
+    .delivery { border-color: #a78bfa; background: #faf5ff; }
+    .delivery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .delivery label { display: block; margin-top: .7rem; font-weight: 760; }
+    .delivery input, .delivery textarea, .delivery select { width: 100%; margin-top: .3rem; padding: .62rem .7rem; border: 1px solid #a78bfa; border-radius: 8px; background: white; color: var(--ink); }
+    .delivery textarea { min-height: 105px; resize: vertical; }
+    .form-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .9rem; }
+    .form-actions button { padding: .58rem .8rem; border: 0; border-radius: 8px; color: white; background: var(--violet); font-weight: 800; }
+    .form-actions button.secondary { color: #5b21b6; border: 1px solid #c4b5fd; background: #ede9fe; }
+    .form-actions button:disabled { opacity: .5; cursor: not-allowed; }
+    .report-preview { min-height: 290px; margin: 0; padding: .85rem; overflow: auto; border-radius: 9px; color: #e2e8f0; background: #111827; white-space: pre-wrap; font: .84rem/1.5 ui-monospace, monospace; }
+    .practice-launch { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; border-color: #60a5fa; background: #eff6ff; }
+    .practice-launch h2 { margin-bottom: .25rem; }
+    .practice-launch p { margin-bottom: 0; }
+    .launch-button { display: inline-block; padding: .75rem 1rem; border-radius: 9px; color: white; background: var(--blue); text-decoration: none; font-weight: 850; white-space: nowrap; }
+    .launch-button:hover, .launch-button:focus-visible { background: #1e40af; outline: 3px solid #93c5fd; outline-offset: 2px; }
+    .notice { margin: 1rem 0; padding: .75rem .9rem; border-left: 4px solid var(--blue); border-radius: 8px; color: #1e3a8a; background: var(--blue-soft); }
+    .lab-sheet h2 { margin-bottom: .2rem; }
+    .lab-sheet > p { margin-top: 0; color: var(--muted); }
+    .lab-sheet-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr); gap: 1rem; }
+    .lab-sheet-card { padding: 1rem; border: 1px solid var(--line); border-radius: 12px; background: #f8fafc; }
+    .lab-sheet-card h3 { margin: 0 0 .55rem; font-size: 1rem; color: #1e3a8a; }
+    .quick-guide { font-size: .9rem; }
+    .quick-guide th, .quick-guide td { padding: .42rem .5rem; white-space: normal; vertical-align: top; }
+    .quick-guide th[scope="row"] { width: 36%; color: #1e3a8a; background: white; text-transform: none; letter-spacing: 0; }
+    .storage-guide { display: grid; grid-template-columns: max-content 1fr; gap: .35rem .6rem; margin: .55rem 0 0; font-size: .9rem; }
+    .storage-guide dt { font-weight: 800; color: #1e3a8a; }
+    .storage-guide dd { margin: 0; }
+
+    footer { padding: 1rem 0 3rem; color: var(--muted); }
+    .small { font-size: .9rem; }
+    @media (max-width: 900px) {
+      .hero, .intro-grid, .orientation-grid, .delivery-grid, .incident-grid, .practice-launch, .lab-sheet-grid { grid-template-columns: 1fr; }
+      .terminal { max-width: 620px; }
+      .coverage { grid-template-columns: repeat(3, 1fr); }
+      .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+      .panel-map { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 1rem, 1180px); }
+      .hero { padding: 2.2rem 0; }
+      h1 { font-size: clamp(2.2rem, 14vw, 3.5rem); }
+      .progress-panel { grid-template-columns: 1fr auto; }
+      .progress-track { grid-column: 1 / -1; grid-row: 2; }
+      .outcomes, .dashboard-grid, .coverage, .panel-map, .objective { grid-template-columns: 1fr; }
+      .ticket { grid-template-columns: 1fr; }
+      .ticket-id { width: max-content; }
+    }
+    @media print {
+      body { background: white; font-size: 10pt; }
+      .wrap { width: 100%; }
+      .site-header { color: black; background: white; }
+      .lede, .hero-meta li { color: #334155; }
+      .terminal, .progress-panel, .toolbar, .done-row, .form-actions { display: none; }
+      .panel, .ticket, .incident { box-shadow: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#cobertura">Saltar al índice de tickets</a>
+
+  <header class="site-header">
+    <div class="wrap hero">
+      <div>
+        <p class="eyebrow">Desarrollo Web en Entorno Cliente · CFGS DAW</p>
+        <h1>Chrome DevTools: laboratorio guiado</h1>
+        <p class="lede">Aprenderás desde cero y paso a paso. Cada ticket te indica dónde hacer clic, qué acción realizar y qué resultado debes ver antes de escribir tu respuesta.</p>
+        <ul class="hero-meta">
+          <li><strong>Nivel:</strong> iniciación, sin experiencia previa</li>
+          <li><strong>Duración:</strong> dos sesiones de clase</li>
+          <li><strong>Modalidad:</strong> individual o parejas</li>
+          <li><strong>Entrega:</strong> respuestas + informe generado</li>
+        </ul>
+      </div>
+      <div class="terminal" aria-label="Ejemplo de sesión de depuración">
+        <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+        <pre><span class="prompt">1.</span> Abre DevTools con F12
+
+<span class="prompt">2.</span> Busca la pestaña indicada
+
+<span class="prompt">3.</span> Sigue los pasos en orden
+
+<span class="prompt">4.</span> Comprueba el resultado
+
+<span class="prompt">5.</span> Escribe una respuesta breve</pre>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="progress-panel" aria-label="Progreso del laboratorio">
+      <strong id="progress-text">0 de 13 respuestas verificadas</strong>
+      <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
+      <button class="reset" id="reset-progress" type="button">Reiniciar</button>
+    </section>
+
+    <nav class="panel" id="cobertura" aria-label="Índice de tickets">
+      <h2>Cobertura del laboratorio</h2>
+      <ol class="coverage">
+        <li><a href="#t0">00 · Buscar</a></li>
+        <li><a href="#t1">01 · Elements</a></li>
+        <li><a href="#t2">02 · CSS</a></li>
+        <li><a href="#t3">03 · Console</a></li>
+        <li><a href="#t4">04 · Sources</a></li>
+        <li><a href="#t5">05 · Network</a></li>
+        <li><a href="#t6">06 · Device Mode</a></li>
+        <li><a href="#t7">07 · Storage</a></li>
+        <li><a href="#t8">08 · Accessibility</a></li>
+        <li><a href="#t9">09 · Performance</a></li>
+        <li><a href="#t10">10 · Memory</a></li>
+        <li><a href="#t11">11 · PWA</a></li>
+        <li><a href="#t12">12 · Lighthouse</a></li>
+      </ol>
+    </nav>
+
+    <section class="panel practice-launch" id="entorno-practicas">
+      <div>
+        <h2>Página de prácticas</h2>
+        <p>Ábrela en otra pestaña. Manipula esa página con DevTools y conserva aquí las instrucciones y respuestas.</p>
+      </div>
+      <a class="launch-button" href="./p0101_v2_lab/" target="_blank" rel="noopener">Abrir página de prácticas</a>
+    </section>
+
+    <section class="panel lab-sheet" aria-labelledby="ficha-panel-pedidos">
+      <h2 id="ficha-panel-pedidos">Ficha rápida · Panel de pedidos</h2>
+      <p>Es una aplicación ficticia: JavaScript carga pedidos desde <code>data.json</code>, actualiza la pantalla y genera fallos preparados para practicar.</p>
+      <div class="lab-sheet-grid">
+        <div class="lab-sheet-card">
+          <h3>Qué hace cada botón</h3>
+          <table class="quick-guide">
+            <thead><tr><th>Botón</th><th>Acción</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Sincronizar pedidos</th><td>Carga cuatro pedidos desde <code>data.json</code>.</td></tr>
+              <tr><th scope="row">Recalcular total</th><td>Ejecuta un cálculo con un error intencionado.</td></tr>
+              <tr><th scope="row">Provocar error HTTP</th><td>Solicita <code>missing.json</code> y genera un 404.</td></tr>
+              <tr><th scope="row">Ejecutar tarea lenta</th><td>Bloquea JavaScript durante unos 550 ms.</td></tr>
+              <tr><th scope="row">Retener memoria</th><td>Conserva objetos en memoria y aumenta el contador.</td></tr>
+              <tr><th scope="row">🗑️</th><td>Elimina el último pedido; no tiene nombre accesible a propósito.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="lab-sheet-card">
+          <h3>Service Worker</h3>
+          <p><code>sw.js</code> trabaja en segundo plano, intercepta peticiones y guarda <code>index.html</code>, <code>data.json</code> y el manifiesto en caché para poder recuperarlos sin conexión.</p>
+          <h3>Almacenamiento</h3>
+          <dl class="storage-guide">
+            <dt>Cookie</dt><dd><code>opsboard_lab=enabled</code>: dato de demostración del laboratorio.</dd>
+            <dt>Local Storage</dt><dd><code>opsboard.theme=light</code>: preferencia de aspecto que permanece guardada.</dd>
+            <dt>Session Storage</dt><dd><code>opsboard.session=training</code>: identifica esta sesión de práctica.</dd>
+          </dl>
+          <p class="small"><strong>No se almacenan datos personales.</strong></p>
+        </div>
+      </div>
+    </section>
+
+    <p class="notice"><strong>Antes de empezar un nuevo ticket:</strong> actualiza la página de prácticas con el botón ↻ del navegador o con <kbd>Ctrl</kbd> + <kbd>R</kbd>. Así eliminas los cambios y errores del ticket anterior.</p>
+
+    <section class="tickets" aria-label="Trece tickets guiados">
+      <article class="ticket" id="t0"><div class="ticket-id">DEV-100</div><div>
+        <div class="ticket-head"><h3>Busca un texto dentro de Elements</h3><div class="meta"><span class="tag core">Elements</span><span class="tag">5 min</span></div></div>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Buscar el texto «Facturación calculada» dentro del árbol HTML de Elements.</p>
+          <p><strong>Objetivo didáctico</strong> Aprender a localizar rápidamente la etiqueta que contiene un texto visible.</p>
+        </div>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → <kbd>F12</kbd> → <strong>Elements</strong>.</p>
+        <ol class="steps">
+          <li>Abre la página de prácticas con el botón azul anterior.</li>
+          <li>En esa nueva pestaña, abre DevTools con <kbd>F12</kbd> y selecciona <strong>Elements</strong>.</li>
+          <li>Haz clic una vez dentro del árbol de etiquetas HTML.</li>
+          <li>Pulsa <kbd>Ctrl</kbd> + <kbd>F</kbd>. La caja de búsqueda aparecerá en la parte inferior de Elements.</li>
+          <li>Escribe <code>Facturación calculada</code> y pulsa <kbd>Enter</kbd>.</li>
+        </ol>
+        <p class="expected"><strong>Debes ver:</strong> el texto resaltado dentro de un elemento <code>span</code>.</p>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe únicamente el nombre de la etiqueta que contiene directamente el texto.</p>
+        <div class="response-field"><label for="r0">Respuesta del ticket DEV-100</label><textarea class="ticket-response" id="r0" placeholder="Nombre de la etiqueta"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d0" type="checkbox"><label for="d0">Respuesta verificada</label></div>
+      </div></article>
+
+      <article class="ticket" id="t1"><div class="ticket-id">DEV-101</div><div>
+        <div class="ticket-head"><h3>Distingue una etiqueta de su etiqueta padre</h3><div class="meta"><span class="tag core">Elements · Sources</span><span class="tag">8 min</span></div></div>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Identificar el <code>article</code> padre del <code>span</code> y cambiar temporalmente su texto.</p>
+          <p><strong>Objetivo didáctico</strong> Comprender la relación padre-hijo del HTML y distinguir el DOM actual del archivo original.</p>
+        </div>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Elements</strong>.</p>
+        <ol class="steps">
+          <li>Mantén seleccionado el resultado del ticket anterior: <code>&lt;span&gt;Facturación calculada&lt;/span&gt;</code>.</li>
+          <li>Haz doble clic sobre el texto <code>Facturación calculada</code>, escribe <code>Facturación Revisada</code> y pulsa <kbd>Enter</kbd>.</li>
+          <li>Abre <strong>Sources</strong>. En el lado izquierdo, abre el árbol <strong>Page</strong> y selecciona primero <code>p0101_v2_lab/</code>.</li>
+          <li>Solo después de seleccionar el archivo, pulsa <kbd>Ctrl</kbd> + <kbd>F</kbd>, busca <code>Facturación calculada</code> y pulsa <kbd>Enter</kbd>.</li>
+        </ol>
+        <p class="expected"><strong>Debes ver:</strong> el nuevo texto en la página y el texto original dentro de Sources.</p>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe las dos clases del <code>article</code> padre, separadas por un espacio y en el mismo orden.</p>
+        <div class="response-field"><label for="r1">Respuesta del ticket DEV-101</label><textarea class="ticket-response" id="r1" placeholder="clase1 clase2"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d1" type="checkbox"><label for="d1">Respuesta verificada</label></div>
+      </div></article>
+
+      <article class="ticket" id="t2"><div class="ticket-id">DEV-102</div><div>
+        <div class="ticket-head"><h3>Prueba colores y tamaños con CSS</h3><div class="meta"><span class="tag core">Elements · Styles</span><span class="tag">8 min</span></div></div>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Añadir reglas de color y espacio a una tarjeta desde Styles y después desactivar una de ellas.</p>
+          <p><strong>Objetivo didáctico</strong> Comprobar cómo CSS modifica un elemento e identificar el <code>padding</code> en el modelo de caja.</p>
+        </div>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Elements → Styles</strong>.</p>
+        <ol class="steps">
+          <li>Usa el selector para elegir la tarjeta que muestra <strong>Facturación Revisada</strong>.</li>
+          <li>En <strong>Styles</strong>, busca el bloque <code>element.style { }</code>, situado normalmente arriba.</li>
+          <li>Haz clic dentro de las llaves, escribe <code>color: crimson</code> y pulsa <kbd>Enter</kbd>.</li>
+          <li>En la línea siguiente escribe <code>padding: 30px</code> y pulsa <kbd>Enter</kbd>.</li>
+          <li>Pulsa la pestaña <strong>Computed</strong>, junto a Styles. Baja hasta el dibujo de una caja: las zonas son <em>content</em>, <em>padding</em>, <em>border</em> y <em>margin</em>.</li>
+          <li>En <strong>Styles</strong>, desmarca la casilla situada junto a <code>padding: 30px</code> y observa cómo vuelve el tamaño anterior.</li>
+        </ol>
+        <p class="expected"><strong>Debes ver:</strong> el texto de color rojo y la tarjeta más grande mientras la regla está activada.</p>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe únicamente la propiedad que hizo crecer la tarjeta.</p>
+        <div class="response-field"><label for="r2">Respuesta del ticket DEV-102</label><textarea class="ticket-response" id="r2" placeholder="Nombre de la propiedad"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d2" type="checkbox"><label for="d2">Respuesta verificada</label></div>
+      </div></article>
+
+      <article class="ticket" id="t3"><div class="ticket-id">DEV-103</div><div>
+        <div class="ticket-head"><h3>Escribe un comando y encuentra un error</h3><div class="meta"><span class="tag core">Console</span><span class="tag">8 min</span></div></div>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Contar filas mediante un comando y provocar un error HTTP 404.</p>
+          <p><strong>Objetivo didáctico</strong> Aprender a ejecutar una consulta sencilla y reconocer resultados y errores en Console.</p>
+        </div>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Console</strong>.</p>
+        <ol class="steps">
+          <li>Pulsa <strong>Sincronizar pedidos</strong> en la página. Deben aparecer cuatro filas en la tabla.</li>
+          <li>Abre <strong>Console</strong> y busca la línea inferior que comienza por <code>&gt;</code>.</li>
+          <li>Escribe a mano <code>document.querySelectorAll('#orders-body tr').length</code> y pulsa <kbd>Enter</kbd>.</li>
+          <li>Chrome contestará con el número de filas encontradas.</li>
+          <li>Pulsa <strong>Provocar error HTTP</strong> en la página y vuelve a mirar Console.</li>
+          <li>Busca el mensaje rojo que contiene <code>HTTP 404</code>. El enlace situado a la derecha indica el archivo y la línea donde se produjo.</li>
+        </ol>
+        <p class="expected"><strong>Debes ver:</strong> el número <code>4</code> y, después, un mensaje rojo con el código <code>404</code>.</p>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe primero el número de filas y después el código del error, separados por un espacio.</p>
+        <div class="response-field"><label for="r3">Respuesta del ticket DEV-103</label><textarea class="ticket-response" id="r3" placeholder="número número"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d3" type="checkbox"><label for="d3">Respuesta verificada</label></div>
+      </div></article>
+
+      <article class="ticket" id="t4"><div class="ticket-id">DEV-104</div><div>
+        <div class="ticket-head"><h3>Detén JavaScript para mirar sus valores</h3><div class="meta"><span class="tag core">Sources</span><span class="tag">10 min</span></div></div>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Detener el programa en <code>total = subtotal</code> y observar los valores de sus variables.</p>
+          <p><strong>Objetivo didáctico</strong> Entender para qué sirve un breakpoint y descubrir por qué el cálculo sustituye el total.</p>
+        </div>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Sources</strong>.</p>
+        <ol class="steps">
+          <li>En el lado izquierdo, abre <strong>Page</strong> y selecciona <code>p0101_v2_lab/</code>.</li>
+          <li>Con el archivo abierto en el centro, pulsa <kbd>Ctrl</kbd> + <kbd>F</kbd>, busca <code>total = subtotal</code> y cierra la búsqueda con <kbd>Esc</kbd>.</li>
+          <li>Haz clic sobre el número de esa línea. Aparecerá una marca azul: es el breakpoint.</li>
+          <li>Pulsa <strong>Recalcular total</strong> en la página. El programa se detendrá y la línea aparecerá resaltada.</li>
+          <li>En el panel inferior, abre <strong>Scope → Local</strong> y busca <code>subtotal</code> y <code>total</code>.</li>
+          <li>Pulsa el triángulo azul ▶ situado sobre el código hasta que el programa termine.</li>
+          <li>Haz clic otra vez en el número de línea para quitar el breakpoint.</li>
+        </ol>
+        <p class="expected"><strong>Debes ver:</strong> el código detenido y los valores numéricos de <code>subtotal</code> y <code>total</code>.</p>
+        <p class="evidence"><strong>Respuesta verificable:</strong> indica si <code>total = subtotal</code> <strong>suma</strong> o <strong>sustituye</strong>.</p>
+        <div class="response-field"><label for="r4">Respuesta del ticket DEV-104</label><textarea class="ticket-response" id="r4" placeholder="suma o sustituye"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d4" type="checkbox"><label for="d4">Respuesta verificada</label></div>
+      </div></article>
+
+      <article class="ticket" id="t5"><div class="ticket-id">DEV-105</div><div>
+        <div class="ticket-head"><h3>Observa cómo llegan los datos</h3><div class="meta"><span class="tag core">Network</span><span class="tag">9 min</span></div></div>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Inspeccionar una petición correcta a <code>data.json</code> y otra fallida a <code>missing.json</code>.</p>
+          <p><strong>Objetivo didáctico</strong> Aprender a interpretar el método, el código de estado y la respuesta de una petición.</p>
+        </div>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Network</strong>.</p>
+        <ol class="steps">
+          <li>Abre <strong>Network</strong> y pulsa el icono de limpiar, un círculo atravesado, situado arriba a la izquierda de la tabla.</li>
+          <li>Pulsa el filtro <strong>Fetch/XHR</strong> y después <strong>Sincronizar pedidos</strong>.</li>
+          <li>Haz clic en la fila llamada <code>data.json</code>.</li>
+          <li>En el panel que se abre, elige <strong>Headers</strong>. Busca <strong>Request Method</strong> y <strong>Status Code</strong>.</li>
+          <li>Abre <strong>Response</strong> para ver los datos que llegaron.</li>
+          <li>Pulsa <strong>Provocar error HTTP</strong>. Selecciona la nueva fila <code>missing.json</code> y comprueba su código.</li>
+        </ol>
+        <p class="expected"><strong>Debes observar que el código de estado ha cambiado.</strong></p>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe el código de <code>data.json</code> y el de <code>missing.json</code>, separados por un espacio.</p>
+        <div class="response-field"><label for="r5">Respuesta del ticket DEV-105</label><textarea class="ticket-response" id="r5" placeholder="código código"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d5" type="checkbox"><label for="d5">Respuesta verificada</label></div>
+      </div></article>
+
+      <article class="ticket" id="t6"><div class="ticket-id">DEV-106</div><div>
+        <div class="ticket-head"><h3>Mira la página como si fuera un móvil</h3><div class="meta"><span class="tag core">Device Mode</span><span class="tag">8 min</span></div></div>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Simular una pantalla móvil y una conexión lenta para observar el overflow y el tiempo de carga.</p>
+          <p><strong>Objetivo didáctico</strong> Detectar problemas de diseño adaptable y relacionar la velocidad de red con la carga de la página.</p>
+        </div>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → icono de móvil y tableta.</p>
+        <ol class="steps">
+          <li>Actualiza la página de prácticas con el botón ↻ del navegador o con <kbd>Ctrl</kbd> + <kbd>R</kbd> para eliminar los errores y cambios de los tickets anteriores.</li>
+          <li>Pulsa el icono de móvil y tableta. También puedes usar <kbd>Ctrl</kbd> + <kbd>Mayús</kbd> + <kbd>M</kbd>.</li>
+          <li>En la barra que aparece sobre la página, elige <strong>Responsive</strong>.</li>
+          <li>Escribe <code>360</code> en el campo de anchura y <code>800</code> en el de altura. Observa el panel de pedidos: la parte ancha produce un <strong>desbordamiento</strong> u <strong>overflow</strong> y obliga a desplazarse horizontalmente.</li>
+          <li>Abre <strong>Network</strong>. En el menú que indica <strong>No throttling</strong>, elige una conexión lenta como <strong>Slow 4G</strong> o <strong>Fast 3G</strong>.</li>
+          <li>Actualiza la página y observa el valor <strong>Load</strong> en la barra inferior de Network.</li>
+          <li>Vuelve a seleccionar <strong>No throttling</strong> y desactiva el modo móvil con el mismo icono.</li>
+        </ol>
+        <p class="expected"><strong>Debes ver:</strong> una página estrecha, desplazamiento horizontal y el tiempo de carga indicado por <strong>Load</strong>.</p>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe únicamente la palabra inglesa que nombra el desbordamiento.</p>
+        <div class="response-field"><label for="r6">Respuesta del ticket DEV-106</label><textarea class="ticket-response" id="r6" placeholder="Palabra en inglés"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d6" type="checkbox"><label for="d6">Respuesta verificada</label></div>
+      </div></article>
+
+      <article class="ticket" id="t7"><div class="ticket-id">DEV-107</div><div>
+        <div class="ticket-head"><h3>Encuentra los datos guardados por la página</h3><div class="meta"><span class="tag core">Application</span><span class="tag">9 min</span></div></div>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Localizar y modificar datos guardados en Local Storage, Session Storage y Cookies.</p>
+          <p><strong>Objetivo didáctico</strong> Distinguir los principales lugares donde una aplicación web almacena información en el navegador.</p>
+        </div>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Application</strong>.</p>
+        <ol class="steps">
+          <li>En la columna izquierda, abre <strong>Local Storage</strong> con su pequeño triángulo y pulsa la dirección de esta web.</li>
+          <li>En la tabla de la derecha busca la clave <code>opsboard.theme</code>. Su valor inicial es <code>light</code>.</li>
+          <li>Haz doble clic sobre <code>light</code>, escribe <code>contrast</code> y pulsa <kbd>Enter</kbd>.</li>
+          <li>Abre <strong>Console</strong>, escribe <code>aplicarPreferencias()</code> y pulsa <kbd>Enter</kbd>. Aparecerá un borde oscuro alrededor del panel.</li>
+          <li>Vuelve a <strong>Application</strong>. En <strong>Session Storage</strong> busca <code>opsboard.session</code> y en <strong>Cookies</strong> busca <code>opsboard_lab</code>.</li>
+        </ol>
+        <p class="expected"><strong>Debes ver:</strong> <code>opsboard.theme → contrast</code>, <code>opsboard.session → training</code> y <code>opsboard_lab → enabled</code>.</p>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe los valores de Local Storage, Session Storage y Cookies, en ese orden y separados por espacios.</p>
+        <div class="response-field"><label for="r7">Respuesta del ticket DEV-107</label><textarea class="ticket-response" id="r7" placeholder="valor valor valor"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d7" type="checkbox"><label for="d7">Respuesta verificada</label></div>
+      </div></article>
+
+      <article class="ticket" id="t8"><div class="ticket-id">DEV-108</div><div>
+        <div class="ticket-head"><h3>Comprueba si un botón tiene un nombre claro</h3><div class="meta"><span class="tag core">Accessibility</span><span class="tag">9 min</span></div></div>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Añadir un nombre accesible a un botón con icono y revisar el contraste de un texto.</p>
+          <p><strong>Objetivo didáctico</strong> Comprender por qué los controles necesitan un nombre y por qué el contraste facilita la lectura.</p>
+        </div>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Elements → Accessibility</strong>.</p>
+        <ol class="steps">
+          <li>Usa el selector de elementos y pulsa el botón que solo muestra una papelera.</li>
+          <li>Abre <strong>Accessibility</strong> y busca <strong>Computed Properties</strong>.</li>
+          <li>Comprueba que el rol es <code>button</code> y observa el campo <strong>Name</strong>. Está vacío porque el icono se oculta a los lectores de pantalla.</li>
+          <li>Vuelve al HTML seleccionado. Haz doble clic en un espacio dentro de la etiqueta de apertura y añade <code>aria-label="Eliminar último pedido"</code>.</li>
+          <li>Regresa a Accessibility: ahora <strong>Name</strong> debe mostrar <em>Eliminar último pedido</em>.</li>
+          <li>Con el selector de elementos, pulsa el texto gris «Consejo del sistema…» situado bajo el buscador. En <strong>Styles</strong>, localiza <code>color: #667085</code> y pulsa el cuadrado de color que aparece junto al valor. Se abrirá el selector de color con la información de contraste.</li>
+        </ol>
+        <p class="expected"><strong>Debes ver:</strong> el botón pasa de no tener nombre a tener el nombre que has añadido.</p>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe el nombre accesible que añadiste al botón.</p>
+        <div class="response-field"><label for="r8">Respuesta del ticket DEV-108</label><textarea class="ticket-response" id="r8" placeholder="Nombre accesible exacto"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d8" type="checkbox"><label for="d8">Respuesta verificada</label></div>
+      </div></article>
+
+      <article class="ticket" id="t9"><div class="ticket-id">DEV-109</div><div>
+        <div class="ticket-head"><h3>Graba una tarea que bloquea la página</h3><div class="meta"><span class="tag core">Performance</span><span class="tag">10 min</span></div></div>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Grabar la ejecución de una tarea lenta y localizar la función que la provoca.</p>
+          <p><strong>Objetivo didáctico</strong> Aprender a reconocer una tarea larga que bloquea temporalmente la página.</p>
+        </div>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Performance</strong>.</p>
+        <ol class="steps">
+          <li>Pulsa el botón redondo <strong>Record</strong> para iniciar la grabación.</li>
+          <li>En la página, pulsa <strong>Ejecutar tarea lenta</strong>. Durante medio segundo la página responderá peor.</li>
+          <li>Vuelve a Performance y pulsa <strong>Stop</strong>.</li>
+          <li>Espera a que Chrome dibuje la grabación. Busca en la fila <strong>Main</strong> un bloque largo con una marca roja.</li>
+          <li>Haz clic en ese bloque. Explora los resultados y busca ahora la función responsable de dicha lentitud.</li>
+        </ol>
+        <p class="expected"><strong>Debes ver:</strong> una tarea larga de aproximadamente medio segundo.</p>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe únicamente el nombre de la función que produjo la tarea larga.</p>
+        <div class="response-field"><label for="r9">Respuesta del ticket DEV-109</label><textarea class="ticket-response" id="r9" placeholder="Nombre de la función"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d9" type="checkbox"><label for="d9">Respuesta verificada</label></div>
+      </div></article>
+
+      <article class="ticket" id="t10"><div class="ticket-id">DEV-110</div><div>
+        <div class="ticket-head"><h3>Observa cómo aumenta la memoria</h3><div class="meta"><span class="tag core">Memory</span><span class="tag">10 min</span></div></div>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Comparar dos instantáneas de memoria antes y después de retener varios objetos.</p>
+          <p><strong>Objetivo didáctico</strong> Comprender que los objetos retenidos aumentan la memoria utilizada por una página.</p>
+        </div>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>» → Memory</strong>.</p>
+        <ol class="steps">
+          <li>En Memory elige <strong>Heap snapshot</strong> y pulsa <strong>Take snapshot</strong>.</li>
+          <li>Espera a que aparezca <strong>Snapshot 1</strong> en la columna izquierda.</li>
+          <li>Pulsa tres veces <strong>Retener memoria</strong> en la página. El contador debe indicar <strong>Retenciones: 3</strong>.</li>
+          <li>Vuelve a Memory y toma otra instantánea. Aparecerá <strong>Snapshot 2</strong>.</li>
+          <li>Compara el tamaño que Chrome muestra junto a las dos instantáneas.</li>
+          <li>Abre Console, escribe <code>window.devtoolsLab.retenciones.length</code> y pulsa <kbd>Enter</kbd>.</li>
+        </ol>
+        <p class="expected"><strong>Debes ver:</strong> el número <code>3</code> en Console y una segunda instantánea de memoria.</p>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe el número devuelto por Console.</p>
+        <div class="response-field"><label for="r10">Respuesta del ticket DEV-110</label><textarea class="ticket-response" id="r10" placeholder="número"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d10" type="checkbox"><label for="d10">Respuesta verificada</label></div>
+      </div></article>
+
+      <article class="ticket" id="t11"><div class="ticket-id">DEV-111</div><div>
+        <div class="ticket-head"><h3>Explora la parte PWA de la aplicación</h3><div class="meta"><span class="tag core">Application</span><span class="tag">10 min</span></div></div>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Localizar el manifiesto, el Service Worker y los archivos guardados en Cache Storage.</p>
+          <p><strong>Objetivo didáctico</strong> Comprender cómo una PWA puede recuperar recursos de la caché cuando no hay conexión.</p>
+        </div>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>Application</strong>.</p>
+        <ol class="steps">
+          <li>Actualiza la página de prácticas y espera hasta que, en la propia página, aparezca <strong>Service Worker: activo</strong>.</li>
+          <li>Abre <strong>Application</strong>. En la columna izquierda, dentro del apartado <strong>Application</strong>, pulsa <strong>Manifest</strong>. En el panel central aparecerán <strong>App name</strong> y <strong>Start URL</strong>.</li>
+          <li>En esa misma columna izquierda, pulsa <strong>Service workers</strong>. Si no lo ves, desplázate hasta la parte superior de la columna.</li>
+          <li>En el panel central busca <strong>Source</strong>: el enlace debe terminar en <code>sw.js</code>. Junto a <strong>Status</strong> debe aparecer <em>activated</em> o <em>running</em>.</li>
+          <li>Vuelve a la columna izquierda y baja hasta <strong>Cache Storage</strong>. Pulsa el triángulo situado a su izquierda y después pulsa la caché <code>opsboard-lab-v4</code>.</li>
+          <li>En la tabla central, mira la columna <strong>Request</strong>. Debes encontrar tres direcciones terminadas en <code>index.html</code>, <code>data.json</code> y <code>manifest.webmanifest</code>.</li>
+          <li>Regresa a <strong>Service workers</strong> y marca la casilla <strong>Offline</strong>. Sin cerrar DevTools, pulsa <strong>Sincronizar pedidos</strong> en la página.</li>
+          <li>Aunque has desconectado la red, deben aparecer los cuatro pedidos y el indicador <strong>Red: 200</strong>: el Service Worker ha entregado <code>data.json</code> desde la caché.</li>
+          <li>Desmarca <strong>Offline</strong> al terminar para recuperar la conexión normal.</li>
+        </ol>
+        <p class="expected"><strong>Debes ver:</strong> <code>sw.js</code> activo, tres recursos en <strong>Cache Storage</strong> y cuatro pedidos cargados mientras <strong>Offline</strong> está marcado.</p>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe únicamente el nombre del archivo del Service Worker.</p>
+        <div class="response-field"><label for="r11">Respuesta del ticket DEV-111</label><textarea class="ticket-response" id="r11" placeholder="archivo.js"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d11" type="checkbox"><label for="d11">Respuesta verificada</label></div>
+      </div></article>
+
+      <article class="ticket" id="t12"><div class="ticket-id">DEV-112</div><div>
+        <div class="ticket-head"><h3>Pide a Lighthouse una revisión automática</h3><div class="meta"><span class="tag core">Lighthouse</span><span class="tag">10 min</span></div></div>
+        <div class="objective">
+          <p><strong>Qué vamos a hacer</strong> Ejecutar Lighthouse en cuatro categorías y abrir una de sus recomendaciones.</p>
+          <p><strong>Objetivo didáctico</strong> Aprender a usar una auditoría automática como punto de partida para mejorar una web.</p>
+        </div>
+        <p class="where"><strong>Dónde:</strong> página de prácticas → DevTools → <strong>» → Lighthouse</strong>.</p>
+        <ol class="steps">
+          <li>En <strong>Mode</strong> elige <strong>Navigation</strong> y en <strong>Device</strong> elige <strong>Mobile</strong>.</li>
+          <li>Marca las categorías <strong>Performance</strong>, <strong>Accessibility</strong>, <strong>Best Practices</strong> y <strong>SEO</strong>.</li>
+          <li>Pulsa <strong>Analyze page load</strong> y espera. Chrome realizará la prueba automáticamente.</li>
+          <li>Al terminar verás cuatro círculos con puntuaciones de 0 a 100.</li>
+          <li>Busca una recomendación marcada en naranja o rojo, ábrela y lee su explicación.</li>
+        </ol>
+        <p class="expected"><strong>Debes ver:</strong> cuatro puntuaciones y una lista de recomendaciones.</p>
+        <p class="evidence"><strong>Respuesta verificable:</strong> escribe cuántas categorías has marcado antes de iniciar el análisis.</p>
+        <div class="response-field"><label for="r12">Respuesta del ticket DEV-112</label><textarea class="ticket-response" id="r12" placeholder="número"></textarea><small class="response-help">Pulsa «Comprobar respuesta» cuando termines.</small></div>
+        <div class="done-row"><input class="done" id="d12" type="checkbox"><label for="d12">Respuesta verificada</label></div>
+      </div></article>
+    </section>
+
+    <section class="incident" id="reto-final">
+      <span class="incident-badge">RETO FINAL GUIADO · 15 MIN</span>
+      <h2>Explica tres descubrimientos</h2>
+      <p>Ya conoces los paneles principales. Ahora repite tres comprobaciones sencillas y descríbelas con tus palabras.</p>
+      <div class="incident-grid">
+        <div class="incident-card">
+          <h3>Qué debes comprobar</h3>
+          <ol>
+            <li>En Network, muestra una petición con estado 200.</li>
+            <li>En Console, muestra el error HTTP 404.</li>
+            <li>En Elements, selecciona el botón de papelera y explica por qué necesita un nombre.</li>
+          </ol>
+        </div>
+        <div class="incident-card">
+          <h3>Cómo explicarlo</h3>
+          <ul>
+            <li>Nombra el panel que utilizaste.</li>
+            <li>Cuenta dónde hiciste clic.</li>
+            <li>Escribe qué resultado apareció.</li>
+            <li>No incluyas cuentas, contraseñas ni datos personales.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="done-row"><input id="incident-done" type="checkbox"><label for="incident-done">Reto final explicado</label></div>
+    </section>
+
+    <section class="panel delivery" id="entrega">
+      <h2>Informe final</h2>
+      <p>El generador reúne las 13 respuestas comprobadas. Se habilitará cuando todas sean correctas.</p>
+      <p class="note" id="verification-summary">0 de 13 respuestas verificadas.</p>
+      <div class="delivery-grid">
+        <form id="report-form">
+          <label for="student-id">Nombre, alias o equipo</label>
+          <input id="student-id" name="student" maxlength="60" required placeholder="Ej.: Equipo 3">
+
+          <label for="priority">Importancia del problema principal</label>
+          <select id="priority" name="priority"><option>Alta · impide usar una función</option><option selected>Media · dificulta el uso</option><option>Baja · es una mejora conveniente</option></select>
+
+          <label for="findings">¿Qué tres cosas importantes has descubierto?</label>
+          <textarea id="findings" name="findings" maxlength="1200" required placeholder="1. En Elements aprendí… 2. En Network vi… 3. En Console…"></textarea>
+
+          <label for="recommendations">¿Qué mejorarías en la aplicación?</label>
+          <textarea id="recommendations" name="recommendations" maxlength="1200" required placeholder="Cambiaría… porque…"></textarea>
+
+          <div class="form-actions">
+            <button id="generate-report" type="submit" disabled>Generar informe</button>
+            <button class="secondary" id="download-report" type="button" disabled>Descargar TXT</button>
+          </div>
+        </form>
+        <div>
+          <h3>Vista previa</h3>
+          <pre class="report-preview" id="report-preview" aria-live="polite">Completa el formulario para generar el informe.</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Cómo se evaluará</h2>
+      <ul>
+        <li><strong>40 % Pasos:</strong> has seguido las instrucciones y encontrado el resultado indicado.</li>
+        <li><strong>30 % Respuestas:</strong> las 13 respuestas superan la comprobación automática.</li>
+        <li><strong>20 % Informe:</strong> incluye las respuestas y una mejora razonable.</li>
+        <li><strong>10 % Seguridad:</strong> no muestras información personal ni ejecutas código desconocido.</li>
+      </ul>
+      <p class="small">Consulta recomendada: <a href="https://developer.chrome.com/docs/devtools/">documentación oficial de Chrome DevTools</a>. Los nombres de algunos paneles pueden aparecer traducidos o dentro del menú <strong>»</strong>.</p>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <p>Práctica guiada de DWEC. Los fallos del panel son intencionados y están preparados para aprender DevTools desde cero.</p>
+  </footer>
+
+  <script type="text/plain" id="legacy-script-disabled">
+    'use strict';
+
+    window.devtoolsLab = {
+      orders: [],
+      retenciones: []
+    };
+
+    const ui = {
+      body: document.querySelector('#orders-body'),
+      count: document.querySelector('#orders-count'),
+      pending: document.querySelector('#pending-count'),
+      total: document.querySelector('#invoice-total'),
+      response: document.querySelector('#response-time'),
+      network: document.querySelector('#network-status'),
+      calculation: document.querySelector('#calc-status'),
+      memory: document.querySelector('#memory-status'),
+      serviceWorker: document.querySelector('#sw-status'),
+      clock: document.querySelector('#clock')
+    };
+
+    function euro(value) {
+      return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value);
+    }
+
+    function renderOrders(orders) {
+      ui.body.replaceChildren(...orders.map(order => {
+        const row = document.createElement('tr');
+        row.dataset.orderId = order.id;
+        row.innerHTML = `<td>${order.id}</td><td>${order.client}</td><td>${order.quantity}</td><td>${euro(order.price)}</td><td>${order.status}</td>`;
+        return row;
+      }));
+      ui.count.textContent = String(orders.length);
+      ui.pending.textContent = String(orders.filter(order => order.status === 'Pendiente').length);
+    }
+
+    async function cargarPedidos() {
+      const started = performance.now();
+      ui.network.textContent = 'Red: solicitando…';
+      ui.network.className = 'status';
+      console.info('[OpsBoard] Inicio de sincronización');
+      try {
+        const response = await fetch(`./p0101_v2_data.json?ts=${Date.now()}`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status} al cargar pedidos`);
+        const payload = await response.json();
+        window.devtoolsLab.orders = payload.orders;
+        renderOrders(payload.orders);
+        const elapsed = Math.round(performance.now() - started);
+        ui.response.textContent = `${elapsed} ms`;
+        ui.network.textContent = `Red: ${response.status} ${response.statusText}`;
+        ui.network.className = 'status ok';
+        ui.clock.textContent = `Última sincronización: ${new Date().toLocaleTimeString('es-ES')}`;
+        console.table(payload.orders);
+        console.info(`[OpsBoard] ${payload.orders.length} pedidos cargados en ${elapsed} ms`);
+      } catch (error) {
+        ui.network.textContent = `Red: ${error.message}`;
+        ui.network.className = 'status bad';
+        console.error('[OpsBoard] No se pudieron sincronizar los pedidos', error);
+      }
+    }
+
+    // Incidencia intencionada para el ticket DEV-104: se sustituye el total en cada iteración.
+    function calcularTotalConBug(orders) {
+      let total = 0;
+      for (const pedido of orders) {
+        const subtotal = pedido.price * pedido.quantity;
+        total = subtotal;
+      }
+      return total;
+    }
+
+    function recalcular() {
+      const total = calcularTotalConBug(window.devtoolsLab.orders);
+      ui.total.textContent = euro(total);
+      ui.calculation.textContent = 'Cálculo: completado';
+      ui.calculation.className = 'status bad';
+      console.warn('[OpsBoard] Total calculado. Validación funcional pendiente.');
+    }
+
+    async function provocarErrorHttp() {
+      console.group('[OpsBoard] Prueba de error controlado');
+      try {
+        const response = await fetch(`./p0101_v2_missing.json?ts=${Date.now()}`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}: recurso de prueba inexistente`);
+      } catch (error) {
+        console.error(error);
+        ui.network.textContent = `Red: ${error.message}`;
+        ui.network.className = 'status bad';
+      } finally {
+        console.groupEnd();
+      }
+    }
+
+    function ejecutarTareaLenta() {
+      const started = performance.now();
+      let checksum = 0;
+      while (performance.now() - started < 550) {
+        checksum = (checksum + Math.sqrt(checksum + 17)) % 100000;
+      }
+      const elapsed = Math.round(performance.now() - started);
+      console.warn(`[Performance] Tarea síncrona terminada en ${elapsed} ms`, { checksum });
+      return elapsed;
+    }
+
+    function retenerMemoria() {
+      const detached = document.createElement('section');
+      detached.className = 'detached-order-preview';
+      detached.textContent = `Vista previa ${Date.now()}`;
+      const payload = Array.from({ length: 12000 }, (_, index) => `pedido-${index}-${Date.now()}`);
+      window.devtoolsLab.retenciones.push({ detached, payload, createdAt: new Date() });
+      ui.memory.textContent = `Retenciones: ${window.devtoolsLab.retenciones.length}`;
+      console.info('[Memory] Objeto retenido deliberadamente', window.devtoolsLab.retenciones.at(-1));
+    }
+
+    function aplicarPreferencias() {
+      const contrast = localStorage.getItem('opsboard.theme') === 'contrast';
+      document.querySelector('.app-lab').style.outline = contrast ? '4px solid #111827' : '';
+      console.info(`[Storage] Tema aplicado: ${contrast ? 'contrast' : 'default'}`);
+    }
+    window.aplicarPreferencias = aplicarPreferencias;
+
+    document.querySelector('#sync-orders').addEventListener('click', cargarPedidos);
+    document.querySelector('#recalculate').addEventListener('click', recalcular);
+    document.querySelector('#trigger-error').addEventListener('click', provocarErrorHttp);
+    document.querySelector('#run-long-task').addEventListener('click', ejecutarTareaLenta);
+    document.querySelector('#create-leak').addEventListener('click', retenerMemoria);
+    document.querySelector('#delete-last').addEventListener('click', () => {
+      window.devtoolsLab.orders.pop();
+      renderOrders(window.devtoolsLab.orders);
+    });
+    document.querySelector('#order-filter').addEventListener('input', event => {
+      const query = event.target.value.trim().toLocaleLowerCase('es');
+      renderOrders(window.devtoolsLab.orders.filter(order => order.client.toLocaleLowerCase('es').includes(query)));
+    });
+
+    try {
+      localStorage.setItem('opsboard.theme', localStorage.getItem('opsboard.theme') || 'light');
+      sessionStorage.setItem('opsboard.session', 'training');
+      document.cookie = 'opsboard_lab=enabled; SameSite=Lax; path=/';
+    } catch (error) {
+      console.warn('[Storage] El origen actual limita el almacenamiento', error);
+    }
+
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      navigator.serviceWorker.getRegistrations()
+        .then(registrations => Promise.all(registrations
+          .filter(registration => registration.active?.scriptURL === new URL('./p0101_v2_sw.js', location.href).href
+            && !registration.scope.endsWith('/index.html'))
+          .map(registration => registration.unregister())))
+        .then(() => navigator.serviceWorker.register('./p0101_v2_sw.js', { scope: './index.html' }))
+        .then(registration => navigator.serviceWorker.ready.then(() => {
+          ui.serviceWorker.textContent = `Service Worker: activo (${registration.scope})`;
+          ui.serviceWorker.className = 'status ok';
+        }))
+        .catch(error => {
+          ui.serviceWorker.textContent = 'Service Worker: error de registro';
+          ui.serviceWorker.className = 'status bad';
+          console.error('[PWA] Error al registrar el Service Worker', error);
+        });
+    } else {
+      ui.serviceWorker.textContent = 'Service Worker: requiere HTTP(S)';
+    }
+
+    (() => {
+      const boxes = [...document.querySelectorAll('.done')];
+      const responses = [...document.querySelectorAll('.ticket-response')];
+      const incident = document.querySelector('#incident-done');
+      const bar = document.querySelector('#progress-bar');
+      const text = document.querySelector('#progress-text');
+      const key = 'devtools-cfgs-v2-progress';
+      const incidentKey = 'devtools-cfgs-v2-incident';
+      const responseKey = 'devtools-cfgs-v2-responses';
+
+      function read(storageKey, fallback) {
+        try { return JSON.parse(localStorage.getItem(storageKey)) ?? fallback; }
+        catch (_) { return fallback; }
+      }
+      function renderProgress() {
+        const completed = boxes.filter(box => box.checked).length;
+        bar.style.width = `${completed / boxes.length * 100}%`;
+        text.textContent = completed === boxes.length
+          ? (incident.checked ? '12 de 12 + reto final terminado' : '12 de 12 · falta el reto final')
+          : `${completed} de ${boxes.length} tickets`;
+      }
+      const saved = read(key, []);
+      boxes.forEach((box, index) => {
+        box.checked = saved.includes(index + 1);
+        box.addEventListener('change', () => {
+          const state = boxes.map((item, i) => item.checked ? i + 1 : null).filter(Boolean);
+          localStorage.setItem(key, JSON.stringify(state));
+          renderProgress();
+        });
+      });
+      const savedResponses = read(responseKey, {});
+      responses.forEach(field => {
+        field.value = savedResponses[field.id] || '';
+        field.addEventListener('input', () => {
+          const state = Object.fromEntries(responses.map(item => [item.id, item.value]));
+          localStorage.setItem(responseKey, JSON.stringify(state));
+        });
+      });
+      incident.checked = read(incidentKey, false);
+      incident.addEventListener('change', () => {
+        localStorage.setItem(incidentKey, JSON.stringify(incident.checked));
+        renderProgress();
+      });
+      document.querySelector('#reset-progress').addEventListener('click', () => {
+        boxes.forEach(box => { box.checked = false; });
+        responses.forEach(field => { field.value = ''; });
+        incident.checked = false;
+        localStorage.removeItem(key);
+        localStorage.removeItem(incidentKey);
+        localStorage.removeItem(responseKey);
+        renderProgress();
+      });
+      renderProgress();
+    })();
+
+    (() => {
+      const form = document.querySelector('#report-form');
+      const preview = document.querySelector('#report-preview');
+      const download = document.querySelector('#download-report');
+      let report = '';
+
+      function filePart(value) {
+        return value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'equipo';
+      }
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const student = document.querySelector('#student-id').value.trim();
+        const priority = document.querySelector('#priority').value;
+        const findings = document.querySelector('#findings').value.trim();
+        const recommendations = document.querySelector('#recommendations').value.trim();
+        const completed = document.querySelectorAll('.done:checked').length;
+        const ticketResponses = [...document.querySelectorAll('.ticket')].map(ticket => {
+          const id = ticket.querySelector('.ticket-id').textContent.trim();
+          const title = ticket.querySelector('h3').textContent.trim();
+          const answer = ticket.querySelector('.ticket-response').value.trim() || '[Sin respuesta]';
+          return `${id} · ${title}\n${answer}`;
+        }).join('\n\n');
+        report = [
+          'INFORME DEL LABORATORIO · CHROME DEVTOOLS',
+          '==========================================',
+          `Autoría: ${student}`,
+          `Fecha: ${new Date().toLocaleString('es-ES')}`,
+          `Importancia del problema principal: ${priority}`,
+          `Tickets documentados: ${completed} de 12`,
+          '',
+          'ESTADO OBSERVADO',
+          `Pedidos cargados: ${window.devtoolsLab.orders.length}`,
+          `Total visible: ${ui.total.textContent}`,
+          `Estado de red: ${ui.network.textContent}`,
+          `Objetos retenidos: ${window.devtoolsLab.retenciones.length}`,
+          `Service Worker: ${ui.serviceWorker.textContent}`,
+          '',
+          'RESPUESTAS DE LOS TICKETS', ticketResponses,
+          '',
+          'LO QUE HE DESCUBIERTO', findings,
+          '',
+          'MEJORAS QUE PROPONGO', recommendations,
+          '',
+          'COMPROBACIONES REALIZADAS',
+          '[ ] Elements y Styles',
+          '[ ] Console y Sources',
+          '[ ] Network y modo móvil',
+          '[ ] Application, Performance, Memory o Lighthouse',
+          '',
+          'Nota: se han revisado las capturas para excluir datos sensibles.'
+        ].join('\n');
+        preview.textContent = report;
+        download.disabled = false;
+        download.dataset.filename = `diagnostico-devtools-${filePart(student)}.txt`;
+      });
+      download.addEventListener('click', () => {
+        if (!report) return;
+        const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = download.dataset.filename || 'diagnostico-devtools.txt';
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+    })();
+  </script>
+  <script>
+    'use strict';
+
+    (() => {
+      const responses = [...document.querySelectorAll('.ticket-response')];
+      const boxes = [...document.querySelectorAll('.done')];
+      const incident = document.querySelector('#incident-done');
+      const progressBar = document.querySelector('#progress-bar');
+      const progressText = document.querySelector('#progress-text');
+      const verificationSummary = document.querySelector('#verification-summary');
+      const generateButton = document.querySelector('#generate-report');
+      const responseKey = 'devtools-cfgs-v3-responses';
+      const incidentKey = 'devtools-cfgs-v3-incident';
+
+      function read(key, fallback) {
+        try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
+        catch (_) { return fallback; }
+      }
+
+      function normalize(value) {
+        return value.trim().toLowerCase().normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[<>]/g, '')
+          .replace(/[;,/|]+/g, ' ')
+          .replace(/\s+/g, ' ');
+      }
+
+      function numbers(value) {
+        return value.match(/\d+/g) || [];
+      }
+
+      const rules = {
+        r0: value => normalize(value) === 'span',
+        r1: value => normalize(value) === 'metric highlight',
+        r2: value => normalize(value) === 'padding',
+        r3: value => JSON.stringify(numbers(value)) === JSON.stringify(['4', '404']),
+        r4: value => ['sustituye', 'reemplaza'].includes(normalize(value)),
+        r5: value => JSON.stringify(numbers(value)) === JSON.stringify(['200', '404']),
+        r6: value => normalize(value) === 'overflow',
+        r7: value => normalize(value) === 'contrast training enabled',
+        r8: value => normalize(value) === 'eliminar ultimo pedido',
+        r9: value => normalize(value).replace(/[^a-z0-9]/g, '') === 'ejecutartarealenta',
+        r10: value => normalize(value) === '3',
+        r11: value => normalize(value) === 'sw.js',
+        r12: value => normalize(value) === '4'
+      };
+
+      function saveResponses() {
+        const state = Object.fromEntries(responses.map(field => [field.id, field.value]));
+        localStorage.setItem(responseKey, JSON.stringify(state));
+      }
+
+      function renderProgress() {
+        const completed = boxes.filter(box => box.checked).length;
+        const total = boxes.length;
+        progressBar.style.width = `${completed / total * 100}%`;
+        progressText.textContent = `${completed} de ${total} respuestas verificadas`;
+        verificationSummary.textContent = completed === total
+          ? 'Las 13 respuestas están verificadas. Ya puedes generar el informe.'
+          : `${completed} de ${total} respuestas verificadas. Corrige las pendientes para habilitar el informe.`;
+        generateButton.disabled = completed !== total;
+      }
+
+      function validate(field, showError = true) {
+        const correct = Boolean(rules[field.id]?.(field.value));
+        const box = document.querySelector(`#d${field.id.slice(1)}`);
+        const feedback = document.querySelector(`#feedback-${field.id}`);
+        box.checked = correct;
+        feedback.className = `answer-feedback ${correct ? 'correct' : (showError ? 'incorrect' : '')}`;
+        feedback.textContent = correct ? 'Correcto. Respuesta verificada.' : (showError ? 'Todavía no. Revisa los pasos y vuelve a intentarlo.' : '');
+        renderProgress();
+        return correct;
+      }
+
+      const previousResponses = read('devtools-cfgs-v2-responses', {});
+      const savedResponses = read(responseKey, previousResponses);
+      if (!localStorage.getItem(responseKey)) {
+        localStorage.setItem(responseKey, JSON.stringify(savedResponses));
+      }
+      localStorage.removeItem('devtools-cfgs-v2-responses');
+      boxes.forEach(box => {
+        box.disabled = true;
+        box.checked = false;
+      });
+      responses.forEach(field => {
+        field.value = savedResponses[field.id] || '';
+        const actions = document.createElement('div');
+        actions.className = 'response-actions';
+        const button = document.createElement('button');
+        button.className = 'check-answer';
+        button.type = 'button';
+        button.textContent = 'Comprobar respuesta';
+        const feedback = document.createElement('output');
+        feedback.id = `feedback-${field.id}`;
+        feedback.className = 'answer-feedback';
+        feedback.setAttribute('aria-live', 'polite');
+        actions.append(button, feedback);
+        field.closest('.response-field').append(actions);
+        field.addEventListener('input', () => {
+          saveResponses();
+          validate(field, false);
+        });
+        button.addEventListener('click', () => validate(field, true));
+        validate(field, false);
+      });
+
+      incident.checked = read(incidentKey, false);
+      incident.addEventListener('change', () => {
+        localStorage.setItem(incidentKey, JSON.stringify(incident.checked));
+      });
+
+      document.querySelector('#reset-progress').addEventListener('click', () => {
+        responses.forEach(field => { field.value = ''; });
+        boxes.forEach(box => { box.checked = false; });
+        document.querySelectorAll('.answer-feedback').forEach(item => {
+          item.textContent = '';
+          item.className = 'answer-feedback';
+        });
+        incident.checked = false;
+        localStorage.removeItem(responseKey);
+        localStorage.removeItem(incidentKey);
+        renderProgress();
+      });
+
+      renderProgress();
+    })();
+
+    (() => {
+      const form = document.querySelector('#report-form');
+      const preview = document.querySelector('#report-preview');
+      const download = document.querySelector('#download-report');
+      let report = '';
+
+      function filePart(value) {
+        return value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'equipo';
+      }
+
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const boxes = [...document.querySelectorAll('.done')];
+        if (!boxes.every(box => box.checked)) return;
+        const student = document.querySelector('#student-id').value.trim();
+        const priority = document.querySelector('#priority').value;
+        const findings = document.querySelector('#findings').value.trim();
+        const recommendations = document.querySelector('#recommendations').value.trim();
+        const ticketResponses = [...document.querySelectorAll('.ticket')].map(ticket => {
+          const id = ticket.querySelector('.ticket-id').textContent.trim();
+          const title = ticket.querySelector('h3').textContent.trim();
+          const answer = ticket.querySelector('.ticket-response').value.trim();
+          return `${id} · ${title}\nRespuesta: ${answer}\nEstado: VERIFICADA`;
+        }).join('\n\n');
+        report = [
+          'INFORME DEL LABORATORIO · CHROME DEVTOOLS',
+          '==========================================',
+          `Autoría: ${student}`,
+          `Fecha: ${new Date().toLocaleString('es-ES')}`,
+          `Importancia del problema principal: ${priority}`,
+          `Respuestas verificadas: ${boxes.length} de ${boxes.length}`,
+          '',
+          'RESPUESTAS DE LOS TICKETS', ticketResponses,
+          '',
+          'LO QUE HE DESCUBIERTO', findings,
+          '',
+          'MEJORAS QUE PROPONGO', recommendations,
+          '',
+          'Nota: todas las respuestas de los tickets superaron la comprobación automática.'
+        ].join('\n');
+        preview.textContent = report;
+        download.disabled = false;
+        download.dataset.filename = `laboratorio-devtools-${filePart(student)}.txt`;
+      });
+
+      download.addEventListener('click', () => {
+        if (!report) return;
+        const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = download.dataset.filename || 'laboratorio-devtools.txt';
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+    })();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations
+          .filter(registration => registration.active?.scriptURL === new URL('./p0101_v2_sw.js', location.href).href)
+          .forEach(registration => registration.unregister());
+      });
+    }
+  </script>
+</body>
+</html>
