@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Auditoría avanzada de usabilidad de Migas Amigas para ciclos formativos de grado superior: diez casos, decisiones argumentadas y un informe TXT.">
+  <title>Migas Amigas · Auditoría UX para grado superior</title>
+  <style>
+    :root { color-scheme: light; --ink:#252b2b; --sub:#505b59; --paper:#fffefa; --sand:#f4f0e8; --line:#d8d2c6; --forest:#164d4b; --forest-dark:#103b3a; --clay:#9c421e; --mint:#e4f2ec; --amber:#fff3dc; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--sand); color:var(--ink); font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; }
+    button,input,select,textarea { font:inherit; }
+    button { cursor:pointer; }
+    :focus-visible { outline:3px solid #1165ae; outline-offset:3px; }
+    [hidden] { display:none !important; }
+    a { color:var(--forest); }
+    h1,h2,h3,p { margin-top:0; }
+    .wrap { max-width:1390px; margin:auto; padding:0 22px; }
+    .masthead { background:#183b3a; color:#fff; padding:28px 0 31px; }
+    .masthead .wrap { display:flex; justify-content:space-between; gap:24px; align-items:center; }
+    .kicker { margin:0 0 7px; color:#c7decf; font-weight:800; font-size:.83rem; letter-spacing:.1em; text-transform:uppercase; }
+    h1 { font-size:clamp(2rem,4vw,3.2rem); line-height:1.08; margin-bottom:9px; }
+    .masthead p:last-child { margin-bottom:0; max-width:75ch; color:#e9f0eb; }
+    .stamp { flex:none; border:1px solid #8cbbb0; padding:13px 19px; border-radius:12px; font-weight:800; text-align:center; line-height:1.25; }
+    main { padding-top:22px !important; padding-bottom:52px !important; }
+    .card { background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:0 9px 25px rgba(47,37,24,.055); }
+    .intro { display:grid; grid-template-columns:1.45fr 1fr; gap:18px; margin-bottom:18px; }
+    .intro .card { padding:21px 24px; }
+    .intro h2 { font-size:1.15rem; margin-bottom:7px; }
+    .intro ol { margin:6px 0 0; padding-left:23px; }
+    .intro li+li { margin-top:5px; }
+    .small { color:var(--sub); font-size:.9rem; }
+    .name-label { display:block; font-weight:750; margin:10px 0 6px; }
+    input[type="text"],input[type="search"],input[type="email"],select,textarea { width:100%; border:1px solid #a7aea8; border-radius:8px; background:#fff; color:var(--ink); padding:10px 11px; }
+    textarea { min-height:94px; resize:vertical; }
+    .layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(440px,.95fr); gap:19px; align-items:start; }
+    .panel-head { padding:15px 20px; background:#e7e3d8; border-bottom:1px solid var(--line); display:flex; gap:12px; justify-content:space-between; align-items:center; }
+    .panel-head h2 { margin:0; font-size:1.08rem; }
+    .panel-head small { color:#56605b; }
+    .site-panel,.audit-panel { overflow:hidden; }
+    .site-note { padding:12px 17px; margin:0; background:#fdf8ea; border-bottom:1px solid var(--line); font-size:.88rem; }
+    .site { margin:15px; border:1px solid #c8b49e; background:#fffdf8; border-radius:11px; overflow:hidden; }
+    .site-header { background:#693c27; padding:15px; color:#fff; }
+    .brand { font-family:Georgia,serif; font-weight:700; font-size:1.5rem; }
+    .site-header nav,.site-footer { display:flex; flex-wrap:wrap; gap:8px; }
+    .site-header nav button,.site-footer button { background:transparent; border:0; color:inherit; text-decoration:underline; padding:5px; }
+    .site-body { padding:15px; }
+    .promo { padding:16px; border:1px solid #e7bc80; border-radius:10px; background:#ffe9b8; }
+    .promo h3 { font:700 1.5rem Georgia,serif; margin-bottom:5px; }
+    .promo p { margin-bottom:8px; }
+    .badges { display:flex; flex-wrap:wrap; gap:5px; margin:8px 0 13px; }
+    .badges b { display:block; padding:3px 6px; font-size:.7rem; background:#bf4830; color:#fff; transform:rotate(-2deg); }
+    .badges b:nth-child(2n) { background:#713d83; transform:rotate(2deg); }
+    .site button.action { background:#8b351b; border:0; border-radius:5px; color:#fff; padding:7px 11px; font-weight:700; }
+    .site h4 { margin:17px 0 7px; }
+    .search-row { display:flex; gap:6px; }
+    .search-row input { flex:1; min-width:0; }
+    .search-row button,.category-list button { border:1px solid #c9a886; background:#fff3df; border-radius:5px; padding:6px 8px; }
+    .category-list { display:flex; flex-wrap:wrap; gap:5px; }
+    .category-list button { font-size:.78rem; }
+    .category-list button[aria-pressed="true"] { background:#d5efe5; border-color:#43997b; }
+    .results-label { margin:10px 0; font-size:.83rem; color:var(--sub); }
+    .products { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .product { border:1px solid #ded0bd; background:#fff; border-radius:9px; padding:10px; }
+    .product .icon { display:block; font-size:1.6rem; background:#f7ead1; border-radius:6px; text-align:center; padding:5px; }
+    .product strong,.product small { display:block; margin-top:5px; }
+    .product small { color:#6f5341; }
+    .product button { border:0; border-radius:5px; background:#70412f; color:#fff; margin-top:8px; padding:6px 9px; }
+    .cart { background:#fff7e9; border:1px solid #e1c9a5; border-radius:9px; padding:12px; margin-top:16px; }
+    .cart h4 { margin:0 0 5px; }
+    .cart ul { list-style:none; padding:0; margin:0; }
+    .cart li { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:5px 0; border-bottom:1px solid #e8d4ba; }
+    .cart li button { background:#fff; border:1px solid #aa7965; border-radius:5px; padding:3px 7px; }
+    .checkout label { display:block; margin:9px 0 5px; font-weight:700; font-size:.85rem; }
+    .checkout button { margin-top:12px; }
+    .store-error { color:#9d3526; min-height:1.5em; margin:9px 0 0; font-weight:700; }
+    .site-footer { background:#693c27; color:#fff; padding:13px; font-size:.82rem; }
+    .hidden-help { margin:12px 16px 0; font-size:.82rem; }
+    .site-bottom { padding:0 17px 17px; }
+    .button { display:inline-flex; justify-content:center; align-items:center; border-radius:8px; padding:10px 14px; font-weight:800; text-decoration:none; border:2px solid transparent; }
+    .button.primary { color:white; background:var(--forest); border-color:var(--forest); }
+    .button.primary:hover { background:var(--forest-dark); }
+    .button.secondary { color:var(--forest); background:white; border-color:#7a9a91; }
+    .button.secondary:hover { background:#e9f4ee; }
+    .button:disabled { opacity:.55; cursor:not-allowed; }
+    .site [data-zone].focus-zone { outline:3px solid #c87410; outline-offset:3px; border-radius:5px; }
+    .audit-inner { padding:19px; }
+    .progress-label { display:flex; justify-content:space-between; font-weight:750; gap:12px; }
+    progress { width:100%; height:13px; accent-color:var(--forest); margin:8px 0 13px; }
+    .case-nav { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:15px; }
+    .case-nav button { min-width:38px; height:38px; border:1px solid #a8b4ad; border-radius:7px; background:#fff; font-weight:800; }
+    .case-nav button[aria-current="step"] { background:var(--forest); color:#fff; }
+    .case-nav button.complete:not([aria-current="step"]) { background:var(--mint); color:var(--forest); }
+    .case-eyebrow { font-weight:800; font-size:.8rem; letter-spacing:.08em; color:var(--clay); text-transform:uppercase; margin:0 0 5px; }
+    #case-title { line-height:1.17; font-size:1.55rem; margin-bottom:11px; }
+    .brief { padding:13px 15px; border-radius:9px; border:1px solid #c8d6d0; background:#f0f8f4; margin-bottom:13px; }
+    .brief p { margin:0 0 8px; }
+    .brief p:last-child { margin-bottom:0; }
+    .brief strong { color:#174b43; }
+    .zone-actions { display:flex; gap:8px; margin:12px 0; flex-wrap:wrap; }
+    .field { margin:14px 0; }
+    .field label,.field legend { display:block; font-weight:760; margin-bottom:6px; }
+    .field .prompt { margin:0 0 6px; color:var(--sub); font-size:.87rem; }
+    .field small { display:block; color:var(--sub); }
+    .select-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+    fieldset.field { border:0; padding:0; }
+    .proposal { display:block; padding:11px 12px; margin:7px 0; border:1px solid #b8c3bc; border-radius:9px; cursor:pointer; background:#fff; }
+    .proposal:hover,.proposal:has(input:checked) { border-color:var(--forest); background:#f1f8f4; }
+    .proposal input { margin-right:7px; accent-color:var(--forest); }
+    .proposal small { padding-left:25px; margin-top:3px; }
+    .status { min-height:1.4em; font-weight:700; margin:10px 0; }
+    .status.error { color:#a12e1d; }
+    .status.success { color:#165e40; }
+    .debrief { margin-top:13px; padding:15px; border-radius:9px; background:var(--amber); border-left:5px solid #b6791e; }
+    .debrief h3 { font-size:1rem; margin-bottom:8px; }
+    .debrief p { margin-bottom:7px; }
+    .next-row { display:flex; justify-content:flex-end; margin:13px 0; }
+    .deliverable { margin-top:19px; padding:22px; }
+    .deliverable h2 { margin-bottom:6px; }
+    .synthesis { max-width:890px; }
+    .report-preview { white-space:pre-wrap; max-height:280px; overflow:auto; padding:13px; border:1px solid var(--line); border-radius:8px; background:#fff; font: .81rem/1.45 ui-monospace,SFMono-Regular,Consolas,monospace; }
+    .footer { padding:0 0 30px; color:var(--sub); font-size:.87rem; }
+    @media(max-width:1050px) { .layout { grid-template-columns:1fr; } }
+    @media(max-width:720px) { .intro { grid-template-columns:1fr; } .masthead .wrap { display:block; } .stamp { display:inline-block; margin-top:18px; } .wrap { padding:0 12px; } .intro .card,.audit-inner,.deliverable { padding:16px; } .select-grid { grid-template-columns:1fr; } }
+    @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+  </style>
+</head>
+<body>
+  <header class="masthead">
+    <div class="wrap">
+      <div><p class="kicker">Taller de diseño web · Grado superior</p><h1>Migas Amigas: auditoría UX</h1><p>Una tienda ficticia, diez problemas discutibles y decisiones que requieren evidencias. El objetivo es defender un rediseño, explicar su coste y planear cómo validarlo.</p></div>
+      <div class="stamp">10 casos<br>sin respuestas únicas</div>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="intro" aria-label="Instrucciones del laboratorio">
+      <div class="card">
+        <h2>Encargo del equipo de diseño</h2>
+        <ol>
+          <li>Explora la web de prueba, reproduce el problema del caso y anota un hecho comprobable. Los datos de usuarios que aparecen en los casos son <strong>simulados</strong>.</li>
+          <li>Valora la gravedad, selecciona una heurística de Nielsen y relaciona una ley UX. Compara tres soluciones viables: ninguna se corrige por sí sola.</li>
+          <li>Justifica qué ganas y a qué renuncias; plantea una prueba y un criterio medible. Tras los diez casos, prioriza y descarga tu informe TXT.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h2>Cómo se evalúa</h2>
+        <p class="small">La herramienta comprueba que hayas rellenado los apartados; <strong>no califica la calidad</strong> de tus argumentos. Compara cada entrega con una guía de contraste y discútela con tu docente.</p>
+        <p class="small">Referencias: <a href="https://www.nngroup.com/articles/ten-usability-heuristics/" target="_blank" rel="noopener noreferrer">heurísticas</a>, <a href="https://www.nngroup.com/articles/how-to-rate-the-severity-of-usability-problems/" target="_blank" rel="noopener noreferrer">escala de gravedad</a> y <a href="https://lawsofux.com/es/" target="_blank" rel="noopener noreferrer">leyes UX</a>.</p>
+        <label class="name-label" for="student-name">Nombre o identificador para el informe</label>
+        <input id="student-name" type="text" maxlength="60" autocomplete="off" placeholder="Ej.: Equipo 2">
+        <p class="small">El trabajo se guarda en este navegador. Los pedidos son de prueba y no se envía información a un servidor.</p>
+        <a href="migas-amigas.html" class="small">Ir a la versión introductoria</a>
+      </div>
+    </section>
+
+    <div class="layout">
+      <section class="card site-panel" aria-labelledby="site-title">
+        <div class="panel-head"><h2 id="site-title">Web de prueba · Migas Amigas</h2><small>Interacciones ficticias</small></div>
+        <p class="site-note">Esta maqueta conserva fallos a propósito. Utiliza «Localizar el punto» en cada caso y prueba el recorrido antes de escribir.</p>
+        <div class="site" id="site">
+          <header class="site-header" data-zone="4"><div class="brand">Migas Amigas</div><small>Pan de barrio, recogida y reparto</small><nav aria-label="Menú de la tienda"><button type="button" data-scroll="promo">Inicio</button><button type="button" data-scroll="catalog">Tienda</button><button type="button" data-scroll="checkout">Mi pedido</button></nav></header>
+          <div class="site-body">
+            <section class="promo" id="promo" data-zone="8"><h3>Pan recién hecho</h3><p>Escoge tu pan para recogerlo hoy.</p><div class="badges" aria-label="Promociones simultáneas"><b>2 × 1</b><b>¡OFERTA!</b><b>NUEVO</b><b>HOY</b><b>ÚLTIMAS HORAS</b></div><button type="button" class="action" data-scroll="catalog">Ver productos</button></section>
+            <section id="catalog"><h4>Catálogo</h4><div class="search-row" data-zone="1"><input id="search" type="search" placeholder="Buscar pan" aria-label="Buscar pan"><button id="search-button" type="button">Buscar</button></div><p class="results-label" id="results-label">6 productos disponibles</p><div class="category-list" data-zone="6" aria-label="Categorías"><button type="button" data-filter="all" aria-pressed="true">Todos</button><button type="button" data-filter="pan" aria-pressed="false">Panes</button><button type="button" data-filter="dulce" aria-pressed="false">Dulces</button><button type="button" data-filter="sin gluten" aria-pressed="false">Sin gluten</button><button type="button">Barras</button><button type="button">Integrales</button><button type="button">Masa madre</button><button type="button">Hogazas</button><button type="button">Empanadas</button><button type="button">Rosquillas</button><button type="button">Desayunos</button><button type="button">Otros</button></div>
+              <div class="products" id="products">
+                <article class="product" data-id="barra" data-name="Barra de pan" data-category="pan" data-zone="2"><span class="icon" aria-hidden="true">🥖</span><strong>Barra de pan</strong><small>1,20 € · ref. BA-01</small><button type="button" data-add="barra">Añadir</button></article>
+                <article class="product" data-id="hogaza" data-name="Hogaza de masa madre" data-category="pan" data-zone="10"><span class="icon" aria-hidden="true">🍞</span><strong>Hogaza de masa madre</strong><small>4,80 € · ref. HG-05</small><button type="button" data-add="hogaza">Añadir</button></article>
+                <article class="product" data-id="integral" data-name="Pan integral" data-category="pan"><span class="icon" aria-hidden="true">🥯</span><strong>Pan integral</strong><small>2,70 € · ref. IN-02</small><button type="button" data-add="integral">Añadir</button></article>
+                <article class="product" data-id="magdalena" data-name="Magdalena" data-category="dulce"><span class="icon" aria-hidden="true">🧁</span><strong>Magdalena</strong><small>0,90 € · ref. MG-03</small><button type="button" data-add="magdalena">Añadir</button></article>
+                <article class="product" data-id="empanada" data-name="Empanada" data-category="dulce"><span class="icon" aria-hidden="true">🥟</span><strong>Empanada</strong><small>3,40 € · ref. EM-04</small><button type="button" data-add="empanada">Añadir</button></article>
+                <article class="product" data-id="singen" data-name="Pan sin gluten" data-category="sin gluten"><span class="icon" aria-hidden="true">🥨</span><strong>Pan sin gluten</strong><small>3,90 € · ref. SG-06</small><button type="button" data-add="singen">Añadir</button></article>
+              </div>
+            </section>
+            <section class="cart" id="checkout" data-zone="3"><h4>Tu pedido</h4><ul id="cart-list"><li>Aún no hay productos.</li></ul><strong id="cart-total">Total: 0,00 €</strong><div data-zone="7"><small>¿Compras lo mismo cada semana? Revisa el catálogo para volver a añadirlo.</small></div><form id="checkout-form" class="checkout" novalidate><div data-zone="5"><label for="customer-email">Correo electrónico</label><input id="customer-email" type="email" placeholder="tu@correo.es"><label for="pickup-slot">Horario de recogida</label><select id="pickup-slot"><option value="">Selecciona una franja</option><option value="manana">De 9:00 a 11:00</option><option value="tarde">De 17:00 a 19:00</option></select></div><button type="submit" class="action">Confirmar pedido</button></form><p class="store-error" id="store-error" data-zone="9" role="status" aria-live="polite"></p></section>
+            <details class="hidden-help"><summary>Condiciones, alérgenos y ayuda</summary><p>Consulta en la panadería los ingredientes y posibles trazas antes de consumir el producto. Recogida sujeta a disponibilidad.</p></details>
+          </div>
+          <footer class="site-footer"><button type="button" data-scroll="promo">Portada</button><button type="button" data-scroll="catalog">Productos</button><button type="button" data-scroll="checkout">Finalizar</button></footer>
+        </div>
+        <div class="site-bottom"><button type="button" id="back-to-case" class="button secondary">Volver al caso</button></div>
+      </section>
+
+      <section class="card audit-panel" aria-labelledby="audit-title">
+        <div class="panel-head"><h2 id="audit-title">Cuaderno de auditoría</h2><small id="progress-short">0 de 10</small></div>
+        <div class="audit-inner"><div class="progress-label"><span>Casos documentados</span><span id="progress-text">0/10</span></div><progress id="progress" max="10" value="0" aria-label="Casos documentados"></progress><nav class="case-nav" id="case-nav" aria-label="Elegir caso"></nav><div id="case-content"></div></div>
+      </section>
+    </div>
+
+    <section class="card deliverable" id="deliverable" hidden aria-labelledby="deliverable-title">
+      <h2 id="deliverable-title">Síntesis y entrega</h2><p>Ya has documentado los diez casos. Elige qué atenderías primero y explica los límites de la evidencia antes de descargar el informe.</p>
+      <div class="synthesis"><div class="field"><label for="priorities">Tres prioridades, ordenadas y justificadas</label><p class="prompt">Cita los números de caso, el efecto esperado y una dependencia o coste (mínimo 100 caracteres).</p><textarea id="priorities" maxlength="1100"></textarea></div><div class="field"><label for="limitations">Límites y siguiente paso de investigación</label><p class="prompt">¿Qué no puedes concluir con la maqueta y los datos simulados? ¿A quién observarías? (mínimo 50 caracteres).</p><textarea id="limitations" maxlength="700"></textarea></div><button type="button" class="button primary" id="download">Descargar informe TXT</button><button type="button" class="button secondary" id="reset">Borrar esta sesión</button><p id="report-status" class="status" role="status" aria-live="polite"></p><h3>Vista previa</h3><pre id="report-preview" class="report-preview"></pre></div>
+    </section>
+  </main>
+  <footer class="wrap footer">Caso didáctico. Ningún pedido es real; la evaluación argumentada corresponde al alumnado y al docente.</footer>
+  <script>
+  (() => {
+    'use strict';
+    const heuristics = ['Visibilidad del estado','Correspondencia con el mundo real','Control y libertad','Consistencia y estándares','Prevención de errores','Reconocer antes que recordar','Flexibilidad y eficiencia','Diseño estético y minimalista','Reconocer y resolver errores','Ayuda y documentación'];
+    const lawNames = ['Ley de Hick','Ley de Fitts','Ley de Jakob','Ley de Miller','Ley de Tesler','Ley de proximidad','Efecto Von Restorff','Umbral de Doherty','Efecto de posición en serie','No aplicaría una ley UX concreta'];
+    const cases = [
+      { title:'Del filtro al resultado', spot:1, task:'Busca «hogaza» y después «focaccia». Comprueba qué cambia en la lista y qué informa la línea «6 productos disponibles».', data:'En seis sesiones de prueba simuladas, cuatro personas repitieron la búsqueda al no saber si había terminado.', constraint:'La búsqueda puede tardar entre 0,2 y 2 segundos; en ocasiones no habrá resultados.', question:'¿Dónde pondrías la confirmación de búsqueda y el estado sin resultados?', heuristic:0, law:'Umbral de Doherty', options:[
+        {name:'Estado persistente junto al listado', detail:'Mostrar el término, el número real de resultados y un estado vacío que permita borrar la búsqueda.', gain:'La confirmación queda cerca de la zona afectada.', cost:'Hay que sincronizar el contador y evitar anuncios excesivos a lectores de pantalla.'},
+        {name:'Aviso flotante temporal', detail:'Mostrar una notificación breve con el número de coincidencias sin alterar el encabezado.', gain:'Ocupa poco espacio y sirve en recorridos rápidos.', cost:'Puede desaparecer antes de que se lea y no resuelve por sí solo el estado vacío.'},
+        {name:'Pantalla de carga completa', detail:'Bloquear el catálogo hasta disponer del resultado y mostrar un progreso.', gain:'Evita interacciones sobre resultados antiguos.', cost:'Interrumpe una tarea frecuente; necesita gestionar demoras y fallos sin dejar al usuario atrapado.'}
+      ], guide:'El estado debe relacionarse con la búsqueda concreta. Examina la demora real y el caso sin resultados; no conviertas una animación en una solución automática.' },
+      { title:'La etiqueta del pedido', spot:2, task:'Añade una barra y una hogaza. Compara sus nombres en las tarjetas con lo que aparece en «Tu pedido».', data:'En una prueba simulada, tres de ocho clientes necesitaron volver al catálogo para interpretar los códigos del carrito.', constraint:'El personal usa referencias de producto para preparar el pedido y resolver incidencias.', question:'¿Qué información mostrarías en el resumen y dónde dejarías los códigos?', heuristic:1, law:'Ley de Jakob', options:[
+        {name:'Nombre claro con referencia secundaria', detail:'Mostrar «Hogaza de masa madre» y, debajo, «HG-05» de menor peso visual.', gain:'Alinea el resumen con el vocabulario del catálogo sin perder la referencia.', cost:'Puede sobrecargar el carrito móvil si se añaden más atributos.'},
+        {name:'Solo el nombre en pantalla', detail:'Mostrar nombres comunes y reservar los códigos para el recibo y la vista interna.', gain:'Simplifica la revisión del carrito.', cost:'El personal necesita una correspondencia fiable al pasar del pedido a su sistema.'},
+        {name:'Nombre corto y detalle expandible', detail:'Mostrar «Hogaza» y ofrecer la referencia en un panel de detalle opcional.', gain:'Economiza espacio en pedidos grandes.', cost:'Un nombre demasiado genérico puede dificultar distinguir variantes sin abrir el panel.'}
+      ], guide:'Comprueba la correspondencia entre lenguaje del cliente y lenguaje interno en cada paso. La elección depende del número de variantes y del espacio disponible.' },
+      { title:'Quitar sin vuelta atrás', spot:3, task:'Añade dos productos y pulsa «Quitar» en uno. Busca una vía para recuperar exactamente el producto y su cantidad.', data:'En ocho sesiones simuladas hubo dos eliminaciones involuntarias; ambas se detectaron antes de confirmar el pedido.', constraint:'La disponibilidad puede cambiar en pocos minutos; una reserva de stock no siempre es recuperable.', question:'¿Cómo permitirías rectificar sin crear falsas expectativas sobre el stock?', heuristic:2, law:'Ley de Tesler', options:[
+        {name:'Deshacer con comprobación de stock', detail:'Ofrecer «Deshacer» durante unos segundos y avisar si el artículo ya no está disponible.', gain:'Recuperación rápida en el caso habitual.', cost:'Exige conservar el estado y tratar cambios de stock durante el intervalo.'},
+        {name:'Confirmar cada eliminación', detail:'Pedir confirmación antes de sacar cualquier producto del carrito.', gain:'Previene algunos toques accidentales.', cost:'Añade una interrupción a cada eliminación deliberada.'},
+        {name:'Historial editable del carrito', detail:'Guardar una lista de cambios de la sesión para restaurar una versión anterior.', gain:'Permite corregir varios cambios y ajustar cantidades.', cost:'Aumenta complejidad y requiere comunicar con claridad el stock actual.'}
+      ], guide:'Hay una tensión entre una salida inmediata y la disponibilidad real. Describe qué ocurre si «Deshacer» ya no puede restituir el producto.' },
+      { title:'Dos menús para un recorrido', spot:4, task:'Compara las tres opciones de la cabecera con las tres del pie. Abre cada una y anota qué nombres designan el mismo destino.', data:'En una clasificación simulada de tarjetas, «Productos» y «Tienda» se agruparon; «Finalizar» se interpretó como pagar antes de revisar.', constraint:'El equipo de contenidos quiere conservar la palabra «Productos» para búsquedas y campañas.', question:'¿Qué arquitectura de etiquetas mantendría claridad sin perder contexto?', heuristic:3, law:'Ley de Jakob', options:[
+        {name:'Unificar con «Tienda» en ambos menús', detail:'Usar los mismos destinos y nombres, dejando «Productos» como título de la página.', gain:'Reduce diferencias entre navegación principal y pie.', cost:'Requiere revisar textos de campañas que usan «Productos».'},
+        {name:'Unificar con «Productos» en ambos menús', detail:'Usar «Productos» en las dos navegaciones y llamar «Tu pedido» al acceso al carrito.', gain:'Aprovecha el vocabulario conocido y la demanda de contenidos.', cost:'Hay que comprobar si «Productos» comunica compra además de consulta.'},
+        {name:'Mantener variantes con subtítulos', detail:'Usar nombres distintos según contexto, pero añadir aclaraciones visibles.', gain:'Permite mensajes específicos en campañas y pie.', cost:'El usuario todavía tendrá que aprender correspondencias entre etiquetas.'}
+      ], guide:'La consistencia no implica elegir siempre una palabra concreta. Unifica la función, evalúa la expectativa de los usuarios y separa nombre de página de etiqueta de navegación.' },
+      { title:'El formulario cae al final', spot:5, task:'Con un producto añadido, deja el correo vacío y confirma. Repite con un correo mal formado; observa si sabes qué campo corregir.', data:'En una prueba simulada, cinco de ocho personas tardaron más de 20 segundos en interpretar «Error F-12».', constraint:'Se necesita un correo válido y una franja disponible. Algunos usuarios completan datos mediante autocompletado.', question:'¿Cuándo validarías los campos y cómo comunicarías el error?', heuristic:4, law:'Ley de Tesler', options:[
+        {name:'Validación al salir del campo y resumen al enviar', detail:'Marcar cada error junto al campo cuando pierde foco y enfocar el primero si se intenta enviar.', gain:'Da una solución localizada sin interrumpir al escribir.', cost:'Hay que tratar bien autocompletado, cambios de franja y avisos accesibles.'},
+        {name:'Validación nativa al enviar', detail:'Usar campos requeridos, tipo email y mensajes del navegador al confirmar.', gain:'Implementación más pequeña y patrones conocidos.', cost:'Los mensajes varían según navegador y no cubren por sí solos la disponibilidad de la franja.'},
+        {name:'Revisión previa del pedido', detail:'Añadir una pantalla de confirmación con datos y errores antes del envío final.', gain:'Permite comprobar juntos producto, correo y horario.', cost:'Añade un paso y no sustituye mensajes claros junto al campo.'}
+      ], guide:'La comprobación debe prevenir errores recuperables sin castigar cada pulsación. Indica cómo verificarías teclado, lector de pantalla y autocompletado.' },
+      { title:'Un catálogo que obliga a explorar', spot:6, task:'Intenta localizar un pan sin gluten sin usar el buscador. Observa las etiquetas duplicadas y prueba la categoría «Sin gluten».', data:'La maqueta enseña seis productos, pero el catálogo completo simulado tiene 45 referencias y 12 etiquetas de acceso.', constraint:'La panadería quiere que también se descubran novedades y productos de temporada.', question:'¿Cómo organizarías el descubrimiento sin esconder opciones valiosas?', heuristic:5, law:'Ley de Hick', options:[
+        {name:'Cuatro grupos y filtros por necesidad', detail:'Organizar familias principales y mostrar filtros como «Sin gluten» dentro del catálogo.', gain:'Reduce la exploración inicial y permite afinar.', cost:'Hay que decidir dónde ubicar productos que pertenecen a varias familias.'},
+        {name:'Buscador destacado con sugerencias', detail:'Priorizar una búsqueda con autocompletado, sin retirar la navegación por categorías.', gain:'Ayuda a quien llega con un producto en mente.', cost:'Debe gestionar errores de escritura y términos que la gente no conoce.'},
+        {name:'Acceso directo a necesidades frecuentes', detail:'Destacar «Sin gluten» y «Para desayunar» según las tareas más habituales.', gain:'Agiliza búsquedas concretas.', cost:'Puede marginar novedades o necesidades menos frecuentes si se personaliza sin criterio.'}
+      ], guide:'La ley de Hick no exige reducir a ciegas el catálogo. Compara tareas de búsqueda conocida y exploración; revisa si las categorías y filtros son comprensibles.' },
+      { title:'La compra del viernes', spot:7, task:'Imagina que compras la misma barra cada viernes. Desde «Tu pedido», busca un modo de repetirla sin volver al catálogo.', data:'En el escenario simulado, 40 % de los clientes repite alguna compra; un 15 % cambia cantidades o ingredientes.', constraint:'El precio, el horario y la disponibilidad pueden variar entre pedidos.', question:'¿Qué atajo ofrecerías y en qué punto pedirías revisión?', heuristic:6, law:'Ley de Jakob', options:[
+        {name:'Carrito prellenado para revisar', detail:'Ofrecer «Volver a pedir» que añade artículos disponibles y abre la revisión del carrito.', gain:'Acelera la compra sin ocultar los cambios de precio u horario.', cost:'No es un clic final y requiere explicar sustituciones.'},
+        {name:'Compra repetida en un clic', detail:'Confirmar el mismo pedido desde un botón con datos guardados.', gain:'Máxima rapidez para una tarea frecuente.', cost:'Puede confirmar artículos o franjas no deseadas; necesita permisos y salvaguardas.'},
+        {name:'Plantilla editable de favoritos', detail:'Permitir guardar una lista habitual y usarla como punto de partida.', gain:'Sirve para compras parecidas pero no idénticas.', cost:'Requiere configuración y mantenimiento, con un coste inicial mayor.'}
+      ], guide:'Optimizar para expertos no debe quitar control. Explica en qué paso se comunican variaciones de precio, disponibilidad y preferencias.' },
+      { title:'Cinco urgencias simultáneas', spot:8, task:'En el bloque amarillo, busca «Ver productos» sin interactuar. Identifica qué reclamos compiten con la acción y si alguno aporta información imprescindible.', data:'En un ejercicio simulado de recuerdo, 6 de 8 participantes mencionaron la oferta; solo 2 recordaron cómo entrar al catálogo.', constraint:'Marketing necesita comunicar una promoción y el equipo legal pide no ocultar condiciones relevantes.', question:'¿Qué jerarquía visual propondrías sin suprimir información necesaria?', heuristic:7, law:'Efecto Von Restorff', options:[
+        {name:'Una oferta relevante y acción principal destacada', detail:'Reducir los reclamos simultáneos y dar protagonismo al acceso al catálogo.', gain:'Clarifica el siguiente paso sin eliminar la promoción.', cost:'Hay que definir qué oferta mostrar y dónde dejar sus condiciones.'},
+        {name:'Promociones en secuencia', detail:'Mostrar una oferta cada vez junto a «Ver productos».', gain:'Se preservan varias campañas sin exhibirlas a la vez.', cost:'Un carrusel puede ocultar información y distraer si rota automáticamente.'},
+        {name:'Promociones según intención', detail:'Mostrar solo una oferta relacionada con la categoría o búsqueda activa.', gain:'Puede resultar más útil para una tarea concreta.', cost:'Depende de señales fiables y requiere cuidado con privacidad y sorpresa.'}
+      ], guide:'Minimalismo no significa borrar información útil. Compara atención, condiciones de la oferta y descubrimiento del catálogo en tareas reales.' },
+      { title:'¿Se confirmó el pedido?', spot:9, task:'Añade un producto, escribe un correo válido, selecciona una franja y confirma. Interpreta «Error P-47» y decide si sería seguro pulsar de nuevo.', data:'El servicio de pedidos simulado puede fallar después de recibir la solicitud, antes de devolver la confirmación.', constraint:'Un doble envío podría reservar dos veces el mismo producto; la maqueta no revela el estado real del servidor.', question:'¿Qué recuperación diseñarías ante un resultado incierto?', heuristic:8, law:'Umbral de Doherty', options:[
+        {name:'Consultar el estado antes de reintentar', detail:'Mostrar «Comprobando el pedido» y permitir reintentar solo tras verificar que no se registró.', gain:'Reduce duplicados y explica la incertidumbre.', cost:'Necesita una consulta fiable y un identificador de solicitud.'},
+        {name:'Reintento protegido por clave única', detail:'Ofrecer «Reintentar» con una clave idempotente para que ambos intentos cuenten como uno.', gain:'Permite recuperación rápida incluso si hubo un primer envío.', cost:'Exige soporte del servidor; el texto debe explicar el resultado final.'},
+        {name:'Bloquear envío y ofrecer soporte', detail:'Pausar nuevos intentos y mostrar una vía de contacto y un identificador.', gain:'Evita duplicaciones cuando no existe infraestructura de consulta.', cost:'Retrasa la compra y traslada esfuerzo al equipo de atención.'}
+      ], guide:'Un error no implica que la operación no se haya ejecutado. No ofrezcas reintento ciego si puedes generar duplicados; explicita la dependencia técnica.' },
+      { title:'Alérgenos en el momento decisivo', spot:10, task:'Busca los ingredientes o posibles trazas de la hogaza antes de añadirla. Comprueba dónde está la ayuda y qué se puede afirmar con la información visible.', data:'En seis consultas simuladas sobre alérgenos, cuatro se plantearon dentro de la ficha de producto y dos durante la revisión del carrito.', constraint:'La información de ingredientes debe ser verificable y actualizarse cuando cambien recetas o proveedores.', question:'¿Cómo situarías una ayuda fiable sin prometer datos que no conoces?', heuristic:9, law:'Ley de proximidad', options:[
+        {name:'Ficha de alérgenos en producto y carrito', detail:'Mostrar información verificada en la tarjeta ampliada y un acceso visible desde el carrito.', gain:'Responde donde surge la pregunta y permite revisarla antes de confirmar.', cost:'Requiere mantener datos sincronizados y gestionar productos sin información confirmada.'},
+        {name:'Panel contextual de dudas frecuentes', detail:'Añadir preguntas breves junto al producto con fuente y fecha de actualización.', gain:'Da contexto y pasos para ampliar información.', cost:'Las FAQ no sustituyen una ficha de ingredientes exacta y vigente.'},
+        {name:'Contacto humano visible antes de pagar', detail:'Mostrar un botón para consultar a la panadería y pausar la confirmación si faltan datos.', gain:'Evita inferir información que no está verificada.', cost:'Depende de disponibilidad de personal y puede impedir compras fuera de horario.'}
+      ], guide:'La ayuda debe ser localizable, exacta y mantenida. Si falta un dato sobre alérgenos, declara la incertidumbre y no inventes una garantía.' }
+    ];
+    const $ = selector => document.querySelector(selector);
+    const storeKey = 'migas-amigas-superior-v1';
+    const blank = () => ({observation:'',severity:'',heuristic:'',law:'',option:'',reason:'',test:'',submitted:false});
+    let state = {name:'',current:0,entries:cases.map(blank),priorities:'',limitations:''};
+    try {
+      const saved = JSON.parse(localStorage.getItem(storeKey));
+      if (saved && Array.isArray(saved.entries) && saved.entries.length === cases.length) {
+        state = { ...state, ...saved, entries:saved.entries.map(item => ({...blank(), ...item})), current:Math.max(0,Math.min(cases.length-1,Number(saved.current)||0)) };
+      }
+    } catch (_) { /* La actividad sigue funcionando si el almacenamiento está bloqueado. */ }
+    const save = () => { try { localStorage.setItem(storeKey, JSON.stringify(state)); } catch (_) { /* Informe descargable aunque no se pueda guardar. */ } };
+    const esc = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    const productData = {barra:['BA-01',1.2],hogaza:['HG-05',4.8],integral:['IN-02',2.7],magdalena:['MG-03',.9],empanada:['EM-04',3.4],singen:['SG-06',3.9]};
+    let cart = [];
+    function renderCart() {
+      const list=$('#cart-list'); list.replaceChildren();
+      if (!cart.length) { const li=document.createElement('li'); li.textContent='Aún no hay productos.'; list.append(li); }
+      cart.forEach((id,index) => {
+        const li=document.createElement('li'); const label=document.createElement('span'); label.textContent=`${productData[id][0]} · ${productData[id][1].toFixed(2).replace('.',',')} €`;
+        const remove=document.createElement('button'); remove.type='button'; remove.textContent='Quitar'; remove.setAttribute('aria-label',`Quitar ${productData[id][0]}`);
+        remove.addEventListener('click', () => { cart.splice(index,1); renderCart(); });
+        li.append(label,remove); list.append(li);
+      });
+      $('#cart-total').textContent=`Total: ${cart.reduce((sum,id)=>sum+productData[id][1],0).toFixed(2).replace('.',',')} €`;
+    }
+    function filterProducts() {
+      const category=$('[data-filter][aria-pressed="true"]').dataset.filter;
+      const query=$('#search').value.trim().toLocaleLowerCase('es');
+      document.querySelectorAll('.product').forEach(article => {
+        article.hidden=(category!=='all' && article.dataset.category!==category) || !article.dataset.name.toLocaleLowerCase('es').includes(query);
+      });
+      // El contador está desactualizado a propósito: forma parte de la auditoría.
+    }
+    document.querySelectorAll('[data-add]').forEach(button => button.addEventListener('click', () => { cart.push(button.dataset.add); renderCart(); }));
+    document.querySelectorAll('[data-filter]').forEach(button => button.addEventListener('click', () => { document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b===button))); filterProducts(); }));
+    $('#search-button').addEventListener('click', filterProducts);
+    $('#search').addEventListener('keydown', event => { if(event.key==='Enter') { event.preventDefault(); filterProducts(); } });
+    $('#checkout-form').addEventListener('submit', event => {
+      event.preventDefault(); const email=$('#customer-email'); const slot=$('#pickup-slot');
+      $('#store-error').textContent=(!cart.length || !email.value.trim() || !email.validity.valid || !slot.value) ? 'Error F-12' : 'Error P-47';
+    });
+    document.querySelectorAll('[data-scroll]').forEach(button => button.addEventListener('click', () => document.getElementById(button.dataset.scroll).scrollIntoView({behavior:'smooth',block:'center'})));
+    $('#back-to-case').addEventListener('click', () => $('#case-title').scrollIntoView({behavior:'smooth',block:'start'}));
+    function selectOptions(items,selected,placeholder) { return `<option value="">${placeholder}</option>`+items.map((item,index)=>`<option value="${index}" ${selected===String(index)?'selected':''}>${esc(item)}</option>`).join(''); }
+    function renderNav() {
+      const nav=$('#case-nav'); nav.replaceChildren();
+      cases.forEach((item,index) => { const b=document.createElement('button'); b.type='button'; b.textContent=state.entries[index].submitted?'✓':String(index+1); b.title=`Caso ${index+1}: ${item.title}${state.entries[index].submitted?' (documentado)':''}`; b.setAttribute('aria-label',b.title); if(index===state.current)b.setAttribute('aria-current','step'); if(state.entries[index].submitted)b.classList.add('complete'); b.addEventListener('click',()=>{ state.current=index; save(); renderNav(); renderCase(); $('#audit-title').scrollIntoView({behavior:'smooth',block:'start'}); }); nav.append(b); });
+      const done=state.entries.filter(entry=>entry.submitted).length;
+      $('#progress').value=done; $('#progress-short').textContent=`${done} de 10`; $('#progress-text').textContent=`${done}/10`;
+      $('#deliverable').hidden=done!==cases.length;
+      if(done===cases.length) renderPreview();
+    }
+    function renderCase() {
+      const item=cases[state.current]; const entry=state.entries[state.current];
+      document.querySelectorAll('.focus-zone').forEach(element=>element.classList.remove('focus-zone'));
+      document.querySelector(`[data-zone="${item.spot}"]`).classList.add('focus-zone');
+      const proposals=item.options.map((option,index)=>`<label class="proposal"><input type="radio" name="option" value="${index}" ${entry.option===String(index)?'checked':''}><strong>${String.fromCharCode(65+index)} · ${esc(option.name)}</strong><small>${esc(option.detail)}</small></label>`).join('');
+      $('#case-content').innerHTML=`<p class="case-eyebrow">Caso ${state.current+1} de 10 · Diagnóstico abierto</p><h2 id="case-title">${esc(item.title)}</h2>
+        <div class="brief"><p><strong>Prueba en la maqueta:</strong> ${esc(item.task)}</p><p><strong>Indicio de investigación:</strong> ${esc(item.data)}</p><p><strong>Restricción:</strong> ${esc(item.constraint)}</p></div>
+        <div class="zone-actions"><button type="button" id="locate" class="button secondary">Localizar el punto en la web</button><a class="button secondary" href="https://lawsofux.com/es/" target="_blank" rel="noopener noreferrer">Consultar leyes UX ↗</a></div>
+        <form id="audit-form" novalidate><div class="field"><label for="observation">1 · Evidencia de tu prueba</label><p class="prompt">Describe la acción y el resultado exacto que has comprobado; no copies solo el indicio anterior.</p><textarea id="observation" name="observation" minlength="35" maxlength="600" placeholder="Al hacer ..., la interfaz muestra ...">${esc(entry.observation)}</textarea><small>Mínimo 35 caracteres.</small></div>
+        <div class="select-grid"><div class="field"><label for="severity">2 · Gravedad</label><select id="severity" name="severity"><option value="">Elige una</option><option value="0" ${entry.severity==='0'?'selected':''}>0 · No hay problema</option><option value="1" ${entry.severity==='1'?'selected':''}>1 · Cosmético</option><option value="2" ${entry.severity==='2'?'selected':''}>2 · Menor</option><option value="3" ${entry.severity==='3'?'selected':''}>3 · Grave</option><option value="4" ${entry.severity==='4'?'selected':''}>4 · Crítico</option></select></div><div class="field"><label for="heuristic">Heurística principal</label><select id="heuristic" name="heuristic">${selectOptions(heuristics,entry.heuristic,'Elige una')}</select></div></div>
+        <div class="field"><label for="law">Ley UX que ayuda a explicar el caso</label><select id="law" name="law">${selectOptions(lawNames,entry.law,'Elige una')}</select><small>«No aplicaría» es válido si puedes justificarlo.</small></div>
+        <fieldset class="field"><legend>3 · Decisión de diseño: ${esc(item.question)}</legend><p class="prompt">Las tres opciones tienen ventajas y costes. Puedes defender otra solución en tu justificación.</p>${proposals}</fieldset>
+        <div class="field"><label for="reason">4 · Defensa y compensación</label><p class="prompt">Razona con tus observaciones, explica qué sacrificas y en qué condiciones cambiarías tu decisión.</p><textarea id="reason" name="reason" minlength="65" maxlength="1100" placeholder="Elijo ... porque ...; el coste sería ...">${esc(entry.reason)}</textarea><small>Mínimo 65 caracteres.</small></div>
+        <div class="field"><label for="test">5 · Prueba y criterio de éxito</label><p class="prompt">Indica a quién observarías, qué tarea haría y qué medida mostraría una mejora.</p><textarea id="test" name="test" minlength="40" maxlength="800" placeholder="Probaría con ...; mediría ...; esperaría ...">${esc(entry.test)}</textarea><small>Mínimo 40 caracteres.</small></div>
+        <button type="submit" class="button primary">Guardar análisis del caso</button><p id="form-status" class="status" role="status" aria-live="polite"></p></form>
+        <aside id="debrief" class="debrief" ${entry.submitted?'':'hidden'}><h3>Guía de contraste para revisar tu argumento</h3><p><strong>Heurística especialmente pertinente:</strong> ${esc(heuristics[item.heuristic])}. <strong>Conexión UX:</strong> ${esc(item.law)}.</p><p>${esc(item.guide)}</p><p id="option-tradeoff"></p><p class="small">La guía orienta la revisión; no corrige automáticamente la calidad de tu respuesta.</p></aside>
+        <div class="next-row"><button type="button" id="next-case" class="button secondary">${state.current===9?'Ir a la síntesis':'Siguiente caso →'}</button></div>`;
+      $('#locate').addEventListener('click', () => document.querySelector(`[data-zone="${item.spot}"]`).scrollIntoView({behavior:'smooth',block:'center'}));
+      $('#next-case').addEventListener('click', () => { if(state.current===9) { if(!$('#deliverable').hidden) $('#deliverable').scrollIntoView({behavior:'smooth'}); else { $('#form-status').textContent='Completa los diez casos antes de la síntesis.'; $('#form-status').className='status error'; } } else {state.current+=1; save(); renderNav(); renderCase(); $('#audit-title').scrollIntoView({behavior:'smooth',block:'start'});} });
+      const form=$('#audit-form'); const sync=event => { const field=event.target; if(!field.name)return; entry[field.name]=field.value; if(entry.submitted) {entry.submitted=false; $('#debrief').hidden=true; $('#form-status').textContent='Cambios pendientes: guarda de nuevo este caso.'; $('#form-status').className='status'; renderNav();} save(); };
+      form.addEventListener('input',sync); form.addEventListener('change',sync);
+      form.addEventListener('submit',event => {
+        event.preventDefault();
+        const message=$('#form-status');
+        for(const [field,min,label] of [['observation',35,'evidencia'],['reason',65,'defensa'],['test',40,'prueba de validación']]) {
+          if(entry[field].trim().length<min) { message.textContent=`Amplía ${label}: mínimo ${min} caracteres con información concreta.`; message.className='status error'; $(`#${field}`).focus(); return; }
+        }
+        for(const [field,label] of [['severity','gravedad'],['heuristic','heurística'],['law','ley UX'],['option','propuesta']]) {
+          if(entry[field]==='') {message.textContent=`Selecciona ${label} antes de guardar.`; message.className='status error'; $(`#${field==='option'?'audit-form':field}`).focus(); return;}
+        }
+        entry.submitted=true; save(); renderNav(); renderDebrief(item,entry);
+        message.textContent='Análisis guardado. Contrasta tu elección con la guía; puedes editarla.'; message.className='status success';
+      });
+      if(entry.submitted) renderDebrief(item,entry);
+    }
+    function renderDebrief(item,entry) {
+      $('#debrief').hidden=false; const choice=item.options[Number(entry.option)];
+      $('#option-tradeoff').textContent=`Tu propuesta, «${choice.name}»: ${choice.gain} Riesgo: ${choice.cost}`;
+    }
+    function reportText() {
+      const clean=value=>String(value||'').replace(/[\r\n\t]+/g,' ').trim();
+      const lines=['MIGAS AMIGAS · INFORME DE AUDITORÍA UX (GRADO SUPERIOR)','======================================================',`Autoría: ${clean(state.name)||'Sin indicar'}`,`Fecha: ${new Date().toLocaleDateString('es-ES')}`,`Casos documentados: ${state.entries.filter(e=>e.submitted).length}/10`,'Datos de usuarios: simulados; el alumnado debe validar las hipótesis.','','CRITERIO DE REVISIÓN','-------------------','Valorar cada caso según evidencia reproducible, fundamento en heurísticas y leyes,','compensaciones expresas, y plan de validación con personas y medidas.','La aplicación comprueba campos, no asigna calificación a las respuestas.'];
+      cases.forEach((item,index) => {const entry=state.entries[index];const choice=item.options[Number(entry.option)];lines.push('',`CASO ${index+1} · ${item.title.toUpperCase()}`,'-'.repeat(13+item.title.length),`Situación: ${item.data}`,`Restricción: ${item.constraint}`,`Evidencia propia: ${clean(entry.observation)}`,`Gravedad declarada: ${entry.severity}/4`,`Heurística elegida: ${heuristics[Number(entry.heuristic)]}`,`Ley UX elegida: ${lawNames[Number(entry.law)]}`,`Propuesta: ${choice.name}`,`Descripción: ${choice.detail}`,`Justificación y coste: ${clean(entry.reason)}`,`Validación: ${clean(entry.test)}`,`Guía de contraste: ${heuristics[item.heuristic]} / ${item.law}. ${item.guide}`,`Ventaja posible: ${choice.gain}`,`Riesgo posible: ${choice.cost}`);});
+      lines.push('','SÍNTESIS FINAL','--------------',`Prioridades: ${clean(state.priorities)}`,`Límites y siguiente investigación: ${clean(state.limitations)}`,'','Informe educativo basado en una maqueta y datos ficticios.'); return lines.join('\n')+'\n';
+    }
+    function renderPreview() { $('#report-preview').textContent=reportText(); }
+    $('#student-name').value=state.name;
+    $('#student-name').addEventListener('input',event=>{state.name=event.target.value;save();if(!$('#deliverable').hidden)renderPreview();});
+    $('#priorities').value=state.priorities; $('#limitations').value=state.limitations;
+    ['priorities','limitations'].forEach(id=>$('#'+id).addEventListener('input',event=>{state[id]=event.target.value; save(); renderPreview();}));
+    $('#download').addEventListener('click',()=>{
+      const status=$('#report-status');
+      if(state.priorities.trim().length<100 || state.limitations.trim().length<50) { status.textContent='Completa la síntesis: 100 caracteres en prioridades y 50 en límites.'; status.className='status error'; (state.priorities.trim().length<100?$('#priorities'):$('#limitations')).focus(); return; }
+      const text=reportText(); const filename=(state.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,35)||'equipo');
+      const url=URL.createObjectURL(new Blob(['\ufeff',text],{type:'text/plain;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download=`migas-amigas-auditoria-${filename}.txt`;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+      status.textContent='Informe descargado. Comprueba el archivo en tu dispositivo.';status.className='status success';
+    });
+    $('#reset').addEventListener('click',()=>{if(!confirm('¿Borrar tus diez análisis y la síntesis de este navegador?'))return;try{localStorage.removeItem(storeKey);}catch(_){}location.reload();});
+    renderCart();renderNav();renderCase();
+  })();
+  </script>
+</body>
+</html>
