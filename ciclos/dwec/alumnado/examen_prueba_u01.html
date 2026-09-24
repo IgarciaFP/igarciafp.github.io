@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen de prueba · DWEC · Unidad 1</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #16a34a;
+            --success-hover: #15803d;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #cbd5e1;
+            --accent-bg: #eff6ff;
+            --accent-border: #3b82f6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 1.6rem;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .instructions {
+            background-color: #fef3c7;
+            border-left: 4px solid #d97706;
+            padding: 0.85rem 1rem;
+            margin-top: 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #78350f;
+        }
+
+        .student-info {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .student-info input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .question-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .question-title {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+
+        .question-number {
+            background-color: var(--primary);
+            color: white;
+            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .answer-area {
+            width: 100%;
+            min-height: 110px;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            resize: vertical;
+        }
+
+        .answer-area:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .solution-btn {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .solution-btn:hover:not(:disabled) {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .solution-btn:disabled {
+            border-color: #cbd5e1;
+            color: #94a3b8;
+            cursor: not-allowed;
+            background-color: #f1f5f9;
+        }
+
+        .solution-content {
+            display: none;
+            background-color: var(--accent-bg);
+            border-left: 4px solid var(--accent-border);
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.925rem;
+        }
+
+        .solution-content.active {
+            display: block;
+        }
+
+        .solution-content h4 {
+            color: var(--primary-hover);
+            margin-bottom: 0.4rem;
+        }
+
+        .submit-section {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .submit-btn {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 0.85rem 1.75rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--success-hover);
+        }
+
+        .completion-message {
+            display: none;
+            margin-top: 1.25rem;
+            padding: 1rem;
+            background-color: #f0fdf4;
+            border: 1px solid #86efac;
+            color: #166534;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+    
+        [hidden] { display: none !important; }
+        .solution-content:not([hidden]), .completion-message:not([hidden]) { display: block; }
+        .actions { display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; margin-top:1rem; }
+        .submit-btn:disabled { background:#64748b; cursor:not-allowed; }
+        textarea:read-only, input:read-only { background:#f1f5f9; color:#334155; }
+        #validation-msg { color:#b42318; margin:.75rem 0; }
+        #save-status, #clipboard-status { margin-top:1rem; font-size:.9rem; }
+        :focus-visible { outline:3px solid #d97706; outline-offset:3px; }
+        .sr-only { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+        .student-info label { width:100%; font-weight:600; }
+        body { user-select:none; -webkit-user-select:none; }
+        input, textarea { user-select:text; -webkit-user-select:text; }
+        @media(max-width:540px) { body{padding:1rem .5rem} header,.question-card,.submit-section{padding:1rem} .actions button{width:100%} }
+        @media print { .solution-btn,.actions { display:none; } }
+    </style>
+</head>
+<body>
+<noscript>Activa JavaScript para responder y generar el informe. Las soluciones permanecen ocultas sin JavaScript.</noscript>
+
+<div class="container">
+    <header>
+        <h1>Examen de prueba: DWEC Unidad 1</h1>
+        <p class="subtitle">Práctica de autoevaluación · No es el examen oficial</p>
+        <div class="student-info">
+            <label for="student-name">Nombre o alias</label><input type="text" id="student-name" placeholder="Escribe tu nombre o alias" maxlength="100" autocomplete="off" required>
+        </div>
+        <div class="instructions">
+            <strong>Cómo funciona:</strong> Responde a las 10 preguntas con tus palabras. Al pulsar <strong>Generar informe TXT y revisar</strong> se descargan tus respuestas y el intento queda cerrado. Después podrás ver las soluciones y compararlas con lo que escribiste. Para cambiar respuestas o generar otro informe debes borrar el intento y empezar de nuevo.
+            <p>No se permite copiar, cortar, pegar ni arrastrar texto dentro de esta página. El informe se descarga en tu equipo; no se envía al profesor.</p>
+            <p><a href="https://igarciafp.github.io/ciclos/dwec/u01_es.html" target="_blank" rel="noopener noreferrer">Consultar el tema de la unidad 1</a></p>
+        </div>
+    </header>
+
+    <main>
+        <!-- Pregunta 1 -->
+        <div class="question-card">
+            <div class="question-title">
+                <span class="question-number">1</span>
+                <span class="q-text">Explica qué tareas realiza el navegador (entorno cliente) y qué tareas realiza el servidor cuando accedes a una página web. Pon un ejemplo concreto de cada uno.</span>
+            </div>
+            <label class="sr-only" for="ans-1">Respuesta a la pregunta 1</label><textarea required spellcheck="false" autocomplete="off" class="answer-area" id="ans-1" placeholder="Escribe tu respuesta..."></textarea>
+            <button class="solution-btn" id="btn-sol-1" data-solution="1" aria-controls="sol-1" aria-expanded="false" type="button" disabled>Ver solución</button>
+            <div id="sol-1" class="solution-content" hidden>
+                <h4>Puntos clave de la respuesta:</h4>
+                <p>• <strong>Cliente (Navegador):</strong> Se encarga de solicitar los recursos, interpretar el código (HTML, CSS, JS), renderizar la interfaz en pantalla y gestionar la interacción directa con el usuario (ejemplo: mostrar un mensaje cuando se pulsa un botón).</p>
+                <p>• <strong>Servidor:</strong> Se encarga de procesar la lógica de negocio, consultar bases de datos y enviar los archivos o datos solicitados al cliente (ejemplo: comprobar en la base de datos si la contraseña introducida es correcta).</p>
+            </div>
+        </div>
+
+        <!-- Pregunta 2 -->
+        <div class="question-card">
+            <div class="question-title">
+                <span class="question-number">2</span>
+                <span class="q-text">Sintetiza la responsabilidad de cada una de las 3 tecnologías fundamentales del cliente web: HTML, CSS y JavaScript. ¿Qué aporta cada una a la página?</span>
+            </div>
+            <label class="sr-only" for="ans-2">Respuesta a la pregunta 2</label><textarea required spellcheck="false" autocomplete="off" class="answer-area" id="ans-2" placeholder="Escribe tu respuesta..."></textarea>
+            <button class="solution-btn" id="btn-sol-2" data-solution="2" aria-controls="sol-2" aria-expanded="false" type="button" disabled>Ver solución</button>
+            <div id="sol-2" class="solution-content" hidden>
+                <h4>Puntos clave de la respuesta:</h4>
+                <p>• <strong>HTML:</strong> Aporta la <em>estructura</em> y el contenido semántico de la página (títulos, párrafos, formularios, imágenes).</p>
+                <p>• <strong>CSS:</strong> Aporta la <em>presentación</em> y el diseño visual (colores, fuentes, posiciones, adaptabilidad a pantallas).</p>
+                <p>• <strong>JavaScript:</strong> Aporta el <em>comportamiento</em> y la interactividad (reaccionar a eventos del usuario, modificar el contenido sin recargar, validar datos).</p>
+            </div>
+        </div>
+
+        <!-- Pregunta 3 -->
+        <div class="question-card">
+            <div class="question-title">
+                <span class="question-number">3</span>
+                <span class="q-text">Si abres la pestaña Elements (Elementos) en las DevTools de tu navegador, puedes hacer doble clic en un texto de la web y cambiarlo. ¿Ese cambio lo está viendo todo el mundo que entra a la web? Justifica tu respuesta según el modelo cliente/servidor.</span>
+            </div>
+            <label class="sr-only" for="ans-3">Respuesta a la pregunta 3</label><textarea required spellcheck="false" autocomplete="off" class="answer-area" id="ans-3" placeholder="Escribe tu respuesta..."></textarea>
+            <button class="solution-btn" id="btn-sol-3" data-solution="3" aria-controls="sol-3" aria-expanded="false" type="button" disabled>Ver solución</button>
+            <div id="sol-3" class="solution-content" hidden>
+                <h4>Puntos clave de la respuesta:</h4>
+                <p>• <strong>No.</strong> El cambio solo se produce localmente en la memoria del navegador de tu ordenador.</p>
+                <p>• <strong>Justificación:</strong> Las DevTools modifican la copia del documento (DOM) que el cliente ha descargado. Los archivos originales del servidor no sufren ninguna modificación, por lo que los demás usuarios seguirán viendo la página original.</p>
+            </div>
+        </div>
+
+        <!-- Pregunta 4 -->
+        <div class="question-card">
+            <div class="question-title">
+                <span class="question-number">4</span>
+                <span class="q-text">Imagina que en un formulario web obligas a que el campo "Teléfono" tenga 9 números usando JavaScript. ¿Por qué es necesario volver a comprobar ese dato en el servidor antes de guardarlo en la base de datos?</span>
+            </div>
+            <label class="sr-only" for="ans-4">Respuesta a la pregunta 4</label><textarea required spellcheck="false" autocomplete="off" class="answer-area" id="ans-4" placeholder="Escribe tu respuesta..."></textarea>
+            <button class="solution-btn" id="btn-sol-4" data-solution="4" aria-controls="sol-4" aria-expanded="false" type="button" disabled>Ver solución</button>
+            <div id="sol-4" class="solution-content" hidden>
+                <h4>Puntos clave de la respuesta:</h4>
+                <p>• Porque el cliente es un entorno <strong>no seguro y manipulable</strong>.</p>
+                <p>• Un usuario puede desactivar JavaScript en su navegador, modificar el script desde la consola de DevTools o enviar los datos directamente al servidor saltándose la página web. La validación en cliente sirve para mejorar la experiencia de usuario (rapidez), pero la validación en servidor es imprescindible por seguridad e integridad de los datos.</p>
+            </div>
+        </div>
+
+        <!-- Pregunta 5 -->
+        <div class="question-card">
+            <div class="question-title">
+                <span class="question-number">5</span>
+                <span class="q-text">¿Para qué sirve la pestaña Console (Consola) de las herramientas de desarrollo? Nombra dos usos habituales que le da un desarrollador web en su día a día.</span>
+            </div>
+            <label class="sr-only" for="ans-5">Respuesta a la pregunta 5</label><textarea required spellcheck="false" autocomplete="off" class="answer-area" id="ans-5" placeholder="Escribe tu respuesta..."></textarea>
+            <button class="solution-btn" id="btn-sol-5" data-solution="5" aria-controls="sol-5" aria-expanded="false" type="button" disabled>Ver solución</button>
+            <div id="sol-5" class="solution-content" hidden>
+                <h4>Puntos clave de la respuesta:</h4>
+                <p>• <strong>Definición:</strong> Es un entorno interactivo para ejecutar código JavaScript al vuelo y ver los mensajes del sistema o del propio código.</p>
+                <p>• <strong>Usos habituales:</strong></p>
+                <p>1. Ver mensajes de error del código o impresiones de prueba mediante <code>console.log()</code>.</p>
+                <p>2. Probar y ejecutar pequeñas instrucciones o funciones de JavaScript directamente sobre la página actual.</p>
+            </div>
+        </div>
+
+        <!-- Pregunta 6 -->
+        <div class="question-card">
+            <div class="question-title">
+                <span class="question-number">6</span>
+                <span class="q-text">Un usuario entra en una web y las imágenes no cargan correctamente. ¿En qué pestaña de las DevTools (Network / Red o Elements / Elementos) deberías mirar para saber si el servidor está devolviendo un error al intentar descargar esas imágenes? Explica por qué.</span>
+            </div>
+            <label class="sr-only" for="ans-6">Respuesta a la pregunta 6</label><textarea required spellcheck="false" autocomplete="off" class="answer-area" id="ans-6" placeholder="Escribe tu respuesta..."></textarea>
+            <button class="solution-btn" id="btn-sol-6" data-solution="6" aria-controls="sol-6" aria-expanded="false" type="button" disabled>Ver solución</button>
+            <div id="sol-6" class="solution-content" hidden>
+                <h4>Puntos clave de la respuesta:</h4>
+                <p>• Se debe mirar en la pestaña <strong>Network (Red)</strong>.</p>
+                <p>• <strong>Explicación:</strong> La pestaña Network registra todas las peticiones HTTP que el navegador envía al servidor y las respuestas recibidas. Ahí se puede comprobar el estado HTTP de la descarga de cada imagen (por ejemplo, si devuelve un error 404 de "no encontrado"). La pestaña Elements solo muestra la estructura HTML, no el tráfico de red.</p>
+            </div>
+        </div>
+
+        <!-- Pregunta 7 -->
+        <div class="question-card">
+            <div class="question-title">
+                <span class="question-number">7</span>
+                <span class="q-text">Explica qué ventaja tiene para el usuario que una página ejecute código JavaScript en su navegador en lugar de tener que pedirle todo al servidor cada vez que hace un clic.</span>
+            </div>
+            <label class="sr-only" for="ans-7">Respuesta a la pregunta 7</label><textarea required spellcheck="false" autocomplete="off" class="answer-area" id="ans-7" placeholder="Escribe tu respuesta..."></textarea>
+            <button class="solution-btn" id="btn-sol-7" data-solution="7" aria-controls="sol-7" aria-expanded="false" type="button" disabled>Ver solución</button>
+            <div id="sol-7" class="solution-content" hidden>
+                <h4>Puntos clave de la respuesta:</h4>
+                <p>• <strong>Inmediatez / Rapidez:</strong> La interfaz responde al instante sin necesidad de recargar la página entera ni esperar el tiempo de respuesta del servidor a través de la red.</p>
+                <p>• <strong>Ahorro de tráfico:</strong> Se reduce el consumo de ancho de banda y la carga de trabajo en el servidor, ofreciendo una experiencia mucho más fluida y similar a una aplicación de escritorio o móvil.</p>
+            </div>
+        </div>
+
+        <!-- Pregunta 8 -->
+        <div class="question-card">
+            <div class="question-title">
+                <span class="question-number">8</span>
+                <span class="q-text">En la pestaña Sources (Fuentes) de las DevTools podemos ver los archivos .js de la página. ¿Qué ocurre si un desarrollador guarda contraseñas o claves privadas dentro de sus archivos JavaScript de cliente?</span>
+            </div>
+            <label class="sr-only" for="ans-8">Respuesta a la pregunta 8</label><textarea required spellcheck="false" autocomplete="off" class="answer-area" id="ans-8" placeholder="Escribe tu respuesta..."></textarea>
+            <button class="solution-btn" id="btn-sol-8" data-solution="8" aria-controls="sol-8" aria-expanded="false" type="button" disabled>Ver solución</button>
+            <div id="sol-8" class="solution-content" hidden>
+                <h4>Puntos clave de la respuesta:</h4>
+                <p>• Es un fallo grave de seguridad. Cualquier usuario puede abrir la pestaña <em>Sources</em> de las DevTools, inspeccionar el código JavaScript enviado al navegador y ver las contraseñas o claves en texto plano.</p>
+                <p>• <strong>Regla:</strong> Todo lo que se envía al cliente es público. Las contraseñas de servicio y claves privadas no deben incluirse en archivos enviados al navegador; se gestionan en el servidor.</p>
+            </div>
+        </div>
+
+        <!-- Pregunta 9 -->
+        <div class="question-card">
+            <div class="question-title">
+                <span class="question-number">9</span>
+                <span class="q-text">Explica la diferencia entre una arquitectura donde el servidor genera y envía la página HTML completa en cada clic frente a una donde el navegador solo pide datos en segundo plano y actualiza una parte de la pantalla.</span>
+            </div>
+            <label class="sr-only" for="ans-9">Respuesta a la pregunta 9</label><textarea required spellcheck="false" autocomplete="off" class="answer-area" id="ans-9" placeholder="Escribe tu respuesta..."></textarea>
+            <button class="solution-btn" id="btn-sol-9" data-solution="9" aria-controls="sol-9" aria-expanded="false" type="button" disabled>Ver solución</button>
+            <div id="sol-9" class="solution-content" hidden>
+                <h4>Puntos clave de la respuesta:</h4>
+                <p>• <strong>Modelo tradicional (Servidor):</strong> Cuando se navega o se envía un formulario que requiere una nueva página, el servidor devuelve HTML y el navegador carga ese documento. No todos los clics tienen que pedir una página.</p>
+                <p>• <strong>Modelo cliente (Dinámico / AJAX):</strong> La página puede pedir nuevos datos sin cargar otro documento. Cuando hace falta, JavaScript pide los datos necesarios en segundo plano y modifica únicamente el trozo de la pantalla que cambia, sin recargar el resto.</p>
+            </div>
+        </div>
+
+        <!-- Pregunta 10 -->
+        <div class="question-card">
+            <div class="question-title">
+                <span class="question-number">10</span>
+                <span class="q-text">Describe el modelo de 3 capas en una aplicación web (Presentación, Negocio, Datos). Indica en cuál de las capas se sitúa el trabajo principal del desarrollador web en entorno cliente (DWEC).</span>
+            </div>
+            <label class="sr-only" for="ans-10">Respuesta a la pregunta 10</label><textarea required spellcheck="false" autocomplete="off" class="answer-area" id="ans-10" placeholder="Escribe tu respuesta..."></textarea>
+            <button class="solution-btn" id="btn-sol-10" data-solution="10" aria-controls="sol-10" aria-expanded="false" type="button" disabled>Ver solución</button>
+            <div id="sol-10" class="solution-content" hidden>
+                <h4>Puntos clave de la respuesta:</h4>
+                <p>• <strong>Capa de Presentación:</strong> La interfaz con la que interactúa el usuario (HTML/CSS/JS en el navegador).</p>
+                <p>• <strong>Capa de Negocio:</strong> Las reglas y la lógica de la aplicación (normalmente en el servidor).</p>
+                <p>• <strong>Capa de Datos:</strong> La base de datos donde se almacena la información de forma permanente.</p>
+                <p>• <strong>Ubicación de DWEC:</strong> El desarrollo cliente se centra principalmente en la <strong>Capa de Presentación</strong> y en la lógica de interfaz asociada que se ejecuta en el navegador del usuario.</p>
+            </div>
+        </div>
+
+        <!-- Sección de entrega -->
+        <div class="submit-section">
+            <p id="attempt-status" role="status">Intento abierto. Las soluciones se habilitan después de generar el informe.</p>
+            <p id="validation-msg" role="alert"></p>
+            <div class="actions">
+                <button class="submit-btn" id="generate-report" type="button" disabled>Generar informe TXT y revisar</button>
+                <button class="solution-btn" id="reset-attempt" type="button" disabled>Borrar todo y empezar de nuevo</button>
+            </div>
+            <div class="completion-message" id="completion-msg" hidden>
+                <strong>Informe generado. Ahora comprueba tus respuestas.</strong><br>
+                Pulsa «Ver solución» en cada pregunta y compara las ideas clave con tu respuesta. Las respuestas y la descarga están bloqueadas aunque vuelvas a ocultar las soluciones. Solo «Borrar todo y empezar de nuevo» abre otro intento.
+            </div>
+            <p id="save-status" class="subtitle" role="status">El intento se conserva en esta pestaña al recargar.</p>
+            <p id="clipboard-status" role="status" aria-live="polite"></p>
+        </div>
+    </main>
+
+    <footer>
+        <p>DWEC · Unidad 1 · Examen de prueba, no oficial</p>
+    </footer>
+</div>
+
+<script>
+'use strict';
+(() => {
+ const $=id=>document.getElementById(id);
+ const key='dwec-u01-practice-exam-v1';
+ const name=$('student-name'), answers=[...document.querySelectorAll('.answer-area')];
+ const buttons=[...document.querySelectorAll('[data-solution]')];
+ let state={phase:'writing',name:'',answers:Array(answers.length).fill(''),date:null};
+ let storageOK=true;
+ function persist(){try{sessionStorage.setItem(key,JSON.stringify(state));storageOK=true;$('save-status').textContent='El intento se conserva en esta pestaña al recargar. Descarga el informe antes de cerrarla.';}catch(_){storageOK=false;$('save-status').textContent='Este navegador no permite guardar el intento. No recargues ni cierres esta pestaña antes de terminar.';}}
+ function read(){try{const v=JSON.parse(sessionStorage.getItem(key)||'null');if(v&&['writing','review'].includes(v.phase)&&typeof v.name==='string'&&Array.isArray(v.answers)&&v.answers.length===answers.length&&v.answers.every(x=>typeof x==='string'))state=v;}catch(_){storageOK=false;$('save-status').textContent='No se ha podido recuperar un intento anterior. Trabaja en esta pestaña sin recargar.';}}
+ function render(){const locked=state.phase==='review';name.value=state.name;name.readOnly=locked;answers.forEach((a,i)=>{a.value=state.answers[i];a.readOnly=locked;});buttons.forEach(b=>{b.disabled=!locked;b.setAttribute('aria-expanded','false');b.textContent='Ver solución';$('sol-'+b.dataset.solution).hidden=true;});$('generate-report').disabled=locked;$('reset-attempt').disabled=false;$('completion-msg').hidden=!locked;$('attempt-status').textContent=locked?'Intento cerrado. Compara tus respuestas con las soluciones.':'Intento abierto. Las soluciones se habilitan después de generar el informe.';}
+ function update(){if(state.phase!=='writing'){name.value=state.name;answers.forEach((a,i)=>a.value=state.answers[i]);return;}state.name=name.value;state.answers=answers.map(a=>a.value);persist();}
+ [name,...answers].forEach(f=>f.addEventListener('input',update));
+ buttons.forEach(b=>b.addEventListener('click',()=>{if(state.phase!=='review')return;const panel=$('sol-'+b.dataset.solution);panel.hidden=!panel.hidden;b.setAttribute('aria-expanded',String(!panel.hidden));b.textContent=panel.hidden?'Ver solución':'Ocultar solución';}));
+ function report(){const lines=['EXAMEN DE PRUEBA · DWEC · UNIDAD 1','NO ES EL EXAMEN OFICIAL',`Alumno/a: ${state.name.trim()}`,`Fecha: ${new Date(state.date).toLocaleString('es-ES')}`,'Respuestas cerradas antes de consultar las soluciones.',''];document.querySelectorAll('.q-text').forEach((q,i)=>{lines.push(`PREGUNTA ${i+1}`,q.textContent.trim(),'RESPUESTA DEL ALUMNO/A:',state.answers[i].trim(),'','----------------------------------------','');});return lines.join('\n');}
+ $('generate-report').addEventListener('click',()=>{
+  if(state.phase!=='writing')return;
+  $('validation-msg').textContent='';
+  if(!name.value.trim()){$('validation-msg').textContent='Escribe tu nombre o alias antes de generar el informe.';name.focus();return;}
+  const empty=answers.findIndex(a=>!a.value.trim());
+  if(empty!==-1){$('validation-msg').textContent=`Falta la respuesta a la pregunta ${empty+1}. Completa las diez preguntas antes de generar el informe.`;answers[empty].focus();return;}
+  update();state.date=new Date().toISOString();
+  let url;
+  try{
+   const blob=new Blob(['\uFEFF',report(),'\n'],{type:'text/plain;charset=utf-8'});
+   url=URL.createObjectURL(blob);
+   const a=document.createElement('a');a.href=url;
+   const safe=state.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70)||'alumno';
+   a.download=`examen-prueba-dwec-u01-${safe}.txt`;
+   document.body.append(a);a.click();a.remove();
+  }catch(_){if(url)URL.revokeObjectURL(url);$('validation-msg').textContent='No se pudo generar el archivo. Tus respuestas siguen abiertas; inténtalo de nuevo.';return;}
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  state.phase='review';persist();render();
+  $('completion-msg').scrollIntoView({behavior:'smooth',block:'center'});
+ });
+ $('reset-attempt').addEventListener('click',()=>{
+  if(!confirm('Se borrarán el nombre, todas las respuestas y el estado de este intento. Las soluciones volverán a ocultarse. ¿Empezar de nuevo?'))return;
+  state={phase:'writing',name:'',answers:Array(answers.length).fill(''),date:null};
+  $('validation-msg').textContent='';$('clipboard-status').textContent='';persist();render();name.focus();
+ });
+ function preventClipboard(e){e.preventDefault();$('clipboard-status').textContent='Escribe tu respuesta directamente: copiar, cortar, pegar y arrastrar texto están desactivados en esta práctica.';}
+ ['copy','cut','paste','drop','dragstart'].forEach(type=>document.addEventListener(type,preventClipboard,true));
+ document.addEventListener('beforeinput',e=>{if(['insertFromPaste','insertFromDrop','insertFromPasteAsQuotation','deleteByCut'].includes(e.inputType))preventClipboard(e);},true);
+ document.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(((e.ctrlKey||e.metaKey)&&['c','v','x'].includes(k))||(e.shiftKey&&e.key==='Insert'))preventClipboard(e);},true);
+ // Restoring a closed attempt never reopens answers, even when every solution is hidden.
+ read();render();
+})();
+
+</script>
+
+</body>
+</html>
