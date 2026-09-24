@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Laboratorio interactivo para descubrir las diez heurísticas de Nielsen y cinco leyes UX en una panadería ficticia.">
+  <meta name="description" content="Laboratorio interactivo sobre las diez heurísticas de Nielsen y las leyes UX: repara una panadería y resuelve diez decisiones de diseño.">
   <title>Migas Amigas · Detectives de interfaces</title>
   <style>
     :root {
@@ -150,6 +150,13 @@
     .feedback.error { color: #9d2c1a; }
     .feedback.success { color: var(--green); }
     .done-summary { padding: 16px; border-radius: 10px; background: var(--mint); color: #15492f; }
+    .ux-round { margin-top: 23px; overflow: hidden; }
+    .ux-inner { padding: 24px; max-width: 980px; margin: auto; }
+    .ux-inner > p { max-width: 72ch; }
+    .ux-case { border: 1px solid var(--line); border-radius: 12px; background: #fff9ef; padding: 17px; margin: 14px 0; }
+    .ux-case h3 { font-size: 1rem; margin-bottom: 5px; }
+    .ux-case p { margin-bottom: 0; }
+    .ux-choice small { display: block; margin-top: 5px; color: var(--muted); }
     .finish { padding: 24px; margin-top: 23px; }
     .finish h2 { margin-bottom: 7px; }
     .finish[hidden] { display: none; }
@@ -168,7 +175,7 @@
       <div>
         <p class="eyebrow">Laboratorio · Detectives de interfaces</p>
         <h1>Rescata «Migas Amigas»</h1>
-        <p class="header-copy">Esta panadería ficticia tiene diez problemas de usabilidad. Investiga su web, decide cómo arreglarla y observa cómo mejora con cada misión.</p>
+        <p class="header-copy">Esta panadería ficticia tiene diez problemas de usabilidad. Investiga su web, arréglala y después decide cómo diseñar otras diez situaciones de la tienda.</p>
       </div>
       <div class="header-stamp" aria-hidden="true">10<br>misiones</div>
     </div>
@@ -181,7 +188,7 @@
         <ol>
           <li>Empieza por el reto 1 y sigue en orden. Lee «Haz esta prueba» y realiza esa acción en la panadería de la izquierda. El botón «Ir a la zona» te lleva al lugar que debes revisar.</li>
           <li>Vuelve al reto y escribe una frase sobre lo que ocurrió. Después elige la mejora; en cinco retos también responderás una pregunta sobre una ley UX.</li>
-          <li>Pulsa «Comprobar respuestas y reparar». Si aciertas, la panadería cambiará. Si no, puedes intentarlo otra vez. Al resolver los diez retos, descarga tu informe TXT.</li>
+          <li>Pulsa «Comprobar respuestas y reparar». Si aciertas, la panadería cambiará. Si no, vuelve a intentarlo. Después de las diez misiones resolverás diez casos de diseño y descargarás tu informe TXT.</li>
         </ol>
       </div>
       <div class="panel">
@@ -189,7 +196,7 @@
         <label class="name-field" for="student-name">Tu nombre o apodo (opcional)
           <input id="student-name" maxlength="40" autocomplete="off" placeholder="Ej.: Lucía">
         </label>
-        <p class="small">Trabajarás con las diez heurísticas de Nielsen y practicarás cinco leyes UX: Jakob, proximidad, Fitts, Hick y Von Restorff. Las respuestas quedan en este navegador hasta que descargues el archivo.</p>
+        <p class="small">Trabajarás las diez heurísticas de Nielsen, cinco leyes UX durante las misiones y otras diez decisiones sobre leyes UX y usabilidad. Tus respuestas quedan en este navegador hasta que descargues el archivo.</p>
       </div>
     </section>
 
@@ -279,6 +286,17 @@
       </div>
     </div>
 
+    <section class="panel ux-round" id="ux-round" hidden aria-labelledby="ux-round-title">
+      <div class="section-label"><span>Ronda 2 · Decisiones de diseño</span><span id="ux-progress-label">0 de 10 casos</span></div>
+      <div class="ux-inner">
+        <h2 id="ux-round-title">¿Qué harías en otras pantallas de Migas Amigas?</h2>
+        <p>Imagina que la panadería quiere crear las pantallas de cada caso. Lee la situación y elige entre dos propuestas. <strong>Estas pantallas son imaginadas:</strong> para esta ronda no necesitas buscarlas en la web de arriba. Puedes volver a intentarlo si te equivocas.</p>
+        <p class="small">Pon en práctica las <a href="https://lawsofux.com/es/" target="_blank" rel="noopener noreferrer">leyes UX</a> y algunas de las heurísticas de Nielsen.</p>
+        <progress id="ux-progress" max="10" value="0" aria-label="Casos de diseño resueltos"></progress>
+        <div id="ux-content"></div>
+      </div>
+    </section>
+
     <section class="panel finish" id="finish" hidden aria-labelledby="finish-title">
       <h2 id="finish-title">¡Migas Amigas vuelve a funcionar!</h2>
       <p id="finish-summary"></p>
@@ -314,9 +332,101 @@
         { title: 'Ayuda a reconocer y resolver errores', task: 'En «Tu pedido», añade un producto y escribe un correo de prueba válido, por ejemplo prueba@ejemplo.com. Pulsa «Pedir» y lee el mensaje rojo.', clue: 'Si solo aparece un código, no sabrás qué ocurrió ni qué hacer después.', question: '¿Qué mensaje ayudaría a solucionar el fallo?', options: ['«Error E-47».', 'Una pantalla en blanco.', '«No se pudo guardar. Comprueba la conexión y vuelve a intentarlo».'], correct: 2, fix: 'Explicar el error con palabras claras y ofrecer un nuevo intento.', evidence: '¿Qué decía el mensaje rojo? ¿Te indicaba cómo continuar?' },
         { title: 'Ayuda y documentación', task: 'En «Tu pedido», busca instrucciones para comprar o un apartado de ayuda. Revisa también el pie de la panadería.', clue: 'Piensa qué necesitaría saber alguien que hace su primer pedido.', question: '¿Qué añadirías cerca del pedido?', options: ['Una guía corta y visible con los pasos para pedir.', 'Un manual largo escondido en otra web.', 'Ninguna ayuda: todo el mundo sabrá comprar.'], correct: 0, fix: 'Mostrar una guía breve al lado de la tarea.', evidence: '¿Encontraste una guía con los pasos para pedir? ¿Dónde?' }
       ];
+      const uxCases = [
+        {
+          title: 'Elegir entre 45 productos', principle: 'Ley de Hick',
+          scenario: 'La panadería vende 45 tipos de pan y dulces. A los clientes les cuesta elegir porque aparecen todos a la vez.',
+          idea: 'Cuando hay demasiadas opciones mezcladas, tardamos más en decidir.',
+          options: [
+            { text: 'Mostrar los 45 productos en una lista larga, sin separar.', preview: 'Una lista de panes y dulces mezclados.', feedback: 'Una lista tan larga dificulta encontrar algo concreto.', correct: false },
+            { text: 'Separarlos en cuatro categorías claras y añadir un buscador.', preview: 'Pan, bollería, sin gluten y salados; además, un buscador.', feedback: 'Agrupar los productos reduce el número de opciones que hay que revisar a la vez.', correct: true }
+          ]
+        },
+        {
+          title: 'Pulsar en el móvil', principle: 'Ley de Fitts',
+          scenario: 'Un cliente elige si quiere el pan entero o en rebanadas desde su teléfono móvil.',
+          idea: 'Un botón grande y fácil de alcanzar se pulsa con menos esfuerzo.',
+          options: [
+            { text: 'Poner un botón muy pequeño para confirmar en la esquina superior.', preview: 'Hay que apuntar con mucho cuidado para acertar.', feedback: 'Un botón pequeño y alejado es difícil de pulsar con el pulgar.', correct: false },
+            { text: 'Usar opciones grandes para elegir y un botón «Añadir al pedido» fácil de alcanzar.', preview: 'Controles amplios cerca de la zona donde se usa el móvil.', feedback: 'Los controles grandes y accesibles facilitan elegir y confirmar.', correct: true }
+          ]
+        },
+        {
+          title: 'Esperar mientras se confirma', principle: 'Nielsen: visibilidad del estado',
+          scenario: 'En una futura pantalla de pago, la confirmación tarda cuatro segundos. El cliente necesita saber qué está pasando.',
+          idea: 'La web debe avisar cuando está trabajando y cuándo termina.',
+          options: [
+            { text: 'Bloquear el botón y dejar la pantalla sin ningún aviso.', preview: 'Parece que la web se ha detenido.', feedback: 'Sin un mensaje, el cliente no sabe si su acción ha funcionado.', correct: false },
+            { text: 'Mostrar «Estamos confirmando tu pedido» y un indicador de espera.', preview: 'El cliente sabe que la web sigue trabajando.', feedback: 'Mostrar el estado evita la incertidumbre y los intentos repetidos.', correct: true }
+          ]
+        },
+        {
+          title: 'Entender el resumen del pedido', principle: 'Ley de Miller',
+          scenario: 'El resumen mezcla el precio con ingredientes, dirección y muchos datos técnicos. Cuesta revisar el pedido.',
+          idea: 'Agrupar la información relacionada ayuda a leerla sin sobrecargar la memoria.',
+          options: [
+            { text: 'Mostrar tres bloques: productos, dirección y precio total.', preview: 'Tres tarjetas con títulos claros.', feedback: 'Separar los datos en grupos facilita revisar lo importante.', correct: true },
+            { text: 'Poner todos los datos seguidos en una sola lista larga.', preview: 'Una lista continua con detalles que no hacen falta para comprar.', feedback: 'Es difícil encontrar los datos importantes entre tantos detalles.', correct: false }
+          ]
+        },
+        {
+          title: 'Evitar fallos en los datos', principle: 'Ley de Tesler y prevención de errores',
+          scenario: 'Al pedir a domicilio, algunas personas se equivocan al escribir el teléfono o el código postal.',
+          idea: 'La web puede encargarse de parte del trabajo y avisar de errores antes de enviar.',
+          options: [
+            { text: 'Dejar que escriban cualquier cosa y mostrar «Formato incorrecto» al final.', preview: 'Hay que volver atrás sin saber cómo arreglarlo.', feedback: 'El cliente tiene que adivinar el formato y descubrir el fallo demasiado tarde.', correct: false },
+            { text: 'Mostrar un ejemplo del formato, revisar el dato al escribir y sugerir la dirección.', preview: 'La web ayuda a completar los campos paso a paso.', feedback: 'Guiar y comprobar los datos reduce errores y trabajo para el cliente.', correct: true }
+          ]
+        },
+        {
+          title: 'Encontrar un producto', principle: 'Ley de Jakob y consistencia',
+          scenario: 'La panadería quiere colocar un buscador de productos en su nueva página.',
+          idea: 'Los símbolos y lugares conocidos ayudan a encontrar una función sin tener que aprenderla.',
+          options: [
+            { text: 'Mostrar una lupa y el texto «Buscar productos» en la zona superior.', preview: 'Un buscador reconocible en un lugar habitual.', feedback: 'La lupa y la palabra «Buscar» son pistas familiares.', correct: true },
+            { text: 'Esconder el buscador bajo un telescopio llamado «Universo de harina» al pie.', preview: 'Una función difícil de reconocer y localizar.', feedback: 'El telescopio y ese nombre no indican claramente que sirven para buscar.', correct: false }
+          ]
+        },
+        {
+          title: 'Corregir un pedido por error', principle: 'Nielsen: control y libertad',
+          scenario: 'Un cliente acaba de pedir diez barras, pero en realidad quería una. Se da cuenta enseguida.',
+          idea: 'Quien se equivoca necesita una manera sencilla de deshacer o corregir la acción.',
+          options: [
+            { text: 'Mostrar «Deshacer pedido» durante un momento y dejar corregir la cantidad.', preview: 'Hay un botón claro para reparar el error.', feedback: 'Una salida visible permite corregir el pedido inmediatamente.', correct: true },
+            { text: 'Bloquearlo todo y exigir un correo para poder cambiar la cantidad.', preview: 'No hay forma rápida de corregir la compra.', feedback: 'Pedir un correo para un error sencillo quita el control al cliente.', correct: false }
+          ]
+        },
+        {
+          title: 'Recomendar una mermelada', principle: 'Ley de Jakob y patrones conocidos',
+          scenario: 'Al mirar un pan de molde, la panadería quiere sugerir una mermelada que combina con él.',
+          idea: 'Una recomendación integrada en la ficha se entiende y no interrumpe la compra.',
+          options: [
+            { text: 'Abrir una ventana que tape toda la pantalla y obligue a ver un vídeo.', preview: 'El cliente no puede seguir viendo el pan.', feedback: 'Una ventana que bloquea la tarea interrumpe la compra.', correct: false },
+            { text: 'Mostrar «Combina bien con...» debajo del pan, con un botón para añadir.', preview: 'Una sugerencia visible sin tapar el producto.', feedback: 'La recomendación se entiende y deja continuar la tarea.', correct: true }
+          ]
+        },
+        {
+          title: 'Leer las opiniones', principle: 'Efecto de posición en serie',
+          scenario: 'Una empanada tiene muchas opiniones. El cliente quiere saber rápidamente si gusta a otras personas.',
+          idea: 'Se suele recordar mejor lo que aparece al principio y al final de una lista.',
+          options: [
+            { text: 'Mostrar la valoración media primero, las reseñas después y una opinión reciente destacada al final.', preview: 'Un resumen al inicio y una reseña reciente al cierre.', feedback: 'El resumen inicial y el cierre ayudan a recordar la información útil.', correct: true },
+            { text: 'Mostrar cien opiniones seguidas sin resumen ni destacados.', preview: 'Una lista enorme que hay que recorrer entera.', feedback: 'Sin resumen ni estructura es difícil hacerse una idea.', correct: false }
+          ]
+        },
+        {
+          title: 'Consultar ingredientes y ayuda', principle: 'Nielsen: reconocer antes que recordar',
+          scenario: 'Alguien quiere comprobar si un pan puede contener frutos secos y cuándo estará recién hecho.',
+          idea: 'La información útil debe estar a la vista o ser fácil de encontrar en el lugar donde se necesita.',
+          options: [
+            { text: 'Poner preguntas rápidas sobre alérgenos y horarios junto a la ficha del pan.', preview: 'Las respuestas aparecen cerca de los ingredientes.', feedback: 'La ayuda en la ficha evita tener que memorizar dónde buscar.', correct: true },
+            { text: 'Esconder la información en un PDF de veinte páginas.', preview: 'Hay que descargar un manual largo para resolver una duda.', feedback: 'Un documento largo y oculto dificulta encontrar una respuesta sencilla.', correct: false }
+          ]
+        }
+      ];
 
       const $ = selector => document.querySelector(selector);
-      const state = { current: 0, done: Array(10).fill(null), attempts: Array(10).fill(0), drafts: missions.map(() => ({ answer: null, lawAnswer: null, evidence: '' })), cart: [], removed: null };
+      const state = { current: 0, done: Array(10).fill(null), attempts: Array(10).fill(0), drafts: missions.map(() => ({ answer: null, lawAnswer: null, evidence: '' })), uxCurrent: 0, uxDone: Array(10).fill(null), uxAttempts: Array(10).fill(0), uxDrafts: Array(10).fill(null), cart: [], removed: null };
       const prices = { barra: 1.2, magdalena: .8 };
       const labels = { barra: 'Barra de pan', magdalena: 'Magdalena' };
       const shop = $('#shop');
@@ -410,7 +520,10 @@
         $('#progress').value = count;
         $('#progress-label').textContent = `${count} de 10`;
         $('#progress-percent').textContent = `${count * 10} %`;
-        if (count === 10) renderFinish();
+        if (count === 10 && $('#ux-round').hidden) {
+          $('#ux-round').hidden = false;
+          renderUx();
+        }
       }
       function choiceMarkup(name, options, selected) {
         return options.map((text, index) => `<label class="choice"><input type="radio" name="${name}" value="${index}" ${selected === index ? 'checked' : ''}><span>${escapeHtml(text)}</span></label>`).join('');
@@ -439,14 +552,14 @@
             <div class="controls"><button class="primary" type="submit">Comprobar respuestas y reparar</button></div>
           </form>`}
           <p id="mission-feedback" class="feedback" role="status" aria-live="polite"></p>
-          ${done ? `<div class="controls"><button type="button" class="secondary" id="next-mission">${index === 9 ? 'Ver informe final' : 'Ir al siguiente reto →'}</button></div>` : ''}`;
+          ${done ? `<div class="controls"><button type="button" class="secondary" id="next-mission">${index === 9 ? 'Ir a las decisiones UX →' : 'Ir al siguiente reto →'}</button></div>` : ''}`;
         $('#see-zone').addEventListener('click', () => {
           const zone = document.querySelector(`[data-zone="${index + 1}"]`);
           if (zone) zone.scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
         if (done) $('#next-mission').addEventListener('click', () => {
           if (index === 9) {
-            if (state.done.every(Boolean)) $('#finish').scrollIntoView({ behavior: 'smooth' });
+            if (state.done.every(Boolean)) $('#ux-round').scrollIntoView({ behavior: 'smooth' });
             else { chooseMission(state.done.findIndex(item => !item)); feedback('Faltan retos. Resuelve este y después podrás descargar el informe.'); }
           } else chooseMission(index + 1);
         });
@@ -468,7 +581,7 @@
             applyFixes();
             renderNavigation();
             renderMission();
-            feedback(index === 9 ? '¡Bien! La web ya muestra tu mejora. Pulsa «Ver informe final».' : '¡Bien! La web ya muestra tu mejora. Pulsa «Ir al siguiente reto» cuando la hayas visto.', 'success');
+            feedback(index === 9 ? '¡Bien! La web ya muestra tu mejora. Pulsa «Ir a las decisiones UX» para comenzar la segunda ronda.' : '¡Bien! La web ya muestra tu mejora. Pulsa «Ir al siguiente reto» cuando la hayas visto.', 'success');
           });
         }
       }
@@ -478,6 +591,54 @@
         renderNavigation();
         renderMission();
         if (matchMedia('(max-width: 1000px)').matches) $('.mission-column').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      function renderUx() {
+        const index = state.uxCurrent;
+        const currentCase = uxCases[index];
+        const resolved = state.uxDone.filter(Boolean).length;
+        const result = state.uxDone[index];
+        $('#ux-progress').value = resolved;
+        $('#ux-progress-label').textContent = `${resolved} de 10 casos`;
+        const choices = currentCase.options.map((option, number) => `<label class="choice ux-choice"><input type="radio" name="ux-answer" value="${number}" ${state.uxDrafts[index] === number ? 'checked' : ''}><span>${escapeHtml(option.text)}<small>Así se vería: ${escapeHtml(option.preview)}</small></span></label>`).join('');
+        $('#ux-content').innerHTML = `<p class="mission-kicker">Caso ${index + 1} de 10 · ${escapeHtml(currentCase.principle)}</p>
+          <h3>${escapeHtml(currentCase.title)}</h3>
+          <div class="ux-case"><h3>1 · Imagina esta situación</h3><p>${escapeHtml(currentCase.scenario)}</p></div>
+          <div class="hint-box"><strong>2 · Recuerda:</strong> ${escapeHtml(currentCase.idea)}</div>
+          ${result ? `<div class="done-summary"><strong>¡Caso resuelto!</strong><br>Elegiste: ${escapeHtml(currentCase.options[result.answer].text)}<br>${escapeHtml(currentCase.options[result.answer].feedback)}<br><small>Intentos: ${result.attempts}</small></div>
+            <div class="controls"><button type="button" id="next-ux" class="primary">${index === 9 ? 'Ver informe final' : 'Ir al siguiente caso →'}</button></div>` :
+          `<form id="ux-form"><fieldset><legend>3 · ¿Qué propuesta ayuda más al cliente?</legend>${choices}</fieldset>
+            <button type="submit" class="primary">Comprobar mi decisión</button>
+            <p id="ux-feedback" class="feedback" role="status" aria-live="polite"></p>
+          </form>`}`;
+        if (resolved === uxCases.length) renderFinish();
+        if (result) {
+          $('#next-ux').addEventListener('click', () => {
+            if (index === uxCases.length - 1) $('#finish').scrollIntoView({ behavior: 'smooth' });
+            else { state.uxCurrent += 1; renderUx(); $('#ux-round').scrollIntoView({ behavior: 'smooth' }); }
+          });
+          return;
+        }
+        $('#ux-form').addEventListener('change', event => {
+          if (event.target.name === 'ux-answer') {
+            state.uxDrafts[index] = Number(event.target.value);
+            $('#ux-feedback').textContent = '';
+          }
+        });
+        $('#ux-form').addEventListener('submit', event => {
+          event.preventDefault();
+          const selected = state.uxDrafts[index];
+          const message = $('#ux-feedback');
+          if (selected === null) { message.textContent = 'Elige una de las dos propuestas antes de comprobar.'; message.className = 'feedback error'; return; }
+          state.uxAttempts[index] += 1;
+          const choice = currentCase.options[selected];
+          if (!choice.correct) {
+            message.textContent = `${choice.feedback} Prueba la otra propuesta.`;
+            message.className = 'feedback error';
+            return;
+          }
+          state.uxDone[index] = { answer: selected, attempts: state.uxAttempts[index] };
+          renderUx();
+        });
       }
       function reportText() {
         const name = $('#student-name').value.trim().replace(/[\r\n\t]/g, ' ').slice(0, 40) || 'Sin nombre';
@@ -490,6 +651,8 @@
           `Misiones resueltas: ${state.done.filter(Boolean).length}/10`,
           `Resueltas al primer intento: ${firstTry}/10`,
           `Intentos totales: ${state.attempts.reduce((sum, value) => sum + value, 0)}`,
+          `Decisiones de diseño resueltas: ${state.uxDone.filter(Boolean).length}/10`,
+          `Decisiones al primer intento: ${state.uxDone.filter(item => item && item.attempts === 1).length}/10`,
           '',
           'RESULTADOS POR MISIÓN',
           '--------------------'
@@ -500,13 +663,19 @@
           if (mission.law) lines.push(`Ley UX: ${laws[mission.law].name}`, `Respuesta UX: ${result.lawAnswer}`);
           lines.push(`Intentos: ${result.attempts}`);
         });
+        lines.push('', 'RESULTADOS DE LAS DIEZ DECISIONES UX', '------------------------------------');
+        uxCases.forEach((currentCase, index) => {
+          const result = state.uxDone[index];
+          lines.push('', `${index + 1}. ${currentCase.title}`, `Principio: ${currentCase.principle}`, `Situación: ${currentCase.scenario}`, `Decisión: ${currentCase.options[result.answer].text}`, `Por qué: ${currentCase.options[result.answer].feedback}`, `Intentos: ${result.attempts}`);
+        });
         lines.push('', 'REFLEXIÓN FINAL', '---------------', '¿Qué mejora crees que ayuda más a los clientes? Explica por qué:', '', '____________________________________________________________', '', 'Este informe recoge respuestas de una simulación educativa.');
         return lines.join('\n') + '\n';
       }
       function renderFinish() {
         $('#finish').hidden = false;
         const firstTry = state.done.filter(item => item.attempts === 1).length;
-        $('#finish-summary').textContent = `Has resuelto las 10 misiones. ${firstTry} salieron a la primera; en las demás aprendiste al volver a probar. El informe incluye tus pistas, las soluciones, las leyes UX y el número de intentos.`;
+        const uxFirstTry = state.uxDone.filter(item => item.attempts === 1).length;
+        $('#finish-summary').textContent = `Has resuelto las 10 misiones y los 10 casos de diseño. Acertaste ${firstTry} misiones y ${uxFirstTry} casos a la primera. El informe incluye tus observaciones, tus decisiones, las leyes UX y el número de intentos.`;
         $('#report-preview').textContent = reportText();
       }
 
