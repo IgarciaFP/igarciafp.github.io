@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratorio interactivo para descubrir las diez heurísticas de Nielsen y cinco leyes UX en una panadería ficticia.">
+  <title>Migas Amigas · Detectives de interfaces</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #33251f;
+      --muted: #625950;
+      --cream: #fff8e9;
+      --paper: #fffdf8;
+      --line: #dfcdb8;
+      --orange: #b74719;
+      --orange-dark: #873213;
+      --mint: #daf1df;
+      --green: #17653c;
+      --blue: #174b83;
+      --shadow: 0 16px 42px rgba(73, 43, 19, .11);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f5eddf; color: var(--ink); font: 16px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+    :focus-visible { outline: 3px solid #175ca8; outline-offset: 3px; }
+    .page-header { background: #3e261c; color: white; padding: 20px max(20px, calc((100vw - 1250px)/2)); }
+    .page-header a { color: #ffdfa5; }
+    .header-row { display: flex; gap: 16px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+    .eyebrow { margin: 0 0 8px; color: #f5c76f; font-size: .83rem; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+    h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.08; margin: 0 0 12px; }
+    h2, h3, p { margin-top: 0; }
+    .header-copy { max-width: 760px; margin: 0; color: #f9ebdf; }
+    .header-stamp { display: grid; place-items: center; width: 96px; height: 96px; border: 2px dashed #edc57b; border-radius: 50%; transform: rotate(9deg); color: #ffde9c; font-weight: 900; text-align: center; line-height: 1.15; }
+    main { max-width: 1300px; padding: 24px 20px 60px; margin: auto; }
+    .intro { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; margin-bottom: 24px; }
+    .panel { background: var(--paper); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); }
+    .intro .panel { padding: 22px 26px; }
+    .intro h2 { font-size: 1.3rem; margin-bottom: 8px; }
+    .intro ol { margin: 8px 0 0; padding-left: 22px; }
+    .intro li + li { margin-top: 4px; }
+    .small { font-size: .9rem; color: var(--muted); }
+    .name-field { display: block; font-weight: 700; margin: 8px 0; }
+    .name-field input { display: block; width: 100%; padding: 11px 12px; margin-top: 7px; background: white; border: 1px solid #a8998b; border-radius: 9px; }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(390px, .85fr); gap: 22px; align-items: start; }
+    .store-column > .panel, .mission-column > .panel { overflow: hidden; }
+    .section-label { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 15px 20px; background: #ead6ba; border-bottom: 1px solid var(--line); font-weight: 800; }
+    .section-label span:last-child { font-size: .82rem; font-weight: 600; }
+    .shop { margin: 18px; border: 2px solid #b89473; border-radius: 14px; background: #fffdf9; overflow: hidden; }
+    .shop * { box-sizing: border-box; }
+    .shop-top { padding: 17px 18px; background: #673721; color: #fff7e7; }
+    .shop-brand { font-family: Georgia, serif; font-size: 1.6rem; font-weight: 700; line-height: 1; }
+    .shop-tagline { font-size: .8rem; color: #f7d5ad; }
+    .shop-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 13px; }
+    .shop-nav button, .shop-footer button { background: transparent; border: 0; color: inherit; text-decoration: underline; padding: 4px 6px; }
+    .shop-nav button:hover, .shop-footer button:hover { background: rgba(255,255,255,.14); }
+    .shop-body { padding: 16px; }
+    .shop-hero { border: 1px solid #e6c894; border-radius: 12px; background: #ffe7b2; padding: 18px; }
+    .shop-hero h3 { font-family: Georgia, serif; font-size: 1.65rem; margin-bottom: 3px; }
+    .shop-hero p { margin-bottom: 8px; }
+    .noise { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 13px; }
+    .noise span { padding: 3px 7px; background: #ef552a; color: #fff; font-weight: 800; font-size: .72rem; transform: rotate(-2deg); }
+    .noise span:nth-child(even) { background: #7027a5; transform: rotate(3deg); }
+    .hero-action { border: 0; background: #b64b22; color: white; border-radius: 5px; padding: 7px 11px; font-weight: 700; }
+    .fix-8 .noise { display: none; }
+    .fix-8 .hero-action { background: #80300f; padding: 11px 17px; font-size: 1rem; }
+    .shop h4 { margin: 18px 0 9px; font-size: 1rem; }
+    .quick-links { display: flex; flex-wrap: wrap; gap: 5px; }
+    .quick-links button { padding: 5px 7px; border: 1px solid #d5b99c; background: #fff3dc; border-radius: 4px; font-size: .76rem; }
+    .fix-6 .quick-links button.extra { display: none; }
+    .fix-6 .quick-links button { padding: 8px 12px; font-weight: 700; }
+    .product-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .product { border: 1px solid #e0cbb3; border-radius: 10px; background: white; padding: 12px; }
+    .product-icon { display: grid; place-items: center; width: 100%; height: 66px; border-radius: 7px; background: #fae4c0; font-size: 2.1rem; }
+    .product strong, .product small { display: block; margin-top: 6px; }
+    .product small { color: #604934; }
+    .buy { padding: 4px 7px; margin-top: 6px; border: 0; border-radius: 4px; background: #743b24; color: white; font-size: .75rem; }
+    .fix-2 .buy { font-size: .85rem; padding: 9px 12px; }
+    .shop-status { min-height: 0; }
+    .fix-1 .shop-status.has-message { padding: 9px 12px; margin-top: 12px; border: 1px solid #9bceae; border-radius: 8px; color: #165c36; background: #e7f7e9; font-weight: 700; }
+    .cart { margin-top: 18px; padding: 13px; border: 1px solid #dcbf9e; border-radius: 10px; background: #fff7e9; }
+    .cart h4 { margin: 0 0 7px; }
+    .cart-list { list-style: none; padding: 0; margin: 0 0 8px; }
+    .cart-list li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px solid #e9d8c4; }
+    .cart-list button { background: transparent; border: 1px solid #a87962; border-radius: 5px; padding: 2px 6px; color: #6a2d17; }
+    .undo, .repeat, .retry { border: 1px solid #8e633d; border-radius: 6px; background: #fff; padding: 6px 9px; margin: 4px 5px 4px 0; color: #592b16; }
+    .checkout { padding-top: 8px; }
+    .checkout label { font-size: .85rem; font-weight: 700; }
+    .checkout input { display: block; width: 100%; padding: 8px; margin: 5px 0 9px; border: 1px solid #a58b70; border-radius: 5px; background: white; }
+    .order-button { border: 0; padding: 3px 7px; background: #a34325; color: white; border-radius: 4px; font-size: .72rem; }
+    .fix-5 .order-button { min-height: 44px; padding: 9px 18px; font-size: 1rem; font-weight: 800; }
+    .system-message { min-height: 1.4em; margin: 9px 0 0; color: #9a2c20; font-size: .88rem; }
+    .help-box { margin: 15px 0 0; padding: 12px; border: 1px solid #9bceae; border-radius: 8px; background: #e9f8ed; }
+    .help-box h4 { margin: 0 0 4px; }
+    .help-box p { margin: 0; font-size: .86rem; }
+    .shop-footer { display: flex; gap: 7px; flex-wrap: wrap; padding: 12px; background: #673721; color: #fff7e7; font-size: .82rem; }
+    .store-note { padding: 0 20px 18px; margin: 0; }
+    .workspace [data-zone] { scroll-margin: 24px; }
+    .workspace[data-active="1"] [data-zone="1"], .workspace[data-active="2"] [data-zone="2"],
+    .workspace[data-active="3"] [data-zone="3"], .workspace[data-active="4"] [data-zone="4"],
+    .workspace[data-active="5"] [data-zone="5"], .workspace[data-active="6"] [data-zone="6"],
+    .workspace[data-active="7"] [data-zone="7"], .workspace[data-active="8"] [data-zone="8"],
+    .workspace[data-active="9"] [data-zone="9"], .workspace[data-active="10"] [data-zone="10"] {
+      outline: 3px solid #e47d09; outline-offset: 3px; border-radius: 5px;
+    }
+    .fix-4 .shop-footer { gap: 13px; }
+    .mission-column { position: sticky; top: 16px; }
+    .mission-inner { padding: 21px; }
+    .progress-copy { display: flex; justify-content: space-between; gap: 12px; font-weight: 700; }
+    progress { display: block; width: 100%; height: 15px; accent-color: var(--green); margin: 8px 0 17px; }
+    .mission-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+    .mission-nav button { display: grid; place-items: center; width: 37px; height: 37px; border: 1px solid #a58c74; background: #fff; border-radius: 9px; color: var(--ink); font-weight: 800; }
+    .mission-nav button[aria-current="step"] { background: var(--orange-dark); color: white; border-color: var(--orange-dark); }
+    .mission-nav button.done:not([aria-current="step"]) { background: var(--mint); color: var(--green); border-color: #8dbd9b; }
+    .mission-kicker { font-weight: 800; color: var(--orange-dark); font-size: .82rem; letter-spacing: .09em; text-transform: uppercase; }
+    #mission-title { line-height: 1.18; font-size: 1.5rem; margin: 7px 0 10px; }
+    .hint-box { padding: 13px 15px; margin: 12px 0; border-left: 5px solid #df8e20; background: #fff2d6; border-radius: 6px; }
+    .law-box { padding: 12px 14px; border: 1px solid #a7c3dc; background: #ecf5ff; border-radius: 10px; margin: 14px 0; }
+    .law-box strong { color: var(--blue); }
+    .law-box p { margin: 5px 0 6px; font-size: .9rem; }
+    .law-box a { color: var(--blue); font-weight: 700; }
+    fieldset { border: 0; margin: 16px 0; padding: 0; }
+    legend { font-weight: 800; margin-bottom: 7px; }
+    .choice { display: flex; gap: 9px; align-items: flex-start; margin: 6px 0; padding: 9px 11px; border: 1px solid #c7b5a1; border-radius: 9px; background: #fff; cursor: pointer; }
+    .choice:hover { background: #fff3e2; }
+    .choice input { margin-top: 5px; accent-color: var(--orange); }
+    .choice:has(input:checked) { border-color: var(--orange); background: #fff0dc; }
+    .evidence-label { display: block; margin-top: 14px; font-weight: 800; }
+    textarea { width: 100%; min-height: 79px; padding: 10px; margin-top: 7px; border: 1px solid #a8998b; border-radius: 9px; resize: vertical; background: white; }
+    .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; }
+    .primary, .secondary { border-radius: 9px; padding: 10px 15px; font-weight: 800; }
+    .primary { background: var(--orange-dark); border: 2px solid var(--orange-dark); color: white; }
+    .primary:hover { background: #61230b; }
+    .secondary { background: #fff; border: 2px solid #9e6e4d; color: #572b16; }
+    .secondary:hover { background: #fff1df; }
+    .primary:disabled, .secondary:disabled { opacity: .55; cursor: not-allowed; }
+    .feedback { min-height: 1.5em; margin: 12px 0 0; font-weight: 700; }
+    .feedback.error { color: #9d2c1a; }
+    .feedback.success { color: var(--green); }
+    .done-summary { padding: 16px; border-radius: 10px; background: var(--mint); color: #15492f; }
+    .finish { padding: 24px; margin-top: 23px; }
+    .finish h2 { margin-bottom: 7px; }
+    .finish[hidden] { display: none; }
+    .finish-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 15px 0; }
+    .report-preview { white-space: pre-wrap; max-height: 310px; overflow: auto; padding: 15px; background: #fff; border: 1px solid var(--line); border-radius: 9px; font: .83rem/1.45 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .footer { max-width: 1300px; margin: 0 auto 30px; padding: 0 20px; color: #675849; font-size: .88rem; }
+    [hidden] { display: none !important; }
+    @media (max-width: 1000px) { .workspace { grid-template-columns: 1fr; } .mission-column { position: static; } }
+    @media (max-width: 700px) { .intro { grid-template-columns: 1fr; } .header-stamp { display: none; } .shop { margin: 10px; } .shop-body { padding: 11px; } .product-grid { gap: 6px; } .product { padding: 9px; } .section-label { padding: 12px; } .mission-inner { padding: 16px; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Laboratorio · Detectives de interfaces</p>
+        <h1>Rescata «Migas Amigas»</h1>
+        <p class="header-copy">Esta panadería ficticia tiene diez problemas de usabilidad. Investiga su web, decide cómo arreglarla y observa cómo mejora con cada misión.</p>
+      </div>
+      <div class="header-stamp" aria-hidden="true">10<br>misiones</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro" aria-label="Cómo funciona el laboratorio">
+      <div class="panel">
+        <h2>Tu trabajo como detective</h2>
+        <ol>
+          <li>Explora la panadería de prueba. Los fallos son intencionados: no se realiza ninguna compra real.</li>
+          <li>En cada misión, escribe una pista que hayas observado y elige la mejor mejora. Puedes volver a intentarlo si fallas.</li>
+          <li>Cuando completes las diez, descarga un informe TXT con tus respuestas y resultados.</li>
+        </ol>
+      </div>
+      <div class="panel">
+        <h2>Prepara el informe</h2>
+        <label class="name-field" for="student-name">Tu nombre o apodo (opcional)
+          <input id="student-name" maxlength="40" autocomplete="off" placeholder="Ej.: Lucía">
+        </label>
+        <p class="small">Trabajarás con las diez heurísticas de Nielsen y practicarás cinco leyes UX: Jakob, proximidad, Fitts, Hick y Von Restorff. Las respuestas quedan en este navegador hasta que descargues el archivo.</p>
+      </div>
+    </section>
+
+    <div class="workspace" id="workspace" data-active="1">
+      <div class="store-column">
+        <section class="panel" aria-labelledby="store-label">
+          <div class="section-label"><span id="store-label">La web de la panadería</span><span>Zona de pruebas · sin compras reales</span></div>
+          <div class="shop" id="shop">
+            <div class="shop-top" data-zone="4">
+              <div class="shop-brand">Migas Amigas</div>
+              <div class="shop-tagline">Pan recién hecho cada mañana</div>
+              <nav class="shop-nav" aria-label="Menú de la panadería">
+                <button type="button" data-scroll="hero">Inicio</button>
+                <button type="button" data-scroll="products">Tienda</button>
+                <button type="button" data-scroll="cart">Contacto</button>
+              </nav>
+            </div>
+            <div class="shop-body">
+              <section class="shop-hero" id="hero" data-zone="8">
+                <h3>¡El pan de cada día!</h3>
+                <p>Horneamos con cariño. Haz tu pedido para recoger.</p>
+                <div class="noise" aria-label="Mensajes promocionales que compiten por la atención"><span>¡HOY!</span><span>2 × 1</span><span>OFERTA</span><span>¡NUEVO!</span><span>SOLO AHORA</span></div>
+                <button class="hero-action" type="button" data-scroll="products">Ver productos</button>
+              </section>
+              <section data-zone="6">
+                <h4 id="categories-label">Explora nuestras secciones</h4>
+                <div class="quick-links" aria-labelledby="categories-label">
+                  <button type="button">Pan</button><button type="button">Dulces</button><button type="button">Desayunos</button><button type="button">Ofertas</button>
+                  <button type="button" class="extra">Barras</button><button type="button" class="extra">Integral</button><button type="button" class="extra">Sin gluten</button><button type="button" class="extra">Pasteles</button>
+                  <button type="button" class="extra">Rosquillas</button><button type="button" class="extra">Magdalenas</button><button type="button" class="extra">Galletas</button><button type="button" class="extra">Contacto</button>
+                </div>
+              </section>
+              <section id="products">
+                <h4>Productos</h4>
+                <div class="product-grid">
+                  <article class="product" data-zone="2"><div class="product-icon" aria-hidden="true">🥖</div><strong>Barra de pan</strong><small>1,20 €</small><button type="button" class="buy" data-add="barra">CPT</button></article>
+                  <article class="product" data-zone="1"><div class="product-icon" aria-hidden="true">🧁</div><strong>Magdalena</strong><small>0,80 €</small><button type="button" class="buy" data-add="magdalena">CPT</button></article>
+                </div>
+              </section>
+              <div id="store-status" class="shop-status" role="status" aria-live="polite"></div>
+              <section class="cart" id="cart">
+                <h4>Tu pedido</h4>
+                <ul id="cart-list" class="cart-list" data-zone="3"><li>Todavía no has añadido nada.</li></ul>
+                <strong id="cart-total">Total: 0,00 €</strong><br>
+                <button type="button" id="undo-button" class="undo" hidden>Deshacer eliminación</button>
+                <div data-zone="7"><button type="button" id="repeat-button" class="repeat" hidden>Repetir pedido habitual</button></div>
+                <div class="checkout" data-zone="5">
+                  <label for="buyer-email">Correo para avisarte de la recogida</label>
+                  <input id="buyer-email" type="email" placeholder="tu@correo.es" autocomplete="off">
+                  <button type="button" id="order-button" class="order-button">Pedir</button>
+                </div>
+                <div data-zone="9"><p class="system-message" id="system-message" role="status" aria-live="polite"></p><button type="button" id="retry-button" class="retry" hidden>Volver a intentar</button></div>
+              </section>
+              <section class="help-box" id="help-box" data-zone="10" hidden>
+                <h4>¿Necesitas ayuda?</h4>
+                <p>1. Añade productos. 2. Revisa tu pedido. 3. Escribe un correo y confirma. Puedes preguntar en la panadería si algo falla.</p>
+              </section>
+            </div>
+            <footer class="shop-footer" data-zone="4">
+              <button type="button" data-scroll="hero" data-fixed-label="Inicio">Casa</button>
+              <button type="button" data-scroll="products" data-fixed-label="Tienda">Catálogo</button>
+              <button type="button" data-scroll="cart" data-fixed-label="Contacto">Escríbenos</button>
+            </footer>
+          </div>
+          <p class="small store-note">Pista: prueba a añadir y quitar productos, pulsar «Pedir» y comparar las zonas señaladas. Esta web es una simulación.</p>
+        </section>
+      </div>
+
+      <div class="mission-column">
+        <section class="panel" aria-labelledby="mission-panel-label">
+          <div class="section-label"><span id="mission-panel-label">Cuaderno de misiones</span><span id="progress-label">0 de 10</span></div>
+          <div class="mission-inner">
+            <div class="progress-copy"><span>Panadería reparada</span><span id="progress-percent">0 %</span></div>
+            <progress id="progress" value="0" max="10">0 de 10</progress>
+            <nav id="mission-nav" class="mission-nav" aria-label="Elegir misión"></nav>
+            <div id="mission-content"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <section class="panel finish" id="finish" hidden aria-labelledby="finish-title">
+      <h2 id="finish-title">¡Migas Amigas vuelve a funcionar!</h2>
+      <p id="finish-summary"></p>
+      <div class="finish-actions">
+        <button type="button" id="download-report" class="primary">Descargar informe TXT</button>
+        <button type="button" id="restart" class="secondary">Empezar de nuevo</button>
+      </div>
+      <h3>Vista previa del informe</h3>
+      <pre id="report-preview" class="report-preview"></pre>
+    </section>
+  </main>
+  <footer class="footer">Laboratorio educativo de uso local. Los pedidos son ficticios y el informe se descarga en tu dispositivo.</footer>
+
+  <script>
+    (() => {
+      'use strict';
+      const laws = {
+        jakob: { name: 'Ley de Jakob', url: 'https://lawsofux.com/es/ley-de-jakob/', idea: 'Entendemos antes los patrones que ya conocemos.' },
+        proximity: { name: 'Ley de Proximidad', url: 'https://lawsofux.com/es/ley-de-proximidad/', idea: 'Lo que está cerca se percibe como un grupo.' },
+        fitts: { name: 'Ley de Fitts', url: 'https://lawsofux.com/es/ley-de-fitts/', idea: 'Un objetivo más grande y cercano es más fácil de pulsar.' },
+        hick: { name: 'Ley de Hick', url: 'https://lawsofux.com/es/ley-de-hick/', idea: 'Muchas opciones hacen más lenta la decisión.' },
+        rest: { name: 'Efecto Von Restorff', url: 'https://lawsofux.com/es/efecto-von-restorff/', idea: 'Un elemento que destaca entre otros llama más la atención.' }
+      };
+      const missions = [
+        { title: 'Visibilidad del estado', task: 'Añade una magdalena. ¿Sabes enseguida si se añadió? Mira la zona de productos y el pedido.', clue: 'Busca una respuesta cerca del botón después de pulsarlo.', question: '¿Qué cambio informa mejor de lo que acaba de pasar?', options: ['Mostrar «Magdalena añadida» junto a los productos.', 'Ocultar el botón después de pulsarlo.', 'Esperar a que la persona encuentre el pedido abajo.'], correct: 0, fix: 'Mostrar una confirmación inmediata al añadir un producto.', evidence: '¿Qué ocurrió al pulsar «CPT» y dónde se vio el cambio?' },
+        { title: 'Lenguaje del mundo real', task: 'Observa el texto del botón de compra. Imagina que visitas la panadería por primera vez.', clue: 'Tres letras pueden significar cosas distintas para personas distintas.', question: '¿Qué etiqueta se entiende sin conocer códigos internos?', options: ['CPT', 'Añadir al pedido', 'Ejecutar operación P-01'], correct: 1, fix: 'Usar «Añadir al pedido» en lugar de una abreviatura interna.', evidence: '¿Por qué la nueva etiqueta ayuda a alguien que nunca ha usado esta web?', law: 'jakob', lawQuestion: '¿Qué espera reconocer alguien que ya ha comprado por internet?', lawOptions: ['Un botón con una acción familiar, como «Añadir al pedido».', 'Un código nuevo que haya que memorizar.'], lawCorrect: 0 },
+        { title: 'Control y libertad', task: 'Añade un producto y elimínalo del pedido. Piensa en qué pasaría si fue un error.', clue: 'Una persona debería poder recuperar lo que acaba de quitar.', question: '¿Qué opción devuelve el control al cliente?', options: ['Borrar sin avisar y sin vuelta atrás.', 'Añadir un botón «Deshacer eliminación».', 'Bloquear el pedido para que no pueda editarse.'], correct: 1, fix: 'Permitir deshacer la eliminación de un producto.', evidence: '¿Qué opción faltaba después de eliminar el producto?' },
+        { title: 'Consistencia y estándares', task: 'Compara el menú de arriba con los enlaces del pie de la panadería.', clue: 'Las mismas secciones tienen nombres distintos según el lugar.', question: '¿Cómo organizarías los enlaces para orientarte mejor?', options: ['Conservar nombres diferentes para cada lugar.', 'Eliminar el menú superior.', 'Usar los mismos nombres y agrupar las secciones relacionadas.'], correct: 2, fix: 'Mantener los mismos nombres en la cabecera y el pie.', evidence: 'Escribe dos nombres distintos que señalen la misma sección.', law: 'proximity', lawQuestion: '¿Dónde pondrías los enlaces de productos relacionados?', lawOptions: ['Juntos, para que se vean como un grupo.', 'Muy separados, entre enlaces sin relación.'], lawCorrect: 0 },
+        { title: 'Prevención de errores', task: 'Mira el pequeño botón «Pedir». Púlsalo sin escribir un correo o sin añadir nada al pedido.', clue: 'Conviene evitar errores antes de enviarlos y facilitar el botón principal.', question: '¿Qué mejora evita el fallo antes de que ocurra?', options: ['Agrandar el botón y comprobar pedido y correo antes de continuar.', 'Dejar que falle y mostrar un código.', 'Esconder el campo de correo.'], correct: 0, fix: 'Hacer visible y fácil de pulsar el botón; comprobar datos antes de enviar.', evidence: '¿Qué dato faltaba cuando intentaste pedir y cómo era el botón?', law: 'fitts', lawQuestion: '¿Qué botón es más sencillo de pulsar en una pantalla táctil?', lawOptions: ['Uno diminuto pegado a otros controles.', 'Uno grande con espacio alrededor.'], lawCorrect: 1 },
+        { title: 'Reconocer antes que recordar', task: 'Cuenta las opciones bajo «Explora nuestras secciones». Busca una categoría concreta.', clue: 'Muchos nombres pequeños y parecidos obligan a releer y recordar.', question: '¿Qué versión reduce el esfuerzo de encontrar una categoría?', options: ['Mostrar todavía más enlaces mezclados.', 'Agrupar en pocas categorías claras y visibles.', 'Ocultar todas las categorías.'], correct: 1, fix: 'Agrupar las opciones en cuatro categorías claras.', evidence: '¿Cuántas opciones había antes y cómo cambió la búsqueda?', law: 'hick', lawQuestion: '¿Cuándo suele costar menos elegir?', lawOptions: ['Con pocas opciones claras y agrupadas.', 'Con muchas opciones similares sin agrupar.'], lawCorrect: 0 },
+        { title: 'Flexibilidad y eficiencia', task: 'Imagina que siempre compras la misma barra. Busca una forma rápida de repetir el pedido.', clue: 'Quien compra a menudo puede agradecer un atajo visible.', question: '¿Qué añadirías sin quitar el camino normal?', options: ['Obligar a repetir todos los pasos siempre.', 'Ocultar los productos a usuarios frecuentes.', 'Ofrecer «Repetir pedido habitual» además de la compra normal.'], correct: 2, fix: 'Ofrecer un atajo para repetir un pedido habitual.', evidence: '¿Cuántos pasos ahorrarías si compras lo mismo cada semana?' },
+        { title: 'Diseño estético y minimalista', task: 'Mira la cabecera amarilla: ¿cuántos avisos compiten con «Ver productos»?', clue: 'Si todo destaca a la vez, cuesta encontrar lo importante.', question: '¿Qué haría más clara la acción principal?', options: ['Añadir tres anuncios más.', 'Quitar mensajes repetidos y dar protagonismo a «Ver productos».', 'Hacer que todos los botones tengan el mismo aspecto llamativo.'], correct: 1, fix: 'Reducir el ruido visual y destacar la acción principal.', evidence: '¿Qué mensaje debería atraer la mirada primero y por qué?', law: 'rest', lawQuestion: 'Según el efecto Von Restorff, ¿qué recordaremos mejor?', lawOptions: ['Un botón importante que destaca entre elementos tranquilos.', 'Cinco avisos que compiten por destacar igual.'], lawCorrect: 0 },
+        { title: 'Ayuda a reconocer y resolver errores', task: 'Pulsa «Pedir» para ver el mensaje de fallo. Si ya arreglaste la misión 5, añade un producto y escribe un correo antes.', clue: 'Un código técnico no explica el problema ni el siguiente paso.', question: '¿Qué mensaje es más útil para recuperarse del fallo?', options: ['«Error E-47».', 'Una pantalla en blanco.', '«No se pudo guardar. Comprueba la conexión y vuelve a intentarlo».'], correct: 2, fix: 'Explicar el error con palabras claras y ofrecer un nuevo intento.', evidence: '¿Qué información te faltaba al ver «Error E-47»?' },
+        { title: 'Ayuda y documentación', task: 'Busca instrucciones para hacer un pedido o pedir ayuda en la página.', clue: 'Una guía breve puede resolver dudas sin sacar a nadie de su tarea.', question: '¿Qué ayuda sería más fácil de usar?', options: ['Una guía corta y visible con los pasos para pedir.', 'Un manual largo escondido en otra web.', 'Ninguna ayuda: todo el mundo sabrá comprar.'], correct: 0, fix: 'Mostrar una guía breve al lado de la tarea.', evidence: '¿Qué duda podría tener un cliente al hacer su primer pedido?' }
+      ];
+
+      const $ = selector => document.querySelector(selector);
+      const state = { current: 0, done: Array(10).fill(null), attempts: Array(10).fill(0), drafts: missions.map(() => ({ answer: null, lawAnswer: null, evidence: '' })), cart: [], removed: null };
+      const prices = { barra: 1.2, magdalena: .8 };
+      const labels = { barra: 'Barra de pan', magdalena: 'Magdalena' };
+      const shop = $('#shop');
+      const workspace = $('#workspace');
+      const missionContent = $('#mission-content');
+      const missionNav = $('#mission-nav');
+      const feedback = (message, type = 'error') => {
+        const element = $('#mission-feedback');
+        if (element) { element.textContent = message; element.className = `feedback ${type}`; }
+      };
+      const isDone = number => Boolean(state.done[number - 1]);
+
+      function showStoreMessage(message) {
+        const element = $('#store-status');
+        if (!isDone(1)) { element.textContent = ''; element.classList.remove('has-message'); return; }
+        element.textContent = message;
+        element.classList.add('has-message');
+      }
+      function renderCart() {
+        const list = $('#cart-list');
+        list.replaceChildren();
+        if (!state.cart.length) {
+          const li = document.createElement('li');
+          li.textContent = 'Todavía no has añadido nada.';
+          list.append(li);
+        } else {
+          state.cart.forEach((id, index) => {
+            const li = document.createElement('li');
+            const name = document.createElement('span');
+            name.textContent = `${labels[id]} · ${prices[id].toFixed(2).replace('.', ',')} €`;
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.textContent = 'Quitar';
+            remove.setAttribute('aria-label', `Quitar ${labels[id]} del pedido`);
+            remove.addEventListener('click', () => {
+              state.removed = { id, index };
+              state.cart.splice(index, 1);
+              $('#undo-button').hidden = !isDone(3);
+              showStoreMessage(`${labels[id]} eliminado del pedido.`);
+              renderCart();
+            });
+            li.append(name, remove);
+            list.append(li);
+          });
+        }
+        const total = state.cart.reduce((sum, id) => sum + prices[id], 0);
+        $('#cart-total').textContent = `Total: ${total.toFixed(2).replace('.', ',')} €`;
+      }
+      function addProduct(id) {
+        state.cart.push(id);
+        renderCart();
+        showStoreMessage(`${labels[id]} añadido al pedido.`);
+      }
+      function showCheckoutError() {
+        $('#system-message').textContent = isDone(9)
+          ? 'No se pudo guardar el pedido. Comprueba tu conexión y vuelve a intentarlo.'
+          : 'Error E-47';
+        $('#retry-button').hidden = !isDone(9);
+      }
+      function applyFixes() {
+        missions.forEach((_, index) => shop.classList.toggle(`fix-${index + 1}`, isDone(index + 1)));
+        document.querySelectorAll('.buy').forEach(button => { button.textContent = isDone(2) ? 'Añadir al pedido' : 'CPT'; });
+        document.querySelectorAll('[data-fixed-label]').forEach(button => {
+          button.textContent = isDone(4) ? button.dataset.fixedLabel : { Inicio: 'Casa', Tienda: 'Catálogo', Contacto: 'Escríbenos' }[button.dataset.fixedLabel];
+        });
+        $('#undo-button').hidden = !isDone(3) || !state.removed;
+        $('#repeat-button').hidden = !isDone(7);
+        $('#help-box').hidden = !isDone(10);
+        if (isDone(9) && $('#system-message').textContent === 'Error E-47') showCheckoutError();
+      }
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+      }
+      function renderNavigation() {
+        missionNav.replaceChildren();
+        missions.forEach((mission, index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.textContent = state.done[index] ? '✓' : String(index + 1);
+          button.title = `Misión ${index + 1}: ${mission.title}${state.done[index] ? ' (resuelta)' : ''}`;
+          button.setAttribute('aria-label', button.title);
+          if (state.done[index]) button.classList.add('done');
+          if (state.current === index) button.setAttribute('aria-current', 'step');
+          button.addEventListener('click', () => chooseMission(index));
+          missionNav.append(button);
+        });
+        const count = state.done.filter(Boolean).length;
+        $('#progress').value = count;
+        $('#progress-label').textContent = `${count} de 10`;
+        $('#progress-percent').textContent = `${count * 10} %`;
+        if (count === 10) renderFinish();
+      }
+      function choiceMarkup(name, options, selected) {
+        return options.map((text, index) => `<label class="choice"><input type="radio" name="${name}" value="${index}" ${selected === index ? 'checked' : ''}><span>${escapeHtml(text)}</span></label>`).join('');
+      }
+      function renderMission() {
+        const index = state.current;
+        const mission = missions[index];
+        const draft = state.drafts[index];
+        workspace.dataset.active = String(index + 1);
+        let lawMarkup = '';
+        if (mission.law) {
+          const law = laws[mission.law];
+          lawMarkup = `<aside class="law-box"><strong>Conexión UX: ${escapeHtml(law.name)}</strong><p>${escapeHtml(law.idea)} <a href="${law.url}" target="_blank" rel="noopener noreferrer">Ver la ley</a></p></aside>`;
+        }
+        const done = state.done[index];
+        missionContent.innerHTML = `<p class="mission-kicker">Misión ${index + 1} de 10 · Heurística de Nielsen</p>
+          <h2 id="mission-title">${escapeHtml(mission.title)}</h2>
+          <p>${escapeHtml(mission.task)}</p>
+          <div class="hint-box"><strong>Pista para investigar:</strong> ${escapeHtml(mission.clue)}</div>
+          <button type="button" class="secondary" id="see-zone">Ver la zona señalada</button>
+          ${lawMarkup}
+          ${done ? `<div class="done-summary"><strong>¡Misión resuelta!</strong><br>${escapeHtml(mission.fix)}<br><small>Intentos: ${done.attempts}. Tu pista: ${escapeHtml(done.evidence)}</small></div>` :
+          `<form id="mission-form">
+            <fieldset><legend>${escapeHtml(mission.question)}</legend>${choiceMarkup('answer', mission.options, draft.answer)}</fieldset>
+            ${mission.law ? `<fieldset><legend>${escapeHtml(mission.lawQuestion)}</legend>${choiceMarkup('law-answer', mission.lawOptions, draft.lawAnswer)}</fieldset>` : ''}
+            <label class="evidence-label" for="evidence">Tu pista: ${escapeHtml(mission.evidence)}</label>
+            <textarea id="evidence" minlength="10" maxlength="350" required placeholder="Escribe una frase con algo que hayas visto en la web.">${escapeHtml(draft.evidence)}</textarea>
+            <div class="controls"><button class="primary" type="submit">Comprobar y reparar</button></div>
+          </form>`}
+          <p id="mission-feedback" class="feedback" role="status" aria-live="polite"></p>
+          <div class="controls"><button type="button" class="secondary" id="next-mission">${index === 9 ? 'Ir al resultado' : 'Siguiente misión →'}</button></div>`;
+        $('#see-zone').addEventListener('click', () => {
+          const zone = document.querySelector(`[data-zone="${index + 1}"]`);
+          if (zone) zone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+        $('#next-mission').addEventListener('click', () => {
+          if (index === 9) {
+            if (state.done.every(Boolean)) $('#finish').scrollIntoView({ behavior: 'smooth' });
+            else { chooseMission(state.done.findIndex(item => !item)); feedback('Quedan misiones por resolver.'); }
+          } else chooseMission(index + 1);
+        });
+        if (!done) {
+          $('#mission-form').addEventListener('change', event => {
+            if (event.target.name === 'answer') draft.answer = Number(event.target.value);
+            if (event.target.name === 'law-answer') draft.lawAnswer = Number(event.target.value);
+          });
+          $('#evidence').addEventListener('input', event => { draft.evidence = event.target.value; });
+          $('#mission-form').addEventListener('submit', event => {
+            event.preventDefault();
+            if (draft.answer === null || (mission.law && draft.lawAnswer === null)) {
+              feedback('Elige una mejora y, si aparece, una respuesta sobre la ley UX.'); return;
+            }
+            if (draft.evidence.trim().length < 10) { feedback('Escribe una pista de al menos diez caracteres sobre lo que viste.'); $('#evidence').focus(); return; }
+            state.attempts[index] += 1;
+            if (draft.answer !== mission.correct || (mission.law && draft.lawAnswer !== mission.lawCorrect)) {
+              feedback(`Aún no. Revisa la pista y prueba otra opción. Intentos: ${state.attempts[index]}.`); return;
+            }
+            state.done[index] = { evidence: draft.evidence.trim(), attempts: state.attempts[index], answer: mission.options[draft.answer], lawAnswer: mission.law ? mission.lawOptions[draft.lawAnswer] : null };
+            applyFixes();
+            renderNavigation();
+            renderMission();
+            feedback('¡Bien! La mejora ya aparece en Migas Amigas. Pasa a la siguiente misión.', 'success');
+          });
+        }
+      }
+      function chooseMission(index) {
+        state.current = index;
+        renderNavigation();
+        renderMission();
+        if (matchMedia('(max-width: 1000px)').matches) $('.mission-column').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      function reportText() {
+        const name = $('#student-name').value.trim().replace(/[\r\n\t]/g, ' ').slice(0, 40) || 'Sin nombre';
+        const firstTry = state.done.filter(item => item && item.attempts === 1).length;
+        const lines = [
+          'MIGAS AMIGAS · INFORME DEL LABORATORIO',
+          '=====================================',
+          `Alumno/a: ${name}`,
+          `Fecha: ${new Date().toLocaleDateString('es-ES')}`,
+          `Misiones resueltas: ${state.done.filter(Boolean).length}/10`,
+          `Resueltas al primer intento: ${firstTry}/10`,
+          `Intentos totales: ${state.attempts.reduce((sum, value) => sum + value, 0)}`,
+          '',
+          'RESULTADOS POR MISIÓN',
+          '--------------------'
+        ];
+        missions.forEach((mission, index) => {
+          const result = state.done[index];
+          lines.push('', `${index + 1}. ${mission.title}`, `Pista observada: ${result.evidence}`, `Mejora elegida: ${result.answer}`, `Cambio aplicado: ${mission.fix}`);
+          if (mission.law) lines.push(`Ley UX: ${laws[mission.law].name}`, `Respuesta UX: ${result.lawAnswer}`);
+          lines.push(`Intentos: ${result.attempts}`);
+        });
+        lines.push('', 'REFLEXIÓN FINAL', '---------------', '¿Qué mejora crees que ayuda más a los clientes? Explica por qué:', '', '____________________________________________________________', '', 'Este informe recoge respuestas de una simulación educativa.');
+        return lines.join('\n') + '\n';
+      }
+      function renderFinish() {
+        $('#finish').hidden = false;
+        const firstTry = state.done.filter(item => item.attempts === 1).length;
+        $('#finish-summary').textContent = `Has resuelto las 10 misiones. ${firstTry} salieron a la primera; en las demás aprendiste al volver a probar. El informe incluye tus pistas, las soluciones, las leyes UX y el número de intentos.`;
+        $('#report-preview').textContent = reportText();
+      }
+
+      document.querySelectorAll('[data-add]').forEach(button => button.addEventListener('click', () => addProduct(button.dataset.add)));
+      $('#undo-button').addEventListener('click', () => {
+        if (!state.removed) return;
+        state.cart.splice(Math.min(state.removed.index, state.cart.length), 0, state.removed.id);
+        showStoreMessage(`${labels[state.removed.id]} recuperado.`);
+        state.removed = null;
+        $('#undo-button').hidden = true;
+        renderCart();
+      });
+      $('#repeat-button').addEventListener('click', () => addProduct('barra'));
+      $('#order-button').addEventListener('click', () => {
+        const email = $('#buyer-email');
+        if (isDone(5) && (!state.cart.length || !email.validity.valid || !email.value.trim())) {
+          $('#system-message').textContent = !state.cart.length ? 'Añade un producto antes de pedir.' : 'Escribe un correo válido antes de pedir.';
+          $('#retry-button').hidden = true;
+          if (state.cart.length) email.focus();
+          return;
+        }
+        showCheckoutError();
+      });
+      $('#retry-button').addEventListener('click', showCheckoutError);
+      document.querySelectorAll('[data-scroll]').forEach(button => button.addEventListener('click', () => {
+        document.getElementById(button.dataset.scroll).scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }));
+      $('#download-report').addEventListener('click', () => {
+        const text = reportText();
+        const filename = ($('#student-name').value.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-|-$/g, '').slice(0, 30) || 'alumno');
+        const url = URL.createObjectURL(new Blob(['\ufeff', text], { type: 'text/plain;charset=utf-8' }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `migas-amigas-informe-${filename}.txt`;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      });
+      $('#student-name').addEventListener('input', () => { if (!$('#finish').hidden) renderFinish(); });
+      $('#restart').addEventListener('click', () => {
+        if (!confirm('¿Empezar de nuevo? Se borrarán las respuestas de esta sesión.')) return;
+        location.reload();
+      });
+      applyFixes();
+      renderCart();
+      renderNavigation();
+      renderMission();
+    })();
+  </script>
+</body>
+</html>
