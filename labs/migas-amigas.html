@@ -337,7 +337,7 @@
               state.removed = { id, index };
               state.cart.splice(index, 1);
               $('#undo-button').hidden = !isDone(3);
-              showStoreMessage(`${labels[id]} eliminado del pedido.`);
+              showStoreMessage(`Producto eliminado del pedido: ${labels[id]}.`);
               renderCart();
             });
             li.append(name, remove);
@@ -350,7 +350,7 @@
       function addProduct(id) {
         state.cart.push(id);
         renderCart();
-        showStoreMessage(`${labels[id]} añadido al pedido.`);
+        showStoreMessage(`Producto añadido al pedido: ${labels[id]}.`);
       }
       function showCheckoutError() {
         $('#system-message').textContent = isDone(9)
@@ -496,7 +496,7 @@
       $('#undo-button').addEventListener('click', () => {
         if (!state.removed) return;
         state.cart.splice(Math.min(state.removed.index, state.cart.length), 0, state.removed.id);
-        showStoreMessage(`${labels[state.removed.id]} recuperado.`);
+        showStoreMessage(`Producto recuperado: ${labels[state.removed.id]}.`);
         state.removed = null;
         $('#undo-button').hidden = true;
         renderCart();
