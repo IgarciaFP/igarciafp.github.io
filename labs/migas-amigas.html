@@ -69,8 +69,11 @@
     .shop h4 { margin: 18px 0 9px; font-size: 1rem; }
     .quick-links { display: flex; flex-wrap: wrap; gap: 5px; }
     .quick-links button { padding: 5px 7px; border: 1px solid #d5b99c; background: #fff3dc; border-radius: 4px; font-size: .76rem; }
-    .fix-6 .quick-links button.extra { display: none; }
-    .fix-6 .quick-links button { padding: 8px 12px; font-weight: 700; }
+    .fix-6 .quick-links { display: none; }
+    .quick-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .quick-groups details { border: 1px solid #d5b99c; background: #fff3dc; border-radius: 7px; padding: 8px; }
+    .quick-groups summary { cursor: pointer; font-weight: 700; }
+    .quick-groups button { display: block; border: 0; background: transparent; color: #592b16; padding: 5px; text-align: left; text-decoration: underline; }
     .product-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
     .product { border: 1px solid #e0cbb3; border-radius: 10px; background: white; padding: 12px; }
     .product-icon { display: grid; place-items: center; width: 100%; height: 66px; border-radius: 7px; background: #fae4c0; font-size: 2.1rem; }
@@ -114,9 +117,16 @@
     .mission-nav button { display: grid; place-items: center; width: 37px; height: 37px; border: 1px solid #a58c74; background: #fff; border-radius: 9px; color: var(--ink); font-weight: 800; }
     .mission-nav button[aria-current="step"] { background: var(--orange-dark); color: white; border-color: var(--orange-dark); }
     .mission-nav button.done:not([aria-current="step"]) { background: var(--mint); color: var(--green); border-color: #8dbd9b; }
+    .mission-nav button:disabled { opacity: .42; cursor: not-allowed; }
     .mission-kicker { font-weight: 800; color: var(--orange-dark); font-size: .82rem; letter-spacing: .09em; text-transform: uppercase; }
     #mission-title { line-height: 1.18; font-size: 1.5rem; margin: 7px 0 10px; }
     .hint-box { padding: 13px 15px; margin: 12px 0; border-left: 5px solid #df8e20; background: #fff2d6; border-radius: 6px; }
+    .mission-action { padding: 14px 15px; border: 1px solid #dabda2; border-radius: 10px; background: #fff8ec; }
+    .mission-action h3 { font-size: 1rem; margin-bottom: 5px; }
+    .mission-action p { margin-bottom: 12px; }
+    .mission-action .secondary { padding: 8px 12px; }
+    .mission-nav-label { font-weight: 700; font-size: .86rem; margin: 0 0 8px; }
+    .back-to-mission { margin: 0 20px 18px; }
     .law-box { padding: 12px 14px; border: 1px solid #a7c3dc; background: #ecf5ff; border-radius: 10px; margin: 14px 0; }
     .law-box strong { color: var(--blue); }
     .law-box p { margin: 5px 0 6px; font-size: .9rem; }
@@ -167,11 +177,11 @@
   <main>
     <section class="intro" aria-label="Cómo funciona el laboratorio">
       <div class="panel">
-        <h2>Tu trabajo como detective</h2>
+        <h2>Cómo resolver cada reto</h2>
         <ol>
-          <li>Explora la panadería de prueba. Los fallos son intencionados: no se realiza ninguna compra real.</li>
-          <li>En cada misión, escribe una pista que hayas observado y elige la mejor mejora. Puedes volver a intentarlo si fallas.</li>
-          <li>Cuando completes las diez, descarga un informe TXT con tus respuestas y resultados.</li>
+          <li>Empieza por el reto 1 y sigue en orden. Lee «Haz esta prueba» y realiza esa acción en la panadería de la izquierda. El botón «Ir a la zona» te lleva al lugar que debes revisar.</li>
+          <li>Vuelve al reto y escribe una frase sobre lo que ocurrió. Después elige la mejora; en cinco retos también responderás una pregunta sobre una ley UX.</li>
+          <li>Pulsa «Comprobar y reparar». Si aciertas, la panadería cambiará. Si no, puedes intentarlo otra vez. Al resolver los diez retos, descarga tu informe TXT.</li>
         </ol>
       </div>
       <div class="panel">
@@ -211,6 +221,12 @@
                   <button type="button" class="extra">Barras</button><button type="button" class="extra">Integral</button><button type="button" class="extra">Sin gluten</button><button type="button" class="extra">Pasteles</button>
                   <button type="button" class="extra">Rosquillas</button><button type="button" class="extra">Magdalenas</button><button type="button" class="extra">Galletas</button><button type="button" class="extra">Contacto</button>
                 </div>
+                <div class="quick-groups" id="quick-groups" hidden>
+                  <details><summary>Pan</summary><button type="button">Barras</button><button type="button">Integral</button><button type="button">Sin gluten</button></details>
+                  <details><summary>Dulces</summary><button type="button">Pasteles</button><button type="button">Rosquillas</button><button type="button">Magdalenas</button><button type="button">Galletas</button></details>
+                  <details><summary>Desayunos</summary><button type="button">Desayunos</button></details>
+                  <details><summary>Ofertas e información</summary><button type="button">Ofertas</button><button type="button">Contacto</button></details>
+                </div>
               </section>
               <section id="products">
                 <h4>Productos</h4>
@@ -244,7 +260,8 @@
               <button type="button" data-scroll="cart" data-fixed-label="Contacto">Escríbenos</button>
             </footer>
           </div>
-          <p class="small store-note">Pista: prueba a añadir y quitar productos, pulsar «Pedir» y comparar las zonas señaladas. Esta web es una simulación.</p>
+          <p class="small store-note">Esta es la web de prueba: sus errores son intencionados. Sigue la instrucción del reto que estés resolviendo.</p>
+          <button type="button" id="back-to-mission" class="secondary back-to-mission">Volver al reto</button>
         </section>
       </div>
 
@@ -254,6 +271,7 @@
           <div class="mission-inner">
             <div class="progress-copy"><span>Panadería reparada</span><span id="progress-percent">0 %</span></div>
             <progress id="progress" value="0" max="10">0 de 10</progress>
+            <p class="mission-nav-label">Retos: avanza en orden. Puedes volver a los que tienen ✓.</p>
             <nav id="mission-nav" class="mission-nav" aria-label="Elegir misión"></nav>
             <div id="mission-content"></div>
           </div>
@@ -285,16 +303,16 @@
         rest: { name: 'Efecto Von Restorff', url: 'https://lawsofux.com/es/efecto-von-restorff/', idea: 'Un elemento que destaca entre otros llama más la atención.' }
       };
       const missions = [
-        { title: 'Visibilidad del estado', task: 'Añade una magdalena. ¿Sabes enseguida si se añadió? Mira la zona de productos y el pedido.', clue: 'Busca una respuesta cerca del botón después de pulsarlo.', question: '¿Qué cambio informa mejor de lo que acaba de pasar?', options: ['Mostrar «Magdalena añadida» junto a los productos.', 'Ocultar el botón después de pulsarlo.', 'Esperar a que la persona encuentre el pedido abajo.'], correct: 0, fix: 'Mostrar una confirmación inmediata al añadir un producto.', evidence: '¿Qué ocurrió al pulsar «CPT» y dónde se vio el cambio?' },
-        { title: 'Lenguaje del mundo real', task: 'Observa el texto del botón de compra. Imagina que visitas la panadería por primera vez.', clue: 'Tres letras pueden significar cosas distintas para personas distintas.', question: '¿Qué etiqueta se entiende sin conocer códigos internos?', options: ['CPT', 'Añadir al pedido', 'Ejecutar operación P-01'], correct: 1, fix: 'Usar «Añadir al pedido» en lugar de una abreviatura interna.', evidence: '¿Por qué la nueva etiqueta ayuda a alguien que nunca ha usado esta web?', law: 'jakob', lawQuestion: '¿Qué espera reconocer alguien que ya ha comprado por internet?', lawOptions: ['Un botón con una acción familiar, como «Añadir al pedido».', 'Un código nuevo que haya que memorizar.'], lawCorrect: 0 },
-        { title: 'Control y libertad', task: 'Añade un producto y elimínalo del pedido. Piensa en qué pasaría si fue un error.', clue: 'Una persona debería poder recuperar lo que acaba de quitar.', question: '¿Qué opción devuelve el control al cliente?', options: ['Borrar sin avisar y sin vuelta atrás.', 'Añadir un botón «Deshacer eliminación».', 'Bloquear el pedido para que no pueda editarse.'], correct: 1, fix: 'Permitir deshacer la eliminación de un producto.', evidence: '¿Qué opción faltaba después de eliminar el producto?' },
-        { title: 'Consistencia y estándares', task: 'Compara el menú de arriba con los enlaces del pie de la panadería.', clue: 'Las mismas secciones tienen nombres distintos según el lugar.', question: '¿Cómo organizarías los enlaces para orientarte mejor?', options: ['Conservar nombres diferentes para cada lugar.', 'Eliminar el menú superior.', 'Usar los mismos nombres y agrupar las secciones relacionadas.'], correct: 2, fix: 'Mantener los mismos nombres en la cabecera y el pie.', evidence: 'Escribe dos nombres distintos que señalen la misma sección.', law: 'proximity', lawQuestion: '¿Dónde pondrías los enlaces de productos relacionados?', lawOptions: ['Juntos, para que se vean como un grupo.', 'Muy separados, entre enlaces sin relación.'], lawCorrect: 0 },
-        { title: 'Prevención de errores', task: 'Mira el pequeño botón «Pedir». Púlsalo sin escribir un correo o sin añadir nada al pedido.', clue: 'Conviene evitar errores antes de enviarlos y facilitar el botón principal.', question: '¿Qué mejora evita el fallo antes de que ocurra?', options: ['Agrandar el botón y comprobar pedido y correo antes de continuar.', 'Dejar que falle y mostrar un código.', 'Esconder el campo de correo.'], correct: 0, fix: 'Hacer visible y fácil de pulsar el botón; comprobar datos antes de enviar.', evidence: '¿Qué dato faltaba cuando intentaste pedir y cómo era el botón?', law: 'fitts', lawQuestion: '¿Qué botón es más sencillo de pulsar en una pantalla táctil?', lawOptions: ['Uno diminuto pegado a otros controles.', 'Uno grande con espacio alrededor.'], lawCorrect: 1 },
-        { title: 'Reconocer antes que recordar', task: 'Cuenta las opciones bajo «Explora nuestras secciones». Busca una categoría concreta.', clue: 'Muchos nombres pequeños y parecidos obligan a releer y recordar.', question: '¿Qué versión reduce el esfuerzo de encontrar una categoría?', options: ['Mostrar todavía más enlaces mezclados.', 'Agrupar en pocas categorías claras y visibles.', 'Ocultar todas las categorías.'], correct: 1, fix: 'Agrupar las opciones en cuatro categorías claras.', evidence: '¿Cuántas opciones había antes y cómo cambió la búsqueda?', law: 'hick', lawQuestion: '¿Cuándo suele costar menos elegir?', lawOptions: ['Con pocas opciones claras y agrupadas.', 'Con muchas opciones similares sin agrupar.'], lawCorrect: 0 },
-        { title: 'Flexibilidad y eficiencia', task: 'Imagina que siempre compras la misma barra. Busca una forma rápida de repetir el pedido.', clue: 'Quien compra a menudo puede agradecer un atajo visible.', question: '¿Qué añadirías sin quitar el camino normal?', options: ['Obligar a repetir todos los pasos siempre.', 'Ocultar los productos a usuarios frecuentes.', 'Ofrecer «Repetir pedido habitual» además de la compra normal.'], correct: 2, fix: 'Ofrecer un atajo para repetir un pedido habitual.', evidence: '¿Cuántos pasos ahorrarías si compras lo mismo cada semana?' },
-        { title: 'Diseño estético y minimalista', task: 'Mira la cabecera amarilla: ¿cuántos avisos compiten con «Ver productos»?', clue: 'Si todo destaca a la vez, cuesta encontrar lo importante.', question: '¿Qué haría más clara la acción principal?', options: ['Añadir tres anuncios más.', 'Quitar mensajes repetidos y dar protagonismo a «Ver productos».', 'Hacer que todos los botones tengan el mismo aspecto llamativo.'], correct: 1, fix: 'Reducir el ruido visual y destacar la acción principal.', evidence: '¿Qué mensaje debería atraer la mirada primero y por qué?', law: 'rest', lawQuestion: 'Según el efecto Von Restorff, ¿qué recordaremos mejor?', lawOptions: ['Un botón importante que destaca entre elementos tranquilos.', 'Cinco avisos que compiten por destacar igual.'], lawCorrect: 0 },
-        { title: 'Ayuda a reconocer y resolver errores', task: 'Pulsa «Pedir» para ver el mensaje de fallo. Si ya arreglaste la misión 5, añade un producto y escribe un correo antes.', clue: 'Un código técnico no explica el problema ni el siguiente paso.', question: '¿Qué mensaje es más útil para recuperarse del fallo?', options: ['«Error E-47».', 'Una pantalla en blanco.', '«No se pudo guardar. Comprueba la conexión y vuelve a intentarlo».'], correct: 2, fix: 'Explicar el error con palabras claras y ofrecer un nuevo intento.', evidence: '¿Qué información te faltaba al ver «Error E-47»?' },
-        { title: 'Ayuda y documentación', task: 'Busca instrucciones para hacer un pedido o pedir ayuda en la página.', clue: 'Una guía breve puede resolver dudas sin sacar a nadie de su tarea.', question: '¿Qué ayuda sería más fácil de usar?', options: ['Una guía corta y visible con los pasos para pedir.', 'Un manual largo escondido en otra web.', 'Ninguna ayuda: todo el mundo sabrá comprar.'], correct: 0, fix: 'Mostrar una guía breve al lado de la tarea.', evidence: '¿Qué duda podría tener un cliente al hacer su primer pedido?' }
+        { title: 'Visibilidad del estado', task: 'En «Productos», pulsa «CPT» debajo de Magdalena. Mira si aparece un mensaje junto al botón. Después revisa «Tu pedido».', clue: 'Comprueba si recibes una confirmación inmediata donde has pulsado.', question: '¿Qué añadirías para saber al instante que funcionó?', options: ['Mostrar «Magdalena añadida» junto a los productos.', 'Ocultar el botón después de pulsarlo.', 'Esperar a que la persona encuentre el pedido abajo.'], correct: 0, fix: 'Mostrar una confirmación inmediata al añadir un producto.', evidence: '¿Apareció algún aviso junto al botón al añadir la magdalena?' },
+        { title: 'Lenguaje del mundo real', task: 'Mira el botón «CPT» debajo de Barra de pan. Sin pulsarlo, intenta adivinar qué hace. Después púlsalo para comprobarlo.', clue: 'Compara esas tres letras con las palabras que usarías en una panadería.', question: '¿Qué texto pondrías en el botón para que se entienda?', options: ['CPT', 'Añadir al pedido', 'Ejecutar operación P-01'], correct: 1, fix: 'Usar «Añadir al pedido» en lugar de una abreviatura interna.', evidence: 'Antes de pulsar «CPT», ¿sabías qué acción haría? Explícalo.', law: 'jakob', lawQuestion: '¿Qué reconocerá antes alguien que ya ha comprado por internet?', lawOptions: ['Un botón con una acción familiar, como «Añadir al pedido».', 'Un código nuevo que haya que memorizar.'], lawCorrect: 0 },
+        { title: 'Control y libertad', task: 'Si «Tu pedido» está vacío, añade una barra. En «Tu pedido», pulsa «Quitar». Busca un botón para recuperar el producto eliminado.', clue: 'Mira justo debajo de la lista del pedido después de quitarlo.', question: '¿Qué cambio permitiría corregir un clic por error?', options: ['Borrar sin avisar y sin vuelta atrás.', 'Añadir un botón «Deshacer eliminación».', 'Bloquear el pedido para que no pueda editarse.'], correct: 1, fix: 'Permitir deshacer la eliminación de un producto.', evidence: 'Después de «Quitar», ¿encontraste alguna forma de recuperar el producto?' },
+        { title: 'Consistencia y estándares', task: 'Lee «Inicio, Tienda, Contacto» en el menú superior. Baja al pie de la panadería y lee «Casa, Catálogo, Escríbenos». Compara los nombres.', clue: 'Por ejemplo, «Inicio» y «Casa» llevan a la misma zona.', question: '¿Cómo deberían aparecer esos enlaces en ambos lugares?', options: ['Conservar nombres diferentes para cada lugar.', 'Eliminar el menú superior.', 'Usar los mismos nombres y agrupar las secciones relacionadas.'], correct: 2, fix: 'Mantener los mismos nombres en la cabecera y el pie.', evidence: 'Escribe una pareja de nombres diferentes que lleve a la misma zona.', law: 'proximity', lawQuestion: '¿Dónde pondrías los enlaces de productos relacionados?', lawOptions: ['Juntos, para que se vean como un grupo.', 'Muy separados, entre enlaces sin relación.'], lawCorrect: 0 },
+        { title: 'Prevención de errores', task: 'Ve a «Tu pedido». Deja vacío el correo y pulsa el botón pequeño «Pedir». Lee el mensaje que sale.', clue: 'Observa el tamaño del botón y si la web te avisa del dato que falta antes de enviar.', question: '¿Qué cambiarías para evitar ese error?', options: ['Agrandar el botón y comprobar pedido y correo antes de continuar.', 'Dejar que falle y mostrar un código.', 'Esconder el campo de correo.'], correct: 0, fix: 'Hacer visible y fácil de pulsar el botón; comprobar datos antes de enviar.', evidence: '¿Qué mensaje apareció con el correo vacío y cómo era el botón?', law: 'fitts', lawQuestion: '¿Qué botón es más sencillo de pulsar en una pantalla táctil?', lawOptions: ['Uno diminuto pegado a otros controles.', 'Uno grande con espacio alrededor.'], lawCorrect: 1 },
+        { title: 'Reconocer antes que recordar', task: 'En «Explora nuestras secciones», intenta encontrar «Sin gluten». Cuenta todas las opciones que aparecen en ese bloque.', clue: 'Tienes que recorrer muchos nombres pequeños para decidir dónde entrar.', question: '¿Cómo facilitarías encontrar una sección?', options: ['Mostrar todavía más enlaces mezclados.', 'Agrupar en pocas categorías claras y visibles.', 'Ocultar todas las categorías.'], correct: 1, fix: 'Agrupar las opciones en cuatro categorías claras.', evidence: '¿Cuántas opciones tuviste que revisar para encontrar «Sin gluten»?', law: 'hick', lawQuestion: '¿Cuándo suele costar menos elegir?', lawOptions: ['Con pocas opciones claras y agrupadas.', 'Con muchas opciones similares sin agrupar.'], lawCorrect: 0 },
+        { title: 'Flexibilidad y eficiencia', task: 'Imagina que compras una barra cada mañana. En «Tu pedido», busca un botón para repetir esa compra con un solo clic.', clue: 'Ahora tendrías que volver a «Productos», encontrar la barra y añadirla otra vez.', question: '¿Qué atajo añadirías para clientes habituales?', options: ['Obligar a repetir todos los pasos siempre.', 'Ocultar los productos a usuarios frecuentes.', 'Ofrecer «Repetir pedido habitual» además de la compra normal.'], correct: 2, fix: 'Ofrecer un atajo para repetir un pedido habitual.', evidence: '¿Encontraste un botón para repetir el pedido sin volver a «Productos»?' },
+        { title: 'Diseño estético y minimalista', task: 'Vuelve al recuadro amarillo de la parte superior. Intenta encontrar «Ver productos» entre los mensajes de colores y cuenta los avisos.', clue: 'Hay varios reclamos al mismo tiempo alrededor de una acción importante.', question: '¿Qué quitarías o destacarías para encontrar el botón?', options: ['Añadir tres anuncios más.', 'Quitar mensajes repetidos y dar protagonismo a «Ver productos».', 'Hacer que todos los botones tengan el mismo aspecto llamativo.'], correct: 1, fix: 'Reducir el ruido visual y destacar la acción principal.', evidence: '¿Cuántos avisos compiten con el botón «Ver productos»?', law: 'rest', lawQuestion: '¿Qué elemento destacará más y se recordará mejor?', lawOptions: ['Un botón importante que destaca entre elementos tranquilos.', 'Cinco avisos que compiten por destacar igual.'], lawCorrect: 0 },
+        { title: 'Ayuda a reconocer y resolver errores', task: 'En «Tu pedido», añade un producto y escribe un correo de prueba válido, por ejemplo prueba@ejemplo.com. Pulsa «Pedir» y lee el mensaje rojo.', clue: 'Si solo aparece un código, no sabrás qué ocurrió ni qué hacer después.', question: '¿Qué mensaje ayudaría a solucionar el fallo?', options: ['«Error E-47».', 'Una pantalla en blanco.', '«No se pudo guardar. Comprueba la conexión y vuelve a intentarlo».'], correct: 2, fix: 'Explicar el error con palabras claras y ofrecer un nuevo intento.', evidence: '¿Qué decía el mensaje rojo? ¿Te indicaba cómo continuar?' },
+        { title: 'Ayuda y documentación', task: 'En «Tu pedido», busca instrucciones para comprar o un apartado de ayuda. Revisa también el pie de la panadería.', clue: 'Piensa qué necesitaría saber alguien que hace su primer pedido.', question: '¿Qué añadirías cerca del pedido?', options: ['Una guía corta y visible con los pasos para pedir.', 'Un manual largo escondido en otra web.', 'Ninguna ayuda: todo el mundo sabrá comprar.'], correct: 0, fix: 'Mostrar una guía breve al lado de la tarea.', evidence: '¿Encontraste una guía con los pasos para pedir? ¿Dónde?' }
       ];
 
       const $ = selector => document.querySelector(selector);
@@ -366,6 +384,7 @@
         });
         $('#undo-button').hidden = !isDone(3) || !state.removed;
         $('#repeat-button').hidden = !isDone(7);
+        $('#quick-groups').hidden = !isDone(6);
         $('#help-box').hidden = !isDone(10);
         if (isDone(9) && $('#system-message').textContent === 'Error E-47') showCheckoutError();
       }
@@ -374,11 +393,13 @@
       }
       function renderNavigation() {
         missionNav.replaceChildren();
+        const firstPending = state.done.findIndex(item => !item);
         missions.forEach((mission, index) => {
           const button = document.createElement('button');
           button.type = 'button';
           button.textContent = state.done[index] ? '✓' : String(index + 1);
-          button.title = `Misión ${index + 1}: ${mission.title}${state.done[index] ? ' (resuelta)' : ''}`;
+          button.disabled = firstPending !== -1 && index > firstPending;
+          button.title = `Misión ${index + 1}: ${mission.title}${state.done[index] ? ' (resuelta)' : button.disabled ? ' (completa las anteriores)' : ''}`;
           button.setAttribute('aria-label', button.title);
           if (state.done[index]) button.classList.add('done');
           if (state.current === index) button.setAttribute('aria-current', 'step');
@@ -402,33 +423,31 @@
         let lawMarkup = '';
         if (mission.law) {
           const law = laws[mission.law];
-          lawMarkup = `<aside class="law-box"><strong>Conexión UX: ${escapeHtml(law.name)}</strong><p>${escapeHtml(law.idea)} <a href="${law.url}" target="_blank" rel="noopener noreferrer">Ver la ley</a></p></aside>`;
+          lawMarkup = `<aside class="law-box"><strong>5 · Relaciona con ${escapeHtml(law.name)}</strong><p>${escapeHtml(law.idea)} <a href="${law.url}" target="_blank" rel="noopener noreferrer">Ver la ley</a></p></aside>`;
         }
         const done = state.done[index];
         missionContent.innerHTML = `<p class="mission-kicker">Misión ${index + 1} de 10 · Heurística de Nielsen</p>
           <h2 id="mission-title">${escapeHtml(mission.title)}</h2>
-          <p>${escapeHtml(mission.task)}</p>
-          <div class="hint-box"><strong>Pista para investigar:</strong> ${escapeHtml(mission.clue)}</div>
-          <button type="button" class="secondary" id="see-zone">Ver la zona señalada</button>
-          ${lawMarkup}
-          ${done ? `<div class="done-summary"><strong>¡Misión resuelta!</strong><br>${escapeHtml(mission.fix)}<br><small>Intentos: ${done.attempts}. Tu pista: ${escapeHtml(done.evidence)}</small></div>` :
+          <div class="mission-action"><h3>1 · Haz esta prueba en la panadería</h3><p>${escapeHtml(mission.task)}</p><button type="button" class="secondary" id="see-zone">Ir a la zona de la prueba</button></div>
+          <div class="hint-box"><strong>2 · Fíjate en esto:</strong> ${escapeHtml(mission.clue)}</div>
+          ${done ? `<div class="done-summary"><strong>¡Reto resuelto!</strong><br>${escapeHtml(mission.fix)}<br><small>Intentos: ${done.attempts}. Lo que observaste: ${escapeHtml(done.evidence)}</small><br>Vuelve a mirar la panadería para ver el cambio.</div>` :
           `<form id="mission-form">
-            <fieldset><legend>${escapeHtml(mission.question)}</legend>${choiceMarkup('answer', mission.options, draft.answer)}</fieldset>
-            ${mission.law ? `<fieldset><legend>${escapeHtml(mission.lawQuestion)}</legend>${choiceMarkup('law-answer', mission.lawOptions, draft.lawAnswer)}</fieldset>` : ''}
-            <label class="evidence-label" for="evidence">Tu pista: ${escapeHtml(mission.evidence)}</label>
-            <textarea id="evidence" minlength="10" maxlength="350" required placeholder="Escribe una frase con algo que hayas visto en la web.">${escapeHtml(draft.evidence)}</textarea>
-            <div class="controls"><button class="primary" type="submit">Comprobar y reparar</button></div>
+            <label class="evidence-label" for="evidence">3 · Escribe lo que viste: ${escapeHtml(mission.evidence)}</label>
+            <textarea id="evidence" maxlength="350" placeholder="Escribe una frase sobre lo que pasó al hacer la prueba.">${escapeHtml(draft.evidence)}</textarea>
+            <fieldset><legend>4 · Elige la mejora: ${escapeHtml(mission.question)}</legend>${choiceMarkup('answer', mission.options, draft.answer)}</fieldset>
+            ${mission.law ? `${lawMarkup}<fieldset><legend>${escapeHtml(mission.lawQuestion)}</legend>${choiceMarkup('law-answer', mission.lawOptions, draft.lawAnswer)}</fieldset>` : ''}
+            <div class="controls"><button class="primary" type="submit">Comprobar respuestas y reparar</button></div>
           </form>`}
           <p id="mission-feedback" class="feedback" role="status" aria-live="polite"></p>
-          <div class="controls"><button type="button" class="secondary" id="next-mission">${index === 9 ? 'Ir al resultado' : 'Siguiente misión →'}</button></div>`;
+          ${done ? `<div class="controls"><button type="button" class="secondary" id="next-mission">${index === 9 ? 'Ver informe final' : 'Ir al siguiente reto →'}</button></div>` : ''}`;
         $('#see-zone').addEventListener('click', () => {
           const zone = document.querySelector(`[data-zone="${index + 1}"]`);
           if (zone) zone.scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
-        $('#next-mission').addEventListener('click', () => {
+        if (done) $('#next-mission').addEventListener('click', () => {
           if (index === 9) {
             if (state.done.every(Boolean)) $('#finish').scrollIntoView({ behavior: 'smooth' });
-            else { chooseMission(state.done.findIndex(item => !item)); feedback('Quedan misiones por resolver.'); }
+            else { chooseMission(state.done.findIndex(item => !item)); feedback('Faltan retos. Resuelve este y después podrás descargar el informe.'); }
           } else chooseMission(index + 1);
         });
         if (!done) {
@@ -439,23 +458,22 @@
           $('#evidence').addEventListener('input', event => { draft.evidence = event.target.value; });
           $('#mission-form').addEventListener('submit', event => {
             event.preventDefault();
-            if (draft.answer === null || (mission.law && draft.lawAnswer === null)) {
-              feedback('Elige una mejora y, si aparece, una respuesta sobre la ley UX.'); return;
-            }
-            if (draft.evidence.trim().length < 10) { feedback('Escribe una pista de al menos diez caracteres sobre lo que viste.'); $('#evidence').focus(); return; }
+            if (draft.evidence.trim().length < 10) { feedback('Completa el paso 3: escribe una frase sobre lo que viste.'); $('#evidence').focus(); return; }
+            if (draft.answer === null) { feedback('Completa el paso 4: elige una mejora para la panadería.'); return; }
+            if (mission.law && draft.lawAnswer === null) { feedback('Completa el paso 5: responde la pregunta de la ley UX.'); return; }
             state.attempts[index] += 1;
-            if (draft.answer !== mission.correct || (mission.law && draft.lawAnswer !== mission.lawCorrect)) {
-              feedback(`Aún no. Revisa la pista y prueba otra opción. Intentos: ${state.attempts[index]}.`); return;
-            }
+            if (draft.answer !== mission.correct) { feedback(`La mejora del paso 4 todavía no resuelve el problema. Vuelve a observar la panadería y prueba otra. Intentos: ${state.attempts[index]}.`); return; }
+            if (mission.law && draft.lawAnswer !== mission.lawCorrect) { feedback(`La mejora del paso 4 es correcta. Revisa la ley UX del paso 5 y prueba otra respuesta. Intentos: ${state.attempts[index]}.`); return; }
             state.done[index] = { evidence: draft.evidence.trim(), attempts: state.attempts[index], answer: mission.options[draft.answer], lawAnswer: mission.law ? mission.lawOptions[draft.lawAnswer] : null };
             applyFixes();
             renderNavigation();
             renderMission();
-            feedback('¡Bien! La mejora ya aparece en Migas Amigas. Pasa a la siguiente misión.', 'success');
+            feedback(index === 9 ? '¡Bien! La web ya muestra tu mejora. Pulsa «Ver informe final».' : '¡Bien! La web ya muestra tu mejora. Pulsa «Ir al siguiente reto» cuando la hayas visto.', 'success');
           });
         }
       }
       function chooseMission(index) {
+        if (index > state.done.findIndex(item => !item) && !state.done[index]) return;
         state.current = index;
         renderNavigation();
         renderMission();
@@ -478,7 +496,7 @@
         ];
         missions.forEach((mission, index) => {
           const result = state.done[index];
-          lines.push('', `${index + 1}. ${mission.title}`, `Pista observada: ${result.evidence}`, `Mejora elegida: ${result.answer}`, `Cambio aplicado: ${mission.fix}`);
+          lines.push('', `${index + 1}. ${mission.title}`, `Lo que observé: ${result.evidence}`, `Mejora elegida: ${result.answer}`, `Cambio aplicado: ${mission.fix}`);
           if (mission.law) lines.push(`Ley UX: ${laws[mission.law].name}`, `Respuesta UX: ${result.lawAnswer}`);
           lines.push(`Intentos: ${result.attempts}`);
         });
@@ -516,6 +534,9 @@
       document.querySelectorAll('[data-scroll]').forEach(button => button.addEventListener('click', () => {
         document.getElementById(button.dataset.scroll).scrollIntoView({ behavior: 'smooth', block: 'center' });
       }));
+      $('#back-to-mission').addEventListener('click', () => {
+        $('#mission-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
       $('#download-report').addEventListener('click', () => {
         const text = reportText();
         const filename = ($('#student-name').value.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-|-$/g, '').slice(0, 30) || 'alumno');
