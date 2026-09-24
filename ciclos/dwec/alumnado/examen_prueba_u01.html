@@ -249,11 +249,6 @@
         <div class="student-info">
             <label for="student-name">Nombre o alias</label><input type="text" id="student-name" placeholder="Escribe tu nombre o alias" maxlength="100" autocomplete="off" required>
         </div>
-        <div class="instructions">
-            <strong>Cómo funciona:</strong> Responde a las 10 preguntas con tus palabras. Al pulsar <strong>Generar informe TXT y revisar</strong> se descargan tus respuestas y el intento queda cerrado. Después podrás ver las soluciones y compararlas con lo que escribiste. Para cambiar respuestas o generar otro informe debes borrar el intento y empezar de nuevo.
-            <p>No se permite copiar, cortar, pegar ni arrastrar texto dentro de esta página. El informe se descarga en tu equipo; no se envía al profesor.</p>
-            <p><a href="https://igarciafp.github.io/ciclos/dwec/u01_es.html" target="_blank" rel="noopener noreferrer">Consultar el tema de la unidad 1</a></p>
-        </div>
     </header>
 
     <main>
@@ -412,6 +407,48 @@
             </div>
         </div>
 
+<div class="question-card">
+<div class="question-title"><span class="question-number">11</span><span class="q-text">Una página en https://tienda.ejemplo pide datos con JavaScript a https://api.ejemplo. ¿Por qué puede aparecer un error CORS? ¿Quién debe permitir que la página lea la respuesta y cómo lo indica?</span></div>
+<label class="sr-only" for="ans-11">Respuesta a la pregunta 11</label>
+<textarea required spellcheck="false" autocomplete="off" class="answer-area" id="ans-11" placeholder="Escribe tu respuesta..."></textarea>
+<button class="solution-btn" id="btn-sol-11" data-solution="11" aria-controls="sol-11" aria-expanded="false" type="button" disabled>Ver solución</button>
+<div id="sol-11" class="solution-content" hidden><h4>Puntos clave de la respuesta:</h4><p>Los dos dominios tienen <strong>orígenes distintos</strong>. La política de mismo origen limita qué respuestas puede leer JavaScript.</p><p>El <strong>servidor de la API</strong> debe autorizar el origen mediante cabeceras como <code>Access-Control-Allow-Origin</code>; el navegador aplica esa política. En ciertos casos hay una petición previa <code>OPTIONS</code> (preflight).</p><p>No se arregla añadiendo esa cabecera a la petición del cliente. CORS controla la lectura desde el navegador y no sustituye la autenticación ni la autorización del servidor.</p></div>
+</div>
+<div class="question-card">
+<div class="question-title"><span class="question-number">12</span><span class="q-text">¿Para qué sirve la caché HTTP del navegador? Explica la diferencia entre Cache-Control: no-cache y no-store, y qué significa recibir un estado 304.</span></div>
+<label class="sr-only" for="ans-12">Respuesta a la pregunta 12</label>
+<textarea required spellcheck="false" autocomplete="off" class="answer-area" id="ans-12" placeholder="Escribe tu respuesta..."></textarea>
+<button class="solution-btn" id="btn-sol-12" data-solution="12" aria-controls="sol-12" aria-expanded="false" type="button" disabled>Ver solución</button>
+<div id="sol-12" class="solution-content" hidden><h4>Puntos clave de la respuesta:</h4><p>La caché permite <strong>reutilizar respuestas</strong> para reducir descargas y tiempos de espera.</p><p><code>no-cache</code> permite guardar la respuesta, pero exige validarla con el servidor antes de reutilizarla. <code>no-store</code> indica que no debe almacenarse.</p><p><code>304 Not Modified</code> responde a una petición condicional e indica que puede reutilizarse la copia guardada; no incluye un nuevo cuerpo del recurso. Una copia fresca puede reutilizarse sin consultar al servidor, por lo que no siempre se observa un 304.</p></div>
+</div>
+<div class="question-card">
+<div class="question-title"><span class="question-number">13</span><span class="q-text">Al abrir una URL que muestra una página HTML con CSS, JavaScript e imágenes, ¿cómo descubre el navegador esos archivos? ¿Se descargan todos uno detrás de otro? Explica también qué puede ocurrir con un script normal, defer y async.</span></div>
+<label class="sr-only" for="ans-13">Respuesta a la pregunta 13</label>
+<textarea required spellcheck="false" autocomplete="off" class="answer-area" id="ans-13" placeholder="Escribe tu respuesta..."></textarea>
+<button class="solution-btn" id="btn-sol-13" data-solution="13" aria-controls="sol-13" aria-expanded="false" type="button" disabled>Ver solución</button>
+<div id="sol-13" class="solution-content" hidden><h4>Puntos clave de la respuesta:</h4><p>Se solicita el <strong>documento HTML</strong> y, al recibirlo y analizarlo, se descubren referencias a otros recursos. El navegador puede empezar a pedirlos antes de recibir todo el HTML.</p><p>Muchas descargas pueden <strong>solaparse</strong>: no existe un orden fijo «HTML completo → CSS completo → JavaScript completo → imágenes».</p><p>Un script clásico externo sin <code>async</code> ni <code>defer</code> normalmente detiene el análisis del HTML mientras se obtiene y ejecuta. Con <code>defer</code>, se descarga mientras continúa el análisis y se ejecuta después, respetando el orden entre scripts diferidos. Con <code>async</code>, se ejecuta cuando está disponible y no garantiza el orden entre scripts.</p><p>El CSS puede retrasar el dibujado y la ejecución de ciertos scripts. Network permite observar el orden y el solapamiento reales.</p></div>
+</div>
+<div class="question-card">
+<div class="question-title"><span class="question-number">14</span><span class="q-text">¿En qué se diferencian GET y POST? Pon un ejemplo adecuado para cada método. ¿Usar POST garantiza que los datos estén cifrados?</span></div>
+<label class="sr-only" for="ans-14">Respuesta a la pregunta 14</label>
+<textarea required spellcheck="false" autocomplete="off" class="answer-area" id="ans-14" placeholder="Escribe tu respuesta..."></textarea>
+<button class="solution-btn" id="btn-sol-14" data-solution="14" aria-controls="sol-14" aria-expanded="false" type="button" disabled>Ver solución</button>
+<div id="sol-14" class="solution-content" hidden><h4>Puntos clave de la respuesta:</h4><p><strong>GET</strong> solicita una representación de un recurso; por ejemplo, consultar un producto. Debe usarse para operaciones de lectura, sin pedir cambios en el estado del servidor. Los parámetros suelen ir en la URL.</p><p><strong>POST</strong> envía datos para que el servidor los procese, normalmente en el cuerpo de la petición; por ejemplo, enviar un pedido. No garantiza que repetir la petición tenga el mismo efecto.</p><p><strong>POST no cifra los datos.</strong> HTTPS aporta la protección del transporte. Tanto GET como POST pueden utilizar HTTPS; los parámetros en una URL pueden quedar en historiales o registros.</p></div>
+</div>
+<div class="question-card">
+<div class="question-title"><span class="question-number">15</span><span class="q-text">¿Para qué sirve el certificado que presenta un servidor al conectarnos por HTTPS? ¿Quién lo comprueba? ¿Un certificado válido garantiza que el contenido de la página sea fiable?</span></div>
+<label class="sr-only" for="ans-15">Respuesta a la pregunta 15</label>
+<textarea required spellcheck="false" autocomplete="off" class="answer-area" id="ans-15" placeholder="Escribe tu respuesta..."></textarea>
+<button class="solution-btn" id="btn-sol-15" data-solution="15" aria-controls="sol-15" aria-expanded="false" type="button" disabled>Ver solución</button>
+<div id="sol-15" class="solution-content" hidden><h4>Puntos clave de la respuesta:</h4><p>El certificado vincula una <strong>clave pública con un nombre de dominio</strong> mediante una firma que el navegador puede validar siguiendo una cadena de confianza.</p><p>El navegador comprueba, entre otras cosas, que el dominio coincide, que el certificado está dentro de su periodo de validez y que la cadena llega a una autoridad de confianza. Durante TLS el servidor demuestra que posee la clave privada correspondiente.</p><p>TLS negocia claves de sesión para proteger los datos en tránsito. El certificado ayuda a autenticar el servidor; <strong>no demuestra que el contenido sea verdadero ni que el sitio sea honesto</strong>.</p></div>
+</div>
+<div class="question-card">
+<div class="question-title"><span class="question-number">16</span><span class="q-text">¿Quién puede establecer una cookie y dónde se guarda? Explica el papel de Set-Cookie, del navegador y de JavaScript. ¿Qué cambia si una cookie tiene el atributo HttpOnly?</span></div>
+<label class="sr-only" for="ans-16">Respuesta a la pregunta 16</label>
+<textarea required spellcheck="false" autocomplete="off" class="answer-area" id="ans-16" placeholder="Escribe tu respuesta..."></textarea>
+<button class="solution-btn" id="btn-sol-16" data-solution="16" aria-controls="sol-16" aria-expanded="false" type="button" disabled>Ver solución</button>
+<div id="sol-16" class="solution-content" hidden><h4>Puntos clave de la respuesta:</h4><p>El <strong>servidor</strong> puede pedir al navegador que guarde una cookie mediante la cabecera de respuesta <code>Set-Cookie</code>. JavaScript de una página también puede crear ciertas cookies mediante <code>document.cookie</code>, dentro de los límites del navegador.</p><p>El <strong>navegador</strong> decide si la acepta según sus políticas, la guarda y la envía en la cabecera <code>Cookie</code> de las peticiones que cumplan sus condiciones de dominio, ruta y otros atributos. No se envía a cualquier sitio.</p><p><code>HttpOnly</code> impide leer o modificar esa cookie desde JavaScript. La establece el servidor y el navegador puede seguir enviándola automáticamente en las peticiones correspondientes.</p></div>
+</div>
         <!-- Sección de entrega -->
         <div class="submit-section">
             <p id="attempt-status" role="status">Intento abierto. Las soluciones se habilitan después de generar el informe.</p>
@@ -438,7 +475,7 @@
 'use strict';
 (() => {
  const $=id=>document.getElementById(id);
- const key='dwec-u01-practice-exam-v1';
+ const key='dwec-u01-practice-exam-v2';
  const name=$('student-name'), answers=[...document.querySelectorAll('.answer-area')];
  const buttons=[...document.querySelectorAll('[data-solution]')];
  let state={phase:'writing',name:'',answers:Array(answers.length).fill(''),date:null};
@@ -455,7 +492,7 @@
   $('validation-msg').textContent='';
   if(!name.value.trim()){$('validation-msg').textContent='Escribe tu nombre o alias antes de generar el informe.';name.focus();return;}
   const empty=answers.findIndex(a=>!a.value.trim());
-  if(empty!==-1){$('validation-msg').textContent=`Falta la respuesta a la pregunta ${empty+1}. Completa las diez preguntas antes de generar el informe.`;answers[empty].focus();return;}
+  if(empty!==-1){$('validation-msg').textContent=`Falta la respuesta a la pregunta ${empty+1}. Completa las ${answers.length} preguntas antes de generar el informe.`;answers[empty].focus();return;}
   update();state.date=new Date().toISOString();
   let url;
   try{
