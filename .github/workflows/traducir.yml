@@ -23,6 +23,7 @@ on:
 
 permissions:
   contents: write
+  pages: write
 
 concurrency:
   group: traducir-html-${{ github.ref }}
@@ -101,3 +102,9 @@ jobs:
 
           git commit -m "Traducción automática de unidades HTML"
           git push
+
+      - name: Publicar traducciones en GitHub Pages
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds" --silent
