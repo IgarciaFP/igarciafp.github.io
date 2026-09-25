@@ -113,6 +113,12 @@
             <li><a href="#sec9_5" class="subsection-link">9.5. Funciones como valores y expresiones de función</a></li>
             <li><a href="#sec9_6" class="subsection-link">9.6. Funciones flecha</a></li>
             <li><a href="#sec9_7" class="subsection-link">9.7. Funciones pequeñas y conexión con los eventos</a></li>
+            <li><a href="#sec10">10. Práctica: calculadora de dos operandos</a></li>
+            <li><a href="#sec10_1" class="subsection-link">10.1. Material de partida</a></li>
+            <li><a href="#sec10_2" class="subsection-link">10.2. Comportamiento requerido</a></li>
+            <li><a href="#sec10_3" class="subsection-link">10.3. Desarrollo por etapas</a></li>
+            <li><a href="#sec10_4" class="subsection-link">10.4. Pruebas de funcionamiento</a></li>
+            <li><a href="#sec10_5" class="subsection-link">10.5. Entrega y criterios de revisión</a></li>
         </ul>
     </nav>
     <div class="document-wrapper">
@@ -1163,6 +1169,97 @@ boton.addEventListener("click", () =&gt; {
                     <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Guía de funciones</a>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Funciones flecha</a>
                 </div>
+            </section>
+
+            <section aria-labelledby="sec10">
+                <h2 id="sec10"><i class="fa-solid fa-laptop-code" aria-hidden="true"></i> 10. Práctica: calculadora de dos operandos</h2>
+                <p>Desarrolla el comportamiento de una calculadora que permita sumar, restar, multiplicar y dividir dos números. Se proporcionan el <strong>HTML y el CSS</strong>; tu trabajo consiste en programar <strong><code>app.js</code></strong>, aplicando los contenidos de la unidad.</p>
+
+                <h3 id="sec10_1">10.1. Material de partida</h3>
+                <div class="resource-card expansion-card">
+                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-download" aria-hidden="true"></i> Archivos de la práctica</span><span class="resource-badge badge-reading">Material</span></div>
+                    <p class="resource-description">Descarga los tres archivos y guárdalos juntos en una carpeta llamada <code>calculadora</code>. La interfaz está preparada; el archivo JavaScript contiene únicamente indicaciones iniciales, sin solución.</p>
+                    <a href="alumnado/u02/calculadora/index.html" download="index.html" class="resource-link-btn">Descargar index.html</a>
+                    <a href="alumnado/u02/calculadora/estilos.css" download="estilos.css" class="resource-link-btn">Descargar estilos.css</a>
+                    <a href="alumnado/u02/calculadora/app.js" download="app.js" class="resource-link-btn">Descargar app.js</a>
+                    <a href="alumnado/u02/calculadora/index.html" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Ver la interfaz de partida</a>
+                </div>
+                <pre><code>calculadora/
+├── index.html
+├── estilos.css
+└── app.js</code></pre>
+                <p>Abre la carpeta en VS Code y la página en Chrome. El HTML ya enlaza <code>app.js</code> con <code>defer</code>. Conserva su estructura, los identificadores y las clases CSS: no es necesario modificar los archivos proporcionados de presentación.</p>
+                <p>La interfaz incluye estos elementos:</p>
+                <ul>
+                    <li><code>#formulario-calculadora</code>: formulario cuyo envío inicia el cálculo.</li>
+                    <li><code>#numero1</code> y <code>#numero2</code>: campos para los operandos; admiten decimales.</li>
+                    <li><code>#operacion</code>: selector con los valores <code>sumar</code>, <code>restar</code>, <code>multiplicar</code> y <code>dividir</code>.</li>
+                    <li><code>#limpiar</code>: botón que restablece la interfaz.</li>
+                    <li><code>#resultado</code>: salida del cálculo, inicialmente <code>—</code>.</li>
+                    <li><code>#mensaje</code>: texto informativo; dispone de las clases CSS <code>error</code> y <code>exito</code>.</li>
+                </ul>
+
+                <h3 id="sec10_2">10.2. Comportamiento requerido</h3>
+                <ol>
+                    <li><strong>Calcular:</strong> atiende el evento <code>submit</code> y evita el envío convencional con <code>preventDefault()</code>. Debe funcionar tanto con «Calcular» como con Intro en un campo.</li>
+                    <li><strong>Leer y validar:</strong> comprueba que ambos campos tienen contenido antes de convertirlos a números. Admite cero, negativos y decimales. Rechaza datos no numéricos o no finitos.</li>
+                    <li><strong>Operar:</strong> ejecuta la operación seleccionada respetando el orden de los operandos. En una división, el segundo número es el divisor.</li>
+                    <li><strong>Gestionar errores:</strong> no permitas dividir entre cero. Una operación desconocida o un resultado no finito también deben producir un mensaje de error.</li>
+                    <li><strong>Mostrar:</strong> presenta el resultado con <code>textContent</code> y un mensaje de éxito. Ante un error, sustituye cualquier resultado anterior por <code>—</code> y muestra una explicación concreta.</li>
+                    <li><strong>Limpiar:</strong> vacía los campos, selecciona de nuevo «Sumar», restaura <code>—</code> y elimina el mensaje y las clases de estado. Devuelve el foco al primer campo.</li>
+                </ol>
+                <div class="didactic-note"><p><strong>Validación desde JavaScript.</strong> El formulario utiliza <code>novalidate</code> para que programes las comprobaciones. El tipo <code>number</code> sigue condicionando la entrada: el navegador puede impedir escribir letras o representar una entrada no válida como una cadena vacía. No confundas un campo vacío con el número cero.</p></div>
+                <p>Al mostrar un error, añade <code>error</code> a <code>#mensaje</code> y retira <code>exito</code>; al mostrar un éxito, realiza lo contrario. Conserva la clase base <code>mensaje</code>.</p>
+
+                <h3 id="sec10_3">10.3. Desarrollo por etapas</h3>
+                <ol>
+                    <li><strong>Conectar la interfaz.</strong> Selecciona los elementos del DOM y registra los manejadores de envío y limpieza. Comprueba con un mensaje de consola que cada acción ejecuta su manejador una sola vez.</li>
+                    <li><strong>Obtener los datos.</strong> Lee los valores dentro del manejador de envío. Comprueba las entradas y conviértelas con <code>Number()</code>.</li>
+                    <li><strong>Resolver las operaciones.</strong> Utiliza <code>switch</code> o <code>if...else</code> para seleccionar el cálculo. Comprueba los casos de error antes de mostrar el resultado.</li>
+                    <li><strong>Organizar funciones.</strong> Separa el cálculo de la actualización del DOM. Una función como <code>calcular(numero1, numero2, operacion)</code> debe recibir los datos y devolver el resultado, sin leer campos ni escribir mensajes. Decide y documenta cómo comunicarás una operación no válida al código que la llama.</li>
+                    <li><strong>Completar la interacción.</strong> Implementa los mensajes, las clases CSS y el botón «Limpiar». Prueba varias operaciones consecutivas sin recargar.</li>
+                </ol>
+                <p>Utiliza <code>const</code> como opción habitual, <code>let</code> cuando sea necesario reasignar, nombres descriptivos y funciones con una responsabilidad clara. Emplea al menos una función flecha donde resulte legible, por ejemplo para una operación breve o un manejador.</p>
+                <div class="resource-card expansion-card">
+                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Ayudas para completar la práctica</span><span class="resource-badge badge-reading">Consulta</span></div>
+                    <p><code>Number.isFinite(valor)</code> comprueba si un valor es un número finito: devuelve <code>false</code> para <code>NaN</code> e <code>Infinity</code>. Úsalo después de convertir y al comprobar el resultado.</p>
+                    <p><code>formulario.reset()</code> restaura los valores iniciales de los controles; no limpia por sí solo los mensajes ni las clases añadidas. <code>campo.focus()</code> sitúa el foco en un campo.</p>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Number.isFinite()</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/reset" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · reset()</a>
+                </div>
+
+                <h3 id="sec10_4">10.4. Pruebas de funcionamiento</h3>
+                <p>Registra el resultado de cada prueba. Incluye también secuencias de acciones para comprobar que no quedan mensajes o resultados de la operación anterior.</p>
+                <div class="table-scroll operators-table" role="region" aria-label="Pruebas de la calculadora" tabindex="0">
+                    <table>
+                        <thead><tr><th scope="col">Prueba</th><th scope="col">Resultado esperado</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>8 + 2</code></td><td><code>10</code></td></tr>
+                            <tr><td><code>3 - 8</code></td><td><code>-5</code></td></tr>
+                            <tr><td><code>-4 × 2.5</code></td><td><code>-10</code></td></tr>
+                            <tr><td><code>7 ÷ 2</code></td><td><code>3.5</code></td></tr>
+                            <tr><td><code>0 + 5</code> y <code>0 ÷ 2</code></td><td><code>5</code> y <code>0</code>; cero es una entrada válida.</td></tr>
+                            <tr><td><code>5 ÷ 0</code> y <code>0 ÷ 0</code></td><td>Error de división entre cero y resultado <code>—</code>.</td></tr>
+                            <tr><td>Uno o ambos campos vacíos</td><td>Mensaje de entrada obligatoria, sin realizar el cálculo.</td></tr>
+                            <tr><td>Entrada no válida o fuera del rango numérico</td><td>Se rechaza; nunca se muestra <code>NaN</code> ni <code>Infinity</code> como resultado válido.</td></tr>
+                            <tr><td>Éxito → error → éxito</td><td>Texto, resultado y clases se actualizan en cada paso.</td></tr>
+                            <tr><td>Limpiar después de calcular o fallar</td><td>Estado inicial y foco en el primer campo.</td></tr>
+                            <tr><td>Enviar mediante Intro</td><td>Mismo cálculo que con el botón, sin navegación.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>Para comprobar resultados no finitos puedes probar, si el navegador admite esta notación en los campos, <code>1e308 × 10</code>. Comprueba también directamente la función de cálculo con una operación desconocida.</p>
+                <div class="didactic-note"><p><strong>Decimales.</strong> Algunos cálculos, como <code>0.1 + 0.2</code>, pueden mostrar una pequeña diferencia por la representación binaria de los números. En esta práctica se acepta el resultado numérico de JavaScript; no es obligatorio implementar redondeo.</p></div>
+
+                <h3 id="sec10_5">10.5. Entrega y criterios de revisión</h3>
+                <p>Entrega la carpeta con los tres archivos y un documento breve con las pruebas realizadas, sus resultados y una explicación de las funciones principales. Incluye una captura de una operación correcta y otra de un error.</p>
+                <ul>
+                    <li><strong>Funcionamiento:</strong> las cuatro operaciones, la validación y la limpieza cumplen los requisitos.</li>
+                    <li><strong>Organización:</strong> se distingue el cálculo de la interacción con el DOM y se evita repetir código innecesariamente.</li>
+                    <li><strong>Uso del lenguaje:</strong> declaraciones adecuadas, comparaciones estrictas, eventos mediante <code>addEventListener()</code> y funciones legibles.</li>
+                    <li><strong>Presentación y pruebas:</strong> mensajes claros, clases coherentes y casos límite comprobados.</li>
+                </ul>
+                <p>No utilices <code>eval()</code>, el constructor <code>Function</code> ni bibliotecas para resolver las operaciones. La lógica debe desarrollarse con los operadores y las estructuras estudiadas.</p>
             </section>
 
             <footer class="document-footer">DAW / DWEC · © Ignacio García</footer>
