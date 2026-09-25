@@ -6,7 +6,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Unidad 2 de DWEC: fundamentos de JavaScript. Introducción, entorno de trabajo, primeros programas, sintaxis y buenas prácticas.">
+    <meta name="description" content="Unidad 2 de DWEC: fundamentos de JavaScript. Introducción, entorno de trabajo, primeros programas, sintaxis, variables y tipos de datos.">
     <title>UD02 Fundamentos de JavaScript — 2º DAW</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,14 +20,14 @@
         .sidebar-toc:focus-within { transform: translateX(0); }
         .unit-navigation { margin-bottom: 22px; font-size: .9rem; }
         .unit-navigation a { color: var(--primary-color); text-underline-offset: 3px; }
-        .timeline-wide { display: block; width: 100%; }
-        .timeline-narrow { display: none; width: 100%; max-width: 360px; margin: 0 auto; }
-        .timeline-label { font-family: 'Inter', system-ui, sans-serif; fill: #475569; }
-        .timeline-date { font-size: 25px; font-weight: 700; fill: #1e3a8a; }
-        .timeline-heading { font-size: 17px; font-weight: 700; fill: #0f172a; }
-        .timeline-detail { font-size: 15px; }
         .roles-table table { min-width: 0; }
         .roles-table th:first-child { width: 22%; }
+        .history-timeline { list-style: none; margin: 24px 0 24px 10px; padding: 0 0 0 24px; border-left: 3px solid var(--primary-border); }
+        .history-timeline li { position: relative; margin: 0; padding: 0 0 22px; break-inside: avoid; }
+        .history-timeline li:last-child { padding-bottom: 0; }
+        .history-timeline li::before { content: ""; position: absolute; left: -32px; top: 6px; width: 13px; height: 13px; border-radius: 50%; background: var(--primary-color); border: 2px solid white; }
+        .history-timeline strong { display: block; color: var(--primary-color); }
+        .history-timeline p { margin: 5px 0 0; text-align: left; }
         .event-sequence { padding: 14px 18px; background: var(--primary-light); border-radius: 6px; }
         .activity-card ol { margin-bottom: 0; }
         .resource-description { text-align: left; }
@@ -36,8 +36,6 @@
             .sidebar-toc { position: static; width: 100%; max-height: none; transform: none; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 20px; box-shadow: none; }
             .sidebar-toc::after { display: none; }
             .sidebar-toc ul { max-height: none; overflow: visible; }
-            .timeline-wide { display: none; }
-            .timeline-narrow { display: block; }
             .resource-card-header { align-items: flex-start; gap: 10px; flex-wrap: wrap; }
             .resource-card, .activity-card { padding: 18px; }
             .roles-table th, .roles-table td { padding: 10px; }
@@ -45,8 +43,6 @@
         }
         @media print {
             .unit-navigation { display: none; }
-            .timeline-wide { display: block; }
-            .timeline-narrow { display: none; }
         }
     </style>
 </head>
@@ -57,8 +53,7 @@
             <li><a href="#sec1">1. Introducción a JavaScript</a></li>
             <li><a href="#sec1_1" class="subsection-link">1.1. Origen y evolución</a></li>
             <li><a href="#sec1_2" class="subsection-link">1.2. JavaScript y ECMAScript</a></li>
-            <li><a href="#sec1_3" class="subsection-link">1.3. HTML, CSS y JavaScript</a></li>
-            <li><a href="#sec1_4" class="subsection-link">1.4. Características del lenguaje</a></li>
+            <li><a href="#sec1_3" class="subsection-link">1.3. Características del lenguaje</a></li>
             <li><a href="#sec2">2. Entorno de trabajo y primer programa</a></li>
             <li><a href="#sec2_1" class="subsection-link">2.1. Herramientas y organización</a></li>
             <li><a href="#sec2_2" class="subsection-link">2.2. Mostrar y recoger información</a></li>
@@ -69,14 +64,14 @@
             <li><a href="#sec3">3. Sintaxis y buenas prácticas</a></li>
             <li><a href="#sec3_1" class="subsection-link">3.1. Valores, expresiones y bloques</a></li>
             <li><a href="#sec3_2" class="subsection-link">3.2. Mayúsculas y comentarios</a></li>
-            <li><a href="#sec3_3" class="subsection-link">3.3. Identificadores y nombres</a></li>
             <li><a href="#sec4">4. Variables y tipos de datos</a></li>
             <li><a href="#sec4_1" class="subsection-link">4.1. Declaración y reasignación</a></li>
-            <li><a href="#sec4_2" class="subsection-link">4.2. Elegir entre const y let</a></li>
-            <li><a href="#sec4_3" class="subsection-link">4.3. Tipos de datos</a></li>
-            <li><a href="#sec4_4" class="subsection-link">4.4. Tipado dinámico y typeof</a></li>
-            <li><a href="#sec4_5" class="subsection-link">4.5. Cadenas e interpolación</a></li>
-            <li><a href="#sec4_6" class="subsection-link">4.6. Ámbito de bloque</a></li>
+            <li><a href="#sec4_2" class="subsection-link">4.2. Identificadores y nombres</a></li>
+            <li><a href="#sec4_3" class="subsection-link">4.3. Elegir entre const y let</a></li>
+            <li><a href="#sec4_4" class="subsection-link">4.4. Tipos de datos</a></li>
+            <li><a href="#sec4_5" class="subsection-link">4.5. Tipado dinámico y typeof</a></li>
+            <li><a href="#sec4_6" class="subsection-link">4.6. Cadenas e interpolación</a></li>
+            <li><a href="#sec4_7" class="subsection-link">4.7. Ámbito de bloque</a></li>
         </ul>
     </nav>
     <div class="document-wrapper">
@@ -99,79 +94,19 @@
 
                 <h3 id="sec1_1">1.1. Origen y evolución</h3>
                 <p>JavaScript fue creado por <strong>Brendan Eich en 1995</strong>, durante su trabajo en Netscape. Su finalidad inicial era incorporar pequeñas interacciones a las páginas y ejecutar instrucciones en el navegador del usuario.</p>
-                <p>La aparición de distintas implementaciones hizo necesario un estándar común. En <strong>1997</strong> se publicó la primera edición de ECMAScript. Una actualización decisiva llegó con <strong>ECMAScript 2015 (ES6)</strong>, que incorporó, entre otras novedades, <code>let</code>, <code>const</code> y las funciones flecha. Desde 2016 se publican nuevas ediciones anuales.</p>
+                <p>La aparición de distintas implementaciones hizo necesario un estándar común. Estos hitos resumen su evolución; las características que se mencionan se desarrollarán a lo largo del módulo.</p>
 
-                <figure class="image-container">
-                    <svg class="timeline-wide" viewBox="0 0 1000 220" role="img" aria-labelledby="timeline-title timeline-desc" xmlns="http://www.w3.org/2000/svg">
-                        <title id="timeline-title">Evolución de JavaScript: cuatro hitos</title>
-                        <desc id="timeline-desc">1995: Brendan Eich crea JavaScript en Netscape. 1997: primera edición de ECMAScript. 2015: ES6 incorpora let, const y funciones flecha. Desde 2016: nuevas ediciones anuales. Las distancias no representan el tiempo transcurrido.</desc>
-                        <rect x="0" y="0" width="1000" height="220" rx="12" fill="#f8fafc"/>
-                        <path d="M125 81 H875" stroke="#cbd5e1" stroke-width="4"/>
-                        <g class="timeline-label" text-anchor="middle">
-                            <g transform="translate(125 0)">
-                                <text class="timeline-date" y="48">1995</text>
-                                <circle cy="81" r="9" fill="#1e3a8a"/>
-                                <text class="timeline-heading" y="123">Nacimiento de JS</text>
-                                <text class="timeline-detail" y="151">Brendan Eich</text>
-                                <text class="timeline-detail" y="175">Netscape</text>
-                            </g>
-                            <g transform="translate(375 0)">
-                                <text class="timeline-date" y="48">1997</text>
-                                <circle cy="81" r="9" fill="#1e3a8a"/>
-                                <text class="timeline-heading" y="123">ECMAScript</text>
-                                <text class="timeline-detail" y="151">Primera edición</text>
-                                <text class="timeline-detail" y="175">del estándar</text>
-                            </g>
-                            <g transform="translate(625 0)">
-                                <text class="timeline-date" y="48">2015</text>
-                                <circle cy="81" r="9" fill="#0f766e"/>
-                                <text class="timeline-heading" y="123">ES6 / ES2015</text>
-                                <text class="timeline-detail" y="151">let, const y</text>
-                                <text class="timeline-detail" y="175">funciones flecha</text>
-                            </g>
-                            <g transform="translate(875 0)">
-                                <text class="timeline-date" y="48">2016 →</text>
-                                <circle cy="81" r="9" fill="#0f766e"/>
-                                <text class="timeline-heading" y="123">Evolución anual</text>
-                                <text class="timeline-detail" y="151">Nuevas ediciones</text>
-                                <text class="timeline-detail" y="175">del lenguaje</text>
-                            </g>
-                        </g>
-                    </svg>
-                    <svg class="timeline-narrow" viewBox="0 0 320 425" role="img" aria-labelledby="timeline-mobile-title timeline-mobile-desc" xmlns="http://www.w3.org/2000/svg">
-                        <title id="timeline-mobile-title">Evolución de JavaScript: cuatro hitos</title>
-                        <desc id="timeline-mobile-desc">1995: creación en Netscape. 1997: primera edición de ECMAScript. 2015: ES6. Desde 2016: ediciones anuales. Esquema sin escala temporal.</desc>
-                        <rect width="320" height="425" rx="12" fill="#f8fafc"/>
-                        <path d="M27 45 V353" stroke="#cbd5e1" stroke-width="3"/>
-                        <g class="timeline-label">
-                            <g transform="translate(0 20)">
-                                <circle cx="27" cy="25" r="7" fill="#1e3a8a"/>
-                                <text class="timeline-date" x="51" y="30">1995</text>
-                                <text class="timeline-heading" x="51" y="57">Nacimiento de JS</text>
-                                <text class="timeline-detail" x="51" y="80">Brendan Eich · Netscape</text>
-                            </g>
-                            <g transform="translate(0 122)">
-                                <circle cx="27" cy="25" r="7" fill="#1e3a8a"/>
-                                <text class="timeline-date" x="51" y="30">1997</text>
-                                <text class="timeline-heading" x="51" y="57">ECMAScript</text>
-                                <text class="timeline-detail" x="51" y="80">Primera edición del estándar</text>
-                            </g>
-                            <g transform="translate(0 224)">
-                                <circle cx="27" cy="25" r="7" fill="#0f766e"/>
-                                <text class="timeline-date" x="51" y="30">2015</text>
-                                <text class="timeline-heading" x="51" y="57">ES6 / ES2015</text>
-                                <text class="timeline-detail" x="51" y="80">let, const y funciones flecha</text>
-                            </g>
-                            <g transform="translate(0 326)">
-                                <circle cx="27" cy="25" r="7" fill="#0f766e"/>
-                                <text class="timeline-date" x="51" y="30">2016 →</text>
-                                <text class="timeline-heading" x="51" y="57">Evolución anual</text>
-                                <text class="timeline-detail" x="51" y="80">Nuevas ediciones del lenguaje</text>
-                            </g>
-                        </g>
-                    </svg>
-                    <figcaption class="image-caption">Hitos principales de JavaScript. Esquema sin escala temporal.</figcaption>
-                </figure>
+                <ol class="history-timeline" aria-label="Línea de tiempo de JavaScript">
+                    <li><strong>1995 · Nacimiento en Netscape</strong><p>Brendan Eich crea el lenguaje para incorporar interacción a las páginas web. Inicialmente se denomina Mocha, después LiveScript y finalmente JavaScript.</p></li>
+                    <li><strong>1997 · Primer estándar ECMAScript</strong><p>Ecma International publica ECMA-262 para establecer unas reglas comunes entre implementaciones.</p></li>
+                    <li><strong>1999 · ECMAScript 3</strong><p>Incorpora expresiones regulares y manejo de excepciones. Se convierte en la base de JavaScript durante la década siguiente.</p></li>
+                    <li><strong>2009 · ECMAScript 5</strong><p>Añade el modo estricto, soporte nativo de JSON y nuevos métodos para trabajar con arrays.</p></li>
+                    <li><strong>2015 · ECMAScript 2015 (ES6)</strong><p>Una renovación importante: <code>let</code>, <code>const</code>, funciones flecha, plantillas de cadena, clases, módulos y promesas.</p></li>
+                    <li><strong>2016 · Ediciones anuales</strong><p>Comienza el ciclo anual de publicación. El lenguaje incorpora mejoras graduales mediante el proceso de propuestas del comité TC39.</p></li>
+                    <li><strong>2017 · Funciones asíncronas</strong><p><code>async</code> y <code>await</code> facilitan expresar operaciones asíncronas. Se estudiarán en unidades posteriores.</p></li>
+                    <li><strong>2020 · Nuevos recursos del lenguaje</strong><p>Se incorporan el encadenamiento opcional (<code>?.</code>), el operador de coalescencia nula (<code>??</code>) y <code>BigInt</code>.</p></li>
+                </ol>
+                <p class="resource-description">La evolución continúa con ediciones anuales. Para ampliar: <a href="https://tc39.es/ecma262/multipage/#sec-intro" target="_blank" rel="noopener noreferrer">historia de las ediciones en la introducción de ECMA-262</a>.</p>
 
                 <div class="didactic-note curiosity-card">
                     <p><strong>Java y JavaScript son lenguajes diferentes.</strong> La semejanza del nombre responde al contexto comercial de su origen. Aprender JavaScript no requiere conocer Java.</p>
@@ -192,23 +127,7 @@
                     <a href="https://ecma-international.org/publications-and-standards/standards/ecma-262/" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Ecma International · ECMA-262 <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
                 </div>
 
-                <h3 id="sec1_3">1.3. HTML, CSS y JavaScript</h3>
-                <p>Las tres tecnologías colaboran en una página web, con responsabilidades diferenciadas:</p>
-                <div class="table-scroll roles-table" role="region" aria-label="Responsabilidades de HTML, CSS y JavaScript" tabindex="0">
-                    <table>
-                        <thead>
-                            <tr><th scope="col">Tecnología</th><th scope="col">Responsabilidad</th><th scope="col">Ejemplo</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><th scope="row">HTML</th><td>Define la estructura y el significado del contenido.</td><td>Títulos, párrafos, campos y botones.</td></tr>
-                            <tr><th scope="row">CSS</th><td>Determina la presentación visual.</td><td>Distribución, colores, tipografía y apariencia de los mensajes.</td></tr>
-                            <tr><th scope="row">JavaScript</th><td>Programa la lógica y la interacción.</td><td>Responde a una acción y actualiza un mensaje.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <p>El código se ejecuta mediante el <strong>motor JavaScript del navegador</strong>. Una interacción sencilla, como mostrar u ocultar un mensaje, puede resolverse en el propio cliente.</p>
-
-                <h3 id="sec1_4">1.4. Características del lenguaje</h3>
+                <h3 id="sec1_3">1.3. Características del lenguaje</h3>
                 <ul>
                     <li><strong>Tipado dinámico.</strong> No se declara un tipo fijo para cada variable. Los valores tienen un tipo, y una variable puede contener valores de distintos tipos durante la ejecución. Esto no elimina las reglas sobre qué operaciones admite cada valor.</li>
                     <li><strong>Multiparadigma.</strong> Permite organizar un programa mediante instrucciones, funciones y objetos. En esta unidad se utilizarán principalmente instrucciones y funciones.</li>
@@ -236,10 +155,7 @@
                     </ol>
                 </div>
 
-                <div class="activity-card activity-callout" id="actividad-1-2">
-                    <p><strong>1.2. Estructura, presentación y comportamiento</strong></p>
-                    <p>Clasifica estas tareas según correspondan a HTML, CSS o JavaScript y justifica tu respuesta: crear un párrafo, cambiar su color, añadir un botón y mostrar un mensaje al pulsarlo.</p>
-                </div>
+
             </section>
 
             <section aria-labelledby="sec2">
@@ -253,13 +169,6 @@
                     <li><strong>DevTools:</strong> son las herramientas de desarrollo integradas en el navegador. Se abren con <kbd>F12</kbd> o desde el menú de Chrome, en <em>Más herramientas → Herramientas para desarrolladores</em>.</li>
                 </ul>
                 <p>En DevTools se utilizarán principalmente <strong>Console (Consola)</strong>, para ejecutar instrucciones y consultar mensajes; <strong>Sources (Fuentes)</strong>, para examinar y depurar el código; y <strong>Network (Red)</strong>, para comprobar la carga de los archivos.</p>
-                <p>Abre la carpeta completa del proyecto en VS Code. Para los primeros ejercicios se utilizará esta estructura:</p>
-                <pre><code>ejercicios-js/
-├── index.html
-└── app.js</code></pre>
-                <p>Para servir los archivos por HTTP se puede utilizar la extensión <a href="https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer" target="_blank" rel="noopener noreferrer">Live Server, de Ritwick Dey</a>. Una vez instalada, haz clic derecho sobre <code>index.html</code> y selecciona <em>Open with Live Server</em>. Abre la dirección resultante en Chrome. Su dominio será normalmente <code>localhost</code> o <code>127.0.0.1</code>; el puerto puede variar.</p>
-                <p>El servidor local entrega los archivos. <strong>El JavaScript de esta práctica se ejecuta en el navegador</strong>. Guarda los cambios en VS Code antes de comprobarlos en la página.</p>
-
                 <h3 id="sec2_2">2.2. Primeras formas de mostrar y recoger información</h3>
                 <p>Estas herramientas permiten observar los primeros programas. Escribe las instrucciones de los ejemplos una a una en la consola de una página de práctica. El texto entre comillas representa una cadena.</p>
                 <h4 class="content-subtitle">Mensajes en la consola</h4>
@@ -301,27 +210,6 @@ console.warn("Aviso de prueba");
 console.error("Mensaje de error de prueba");</code></pre>
                 <p><code>console.warn()</code> y <code>console.error()</code> presentan mensajes con distinta importancia visual. Llamar a <code>console.error()</code> no provoca por sí mismo una excepción ni detiene el programa.</p>
                 <p>Cuando aparece un error real, la consola suele indicar su tipo, una descripción y el archivo y la línea relacionados. El enlace a esa línea ayuda a localizarlo. Si no aparecen mensajes, comprueba los filtros de la consola.</p>
-                <h4 class="content-subtitle">Puntos de interrupción</h4>
-                <p>Un <strong>punto de interrupción</strong> pausa la ejecución antes de una instrucción. Cuando el archivo <code>app.js</code> esté conectado al HTML, utiliza este ejemplo:</p>
-                <pre><code>console.log("Inicio");
-console.log(8 + 4);
-console.log("Fin");</code></pre>
-                <ol>
-                    <li>Abre <em>Sources</em> y localiza <code>app.js</code>.</li>
-                    <li>Haz clic en el número de la segunda línea para establecer un punto de interrupción.</li>
-                    <li>Recarga la página. La ejecución se detendrá antes de calcular y mostrar la suma.</li>
-                    <li>Avanza una instrucción con <em>Step over</em> y continúa con <em>Resume script execution</em>. Retira el punto de interrupción al terminar.</li>
-                </ol>
-                <div class="activity-card activity-callout" id="actividad-2-2">
-                    <p><strong>2.2. Localizar un error</strong></p>
-                    <p>Ejecuta <code>console.Log("Hola");</code> en la consola. Lee el mensaje, compáralo con <code>console.log("Hola");</code> y corrige la instrucción. Explica por qué una letra mayúscula cambia el resultado.</p>
-                </div>
-                <div class="resource-card expansion-card">
-                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Depuración en Chrome</span><span class="resource-badge badge-reading">Guía</span></div>
-                    <p class="resource-description">Guía de Chrome DevTools sobre puntos de interrupción y ejecución paso a paso. Para este apartado basta con practicar cómo pausar y reanudar.</p>
-                    <a href="https://developer.chrome.com/docs/devtools/javascript?hl=es" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Chrome Developers · Cómo depurar JavaScript <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
-                </div>
-
                 <h3 id="sec2_4">2.4. Formas de incluir JavaScript</h3>
                 <p>El elemento HTML <code>&lt;script&gt;</code> permite incluir instrucciones en el documento o cargar un archivo externo.</p>
                 <h4 class="content-subtitle">Código dentro del documento</h4>
@@ -350,8 +238,20 @@ console.log("Fin");</code></pre>
                     <li><strong><code>type="module"</code>:</strong> carga código como módulo y difiere su ejecución por defecto. Los módulos se desarrollarán en otra unidad.</li>
                 </ul>
                 <p>En esta práctica se utilizará <strong><code>&lt;script src="app.js" defer&gt;&lt;/script&gt;</code></strong>. <code>defer</code> no tiene efecto en scripts clásicos escritos dentro del HTML y no implica esperar a que se descarguen todas las imágenes.</p>
-                <div class="activity-card activity-callout" id="actividad-2-3">
-                    <p><strong>2.3. Comprobar el orden de carga</strong></p>
+                <div class="resource-card expansion-card" id="eventos-de-carga">
+                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Otras opciones: eventos de carga</span><span class="resource-badge badge-reading">Ampliación</span></div>
+                    <p>También se puede aplazar una acción hasta que ocurra un evento de carga:</p>
+                    <ul>
+                        <li><strong><code>DOMContentLoaded</code>:</strong> se dispara cuando el HTML está procesado y los scripts diferidos han terminado. No espera a las imágenes; suele ser suficiente para comenzar a trabajar con el DOM.</li>
+                        <li><strong><code>load</code>:</strong> espera además a recursos como imágenes y hojas de estilo, salvo los cargados de forma diferida. Puede manejarse mediante <code>window.onload</code> o <code>window.addEventListener("load", manejador)</code>.</li>
+                    </ul>
+                    <p><code>onload</code> es la propiedad que recibe el manejador; el nombre del evento es <code>load</code>. Una nueva asignación a <code>window.onload</code> sustituye el manejador anterior; <code>addEventListener()</code> permite registrar varios.</p>
+                    <p>Estos eventos no cambian cómo se descarga el script: retrasan la acción registrada. El manejador debe registrarse antes de que ocurra el evento. Se practicarán al estudiar funciones y eventos; por ahora se utilizará <code>defer</code>.</p>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · DOMContentLoaded</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · load y onload</a>
+                </div>
+                <div class="activity-card activity-callout" id="actividad-2-2">
+                    <p><strong>2.2. Comprobar el orden de carga</strong></p>
                     <p>En una página de prueba independiente, coloca el fragmento anterior dentro de <code>&lt;body&gt;</code>. Después mueve la instrucción JavaScript a un archivo externo y enlázalo desde <code>&lt;head&gt;</code> con <code>defer</code>. Recarga y compara lo que muestra la consola. ¿Por qué ahora aparece el elemento?</p>
                 </div>
                 <div class="resource-card expansion-card">
@@ -377,19 +277,19 @@ console.log("Fin");</code></pre>
     &lt;p id="saludo"&gt;Abre la consola para consultar los mensajes.&lt;/p&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-                <p>Escribe estas instrucciones en <code>app.js</code>, guarda ambos archivos y abre el HTML mediante el servidor local:</p>
+                <p>Escribe estas instrucciones en <code>app.js</code>, guarda ambos archivos y abre <code>index.html</code> en Chrome:</p>
                 <pre><code>console.log("Hola, mundo");
 console.log("El archivo JavaScript se ha ejecutado");</code></pre>
                 <p>Consulta la consola de Chrome. Los dos mensajes confirman que el archivo se ha cargado y ejecutado; el contenido visible de la página sigue siendo el definido en el HTML.</p>
                 <div class="didactic-note">
                     <p><strong>Si los mensajes no aparecen:</strong> comprueba que has guardado <code>app.js</code>, que la ruta de <code>src</code> coincide con su ubicación y que has recargado la página. En <em>Network</em>, una respuesta <code>404</code> al solicitar el archivo indica que no se ha encontrado.</p>
                 </div>
-                <div class="activity-card activity-callout" id="actividad-2-4">
-                    <p><strong>2.4. Comprobar el primer programa</strong></p>
+                <div class="activity-card activity-callout" id="actividad-2-3">
+                    <p><strong>2.3. Comprobar el primer programa</strong></p>
                     <ol>
                         <li>Añade un tercer mensaje que identifique al autor o autora del programa.</li>
-                        <li>Establece un punto de interrupción en la segunda instrucción, recarga y comprueba qué mensaje se ha mostrado antes de la pausa.</li>
-                        <li>Retira el punto de interrupción y confirma que los tres mensajes aparecen en orden.</li>
+                        <li>Antes de recargar, predice en qué orden aparecerán los tres mensajes.</li>
+                        <li>Guarda los cambios, recarga la página y comprueba la salida de la consola.</li>
                     </ol>
                     <p><strong>Entrega:</strong> los archivos <code>index.html</code> y <code>app.js</code>, junto con una captura de la consola.</p>
                 </div>
@@ -410,14 +310,7 @@ console.log("El archivo JavaScript se ha ejecutado");</code></pre>
     console.log("Fin del bloque");
 }</code></pre>
                 <p>Los bloques se utilizarán más adelante en estructuras de control y funciones. Las llaves delimitan el bloque; el sangrado permite reconocer visualmente su contenido.</p>
-                <div class="activity-card activity-callout" id="actividad-3-1">
-                    <p><strong>3.1. Leer antes de ejecutar</strong></p>
-                    <pre><code>{
-    console.log("Resultado");
-    console.log(12 + 5);
-}</code></pre>
-                    <p>Identifica el bloque, las dos instrucciones y la expresión que realiza una suma. Localiza un literal numérico y uno de texto. Predice la salida y compruébala en la consola.</p>
-                </div>
+
 
                 <h3 id="sec3_2">3.2. Mayúsculas, comentarios y signos de delimitación</h3>
                 <p>JavaScript <strong>distingue entre mayúsculas y minúsculas</strong>. Por tanto, <code>console.log</code> y <code>console.Log</code> son nombres diferentes. Una letra incorrecta puede impedir que una instrucción funcione.</p>
@@ -440,22 +333,6 @@ console.log("Fin del programa");</code></pre>
 
                 <div class="didactic-note" id="buenas-practicas">
                     <p><strong>Buenas prácticas desde el primer programa.</strong> Mantén una indentación uniforme para reconocer los bloques, escribe una instrucción por línea y utiliza espacios que faciliten la lectura. Elige nombres descriptivos y añade comentarios breves que expliquen decisiones, manteniéndolos actualizados. La coherencia de formato y la legibilidad facilitan revisar y modificar el código. <a href="https://es.javascript.info/coding-style" target="_blank" rel="noopener noreferrer">Ampliación: estilo de codificación</a>.</p>
-                </div>
-
-                <h3 id="sec3_3">3.3. Identificadores y nombres descriptivos</h3>
-                <p>Un <strong>identificador</strong> es un nombre que permite referirse a un elemento del programa, como una variable o una función. En el próximo apartado se aprenderá a declarar variables; aquí se presentan los criterios para nombrarlas.</p>
-                <ul>
-                    <li>Puede comenzar por una letra, un guion bajo (<code>_</code>) o el signo <code>$</code>. También se admiten muchas letras Unicode.</li>
-                    <li>Puede incluir números, pero no comenzar por ellos.</li>
-                    <li>No puede contener espacios ni guiones medios.</li>
-                    <li>No se utilizan palabras reservadas como <code>if</code>, <code>class</code> o <code>return</code>.</li>
-                    <li>Las mayúsculas distinguen nombres: <code>nombreUsuario</code> y <code>NombreUsuario</code> son identificadores diferentes.</li>
-                </ul>
-                <p>Se empleará <strong>camelCase</strong>: la primera palabra comienza en minúscula y las siguientes en mayúscula, como <code>nombreUsuario</code>, <code>numeroIntentos</code> o <code>mostrarMensaje</code>.</p>
-                <p>El nombre debe expresar su significado. Por ejemplo, <code>numeroIntentos</code> comunica más información que <code>n</code>. Para funciones que realizan una acción conviene utilizar un verbo, como <code>mostrarMensaje</code>. Se mantendrá un criterio de idioma coherente.</p>
-                <div class="activity-card activity-callout" id="actividad-3-2">
-                    <p><strong>3.2. Revisar nombres</strong></p>
-                    <p>Determina cuáles de estos nombres son válidos: <code>2intentos</code>, <code>nombreUsuario</code>, <code>nombre-usuario</code>, <code>class</code>, <code>_mensaje</code> y <code>dato1</code>. Corrige los no válidos y explica por qué un nombre válido puede ser poco descriptivo.</p>
                 </div>
 
                 <div class="resource-card expansion-card">
@@ -487,7 +364,20 @@ mensaje = "Bienvenido";
 console.log(mensaje); // Bienvenido</code></pre>
                 <p>Declara las variables antes de utilizarlas. Usar un nombre que no se ha declarado provoca un <code>ReferenceError</code>; no es lo mismo que leer una variable declarada cuyo valor es <code>undefined</code>.</p>
 
-                <h3 id="sec4_2">4.2. Elegir entre const y let</h3>
+                <h3 id="sec4_2">4.2. Identificadores y nombres descriptivos</h3>
+                <p>Un <strong>identificador</strong> es un nombre que permite referirse a un elemento del programa, como una variable o una función. Al declarar una variable se elige su identificador, que debe respetar las reglas del lenguaje y expresar su significado.</p>
+                <ul>
+                    <li>Puede comenzar por una letra, un guion bajo (<code>_</code>) o el signo <code>$</code>. También se admiten muchas letras Unicode.</li>
+                    <li>Puede incluir números, pero no comenzar por ellos.</li>
+                    <li>No puede contener espacios ni guiones medios.</li>
+                    <li>No se utilizan palabras reservadas como <code>if</code>, <code>class</code> o <code>return</code>.</li>
+                    <li>Las mayúsculas distinguen nombres: <code>nombreUsuario</code> y <code>NombreUsuario</code> son identificadores diferentes.</li>
+                </ul>
+                <p>Se empleará <strong>camelCase</strong>: la primera palabra comienza en minúscula y las siguientes en mayúscula, como <code>nombreUsuario</code>, <code>numeroIntentos</code> o <code>mostrarMensaje</code>.</p>
+                <p>El nombre debe expresar su significado. Por ejemplo, <code>numeroIntentos</code> comunica más información que <code>n</code>. Para funciones que realizan una acción conviene utilizar un verbo, como <code>mostrarMensaje</code>. Se mantendrá un criterio de idioma coherente.</p>
+
+
+                <h3 id="sec4_3">4.3. Elegir entre const y let</h3>
                 <p>Utiliza <strong><code>const</code> como opción habitual</strong> y <strong><code>let</code> cuando el programa necesite reasignar</strong> la variable.</p>
                 <pre><code>const nombreCurso = "DWEC";
 let intentosRestantes = 3;
@@ -500,8 +390,24 @@ console.log(nombreCurso, intentosRestantes);</code></pre>
                     <li>Ninguna de las dos permite volver a declarar el mismo nombre en el mismo ámbito.</li>
                 </ul>
                 <p>En código anterior puede aparecer <code>var</code>. Sus reglas de ámbito son diferentes; en esta unidad se utilizarán <code>const</code> y <code>let</code>.</p>
-                <div class="didactic-note">
-                    <p><strong>Alcance de const.</strong> Impide reasignar la variable, pero no convierte en inmutable el contenido de un objeto. Esta distinción se retomará al estudiar objetos y arrays.</p>
+                <div class="resource-card expansion-card" id="otros-usos-const">
+                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> const con funciones y otros valores</span><span class="resource-badge badge-reading">Ampliación</span></div>
+                    <p><code>const</code> puede asociar un nombre a una función, ya que las funciones también son valores. Se usa tanto con expresiones de función como con funciones flecha:</p>
+                    <pre><code>const saludar = function () {
+    console.log("Hola");
+};
+
+const despedir = () =&gt; console.log("Hasta pronto");
+
+saludar();
+despedir();</code></pre>
+                    <p>Los nombres <code>saludar</code> y <code>despedir</code> permiten invocar las funciones y no pueden reasignarse. Las llamadas se sitúan después de las declaraciones. Su sintaxis se explicará en el apartado de funciones.</p>
+                    <p>También se utiliza para referencias a elementos del DOM, objetos, arrays y valores de configuración. Impide sustituir el valor asociado al nombre, pero permite modificar el contenido de un objeto o array:</p>
+                    <pre><code>const usuario = { nombre: "Ana" };
+usuario.nombre = "Luis";
+console.log(usuario.nombre); // Luis</code></pre>
+                    <p>Los objetos y arrays se estudiarán más adelante. Para constantes de configuración puede emplearse <code>MAYUSCULAS_CON_GUIONES_BAJOS</code>, como <code>MAX_INTENTOS</code>; declarar con <code>const</code> no obliga a escribir todos los nombres en mayúsculas.</p>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · const y sus usos</a>
                 </div>
                 <div class="activity-card activity-callout" id="actividad-4-1">
                     <p><strong>4.1. Elegir la declaración</strong></p>
@@ -509,7 +415,7 @@ console.log(nombreCurso, intentosRestantes);</code></pre>
                     <p>En una prueba independiente, intenta reasignar una variable declarada con <code>const</code>. Lee el error y retira esa instrucción antes de continuar.</p>
                 </div>
 
-                <h3 id="sec4_3">4.3. Tipos de datos de uso inicial</h3>
+                <h3 id="sec4_4">4.4. Tipos de datos de uso inicial</h3>
                 <p>El <strong>tipo</strong> describe la clase de valor con la que trabaja el programa. En estos primeros ejercicios se utilizarán los siguientes:</p>
                 <ul>
                     <li><strong><code>number</code>:</strong> representa números, tanto enteros como decimales. Ejemplos: <code>18</code> y <code>7.5</code>. El separador decimal en el código es el punto.</li>
@@ -528,7 +434,7 @@ console.log(edad, nombre, matriculaActiva);
 console.log(observaciones, tutorAsignado);</code></pre>
                 <p><code>undefined</code> puede aparecer también en otras situaciones, como el resultado de una llamada a <code>console.log()</code>. <code>null</code> expresa una ausencia explícita, como ocurre al cancelar <code>prompt()</code>. Ninguno equivale a un texto vacío.</p>
 
-                <h3 id="sec4_4">4.4. Tipado dinámico y typeof</h3>
+                <h3 id="sec4_5">4.5. Tipado dinámico y typeof</h3>
                 <p>JavaScript tiene <strong>tipado dinámico</strong>: una variable no queda asociada a un tipo fijo. El operador <code>typeof</code> consulta el tipo de un valor y devuelve una cadena con su nombre.</p>
                 <pre><code>let dato = 42;
 console.log(typeof dato); // "number"
@@ -549,7 +455,7 @@ console.log(typeof null);     // "object"</code></pre>
                     <p>Antes de ejecutarlas, indica qué devuelven <code>typeof 25</code>, <code>typeof "25"</code>, <code>typeof true</code>, <code>typeof "true"</code> y <code>typeof ""</code>. Comprueba tus respuestas y explica el efecto de las comillas.</p>
                 </div>
 
-                <h3 id="sec4_5">4.5. Cadenas e interpolación</h3>
+                <h3 id="sec4_6">4.6. Cadenas e interpolación</h3>
                 <p>Las cadenas sencillas pueden escribirse con comillas dobles o simples. El delimitador de cierre debe coincidir con el de apertura. Las comillas de otro tipo pueden formar parte del texto:</p>
                 <pre><code>const saludo = "Hola";
 const aviso = 'Pulsa "Aceptar" para continuar';
@@ -566,7 +472,7 @@ console.log(&#96;Hola, $&#123;nombre&#125;. Bienvenida a $&#123;curso&#125;.&#96
                     <p>Declara <code>nombre</code>, <code>modulo</code> y <code>grupo</code>. Construye un mensaje con esos datos mediante concatenación y mediante una plantilla de cadena. Cambia los valores y comprueba que el texto se actualiza al volver a ejecutar el programa.</p>
                 </div>
 
-                <h3 id="sec4_6">4.6. Ámbito de bloque</h3>
+                <h3 id="sec4_7">4.7. Ámbito de bloque</h3>
                 <p>El <strong>ámbito</strong> determina desde dónde se puede utilizar una variable. Una variable declarada con <code>let</code> o <code>const</code> dentro de un bloque está disponible en ese bloque y en los que contiene, pero no fuera de él.</p>
                 <pre><code>const centro = "IES Ejemplo";
 
