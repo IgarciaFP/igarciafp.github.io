@@ -6,7 +6,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Unidad 2 de DWEC: fundamentos de JavaScript. Introducción, breve historia, ECMAScript, tipado dinámico y presentación de la calculadora como práctica de la unidad.">
+    <meta name="description" content="Unidad 2 de DWEC: fundamentos de JavaScript. Introducción, entorno de trabajo, primeros programas, sintaxis y buenas prácticas.">
     <title>UD02 Fundamentos de JavaScript — 2º DAW</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,14 +59,20 @@
             <li><a href="#sec1_2" class="subsection-link">1.2. JavaScript y ECMAScript</a></li>
             <li><a href="#sec1_3" class="subsection-link">1.3. HTML, CSS y JavaScript</a></li>
             <li><a href="#sec1_4" class="subsection-link">1.4. Características del lenguaje</a></li>
-            <li><a href="#sec1_5" class="subsection-link">1.5. Práctica: una calculadora</a></li>
             <li><a href="#sec2">2. Entorno de trabajo y primer programa</a></li>
             <li><a href="#sec2_1" class="subsection-link">2.1. Herramientas y organización</a></li>
             <li><a href="#sec2_2" class="subsection-link">2.2. Mostrar y recoger información</a></li>
             <li><a href="#sec2_3" class="subsection-link">2.3. Primer contacto con la depuración</a></li>
             <li><a href="#sec2_4" class="subsection-link">2.4. Incluir JavaScript</a></li>
             <li><a href="#sec2_5" class="subsection-link">2.5. Carga y ejecución</a></li>
-            <li><a href="#sec2_6" class="subsection-link">2.6. Hola, mundo: la calculadora</a></li>
+            <li><a href="#sec2_6" class="subsection-link">2.6. Hola, mundo</a></li>
+            <li><a href="#sec3">3. Sintaxis y buenas prácticas</a></li>
+            <li><a href="#sec3_1" class="subsection-link">3.1. Valores, expresiones y bloques</a></li>
+            <li><a href="#sec3_2" class="subsection-link">3.2. Mayúsculas y comentarios</a></li>
+            <li><a href="#sec3_3" class="subsection-link">3.3. Convenciones de formato</a></li>
+            <li><a href="#sec3_4" class="subsection-link">3.4. Identificadores y nombres</a></li>
+            <li><a href="#sec3_5" class="subsection-link">3.5. Cómo leer una llamada</a></li>
+            <li><a href="#sec3_6" class="subsection-link">3.6. Legibilidad y organización</a></li>
         </ul>
     </nav>
     <div class="document-wrapper">
@@ -85,7 +91,7 @@
             <section aria-labelledby="sec1">
                 <h2 id="sec1"><i class="fa-brands fa-js" aria-hidden="true"></i> 1. Introducción a JavaScript</h2>
                 <p><strong>JavaScript (JS)</strong> es un lenguaje de programación que permite procesar datos y dotar de comportamiento a una página web. Con él se pueden realizar cálculos, comprobar datos de un formulario y actualizar el contenido en respuesta a las acciones del usuario.</p>
-                <p>En esta unidad se trabajará con JavaScript en el <strong>navegador</strong>. Los conceptos se aplicarán progresivamente al desarrollo de una calculadora, a partir de una interfaz HTML y CSS ya preparada.</p>
+                <p>En esta unidad se trabajará con JavaScript en el <strong>navegador</strong>. Los conceptos se practicarán mediante ejemplos breves y actividades independientes.</p>
 
                 <h3 id="sec1_1">1.1. Origen y evolución</h3>
                 <p>JavaScript fue creado por <strong>Brendan Eich en 1995</strong>, durante su trabajo en Netscape. Su finalidad inicial era incorporar pequeñas interacciones a las páginas y ejecutar instrucciones en el navegador del usuario.</p>
@@ -187,16 +193,16 @@
                 <div class="table-scroll roles-table" role="region" aria-label="Responsabilidades de HTML, CSS y JavaScript" tabindex="0">
                     <table>
                         <thead>
-                            <tr><th scope="col">Tecnología</th><th scope="col">Responsabilidad</th><th scope="col">En la calculadora</th></tr>
+                            <tr><th scope="col">Tecnología</th><th scope="col">Responsabilidad</th><th scope="col">Ejemplo</th></tr>
                         </thead>
                         <tbody>
-                            <tr><th scope="row">HTML</th><td>Define la estructura y el significado del contenido.</td><td>Campos, etiquetas, selector de operación y botones.</td></tr>
+                            <tr><th scope="row">HTML</th><td>Define la estructura y el significado del contenido.</td><td>Títulos, párrafos, campos y botones.</td></tr>
                             <tr><th scope="row">CSS</th><td>Determina la presentación visual.</td><td>Distribución, colores, tipografía y apariencia de los mensajes.</td></tr>
-                            <tr><th scope="row">JavaScript</th><td>Programa la lógica y la interacción.</td><td>Lee los números, realiza la operación y actualiza el resultado.</td></tr>
+                            <tr><th scope="row">JavaScript</th><td>Programa la lógica y la interacción.</td><td>Responde a una acción y actualiza un mensaje.</td></tr>
                         </tbody>
                     </table>
                 </div>
-                <p>El código se ejecuta mediante el <strong>motor JavaScript del navegador</strong>. En una calculadora sencilla, las operaciones pueden resolverse en el propio cliente, sin enviar cada cálculo a un servidor.</p>
+                <p>El código se ejecuta mediante el <strong>motor JavaScript del navegador</strong>. Una interacción sencilla, como mostrar u ocultar un mensaje, puede resolverse en el propio cliente.</p>
 
                 <h3 id="sec1_4">1.4. Características del lenguaje</h3>
                 <ul>
@@ -206,7 +212,7 @@
                     <li><strong>Ejecución en distintos entornos.</strong> Además de los navegadores, existen entornos como Node.js. El lenguaje es el mismo, pero las herramientas disponibles dependen del entorno.</li>
                 </ul>
                 <p>En las páginas web es habitual la <strong>programación dirigida por eventos</strong>: se establece qué instrucciones deben ejecutarse cuando sucede algo, como pulsar un botón o modificar un campo. La función que responde a ese suceso se denomina <strong>manejador del evento</strong>.</p>
-                <p class="event-sequence"><strong>Ejemplo:</strong> pulsar «Calcular» → leer los datos → realizar la operación → mostrar el resultado.</p>
+                <p class="event-sequence"><strong>Ejemplo:</strong> pulsar un botón → ejecutar las instrucciones asociadas → mostrar un mensaje.</p>
 
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header">
@@ -226,19 +232,9 @@
                     </ol>
                 </div>
 
-                <h3 id="sec1_5">1.5. Práctica de la unidad: una calculadora</h3>
-                <p>La práctica consiste en desarrollar el comportamiento de una <strong>calculadora de dos operandos</strong>. Se proporcionarán el HTML y el CSS; el alumnado implementará el archivo JavaScript a medida que avance la unidad.</p>
-                <p>La interfaz incluirá dos campos numéricos, un selector de operación, los botones <strong>Calcular</strong> y <strong>Limpiar</strong>, y una zona para mostrar resultados o mensajes.</p>
-                <p>La versión final deberá permitir sumar, restar, multiplicar y dividir; detectar entradas incompletas o no válidas; informar cuando se intente dividir entre cero; y restablecer la interfaz. En este apartado se analiza el problema. La implementación comenzará con los primeros programas.</p>
-
                 <div class="activity-card activity-callout" id="actividad-1-2">
-                    <p><strong>1.2. Análisis de la calculadora</strong></p>
-                    <ol>
-                        <li>Clasifica estas tareas según correspondan a HTML, CSS o JavaScript: crear un campo, dar color a un botón, sumar dos valores y mostrar un mensaje según el resultado.</li>
-                        <li>Describe qué datos necesita la calculadora, qué debe hacer con ellos y qué debe mostrar.</li>
-                        <li>Escribe, con tus propias palabras, los pasos que deberían realizarse al pulsar «Calcular» y al pulsar «Limpiar».</li>
-                    </ol>
-                    <p><strong>Entrega:</strong> una respuesta breve y razonada. Todavía no es necesario escribir código.</p>
+                    <p><strong>1.2. Estructura, presentación y comportamiento</strong></p>
+                    <p>Clasifica estas tareas según correspondan a HTML, CSS o JavaScript y justifica tu respuesta: crear un párrafo, cambiar su color, añadir un botón y mostrar un mensaje al pulsarlo.</p>
                 </div>
             </section>
 
@@ -253,10 +249,9 @@
                     <li><strong>DevTools:</strong> son las herramientas de desarrollo integradas en el navegador. Se abren con <kbd>F12</kbd> o desde el menú de Chrome, en <em>Más herramientas → Herramientas para desarrolladores</em>.</li>
                 </ul>
                 <p>En DevTools se utilizarán principalmente <strong>Console (Consola)</strong>, para ejecutar instrucciones y consultar mensajes; <strong>Sources (Fuentes)</strong>, para examinar y depurar el código; y <strong>Network (Red)</strong>, para comprobar la carga de los archivos.</p>
-                <p>Abre la carpeta completa del proyecto en VS Code. La calculadora tendrá esta estructura:</p>
-                <pre><code>calculadora/
+                <p>Abre la carpeta completa del proyecto en VS Code. Para los primeros ejercicios se utilizará esta estructura:</p>
+                <pre><code>ejercicios-js/
 ├── index.html
-├── estilos.css
 └── app.js</code></pre>
                 <p>Para servir los archivos por HTTP se puede utilizar la extensión <a href="https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer" target="_blank" rel="noopener noreferrer">Live Server, de Ritwick Dey</a>. Una vez instalada, haz clic derecho sobre <code>index.html</code> y selecciona <em>Open with Live Server</em>. Abre la dirección resultante en Chrome. Su dominio será normalmente <code>localhost</code> o <code>127.0.0.1</code>; el puerto puede variar.</p>
                 <p>El servidor local entrega los archivos. <strong>El JavaScript de esta práctica se ejecuta en el navegador</strong>. Guarda los cambios en VS Code antes de comprobarlos en la página.</p>
@@ -268,7 +263,7 @@
 console.log(8 + 4);</code></pre>
                 <p><code>console.log()</code> muestra información en DevTools sin añadirla a la página. En este ejemplo aparecen un mensaje y el resultado <code>12</code>. Si la consola muestra también <code>undefined</code>, es el valor devuelto por la llamada; no indica que haya fallado.</p>
                 <h4 class="content-subtitle">Diálogos del navegador</h4>
-                <pre><code>alert("Bienvenido a la calculadora");
+                <pre><code>alert("Bienvenido a JavaScript");
 console.log(prompt("¿Cómo te llamas?"));
 console.log(confirm("¿Quieres continuar?"));</code></pre>
                 <ul>
@@ -277,7 +272,7 @@ console.log(confirm("¿Quieres continuar?"));</code></pre>
                     <li><code>confirm()</code> solicita una decisión. Devuelve <code>true</code> al aceptar o <code>false</code> al cancelar.</li>
                 </ul>
                 <p>En los dos últimos ejemplos se obtiene primero la respuesta del diálogo y después se muestra con <code>console.log()</code>. Los tipos de estos valores se estudiarán en el apartado 4.</p>
-                <p>Los diálogos son modales: mientras permanecen abiertos impiden interactuar con el resto de la página. Resultan útiles para estas primeras pruebas; en la calculadora se utilizarán los campos y mensajes del documento.</p>
+                <p>Los diálogos son modales: mientras permanecen abiertos impiden interactuar con el resto de la página. Resultan útiles para estas primeras pruebas; en las páginas interactivas se utilizarán también campos y mensajes del documento.</p>
                 <div class="didactic-note">
                     <p><strong>Referencia histórica: <code>document.write()</code>.</strong> Escribe en el flujo de un documento HTML. Si se utiliza después de cargar la página puede sustituir su contenido. Su uso está desaconsejado y no se empleará en la práctica. Más adelante se actualizarán elementos del DOM mediante herramientas como <code>textContent</code>. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/write" target="_blank" rel="noopener noreferrer">Consultar la explicación de MDN</a>.</p>
                 </div>
@@ -332,7 +327,7 @@ console.log("Fin");</code></pre>
                 <p>Esta forma resulta útil para ejemplos pequeños. El código se escribe entre las etiquetas de apertura y cierre.</p>
                 <h4 class="content-subtitle">Archivo externo</h4>
                 <pre><code>&lt;script src="app.js" defer&gt;&lt;/script&gt;</code></pre>
-                <p>El atributo <code>src</code> indica la ruta al archivo. Dentro de <code>app.js</code> se escriben únicamente instrucciones JavaScript, sin etiquetas <code>&lt;script&gt;</code>. Esta será la organización de la calculadora, con el enlace situado en <code>&lt;head&gt;</code>.</p>
+                <p>El atributo <code>src</code> indica la ruta al archivo. Dentro de <code>app.js</code> se escriben únicamente instrucciones JavaScript, sin etiquetas <code>&lt;script&gt;</code>. Esta será la organización de los ejercicios, con el enlace situado en <code>&lt;head&gt;</code>.</p>
                 <p>Cuando un elemento <code>&lt;script&gt;</code> tiene <code>src</code>, no se añade también código entre sus etiquetas. En ejemplos antiguos pueden aparecer atributos como <code>onclick</code> con instrucciones dentro del HTML; en esta unidad los eventos se registrarán desde JavaScript con <code>addEventListener()</code>.</p>
 
                 <h3 id="sec2_5">2.5. Carga y ejecución de los scripts</h3>
@@ -362,34 +357,146 @@ console.log("Fin");</code></pre>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · El elemento script</a>
                 </div>
 
-                <h3 id="sec2_6">2.6. Hola, mundo: comenzar la calculadora</h3>
-                <p>Descarga los tres archivos siguientes y guárdalos juntos en una carpeta llamada <code>calculadora</code>, conservando sus nombres. El HTML y el CSS están preparados. El archivo <code>app.js</code> contiene únicamente comentarios para que el alumnado escriba su código.</p>
-                <div class="resource-card">
-                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-download" aria-hidden="true"></i> Material inicial de la calculadora</span><span class="resource-badge badge-reading">Archivos</span></div>
-                    <a class="resource-link-btn" href="alumnado/u02/calculadora/index.html" download="index.html">Descargar index.html</a>
-                    <a class="resource-link-btn" href="alumnado/u02/calculadora/estilos.css" download="estilos.css">Descargar estilos.css</a>
-                    <a class="resource-link-btn" href="alumnado/u02/calculadora/app.js" download="app.js">Descargar app.js</a>
-                    <p><a href="alumnado/u02/calculadora/index.html" target="_blank" rel="noopener noreferrer">Ver la interfaz inicial</a>. Los botones todavía no realizan cálculos; el formulario conserva su comportamiento nativo hasta que se programen los eventos.</p>
-                </div>
-                <ol>
-                    <li>Abre la carpeta en VS Code y localiza en el HTML el enlace a <code>app.js</code>.</li>
-                    <li>Escribe el siguiente código en <code>app.js</code> y guarda el archivo.</li>
-                    <li>Abre <code>index.html</code> con el servidor local y consulta la consola de Chrome.</li>
-                </ol>
+                <h3 id="sec2_6">2.6. Hola, mundo</h3>
+                <p>Crea una carpeta llamada <code>ejercicios-js</code> y ábrela en VS Code. Dentro, crea los archivos <code>index.html</code> y <code>app.js</code>.</p>
+                <p>Escribe en <code>index.html</code> esta página mínima:</p>
+                <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Primer programa JavaScript&lt;/title&gt;
+    &lt;script src="app.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Primer programa JavaScript&lt;/h1&gt;
+    &lt;p id="saludo"&gt;Abre la consola para consultar los mensajes.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                <p>Escribe estas instrucciones en <code>app.js</code>, guarda ambos archivos y abre el HTML mediante el servidor local:</p>
                 <pre><code>console.log("Hola, mundo");
-console.log("JavaScript de la calculadora conectado");</code></pre>
-                <p>Los dos mensajes confirman que el archivo se ha cargado y ejecutado. La interfaz aún no calcula: su comportamiento se incorporará en los siguientes apartados.</p>
+console.log("El archivo JavaScript se ha ejecutado");</code></pre>
+                <p>Consulta la consola de Chrome. Los dos mensajes confirman que el archivo se ha cargado y ejecutado; el contenido visible de la página sigue siendo el definido en el HTML.</p>
                 <div class="didactic-note">
                     <p><strong>Si los mensajes no aparecen:</strong> comprueba que has guardado <code>app.js</code>, que la ruta de <code>src</code> coincide con su ubicación y que has recargado la página. En <em>Network</em>, una respuesta <code>404</code> al solicitar el archivo indica que no se ha encontrado.</p>
                 </div>
                 <div class="activity-card activity-callout" id="actividad-2-4">
-                    <p><strong>2.4. Primera entrega de la calculadora</strong></p>
+                    <p><strong>2.4. Comprobar el primer programa</strong></p>
                     <ol>
                         <li>Añade un tercer mensaje que identifique al autor o autora del programa.</li>
                         <li>Establece un punto de interrupción en la segunda instrucción, recarga y comprueba qué mensaje se ha mostrado antes de la pausa.</li>
                         <li>Retira el punto de interrupción y confirma que los tres mensajes aparecen en orden.</li>
                     </ol>
-                    <p><strong>Entrega:</strong> el archivo <code>app.js</code> y una captura de la consola. Conserva el HTML y el CSS proporcionados para continuar la práctica.</p>
+                    <p><strong>Entrega:</strong> los archivos <code>index.html</code> y <code>app.js</code>, junto con una captura de la consola.</p>
+                </div>
+            </section>
+
+            <section aria-labelledby="sec3">
+                <h2 id="sec3"><i class="fa-solid fa-align-left" aria-hidden="true"></i> 3. Sintaxis básica y buenas prácticas iniciales</h2>
+                <p>La <strong>sintaxis</strong> establece cómo se escribe un programa válido. Las convenciones de estilo ayudan a que ese programa resulte legible y fácil de modificar. En los ejemplos de este apartado se utilizará el archivo <code>app.js</code> creado anteriormente.</p>
+
+                <h3 id="sec3_1">3.1. Valores, expresiones, instrucciones y bloques</h3>
+                <p>Un <strong>valor</strong> es un dato con el que trabaja el programa, como el número <code>12</code>, el texto <code>"Hola"</code> o el valor lógico <code>true</code>. Cuando se escribe directamente en el código se utiliza un <strong>literal</strong>.</p>
+                <p>Una <strong>expresión</strong> es una construcción que se evalúa y produce un valor. Por ejemplo, <code>8 + 4</code> produce <code>12</code>. Un literal también puede constituir una expresión.</p>
+                <pre><code>console.log(8 + 4);</code></pre>
+                <p>En este ejemplo, <code>8 + 4</code> es la expresión que calcula el resultado. La línea completa es una <strong>instrucción</strong> que llama a <code>console.log()</code> para mostrarlo. Una instrucción representa un paso del programa.</p>
+                <p>Un <strong>bloque</strong> agrupa instrucciones entre llaves. En este ejemplo se ejecutan las dos instrucciones en orden:</p>
+                <pre><code>{
+    console.log("Inicio del bloque");
+    console.log("Fin del bloque");
+}</code></pre>
+                <p>Los bloques se utilizarán más adelante en estructuras de control y funciones. Las llaves delimitan el bloque; el sangrado permite reconocer visualmente su contenido.</p>
+                <div class="activity-card activity-callout" id="actividad-3-1">
+                    <p><strong>3.1. Leer antes de ejecutar</strong></p>
+                    <pre><code>{
+    console.log("Resultado");
+    console.log(12 + 5);
+}</code></pre>
+                    <p>Identifica el bloque, las dos instrucciones y la expresión que realiza una suma. Localiza un literal numérico y uno de texto. Predice la salida y compruébala en la consola.</p>
+                </div>
+
+                <h3 id="sec3_2">3.2. Mayúsculas, comentarios y signos de delimitación</h3>
+                <p>JavaScript <strong>distingue entre mayúsculas y minúsculas</strong>. Por tanto, <code>console.log</code> y <code>console.Log</code> son nombres diferentes. Una letra incorrecta puede impedir que una instrucción funcione.</p>
+                <p>Los comentarios documentan el código y no se ejecutan:</p>
+                <pre><code>// Comentario de una línea.
+console.log("Bienvenido");
+
+/*
+   Comentario que ocupa
+   varias líneas.
+*/
+console.log("Fin del programa");</code></pre>
+                <p><code>//</code> inicia un comentario hasta el final de la línea. <code>/*</code> y <code>*/</code> delimitan un comentario que puede ocupar varias líneas. Estos últimos no se pueden anidar.</p>
+                <p>Un comentario útil explica una decisión o una finalidad que no resulta evidente. Debe mantenerse actualizado cuando cambia el código.</p>
+                <p>Conviene distinguir los signos que ya han aparecido:</p>
+                <ul>
+                    <li><strong>Comillas:</strong> delimitan textos, como <code>"Bienvenido"</code>.</li>
+                    <li><strong>Paréntesis:</strong> en una llamada, contienen los argumentos, como en <code>console.log("Bienvenido")</code>.</li>
+                    <li><strong>Llaves:</strong> en los ejemplos anteriores, delimitan un bloque.</li>
+                </ul>
+
+                <h3 id="sec3_3">3.3. Sangrado y convenciones de formato</h3>
+                <p>Los espacios y saltos de línea permiten organizar el código. Su uso puede afectar a la interpretación en algunos casos; dentro de una cadena, además, forman parte del texto.</p>
+                <p>En esta unidad se seguirá una pauta común:</p>
+                <ul>
+                    <li>Una instrucción por línea.</li>
+                    <li>Cuatro espacios por nivel de sangrado.</li>
+                    <li>Espacios alrededor de operadores como <code>+</code> y después de las comas.</li>
+                    <li>Comillas dobles para las cadenas sencillas.</li>
+                    <li>Punto y coma al terminar instrucciones como las llamadas mostradas.</li>
+                    <li>Llave de cierre alineada con el inicio del bloque.</li>
+                </ul>
+                <pre><code>{
+    console.log("Primer mensaje");
+    console.log("Segundo mensaje", 8 + 4);
+}</code></pre>
+                <p>Estas son convenciones del material, no las únicas opciones válidas. JavaScript admite también comillas simples y puede insertar puntos y coma automáticamente en determinadas situaciones. <strong>Un salto de línea no siempre equivale a un punto y coma</strong>; por eso se escribirán explícitamente en los ejemplos. No se añade un punto y coma por el mero hecho de cerrar un bloque.</p>
+                <div class="activity-card activity-callout" id="actividad-3-2">
+                    <p><strong>3.2. Dar formato sin cambiar el comportamiento</strong></p>
+                    <pre><code>{console.log("Inicio");console.log(6+3);console.log("Fin");}</code></pre>
+                    <p>Reescribe el fragmento aplicando las convenciones anteriores. Ejecuta ambas versiones y comprueba que producen los mismos mensajes. Añade un comentario que describa la finalidad de la prueba.</p>
+                </div>
+
+                <h3 id="sec3_4">3.4. Identificadores y nombres descriptivos</h3>
+                <p>Un <strong>identificador</strong> es un nombre que permite referirse a un elemento del programa, como una variable o una función. En el próximo apartado se aprenderá a declarar variables; aquí se presentan los criterios para nombrarlas.</p>
+                <ul>
+                    <li>Puede comenzar por una letra, un guion bajo (<code>_</code>) o el signo <code>$</code>. También se admiten muchas letras Unicode.</li>
+                    <li>Puede incluir números, pero no comenzar por ellos.</li>
+                    <li>No puede contener espacios ni guiones medios.</li>
+                    <li>No se utilizan palabras reservadas como <code>if</code>, <code>class</code> o <code>return</code>.</li>
+                    <li>Las mayúsculas distinguen nombres: <code>nombreUsuario</code> y <code>NombreUsuario</code> son identificadores diferentes.</li>
+                </ul>
+                <p>Se empleará <strong>camelCase</strong>: la primera palabra comienza en minúscula y las siguientes en mayúscula, como <code>nombreUsuario</code>, <code>numeroIntentos</code> o <code>mostrarMensaje</code>.</p>
+                <p>El nombre debe expresar su significado. Por ejemplo, <code>numeroIntentos</code> comunica más información que <code>n</code>. Para funciones que realizan una acción conviene utilizar un verbo, como <code>mostrarMensaje</code>. Se mantendrá un criterio de idioma coherente.</p>
+                <div class="activity-card activity-callout" id="actividad-3-3">
+                    <p><strong>3.3. Revisar nombres</strong></p>
+                    <p>Determina cuáles de estos nombres son válidos: <code>2intentos</code>, <code>nombreUsuario</code>, <code>nombre-usuario</code>, <code>class</code>, <code>_mensaje</code> y <code>dato1</code>. Corrige los no válidos y explica por qué un nombre válido puede ser poco descriptivo.</p>
+                </div>
+
+                <h3 id="sec3_5">3.5. Cómo leer una llamada</h3>
+                <p>Una llamada indica que debe ejecutarse una función o un método. De momento basta con reconocer sus partes:</p>
+                <pre><code>console.log("Puntuación:", 10 + 5);</code></pre>
+                <ul>
+                    <li><code>console.log</code> identifica el método que se ejecuta.</li>
+                    <li>Los paréntesis indican la llamada.</li>
+                    <li><code>"Puntuación:"</code> y <code>10 + 5</code> son dos argumentos, separados por una coma.</li>
+                    <li>La expresión <code>10 + 5</code> se evalúa antes de pasar su resultado al método.</li>
+                </ul>
+                <p>El resultado visible será <code>Puntuación: 15</code>. La declaración de funciones, sus parámetros y sus valores de retorno se estudiarán en el apartado 9.</p>
+
+                <h3 id="sec3_6">3.6. Legibilidad y separación de responsabilidades</h3>
+                <p>Un programa debe poder leerse y revisarse. Para ello, conviene mantener un formato uniforme, elegir nombres claros y separar grupos de instrucciones relacionados mediante líneas en blanco.</p>
+                <p>En una página web se conservará la organización ya presentada: <strong>HTML</strong> para la estructura, <strong>CSS</strong> para la presentación y <strong>JavaScript</strong> para la lógica. El código JavaScript se guardará en su archivo externo.</p>
+                <div class="activity-card activity-callout" id="actividad-3-4">
+                    <p><strong>3.4. Revisión final del archivo</strong></p>
+                    <p>Escribe en <code>app.js</code> tres instrucciones que muestren un saludo, el resultado de una operación sencilla y un mensaje de despedida. Añade un comentario inicial y aplica las convenciones de formato. Comprueba la salida y revisa el archivo de un compañero: claridad, sangrado, signos y correspondencia entre comentarios y código.</p>
+                </div>
+                <div class="resource-card expansion-card">
+                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Sintaxis y estilo</span><span class="resource-badge badge-reading">Lectura</span></div>
+                    <p class="resource-description">Consulta los apartados iniciales sobre sintaxis y comentarios. Las declaraciones de variables y los tipos se desarrollarán en el siguiente punto de esta unidad.</p>
+                    <a href="https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Grammar_and_types" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Gramática y tipos</a>
+                    <a href="https://es.javascript.info/structure" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Estructura del código</a>
+                    <a href="https://es.javascript.info/coding-style" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Estilo de codificación</a>
                 </div>
             </section>
             <footer class="document-footer">DAW / DWEC · © Ignacio García</footer>
