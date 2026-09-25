@@ -105,6 +105,14 @@
             <li><a href="#sec8_4" class="subsection-link">8.4. El objeto del evento y currentTarget</a></li>
             <li><a href="#sec8_5" class="subsection-link">8.5. Comportamiento predeterminado y preventDefault()</a></li>
             <li><a href="#sec8_6" class="subsection-link">8.6. Organizar la interacción</a></li>
+            <li><a href="#sec9">9. Funciones: organizar y reutilizar código</a></li>
+            <li><a href="#sec9_1" class="subsection-link">9.1. Definición e invocación</a></li>
+            <li><a href="#sec9_2" class="subsection-link">9.2. Parámetros, argumentos y valores predeterminados</a></li>
+            <li><a href="#sec9_3" class="subsection-link">9.3. Devolver resultados con return</a></li>
+            <li><a href="#sec9_4" class="subsection-link">9.4. Ámbito local y variables externas</a></li>
+            <li><a href="#sec9_5" class="subsection-link">9.5. Funciones como valores y expresiones de función</a></li>
+            <li><a href="#sec9_6" class="subsection-link">9.6. Funciones flecha</a></li>
+            <li><a href="#sec9_7" class="subsection-link">9.7. Funciones pequeñas y conexión con los eventos</a></li>
         </ul>
     </nav>
     <div class="document-wrapper">
@@ -1020,6 +1028,140 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · change</a>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · submit</a>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · preventDefault()</a>
+                </div>
+            </section>
+
+            <section aria-labelledby="sec9">
+                <h2 id="sec9"><i class="fa-solid fa-cubes" aria-hidden="true"></i> 9. Funciones: organizar y reutilizar código</h2>
+                <p>Una <strong>función</strong> agrupa instrucciones para realizar una tarea. Puede recibir datos y devolver un resultado. Permite reutilizar una operación y separar el programa en partes comprensibles. En el apartado anterior se utilizaron funciones como manejadores; ahora se estudiará cómo definirlas y utilizarlas.</p>
+                <p>Ejecuta cada ejemplo por separado en <code>app.js</code> para evitar declaraciones repetidas.</p>
+
+                <h3 id="sec9_1">9.1. Definición e invocación</h3>
+                <p>Una declaración de función utiliza <code>function</code>, un nombre, una lista de parámetros entre paréntesis y un cuerpo entre llaves:</p>
+                <pre><code>function mostrarInicio() {
+    console.log("Comienza la sesión");
+}
+
+mostrarInicio();
+mostrarInicio();</code></pre>
+                <p>Definir la función no ejecuta su cuerpo. Para <strong>invocarla</strong> se escribe su nombre seguido de paréntesis. En el ejemplo se muestra el mensaje dos veces porque hay dos llamadas.</p>
+                <p><code>mostrarInicio</code> referencia la función; <code>mostrarInicio()</code> la ejecuta. Esta diferencia explica por qué en <code>addEventListener()</code> se pasa el nombre del manejador sin los paréntesis de llamada.</p>
+
+                <h3 id="sec9_2">9.2. Parámetros, argumentos y valores predeterminados</h3>
+                <p>Los <strong>parámetros</strong> son los nombres que aparecen en la definición. Los <strong>argumentos</strong> son los valores que se proporcionan al llamar:</p>
+                <pre><code>function saludar(nombre, saludo = "Hola") {
+    console.log(`${saludo}, ${nombre}`);
+}
+
+saludar("Ana");                 // Hola, Ana
+saludar("Luis", "Buenos días"); // Buenos días, Luis</code></pre>
+                <p><code>nombre</code> y <code>saludo</code> son parámetros. En la segunda llamada, los argumentos son <code>"Luis"</code> y <code>"Buenos días"</code>, que se asignan por posición.</p>
+                <p>El valor predeterminado se utiliza si se omite el argumento o se pasa <code>undefined</code>. No sustituye valores como <code>null</code>, <code>0</code> o <code>""</code>. Un parámetro sin argumento ni valor predeterminado recibe <code>undefined</code>.</p>
+                <div class="activity-card activity-callout" id="actividad-9-1">
+                    <p><strong>9.1. Personalizar una llamada</strong></p>
+                    <p>Define <code>presentar(nombre, grupo = "2DAW")</code> para mostrar una presentación. Llámala con un solo argumento, con dos y con una cadena vacía como segundo argumento. Explica cuándo se utiliza el grupo predeterminado.</p>
+                </div>
+
+                <h3 id="sec9_3">9.3. Devolver resultados con return</h3>
+                <p><code>return</code> termina la ejecución de la función y entrega un valor al código que la llamó. Ese valor puede guardarse o utilizarse en otra expresión:</p>
+                <pre><code>function calcularArea(base, altura) {
+    return base * altura;
+}
+
+const area = calcularArea(6, 4);
+console.log(area);     // 24
+console.log(area * 2); // 48</code></pre>
+                <p><strong>Devolver y mostrar son operaciones distintas.</strong> <code>console.log()</code> escribe en la consola; no establece el resultado de la función que lo contiene:</p>
+                <pre><code>function mostrarDoble(numero) {
+    console.log(numero * 2);
+}
+
+const resultado = mostrarDoble(5); // Muestra 10.
+console.log(resultado);          // undefined</code></pre>
+                <p>Si se alcanza el final sin ejecutar un <code>return</code> con valor, la función devuelve <code>undefined</code>. También puede escribirse <code>return;</code> para terminarla sin proporcionar otro resultado.</p>
+                <div class="didactic-note"><p><strong>El retorno termina la llamada.</strong> Las instrucciones posteriores al <code>return</code> ejecutado no se alcanzan. Escribe la expresión devuelta en la misma línea que <code>return</code>; un salto de línea justo después puede hacer que se devuelva <code>undefined</code>.</p></div>
+                <div class="activity-card activity-callout" id="actividad-9-2">
+                    <p><strong>9.2. Obtener un resultado reutilizable</strong></p>
+                    <p>Transforma <code>mostrarDoble()</code> en <code>obtenerDoble()</code>: debe devolver el doble sin escribir en la consola. Guarda el resultado de <code>obtenerDoble(5)</code> y muéstralo desde fuera. Comprueba también los argumentos <code>0</code> y <code>-3</code>.</p>
+                </div>
+
+                <h3 id="sec9_4">9.4. Ámbito local y variables externas</h3>
+                <p>Los parámetros y las variables declaradas dentro de una función son locales a ella. La función puede acceder a variables de su ámbito exterior:</p>
+                <pre><code>const centro = "IES Ejemplo";
+
+function crearPresentacion(nombre) {
+    const texto = `${nombre} estudia en ${centro}`;
+    return texto;
+}
+
+console.log(crearPresentacion("Ana"));
+// console.log(texto); // ReferenceError: texto es local.</code></pre>
+                <p><code>centro</code> está disponible dentro de la función, pero <code>texto</code> no está disponible fuera. El valor retornado sí puede utilizarse en la llamada. Además, <code>let</code> y <code>const</code> siguen respetando los bloques interiores, como los de un <code>if</code>.</p>
+                <p>Para que una función sea fácil de reutilizar, conviene recibir mediante parámetros los datos que necesita y evitar modificar variables externas sin necesidad.</p>
+
+                <h3 id="sec9_5">9.5. Funciones como valores y expresiones de función</h3>
+                <p>Las funciones también son valores. Se pueden guardar en una variable y pasar como argumento, como ocurre al registrar un manejador:</p>
+                <pre><code>const obtenerTriple = function (numero) {
+    return numero * 3;
+};
+
+console.log(obtenerTriple(4)); // 12</code></pre>
+                <p>Aquí se crea una <strong>expresión de función</strong> y se asigna a <code>obtenerTriple</code>. <code>const</code> impide reasignar ese nombre, pero permite invocar la función tantas veces como sea necesario.</p>
+                <p>Una declaración como <code>function mostrarInicio() { ... }</code> puede invocarse antes de su posición en el código dentro de su ámbito. En cambio, una función asignada a <code>const</code> solo puede utilizarse después de inicializar la variable. En los ejemplos se definirán antes de llamarlas.</p>
+
+                <h3 id="sec9_6">9.6. Funciones flecha</h3>
+                <p>Una <strong>función flecha</strong> es otra forma de escribir una expresión de función. Utiliza <code>=&gt;</code> entre los parámetros y el cuerpo:</p>
+                <pre><code>const obtenerDoble = (numero) =&gt; {
+    return numero * 2;
+};
+
+console.log(obtenerDoble(7)); // 14</code></pre>
+                <p>Si el cuerpo es una única expresión, pueden omitirse las llaves y <code>return</code>. El resultado se devuelve de forma implícita:</p>
+                <pre><code>const obtenerDoble = (numero) =&gt; numero * 2;
+const sumar = (a, b) =&gt; a + b;
+const crearAviso = () =&gt; "Operación completada";
+
+console.log(obtenerDoble(7)); // 14
+console.log(sumar(3, 5));    // 8
+console.log(crearAviso());   // Operación completada</code></pre>
+                <p>Sin parámetros se escribe <code>()</code>. Con un único parámetro sencillo, los paréntesis son opcionales; en esta unidad se mantendrán por coherencia. Con varios parámetros son necesarios.</p>
+                <div class="didactic-note"><p><strong>Llaves y retorno.</strong> <code>(numero) =&gt; numero * 2</code> devuelve el resultado, pero <code>(numero) =&gt; { numero * 2; }</code> devuelve <code>undefined</code>. Con un cuerpo entre llaves debes escribir <code>return</code> si quieres devolver un valor.</p></div>
+                <p>Las funciones flecha no son intercambiables con <code>function</code> en todos los casos: no tienen su propio <code>this</code> y no se utilizan como constructores. Estos conceptos se estudiarán con los objetos. En los manejadores de esta unidad se utilizará <code>event.currentTarget</code> para acceder al elemento.</p>
+                <div class="activity-card activity-callout" id="actividad-9-3">
+                    <p><strong>9.3. Comparar formas de escritura</strong></p>
+                    <p>Reescribe <code>calcularArea(base, altura)</code> como función flecha, primero con retorno explícito y después con retorno implícito. Prueba las tres versiones por separado con los mismos argumentos y comprueba que devuelven el mismo resultado.</p>
+                </div>
+
+                <h3 id="sec9_7">9.7. Funciones pequeñas y conexión con los eventos</h3>
+                <p>Una función debe tener una responsabilidad clara y un nombre que la exprese. Separar la obtención de un resultado de su presentación permite utilizarlo tanto en la consola como en el DOM.</p>
+                <p>En la página de prueba del apartado 8, sustituye <code>app.js</code> por este ejemplo. Una función construye el saludo y el manejador lo muestra al activar el botón:</p>
+                <pre data-example="functions-dom"><code>const boton = document.querySelector("#saludar");
+const campo = document.querySelector("#nombre");
+const mensaje = document.querySelector("#mensaje");
+
+function crearSaludo(nombre) {
+    const nombreLimpio = nombre.trim();
+    if (nombreLimpio === "") {
+        return "Escribe un nombre";
+    }
+    return `Hola, ${nombreLimpio}`;
+}
+
+boton.addEventListener("click", () =&gt; {
+    mensaje.textContent = crearSaludo(campo.value);
+});</code></pre>
+                <p><code>crearSaludo()</code> recibe una cadena y devuelve otra sin consultar el documento. La función flecha se pasa como manejador y se ejecuta cuando ocurre <code>click</code>; en ese momento lee el campo y actualiza el párrafo.</p>
+                <p>Para una respuesta muy breve puede utilizarse una función flecha en el registro. Si el manejador crece o se reutiliza, conviene darle un nombre. La claridad debe guiar la elección.</p>
+                <div class="activity-card activity-callout" id="actividad-9-4">
+                    <p><strong>9.4. Reutilizar una función</strong></p>
+                    <p>Comprueba <code>crearSaludo()</code> desde la consola con <code>"Ana"</code>, <code>" Luis "</code> y <code>"   "</code>. Repite las pruebas con el campo y el botón. Después sustituye el manejador flecha por una función con nombre, manteniendo el mismo comportamiento.</p>
+                </div>
+                <div class="resource-card expansion-card">
+                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Funciones y funciones flecha</span><span class="resource-badge badge-reading">Ampliación</span></div>
+                    <p class="resource-description">Referencias sobre parámetros, retorno, ámbito y las diferencias entre las formas de definir funciones. La recursividad y los cierres se reservan para más adelante.</p>
+                    <a href="https://es.javascript.info/function-basics" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Funciones</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Guía de funciones</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Funciones flecha</a>
                 </div>
             </section>
 
