@@ -14,6 +14,7 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 ARCHIVOS_ORIGEN = [
     "ciclos/diw/u01_es.html",
     "ciclos/dwec/u01_es.html",
+    "ciclos/dwec/u02_es.html",
     "ciclos/ssii/u01_es.html",
 ]
 
