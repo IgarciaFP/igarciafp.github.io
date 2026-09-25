@@ -62,9 +62,7 @@
             <li><a href="#sec2_2" class="subsection-link">2.2. Mostrar y recoger información</a></li>
             <li><a href="#sec2_3" class="subsection-link">2.3. Primer contacto con la depuración</a></li>
             <li><a href="#sec2_4" class="subsection-link">2.4. Incluir JavaScript</a></li>
-            <li><a href="#sec2_5" class="subsection-link">2.5. Carga y ejecución</a></li>
-            <li><a href="#sec2_6" class="subsection-link">2.6. Hola, mundo</a></li>
-            <li><a href="#sec3">3. Sintaxis y buenas prácticas</a></li>
+            <li><a href="#sec2_5" class="subsection-link">2.5. Carga y ejecución</a></li>            <li><a href="#sec3">3. Sintaxis y buenas prácticas</a></li>
             <li><a href="#sec3_1" class="subsection-link">3.1. Valores, expresiones y bloques</a></li>
             <li><a href="#sec3_2" class="subsection-link">3.2. Mayúsculas y comentarios</a></li>
             <li><a href="#sec4">4. Variables y tipos de datos</a></li>
@@ -250,6 +248,38 @@ console.log(confirm("¿Quieres continuar?"));</code></pre>
                     <a class="resource-link-btn" href="https://developer.mozilla.org/es/docs/Web/API/Window/confirm" target="_blank" rel="noopener noreferrer">confirm()</a>
                 </div>
 
+                <div class="activity-card activity-callout" id="actividad-2-2">
+                    <p><strong>2.2. Tu primer programa: Hola, mundo</strong></p>
+                    <ol>
+                        <li>Crea una carpeta llamada <code>ejercicios-js</code> y ábrela en VS Code. Dentro, crea un archivo <code>index.html</code>.</li>
+                        <li>Copia esta página. El JavaScript se escribe dentro de <code>&lt;script&gt;</code>, al final de <code>&lt;body&gt;</code>:</li>
+                    </ol>
+                    <pre data-example="hola-mundo-inline"><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Primer programa JavaScript&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Primer programa JavaScript&lt;/h1&gt;
+    &lt;p&gt;Abre la consola para consultar los mensajes.&lt;/p&gt;
+
+    &lt;script&gt;
+        console.log("Hola, mundo");
+        console.log("El JavaScript del HTML se ha ejecutado");
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                    <ol start="3">
+                        <li>Guarda el archivo, ábrelo en Chrome y consulta la consola de DevTools. Comprueba que aparecen los dos mensajes en orden.</li>
+                        <li>Añade dentro del mismo <code>&lt;script&gt;</code> un tercer <code>console.log()</code> con tu nombre. Guarda y recarga.</li>
+                        <li>Copia los tres mensajes en <code>respuestas.txt</code> y explica dónde aparecen: en la página o en la consola.</li>
+                    </ol>
+                    <p>Si no ves los mensajes, comprueba que has guardado el HTML, recargado la página y que la consola no los está ocultando con sus filtros.</p>
+                    <p><strong>Entrega:</strong> <code>index.html</code> y <code>respuestas.txt</code>, ambos en texto plano.</p>
+                </div>
+
                 <h3 id="sec2_3">2.3. Primer contacto con la depuración</h3>
                 <p><strong>Depurar</strong> consiste en localizar y comprender los errores de un programa. Conviene distinguir un mensaje que escribe el programador de un error detectado por el navegador:</p>
                 <pre><code>console.log("Información de seguimiento");
@@ -266,7 +296,7 @@ console.error("Mensaje de error de prueba");</code></pre>
                 <p>Esta forma resulta útil para ejemplos pequeños. El código se escribe entre las etiquetas de apertura y cierre.</p>
                 <h4 class="content-subtitle">Archivo externo</h4>
                 <pre><code>&lt;script src="app.js" defer&gt;&lt;/script&gt;</code></pre>
-                <p>El atributo <code>src</code> indica la ruta al archivo. Dentro de <code>app.js</code> se escriben únicamente instrucciones JavaScript, sin etiquetas <code>&lt;script&gt;</code>. Esta será la organización de los ejercicios, con el enlace situado en <code>&lt;head&gt;</code>.</p>
+                <p>El atributo <code>src</code> indica la ruta al archivo. Dentro de <code>app.js</code> se escriben únicamente instrucciones JavaScript, sin etiquetas <code>&lt;script&gt;</code>. Para pasar el «Hola, mundo» a esta organización, crea <code>app.js</code> junto a <code>index.html</code> y mueve allí los mensajes de consola. Retira el bloque <code>&lt;script&gt;</code> del cuerpo del HTML y añade el enlace del ejemplo en <code>&lt;head&gt;</code>. Guarda ambos archivos y recarga: los mensajes deben seguir apareciendo una sola vez. Esta será la organización de los siguientes ejercicios.</p>
                 <p>Cuando un elemento <code>&lt;script&gt;</code> tiene <code>src</code>, no se añade también código entre sus etiquetas. En ejemplos antiguos pueden aparecer atributos como <code>onclick</code> con instrucciones dentro del HTML; en esta unidad los eventos se registrarán desde JavaScript con <code>addEventListener()</code>.</p>
 
                 <h3 id="sec2_5">2.5. Carga y ejecución de los scripts</h3>
@@ -310,8 +340,8 @@ window.addEventListener("load", function () {
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · DOMContentLoaded</a>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · load y onload</a>
                 </div>
-                <div class="activity-card activity-callout" id="actividad-2-2">
-                    <p><strong>2.2. Comprobar el orden de carga</strong></p>
+                <div class="activity-card activity-callout" id="actividad-2-3">
+                    <p><strong>2.3. Comprobar el orden de carga</strong></p>
                     <ol><li>Copia en una página de prueba el ejemplo del script situado antes del párrafo. Recarga y apunta qué muestra la consola.</li><li>Mueve la instrucción JavaScript a app.js y enlaza ese archivo desde head con defer.</li><li>Recarga, copia la nueva salida y explica por qué ahora se encuentra el párrafo. Entrega las dos versiones del código.</li></ol>
                 </div>
                 <div class="resource-card expansion-card">
@@ -321,38 +351,11 @@ window.addEventListener("load", function () {
                     <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · El elemento script</a>
                 </div>
 
-                <h3 id="sec2_6">2.6. Hola, mundo</h3>
-                <p>Crea una carpeta llamada <code>ejercicios-js</code> y ábrela en VS Code. Dentro, crea los archivos <code>index.html</code> y <code>app.js</code>.</p>
-                <p>Escribe en <code>index.html</code> esta página mínima:</p>
-                <pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="es"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;title&gt;Primer programa JavaScript&lt;/title&gt;
-    &lt;script src="app.js" defer&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;h1&gt;Primer programa JavaScript&lt;/h1&gt;
-    &lt;p id="saludo"&gt;Abre la consola para consultar los mensajes.&lt;/p&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-                <p>Escribe estas instrucciones en <code>app.js</code>, guarda ambos archivos y abre <code>index.html</code> en Chrome:</p>
-                <pre><code>console.log("Hola, mundo");
-console.log("El archivo JavaScript se ha ejecutado");</code></pre>
-                <p>Consulta la consola de Chrome. Los dos mensajes confirman que el archivo se ha cargado y ejecutado; el contenido visible de la página sigue siendo el definido en el HTML.</p>
-                <div class="didactic-note">
-                    <p><strong>Si los mensajes no aparecen:</strong> comprueba que has guardado <code>app.js</code>, que la ruta de <code>src</code> coincide con su ubicación y que has recargado la página. En <em>Network</em>, una respuesta <code>404</code> al solicitar el archivo indica que no se ha encontrado.</p>
-                </div>
-                <div class="activity-card activity-callout" id="actividad-2-3">
-                    <p><strong>2.3. Comprobar el primer programa</strong></p>
-                    <ol><li>Añade a app.js un tercer mensaje de consola con tu nombre.</li><li>Antes de ejecutar, escribe en qué orden crees que saldrán los tres mensajes.</li><li>Guarda, recarga y copia la salida de la consola en respuestas.txt. Entrega también index.html y app.js.</li></ol>
-                </div>
             </section>
 
             <section aria-labelledby="sec3">
                 <h2 id="sec3"><i class="fa-solid fa-align-left" aria-hidden="true"></i> 3. Sintaxis básica y buenas prácticas iniciales</h2>
-                <p>La <strong>sintaxis</strong> establece cómo se escribe un programa válido. Las convenciones de estilo ayudan a que ese programa resulte legible y fácil de modificar. En los ejemplos de este apartado se utilizará el archivo <code>app.js</code> creado anteriormente.</p>
+                <p>La <strong>sintaxis</strong> establece cómo se escribe un programa válido. Las convenciones de estilo ayudan a que ese programa resulte legible y fácil de modificar. En los ejemplos de este apartado se utilizará el archivo <code>app.js</code> preparado al separar el JavaScript del HTML en el apartado 2.4.</p>
 
                 <h3 id="sec3_1">3.1. Valores, expresiones, instrucciones y bloques</h3>
                 <p>Un <strong>valor</strong> es un dato con el que trabaja el programa, como el número <code>12</code>, el texto <code>"Hola"</code> o el valor lógico <code>true</code>. Cuando se escribe directamente en el código se utiliza un <strong>literal</strong>.</p>
