@@ -69,10 +69,14 @@
             <li><a href="#sec3">3. Sintaxis y buenas prácticas</a></li>
             <li><a href="#sec3_1" class="subsection-link">3.1. Valores, expresiones y bloques</a></li>
             <li><a href="#sec3_2" class="subsection-link">3.2. Mayúsculas y comentarios</a></li>
-            <li><a href="#sec3_3" class="subsection-link">3.3. Convenciones de formato</a></li>
-            <li><a href="#sec3_4" class="subsection-link">3.4. Identificadores y nombres</a></li>
-            <li><a href="#sec3_5" class="subsection-link">3.5. Cómo leer una llamada</a></li>
-            <li><a href="#sec3_6" class="subsection-link">3.6. Legibilidad y organización</a></li>
+            <li><a href="#sec3_3" class="subsection-link">3.3. Identificadores y nombres</a></li>
+            <li><a href="#sec4">4. Variables y tipos de datos</a></li>
+            <li><a href="#sec4_1" class="subsection-link">4.1. Declaración y reasignación</a></li>
+            <li><a href="#sec4_2" class="subsection-link">4.2. Elegir entre const y let</a></li>
+            <li><a href="#sec4_3" class="subsection-link">4.3. Tipos de datos</a></li>
+            <li><a href="#sec4_4" class="subsection-link">4.4. Tipado dinámico y typeof</a></li>
+            <li><a href="#sec4_5" class="subsection-link">4.5. Cadenas e interpolación</a></li>
+            <li><a href="#sec4_6" class="subsection-link">4.6. Ámbito de bloque</a></li>
         </ul>
     </nav>
     <div class="document-wrapper">
@@ -427,7 +431,6 @@ console.log("Bienvenido");
 */
 console.log("Fin del programa");</code></pre>
                 <p><code>//</code> inicia un comentario hasta el final de la línea. <code>/*</code> y <code>*/</code> delimitan un comentario que puede ocupar varias líneas. Estos últimos no se pueden anidar.</p>
-                <p>Un comentario útil explica una decisión o una finalidad que no resulta evidente. Debe mantenerse actualizado cuando cambia el código.</p>
                 <p>Conviene distinguir los signos que ya han aparecido:</p>
                 <ul>
                     <li><strong>Comillas:</strong> delimitan textos, como <code>"Bienvenido"</code>.</li>
@@ -435,29 +438,11 @@ console.log("Fin del programa");</code></pre>
                     <li><strong>Llaves:</strong> en los ejemplos anteriores, delimitan un bloque.</li>
                 </ul>
 
-                <h3 id="sec3_3">3.3. Sangrado y convenciones de formato</h3>
-                <p>Los espacios y saltos de línea permiten organizar el código. Su uso puede afectar a la interpretación en algunos casos; dentro de una cadena, además, forman parte del texto.</p>
-                <p>En esta unidad se seguirá una pauta común:</p>
-                <ul>
-                    <li>Una instrucción por línea.</li>
-                    <li>Cuatro espacios por nivel de sangrado.</li>
-                    <li>Espacios alrededor de operadores como <code>+</code> y después de las comas.</li>
-                    <li>Comillas dobles para las cadenas sencillas.</li>
-                    <li>Punto y coma al terminar instrucciones como las llamadas mostradas.</li>
-                    <li>Llave de cierre alineada con el inicio del bloque.</li>
-                </ul>
-                <pre><code>{
-    console.log("Primer mensaje");
-    console.log("Segundo mensaje", 8 + 4);
-}</code></pre>
-                <p>Estas son convenciones del material, no las únicas opciones válidas. JavaScript admite también comillas simples y puede insertar puntos y coma automáticamente en determinadas situaciones. <strong>Un salto de línea no siempre equivale a un punto y coma</strong>; por eso se escribirán explícitamente en los ejemplos. No se añade un punto y coma por el mero hecho de cerrar un bloque.</p>
-                <div class="activity-card activity-callout" id="actividad-3-2">
-                    <p><strong>3.2. Dar formato sin cambiar el comportamiento</strong></p>
-                    <pre><code>{console.log("Inicio");console.log(6+3);console.log("Fin");}</code></pre>
-                    <p>Reescribe el fragmento aplicando las convenciones anteriores. Ejecuta ambas versiones y comprueba que producen los mismos mensajes. Añade un comentario que describa la finalidad de la prueba.</p>
+                <div class="didactic-note" id="buenas-practicas">
+                    <p><strong>Buenas prácticas desde el primer programa.</strong> Mantén una indentación uniforme para reconocer los bloques, escribe una instrucción por línea y utiliza espacios que faciliten la lectura. Elige nombres descriptivos y añade comentarios breves que expliquen decisiones, manteniéndolos actualizados. La coherencia de formato y la legibilidad facilitan revisar y modificar el código. <a href="https://es.javascript.info/coding-style" target="_blank" rel="noopener noreferrer">Ampliación: estilo de codificación</a>.</p>
                 </div>
 
-                <h3 id="sec3_4">3.4. Identificadores y nombres descriptivos</h3>
+                <h3 id="sec3_3">3.3. Identificadores y nombres descriptivos</h3>
                 <p>Un <strong>identificador</strong> es un nombre que permite referirse a un elemento del programa, como una variable o una función. En el próximo apartado se aprenderá a declarar variables; aquí se presentan los criterios para nombrarlas.</p>
                 <ul>
                     <li>Puede comenzar por una letra, un guion bajo (<code>_</code>) o el signo <code>$</code>. También se admiten muchas letras Unicode.</li>
@@ -468,35 +453,142 @@ console.log("Fin del programa");</code></pre>
                 </ul>
                 <p>Se empleará <strong>camelCase</strong>: la primera palabra comienza en minúscula y las siguientes en mayúscula, como <code>nombreUsuario</code>, <code>numeroIntentos</code> o <code>mostrarMensaje</code>.</p>
                 <p>El nombre debe expresar su significado. Por ejemplo, <code>numeroIntentos</code> comunica más información que <code>n</code>. Para funciones que realizan una acción conviene utilizar un verbo, como <code>mostrarMensaje</code>. Se mantendrá un criterio de idioma coherente.</p>
-                <div class="activity-card activity-callout" id="actividad-3-3">
-                    <p><strong>3.3. Revisar nombres</strong></p>
+                <div class="activity-card activity-callout" id="actividad-3-2">
+                    <p><strong>3.2. Revisar nombres</strong></p>
                     <p>Determina cuáles de estos nombres son válidos: <code>2intentos</code>, <code>nombreUsuario</code>, <code>nombre-usuario</code>, <code>class</code>, <code>_mensaje</code> y <code>dato1</code>. Corrige los no válidos y explica por qué un nombre válido puede ser poco descriptivo.</p>
                 </div>
 
-                <h3 id="sec3_5">3.5. Cómo leer una llamada</h3>
-                <p>Una llamada indica que debe ejecutarse una función o un método. De momento basta con reconocer sus partes:</p>
-                <pre><code>console.log("Puntuación:", 10 + 5);</code></pre>
-                <ul>
-                    <li><code>console.log</code> identifica el método que se ejecuta.</li>
-                    <li>Los paréntesis indican la llamada.</li>
-                    <li><code>"Puntuación:"</code> y <code>10 + 5</code> son dos argumentos, separados por una coma.</li>
-                    <li>La expresión <code>10 + 5</code> se evalúa antes de pasar su resultado al método.</li>
-                </ul>
-                <p>El resultado visible será <code>Puntuación: 15</code>. La declaración de funciones, sus parámetros y sus valores de retorno se estudiarán en el apartado 9.</p>
-
-                <h3 id="sec3_6">3.6. Legibilidad y separación de responsabilidades</h3>
-                <p>Un programa debe poder leerse y revisarse. Para ello, conviene mantener un formato uniforme, elegir nombres claros y separar grupos de instrucciones relacionados mediante líneas en blanco.</p>
-                <p>En una página web se conservará la organización ya presentada: <strong>HTML</strong> para la estructura, <strong>CSS</strong> para la presentación y <strong>JavaScript</strong> para la lógica. El código JavaScript se guardará en su archivo externo.</p>
-                <div class="activity-card activity-callout" id="actividad-3-4">
-                    <p><strong>3.4. Revisión final del archivo</strong></p>
-                    <p>Escribe en <code>app.js</code> tres instrucciones que muestren un saludo, el resultado de una operación sencilla y un mensaje de despedida. Añade un comentario inicial y aplica las convenciones de formato. Comprueba la salida y revisa el archivo de un compañero: claridad, sangrado, signos y correspondencia entre comentarios y código.</p>
-                </div>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Sintaxis y estilo</span><span class="resource-badge badge-reading">Lectura</span></div>
                     <p class="resource-description">Consulta los apartados iniciales sobre sintaxis y comentarios. Las declaraciones de variables y los tipos se desarrollarán en el siguiente punto de esta unidad.</p>
                     <a href="https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Grammar_and_types" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Gramática y tipos</a>
                     <a href="https://es.javascript.info/structure" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Estructura del código</a>
-                    <a href="https://es.javascript.info/coding-style" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Estilo de codificación</a>
+                </div>
+            </section>
+
+            <section aria-labelledby="sec4">
+                <h2 id="sec4"><i class="fa-solid fa-box" aria-hidden="true"></i> 4. Variables y tipos de datos</h2>
+                <p>Las <strong>variables</strong> permiten asociar un nombre a un valor y utilizarlo a lo largo del programa. En los ejemplos se emplearán <code>const</code> y <code>let</code>, junto con nombres descriptivos en <em>camelCase</em>.</p>
+                <p>Prueba cada fragmento por separado en <code>app.js</code> y recarga la página. Así evitarás declarar varias veces el mismo nombre al reunir ejemplos independientes.</p>
+
+                <h3 id="sec4_1">4.1. Declaración, inicialización y reasignación</h3>
+                <p><strong>Declarar</strong> una variable introduce su nombre en el programa. <strong>Inicializarla</strong> consiste en establecer su valor inicial. Una <strong>reasignación</strong> sustituye el valor que tenía por otro.</p>
+                <pre><code>let puntuacion = 10; // Declaración e inicialización.
+console.log(puntuacion); // 10
+
+puntuacion = 15; // Reasignación.
+console.log(puntuacion); // 15</code></pre>
+                <p>El signo <code>=</code> asigna un valor; no expresa una comparación. Al reasignar se escribe el nombre sin repetir <code>let</code>.</p>
+                <p>Con <code>let</code> es posible separar la declaración de la primera asignación. Mientras no se asigne otro valor, la variable contiene <code>undefined</code>:</p>
+                <pre><code>let mensaje;
+console.log(mensaje); // undefined
+
+mensaje = "Bienvenido";
+console.log(mensaje); // Bienvenido</code></pre>
+                <p>Declara las variables antes de utilizarlas. Usar un nombre que no se ha declarado provoca un <code>ReferenceError</code>; no es lo mismo que leer una variable declarada cuyo valor es <code>undefined</code>.</p>
+
+                <h3 id="sec4_2">4.2. Elegir entre const y let</h3>
+                <p>Utiliza <strong><code>const</code> como opción habitual</strong> y <strong><code>let</code> cuando el programa necesite reasignar</strong> la variable.</p>
+                <pre><code>const nombreCurso = "DWEC";
+let intentosRestantes = 3;
+
+intentosRestantes = 2;
+console.log(nombreCurso, intentosRestantes);</code></pre>
+                <ul>
+                    <li><code>const</code> requiere un valor inicial en su declaración y no permite reasignarlo.</li>
+                    <li><code>let</code> permite establecer un valor inicial y cambiarlo posteriormente.</li>
+                    <li>Ninguna de las dos permite volver a declarar el mismo nombre en el mismo ámbito.</li>
+                </ul>
+                <p>En código anterior puede aparecer <code>var</code>. Sus reglas de ámbito son diferentes; en esta unidad se utilizarán <code>const</code> y <code>let</code>.</p>
+                <div class="didactic-note">
+                    <p><strong>Alcance de const.</strong> Impide reasignar la variable, pero no convierte en inmutable el contenido de un objeto. Esta distinción se retomará al estudiar objetos y arrays.</p>
+                </div>
+                <div class="activity-card activity-callout" id="actividad-4-1">
+                    <p><strong>4.1. Elegir la declaración</strong></p>
+                    <p>Declara el nombre de un centro educativo, el número de intentos disponibles y un mensaje que cambiará durante la ejecución. Decide en cada caso si corresponde <code>const</code> o <code>let</code>. Muestra los valores, realiza las reasignaciones previstas y justifica tu elección.</p>
+                    <p>En una prueba independiente, intenta reasignar una variable declarada con <code>const</code>. Lee el error y retira esa instrucción antes de continuar.</p>
+                </div>
+
+                <h3 id="sec4_3">4.3. Tipos de datos de uso inicial</h3>
+                <p>El <strong>tipo</strong> describe la clase de valor con la que trabaja el programa. En estos primeros ejercicios se utilizarán los siguientes:</p>
+                <ul>
+                    <li><strong><code>number</code>:</strong> representa números, tanto enteros como decimales. Ejemplos: <code>18</code> y <code>7.5</code>. El separador decimal en el código es el punto.</li>
+                    <li><strong><code>string</code>:</strong> representa texto delimitado por comillas. Ejemplos: <code>"Ana"</code>, <code>"18"</code> y <code>""</code>. Un número entre comillas es texto; una cadena vacía también es texto.</li>
+                    <li><strong><code>boolean</code>:</strong> admite los valores <code>true</code> y <code>false</code>, escritos sin comillas. Permite representar estados como «activo» o «inactivo».</li>
+                    <li><strong><code>undefined</code>:</strong> es el valor de una variable declarada con <code>let</code> a la que todavía no se ha asignado otro valor.</li>
+                    <li><strong><code>null</code>:</strong> se utiliza para representar de forma explícita la ausencia de un valor.</li>
+                </ul>
+                <pre><code>const edad = 18;
+const nombre = "Ana";
+const matriculaActiva = true;
+let observaciones;
+const tutorAsignado = null;
+
+console.log(edad, nombre, matriculaActiva);
+console.log(observaciones, tutorAsignado);</code></pre>
+                <p><code>undefined</code> puede aparecer también en otras situaciones, como el resultado de una llamada a <code>console.log()</code>. <code>null</code> expresa una ausencia explícita, como ocurre al cancelar <code>prompt()</code>. Ninguno equivale a un texto vacío.</p>
+
+                <h3 id="sec4_4">4.4. Tipado dinámico y typeof</h3>
+                <p>JavaScript tiene <strong>tipado dinámico</strong>: una variable no queda asociada a un tipo fijo. El operador <code>typeof</code> consulta el tipo de un valor y devuelve una cadena con su nombre.</p>
+                <pre><code>let dato = 42;
+console.log(typeof dato); // "number"
+
+dato = "cuarenta y dos";
+console.log(typeof dato); // "string"</code></pre>
+                <p>La reasignación es válida, pero conviene mantener un significado y un tipo coherentes para cada variable cuando sea posible. Esto facilita entender el programa.</p>
+                <pre><code>console.log(typeof 7.5);      // "number"
+console.log(typeof "7.5");    // "string"
+console.log(typeof false);    // "boolean"
+console.log(typeof undefined); // "undefined"
+console.log(typeof null);     // "object"</code></pre>
+                <div class="didactic-note">
+                    <p><strong>El caso de null.</strong> Por una particularidad histórica, <code>typeof null</code> devuelve <code>"object"</code>. Sin embargo, <code>null</code> es un valor primitivo que representa ausencia, no un objeto con propiedades.</p>
+                </div>
+                <div class="activity-card activity-callout" id="actividad-4-2">
+                    <p><strong>4.2. Predecir y comprobar tipos</strong></p>
+                    <p>Antes de ejecutarlas, indica qué devuelven <code>typeof 25</code>, <code>typeof "25"</code>, <code>typeof true</code>, <code>typeof "true"</code> y <code>typeof ""</code>. Comprueba tus respuestas y explica el efecto de las comillas.</p>
+                </div>
+
+                <h3 id="sec4_5">4.5. Cadenas e interpolación</h3>
+                <p>Las cadenas sencillas pueden escribirse con comillas dobles o simples. El delimitador de cierre debe coincidir con el de apertura. Las comillas de otro tipo pueden formar parte del texto:</p>
+                <pre><code>const saludo = "Hola";
+const aviso = 'Pulsa "Aceptar" para continuar';
+console.log(saludo, aviso);</code></pre>
+                <p>El operador <code>+</code> permite concatenar, es decir, unir cadenas. Las <strong>plantillas de cadena</strong> utilizan acentos graves (<code>&#96;</code>) y permiten insertar valores mediante <code>$&#123;expresion&#125;</code>.</p>
+                <pre><code>const nombre = "Ana";
+const curso = "DWEC";
+
+console.log("Hola, " + nombre + ". Bienvenida a " + curso + ".");
+console.log(&#96;Hola, $&#123;nombre&#125;. Bienvenida a $&#123;curso&#125;.&#96;);</code></pre>
+                <p>Ambas instrucciones muestran el mismo mensaje. La interpolación facilita leer textos que combinan varias variables. Las comillas simples y dobles no interpretan <code>$&#123;...&#125;</code>.</p>
+                <div class="activity-card activity-callout" id="actividad-4-3">
+                    <p><strong>4.3. Construir un mensaje</strong></p>
+                    <p>Declara <code>nombre</code>, <code>modulo</code> y <code>grupo</code>. Construye un mensaje con esos datos mediante concatenación y mediante una plantilla de cadena. Cambia los valores y comprueba que el texto se actualiza al volver a ejecutar el programa.</p>
+                </div>
+
+                <h3 id="sec4_6">4.6. Ámbito de bloque</h3>
+                <p>El <strong>ámbito</strong> determina desde dónde se puede utilizar una variable. Una variable declarada con <code>let</code> o <code>const</code> dentro de un bloque está disponible en ese bloque y en los que contiene, pero no fuera de él.</p>
+                <pre><code>const centro = "IES Ejemplo";
+
+{
+    const grupo = "2DAW";
+    console.log(centro); // IES Ejemplo
+    console.log(grupo);  // 2DAW
+}
+
+console.log(centro); // IES Ejemplo
+// console.log(grupo); // Fuera del bloque: ReferenceError.</code></pre>
+                <p>El bloque puede acceder a <code>centro</code>, declarado en el ámbito exterior. En cambio, el código exterior no puede acceder a <code>grupo</code>. Conviene declarar cada variable cerca de donde se utiliza y limitar su ámbito a lo necesario.</p>
+                <div class="activity-card activity-callout" id="actividad-4-4">
+                    <p><strong>4.4. Comprobar la visibilidad</strong></p>
+                    <p>Ejecuta el ejemplo anterior. Después, activa la última instrucción retirando <code>//</code> y explica el error. Vuelve a comentarla y añade otro bloque con su propia variable <code>grupo</code>. Comprueba que cada bloque puede utilizar su propio nombre sin interferir con el otro.</p>
+                </div>
+                <div class="resource-card expansion-card">
+                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Variables y tipos</span><span class="resource-badge badge-reading">Lectura</span></div>
+                    <p class="resource-description">Referencias para ampliar las declaraciones, el ámbito y los tipos de datos. Los objetos y los tipos menos habituales se estudiarán más adelante.</p>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Declaraciones, tipos y ámbito</a>
+                    <a href="https://es.javascript.info/variables" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Variables</a>
+                    <a href="https://es.javascript.info/types" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Tipos de datos</a>
                 </div>
             </section>
             <footer class="document-footer">DAW / DWEC · © Ignacio García</footer>
