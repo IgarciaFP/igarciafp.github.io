@@ -90,6 +90,14 @@
             <li><a href="#sec6_4" class="subsection-link">6.4. Leer campos y convertir sus datos</a></li>
             <li><a href="#sec6_5" class="subsection-link">6.5. Estilos y clases CSS</a></li>
             <li><a href="#sec6_6" class="subsection-link">6.6. Comprobar que un elemento existe</a></li>
+            <li><a href="#sec7">7. Estructuras de control</a></li>
+            <li><a href="#sec7_1" class="subsection-link">7.1. Condiciones y valores truthy y falsy</a></li>
+            <li><a href="#sec7_2" class="subsection-link">7.2. if, else if y else</a></li>
+            <li><a href="#sec7_3" class="subsection-link">7.3. Combinar condiciones y validar datos</a></li>
+            <li><a href="#sec7_4" class="subsection-link">7.4. switch: alternativas según un valor</a></li>
+            <li><a href="#sec7_5" class="subsection-link">7.5. Operador ternario</a></li>
+            <li><a href="#sec7_6" class="subsection-link">7.6. Repeticiones con for, while y do...while</a></li>
+            <li><a href="#sec7_7" class="subsection-link">7.7. Recorrer elementos del DOM con for...of</a></li>
         </ul>
     </nav>
     <div class="document-wrapper">
@@ -728,6 +736,149 @@ if (mensaje !== null) {
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · innerHTML</a>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/value" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · value</a>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/classList" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · classList</a>
+                </div>
+            </section>
+
+            <section aria-labelledby="sec7">
+                <h2 id="sec7"><i class="fa-solid fa-code-branch" aria-hidden="true"></i> 7. Estructuras de control</h2>
+                <p>Un programa ejecuta sus instrucciones en orden, pero puede necesitar elegir entre varias acciones o repetir una tarea. Las <strong>estructuras de control</strong> permiten tomar estas decisiones. Ejecuta cada ejemplo por separado en <code>app.js</code> y modifica los datos para comprobar las distintas posibilidades.</p>
+
+                <h3 id="sec7_1">7.1. Condiciones y valores truthy y falsy</h3>
+                <p>Una <strong>condición</strong> es una expresión cuyo valor se interpreta como verdadero o falso. Puede ser una comparación, como <code>edad &gt;= 18</code>, o una variable booleana, como <code>sesionActiva</code>.</p>
+                <p>Si el valor no es booleano, JavaScript lo interpreta según las reglas de <code>Boolean()</code>:</p>
+                <ul>
+                    <li><strong>Falsy:</strong> valores que se interpretan como falsos. Entre los tipos estudiados están <code>false</code>, <code>0</code> (también <code>-0</code>), <code>""</code>, <code>null</code>, <code>undefined</code> y <code>NaN</code>.</li>
+                    <li><strong>Truthy:</strong> valores que se interpretan como verdaderos. Por ejemplo, un número distinto de cero o una cadena no vacía, incluidas <code>"0"</code>, <code>"false"</code> y <code>" "</code>.</li>
+                </ul>
+                <p>Cuando se comprueba un dato concreto, una condición explícita suele expresar mejor la intención: <code>cantidad === 0</code> comprueba un cero, mientras que <code>!cantidad</code> acepta cualquier valor <em>falsy</em>.</p>
+
+                <h3 id="sec7_2">7.2. if, else if y else</h3>
+                <p><code>if</code> ejecuta un bloque cuando la condición se interpreta como verdadera. El bloque opcional <code>else</code> se ejecuta en caso contrario:</p>
+                <pre><code>const edad = 16;
+
+if (edad &gt;= 18) {
+    console.log("Mayor de edad");
+} else {
+    console.log("Menor de edad");
+}</code></pre>
+                <p>Para distinguir más alternativas se añade <code>else if</code>. Las condiciones se comprueban de arriba abajo y se ejecuta únicamente la primera rama que corresponde:</p>
+                <pre><code>const temperatura = 24;
+
+if (temperatura &lt; 15) {
+    console.log("Temperatura baja");
+} else if (temperatura &lt; 25) {
+    console.log("Temperatura moderada");
+} else {
+    console.log("Temperatura alta");
+}</code></pre>
+                <p>Al llegar al segundo caso ya se sabe que la temperatura no es menor que <code>15</code>. El orden importa: colocar primero una condición demasiado general puede impedir que se alcancen las siguientes.</p>
+                <div class="didactic-note"><p><strong>Escritura de las condiciones.</strong> Utiliza llaves incluso si el bloque contiene una sola instrucción. No escribas <code>;</code> entre la condición y la llave de apertura. Para comparar emplea <code>===</code>, no la asignación <code>=</code>.</p></div>
+                <div class="activity-card activity-callout" id="actividad-7-1">
+                    <p><strong>7.1. Comprobar los límites</strong></p>
+                    <p>Predice la salida del ejemplo de temperatura para <code>14</code>, <code>15</code>, <code>24</code> y <code>25</code>. Ejecuta cada prueba y explica a qué intervalo corresponde cada rama.</p>
+                </div>
+
+                <h3 id="sec7_3">7.3. Combinar condiciones y validar datos</h3>
+                <p>Los operadores <code>&amp;&amp;</code>, <code>||</code> y <code>!</code> permiten combinar comprobaciones sin encadenar muchos bloques:</p>
+                <pre><code>const tieneEntrada = true;
+const salaAbierta = true;
+
+if (tieneEntrada &amp;&amp; salaAbierta) {
+    console.log("Puedes acceder");
+} else {
+    console.log("No se cumplen las condiciones de acceso");
+}</code></pre>
+                <p>Para procesar una entrada textual, comprueba primero si está vacía y después si la conversión es válida. <code>trim()</code> devuelve una cadena sin espacios en blanco al principio ni al final:</p>
+                <pre><code>const texto = " 6 ";
+const cantidad = Number(texto);
+
+if (texto.trim() === "") {
+    console.log("Introduce una cantidad");
+} else if (Number.isNaN(cantidad) || cantidad &lt; 0) {
+    console.log("Introduce un número igual o mayor que cero");
+} else {
+    console.log(`Cantidad aceptada: ${cantidad}`);
+}</code></pre>
+                <p>El ejemplo presupone que <code>texto</code> es una cadena. Si procede de <code>prompt()</code>, comprueba antes si es <code>null</code>, porque cancelar el diálogo no devuelve texto y no permite llamar a <code>trim()</code>.</p>
+                <div class="activity-card activity-callout" id="actividad-7-2">
+                    <p><strong>7.2. Validar una entrada</strong></p>
+                    <p>Prueba el ejemplo con <code>""</code>, <code>"   "</code>, <code>"seis"</code>, <code>"-2"</code> y <code>"0"</code>. Justifica por qué el último valor debe aceptarse y por qué no basta con comprobar <code>!cantidad</code>.</p>
+                </div>
+
+                <h3 id="sec7_4">7.4. switch: alternativas según un valor</h3>
+                <p><code>switch</code> resulta útil cuando una expresión puede coincidir con varios valores concretos. Cada <code>case</code> representa una alternativa:</p>
+                <pre><code>const estado = "enviado";
+
+switch (estado) {
+    case "pendiente":
+        console.log("Preparando el envío");
+        break;
+    case "enviado":
+        console.log("En camino");
+        break;
+    case "entregado":
+        console.log("Entrega completada");
+        break;
+    default:
+        console.log("Estado desconocido");
+}</code></pre>
+                <p>La coincidencia se comprueba mediante igualdad estricta: <code>case 1</code> no coincide con <code>"1"</code>. <code>break</code> sale del <code>switch</code>; si se omite, la ejecución continúa por las instrucciones de los casos siguientes. <code>default</code> es opcional y se utiliza cuando no hay coincidencia.</p>
+                <p>Para comprobar intervalos, como una temperatura entre dos límites, suele resultar más claro utilizar <code>if</code> y <code>else if</code>.</p>
+
+                <h3 id="sec7_5">7.5. Operador ternario</h3>
+                <p>El operador condicional o <strong>ternario</strong> selecciona uno de dos valores. Su forma es <code>condicion ? valorSiVerdadera : valorSiFalsa</code>:</p>
+                <pre><code>const conectado = true;
+const mensaje = conectado ? "En línea" : "Sin conexión";
+console.log(mensaje); // En línea</code></pre>
+                <p>Es una expresión: produce un valor que puede asignarse a una variable. Úsalo para elecciones sencillas; si cada alternativa requiere varias instrucciones, emplea <code>if...else</code>. Evita anidar ternarios que dificulten la lectura.</p>
+                <div class="activity-card activity-callout" id="actividad-7-3">
+                    <p><strong>7.3. Elegir una estructura</strong></p>
+                    <p>Amplía el <code>switch</code> con el estado <code>"cancelado"</code> y comprueba también un estado no previsto. Después transforma el ejemplo del ternario en un <code>if...else</code> que muestre el mismo mensaje. Explica qué versión resulta más clara en cada caso.</p>
+                </div>
+
+                <h3 id="sec7_6">7.6. Repeticiones con for, while y do...while</h3>
+                <p>Un <strong>bucle</strong> repite un bloque de instrucciones. Cada ejecución del bloque es una <strong>iteración</strong>. <code>for</code> reúne la inicialización, la condición de continuidad y la actualización:</p>
+                <pre><code>for (let numero = 1; numero &lt;= 3; numero++) {
+    console.log(numero);
+}
+// Muestra 1, 2 y 3.</code></pre>
+                <p>Primero se inicializa <code>numero</code>. Antes de cada iteración se comprueba <code>numero &lt;= 3</code>; si es verdadera, se ejecuta el bloque y después <code>numero++</code>. Al dejar de cumplirse la condición, el bucle termina. La variable declarada con <code>let</code> en la cabecera no está disponible fuera del bucle.</p>
+                <p><code>while</code> comprueba la condición antes de ejecutar el bloque. Puede no ejecutarlo ninguna vez:</p>
+                <pre><code>let pendientes = 3;
+
+while (pendientes &gt; 0) {
+    console.log(`Quedan ${pendientes}`);
+    pendientes--;
+}</code></pre>
+                <p><code>do...while</code> comprueba la condición al final, por lo que el bloque se ejecuta al menos una vez:</p>
+                <pre><code>let intentos = 0;
+
+do {
+    console.log("Se realiza un intento");
+    intentos++;
+} while (intentos &lt; 1);</code></pre>
+                <div class="didactic-note"><p><strong>El bucle debe poder terminar.</strong> Comprueba que la actualización acerca el programa al final de la repetición. Una condición que permanece verdadera puede bloquear la página. No uses un bucle para esperar a que el usuario pulse un botón: esa interacción se gestionará mediante eventos.</p></div>
+                <p><code>break</code> termina el bucle más cercano; <code>continue</code> omite el resto de la iteración actual. En un <code>for</code>, después de <code>continue</code> se realiza la actualización y se vuelve a comprobar la condición. En estos primeros ejemplos basta con condiciones de finalización claras.</p>
+                <div class="activity-card activity-callout" id="actividad-7-4">
+                    <p><strong>7.4. Repetir y acumular</strong></p>
+                    <p>Utiliza un <code>for</code> para mostrar los números del <code>1</code> al <code>5</code>. Después declara <code>let suma = 0;</code> antes del bucle y acumula cada número con <code>+=</code>. Muestra el total al terminar; debe ser <code>15</code>. Reescribe el recorrido con <code>while</code>.</p>
+                </div>
+
+                <h3 id="sec7_7">7.7. Recorrer elementos del DOM con for...of</h3>
+                <p><code>for...of</code> recorre los valores de una colección iterable. Se puede utilizar con el resultado de <code>querySelectorAll()</code> para actuar sobre varios elementos:</p>
+                <pre data-example="control-dom"><code>const parrafos = document.querySelectorAll("p");
+
+for (const parrafo of parrafos) {
+    parrafo.classList.add("destacado");
+}</code></pre>
+                <p>En la página de prueba del apartado 6, este código añade la clase <code>destacado</code> a cada párrafo. La hoja de estilos debe contener la clase para que el cambio sea visible. Si la selección está vacía, el bloque no se ejecuta.</p>
+                <p><code>const parrafo</code> crea una variable para cada iteración: no se reasigna la de la iteración anterior. Para recorrer estos elementos se utiliza <code>for...of</code>; <code>for...in</code> recorre nombres de propiedades y tiene otro propósito.</p>
+                <div class="resource-card expansion-card">
+                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Decisiones y repeticiones</span><span class="resource-badge badge-reading">Ampliación</span></div>
+                    <p class="resource-description">Referencias para ampliar las condiciones, el operador ternario, las alternativas de switch y los bucles.</p>
+                    <a href="https://es.javascript.info/ifelse" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · if y operador ternario</a>
+                    <a href="https://es.javascript.info/switch" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · switch</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Loops_and_iteration" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Bucles e iteración</a>
                 </div>
             </section>
 
