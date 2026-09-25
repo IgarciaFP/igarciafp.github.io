@@ -6,7 +6,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Unidad 2 de DWEC: fundamentos de JavaScript. Introducción, entorno de trabajo, primeros programas, sintaxis, variables y tipos de datos.">
+    <meta name="description" content="Unidad 2 de DWEC: fundamentos de JavaScript. Introducción, entorno de trabajo, primeros programas, sintaxis, variables, operadores, conversiones y DOM.">
     <title>UD02 Fundamentos de JavaScript — 2º DAW</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,6 +20,8 @@
         .sidebar-toc:focus-within { transform: translateX(0); }
         .unit-navigation { margin-bottom: 22px; font-size: .9rem; }
         .unit-navigation a { color: var(--primary-color); text-underline-offset: 3px; }
+        .operators-table table { min-width: 0; }
+        .operators-table th, .operators-table td { padding: 10px; }
         .roles-table table { min-width: 0; }
         .roles-table th:first-child { width: 22%; }
         .history-timeline { list-style: none; margin: 24px 0 24px 10px; padding: 0 0 0 24px; border-left: 3px solid var(--primary-border); }
@@ -72,6 +74,20 @@
             <li><a href="#sec4_5" class="subsection-link">4.5. Tipado dinámico y typeof</a></li>
             <li><a href="#sec4_6" class="subsection-link">4.6. Cadenas e interpolación</a></li>
             <li><a href="#sec4_7" class="subsection-link">4.7. Ámbito de bloque</a></li>
+            <li><a href="#sec5">5. Operadores, expresiones y conversiones</a></li>
+            <li><a href="#sec5_1" class="subsection-link">5.1. Operadores aritméticos y de asignación</a></li>
+            <li><a href="#sec5_2" class="subsection-link">5.2. Comparaciones e igualdad estricta</a></li>
+            <li><a href="#sec5_3" class="subsection-link">5.3. Operadores lógicos</a></li>
+            <li><a href="#sec5_4" class="subsection-link">5.4. Precedencia y paréntesis</a></li>
+            <li><a href="#sec5_5" class="subsection-link">5.5. Conversión explícita de tipos</a></li>
+            <li><a href="#sec5_6" class="subsection-link">5.6. Errores habituales al operar con datos</a></li>
+            <li><a href="#sec6">6. El DOM: acceder y modificar la página</a></li>
+            <li><a href="#sec6_1" class="subsection-link">6.1. El documento como árbol de objetos</a></li>
+            <li><a href="#sec6_2" class="subsection-link">6.2. Selección de elementos</a></li>
+            <li><a href="#sec6_3" class="subsection-link">6.3. Leer y modificar el contenido</a></li>
+            <li><a href="#sec6_4" class="subsection-link">6.4. Leer campos y convertir sus datos</a></li>
+            <li><a href="#sec6_5" class="subsection-link">6.5. Estilos y clases CSS</a></li>
+            <li><a href="#sec6_6" class="subsection-link">6.6. Comprobar que un elemento existe</a></li>
         </ul>
     </nav>
     <div class="document-wrapper">
@@ -497,6 +513,222 @@ console.log(centro); // IES Ejemplo
                     <a href="https://es.javascript.info/types" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Tipos de datos</a>
                 </div>
             </section>
+            <section aria-labelledby="sec5">
+                <h2 id="sec5"><i class="fa-solid fa-calculator" aria-hidden="true"></i> 5. Operadores, expresiones y conversiones</h2>
+                <p>Los <strong>operadores</strong> permiten realizar cálculos, comparar valores y combinar condiciones. Los valores sobre los que actúan se denominan <strong>operandos</strong>: en <code>6 + 2</code>, el operador es <code>+</code> y los operandos son <code>6</code> y <code>2</code>. Ejecuta los ejemplos de este apartado por separado en la consola o en <code>app.js</code>.</p>
+
+                <h3 id="sec5_1">5.1. Operadores aritméticos y de asignación</h3>
+                <div class="table-scroll operators-table" role="region" aria-label="Operadores aritméticos" tabindex="0">
+                    <table>
+                        <thead><tr><th scope="col">Operador</th><th scope="col">Operación</th><th scope="col">Ejemplo</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>+</code></td><td>Suma</td><td><code>9 + 4</code> → <code>13</code></td></tr>
+                            <tr><td><code>-</code></td><td>Resta</td><td><code>9 - 4</code> → <code>5</code></td></tr>
+                            <tr><td><code>*</code></td><td>Multiplicación</td><td><code>9 * 4</code> → <code>36</code></td></tr>
+                            <tr><td><code>/</code></td><td>División</td><td><code>9 / 4</code> → <code>2.25</code></td></tr>
+                            <tr><td><code>%</code></td><td>Resto de la división</td><td><code>9 % 4</code> → <code>1</code></td></tr>
+                            <tr><td><code>**</code></td><td>Potencia</td><td><code>3 ** 2</code> → <code>9</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p><code>%</code> no calcula porcentajes. Por ejemplo, para obtener el 20 % de una cantidad se multiplica por <code>20 / 100</code>.</p>
+                <p>La asignación <code>=</code> guarda un valor. Los operadores compuestos permiten actualizar una variable a partir de su valor anterior:</p>
+                <pre><code>let puntos = 10;
+puntos += 5; // Equivale a puntos = puntos + 5.
+puntos -= 2; // Equivale a puntos = puntos - 2.
+console.log(puntos); // 13</code></pre>
+                <p>También existen <code>*=</code>, <code>/=</code>, <code>%=</code> y <code>**=</code>. Para variables numéricas, <code>contador++</code> y <code>contador--</code> aumentan o reducen el valor en una unidad. Al principio conviene usarlos como instrucciones independientes.</p>
+
+                <h3 id="sec5_2">5.2. Comparaciones e igualdad estricta</h3>
+                <p>Las comparaciones producen un booleano. Los operadores <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code> y <code>&lt;=</code> comprueban si un valor es mayor, menor, mayor o igual, o menor o igual que otro.</p>
+                <pre><code>const nota = 7;
+console.log(nota &gt;= 5); // true
+console.log(nota &lt; 5);  // false
+console.log(nota === 7); // true
+console.log(nota !== 7); // false</code></pre>
+                <p>Se utilizarán <strong><code>===</code> y <code>!==</code></strong> para comprobar igualdad y desigualdad estrictas. No convierten los operandos a otro tipo: <code>7 === "7"</code> es <code>false</code>. Los operadores <code>==</code> y <code>!=</code> pueden realizar conversiones implícitas y se evitarán en estos ejercicios.</p>
+                <div class="didactic-note"><p><strong>Asignar no es comparar.</strong> <code>nota = 5</code> cambia el valor de una variable; <code>nota === 5</code> consulta si su valor es el número <code>5</code>. Para comparar cantidades recibidas como texto, conviértelas primero a números.</p></div>
+
+                <h3 id="sec5_3">5.3. Operadores lógicos</h3>
+                <p>Cuando se trabaja con booleanos, estos operadores permiten expresar condiciones compuestas:</p>
+                <ul>
+                    <li><strong><code>&amp;&amp;</code> (Y):</strong> el resultado es <code>true</code> si ambas condiciones son verdaderas.</li>
+                    <li><strong><code>||</code> (O):</strong> el resultado es <code>true</code> si al menos una condición es verdadera.</li>
+                    <li><strong><code>!</code> (NO):</strong> invierte el valor lógico.</li>
+                </ul>
+                <pre><code>const tieneEntrada = true;
+const salaAbierta = false;
+
+console.log(tieneEntrada &amp;&amp; salaAbierta); // false
+console.log(tieneEntrada || salaAbierta); // true
+console.log(!salaAbierta); // true</code></pre>
+                <p><code>&amp;&amp;</code> y <code>||</code> evalúan de izquierda a derecha y pueden omitir el segundo operando si el primero determina el resultado. Es la <strong>evaluación en cortocircuito</strong>. Con otros tipos de datos pueden devolver uno de sus operandos, no necesariamente un booleano; por ahora se emplearán con condiciones.</p>
+
+                <h3 id="sec5_4">5.4. Precedencia y paréntesis</h3>
+                <p>La <strong>precedencia</strong> determina cómo se agrupan las operaciones. La multiplicación se realiza antes que la suma, salvo que los paréntesis indiquen otra agrupación:</p>
+                <pre><code>console.log(4 + 3 * 2);   // 10
+console.log((4 + 3) * 2); // 14</code></pre>
+                <p>En expresiones lógicas, <code>!</code> tiene mayor prioridad que <code>&amp;&amp;</code>, y este mayor que <code>||</code>. Utiliza paréntesis para hacer explícita la intención cuando combines varias operaciones.</p>
+                <div class="activity-card activity-callout" id="actividad-5-1">
+                    <p><strong>5.1. Predecir una expresión</strong></p>
+                    <p>Calcula antes de ejecutar: <code>17 % 5</code>, <code>2 + 3 ** 2</code>, <code>(2 + 3) ** 2</code>, <code>8 === "8"</code> y <code>(8 &gt; 5) &amp;&amp; (8 &lt; 10)</code>. Comprueba las respuestas y explica qué operador determina cada resultado.</p>
+                </div>
+
+                <h3 id="sec5_5">5.5. Conversión explícita de tipos</h3>
+                <p>Cuando un dato no tiene el tipo necesario, puede convertirse de forma explícita. La conversión produce un nuevo valor; no modifica por sí sola la variable original.</p>
+                <pre><code>const texto = "24";
+const numero = Number(texto);
+console.log(numero + 1); // 25
+console.log(typeof texto); // "string"
+
+console.log(String(24));    // "24"
+console.log(Boolean(1));    // true
+console.log(Boolean(0));    // false
+console.log(Boolean(""));   // false
+console.log(Boolean("false")); // true</code></pre>
+                <ul>
+                    <li><code>Number()</code> convierte a número. Por ejemplo, <code>Number("6.5")</code> produce <code>6.5</code>.</li>
+                    <li><code>String()</code> obtiene una representación textual.</li>
+                    <li><code>Boolean()</code> obtiene un valor lógico. Una cadena no vacía, incluso <code>"false"</code> o <code>"0"</code>, se convierte en <code>true</code>.</li>
+                </ul>
+
+                <h3 id="sec5_6">5.6. Errores habituales al operar con datos</h3>
+                <p>El operador <code>+</code> también concatena cadenas. Al combinar un número con una cadena se obtiene texto:</p>
+                <pre><code>console.log("12" + 3);         // "123"
+console.log(Number("12") + 3); // 15
+console.log("12" - 3);         // 9: conversión implícita</code></pre>
+                <p>Conviene convertir antes de operar, sin depender de que cada operador trate el texto de una forma distinta. Si una conversión numérica falla, se obtiene <code>NaN</code> (<em>Not a Number</em>):</p>
+                <pre><code>const cantidad = Number("doce");
+console.log(cantidad); // NaN
+console.log(Number.isNaN(cantidad)); // true</code></pre>
+                <p>Para detectar <code>NaN</code>, utiliza <code>Number.isNaN()</code>; compararlo mediante <code>=== NaN</code> no funciona. <code>NaN</code> pertenece al tipo <code>number</code>.</p>
+                <div class="didactic-note"><p><strong>Convertir no equivale a validar.</strong> <code>Number("")</code>, <code>Number("   ")</code> y <code>Number(null)</code> producen <code>0</code>. Por ello, una entrada vacía o un diálogo cancelado deben comprobarse antes de interpretar el resultado como una cantidad.</p></div>
+                <div class="activity-card activity-callout" id="actividad-5-2">
+                    <p><strong>5.2. Del texto al cálculo</strong></p>
+                    <p>Declara <code>const unidadesTexto = "6";</code> y <code>const unidadesNuevas = 4;</code>. Muestra el resultado de sumarlas directamente y después realiza la conversión necesaria para obtener <code>10</code>. Repite con <code>"seis"</code> y con <code>""</code>; observa los resultados y comprueba en qué caso <code>Number.isNaN()</code> devuelve <code>true</code>.</p>
+                </div>
+                <div class="resource-card expansion-card">
+                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Operadores y conversiones</span><span class="resource-badge badge-reading">Ampliación</span></div>
+                    <p class="resource-description">Consulta ejemplos adicionales y las reglas de conversión. Los operadores menos habituales se estudiarán cuando sean necesarios.</p>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Expresiones y operadores</a>
+                    <a href="https://es.javascript.info/operators" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Operadores básicos</a>
+                    <a href="https://es.javascript.info/type-conversions" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Conversiones de tipos</a>
+                </div>
+            </section>
+
+            <section aria-labelledby="sec6">
+                <h2 id="sec6"><i class="fa-solid fa-sitemap" aria-hidden="true"></i> 6. El DOM: acceder y modificar la página</h2>
+                <p>El <strong>DOM</strong> (<em>Document Object Model</em>) representa el documento mediante un árbol de objetos. JavaScript puede consultar esos objetos y modificar el contenido de la página. En este apartado los cambios se realizarán al ejecutar el script; la respuesta a acciones del usuario se estudiará con los eventos.</p>
+
+                <h3 id="sec6_1">6.1. El documento como árbol de objetos</h3>
+                <p>El objeto <code>document</code> representa el documento cargado. Los elementos HTML, como un párrafo o un campo de entrada, son nodos del árbol y tienen propiedades y métodos. Por ejemplo, <code>textContent</code> es una propiedad que contiene texto y <code>querySelector()</code> es un método de búsqueda.</p>
+                <p>Utiliza esta página de prueba con un archivo <code>app.js</code> en la misma carpeta. Contiene los elementos necesarios para los ejemplos siguientes:</p>
+                <pre data-example="dom-html"><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Pruebas con el DOM&lt;/title&gt;
+    &lt;script src="app.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1 id="titulo"&gt;Pruebas con el DOM&lt;/h1&gt;
+    &lt;p id="mensaje" class="aviso"&gt;Texto inicial&lt;/p&gt;
+    &lt;label for="unidades"&gt;Unidades&lt;/label&gt;
+    &lt;input id="unidades" type="number" value="3"&gt;
+    &lt;p id="resultado"&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                <p>La estructura principal es <code>document → html → head / body</code>. Dentro de <code>body</code> se encuentran el título, los párrafos y los controles. <code>defer</code> permite ejecutar <code>app.js</code> cuando estos elementos ya existen.</p>
+
+                <h3 id="sec6_2">6.2. Selección de elementos</h3>
+                <p><code>document.querySelector()</code> recibe un <strong>selector CSS</strong> y devuelve el primer elemento que coincide, o <code>null</code> si no encuentra ninguno:</p>
+                <pre data-example="dom-js"><code>const titulo = document.querySelector("#titulo");
+const aviso = document.querySelector(".aviso");
+const primerParrafo = document.querySelector("p");
+
+console.log(titulo.textContent);
+console.log(aviso === primerParrafo); // true</code></pre>
+                <p><code>#</code> indica un identificador y <code>.</code> una clase. También se pueden combinar selectores, como <code>"body p.aviso"</code>. Guarda el elemento en una variable si vas a utilizarlo varias veces.</p>
+                <ul>
+                    <li><code>document.getElementById("titulo")</code> busca por identificador, sin escribir <code>#</code>.</li>
+                    <li><code>document.querySelectorAll("p")</code> devuelve una colección <code>NodeList</code> con todas las coincidencias. Si no hay ninguna, la colección está vacía. Su recorrido se estudiará con las estructuras de repetición.</li>
+                </ul>
+                <p>En los ejemplos siguientes sustituye el contenido de <code>app.js</code> por cada fragmento y recarga. Así se evita declarar dos veces el mismo nombre.</p>
+
+                <h3 id="sec6_3">6.3. Leer y modificar el contenido</h3>
+                <p>La propiedad <code>textContent</code> permite leer o sustituir el texto de un elemento:</p>
+                <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
+console.log(mensaje.textContent); // Texto inicial
+mensaje.textContent = "El contenido ha cambiado";</code></pre>
+                <p>Si el elemento contiene otros elementos, asignar <code>textContent</code> sustituye todo su contenido por texto. Las etiquetas escritas en la cadena se muestran literalmente.</p>
+                <p><code>innerHTML</code> lee o sustituye el contenido interpretándolo como HTML:</p>
+                <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
+mensaje.innerHTML = "&lt;strong&gt;Aviso:&lt;/strong&gt; sesión iniciada";</code></pre>
+                <div class="didactic-note"><p><strong>Texto o HTML.</strong> Utiliza <code>textContent</code> para mostrar texto y datos introducidos por el usuario. Reserva <code>innerHTML</code> para HTML controlado: insertar contenido no fiable puede permitir que se ejecute código malicioso. Los cambios en el DOM no modifican el archivo HTML guardado en disco.</p></div>
+                <div class="activity-card activity-callout" id="actividad-6-1">
+                    <p><strong>6.1. Cambiar un mensaje</strong></p>
+                    <p>Selecciona el título por su identificador y cambia su texto. Después asigna <code>"&lt;strong&gt;Hola&lt;/strong&gt;"</code> al párrafo primero con <code>textContent</code> y luego con <code>innerHTML</code>, en pruebas separadas. Explica la diferencia que observas.</p>
+                </div>
+
+                <h3 id="sec6_4">6.4. Leer campos y convertir sus datos</h3>
+                <p>En un campo de entrada, <code>value</code> permite leer o establecer el valor actual. Su lectura devuelve una cadena, también cuando el campo es <code>type="number"</code>.</p>
+                <pre data-example="dom-js"><code>const campo = document.querySelector("#unidades");
+const resultado = document.querySelector("#resultado");
+const unidades = Number(campo.value);
+
+resultado.textContent = `El doble es ${unidades * 2}`;</code></pre>
+                <p>Con el valor inicial <code>3</code>, la página muestra «El doble es 6». El cálculo se ejecuta una vez al cargar; editar el campo después no vuelve a ejecutar el script. Los eventos permitirán responder a esos cambios.</p>
+                <p>Para probar otro valor por ahora, modifica <code>value="3"</code> en el HTML y recarga. Recuerda comprobar las entradas vacías antes de convertirlas: <code>Number("")</code> produce <code>0</code>. En campos numéricos también existe <code>valueAsNumber</code>, que devuelve un número o <code>NaN</code> si no puede obtenerlo.</p>
+
+                <h3 id="sec6_5">6.5. Estilos y clases CSS</h3>
+                <p><code>style</code> modifica estilos en línea. Las propiedades con guiones en CSS se escriben en <em>camelCase</em> al acceder mediante un punto:</p>
+                <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
+mensaje.style.backgroundColor = "#e0f2fe";
+mensaje.style.padding = "12px";</code></pre>
+                <p><code>mensaje.style.backgroundColor</code> lee el valor en línea; no todos los estilos procedentes de hojas CSS. Para consultar el estilo calculado se utiliza <code>getComputedStyle(mensaje).backgroundColor</code>.</p>
+                <p>Para mantener la presentación en CSS, es preferible definir clases y activarlas desde JavaScript. Añade este CSS en un elemento <code>&lt;style&gt;</code> dentro de <code>&lt;head&gt;</code> de la página de prueba:</p>
+                <pre data-example="dom-css"><code>.destacado {
+    background-color: #e0f2fe;
+    font-weight: bold;
+    padding: 12px;
+}</code></pre>
+                <p><code>classList</code> permite gestionar las clases de un elemento sin sustituir las demás:</p>
+                <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
+mensaje.classList.add("destacado");
+console.log(mensaje.classList.contains("destacado")); // true
+
+mensaje.classList.remove("destacado");
+mensaje.classList.toggle("destacado"); // La añade de nuevo.</code></pre>
+                <p><code>add()</code> añade una clase, <code>remove()</code> la elimina, <code>contains()</code> comprueba si existe y <code>toggle()</code> alterna su presencia. Se escribe el nombre de la clase sin el punto del selector.</p>
+                <div class="activity-card activity-callout" id="actividad-6-2">
+                    <p><strong>6.2. Datos y presentación</strong></p>
+                    <p>Combina la lectura del campo con la actualización de <code>#resultado</code>: muestra el número de unidades y su doble, y añade a ese párrafo la clase <code>destacado</code>. Cambia el valor inicial en el HTML y recarga para comprobar el resultado.</p>
+                </div>
+
+                <h3 id="sec6_6">6.6. Comprobar que un elemento existe</h3>
+                <p>Una búsqueda sin coincidencias devuelve <code>null</code>. Intentar utilizar una propiedad de ese valor, como <code>null.textContent</code>, provoca un <code>TypeError</code>. Comprueba el selector, el HTML y el momento de ejecución.</p>
+                <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
+
+if (mensaje !== null) {
+    mensaje.textContent = "Elemento encontrado";
+}</code></pre>
+                <p>Esta primera utilización de <code>if</code> ejecuta el bloque únicamente si el elemento existe. Su funcionamiento se desarrollará en el apartado 7. Si el elemento debería estar presente, conviene corregir la causa de su ausencia, además de evitar el error.</p>
+                <div class="activity-card activity-callout" id="actividad-6-3">
+                    <p><strong>6.3. Una búsqueda sin coincidencias</strong></p>
+                    <p>Cambia el selector del ejemplo por <code>"#mensaje-inexistente"</code>. Muestra la variable con <code>console.log()</code> y comprueba que el bloque no se ejecuta. Recupera después el selector correcto.</p>
+                </div>
+                <div class="resource-card expansion-card">
+                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Consultar y modificar el DOM</span><span class="resource-badge badge-reading">Ampliación</span></div>
+                    <p class="resource-description">Referencias sobre selección, contenido, campos y clases. La creación de elementos y el recorrido detallado del árbol se abordarán más adelante.</p>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · querySelector()</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · textContent</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · innerHTML</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/value" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · value</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/classList" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · classList</a>
+                </div>
+            </section>
+
             <footer class="document-footer">DAW / DWEC · © Ignacio García</footer>
         </main>
     </div>
