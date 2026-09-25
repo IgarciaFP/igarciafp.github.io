@@ -14,12 +14,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="u01.css">
     <style>
+        .loading-diagram { margin: 24px 0; }
+        .loading-diagram svg { display: block; width: 100%; max-width: 520px; height: auto; margin: 0 auto; font-family: Inter, sans-serif; }
         /* Mostrar cada carácter de los operadores sin ligaduras tipográficas. */
         code, pre, kbd, samp { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
         /* Se reutiliza la plantilla de DWEC U01; estos ajustes son propios de U02. */
         .sidebar-toc { overflow: visible; }
         .sidebar-toc ul { max-height: calc(100vh - 130px); overflow-y: auto; }
-        .sidebar-toc:focus-within { transform: translateX(0); }        .operators-table table { min-width: 0; }
+        .sidebar-toc:focus-within { transform: translateX(0); }
+        .operators-table table { min-width: 0; }
         .operators-table th, .operators-table td { padding: 10px; }
         .roles-table table { min-width: 0; }
         .roles-table th:first-child { width: 22%; }
@@ -42,7 +45,8 @@
             .roles-table th, .roles-table td { padding: 10px; }
             .roles-table th:first-child { width: 26%; }
         }
-        @media print {        }
+        @media print {
+        }
     </style>
 </head>
 <body>
@@ -127,6 +131,8 @@
                 <p class="header-subtitle">El lenguaje que permite programar el comportamiento de una página web</p>
             </header>
 
+            <div class="didactic-note" id="entregas-actividades"><p><strong>Cómo entregar las actividades.</strong> Entrega siempre texto plano: tus respuestas y los resultados de las pruebas en un archivo <code>respuestas.txt</code>, y el código en sus archivos <code>.html</code>, <code>.css</code> y <code>.js</code>, según lo que pida cada actividad. Identifica cada ejercicio por su número. Copia los mensajes de la consola como texto; no entregues capturas ni documentos de Word o PDF.</p></div>
+
             <section aria-labelledby="sec1">
                 <h2 id="sec1"><i class="fa-brands fa-js" aria-hidden="true"></i> 1. Introducción a JavaScript</h2>
                 <p><strong>JavaScript (JS)</strong> es un lenguaje de programación que permite procesar datos y dotar de comportamiento a una página web. Con él se pueden realizar cálculos, comprobar datos de un formulario y actualizar el contenido en respuesta a las acciones del usuario.</p>
@@ -192,11 +198,7 @@
 
                 <div class="activity-card activity-callout" id="actividad-1-1">
                     <p><strong>1.1. Comprensión de los conceptos</strong></p>
-                    <ol>
-                        <li>Explica la relación entre JavaScript y ECMAScript.</li>
-                        <li>¿Qué significa que JavaScript tiene tipado dinámico? ¿Significa que sus valores carecen de tipo?</li>
-                        <li>Identifica dos acciones del usuario que puedan producir un evento en una página web.</li>
-                    </ol>
+                    <ol><li>Explica con tus palabras qué relación hay entre JavaScript y ECMAScript.</li><li>Una variable contiene primero un número y después un texto. ¿Qué característica del lenguaje permite hacerlo?</li><li>Escribe dos acciones del usuario que puedan provocar un evento en una página.</li></ol>
                 </div>
 
 
@@ -207,6 +209,7 @@
                 <p>Para comenzar se necesitan un editor y un navegador. El objetivo de este apartado es preparar los archivos, ejecutar instrucciones sencillas y comprobar qué sucede durante su ejecución.</p>
 
                 <h3 id="sec2_1">2.1. Herramientas y organización del proyecto</h3>
+                <p>Estas son las herramientas elegidas para este curso, para que podamos seguir los mismos ejemplos. Existen otros editores, navegadores y herramientas de desarrollo con los que también se puede programar JavaScript.</p>
                 <ul>
                     <li><strong>Visual Studio Code:</strong> permite editar y organizar los archivos del proyecto.</li>
                     <li><strong>Chrome:</strong> carga la página y ejecuta su JavaScript.</li>
@@ -231,20 +234,20 @@ console.log(confirm("¿Quieres continuar?"));</code></pre>
                 <p>En los dos últimos ejemplos se obtiene primero la respuesta del diálogo y después se muestra con <code>console.log()</code>. Los tipos de estos valores se estudiarán en el apartado 4.</p>
                 <p>Los diálogos son modales: mientras permanecen abiertos impiden interactuar con el resto de la página. Resultan útiles para estas primeras pruebas; en las páginas interactivas se utilizarán también campos y mensajes del documento.</p>
                 <div class="didactic-note">
-                    <p><strong>Referencia histórica: <code>document.write()</code>.</strong> Escribe en el flujo de un documento HTML. Si se utiliza después de cargar la página puede sustituir su contenido. Su uso está desaconsejado y no se empleará en la práctica. Más adelante se actualizarán elementos del DOM mediante herramientas como <code>textContent</code>. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/write" target="_blank" rel="noopener noreferrer">Consultar la explicación de MDN</a>.</p>
+                    <p><strong>Referencia histórica: <code>document.write()</code>.</strong> Escribe en el flujo de un documento HTML. Si se utiliza después de cargar la página puede sustituir su contenido. Su uso está desaconsejado y no se empleará en la práctica. Más adelante se actualizarán elementos del DOM mediante herramientas como <code>textContent</code>.</p>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/write" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Consultar la explicación de MDN</a>
                 </div>
                 <div class="activity-card activity-callout" id="actividad-2-1">
                     <p><strong>2.1. Observar las respuestas</strong></p>
-                    <ol>
-                        <li>Ejecuta los ejemplos anteriores y distingue qué se muestra en la página, en un diálogo y en la consola.</li>
-                        <li>Prueba <code>prompt()</code> aceptando un nombre, aceptando el campo vacío y cancelando. Anota las diferencias.</li>
-                        <li>Acepta y cancela <code>confirm()</code>. Explica qué valor aparece en cada caso.</li>
-                    </ol>
+                    <ol><li>Ejecuta por separado los ejemplos de consola y diálogos. Apunta dónde aparece cada mensaje.</li><li>Prueba prompt() tres veces: escribe un nombre, acepta sin escribir y cancela. Copia el valor obtenido en cada caso.</li><li>Prueba confirm(): acepta una vez y cancela otra. Anota los dos resultados.</li></ol>
                 </div>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Consola y diálogos</span><span class="resource-badge badge-reading">Consulta</span></div>
                     <p class="resource-description">Referencias para consultar la finalidad y los valores devueltos por cada herramienta.</p>
-                    <p><a href="https://developer.mozilla.org/es/docs/Web/API/console" target="_blank" rel="noopener noreferrer">MDN · Consola</a> · <a href="https://developer.mozilla.org/es/docs/Web/API/Window/alert" target="_blank" rel="noopener noreferrer">alert()</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/prompt" target="_blank" rel="noopener noreferrer">prompt()</a> · <a href="https://developer.mozilla.org/es/docs/Web/API/Window/confirm" target="_blank" rel="noopener noreferrer">confirm()</a></p>
+                    <a class="resource-link-btn" href="https://developer.mozilla.org/es/docs/Web/API/console" target="_blank" rel="noopener noreferrer">MDN · Consola</a>
+                    <a class="resource-link-btn" href="https://developer.mozilla.org/es/docs/Web/API/Window/alert" target="_blank" rel="noopener noreferrer">alert()</a>
+                    <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Window/prompt" target="_blank" rel="noopener noreferrer">prompt()</a>
+                    <a class="resource-link-btn" href="https://developer.mozilla.org/es/docs/Web/API/Window/confirm" target="_blank" rel="noopener noreferrer">confirm()</a>
                 </div>
 
                 <h3 id="sec2_3">2.3. Primer contacto con la depuración</h3>
@@ -273,6 +276,7 @@ console.error("Mensaje de error de prueba");</code></pre>
 &lt;/script&gt;
 &lt;p id="saludo"&gt;Hola, mundo&lt;/p&gt;</code></pre>
                 <p>La consulta devuelve <code>null</code> porque el párrafo todavía no se ha procesado. Basta con interpretar la consulta como «buscar el elemento cuyo identificador es saludo»; el DOM se estudiará en el apartado 6.</p>
+                <figure class="loading-diagram" id="diagrama-orden-carga"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 387" role="img" aria-labelledby="diagrama-orden-carga-title diagrama-orden-carga-desc"><title id="diagrama-orden-carga-title">El orden del HTML importa</title><desc id="diagrama-orden-carga-desc">Un script situado antes del párrafo busca un elemento que todavía no existe. Con defer, la búsqueda se realiza tras procesar el HTML.</desc><rect width="440" height="387" rx="12" fill="#f8fafc"/><rect x="16" y="20" width="408" height="64" rx="8" fill="#fee2e2"/><text x="30" y="45" fill="#0f172a" font-size="17" font-weight="700">Sin defer: el script aparece antes del párrafo</text><text x="30" y="69" fill="#334155" font-size="15">1. Se ejecuta la búsqueda de #saludo.</text><path d="M220 81 V97 m-5 -5 5 5 5 -5" stroke="#64748b" stroke-width="2" fill="none"/><rect x="16" y="103" width="408" height="64" rx="8" fill="#fee2e2"/><text x="30" y="128" fill="#0f172a" font-size="17" font-weight="700">La búsqueda devuelve null</text><text x="30" y="152" fill="#334155" font-size="15">2. El navegador procesa después el párrafo.</text><rect x="16" y="186" width="408" height="64" rx="8" fill="#dbeafe"/><text x="30" y="211" fill="#0f172a" font-size="17" font-weight="700">Alternativa: archivo externo con defer</text><text x="30" y="235" fill="#334155" font-size="15">1. Se procesa el HTML y se crea el párrafo.</text><path d="M220 247 V263 m-5 -5 5 5 5 -5" stroke="#64748b" stroke-width="2" fill="none"/><rect x="16" y="269" width="408" height="64" rx="8" fill="#ccfbf1"/><text x="30" y="294" fill="#0f172a" font-size="17" font-weight="700">El script se ejecuta al terminar el HTML</text><text x="30" y="318" fill="#334155" font-size="15">2. La búsqueda ya encuentra #saludo.</text></svg><figcaption class="image-caption">El orden del HTML importa. Esquema simplificado, sin escala temporal.</figcaption></figure>
                 <p>Las principales opciones de carga son:</p>
                 <ul>
                     <li><strong>Script clásico sin atributos:</strong> detiene el análisis del HTML para cargar y ejecutar el código.</li>
@@ -287,8 +291,10 @@ console.error("Mensaje de error de prueba");</code></pre>
                     <p>También se puede aplazar una acción hasta que ocurra un evento de carga:</p>
                     <ul>
                         <li><strong><code>DOMContentLoaded</code>:</strong> se dispara cuando el HTML está procesado y los scripts diferidos han terminado. No espera a las imágenes; suele ser suficiente para comenzar a trabajar con el DOM.</li>
-                        <li><strong><code>load</code>:</strong> espera además a recursos como imágenes y hojas de estilo, salvo los cargados de forma diferida. Puede manejarse mediante <code>window.onload</code> o <code>window.addEventListener("load", manejador)</code>.</li>
+                        <li><strong><code>load</code>:</strong> espera además a recursos como imágenes y hojas de estilo, sin esperar a las imágenes con <code>loading="lazy"</code>. Puede manejarse mediante <code>window.onload</code> o <code>window.addEventListener("load", manejador)</code>.</li>
                     </ul>
+                    <figure class="loading-diagram" id="diagrama-eventos-carga"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 470" role="img" aria-labelledby="diagrama-eventos-carga-title diagrama-eventos-carga-desc"><title id="diagrama-eventos-carga-title">DOMContentLoaded y load: ejemplo con una imagen lenta</title><desc id="diagrama-eventos-carga-desc">Con una imagen de carga normal que tarda en llegar, DOMContentLoaded permite preparar los botones antes de que termine la imagen. load llega después de cargar los recursos que espera.</desc><rect width="440" height="470" rx="12" fill="#f8fafc"/><rect x="16" y="20" width="408" height="64" rx="8" fill="#dbeafe"/><text x="30" y="45" fill="#0f172a" font-size="17" font-weight="700">1. Se procesa el HTML</text><text x="30" y="69" fill="#334155" font-size="15">La imagen se descarga en paralelo.</text><path d="M220 81 V97 m-5 -5 5 5 5 -5" stroke="#64748b" stroke-width="2" fill="none"/><rect x="16" y="103" width="408" height="64" rx="8" fill="#dbeafe"/><text x="30" y="128" fill="#0f172a" font-size="17" font-weight="700">2. Terminan los scripts con defer</text><text x="30" y="152" fill="#334155" font-size="15">La imagen del ejemplo aún está cargando.</text><path d="M220 164 V180 m-5 -5 5 5 5 -5" stroke="#64748b" stroke-width="2" fill="none"/><rect x="16" y="186" width="408" height="64" rx="8" fill="#ccfbf1"/><text x="30" y="211" fill="#0f172a" font-size="17" font-weight="700">3. Se dispara DOMContentLoaded</text><text x="30" y="235" fill="#334155" font-size="15">Ejemplo: registrar los eventos de un botón.</text><path d="M220 247 V263 m-5 -5 5 5 5 -5" stroke="#64748b" stroke-width="2" fill="none"/><rect x="16" y="269" width="408" height="64" rx="8" fill="#e0e7ff"/><text x="30" y="294" fill="#0f172a" font-size="17" font-weight="700">4. Terminan la imagen y los demás recursos</text><text x="30" y="318" fill="#334155" font-size="15">Se completan los recursos que espera load.</text><path d="M220 330 V346 m-5 -5 5 5 5 -5" stroke="#64748b" stroke-width="2" fill="none"/><rect x="16" y="352" width="408" height="64" rx="8" fill="#ccfbf1"/><text x="30" y="377" fill="#0f172a" font-size="17" font-weight="700">5. Se dispara load en window</text><text x="30" y="401" fill="#334155" font-size="15">Ejemplo: consultar el tamaño de esa imagen.</text></svg><figcaption class="image-caption">DOMContentLoaded y load: ejemplo con una imagen lenta. Esquema simplificado, sin escala temporal.</figcaption></figure>
+                    <p>En este ejemplo la imagen no utiliza <code>loading="lazy"</code>. Las imágenes con carga diferida no retrasan <code>load</code>; ese evento no garantiza que todos los recursos futuros de la página estén disponibles.</p>
                     <p><code>onload</code> es la propiedad que recibe el manejador; el nombre del evento es <code>load</code>. Una nueva asignación a <code>window.onload</code> sustituye el manejador anterior; <code>addEventListener()</code> permite registrar varios.</p>
                     <p>Estos eventos no cambian cómo se descarga el script: retrasan la acción registrada. El manejador debe registrarse antes de que ocurra el evento. Se practicarán al estudiar funciones y eventos; por ahora se utilizará <code>defer</code>.</p>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · DOMContentLoaded</a>
@@ -296,7 +302,7 @@ console.error("Mensaje de error de prueba");</code></pre>
                 </div>
                 <div class="activity-card activity-callout" id="actividad-2-2">
                     <p><strong>2.2. Comprobar el orden de carga</strong></p>
-                    <p>En una página de prueba independiente, coloca el fragmento anterior dentro de <code>&lt;body&gt;</code>. Después mueve la instrucción JavaScript a un archivo externo y enlázalo desde <code>&lt;head&gt;</code> con <code>defer</code>. Recarga y compara lo que muestra la consola. ¿Por qué ahora aparece el elemento?</p>
+                    <ol><li>Copia en una página de prueba el ejemplo del script situado antes del párrafo. Recarga y apunta qué muestra la consola.</li><li>Mueve la instrucción JavaScript a app.js y enlaza ese archivo desde head con defer.</li><li>Recarga, copia la nueva salida y explica por qué ahora se encuentra el párrafo. Entrega las dos versiones del código.</li></ol>
                 </div>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Inclusión y carga de JavaScript</span><span class="resource-badge badge-reading">Lectura</span></div>
@@ -330,12 +336,7 @@ console.log("El archivo JavaScript se ha ejecutado");</code></pre>
                 </div>
                 <div class="activity-card activity-callout" id="actividad-2-3">
                     <p><strong>2.3. Comprobar el primer programa</strong></p>
-                    <ol>
-                        <li>Añade un tercer mensaje que identifique al autor o autora del programa.</li>
-                        <li>Antes de recargar, predice en qué orden aparecerán los tres mensajes.</li>
-                        <li>Guarda los cambios, recarga la página y comprueba la salida de la consola.</li>
-                    </ol>
-                    <p><strong>Entrega:</strong> los archivos <code>index.html</code> y <code>app.js</code>, junto con una captura de la consola.</p>
+                    <ol><li>Añade a app.js un tercer mensaje de consola con tu nombre.</li><li>Antes de ejecutar, escribe en qué orden crees que saldrán los tres mensajes.</li><li>Guarda, recarga y copia la salida de la consola en respuestas.txt. Entrega también index.html y app.js.</li></ol>
                 </div>
             </section>
 
@@ -376,7 +377,8 @@ console.log("Fin del programa");</code></pre>
                 </ul>
 
                 <div class="didactic-note" id="buenas-practicas">
-                    <p><strong>Buenas prácticas desde el primer programa.</strong> Mantén una indentación uniforme para reconocer los bloques, escribe una instrucción por línea y utiliza espacios que faciliten la lectura. Elige nombres descriptivos y añade comentarios breves que expliquen decisiones, manteniéndolos actualizados. La coherencia de formato y la legibilidad facilitan revisar y modificar el código. <a href="https://es.javascript.info/coding-style" target="_blank" rel="noopener noreferrer">Ampliación: estilo de codificación</a>.</p>
+                    <p><strong>Buenas prácticas desde el primer programa.</strong> Mantén una indentación uniforme para reconocer los bloques, escribe una instrucción por línea y utiliza espacios que faciliten la lectura. Elige nombres descriptivos y añade comentarios breves que expliquen decisiones, manteniéndolos actualizados. La coherencia de formato y la legibilidad facilitan revisar y modificar el código.</p>
+                    <a href="https://es.javascript.info/coding-style" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Ampliación: estilo de codificación</a>
                 </div>
 
                 <div class="resource-card expansion-card">
@@ -454,9 +456,16 @@ console.log(usuario.nombre); // Luis</code></pre>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · const y sus usos</a>
                 </div>
                 <div class="activity-card activity-callout" id="actividad-4-1">
-                    <p><strong>4.1. Elegir la declaración</strong></p>
-                    <p>Declara el nombre de un centro educativo, el número de intentos disponibles y un mensaje que cambiará durante la ejecución. Decide en cada caso si corresponde <code>const</code> o <code>let</code>. Muestra los valores, realiza las reasignaciones previstas y justifica tu elección.</p>
-                    <p>En una prueba independiente, intenta reasignar una variable declarada con <code>const</code>. Lee el error y retira esa instrucción antes de continuar.</p>
+                    <p><strong>4.1. Un marcador que cambia</strong></p>
+                    <p>Vas a guardar el nombre de un jugador y sus puntos. Copia este código en <code>app.js</code>:</p>
+                    <pre><code>const jugador = "Ana";
+const puntos = 0;
+console.log(jugador, puntos);
+
+puntos = 10;
+console.log(jugador, puntos);</code></pre>
+                    <ol><li>Antes de ejecutarlo, escribe qué crees que ocurrirá.</li><li>Ejecuta el código y copia el mensaje de error. ¿Qué línea intenta cambiar un valor declarado con <code>const</code>?</li><li>Cambia solo la declaración de <code>puntos</code> para permitir que pase de 0 a 10. No cambies la de <code>jugador</code>.</li><li>Ejecuta de nuevo y copia las dos salidas. Explica por qué has utilizado <code>let</code> en un caso y <code>const</code> en el otro.</li></ol>
+                    <p><strong>Entrega:</strong> el código corregido y tus respuestas en texto plano.</p>
                 </div>
 
                 <h3 id="sec4_4">4.4. Tipos de datos de uso inicial</h3>
@@ -496,7 +505,7 @@ console.log(typeof null);     // "object"</code></pre>
                 </div>
                 <div class="activity-card activity-callout" id="actividad-4-2">
                     <p><strong>4.2. Predecir y comprobar tipos</strong></p>
-                    <p>Antes de ejecutarlas, indica qué devuelven <code>typeof 25</code>, <code>typeof "25"</code>, <code>typeof true</code>, <code>typeof "true"</code> y <code>typeof ""</code>. Comprueba tus respuestas y explica el efecto de las comillas.</p>
+                    <ol><li>Sin ejecutar todavía, apunta qué crees que devuelven typeof 25, typeof &quot;25&quot;, typeof true, typeof &quot;true&quot; y typeof &quot;&quot;.</li><li>Prueba las cinco expresiones con console.log() y copia sus resultados.</li><li>Explica con un ejemplo qué cambian las comillas.</li></ol>
                 </div>
 
                 <h3 id="sec4_6">4.6. Cadenas e interpolación</h3>
@@ -512,8 +521,9 @@ console.log("Hola, " + nombre + ". Bienvenida a " + curso + ".");
 console.log(&#96;Hola, $&#123;nombre&#125;. Bienvenida a $&#123;curso&#125;.&#96;);</code></pre>
                 <p>Ambas instrucciones muestran el mismo mensaje. La interpolación facilita leer textos que combinan varias variables. Las comillas simples y dobles no interpretan <code>$&#123;...&#125;</code>.</p>
                 <div class="activity-card activity-callout" id="actividad-4-3">
-                    <p><strong>4.3. Construir un mensaje</strong></p>
-                    <p>Declara <code>nombre</code>, <code>modulo</code> y <code>grupo</code>. Construye un mensaje con esos datos mediante concatenación y mediante una plantilla de cadena. Cambia los valores y comprueba que el texto se actualiza al volver a ejecutar el programa.</p>
+                    <p><strong>4.3. Escribe tu presentación</strong></p>
+                    <ol><li>Crea tres variables: <code>nombre</code> con tu nombre, <code>modulo</code> con <code>"DWEC"</code> y <code>grupo</code> con <code>"2DAW"</code>.</li><li>Usa esas variables y el operador <code>+</code> para mostrar un mensaje como <code>"Soy Ana, estudio DWEC y estoy en 2DAW."</code>.</li><li>Muestra el mismo mensaje con una plantilla de cadena: utiliza acentos graves e inserta cada variable con <code>${...}</code>.</li><li>Cambia el nombre en su declaración y ejecuta otra vez. Comprueba que se actualizan los dos mensajes sin modificar las instrucciones que los muestran.</li></ol>
+                    <p><strong>Entrega:</strong> el código de las dos versiones y los mensajes obtenidos en <code>respuestas.txt</code>.</p>
                 </div>
 
                 <h3 id="sec4_7">4.7. Ámbito de bloque</h3>
@@ -531,7 +541,7 @@ console.log(centro); // IES Ejemplo
                 <p>El bloque puede acceder a <code>centro</code>, declarado en el ámbito exterior. En cambio, el código exterior no puede acceder a <code>grupo</code>. Conviene declarar cada variable cerca de donde se utiliza y limitar su ámbito a lo necesario.</p>
                 <div class="activity-card activity-callout" id="actividad-4-4">
                     <p><strong>4.4. Comprobar la visibilidad</strong></p>
-                    <p>Ejecuta el ejemplo anterior. Después, activa la última instrucción retirando <code>//</code> y explica el error. Vuelve a comentarla y añade otro bloque con su propia variable <code>grupo</code>. Comprueba que cada bloque puede utilizar su propio nombre sin interferir con el otro.</p>
+                    <ol><li>Ejecuta el ejemplo de centro y grupo. Copia los mensajes que aparecen.</li><li>Quita // de la última línea para intentar mostrar grupo fuera del bloque. Copia el error y explica por qué ocurre.</li><li>Vuelve a comentar esa línea. Añade un segundo bloque con otra variable grupo y muéstrala dentro. Comprueba que cada bloque usa su propia variable.</li></ol>
                 </div>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Variables y tipos</span><span class="resource-badge badge-reading">Lectura</span></div>
@@ -599,7 +609,7 @@ console.log((4 + 3) * 2); // 14</code></pre>
                 <p>En expresiones lógicas, <code>!</code> tiene mayor prioridad que <code>&amp;&amp;</code>, y este mayor que <code>||</code>. Utiliza paréntesis para hacer explícita la intención cuando combines varias operaciones.</p>
                 <div class="activity-card activity-callout" id="actividad-5-1">
                     <p><strong>5.1. Predecir una expresión</strong></p>
-                    <p>Calcula antes de ejecutar: <code>17 % 5</code>, <code>2 + 3 ** 2</code>, <code>(2 + 3) ** 2</code>, <code>8 === "8"</code> y <code>(8 &gt; 5) &amp;&amp; (8 &lt; 10)</code>. Comprueba las respuestas y explica qué operador determina cada resultado.</p>
+                    <ol><li>Apunta el resultado que esperas para 17 % 5, 2 + 3 ** 2, (2 + 3) ** 2, 8 === &quot;8&quot; y (8 &gt; 5) &amp;&amp; (8 &lt; 10).</li><li>Ejecuta cada expresión con console.log() y copia la salida.</li><li>Si te equivocaste en alguna, explica qué operación se realiza primero o qué comparación se está haciendo.</li></ol>
                 </div>
 
                 <h3 id="sec5_5">5.5. Conversión explícita de tipos</h3>
@@ -633,7 +643,7 @@ console.log(Number.isNaN(cantidad)); // true</code></pre>
                 <div class="didactic-note"><p><strong>Convertir no equivale a validar.</strong> <code>Number("")</code>, <code>Number("   ")</code> y <code>Number(null)</code> producen <code>0</code>. Por ello, una entrada vacía o un diálogo cancelado deben comprobarse antes de interpretar el resultado como una cantidad.</p></div>
                 <div class="activity-card activity-callout" id="actividad-5-2">
                     <p><strong>5.2. Del texto al cálculo</strong></p>
-                    <p>Declara <code>const unidadesTexto = "6";</code> y <code>const unidadesNuevas = 4;</code>. Muestra el resultado de sumarlas directamente y después realiza la conversión necesaria para obtener <code>10</code>. Repite con <code>"seis"</code> y con <code>""</code>; observa los resultados y comprueba en qué caso <code>Number.isNaN()</code> devuelve <code>true</code>.</p>
+                    <ol><li>Crea const unidadesTexto = &quot;6&quot;; y const unidadesNuevas = 4;. Súmalas directamente y muestra el resultado.</li><li>Convierte unidadesTexto a número antes de sumar. Comprueba que ahora obtienes 10.</li><li>Repite cambiando &quot;6&quot; por &quot;seis&quot; y luego por &quot;&quot;. Apunta qué ocurre y comprueba cada conversión con Number.isNaN().</li></ol>
                 </div>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Operadores y conversiones</span><span class="resource-badge badge-reading">Ampliación</span></div>
@@ -670,19 +680,28 @@ console.log(Number.isNaN(cantidad)); // true</code></pre>
                 <p>La estructura principal es <code>document → html → head / body</code>. Dentro de <code>body</code> se encuentran el título, los párrafos y los controles. <code>defer</code> permite ejecutar <code>app.js</code> cuando estos elementos ya existen.</p>
 
                 <h3 id="sec6_2">6.2. Selección de elementos</h3>
-                <p><code>document.querySelector()</code> recibe un <strong>selector CSS</strong> y devuelve el primer elemento que coincide, o <code>null</code> si no encuentra ninguno:</p>
-                <pre data-example="dom-js"><code>const titulo = document.querySelector("#titulo");
-const aviso = document.querySelector(".aviso");
-const primerParrafo = document.querySelector("p");
+                <p>El DOM ofrece métodos específicos para buscar por identificador, clase o etiqueta. Los nombres distinguen mayúsculas y minúsculas:</p>
+                <ul><li><code>document.getElementById("titulo")</code>: devuelve el elemento con ese identificador, o <code>null</code>. El identificador se escribe sin <code>#</code>.</li><li><code>document.getElementsByClassName("aviso")</code>: devuelve los elementos con esa clase, sin escribir el punto.</li><li><code>document.getElementsByTagName("p")</code>: devuelve los elementos de esa etiqueta.</li></ul>
+                <pre data-example="selection-classic"><code>const titulo = document.getElementById("titulo");
+const avisos = document.getElementsByClassName("aviso");
+const parrafos = document.getElementsByTagName("p");
 
 console.log(titulo.textContent);
-console.log(aviso === primerParrafo); // true</code></pre>
-                <p><code>#</code> indica un identificador y <code>.</code> una clase. También se pueden combinar selectores, como <code>"body p.aviso"</code>. Guarda el elemento en una variable si vas a utilizarlo varias veces.</p>
-                <ul>
-                    <li><code>document.getElementById("titulo")</code> busca por identificador, sin escribir <code>#</code>.</li>
-                    <li><code>document.querySelectorAll("p")</code> devuelve una colección <code>NodeList</code> con todas las coincidencias. Si no hay ninguna, la colección está vacía. Su recorrido se estudiará con las estructuras de repetición.</li>
-                </ul>
-                <p>En los ejemplos siguientes sustituye el contenido de <code>app.js</code> por cada fragmento y recarga. Así se evita declarar dos veces el mismo nombre.</p>
+console.log(avisos.length);   // 1 en la página de prueba.
+console.log(parrafos.length); // 2 en la página de prueba.</code></pre>
+                <p>Los dos métodos en plural devuelven una <code>HTMLCollection</code>, incluso si solo hay una coincidencia. Se consulta su tamaño con <code>length</code> y su primer elemento con <code>[0]</code>, si existe. Estas colecciones son <strong>vivas</strong>: se actualizan cuando cambian las coincidencias en el DOM.</p>
+                <h4 class="content-subtitle">Selección mediante CSS</h4>
+                <p><code>querySelector()</code> y <code>querySelectorAll()</code> permiten utilizar selectores CSS, desde una etiqueta hasta una combinación de clases y atributos:</p>
+                <pre data-example="selection-css"><code>const titulo = document.querySelector("#titulo");
+const aviso = document.querySelector(".aviso");
+const parrafos = document.querySelectorAll("p");
+
+console.log(titulo.textContent);
+console.log(aviso.textContent);
+console.log(parrafos.length); // 2</code></pre>
+                <p><code>querySelector()</code> devuelve la primera coincidencia o <code>null</code>. <code>querySelectorAll()</code> devuelve una <code>NodeList</code> estática: no se actualiza automáticamente si después se añaden o eliminan coincidencias. Cuando no encuentra elementos, devuelve una colección vacía.</p>
+                <div class="didactic-note"><p><strong>¿Cuál usar hoy?</strong> Los métodos <code>getElementById()</code>, <code>getElementsByClassName()</code> y <code>getElementsByTagName()</code> siguen vigentes. En código moderno es habitual utilizar <code>querySelector()</code> y <code>querySelectorAll()</code> por su flexibilidad; serán la opción general de este curso. Para buscar un identificador concreto, <code>getElementById()</code> sigue siendo una opción directa y adecuada.</p></div>
+                <p>Prueba cada fragmento por separado en la página del apartado 6.1. Guarda las referencias que vayas a reutilizar y comprueba que un elemento existe antes de acceder a sus propiedades.</p>
 
                 <h3 id="sec6_3">6.3. Leer y modificar el contenido</h3>
                 <p>La propiedad <code>textContent</code> permite leer o sustituir el texto de un elemento:</p>
@@ -694,9 +713,19 @@ mensaje.textContent = "El contenido ha cambiado";</code></pre>
                 <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
 mensaje.innerHTML = "&lt;strong&gt;Aviso:&lt;/strong&gt; sesión iniciada";</code></pre>
                 <div class="didactic-note"><p><strong>Texto o HTML.</strong> Utiliza <code>textContent</code> para mostrar texto y datos introducidos por el usuario. Reserva <code>innerHTML</code> para HTML controlado: insertar contenido no fiable puede permitir que se ejecute código malicioso. Los cambios en el DOM no modifican el archivo HTML guardado en disco.</p></div>
+                <p><code>outerHTML</code> incluye también la etiqueta del propio elemento. En la página de prueba, ejecuta este fragmento tras recargar:</p>
+                <pre data-example="dom-outer"><code>const mensaje = document.querySelector("#mensaje");
+console.log(mensaje.innerHTML); // Texto inicial
+console.log(mensaje.outerHTML);
+// &lt;p id="mensaje" class="aviso"&gt;Texto inicial&lt;/p&gt;
+
+mensaje.outerHTML = '&lt;div id="mensaje" class="aviso"&gt;Nuevo elemento&lt;/div&gt;';</code></pre>
+                <ul><li><code>textContent</code>: lee o sustituye el texto; no interpreta etiquetas.</li><li><code>innerHTML</code>: lee o sustituye el HTML interior; conserva el elemento contenedor.</li><li><code>outerHTML</code>: lee o sustituye el elemento completo, con su etiqueta y su contenido.</li></ul>
+                <p>Tras asignar <code>outerHTML</code>, la variable <code>mensaje</code> sigue apuntando al elemento antiguo, ya separado del documento. Si necesitas trabajar con el nuevo, vuelve a seleccionarlo. Usa tanto <code>innerHTML</code> como <code>outerHTML</code> solo con HTML controlado; para datos del usuario utiliza <code>textContent</code>.</p>
+                <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/outerHTML" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · outerHTML</a>
                 <div class="activity-card activity-callout" id="actividad-6-1">
                     <p><strong>6.1. Cambiar un mensaje</strong></p>
-                    <p>Selecciona el título por su identificador y cambia su texto. Después asigna <code>"&lt;strong&gt;Hola&lt;/strong&gt;"</code> al párrafo primero con <code>textContent</code> y luego con <code>innerHTML</code>, en pruebas separadas. Explica la diferencia que observas.</p>
+                    <ol><li>En la página de prueba, selecciona #titulo y cambia su texto por tu nombre.</li><li>En otra prueba, asigna el texto &quot;&lt;strong&gt;Hola&lt;/strong&gt;&quot; a #mensaje usando textContent. Describe lo que ves.</li><li>Repite usando innerHTML y después outerHTML. Recarga entre pruebas. Copia el HTML resultante del elemento desde DevTools y explica qué se conserva y qué se sustituye.</li></ol>
                 </div>
 
                 <h3 id="sec6_4">6.4. Leer campos y convertir sus datos</h3>
@@ -731,7 +760,7 @@ mensaje.classList.toggle("destacado"); // La añade de nuevo.</code></pre>
                 <p><code>add()</code> añade una clase, <code>remove()</code> la elimina, <code>contains()</code> comprueba si existe y <code>toggle()</code> alterna su presencia. Se escribe el nombre de la clase sin el punto del selector.</p>
                 <div class="activity-card activity-callout" id="actividad-6-2">
                     <p><strong>6.2. Datos y presentación</strong></p>
-                    <p>Combina la lectura del campo con la actualización de <code>#resultado</code>: muestra el número de unidades y su doble, y añade a ese párrafo la clase <code>destacado</code>. Cambia el valor inicial en el HTML y recarga para comprobar el resultado.</p>
+                    <ol><li>Usa la página de prueba del apartado 6 y añade la clase destacado del ejemplo a su CSS.</li><li>Lee #unidades, convierte el valor a número y escribe en #resultado un mensaje con esa cantidad y su doble.</li><li>Añade destacado al párrafo del resultado. Cambia el valor inicial del campo a 5 en el HTML, recarga y apunta el mensaje obtenido.</li></ol>
                 </div>
 
                 <h3 id="sec6_6">6.6. Comprobar que un elemento existe</h3>
@@ -744,7 +773,7 @@ if (mensaje !== null) {
                 <p>Esta primera utilización de <code>if</code> ejecuta el bloque únicamente si el elemento existe. Su funcionamiento se desarrollará en el apartado 7. Si el elemento debería estar presente, conviene corregir la causa de su ausencia, además de evitar el error.</p>
                 <div class="activity-card activity-callout" id="actividad-6-3">
                     <p><strong>6.3. Una búsqueda sin coincidencias</strong></p>
-                    <p>Cambia el selector del ejemplo por <code>"#mensaje-inexistente"</code>. Muestra la variable con <code>console.log()</code> y comprueba que el bloque no se ejecuta. Recupera después el selector correcto.</p>
+                    <ol><li>Copia el ejemplo que comprueba si #mensaje existe.</li><li>Cambia el selector por #mensaje-inexistente y añade console.log(mensaje) antes del if.</li><li>Ejecuta, copia la salida y explica por qué no se cambia el párrafo. Recupera el selector correcto y vuelve a probar.</li></ol>
                 </div>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Consultar y modificar el DOM</span><span class="resource-badge badge-reading">Ampliación</span></div>
@@ -793,7 +822,7 @@ if (temperatura &lt; 15) {
                 <div class="didactic-note"><p><strong>Escritura de las condiciones.</strong> Utiliza llaves incluso si el bloque contiene una sola instrucción. No escribas <code>;</code> entre la condición y la llave de apertura. Para comparar emplea <code>===</code>, no la asignación <code>=</code>.</p></div>
                 <div class="activity-card activity-callout" id="actividad-7-1">
                     <p><strong>7.1. Comprobar los límites</strong></p>
-                    <p>Predice la salida del ejemplo de temperatura para <code>14</code>, <code>15</code>, <code>24</code> y <code>25</code>. Ejecuta cada prueba y explica a qué intervalo corresponde cada rama.</p>
+                    <ol><li>Prueba el ejemplo de temperatura con 14, 15, 24 y 25, cambiando la variable en cada ejecución.</li><li>Antes de cada prueba, escribe qué mensaje esperas. Después copia el mensaje real.</li><li>Explica qué ocurre justo en los límites 15 y 25.</li></ol>
                 </div>
 
                 <h3 id="sec7_3">7.3. Combinar condiciones y validar datos</h3>
@@ -820,7 +849,7 @@ if (texto.trim() === "") {
                 <p>El ejemplo presupone que <code>texto</code> es una cadena. Si procede de <code>prompt()</code>, comprueba antes si es <code>null</code>, porque cancelar el diálogo no devuelve texto y no permite llamar a <code>trim()</code>.</p>
                 <div class="activity-card activity-callout" id="actividad-7-2">
                     <p><strong>7.2. Validar una entrada</strong></p>
-                    <p>Prueba el ejemplo con <code>""</code>, <code>"   "</code>, <code>"seis"</code>, <code>"-2"</code> y <code>"0"</code>. Justifica por qué el último valor debe aceptarse y por qué no basta con comprobar <code>!cantidad</code>.</p>
+                    <ol><li>En el ejemplo de validación, cambia texto por &quot;&quot;, &quot;   &quot;, &quot;seis&quot;, &quot;-2&quot; y &quot;0&quot;, de uno en uno.</li><li>Copia el mensaje que obtienes para cada entrada.</li><li>Explica por qué cero es válido y qué problema tendría usar solo !cantidad para rechazar datos.</li></ol>
                 </div>
 
                 <h3 id="sec7_4">7.4. switch: alternativas según un valor</h3>
@@ -851,7 +880,7 @@ console.log(mensaje); // En línea</code></pre>
                 <p>Es una expresión: produce un valor que puede asignarse a una variable. Úsalo para elecciones sencillas; si cada alternativa requiere varias instrucciones, emplea <code>if...else</code>. Evita anidar ternarios que dificulten la lectura.</p>
                 <div class="activity-card activity-callout" id="actividad-7-3">
                     <p><strong>7.3. Elegir una estructura</strong></p>
-                    <p>Amplía el <code>switch</code> con el estado <code>"cancelado"</code> y comprueba también un estado no previsto. Después transforma el ejemplo del ternario en un <code>if...else</code> que muestre el mismo mensaje. Explica qué versión resulta más clara en cada caso.</p>
+                    <ol><li>Añade al switch un caso para &quot;cancelado&quot; que muestre &quot;Envío cancelado&quot;.</li><li>Prueba ese caso y otro valor que no figure en ningún case. Copia las salidas.</li><li>Reescribe el ejemplo del ternario con if y else. Prueba conectado con true y false y compara los mensajes.</li></ol>
                 </div>
 
                 <h3 id="sec7_6">7.6. Repeticiones con for, while y do...while</h3>
@@ -879,7 +908,7 @@ do {
                 <p><code>break</code> termina el bucle más cercano; <code>continue</code> omite el resto de la iteración actual. En un <code>for</code>, después de <code>continue</code> se realiza la actualización y se vuelve a comprobar la condición. En estos primeros ejemplos basta con condiciones de finalización claras.</p>
                 <div class="activity-card activity-callout" id="actividad-7-4">
                     <p><strong>7.4. Repetir y acumular</strong></p>
-                    <p>Utiliza un <code>for</code> para mostrar los números del <code>1</code> al <code>5</code>. Después declara <code>let suma = 0;</code> antes del bucle y acumula cada número con <code>+=</code>. Muestra el total al terminar; debe ser <code>15</code>. Reescribe el recorrido con <code>while</code>.</p>
+                    <ol><li>Escribe un for que muestre los números del 1 al 5.</li><li>Antes del bucle, crea let suma = 0;. Dentro, añade cada número a suma con +=. Muestra suma después del bucle y comprueba que vale 15.</li><li>Haz otra versión con while que produzca lo mismo. Entrega ambas versiones y su salida.</li></ol>
                 </div>
 
                 <h3 id="sec7_7">7.7. Recorrer elementos del DOM con for...of</h3>
@@ -945,7 +974,7 @@ boton.addEventListener("click", mostrarSaludo);</code></pre>
                 <p>Registra los manejadores cuando los elementos ya existan, como ocurre al usar <code>defer</code>. <code>addEventListener()</code> permite asociar varias funciones a un mismo evento y mantiene el comportamiento en el archivo JavaScript.</p>
                 <div class="activity-card activity-callout" id="actividad-8-1">
                     <p><strong>8.1. Responder a una acción</strong></p>
-                    <p>Comprueba que el mensaje permanece vacío al cargar y cambia al activar «Saludar». Modifica el texto del saludo. Después añade un segundo botón de tipo <code>button</code> y un manejador que vacíe el párrafo con <code>textContent = ""</code>.</p>
+                    <ol><li>Abre la página de prueba. Comprueba que al cargar no aparece el saludo y que aparece al pulsar Saludar.</li><li>Cambia el saludo para que muestre un texto elegido por ti.</li><li>Añade un botón type=&quot;button&quot; con el texto Borrar. Programa su click para dejar vacío #mensaje con textContent = &quot;&quot;. Entrega el HTML y el JavaScript.</li></ol>
                 </div>
 
                 <h3 id="sec8_3">8.3. Eventos básicos: click, input, change y submit</h3>
@@ -972,7 +1001,7 @@ campo.addEventListener("change", confirmarCambio);</code></pre>
                 <p>Asignar un valor desde JavaScript mediante <code>campo.value = "Ana"</code> no dispara automáticamente estos eventos. Si el programa modifica el dato, debe actualizar también la presentación cuando corresponda.</p>
                 <div class="activity-card activity-callout" id="actividad-8-2">
                     <p><strong>8.2. Comparar input y change</strong></p>
-                    <p>Escribe un nombre, modifícalo y después pulsa Tab para salir del campo. Observa cuándo cambia el párrafo y cuándo aparece el mensaje en la consola. Vuelve a entrar y salir sin modificar el valor: ¿se produce otro <code>change</code>?</p>
+                    <ol><li>Escribe un nombre y observa el párrafo mientras escribes.</li><li>Pulsa Tab para salir del campo y copia el mensaje de la consola.</li><li>Entra y sal del campo otra vez sin cambiar nada. Cuenta cuándo se produce input y cuándo change.</li></ol>
                 </div>
 
                 <h3 id="sec8_4">8.4. El objeto del evento y currentTarget</h3>
@@ -1017,7 +1046,7 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
                 <div class="didactic-note"><p><strong>Cancelar la acción no detiene el programa.</strong> <code>preventDefault()</code> no termina el manejador ni detiene la propagación del evento. Las instrucciones que aparecen después siguen ejecutándose.</p></div>
                 <div class="activity-card activity-callout" id="actividad-8-3">
                     <p><strong>8.3. Probar el formulario</strong></p>
-                    <p>Prueba el envío con un nombre, con espacios y con el campo vacío. Compara la respuesta del navegador con el mensaje del programa. Comprueba también el envío mediante Intro y explica qué evita <code>preventDefault()</code>.</p>
+                    <ol><li>Prueba el formulario con un nombre, con solo espacios y con el campo vacío.</li><li>Escribe en respuestas.txt qué sucede en cada caso y quién muestra el aviso: el navegador o tu programa.</li><li>Envía también con Intro. Comprueba que no se navega a otra página y explica qué hace preventDefault().</li></ol>
                 </div>
 
                 <h3 id="sec8_6">8.6. Organizar la interacción</h3>
@@ -1062,7 +1091,7 @@ saludar("Luis", "Buenos días"); // Buenos días, Luis</code></pre>
                 <p>El valor predeterminado se utiliza si se omite el argumento o se pasa <code>undefined</code>. No sustituye valores como <code>null</code>, <code>0</code> o <code>""</code>. Un parámetro sin argumento ni valor predeterminado recibe <code>undefined</code>.</p>
                 <div class="activity-card activity-callout" id="actividad-9-1">
                     <p><strong>9.1. Personalizar una llamada</strong></p>
-                    <p>Define <code>presentar(nombre, grupo = "2DAW")</code> para mostrar una presentación. Llámala con un solo argumento, con dos y con una cadena vacía como segundo argumento. Explica cuándo se utiliza el grupo predeterminado.</p>
+                    <ol><li>Escribe presentar(nombre, grupo = &quot;2DAW&quot;) para mostrar el nombre y el grupo.</li><li>Prueba presentar(&quot;Ana&quot;), presentar(&quot;Luis&quot;, &quot;2DAW-B&quot;) y presentar(&quot;Eva&quot;, &quot;&quot;).</li><li>Copia las salidas y explica en qué llamada se usa el grupo predeterminado.</li></ol>
                 </div>
 
                 <h3 id="sec9_3">9.3. Devolver resultados con return</h3>
@@ -1085,7 +1114,7 @@ console.log(resultado);          // undefined</code></pre>
                 <div class="didactic-note"><p><strong>El retorno termina la llamada.</strong> Las instrucciones posteriores al <code>return</code> ejecutado no se alcanzan. Escribe la expresión devuelta en la misma línea que <code>return</code>; un salto de línea justo después puede hacer que se devuelva <code>undefined</code>.</p></div>
                 <div class="activity-card activity-callout" id="actividad-9-2">
                     <p><strong>9.2. Obtener un resultado reutilizable</strong></p>
-                    <p>Transforma <code>mostrarDoble()</code> en <code>obtenerDoble()</code>: debe devolver el doble sin escribir en la consola. Guarda el resultado de <code>obtenerDoble(5)</code> y muéstralo desde fuera. Comprueba también los argumentos <code>0</code> y <code>-3</code>.</p>
+                    <ol><li>Copia mostrarDoble() y cámbiale el nombre a obtenerDoble().</li><li>Sustituye console.log() por return para devolver el doble del número.</li><li>Llama a la función con 5, 0 y -3. Guarda cada resultado y muéstralo desde fuera de la función. Entrega el código y los tres resultados.</li></ol>
                 </div>
 
                 <h3 id="sec9_4">9.4. Ámbito local y variables externas</h3>
@@ -1132,7 +1161,7 @@ console.log(crearAviso());   // Operación completada</code></pre>
                 <p>Las funciones flecha no son intercambiables con <code>function</code> en todos los casos: no tienen su propio <code>this</code> y no se utilizan como constructores. Estos conceptos se estudiarán con los objetos. En los manejadores de esta unidad se utilizará <code>event.currentTarget</code> para acceder al elemento.</p>
                 <div class="activity-card activity-callout" id="actividad-9-3">
                     <p><strong>9.3. Comparar formas de escritura</strong></p>
-                    <p>Reescribe <code>calcularArea(base, altura)</code> como función flecha, primero con retorno explícito y después con retorno implícito. Prueba las tres versiones por separado con los mismos argumentos y comprueba que devuelven el mismo resultado.</p>
+                    <ol><li>Copia calcularArea(base, altura) y pruébala con 6 y 4.</li><li>Escribe una segunda versión como función flecha con llaves y return.</li><li>Escribe una tercera con retorno implícito. Ejecuta cada versión por separado con los mismos datos y comprueba que todas devuelven 24.</li></ol>
                 </div>
 
                 <h3 id="sec9_7">9.7. Funciones pequeñas y conexión con los eventos</h3>
@@ -1157,7 +1186,7 @@ boton.addEventListener("click", () =&gt; {
                 <p>Para una respuesta muy breve puede utilizarse una función flecha en el registro. Si el manejador crece o se reutiliza, conviene darle un nombre. La claridad debe guiar la elección.</p>
                 <div class="activity-card activity-callout" id="actividad-9-4">
                     <p><strong>9.4. Reutilizar una función</strong></p>
-                    <p>Comprueba <code>crearSaludo()</code> desde la consola con <code>"Ana"</code>, <code>" Luis "</code> y <code>"   "</code>. Repite las pruebas con el campo y el botón. Después sustituye el manejador flecha por una función con nombre, manteniendo el mismo comportamiento.</p>
+                    <ol><li>Prueba crearSaludo() en la consola con &quot;Ana&quot;, &quot; Luis &quot; y &quot;   &quot;. Copia los tres resultados.</li><li>Introduce esos mismos valores en el campo y pulsa Saludar. Anota si coinciden con lo anterior.</li><li>Sustituye el manejador flecha por una función con nombre. Vuelve a probar y entrega el JavaScript modificado.</li></ol>
                 </div>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Funciones y funciones flecha</span><span class="resource-badge badge-reading">Ampliación</span></div>
@@ -1249,7 +1278,7 @@ boton.addEventListener("click", () =&gt; {
                 <div class="didactic-note"><p><strong>Decimales.</strong> Algunos cálculos, como <code>0.1 + 0.2</code>, pueden mostrar una pequeña diferencia por la representación binaria de los números. En esta práctica se acepta el resultado numérico de JavaScript; no es obligatorio implementar redondeo.</p></div>
 
                 <h3 id="sec10_5">10.5. Entrega y criterios de revisión</h3>
-                <p>Entrega la carpeta con los tres archivos y un documento breve con las pruebas realizadas, sus resultados y una explicación de las funciones principales. Incluye una captura de una operación correcta y otra de un error.</p>
+                <p>Entrega la carpeta con <code>index.html</code>, <code>estilos.css</code>, <code>app.js</code> y <code>respuestas.txt</code>. En este último archivo, escribe qué probaste, qué resultado esperabas y qué ocurrió. Explica brevemente para qué sirve cada función. Incluye como texto un ejemplo correcto y otro que muestre un error.</p>
                 <ul>
                     <li><strong>Funcionamiento:</strong> las cuatro operaciones, la validación y la limpieza cumplen los requisitos.</li>
                     <li><strong>Organización:</strong> se distingue el cálculo de la interacción con el DOM y se evita repetir código innecesariamente.</li>
