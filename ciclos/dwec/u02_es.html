@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Unidad 2 de DWEC: fundamentos de JavaScript. Introducción, breve historia, ECMAScript, tipado dinámico y presentación de la calculadora como práctica de la unidad.">
+    <title>UD02 Fundamentos de JavaScript — 2º DAW</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&amp;family=Inter:wght@300;400;500;600;700&amp;family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="u01.css">
+    <style>
+        /* Se reutiliza la plantilla de DWEC U01; estos ajustes son propios de U02. */
+        .sidebar-toc { overflow: visible; }
+        .sidebar-toc ul { max-height: calc(100vh - 130px); overflow-y: auto; }
+        .sidebar-toc:focus-within { transform: translateX(0); }
+        .unit-navigation { margin-bottom: 22px; font-size: .9rem; }
+        .unit-navigation a { color: var(--primary-color); text-underline-offset: 3px; }
+        .timeline-wide { display: block; width: 100%; }
+        .timeline-narrow { display: none; width: 100%; max-width: 360px; margin: 0 auto; }
+        .timeline-label { font-family: 'Inter', system-ui, sans-serif; fill: #475569; }
+        .timeline-date { font-size: 25px; font-weight: 700; fill: #1e3a8a; }
+        .timeline-heading { font-size: 17px; font-weight: 700; fill: #0f172a; }
+        .timeline-detail { font-size: 15px; }
+        .roles-table table { min-width: 0; }
+        .roles-table th:first-child { width: 22%; }
+        .event-sequence { padding: 14px 18px; background: var(--primary-light); border-radius: 6px; }
+        .activity-card ol { margin-bottom: 0; }
+        .resource-description { text-align: left; }
+        a:focus-visible { outline: 3px solid var(--primary-border); outline-offset: 3px; }
+        @media (max-width: 700px) {
+            .sidebar-toc { position: static; width: 100%; max-height: none; transform: none; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 20px; box-shadow: none; }
+            .sidebar-toc::after { display: none; }
+            .sidebar-toc ul { max-height: none; overflow: visible; }
+            .timeline-wide { display: none; }
+            .timeline-narrow { display: block; }
+            .resource-card-header { align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+            .resource-card, .activity-card { padding: 18px; }
+            .roles-table th, .roles-table td { padding: 10px; }
+            .roles-table th:first-child { width: 26%; }
+        }
+        @media print {
+            .unit-navigation { display: none; }
+            .timeline-wide { display: block; }
+            .timeline-narrow { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="sidebar-toc" aria-label="Índice de contenidos">
+        <h4><i class="fa-solid fa-list-ol" aria-hidden="true"></i> Contenidos</h4>
+        <ul>
+            <li><a href="#sec1">1. Introducción a JavaScript</a></li>
+            <li><a href="#sec1_1" class="subsection-link">1.1. Origen y evolución</a></li>
+            <li><a href="#sec1_2" class="subsection-link">1.2. JavaScript y ECMAScript</a></li>
+            <li><a href="#sec1_3" class="subsection-link">1.3. HTML, CSS y JavaScript</a></li>
+            <li><a href="#sec1_4" class="subsection-link">1.4. Características del lenguaje</a></li>
+            <li><a href="#sec1_5" class="subsection-link">1.5. Práctica: una calculadora</a></li>
+        </ul>
+    </nav>
+    <div class="document-wrapper">
+        <main class="document-container">
+            <nav class="unit-navigation" aria-label="Navegación del módulo">
+                <a href="index.html"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Volver a DWEC</a>
+            </nav>
+            <header class="header-banner">
+                <div class="header-top-row">
+                    <span class="module-tag">Desarrollo Web en Entorno Cliente • 2º DAW</span>
+                </div>
+                <h1>UD02 Fundamentos de JavaScript</h1>
+                <p class="header-subtitle">El lenguaje que permite programar el comportamiento de una página web</p>
+            </header>
+
+            <section aria-labelledby="sec1">
+                <h2 id="sec1"><i class="fa-brands fa-js" aria-hidden="true"></i> 1. Introducción a JavaScript</h2>
+                <p><strong>JavaScript (JS)</strong> es un lenguaje de programación que permite procesar datos y dotar de comportamiento a una página web. Con él se pueden realizar cálculos, comprobar datos de un formulario y actualizar el contenido en respuesta a las acciones del usuario.</p>
+                <p>En esta unidad se trabajará con JavaScript en el <strong>navegador</strong>. Los conceptos se aplicarán progresivamente al desarrollo de una calculadora, a partir de una interfaz HTML y CSS ya preparada.</p>
+
+                <h3 id="sec1_1">1.1. Origen y evolución</h3>
+                <p>JavaScript fue creado por <strong>Brendan Eich en 1995</strong>, durante su trabajo en Netscape. Su finalidad inicial era incorporar pequeñas interacciones a las páginas y ejecutar instrucciones en el navegador del usuario.</p>
+                <p>La aparición de distintas implementaciones hizo necesario un estándar común. En <strong>1997</strong> se publicó la primera edición de ECMAScript. Una actualización decisiva llegó con <strong>ECMAScript 2015 (ES6)</strong>, que incorporó, entre otras novedades, <code>let</code>, <code>const</code> y las funciones flecha. Desde 2016 se publican nuevas ediciones anuales.</p>
+
+                <figure class="image-container">
+                    <svg class="timeline-wide" viewBox="0 0 1000 220" role="img" aria-labelledby="timeline-title timeline-desc" xmlns="http://www.w3.org/2000/svg">
+                        <title id="timeline-title">Evolución de JavaScript: cuatro hitos</title>
+                        <desc id="timeline-desc">1995: Brendan Eich crea JavaScript en Netscape. 1997: primera edición de ECMAScript. 2015: ES6 incorpora let, const y funciones flecha. Desde 2016: nuevas ediciones anuales. Las distancias no representan el tiempo transcurrido.</desc>
+                        <rect x="0" y="0" width="1000" height="220" rx="12" fill="#f8fafc"/>
+                        <path d="M125 81 H875" stroke="#cbd5e1" stroke-width="4"/>
+                        <g class="timeline-label" text-anchor="middle">
+                            <g transform="translate(125 0)">
+                                <text class="timeline-date" y="48">1995</text>
+                                <circle cy="81" r="9" fill="#1e3a8a"/>
+                                <text class="timeline-heading" y="123">Nacimiento de JS</text>
+                                <text class="timeline-detail" y="151">Brendan Eich</text>
+                                <text class="timeline-detail" y="175">Netscape</text>
+                            </g>
+                            <g transform="translate(375 0)">
+                                <text class="timeline-date" y="48">1997</text>
+                                <circle cy="81" r="9" fill="#1e3a8a"/>
+                                <text class="timeline-heading" y="123">ECMAScript</text>
+                                <text class="timeline-detail" y="151">Primera edición</text>
+                                <text class="timeline-detail" y="175">del estándar</text>
+                            </g>
+                            <g transform="translate(625 0)">
+                                <text class="timeline-date" y="48">2015</text>
+                                <circle cy="81" r="9" fill="#0f766e"/>
+                                <text class="timeline-heading" y="123">ES6 / ES2015</text>
+                                <text class="timeline-detail" y="151">let, const y</text>
+                                <text class="timeline-detail" y="175">funciones flecha</text>
+                            </g>
+                            <g transform="translate(875 0)">
+                                <text class="timeline-date" y="48">2016 →</text>
+                                <circle cy="81" r="9" fill="#0f766e"/>
+                                <text class="timeline-heading" y="123">Evolución anual</text>
+                                <text class="timeline-detail" y="151">Nuevas ediciones</text>
+                                <text class="timeline-detail" y="175">del lenguaje</text>
+                            </g>
+                        </g>
+                    </svg>
+                    <svg class="timeline-narrow" viewBox="0 0 320 425" role="img" aria-labelledby="timeline-mobile-title timeline-mobile-desc" xmlns="http://www.w3.org/2000/svg">
+                        <title id="timeline-mobile-title">Evolución de JavaScript: cuatro hitos</title>
+                        <desc id="timeline-mobile-desc">1995: creación en Netscape. 1997: primera edición de ECMAScript. 2015: ES6. Desde 2016: ediciones anuales. Esquema sin escala temporal.</desc>
+                        <rect width="320" height="425" rx="12" fill="#f8fafc"/>
+                        <path d="M27 45 V353" stroke="#cbd5e1" stroke-width="3"/>
+                        <g class="timeline-label">
+                            <g transform="translate(0 20)">
+                                <circle cx="27" cy="25" r="7" fill="#1e3a8a"/>
+                                <text class="timeline-date" x="51" y="30">1995</text>
+                                <text class="timeline-heading" x="51" y="57">Nacimiento de JS</text>
+                                <text class="timeline-detail" x="51" y="80">Brendan Eich · Netscape</text>
+                            </g>
+                            <g transform="translate(0 122)">
+                                <circle cx="27" cy="25" r="7" fill="#1e3a8a"/>
+                                <text class="timeline-date" x="51" y="30">1997</text>
+                                <text class="timeline-heading" x="51" y="57">ECMAScript</text>
+                                <text class="timeline-detail" x="51" y="80">Primera edición del estándar</text>
+                            </g>
+                            <g transform="translate(0 224)">
+                                <circle cx="27" cy="25" r="7" fill="#0f766e"/>
+                                <text class="timeline-date" x="51" y="30">2015</text>
+                                <text class="timeline-heading" x="51" y="57">ES6 / ES2015</text>
+                                <text class="timeline-detail" x="51" y="80">let, const y funciones flecha</text>
+                            </g>
+                            <g transform="translate(0 326)">
+                                <circle cx="27" cy="25" r="7" fill="#0f766e"/>
+                                <text class="timeline-date" x="51" y="30">2016 →</text>
+                                <text class="timeline-heading" x="51" y="57">Evolución anual</text>
+                                <text class="timeline-detail" x="51" y="80">Nuevas ediciones del lenguaje</text>
+                            </g>
+                        </g>
+                    </svg>
+                    <figcaption class="image-caption">Hitos principales de JavaScript. Esquema sin escala temporal.</figcaption>
+                </figure>
+
+                <div class="didactic-note curiosity-card">
+                    <p><strong>Java y JavaScript son lenguajes diferentes.</strong> La semejanza del nombre responde al contexto comercial de su origen. Aprender JavaScript no requiere conocer Java.</p>
+                </div>
+
+                <h3 id="sec1_2">1.2. JavaScript y ECMAScript</h3>
+                <p><strong>ECMAScript</strong> es la especificación que define las reglas del lenguaje: su sintaxis, sus tipos de datos y sus operaciones. Se publica como el estándar <strong>ECMA-262</strong> de Ecma International y evoluciona mediante el trabajo del comité TC39. Los motores JavaScript implementan estas reglas.</p>
+                <p>El navegador añade herramientas para trabajar con la página, como el <strong>DOM</strong> y los eventos. Estas herramientas forman parte de las APIs web y se definen en estándares propios.</p>
+                <p>En esta unidad, <strong>JavaScript moderno</strong> se refiere al uso de prácticas actuales y características consolidadas. La evolución del lenguaje conserva compatibilidad con mucho código anterior; por ello, la documentación puede mostrar distintas formas de resolver una misma tarea.</p>
+
+                <div class="resource-card expansion-card">
+                    <div class="resource-card-header">
+                        <span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> El lenguaje y su estándar</span>
+                        <span class="resource-badge badge-reading">Lectura</span>
+                    </div>
+                    <p class="resource-description">La introducción de MDN explica la relación entre JavaScript y ECMAScript. Ecma International permite consultar las ediciones del estándar como referencia.</p>
+                    <a href="https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Introduction" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Introducción a JavaScript <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+                    <a href="https://ecma-international.org/publications-and-standards/standards/ecma-262/" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Ecma International · ECMA-262 <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+                </div>
+
+                <h3 id="sec1_3">1.3. HTML, CSS y JavaScript</h3>
+                <p>Las tres tecnologías colaboran en una página web, con responsabilidades diferenciadas:</p>
+                <div class="table-scroll roles-table" role="region" aria-label="Responsabilidades de HTML, CSS y JavaScript" tabindex="0">
+                    <table>
+                        <thead>
+                            <tr><th scope="col">Tecnología</th><th scope="col">Responsabilidad</th><th scope="col">En la calculadora</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><th scope="row">HTML</th><td>Define la estructura y el significado del contenido.</td><td>Campos, etiquetas, selector de operación y botones.</td></tr>
+                            <tr><th scope="row">CSS</th><td>Determina la presentación visual.</td><td>Distribución, colores, tipografía y apariencia de los mensajes.</td></tr>
+                            <tr><th scope="row">JavaScript</th><td>Programa la lógica y la interacción.</td><td>Lee los números, realiza la operación y actualiza el resultado.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>El código se ejecuta mediante el <strong>motor JavaScript del navegador</strong>. En una calculadora sencilla, las operaciones pueden resolverse en el propio cliente, sin enviar cada cálculo a un servidor.</p>
+
+                <h3 id="sec1_4">1.4. Características del lenguaje</h3>
+                <ul>
+                    <li><strong>Tipado dinámico.</strong> No se declara un tipo fijo para cada variable. Los valores tienen un tipo, y una variable puede contener valores de distintos tipos durante la ejecución. Esto no elimina las reglas sobre qué operaciones admite cada valor.</li>
+                    <li><strong>Multiparadigma.</strong> Permite organizar un programa mediante instrucciones, funciones y objetos. En esta unidad se utilizarán principalmente instrucciones y funciones.</li>
+                    <li><strong>Trabajo con objetos.</strong> Los objetos agrupan datos y operaciones relacionadas. En el navegador se utilizan para representar, entre otros elementos, el documento y sus controles. Su modelo se basa en prototipos, que se estudiarán más adelante.</li>
+                    <li><strong>Ejecución en distintos entornos.</strong> Además de los navegadores, existen entornos como Node.js. El lenguaje es el mismo, pero las herramientas disponibles dependen del entorno.</li>
+                </ul>
+                <p>En las páginas web es habitual la <strong>programación dirigida por eventos</strong>: se establece qué instrucciones deben ejecutarse cuando sucede algo, como pulsar un botón o modificar un campo. La función que responde a ese suceso se denomina <strong>manejador del evento</strong>.</p>
+                <p class="event-sequence"><strong>Ejemplo:</strong> pulsar «Calcular» → leer los datos → realizar la operación → mostrar el resultado.</p>
+
+                <div class="resource-card expansion-card">
+                    <div class="resource-card-header">
+                        <span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Qué puede hacer JavaScript</span>
+                        <span class="resource-badge badge-reading">Lectura</span>
+                    </div>
+                    <p class="resource-description">Introducción al lenguaje, a los motores que lo ejecutan y a sus posibilidades y límites dentro del navegador.</p>
+                    <a href="https://es.javascript.info/intro" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Una introducción a JavaScript <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+                </div>
+
+                <div class="activity-card activity-callout" id="actividad-1-1">
+                    <p><strong>1.1. Comprensión de los conceptos</strong></p>
+                    <ol>
+                        <li>Explica la relación entre JavaScript y ECMAScript.</li>
+                        <li>¿Qué significa que JavaScript tiene tipado dinámico? ¿Significa que sus valores carecen de tipo?</li>
+                        <li>Identifica dos acciones del usuario que puedan producir un evento en una página web.</li>
+                    </ol>
+                </div>
+
+                <h3 id="sec1_5">1.5. Práctica de la unidad: una calculadora</h3>
+                <p>La práctica consiste en desarrollar el comportamiento de una <strong>calculadora de dos operandos</strong>. Se proporcionarán el HTML y el CSS; el alumnado implementará el archivo JavaScript a medida que avance la unidad.</p>
+                <p>La interfaz incluirá dos campos numéricos, un selector de operación, los botones <strong>Calcular</strong> y <strong>Limpiar</strong>, y una zona para mostrar resultados o mensajes.</p>
+                <p>La versión final deberá permitir sumar, restar, multiplicar y dividir; detectar entradas incompletas o no válidas; informar cuando se intente dividir entre cero; y restablecer la interfaz. En este apartado se analiza el problema. La implementación comenzará con los primeros programas.</p>
+
+                <div class="activity-card activity-callout" id="actividad-1-2">
+                    <p><strong>1.2. Análisis de la calculadora</strong></p>
+                    <ol>
+                        <li>Clasifica estas tareas según correspondan a HTML, CSS o JavaScript: crear un campo, dar color a un botón, sumar dos valores y mostrar un mensaje según el resultado.</li>
+                        <li>Describe qué datos necesita la calculadora, qué debe hacer con ellos y qué debe mostrar.</li>
+                        <li>Escribe, con tus propias palabras, los pasos que deberían realizarse al pulsar «Calcular» y al pulsar «Limpiar».</li>
+                    </ol>
+                    <p><strong>Entrega:</strong> una respuesta breve y razonada. Todavía no es necesario escribir código.</p>
+                </div>
+            </section>
+            <footer class="document-footer">DAW / DWEC · © Ignacio García</footer>
+        </main>
+    </div>
+</body>
+</html>
