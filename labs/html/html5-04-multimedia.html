@@ -452,7 +452,7 @@
           <div class="exercise-hero"><div><p class="exercise-kicker">Ejercicio práctico 04 · Proyecto acumulativo</p><h2 id="ejercicio-titulo">Convierte tu página en una experiencia multimedia accesible</h2><p>Carga tu <code>index.html</code> de la sección 03. Añadirás una figura adaptable, un vídeo subtitulado y un audio, sin eliminar la estructura, navegación ni control semántico anteriores.</p></div><div class="time-card"><strong>65–85</strong><span>minutos</span></div></div>
           <div class="brief-grid">
             <article class="task-card"><h3>Contrato funcional</h3><ul><li>Conserva el contenido, la navegación y el botón de acción de la sección 03.</li><li>Crea un <code>figure</code> con <code>picture</code>, dos <code>source</code>, un <code>img</code> de respaldo y <code>figcaption</code>.</li><li>La imagen tendrá <code>alt</code> descriptivo, dimensiones, <code>loading="lazy"</code> y <code>decoding="async"</code>.</li><li>Añade un <code>video</code> con controles, portada, dos formatos y captions en español.</li><li>Añade un <code>audio</code> con controles, al menos una fuente tipada y enlace de descarga alternativo.</li></ul></article>
-            <article class="task-card"><h3>Criterios profesionales</h3><ol><li>Organiza los archivos en una carpeta <code>media</code> y usa rutas relativas legibles.</li><li>Declara tipos MIME coherentes con cada extensión.</li><li>No uses <code>autoplay</code>; configura audio y vídeo con <code>preload="metadata"</code>.</li><li>El pie aporta contexto y no se limita a repetir el texto alternativo.</li><li>Los ejemplos son una referencia conceptual: redacta tus propios textos y nombres.</li><li>Depura las dieciséis comprobaciones antes de descargar el HTML.</li></ol><p class="load-note">La vista previa valida el documento. Los archivos locales de <code>media/</code> se verán o reproducirán cuando abras la carpeta completa mediante un servidor local.</p></article>
+            <article class="task-card"><h3>Criterios profesionales</h3><ol><li>Organiza los archivos en una carpeta <code>media</code> y usa rutas relativas legibles.</li><li>Declara tipos MIME coherentes con cada extensión.</li><li>No uses <code>autoplay</code>; configura audio y vídeo con <code>preload="metadata"</code>.</li><li>El pie aporta contexto y no se limita a repetir el texto alternativo.</li><li>Los ejemplos son una referencia conceptual: redacta tus propios textos y nombres.</li><li>Ejecuta las dieciséis comprobaciones: podrás descargar el HTML con un máximo de 2 errores.</li></ol><p class="load-note">La vista previa valida el documento. Los archivos locales de <code>media/</code> se verán o reproducirán cuando abras la carpeta completa mediante un servidor local.</p></article>
           </div>
 
           <div class="lab">
@@ -859,9 +859,14 @@
         testList.classList.remove("stale");
         testScore.textContent = `${passed} / ${tests.length}`;
         testProgress.style.width = `${passed / tests.length * 100}%`;
-        downloadHtml.disabled = passed !== tests.length;
+        const failedTests = tests.length - passed;
+        const canDownload = failedTests <= 2;
+        downloadHtml.disabled = !canDownload;
         testMessage.className = `test-message ${passed === tests.length ? "success" : "error"}`;
-        testMessage.textContent = passed === tests.length ? "Proyecto multimedia superado: puedes descargar la nueva versión." : `Has superado ${passed} de ${tests.length} pruebas. Sigue las pistas y revisa una decisión cada vez.`;
+        testMessage.textContent = passed === tests.length ? "Proyecto multimedia superado: puedes descargar la nueva versión."
+          : canDownload
+            ? `Puedes descargar index.html con ${failedTests} ${failedTests === 1 ? "error pendiente" : "errores pendientes"} (máximo permitido: 2 por ficha). Revisa las pistas para corregirlos.`
+            : `Has superado ${passed} de ${tests.length} pruebas. Hay ${failedTests} errores: corrige las pistas y vuelve a validar para descargar (máximo permitido: 2 por ficha).`;
         invalidateReport();
         updateReportAvailability();
       };

@@ -600,9 +600,14 @@
         testList.classList.remove("stale");
         testScore.textContent = `${passed} / ${tests.length}`;
         testProgress.style.width = `${passed / tests.length * 100}%`;
-        downloadHtml.disabled = passed !== tests.length;
+        const failedTests = tests.length - passed;
+        const canDownload = failedTests <= 2;
+        downloadHtml.disabled = !canDownload;
         testMessage.className = `test-message ${passed === tests.length ? "success" : "error"}`;
-        testMessage.textContent = passed === tests.length ? "Formulario del proyecto superado: puedes descargar la nueva versión." : `Has superado ${passed} de ${tests.length} pruebas. Sigue las pistas y revisa un control cada vez.`;
+        testMessage.textContent = passed === tests.length ? "Formulario del proyecto superado: puedes descargar la nueva versión."
+          : canDownload
+            ? `Puedes descargar index.html con ${failedTests} ${failedTests === 1 ? "error pendiente" : "errores pendientes"} (máximo permitido: 2 por ficha). Revisa las pistas para corregirlos.`
+            : `Has superado ${passed} de ${tests.length} pruebas. Hay ${failedTests} errores: corrige las pistas y vuelve a validar para descargar (máximo permitido: 2 por ficha).`;
         invalidateReport();
         updateReportAvailability();
       };
