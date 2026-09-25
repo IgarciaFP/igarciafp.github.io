@@ -98,6 +98,13 @@
             <li><a href="#sec7_5" class="subsection-link">7.5. Operador ternario</a></li>
             <li><a href="#sec7_6" class="subsection-link">7.6. Repeticiones con for, while y do...while</a></li>
             <li><a href="#sec7_7" class="subsection-link">7.7. Recorrer elementos del DOM con for...of</a></li>
+            <li><a href="#sec8">8. Eventos e interacción con el usuario</a></li>
+            <li><a href="#sec8_1" class="subsection-link">8.1. Eventos y manejadores</a></li>
+            <li><a href="#sec8_2" class="subsection-link">8.2. Registrar manejadores con addEventListener()</a></li>
+            <li><a href="#sec8_3" class="subsection-link">8.3. Eventos básicos: click, input, change y submit</a></li>
+            <li><a href="#sec8_4" class="subsection-link">8.4. El objeto del evento y currentTarget</a></li>
+            <li><a href="#sec8_5" class="subsection-link">8.5. Comportamiento predeterminado y preventDefault()</a></li>
+            <li><a href="#sec8_6" class="subsection-link">8.6. Organizar la interacción</a></li>
         </ul>
     </nav>
     <div class="document-wrapper">
@@ -879,6 +886,140 @@ for (const parrafo of parrafos) {
                     <a href="https://es.javascript.info/ifelse" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · if y operador ternario</a>
                     <a href="https://es.javascript.info/switch" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · switch</a>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Loops_and_iteration" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Bucles e iteración</a>
+                </div>
+            </section>
+
+            <section aria-labelledby="sec8">
+                <h2 id="sec8"><i class="fa-solid fa-hand-pointer" aria-hidden="true"></i> 8. Eventos e interacción con el usuario</h2>
+                <p>Los ejemplos anteriores se ejecutaban al cargar la página. Los <strong>eventos</strong> permiten responder a acciones posteriores: activar un botón, escribir en un campo o enviar un formulario. La respuesta puede leer datos, tomar decisiones y actualizar el DOM.</p>
+
+                <h3 id="sec8_1">8.1. Eventos y manejadores</h3>
+                <p>Un <strong>evento</strong> es una notificación de que ha ocurrido algo. Un <strong>manejador</strong> es una función que se ejecuta cuando se recibe esa notificación. Registrar un manejador establece la respuesta; no la ejecuta en ese momento.</p>
+                <p class="event-sequence"><strong>Secuencia:</strong> acción del usuario → evento → ejecución del manejador → actualización de la página.</p>
+                <p>En este apartado se introducirá la forma mínima de una función: <code>function nombre() { ... }</code> agrupa instrucciones bajo un nombre. Las funciones y sus distintas formas de escritura se desarrollarán en el apartado 9.</p>
+                <p>Utiliza esta página de prueba y un archivo <code>app.js</code> en la misma carpeta. Prueba cada ejemplo JavaScript por separado, sustituyendo el contenido del archivo y recargando la página:</p>
+                <pre data-example="events-html"><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Pruebas con eventos&lt;/title&gt;
+    &lt;script src="app.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Pruebas con eventos&lt;/h1&gt;
+    &lt;button id="saludar" type="button"&gt;Saludar&lt;/button&gt;
+    &lt;form id="formulario"&gt;
+        &lt;label for="nombre"&gt;Nombre&lt;/label&gt;
+        &lt;input id="nombre" name="nombre" type="text" required&gt;
+        &lt;button type="submit"&gt;Enviar&lt;/button&gt;
+    &lt;/form&gt;
+    &lt;p id="mensaje" aria-live="polite"&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                <p><code>type="button"</code> identifica un botón de acción y <code>type="submit"</code> uno de envío. <code>aria-live="polite"</code> permite que las tecnologías de asistencia anuncien las actualizaciones del mensaje.</p>
+
+                <h3 id="sec8_2">8.2. Registrar manejadores con addEventListener()</h3>
+                <p><code>elemento.addEventListener("evento", manejador)</code> asocia una función a un evento del elemento. El nombre del evento se escribe sin el prefijo <code>on</code>: <code>"click"</code>, no <code>"onclick"</code>.</p>
+                <pre data-example="events-js"><code>const boton = document.querySelector("#saludar");
+const mensaje = document.querySelector("#mensaje");
+
+function mostrarSaludo() {
+    mensaje.textContent = "Hola, bienvenido a la página";
+}
+
+boton.addEventListener("click", mostrarSaludo);</code></pre>
+                <p>El navegador ejecuta <code>mostrarSaludo</code> cada vez que se activa el botón. Un botón HTML puede activarse tanto con el ratón como con el teclado.</p>
+                <div class="didactic-note"><p><strong>Pasar la función, no ejecutarla.</strong> Escribe <code>mostrarSaludo</code> como segundo argumento. Si escribes <code>mostrarSaludo()</code>, la función se ejecuta durante el registro y se pasa su resultado en lugar del manejador.</p></div>
+                <p>Registra los manejadores cuando los elementos ya existan, como ocurre al usar <code>defer</code>. <code>addEventListener()</code> permite asociar varias funciones a un mismo evento y mantiene el comportamiento en el archivo JavaScript.</p>
+                <div class="activity-card activity-callout" id="actividad-8-1">
+                    <p><strong>8.1. Responder a una acción</strong></p>
+                    <p>Comprueba que el mensaje permanece vacío al cargar y cambia al activar «Saludar». Modifica el texto del saludo. Después añade un segundo botón de tipo <code>button</code> y un manejador que vacíe el párrafo con <code>textContent = ""</code>.</p>
+                </div>
+
+                <h3 id="sec8_3">8.3. Eventos básicos: click, input, change y submit</h3>
+                <ul>
+                    <li><strong><code>click</code>:</strong> responde a la activación de un elemento, como un botón.</li>
+                    <li><strong><code>input</code>:</strong> se produce al modificar un campo mediante una acción del usuario. Permite actualizar una vista mientras se escribe.</li>
+                    <li><strong><code>change</code>:</strong> indica que se ha confirmado un cambio. En campos de texto suele producirse al abandonar el campo tras modificarlo; en un selector, al confirmar una opción.</li>
+                    <li><strong><code>submit</code>:</strong> se produce en el formulario cuando se solicita su envío, por ejemplo mediante su botón o pulsando Intro en un campo apropiado.</li>
+                </ul>
+                <p>Este ejemplo muestra el nombre mientras se escribe y registra cuándo se confirma el cambio:</p>
+                <pre data-example="events-js"><code>const campo = document.querySelector("#nombre");
+const mensaje = document.querySelector("#mensaje");
+
+function mostrarNombre() {
+    mensaje.textContent = campo.value;
+}
+
+function confirmarCambio() {
+    console.log("Cambio confirmado:", campo.value);
+}
+
+campo.addEventListener("input", mostrarNombre);
+campo.addEventListener("change", confirmarCambio);</code></pre>
+                <p>Asignar un valor desde JavaScript mediante <code>campo.value = "Ana"</code> no dispara automáticamente estos eventos. Si el programa modifica el dato, debe actualizar también la presentación cuando corresponda.</p>
+                <div class="activity-card activity-callout" id="actividad-8-2">
+                    <p><strong>8.2. Comparar input y change</strong></p>
+                    <p>Escribe un nombre, modifícalo y después pulsa Tab para salir del campo. Observa cuándo cambia el párrafo y cuándo aparece el mensaje en la consola. Vuelve a entrar y salir sin modificar el valor: ¿se produce otro <code>change</code>?</p>
+                </div>
+
+                <h3 id="sec8_4">8.4. El objeto del evento y currentTarget</h3>
+                <p>El navegador entrega al manejador un objeto con información del evento. Para utilizarlo se añade un parámetro, que aquí llamaremos <code>event</code>:</p>
+                <pre data-example="events-js"><code>const campo = document.querySelector("#nombre");
+const mensaje = document.querySelector("#mensaje");
+
+function mostrarEntrada(event) {
+    const elemento = event.currentTarget;
+    mensaje.textContent = elemento.value;
+    console.log(event.type); // input
+}
+
+campo.addEventListener("input", mostrarEntrada);</code></pre>
+                <ul>
+                    <li><code>event.type</code> contiene el nombre del evento.</li>
+                    <li><code>event.currentTarget</code> referencia el elemento donde se registró el manejador que se está ejecutando.</li>
+                    <li><code>event.target</code> identifica el destino original del evento. Puede ser un elemento interior: al pulsar un icono dentro de un botón, el destino puede ser el icono y <code>currentTarget</code> el botón.</li>
+                </ul>
+                <p>Utilizar <code>currentTarget</code> facilita compartir un mismo manejador entre varios elementos. En estos ejemplos se consulta durante la ejecución del manejador; la propagación de eventos se estudiará más adelante.</p>
+
+                <h3 id="sec8_5">8.5. Comportamiento predeterminado y preventDefault()</h3>
+                <p>Algunos eventos tienen una acción predeterminada: un enlace navega y un formulario inicia su envío. <code>event.preventDefault()</code> permite cancelar esa acción cuando el evento es cancelable.</p>
+                <p>Para procesar el formulario en la página, registra <code>submit</code> en el propio formulario. Así se atiende el envío aunque no se active el botón con el ratón:</p>
+                <pre data-example="events-js"><code>const formulario = document.querySelector("#formulario");
+const campo = document.querySelector("#nombre");
+const mensaje = document.querySelector("#mensaje");
+
+function procesarFormulario(event) {
+    event.preventDefault();
+    const nombre = campo.value.trim();
+
+    if (nombre === "") {
+        mensaje.textContent = "Escribe un nombre";
+    } else {
+        mensaje.textContent = `Hola, ${nombre}`;
+    }
+}
+
+formulario.addEventListener("submit", procesarFormulario);</code></pre>
+                <p>La página muestra el saludo sin realizar el envío convencional. El atributo <code>required</code> hace que el navegador compruebe el campo: si está vacío, la validación nativa impide el envío y no se produce <code>submit</code>. La comprobación con <code>trim()</code> rechaza además una entrada formada solo por espacios.</p>
+                <div class="didactic-note"><p><strong>Cancelar la acción no detiene el programa.</strong> <code>preventDefault()</code> no termina el manejador ni detiene la propagación del evento. Las instrucciones que aparecen después siguen ejecutándose.</p></div>
+                <div class="activity-card activity-callout" id="actividad-8-3">
+                    <p><strong>8.3. Probar el formulario</strong></p>
+                    <p>Prueba el envío con un nombre, con espacios y con el campo vacío. Compara la respuesta del navegador con el mensaje del programa. Comprueba también el envío mediante Intro y explica qué evita <code>preventDefault()</code>.</p>
+                </div>
+
+                <h3 id="sec8_6">8.6. Organizar la interacción</h3>
+                <p>Una interacción sencilla puede organizarse en tres pasos: <strong>leer los datos actuales</strong>, <strong>comprobarlos o procesarlos</strong> y <strong>actualizar el DOM</strong>. La lectura de <code>value</code> debe realizarse dentro del manejador cuando se necesita el valor que tiene el campo en ese momento.</p>
+                <p>Selecciona los elementos y registra los manejadores una vez al preparar la página. Mantén cada manejador breve, utiliza <code>textContent</code> para mostrar datos del usuario y recurre a clases CSS para cambiar la presentación. No es necesario repetir continuamente una consulta para detectar las acciones del usuario.</p>
+                <div class="resource-card expansion-card">
+                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Eventos y formularios</span><span class="resource-badge badge-reading">Ampliación</span></div>
+                    <p class="resource-description">Referencias para consultar el registro de manejadores, el objeto del evento y el comportamiento de los formularios.</p>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · addEventListener()</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/currentTarget" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · currentTarget</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · change</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · submit</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · preventDefault()</a>
                 </div>
             </section>
 
