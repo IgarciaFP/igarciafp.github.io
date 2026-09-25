@@ -629,7 +629,7 @@
                 <li><strong>Escribe sin copiar ni pegar</strong><p>Empieza por la declaración HTML5 y teclea después la estructura completa en el editor.</p></li>
                 <li><strong>Ejecuta las pruebas</strong><p>No te limites a la vista previa: el navegador puede corregir silenciosamente un documento mal escrito.</p></li>
                 <li><strong>Depura con las pistas</strong><p>Corrige el orden, el anidamiento, los metadatos y la sangría hasta superar las diez pruebas.</p></li>
-                <li><strong>Descarga y verifica</strong><p>Solo cuando obtengas 10/10 podrás descargar <code>index.html</code> y abrirlo fuera de esta ficha.</p></li>
+                <li><strong>Descarga y verifica</strong><p>Con un máximo de 2 errores en las pruebas podrás descargar <code>index.html</code> y abrirlo fuera de esta ficha.</p></li>
               </ol>
             </div>
 
@@ -1114,11 +1114,15 @@
         testResults.classList.remove("stale");
         testScore.textContent = `${passedTests} / ${tests.length}`;
         testProgress.style.width = `${(passedTests / tests.length) * 100}%`;
-        downloadButton.disabled = passedTests !== tests.length;
+        const failedTests = tests.length - passedTests;
+        const canDownload = failedTests <= 2;
+        downloadButton.disabled = !canDownload;
         validationMessage.className = `validation-message ${passedTests === tests.length ? "success" : "error"}`;
         validationMessage.textContent = passedTests === tests.length
           ? "Documento superado: ya puedes descargar index.html."
-          : `Has superado ${passedTests} de ${tests.length} pruebas. Corrige las pistas marcadas y vuelve a validar.`;
+          : canDownload
+            ? `Puedes descargar index.html con ${failedTests} ${failedTests === 1 ? "error pendiente" : "errores pendientes"} (máximo permitido: 2 por ficha). Revisa las pistas para corregirlos.`
+            : `Has superado ${passedTests} de ${tests.length} pruebas. Hay ${failedTests} errores: corrige las pistas y vuelve a validar para descargar (máximo permitido: 2 por ficha).`;
       };
 
       validateButton.addEventListener("click", () => {
