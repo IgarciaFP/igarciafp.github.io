@@ -60,6 +60,13 @@
             <li><a href="#sec1_3" class="subsection-link">1.3. HTML, CSS y JavaScript</a></li>
             <li><a href="#sec1_4" class="subsection-link">1.4. Características del lenguaje</a></li>
             <li><a href="#sec1_5" class="subsection-link">1.5. Práctica: una calculadora</a></li>
+            <li><a href="#sec2">2. Entorno de trabajo y primer programa</a></li>
+            <li><a href="#sec2_1" class="subsection-link">2.1. Herramientas y organización</a></li>
+            <li><a href="#sec2_2" class="subsection-link">2.2. Mostrar y recoger información</a></li>
+            <li><a href="#sec2_3" class="subsection-link">2.3. Primer contacto con la depuración</a></li>
+            <li><a href="#sec2_4" class="subsection-link">2.4. Incluir JavaScript</a></li>
+            <li><a href="#sec2_5" class="subsection-link">2.5. Carga y ejecución</a></li>
+            <li><a href="#sec2_6" class="subsection-link">2.6. Hola, mundo: la calculadora</a></li>
         </ul>
     </nav>
     <div class="document-wrapper">
@@ -232,6 +239,157 @@
                         <li>Escribe, con tus propias palabras, los pasos que deberían realizarse al pulsar «Calcular» y al pulsar «Limpiar».</li>
                     </ol>
                     <p><strong>Entrega:</strong> una respuesta breve y razonada. Todavía no es necesario escribir código.</p>
+                </div>
+            </section>
+
+            <section aria-labelledby="sec2">
+                <h2 id="sec2"><i class="fa-solid fa-code" aria-hidden="true"></i> 2. Entorno de trabajo y primer programa</h2>
+                <p>Para comenzar se necesitan un editor y un navegador. El objetivo de este apartado es preparar los archivos, ejecutar instrucciones sencillas y comprobar qué sucede durante su ejecución.</p>
+
+                <h3 id="sec2_1">2.1. Herramientas y organización del proyecto</h3>
+                <ul>
+                    <li><strong>Visual Studio Code:</strong> permite editar y organizar los archivos del proyecto.</li>
+                    <li><strong>Chrome:</strong> carga la página y ejecuta su JavaScript.</li>
+                    <li><strong>DevTools:</strong> son las herramientas de desarrollo integradas en el navegador. Se abren con <kbd>F12</kbd> o desde el menú de Chrome, en <em>Más herramientas → Herramientas para desarrolladores</em>.</li>
+                </ul>
+                <p>En DevTools se utilizarán principalmente <strong>Console (Consola)</strong>, para ejecutar instrucciones y consultar mensajes; <strong>Sources (Fuentes)</strong>, para examinar y depurar el código; y <strong>Network (Red)</strong>, para comprobar la carga de los archivos.</p>
+                <p>Abre la carpeta completa del proyecto en VS Code. La calculadora tendrá esta estructura:</p>
+                <pre><code>calculadora/
+├── index.html
+├── estilos.css
+└── app.js</code></pre>
+                <p>Para servir los archivos por HTTP se puede utilizar la extensión <a href="https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer" target="_blank" rel="noopener noreferrer">Live Server, de Ritwick Dey</a>. Una vez instalada, haz clic derecho sobre <code>index.html</code> y selecciona <em>Open with Live Server</em>. Abre la dirección resultante en Chrome. Su dominio será normalmente <code>localhost</code> o <code>127.0.0.1</code>; el puerto puede variar.</p>
+                <p>El servidor local entrega los archivos. <strong>El JavaScript de esta práctica se ejecuta en el navegador</strong>. Guarda los cambios en VS Code antes de comprobarlos en la página.</p>
+
+                <h3 id="sec2_2">2.2. Primeras formas de mostrar y recoger información</h3>
+                <p>Estas herramientas permiten observar los primeros programas. Escribe las instrucciones de los ejemplos una a una en la consola de una página de práctica. El texto entre comillas representa una cadena.</p>
+                <h4 class="content-subtitle">Mensajes en la consola</h4>
+                <pre><code>console.log("Comienza el programa");
+console.log(8 + 4);</code></pre>
+                <p><code>console.log()</code> muestra información en DevTools sin añadirla a la página. En este ejemplo aparecen un mensaje y el resultado <code>12</code>. Si la consola muestra también <code>undefined</code>, es el valor devuelto por la llamada; no indica que haya fallado.</p>
+                <h4 class="content-subtitle">Diálogos del navegador</h4>
+                <pre><code>alert("Bienvenido a la calculadora");
+console.log(prompt("¿Cómo te llamas?"));
+console.log(confirm("¿Quieres continuar?"));</code></pre>
+                <ul>
+                    <li><code>alert()</code> muestra un aviso que el usuario debe cerrar.</li>
+                    <li><code>prompt()</code> solicita un texto. Devuelve una cadena al aceptar, una cadena vacía si se acepta sin escribir, o <code>null</code> al cancelar. Incluso cuando se escribe un número, se recibe texto.</li>
+                    <li><code>confirm()</code> solicita una decisión. Devuelve <code>true</code> al aceptar o <code>false</code> al cancelar.</li>
+                </ul>
+                <p>En los dos últimos ejemplos se obtiene primero la respuesta del diálogo y después se muestra con <code>console.log()</code>. Los tipos de estos valores se estudiarán en el apartado 4.</p>
+                <p>Los diálogos son modales: mientras permanecen abiertos impiden interactuar con el resto de la página. Resultan útiles para estas primeras pruebas; en la calculadora se utilizarán los campos y mensajes del documento.</p>
+                <div class="didactic-note">
+                    <p><strong>Referencia histórica: <code>document.write()</code>.</strong> Escribe en el flujo de un documento HTML. Si se utiliza después de cargar la página puede sustituir su contenido. Su uso está desaconsejado y no se empleará en la práctica. Más adelante se actualizarán elementos del DOM mediante herramientas como <code>textContent</code>. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/write" target="_blank" rel="noopener noreferrer">Consultar la explicación de MDN</a>.</p>
+                </div>
+                <div class="activity-card activity-callout" id="actividad-2-1">
+                    <p><strong>2.1. Observar las respuestas</strong></p>
+                    <ol>
+                        <li>Ejecuta los ejemplos anteriores y distingue qué se muestra en la página, en un diálogo y en la consola.</li>
+                        <li>Prueba <code>prompt()</code> aceptando un nombre, aceptando el campo vacío y cancelando. Anota las diferencias.</li>
+                        <li>Acepta y cancela <code>confirm()</code>. Explica qué valor aparece en cada caso.</li>
+                    </ol>
+                </div>
+                <div class="resource-card expansion-card">
+                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Consola y diálogos</span><span class="resource-badge badge-reading">Consulta</span></div>
+                    <p class="resource-description">Referencias para consultar la finalidad y los valores devueltos por cada herramienta.</p>
+                    <p><a href="https://developer.mozilla.org/es/docs/Web/API/console" target="_blank" rel="noopener noreferrer">MDN · Consola</a> · <a href="https://developer.mozilla.org/es/docs/Web/API/Window/alert" target="_blank" rel="noopener noreferrer">alert()</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/prompt" target="_blank" rel="noopener noreferrer">prompt()</a> · <a href="https://developer.mozilla.org/es/docs/Web/API/Window/confirm" target="_blank" rel="noopener noreferrer">confirm()</a></p>
+                </div>
+
+                <h3 id="sec2_3">2.3. Primer contacto con la depuración</h3>
+                <p><strong>Depurar</strong> consiste en localizar y comprender los errores de un programa. Conviene distinguir un mensaje que escribe el programador de un error detectado por el navegador:</p>
+                <pre><code>console.log("Información de seguimiento");
+console.warn("Aviso de prueba");
+console.error("Mensaje de error de prueba");</code></pre>
+                <p><code>console.warn()</code> y <code>console.error()</code> presentan mensajes con distinta importancia visual. Llamar a <code>console.error()</code> no provoca por sí mismo una excepción ni detiene el programa.</p>
+                <p>Cuando aparece un error real, la consola suele indicar su tipo, una descripción y el archivo y la línea relacionados. El enlace a esa línea ayuda a localizarlo. Si no aparecen mensajes, comprueba los filtros de la consola.</p>
+                <h4 class="content-subtitle">Puntos de interrupción</h4>
+                <p>Un <strong>punto de interrupción</strong> pausa la ejecución antes de una instrucción. Cuando el archivo <code>app.js</code> esté conectado al HTML, utiliza este ejemplo:</p>
+                <pre><code>console.log("Inicio");
+console.log(8 + 4);
+console.log("Fin");</code></pre>
+                <ol>
+                    <li>Abre <em>Sources</em> y localiza <code>app.js</code>.</li>
+                    <li>Haz clic en el número de la segunda línea para establecer un punto de interrupción.</li>
+                    <li>Recarga la página. La ejecución se detendrá antes de calcular y mostrar la suma.</li>
+                    <li>Avanza una instrucción con <em>Step over</em> y continúa con <em>Resume script execution</em>. Retira el punto de interrupción al terminar.</li>
+                </ol>
+                <div class="activity-card activity-callout" id="actividad-2-2">
+                    <p><strong>2.2. Localizar un error</strong></p>
+                    <p>Ejecuta <code>console.Log("Hola");</code> en la consola. Lee el mensaje, compáralo con <code>console.log("Hola");</code> y corrige la instrucción. Explica por qué una letra mayúscula cambia el resultado.</p>
+                </div>
+                <div class="resource-card expansion-card">
+                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Depuración en Chrome</span><span class="resource-badge badge-reading">Guía</span></div>
+                    <p class="resource-description">Guía de Chrome DevTools sobre puntos de interrupción y ejecución paso a paso. Para este apartado basta con practicar cómo pausar y reanudar.</p>
+                    <a href="https://developer.chrome.com/docs/devtools/javascript?hl=es" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Chrome Developers · Cómo depurar JavaScript <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+                </div>
+
+                <h3 id="sec2_4">2.4. Formas de incluir JavaScript</h3>
+                <p>El elemento HTML <code>&lt;script&gt;</code> permite incluir instrucciones en el documento o cargar un archivo externo.</p>
+                <h4 class="content-subtitle">Código dentro del documento</h4>
+                <pre><code>&lt;script&gt;
+    console.log("Hola desde el documento HTML");
+&lt;/script&gt;</code></pre>
+                <p>Esta forma resulta útil para ejemplos pequeños. El código se escribe entre las etiquetas de apertura y cierre.</p>
+                <h4 class="content-subtitle">Archivo externo</h4>
+                <pre><code>&lt;script src="app.js" defer&gt;&lt;/script&gt;</code></pre>
+                <p>El atributo <code>src</code> indica la ruta al archivo. Dentro de <code>app.js</code> se escriben únicamente instrucciones JavaScript, sin etiquetas <code>&lt;script&gt;</code>. Esta será la organización de la calculadora, con el enlace situado en <code>&lt;head&gt;</code>.</p>
+                <p>Cuando un elemento <code>&lt;script&gt;</code> tiene <code>src</code>, no se añade también código entre sus etiquetas. En ejemplos antiguos pueden aparecer atributos como <code>onclick</code> con instrucciones dentro del HTML; en esta unidad los eventos se registrarán desde JavaScript con <code>addEventListener()</code>.</p>
+
+                <h3 id="sec2_5">2.5. Carga y ejecución de los scripts</h3>
+                <p>El navegador procesa el HTML progresivamente. Si un script se ejecuta antes de que exista el elemento que necesita, no podrá encontrarlo. Este fragmento permite observar el problema:</p>
+                <pre><code>&lt;script&gt;
+    console.log(document.querySelector("#saludo"));
+&lt;/script&gt;
+&lt;p id="saludo"&gt;Hola, mundo&lt;/p&gt;</code></pre>
+                <p>La consulta devuelve <code>null</code> porque el párrafo todavía no se ha procesado. Basta con interpretar la consulta como «buscar el elemento cuyo identificador es saludo»; el DOM se estudiará en el apartado 6.</p>
+                <p>Las principales opciones de carga son:</p>
+                <ul>
+                    <li><strong>Script clásico sin atributos:</strong> detiene el análisis del HTML para cargar y ejecutar el código.</li>
+                    <li><strong><code>defer</code>:</strong> descarga un script clásico externo mientras continúa el análisis y lo ejecuta cuando el HTML ya está procesado. Conserva el orden entre scripts diferidos.</li>
+                    <li><strong><code>async</code>:</strong> descarga en paralelo y ejecuta cuando está disponible. No garantiza que el HTML esté terminado ni el orden entre scripts.</li>
+                    <li><strong>Script al final de <code>&lt;body&gt;</code>:</strong> puede acceder a los elementos escritos antes de él.</li>
+                    <li><strong><code>type="module"</code>:</strong> carga código como módulo y difiere su ejecución por defecto. Los módulos se desarrollarán en otra unidad.</li>
+                </ul>
+                <p>En esta práctica se utilizará <strong><code>&lt;script src="app.js" defer&gt;&lt;/script&gt;</code></strong>. <code>defer</code> no tiene efecto en scripts clásicos escritos dentro del HTML y no implica esperar a que se descarguen todas las imágenes.</p>
+                <div class="activity-card activity-callout" id="actividad-2-3">
+                    <p><strong>2.3. Comprobar el orden de carga</strong></p>
+                    <p>En una página de prueba independiente, coloca el fragmento anterior dentro de <code>&lt;body&gt;</code>. Después mueve la instrucción JavaScript a un archivo externo y enlázalo desde <code>&lt;head&gt;</code> con <code>defer</code>. Recarga y compara lo que muestra la consola. ¿Por qué ahora aparece el elemento?</p>
+                </div>
+                <div class="resource-card expansion-card">
+                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Inclusión y carga de JavaScript</span><span class="resource-badge badge-reading">Lectura</span></div>
+                    <p class="resource-description">Ejemplos de inclusión de scripts y referencia de sus atributos.</p>
+                    <a href="https://es.javascript.info/hello-world" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · ¡Hola, mundo!</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · El elemento script</a>
+                </div>
+
+                <h3 id="sec2_6">2.6. Hola, mundo: comenzar la calculadora</h3>
+                <p>Descarga los tres archivos siguientes y guárdalos juntos en una carpeta llamada <code>calculadora</code>, conservando sus nombres. El HTML y el CSS están preparados. El archivo <code>app.js</code> contiene únicamente comentarios para que el alumnado escriba su código.</p>
+                <div class="resource-card">
+                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-download" aria-hidden="true"></i> Material inicial de la calculadora</span><span class="resource-badge badge-reading">Archivos</span></div>
+                    <a class="resource-link-btn" href="alumnado/u02/calculadora/index.html" download="index.html">Descargar index.html</a>
+                    <a class="resource-link-btn" href="alumnado/u02/calculadora/estilos.css" download="estilos.css">Descargar estilos.css</a>
+                    <a class="resource-link-btn" href="alumnado/u02/calculadora/app.js" download="app.js">Descargar app.js</a>
+                    <p><a href="alumnado/u02/calculadora/index.html" target="_blank" rel="noopener noreferrer">Ver la interfaz inicial</a>. Los botones todavía no realizan cálculos; el formulario conserva su comportamiento nativo hasta que se programen los eventos.</p>
+                </div>
+                <ol>
+                    <li>Abre la carpeta en VS Code y localiza en el HTML el enlace a <code>app.js</code>.</li>
+                    <li>Escribe el siguiente código en <code>app.js</code> y guarda el archivo.</li>
+                    <li>Abre <code>index.html</code> con el servidor local y consulta la consola de Chrome.</li>
+                </ol>
+                <pre><code>console.log("Hola, mundo");
+console.log("JavaScript de la calculadora conectado");</code></pre>
+                <p>Los dos mensajes confirman que el archivo se ha cargado y ejecutado. La interfaz aún no calcula: su comportamiento se incorporará en los siguientes apartados.</p>
+                <div class="didactic-note">
+                    <p><strong>Si los mensajes no aparecen:</strong> comprueba que has guardado <code>app.js</code>, que la ruta de <code>src</code> coincide con su ubicación y que has recargado la página. En <em>Network</em>, una respuesta <code>404</code> al solicitar el archivo indica que no se ha encontrado.</p>
+                </div>
+                <div class="activity-card activity-callout" id="actividad-2-4">
+                    <p><strong>2.4. Primera entrega de la calculadora</strong></p>
+                    <ol>
+                        <li>Añade un tercer mensaje que identifique al autor o autora del programa.</li>
+                        <li>Establece un punto de interrupción en la segunda instrucción, recarga y comprueba qué mensaje se ha mostrado antes de la pausa.</li>
+                        <li>Retira el punto de interrupción y confirma que los tres mensajes aparecen en orden.</li>
+                    </ol>
+                    <p><strong>Entrega:</strong> el archivo <code>app.js</code> y una captura de la consola. Conserva el HTML y el CSS proporcionados para continuar la práctica.</p>
                 </div>
             </section>
             <footer class="document-footer">DAW / DWEC · © Ignacio García</footer>
