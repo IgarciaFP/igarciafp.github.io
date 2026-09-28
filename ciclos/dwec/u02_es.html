@@ -63,6 +63,8 @@
         .delivery-tooltip { position: absolute; z-index: 5; left: 0; bottom: calc(100% + 8px); margin: 0; padding: 14px; width: min(100%, 380px); box-sizing: border-box; border: 1px solid #fcd34d; border-radius: 8px; background: #fffbeb; color: #78350f; text-align: left; box-shadow: 0 5px 18px #78350f20; font-size: .95rem; }
         .delivery-tooltip[hidden] { display: none; }
         @media print { .delivery-tooltip[hidden], .delivery-tooltip { display: block; position: static; box-shadow: none; width: 100%; } }
+        .resource-links { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+        .resource-links .resource-link-btn { display: inline-flex; align-items: center; gap: 6px; width: auto; max-width: 100%; min-width: 0; margin: 0; white-space: normal; overflow-wrap: anywhere; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -188,8 +190,8 @@
                         <span class="resource-badge badge-reading">Lectura</span>
                     </div>
                     <p class="resource-description">La introducción de MDN explica la relación entre JavaScript y ECMAScript. Ecma International permite consultar las ediciones del estándar como referencia.</p>
-                    <a href="https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Introduction" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Introducción a JavaScript <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
-                    <a href="https://ecma-international.org/publications-and-standards/standards/ecma-262/" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Ecma International · ECMA-262 <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+                    <div class="resource-links"><a href="https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Introduction" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Introducción a JavaScript <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+                    <a href="https://ecma-international.org/publications-and-standards/standards/ecma-262/" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Ecma International · ECMA-262 <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></div>
                 </div>
 
                 <h3 id="sec1_3">1.3. Características del lenguaje</h3>
@@ -273,7 +275,7 @@
                 <ul>
                     <li><strong>Visual Studio Code:</strong> permite editar y organizar los archivos del proyecto.</li>
                     <li><strong>GitHub Codespaces:</strong> ofrece un entorno de desarrollo en la nube, con editor y terminal accesibles desde el navegador. Permite trabajar en un repositorio sin preparar todo el entorno en el ordenador local.</li>
-                    <li><strong>Node.js y npm:</strong> permiten ejecutar las herramientas de desarrollo e instalar las dependencias de un proyecto. Se necesitan para trabajar con Vite; el JavaScript de la página seguirá ejecutándose en el navegador.</li>
+                    <li><strong>Node.js y npm:</strong> integradas en Codespaces, permiten ejecutar las herramientas de desarrollo e instalar las dependencias de un proyecto. Se necesitan para trabajar con Vite; el JavaScript de la página seguirá ejecutándose en el navegador.</li>
                     <li><strong>Vite:</strong> proporciona un servidor de desarrollo que actualiza la página al guardar cambios y herramientas para preparar el proyecto para su publicación. En esta unidad se utilizará la plantilla <code>vanilla</code>, con JavaScript sin frameworks.</li>
                     <li><strong>Chrome:</strong> carga la página y ejecuta su JavaScript.</li>
                     <li><strong>DevTools:</strong> son las herramientas de desarrollo integradas en el navegador. Se abren con <kbd>F12</kbd> o desde el menú de Chrome, en <em>Más herramientas → Herramientas para desarrolladores</em>.</li>
@@ -283,32 +285,33 @@
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Emmet: escribir HTML y CSS con abreviaturas</span><span class="resource-badge badge-reading">Ampliación</span></div>
                     <p>En clase será necesario utilizar <strong>Emmet</strong>, antes llamado <strong>Zen Coding</strong>, al trabajar con VS Code. Permite expandir abreviaturas para escribir HTML y CSS con rapidez; está integrado en el editor y no requiere instalar una extensión.</p>
                     <p>Por ejemplo, <code>ul&gt;li*3</code> genera una lista con tres elementos. Escribe la abreviatura en un archivo HTML y acepta la sugerencia de Emmet.</p>
-                    <a class="resource-link-btn" href="https://docs.emmet.io/cheat-sheet/" target="_blank" rel="noopener noreferrer">Emmet · Hoja de referencia</a>
-                    <a class="resource-link-btn" href="https://code.visualstudio.com/docs/languages/emmet" target="_blank" rel="noopener noreferrer">Emmet en VS Code</a>
+                    <div class="resource-links"><a class="resource-link-btn" href="https://docs.emmet.io/cheat-sheet/" target="_blank" rel="noopener noreferrer">Emmet · Hoja de referencia</a>
+                    <a class="resource-link-btn" href="https://code.visualstudio.com/docs/languages/emmet" target="_blank" rel="noopener noreferrer">Emmet en VS Code</a></div>
                 </div>
                 <div class="activity-card activity-callout" id="actividad-2-instalacion">
-                    <p><strong>Preparación. Instala las herramientas necesarias para el curso.</strong></p>
+                    <p><strong>Preparación. Configura las herramientas necesarias para el curso.</strong></p>
                     <ol>
-                        <li>Instala Visual Studio Code, Chrome y una versión LTS de Node.js compatible con Vite. Si ya los tienes, comprueba que puedes abrirlos. DevTools forma parte de Chrome.</li>
-                        <li>Abre una terminal y ejecuta <code>node --version</code> y <code>npm --version</code>. Anota las versiones en tu cuaderno de trabajo.</li>
-                        <li>Accede a GitHub y crea un Codespace en el repositorio de trabajo indicado en clase. Localiza el editor y la terminal; comprueba también allí las versiones de Node.js y npm.</li>
-                        <li>En el entorno que indique el profesor, crea un proyecto de prueba con los comandos siguientes. Abre la dirección que muestre Vite; en Codespaces, utiliza el enlace de la pestaña <strong>Puertos</strong>.</li>
+                        <li>Instala Visual Studio Code y Chrome si no los tienes. Si utilizas versiones antiguas, actualízalas. DevTools ya forma parte de Chrome.</li>
+                        <li>En VS Code, instala o actualiza la extensión <strong>GitHub Codespaces</strong> e inicia sesión con tu cuenta de GitHub.</li>
+                        <li>Crea o abre el Codespace del repositorio indicado en clase y conéctate a él desde VS Code. <strong>Node.js y npm ya están incluidos en el entorno remoto de Codespaces</strong>; no tienes que instalarlos en tu ordenador para esta actividad.</li>
+                        <li>En la terminal del Codespace, ejecuta <code>node --version</code> y <code>npm --version</code>. Anota las versiones. Si son antiguas o no cumplen los requisitos de Vite, actualiza Node.js y npm en ese entorno siguiendo las indicaciones del profesor.</li>
+                        <li>Crea el proyecto de prueba con estos comandos en la terminal del Codespace. Abre el enlace del servidor desde la pestaña <strong>Puertos</strong>.</li>
                     </ol>
                     <pre><code>npm create vite@latest prueba-js -- --template vanilla
 cd prueba-js
 npm install
 npm run dev</code></pre>
                     <p>Modifica un texto de la página inicial, guarda y comprueba que se actualiza. Anota qué herramientas has preparado, las versiones y el resultado de la prueba. Los primeros ejemplos de la unidad también pueden ejecutarse en un HTML sencillo; el entorno con Vite se utilizará cuando se indique.</p>
-                    <a class="resource-link-btn" href="https://code.visualstudio.com/" target="_blank" rel="noopener noreferrer">Visual Studio Code</a>
+                    <div class="resource-links"><a class="resource-link-btn" href="https://code.visualstudio.com/" target="_blank" rel="noopener noreferrer">Visual Studio Code</a>
                     <a class="resource-link-btn" href="https://www.google.com/chrome/" target="_blank" rel="noopener noreferrer">Chrome</a>
-                    <a class="resource-link-btn" href="https://nodejs.org/" target="_blank" rel="noopener noreferrer">Node.js</a>
+                    <a class="resource-link-btn" href="https://docs.github.com/en/codespaces/developing-in-a-codespace/using-github-codespaces-in-visual-studio-code" target="_blank" rel="noopener noreferrer">Conectar Codespaces con VS Code</a>
                     <a class="resource-link-btn" href="https://docs.github.com/en/codespaces/overview" target="_blank" rel="noopener noreferrer">GitHub Codespaces</a>
-                    <a class="resource-link-btn" href="https://vite.dev/guide/" target="_blank" rel="noopener noreferrer">Vite · Instalación y requisitos</a>
+                    <a class="resource-link-btn" href="https://vite.dev/guide/" target="_blank" rel="noopener noreferrer">Vite · Instalación y requisitos</a></div>
                 <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-2" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-2" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
                 <div class="activity-card activity-callout laboratory-card" id="actividad-2-emmet">
                     <p><strong>Práctica de laboratorio. Emmet (Zen Coding)</strong></p>
-                    <ol><li>Abre el laboratorio y prepara en VS Code el archivo <code>reto-emmet.html</code>.</li><li>Realiza las diez misiones y el reto final. Escribe y expande las abreviaturas para comprobar cómo se transforman en HTML y CSS.</li><li>Guarda el código y anota en tu cuaderno cinco abreviaturas que hayas utilizado, qué genera cada una y las dificultades que hayas resuelto.</li></ol>
+                    <p>Realiza el laboratorio de Emmet donde te convertirás en un programador zen. Genera el informe final para la entrega.</p>
                     <a class="resource-link-btn" href="/labs/emmet/index.html" target="_blank" rel="noopener noreferrer">Abrir el laboratorio de Emmet</a>
                 <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-3" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-3" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
@@ -350,14 +353,9 @@ console.log(confirm("¿Quieres continuar?"));</code></pre>
                     <li><code>confirm()</code> solicita una decisión. Devuelve <code>true</code> al aceptar o <code>false</code> al cancelar.</li>
                 </ul>
                 <p>En los dos últimos ejemplos se obtiene primero la respuesta del diálogo y después se muestra con <code>console.log()</code>. Los tipos de estos valores se estudiarán en el apartado 4.</p>
-                <p>Los diálogos son modales: mientras permanecen abiertos impiden interactuar con el resto de la página. Resultan útiles para estas primeras pruebas; en las páginas interactivas se utilizarán también campos y mensajes del documento.</p>
-                <aside class="function-card" id="ficha-funcion-5" aria-label="Ficha de función: document.write(texto1, ..., textoN)">
-                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
-                    <p class="function-signature"><code>document.write(texto1, ..., textoN)</code></p>
-                    <p>Escribe contenido interpretado como HTML en el flujo del documento. Referencia histórica: no se utilizará en los ejercicios.</p><p><strong>Parámetros:</strong> Uno o varios textos con el contenido que se escribe.</p><p><strong>Devuelve:</strong> undefined. Tras cargar la página puede reemplazar su contenido.</p>
-                </aside>
-                                <div class="didactic-note">
-                    <p><strong>Referencia histórica: <code>document.write()</code>.</strong> Escribe en el flujo de un documento HTML. Si se utiliza después de cargar la página puede sustituir su contenido. Su uso está desaconsejado y no se empleará en la práctica. Más adelante se actualizarán elementos del DOM mediante herramientas como <code>textContent</code>.</p>
+                <p><strong>Los diálogos son modales: mientras permanecen abiertos impiden interactuar con el resto de la página. Resultan útiles para estas primeras pruebas; en las páginas interactivas se utilizarán también campos y mensajes del documento.</strong></p>
+                <div class="didactic-note">
+                    <p><strong>Referencia histórica:</strong> la función <code>document.write()</code> escribe en el flujo de un documento HTML. Si se utiliza después de cargar la página puede sustituir su contenido. Su uso está desaconsejado y no se empleará en la práctica. Más adelante se actualizarán elementos del DOM mediante herramientas como <code>textContent</code>.</p>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/write" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Consultar la explicación de MDN</a>
                 </div>
                 <div class="activity-card activity-callout" id="actividad-2-1">
@@ -368,10 +366,10 @@ console.log(confirm("¿Quieres continuar?"));</code></pre>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Consola y diálogos</span><span class="resource-badge badge-reading">Consulta</span></div>
                     <p class="resource-description">Referencias para consultar la finalidad y los valores devueltos por cada herramienta.</p>
-                    <a class="resource-link-btn" href="https://developer.mozilla.org/es/docs/Web/API/console" target="_blank" rel="noopener noreferrer">MDN · Consola</a>
+                    <div class="resource-links"><a class="resource-link-btn" href="https://developer.mozilla.org/es/docs/Web/API/console" target="_blank" rel="noopener noreferrer">MDN · Consola</a>
                     <a class="resource-link-btn" href="https://developer.mozilla.org/es/docs/Web/API/Window/alert" target="_blank" rel="noopener noreferrer">alert()</a>
                     <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Window/prompt" target="_blank" rel="noopener noreferrer">prompt()</a>
-                    <a class="resource-link-btn" href="https://developer.mozilla.org/es/docs/Web/API/Window/confirm" target="_blank" rel="noopener noreferrer">confirm()</a>
+                    <a class="resource-link-btn" href="https://developer.mozilla.org/es/docs/Web/API/Window/confirm" target="_blank" rel="noopener noreferrer">confirm()</a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-2-2">
@@ -433,7 +431,18 @@ console.error("Mensaje de error de prueba");</code></pre>
                 <p>Esta forma resulta útil para ejemplos pequeños. El código se escribe entre las etiquetas de apertura y cierre.</p>
                 <h4 class="content-subtitle">Archivo externo</h4>
                 <pre><code>&lt;script src="app.js" defer&gt;&lt;/script&gt;</code></pre>
-                <p>El atributo <code>src</code> indica la ruta al archivo. Dentro de <code>app.js</code> se escriben únicamente instrucciones JavaScript, sin etiquetas <code>&lt;script&gt;</code>. Para pasar el «Hola, mundo» a esta organización, crea <code>app.js</code> junto a <code>index.html</code> y mueve allí los mensajes de consola. Retira el bloque <code>&lt;script&gt;</code> del cuerpo del HTML y añade el enlace del ejemplo en <code>&lt;head&gt;</code>. Guarda ambos archivos y recarga: los mensajes deben seguir apareciendo una sola vez. Esta será la organización de los siguientes ejercicios.</p>
+                <p>El atributo <code>src</code> indica la ruta al archivo. Dentro de <code>app.js</code> se escriben únicamente instrucciones JavaScript, sin etiquetas <code>&lt;script&gt;</code>.</p>
+                <div class="activity-card activity-callout" id="actividad-2-js-externo">
+                    <p><strong>2.3. Pasar el JavaScript a un archivo externo</strong></p>
+                    <ol>
+                        <li>Abre el «Hola, mundo» de la actividad anterior y crea <code>app.js</code> junto a <code>index.html</code>.</li>
+                        <li>Mueve los mensajes de consola a <code>app.js</code>. Copia solo las instrucciones JavaScript, sin las etiquetas <code>&lt;script&gt;</code>.</li>
+                        <li>Retira el bloque <code>&lt;script&gt;</code> del cuerpo del HTML y añade en <code>&lt;head&gt;</code> el enlace <code>&lt;script src="app.js" defer&gt;&lt;/script&gt;</code>.</li>
+                        <li>Guarda ambos archivos y recarga la página. Comprueba que los tres mensajes siguen apareciendo una sola vez y en el mismo orden.</li>
+                        <li>Entrega los dos archivos y anota el resultado de la prueba en tu cuaderno de trabajo. Utilizaremos esta organización en los siguientes ejercicios.</li>
+                    </ol>
+                    <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-js-externo" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-js-externo" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
+                </div>
                 <aside class="function-card" id="ficha-funcion-8" aria-label="Ficha de función: destino.addEventListener(tipo, manejador, opciones)">
                     <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
                     <p class="function-signature"><code>destino.addEventListener(tipo, manejador, opciones)</code></p>
@@ -479,24 +488,32 @@ console.error("Mensaje de error de prueba");</code></pre>
 window.addEventListener("load", function () {
     console.log("2. Han terminado de cargar los recursos de la página");
 });</code></pre>
-                        <p>Primero aparece el mensaje de <code>DOMContentLoaded</code> y después el de <code>load</code>. Si la página contiene una imagen de carga normal que tarda en descargarse, puede haber una pausa entre ambos. Con los recursos en caché, los mensajes pueden aparecer casi seguidos.</p>
-                        <p>El código dentro de cada <code>function () { ... }</code> se ejecuta cuando ocurre ese evento. Las imágenes con <code>loading="lazy"</code> no retrasan <code>load</code>.</p>
+                        
+                        
                     </div>
-                    <p><code>onload</code> es la propiedad que recibe el manejador; el nombre del evento es <code>load</code>. Una nueva asignación a <code>window.onload</code> sustituye el manejador anterior; <code>addEventListener()</code> permite registrar varios.</p>
-                    <p>Estos eventos no cambian cómo se descarga el script: retrasan la acción registrada. El manejador debe registrarse antes de que ocurra el evento. Se practicarán al estudiar funciones y eventos; por ahora se utilizará <code>defer</code>.</p>
-                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · DOMContentLoaded</a>
-                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · load y onload</a>
+                    <div class="didactic-note" id="nota-onload">
+                        <p><strong>La propiedad <code>onload</code> y el evento <code>load</code>.</strong> <code>onload</code> recibe el manejador; el nombre del evento es <code>load</code>. Una nueva asignación a <code>window.onload</code> sustituye el manejador anterior; <code>addEventListener()</code> permite registrar varios.</p>
+                        <p>También puede escribirse como atributo de <code>&lt;body&gt;</code>. En este caso, responde al evento de carga de la ventana:</p>
+                        <pre><code>&lt;!-- Desaconsejado: evento en el HTML --&gt;
+&lt;body onload="console.log('Página cargada')"&gt;
+    &lt;h1&gt;Mi página&lt;/h1&gt;
+&lt;/body&gt;</code></pre>
+                        <p><strong>Se desaconseja esta forma porque mezcla la estructura HTML con el comportamiento.</strong> En los ejercicios, registra el manejador desde el archivo JavaScript con <code>window.addEventListener("load", manejador)</code>.</p>
+                    </div>
+                    
+                    <div class="resource-links"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · DOMContentLoaded</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · load y onload</a></div>
                 </div>
                 <div class="activity-card activity-callout" id="actividad-2-3">
-                    <p><strong>2.3. Comprobar el orden de carga</strong></p>
+                    <p><strong>2.4. Comprobar el orden de carga</strong></p>
                     <ol><li>Copia en una página de prueba el ejemplo del script situado antes del párrafo. Recarga y apunta qué muestra la consola.</li><li>Mueve la instrucción JavaScript a app.js y enlaza ese archivo desde head con defer.</li><li>Recarga, copia la nueva salida y explica por qué ahora se encuentra el párrafo. Entrega las dos versiones del código.</li></ol>
                 <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-6" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-6" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Inclusión y carga de JavaScript</span><span class="resource-badge badge-reading">Lectura</span></div>
                     <p class="resource-description">Ejemplos de inclusión de scripts y referencia de sus atributos.</p>
-                    <a href="https://es.javascript.info/hello-world" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · ¡Hola, mundo!</a>
-                    <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · El elemento script</a>
+                    <div class="resource-links"><a href="https://es.javascript.info/hello-world" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · ¡Hola, mundo!</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · El elemento script</a></div>
                 </div>
 
             </section>
@@ -545,8 +562,8 @@ console.log("Fin del programa");</code></pre>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Sintaxis y estilo</span><span class="resource-badge badge-reading">Lectura</span></div>
                     <p class="resource-description">Consulta los apartados iniciales sobre sintaxis y comentarios. Las declaraciones de variables y los tipos se desarrollarán en el siguiente punto de esta unidad.</p>
-                    <a href="https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Grammar_and_types" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Gramática y tipos</a>
-                    <a href="https://es.javascript.info/structure" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Estructura del código</a>
+                    <div class="resource-links"><a href="https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Grammar_and_types" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Gramática y tipos</a>
+                    <a href="https://es.javascript.info/structure" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Estructura del código</a></div>
                 </div>
             </section>
 
@@ -712,9 +729,9 @@ console.log(centro); // IES Ejemplo
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Variables y tipos</span><span class="resource-badge badge-reading">Lectura</span></div>
                     <p class="resource-description">Referencias para ampliar las declaraciones, el ámbito y los tipos de datos. Los objetos y los tipos menos habituales se estudiarán más adelante.</p>
-                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Declaraciones, tipos y ámbito</a>
+                    <div class="resource-links"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Declaraciones, tipos y ámbito</a>
                     <a href="https://es.javascript.info/variables" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Variables</a>
-                    <a href="https://es.javascript.info/types" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Tipos de datos</a>
+                    <a href="https://es.javascript.info/types" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Tipos de datos</a></div>
                 </div>
             </section>
             <section aria-labelledby="sec5">
@@ -836,9 +853,9 @@ console.log(Number.isNaN(cantidad)); // true</code></pre>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Operadores y conversiones</span><span class="resource-badge badge-reading">Ampliación</span></div>
                     <p class="resource-description">Consulta ejemplos adicionales y las reglas de conversión. Los operadores menos habituales se estudiarán cuando sean necesarios.</p>
-                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Expresiones y operadores</a>
+                    <div class="resource-links"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Expresiones y operadores</a>
                     <a href="https://es.javascript.info/operators" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Operadores básicos</a>
-                    <a href="https://es.javascript.info/type-conversions" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Conversiones de tipos</a>
+                    <a href="https://es.javascript.info/type-conversions" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Conversiones de tipos</a></div>
                 </div>
             </section>
 
@@ -1014,11 +1031,11 @@ if (mensaje !== null) {
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Consultar y modificar el DOM</span><span class="resource-badge badge-reading">Ampliación</span></div>
                     <p class="resource-description">Referencias sobre selección, contenido, campos y clases. La creación de elementos y el recorrido detallado del árbol se abordarán más adelante.</p>
-                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · querySelector()</a>
+                    <div class="resource-links"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · querySelector()</a>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · textContent</a>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · innerHTML</a>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/value" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · value</a>
-                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/classList" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · classList</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/classList" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · classList</a></div>
                 </div>
             </section>
 
@@ -1168,9 +1185,9 @@ for (const parrafo of parrafos) {
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Decisiones y repeticiones</span><span class="resource-badge badge-reading">Ampliación</span></div>
                     <p class="resource-description">Referencias para ampliar las condiciones, el operador ternario, las alternativas de switch y los bucles.</p>
-                    <a href="https://es.javascript.info/ifelse" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · if y operador ternario</a>
+                    <div class="resource-links"><a href="https://es.javascript.info/ifelse" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · if y operador ternario</a>
                     <a href="https://es.javascript.info/switch" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · switch</a>
-                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Loops_and_iteration" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Bucles e iteración</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Loops_and_iteration" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Bucles e iteración</a></div>
                 </div>
             </section>
 
@@ -1312,11 +1329,11 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Eventos y formularios</span><span class="resource-badge badge-reading">Ampliación</span></div>
                     <p class="resource-description">Referencias para consultar el registro de manejadores, el objeto del evento y el comportamiento de los formularios.</p>
-                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · addEventListener()</a>
+                    <div class="resource-links"><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · addEventListener()</a>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/currentTarget" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · currentTarget</a>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · change</a>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · submit</a>
-                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · preventDefault()</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · preventDefault()</a></div>
                 </div>
             </section>
 
@@ -1462,9 +1479,9 @@ boton.addEventListener("click", () =&gt; {
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Funciones y funciones flecha</span><span class="resource-badge badge-reading">Ampliación</span></div>
                     <p class="resource-description">Referencias sobre parámetros, retorno, ámbito y las diferencias entre las formas de definir funciones. La recursividad y los cierres se reservan para más adelante.</p>
-                    <a href="https://es.javascript.info/function-basics" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Funciones</a>
+                    <div class="resource-links"><a href="https://es.javascript.info/function-basics" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Funciones</a>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Guía de funciones</a>
-                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Funciones flecha</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Funciones flecha</a></div>
                 </div>
             </section>
 
@@ -1476,10 +1493,10 @@ boton.addEventListener("click", () =&gt; {
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-download" aria-hidden="true"></i> Archivos de la práctica</span><span class="resource-badge badge-reading">Material</span></div>
                     <p class="resource-description">Descarga los tres archivos y guárdalos juntos en una carpeta llamada <code>calculadora</code>. La interfaz está preparada; el archivo JavaScript contiene únicamente indicaciones iniciales, sin solución.</p>
-                    <a href="alumnado/u02/calculadora/index.html" download="index.html" class="resource-link-btn">Descargar index.html</a>
+                    <div class="resource-links"><a href="alumnado/u02/calculadora/index.html" download="index.html" class="resource-link-btn">Descargar index.html</a>
                     <a href="alumnado/u02/calculadora/estilos.css" download="estilos.css" class="resource-link-btn">Descargar estilos.css</a>
                     <a href="alumnado/u02/calculadora/app.js" download="app.js" class="resource-link-btn">Descargar app.js</a>
-                    <a href="alumnado/u02/calculadora/index.html" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Ver la interfaz de partida</a>
+                    <a href="alumnado/u02/calculadora/index.html" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Ver la interfaz de partida</a></div>
                 </div>
                 <pre><code>calculadora/
 ├── index.html
@@ -1537,8 +1554,8 @@ boton.addEventListener("click", () =&gt; {
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Ayudas para completar la práctica</span><span class="resource-badge badge-reading">Consulta</span></div>
                     <p><code>Number.isFinite(valor)</code> comprueba si un valor es un número finito: devuelve <code>false</code> para <code>NaN</code> e <code>Infinity</code>. Úsalo después de convertir y al comprobar el resultado.</p>
                     <p><code>formulario.reset()</code> restaura los valores iniciales de los controles; no limpia por sí solo los mensajes ni las clases añadidas. <code>campo.focus()</code> sitúa el foco en un campo.</p>
-                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Number.isFinite()</a>
-                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/reset" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · reset()</a>
+                    <div class="resource-links"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Number.isFinite()</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/reset" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · reset()</a></div>
                 </div>
 
                 <h3 id="sec10_4">10.4. Pruebas de funcionamiento</h3>
