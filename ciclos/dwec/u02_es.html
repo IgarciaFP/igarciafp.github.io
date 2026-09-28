@@ -47,6 +47,22 @@
         }
         @media print {
         }
+
+        .function-card { margin: 22px 0; padding: 20px 24px; border: 1px solid #a5b4fc; border-left: 5px solid #4338ca; border-radius: 10px; background: #eef2ff; break-inside: avoid; }
+        .function-card .function-label { color: #3730a3; font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+        .function-card p { margin: 8px 0; text-align: left; }
+        .function-card code { overflow-wrap: anywhere; white-space: normal; }
+        .function-card .function-signature { font-size: 1.05em; font-weight: 600; }
+        .resource-card.expansion-card.expansion-purple { background: #f7f3ff; border-color: #ddd6fe; border-left-color: #7c3aed; }
+        .resource-card.expansion-card.expansion-purple .resource-title { color: #6d28d9; }
+        .resource-card.expansion-card.expansion-purple::before, .expansion-purple .badge-reading { color: #6d28d9; background: #ede9fe; border-color: #c4b5fd; }
+        .laboratory-card::before { content: "⚗ PRÁCTICA DE LABORATORIO"; }
+        .delivery-tip { position: relative; margin-top: 20px; color: #92400e; }
+        .delivery-trigger { cursor: pointer; padding: 8px 12px; border: 1px solid #d97706; border-radius: 8px; background: #fffbeb; color: #92400e; font: inherit; font-weight: 600; }
+        .delivery-trigger:focus-visible { outline: 3px solid #4338ca; outline-offset: 3px; }
+        .delivery-tooltip { position: absolute; z-index: 5; left: 0; bottom: calc(100% + 8px); margin: 0; padding: 14px; width: min(100%, 380px); box-sizing: border-box; border: 1px solid #fcd34d; border-radius: 8px; background: #fffbeb; color: #78350f; text-align: left; box-shadow: 0 5px 18px #78350f20; font-size: .95rem; }
+        .delivery-tooltip[hidden] { display: none; }
+        @media print { .delivery-tooltip[hidden], .delivery-tooltip { display: block; position: static; box-shadow: none; width: 100%; } }
     </style>
 </head>
 <body>
@@ -62,7 +78,8 @@
             <li><a href="#sec2_2" class="subsection-link">2.2. Mostrar y recoger información</a></li>
             <li><a href="#sec2_3" class="subsection-link">2.3. Primer contacto con la depuración</a></li>
             <li><a href="#sec2_4" class="subsection-link">2.4. Incluir JavaScript</a></li>
-            <li><a href="#sec2_5" class="subsection-link">2.5. Carga y ejecución</a></li>            <li><a href="#sec3">3. Sintaxis y buenas prácticas</a></li>
+            <li><a href="#sec2_5" class="subsection-link">2.5. Carga y ejecución</a></li>
+            <li><a href="#sec3">3. Sintaxis y buenas prácticas</a></li>
             <li><a href="#sec3_1" class="subsection-link">3.1. Valores, expresiones y bloques</a></li>
             <li><a href="#sec3_2" class="subsection-link">3.2. Mayúsculas y comentarios</a></li>
             <li><a href="#sec4">4. Variables y tipos de datos</a></li>
@@ -129,7 +146,7 @@
                 <p class="header-subtitle">El lenguaje que permite programar el comportamiento de una página web</p>
             </header>
 
-            <div class="didactic-note" id="entregas-actividades"><p><strong>Cómo entregar las actividades.</strong> Entrega siempre texto plano: tus respuestas y los resultados de las pruebas en un archivo <code>respuestas.txt</code>, y el código en sus archivos <code>.html</code>, <code>.css</code> y <code>.js</code>, según lo que pida cada actividad. Identifica cada ejercicio por su número. Copia los mensajes de la consola como texto; no entregues capturas ni documentos de Word o PDF.</p></div>
+            <div class="didactic-note" id="entregas-actividades"><p><strong>Cómo entregar las actividades.</strong> Utiliza un cuaderno de trabajo digital en texto plano y entrega las actividades realizadas cada día antes de finalizar la clase. Guarda tus respuestas y los resultados de las pruebas en un archivo <code>respuestas.txt</code>, y el código en sus archivos <code>.html</code>, <code>.css</code> y <code>.js</code>, según lo que pida cada actividad. Identifica cada ejercicio por su número. Copia los mensajes de la consola como texto; no entregues capturas ni documentos de Word o PDF.</p></div>
 
             <section aria-labelledby="sec1">
                 <h2 id="sec1"><i class="fa-brands fa-js" aria-hidden="true"></i> 1. Introducción a JavaScript</h2>
@@ -182,6 +199,25 @@
                     <li><strong>Trabajo con objetos.</strong> Los objetos agrupan datos y operaciones relacionadas. En el navegador se utilizan para representar, entre otros elementos, el documento y sus controles. Su modelo se basa en prototipos, que se estudiarán más adelante.</li>
                     <li><strong>Ejecución en distintos entornos.</strong> Además de los navegadores, existen entornos como Node.js. El lenguaje es el mismo, pero las herramientas disponibles dependen del entorno.</li>
                 </ul>
+                <figure class="loading-diagram" id="diagrama-tipado-dinamico">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 398" role="img" aria-labelledby="tipado-titulo tipado-descripcion">
+                        <title id="tipado-titulo">Una misma variable, valores de distinto tipo</title>
+                        <desc id="tipado-descripcion">Primero se declara dato con el número 7. Después se reasigna el texto Hola a la misma variable. El nombre sigue siendo dato; cambian el valor y el tipo del valor.</desc>
+                        <rect x="1" y="1" width="518" height="396" rx="16" fill="#f8fafc" stroke="#cbd5e1"/>
+                        <text x="260" y="36" text-anchor="middle" font-size="22" font-weight="700" fill="#1e3a8a">Tipado dinámico</text>
+                        <rect x="24" y="56" width="472" height="120" rx="12" fill="#dbeafe"/>
+                        <text x="44" y="86" font-size="20" font-weight="700" fill="#1e3a8a">1. Guardamos un número</text>
+                        <text x="44" y="123" font-size="23" font-family="monospace" fill="#0f172a" translate="no">let dato = 7;</text>
+                        <text x="44" y="155" font-size="19" fill="#334155">Valor: 7 · Tipo del valor: <tspan translate="no">number</tspan></text>
+                        <path d="M260 183 V212 M252 204 L260 212 L268 204" stroke="#64748b" stroke-width="3" fill="none"/>
+                        <rect x="24" y="222" width="472" height="120" rx="12" fill="#ccfbf1"/>
+                        <text x="44" y="252" font-size="20" font-weight="700" fill="#0f766e">2. Reasignamos un texto</text>
+                        <text x="44" y="289" font-size="23" font-family="monospace" fill="#0f172a" translate="no">dato = "Hola";</text>
+                        <text x="44" y="321" font-size="19" fill="#334155">Valor: "Hola" · Tipo del valor: <tspan translate="no">string</tspan></text>
+                        <text x="260" y="376" text-anchor="middle" font-size="19" fill="#334155">La variable es la misma; su valor ha cambiado.</text>
+                    </svg>
+                    <figcaption class="resource-description">El tipo pertenece al valor. Aquí se utiliza <code>let</code> porque permite reasignar la variable; se estudiará en el apartado 4.</figcaption>
+                </figure>
                 <p>En las páginas web es habitual la <strong>programación dirigida por eventos</strong>: se establece qué instrucciones deben ejecutarse cuando sucede algo, como pulsar un botón o modificar un campo. La función que responde a ese suceso se denomina <strong>manejador del evento</strong>.</p>
                 <figure class="loading-diagram" id="diagrama-eventos-js">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 540" role="img" aria-labelledby="eventos-js-titulo eventos-js-descripcion">
@@ -221,7 +257,8 @@
 
                 <div class="activity-card activity-callout" id="actividad-1-1">
                     <p><strong>1.1. Comprensión de los conceptos</strong></p>
-                    <ol><li>Explica con tus palabras qué relación hay entre JavaScript y ECMAScript.</li><li>Una variable contiene primero un número y después un texto. ¿Qué característica del lenguaje permite hacerlo?</li><li>Escribe dos acciones del usuario que puedan provocar un evento en una página.</li></ol>
+                    <ol><li>Explica con tus palabras qué relación hay entre JavaScript y ECMAScript.</li><li>Una misma variable contiene primero un número y después un texto. ¿Qué característica del lenguaje permite hacerlo?</li><li>Escribe dos acciones del usuario que puedan provocar un evento en una página.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-1" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-1" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
 
@@ -229,24 +266,82 @@
 
             <section aria-labelledby="sec2">
                 <h2 id="sec2"><i class="fa-solid fa-code" aria-hidden="true"></i> 2. Entorno de trabajo y primer programa</h2>
-                <p>Para comenzar se necesitan un editor y un navegador. El objetivo de este apartado es preparar los archivos, ejecutar instrucciones sencillas y comprobar qué sucede durante su ejecución.</p>
+                <p>Para programar el frontend nos basta un editor de texto plano y un navegador con herramientas de depuración, pero en clase crearemos un entorno de trabajo más eficiente.</p>
 
                 <h3 id="sec2_1">2.1. Herramientas y organización del proyecto</h3>
                 <p>Estas son las herramientas elegidas para este curso, para que podamos seguir los mismos ejemplos. Existen otros editores, navegadores y herramientas de desarrollo con los que también se puede programar JavaScript.</p>
                 <ul>
                     <li><strong>Visual Studio Code:</strong> permite editar y organizar los archivos del proyecto.</li>
+                    <li><strong>GitHub Codespaces:</strong> ofrece un entorno de desarrollo en la nube, con editor y terminal accesibles desde el navegador. Permite trabajar en un repositorio sin preparar todo el entorno en el ordenador local.</li>
+                    <li><strong>Node.js y npm:</strong> permiten ejecutar las herramientas de desarrollo e instalar las dependencias de un proyecto. Se necesitan para trabajar con Vite; el JavaScript de la página seguirá ejecutándose en el navegador.</li>
+                    <li><strong>Vite:</strong> proporciona un servidor de desarrollo que actualiza la página al guardar cambios y herramientas para preparar el proyecto para su publicación. En esta unidad se utilizará la plantilla <code>vanilla</code>, con JavaScript sin frameworks.</li>
                     <li><strong>Chrome:</strong> carga la página y ejecuta su JavaScript.</li>
                     <li><strong>DevTools:</strong> son las herramientas de desarrollo integradas en el navegador. Se abren con <kbd>F12</kbd> o desde el menú de Chrome, en <em>Más herramientas → Herramientas para desarrolladores</em>.</li>
                 </ul>
                 <p>En DevTools se utilizarán principalmente <strong>Console (Consola)</strong>, para ejecutar instrucciones y consultar mensajes; <strong>Sources (Fuentes)</strong>, para examinar y depurar el código; y <strong>Network (Red)</strong>, para comprobar la carga de los archivos.</p>
+                <div class="resource-card expansion-card expansion-purple" id="ampliacion-emmet">
+                    <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Emmet: escribir HTML y CSS con abreviaturas</span><span class="resource-badge badge-reading">Ampliación</span></div>
+                    <p>En clase será necesario utilizar <strong>Emmet</strong>, antes llamado <strong>Zen Coding</strong>, al trabajar con VS Code. Permite expandir abreviaturas para escribir HTML y CSS con rapidez; está integrado en el editor y no requiere instalar una extensión.</p>
+                    <p>Por ejemplo, <code>ul&gt;li*3</code> genera una lista con tres elementos. Escribe la abreviatura en un archivo HTML y acepta la sugerencia de Emmet.</p>
+                    <a class="resource-link-btn" href="https://docs.emmet.io/cheat-sheet/" target="_blank" rel="noopener noreferrer">Emmet · Hoja de referencia</a>
+                    <a class="resource-link-btn" href="https://code.visualstudio.com/docs/languages/emmet" target="_blank" rel="noopener noreferrer">Emmet en VS Code</a>
+                </div>
+                <div class="activity-card activity-callout" id="actividad-2-instalacion">
+                    <p><strong>Preparación. Instala las herramientas necesarias para el curso.</strong></p>
+                    <ol>
+                        <li>Instala Visual Studio Code, Chrome y una versión LTS de Node.js compatible con Vite. Si ya los tienes, comprueba que puedes abrirlos. DevTools forma parte de Chrome.</li>
+                        <li>Abre una terminal y ejecuta <code>node --version</code> y <code>npm --version</code>. Anota las versiones en tu cuaderno de trabajo.</li>
+                        <li>Accede a GitHub y crea un Codespace en el repositorio de trabajo indicado en clase. Localiza el editor y la terminal; comprueba también allí las versiones de Node.js y npm.</li>
+                        <li>En el entorno que indique el profesor, crea un proyecto de prueba con los comandos siguientes. Abre la dirección que muestre Vite; en Codespaces, utiliza el enlace de la pestaña <strong>Puertos</strong>.</li>
+                    </ol>
+                    <pre><code>npm create vite@latest prueba-js -- --template vanilla
+cd prueba-js
+npm install
+npm run dev</code></pre>
+                    <p>Modifica un texto de la página inicial, guarda y comprueba que se actualiza. Anota qué herramientas has preparado, las versiones y el resultado de la prueba. Los primeros ejemplos de la unidad también pueden ejecutarse en un HTML sencillo; el entorno con Vite se utilizará cuando se indique.</p>
+                    <a class="resource-link-btn" href="https://code.visualstudio.com/" target="_blank" rel="noopener noreferrer">Visual Studio Code</a>
+                    <a class="resource-link-btn" href="https://www.google.com/chrome/" target="_blank" rel="noopener noreferrer">Chrome</a>
+                    <a class="resource-link-btn" href="https://nodejs.org/" target="_blank" rel="noopener noreferrer">Node.js</a>
+                    <a class="resource-link-btn" href="https://docs.github.com/en/codespaces/overview" target="_blank" rel="noopener noreferrer">GitHub Codespaces</a>
+                    <a class="resource-link-btn" href="https://vite.dev/guide/" target="_blank" rel="noopener noreferrer">Vite · Instalación y requisitos</a>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-2" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-2" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
+                </div>
+                <div class="activity-card activity-callout laboratory-card" id="actividad-2-emmet">
+                    <p><strong>Práctica de laboratorio. Emmet (Zen Coding)</strong></p>
+                    <ol><li>Abre el laboratorio y prepara en VS Code el archivo <code>reto-emmet.html</code>.</li><li>Realiza las diez misiones y el reto final. Escribe y expande las abreviaturas para comprobar cómo se transforman en HTML y CSS.</li><li>Guarda el código y anota en tu cuaderno cinco abreviaturas que hayas utilizado, qué genera cada una y las dificultades que hayas resuelto.</li></ol>
+                    <a class="resource-link-btn" href="/labs/emmet/index.html" target="_blank" rel="noopener noreferrer">Abrir el laboratorio de Emmet</a>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-3" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-3" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
+                </div>
                 <h3 id="sec2_2">2.2. Primeras formas de mostrar y recoger información</h3>
-                <p>Estas herramientas permiten observar los primeros programas. Escribe las instrucciones de los ejemplos una a una en la consola de una página de práctica. El texto entre comillas representa una cadena.</p>
+                
+                <p>Una <strong>función</strong> realiza una tarea. Al llamarla, los valores escritos entre paréntesis son sus <strong>argumentos</strong>; los <strong>parámetros</strong> describen los datos que puede recibir. El <strong>retorno</strong> es el valor que devuelve la llamada. Una función asociada a un objeto se denomina <strong>método</strong>, como <code>console.log()</code>.</p>
+                <p>Las fichas presentan la forma de uso que necesitamos en esta unidad. Los nombres como <code>mensaje</code> o <code>valor</code> se sustituyen por datos concretos; <code>...</code> indica que pueden pasarse más argumentos.</p>
                 <h4 class="content-subtitle">Mensajes en la consola</h4>
-                <pre><code>console.log("Comienza el programa");
+                <aside class="function-card" id="ficha-funcion-1" aria-label="Ficha de función: console.log(valor1, ..., valorN)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>console.log(valor1, ..., valorN)</code></p>
+                    <p>Muestra información en la consola, sin añadirla a la página.</p><p><strong>Parámetros:</strong> Uno o varios valores de cualquier tipo, separados por comas. En console.log(&quot;Hola&quot;), &quot;Hola&quot; es el argumento que se pasa.</p><p><strong>Devuelve:</strong> undefined; mostrar un mensaje no equivale a devolver ese mensaje.</p>
+                </aside>
+                                <pre><code>console.log("Comienza el programa");
 console.log(8 + 4);</code></pre>
                 <p><code>console.log()</code> muestra información en DevTools sin añadirla a la página. En este ejemplo aparecen un mensaje y el resultado <code>12</code>. Si la consola muestra también <code>undefined</code>, es el valor devuelto por la llamada; no indica que haya fallado.</p>
                 <h4 class="content-subtitle">Diálogos del navegador</h4>
-                <pre><code>alert("Bienvenido a JavaScript");
+                <aside class="function-card" id="ficha-funcion-2" aria-label="Ficha de función: alert(mensaje)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>alert(mensaje)</code></p>
+                    <p>Muestra un aviso modal en el navegador.</p><p><strong>Parámetros:</strong> mensaje: texto que se quiere mostrar; es opcional. Otros valores se convierten en texto.</p><p><strong>Devuelve:</strong> undefined.</p>
+                </aside>
+                <aside class="function-card" id="ficha-funcion-3" aria-label="Ficha de función: prompt(mensaje, valorInicial)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>prompt(mensaje, valorInicial)</code></p>
+                    <p>Abre un diálogo para solicitar un texto.</p><p><strong>Parámetros:</strong> mensaje y valorInicial: textos opcionales; el segundo rellena inicialmente el campo.</p><p><strong>Devuelve:</strong> Una cadena al aceptar, incluso si está vacía, o null al cancelar.</p>
+                </aside>
+                <aside class="function-card" id="ficha-funcion-4" aria-label="Ficha de función: confirm(mensaje)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>confirm(mensaje)</code></p>
+                    <p>Solicita una confirmación mediante un diálogo.</p><p><strong>Parámetros:</strong> mensaje: texto opcional que describe la decisión.</p><p><strong>Devuelve:</strong> true al aceptar; false al cancelar.</p>
+                </aside>
+                                <pre><code>alert("Bienvenido a JavaScript");
 console.log(prompt("¿Cómo te llamas?"));
 console.log(confirm("¿Quieres continuar?"));</code></pre>
                 <ul>
@@ -256,13 +351,19 @@ console.log(confirm("¿Quieres continuar?"));</code></pre>
                 </ul>
                 <p>En los dos últimos ejemplos se obtiene primero la respuesta del diálogo y después se muestra con <code>console.log()</code>. Los tipos de estos valores se estudiarán en el apartado 4.</p>
                 <p>Los diálogos son modales: mientras permanecen abiertos impiden interactuar con el resto de la página. Resultan útiles para estas primeras pruebas; en las páginas interactivas se utilizarán también campos y mensajes del documento.</p>
-                <div class="didactic-note">
+                <aside class="function-card" id="ficha-funcion-5" aria-label="Ficha de función: document.write(texto1, ..., textoN)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>document.write(texto1, ..., textoN)</code></p>
+                    <p>Escribe contenido interpretado como HTML en el flujo del documento. Referencia histórica: no se utilizará en los ejercicios.</p><p><strong>Parámetros:</strong> Uno o varios textos con el contenido que se escribe.</p><p><strong>Devuelve:</strong> undefined. Tras cargar la página puede reemplazar su contenido.</p>
+                </aside>
+                                <div class="didactic-note">
                     <p><strong>Referencia histórica: <code>document.write()</code>.</strong> Escribe en el flujo de un documento HTML. Si se utiliza después de cargar la página puede sustituir su contenido. Su uso está desaconsejado y no se empleará en la práctica. Más adelante se actualizarán elementos del DOM mediante herramientas como <code>textContent</code>.</p>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/write" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Consultar la explicación de MDN</a>
                 </div>
                 <div class="activity-card activity-callout" id="actividad-2-1">
                     <p><strong>2.1. Observar las respuestas</strong></p>
                     <ol><li>Ejecuta por separado los ejemplos de consola y diálogos. Apunta dónde aparece cada mensaje.</li><li>Prueba prompt() tres veces: escribe un nombre, acepta sin escribir y cancela. Copia el valor obtenido en cada caso.</li><li>Prueba confirm(): acepta una vez y cancela otra. Anota los dos resultados.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-4" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-4" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Consola y diálogos</span><span class="resource-badge badge-reading">Consulta</span></div>
@@ -303,11 +404,22 @@ console.log(confirm("¿Quieres continuar?"));</code></pre>
                     </ol>
                     <p>Si no ves los mensajes, comprueba que has guardado el HTML, recargado la página y que la consola no los está ocultando con sus filtros.</p>
                     <p><strong>Entrega:</strong> <code>index.html</code> y <code>respuestas.txt</code>, ambos en texto plano.</p>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-5" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-5" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec2_3">2.3. Primer contacto con la depuración</h3>
                 <p><strong>Depurar</strong> consiste en localizar y comprender los errores de un programa. Conviene distinguir un mensaje que escribe el programador de un error detectado por el navegador:</p>
-                <pre><code>console.log("Información de seguimiento");
+                <aside class="function-card" id="ficha-funcion-6" aria-label="Ficha de función: console.warn(valor1, ..., valorN)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>console.warn(valor1, ..., valorN)</code></p>
+                    <p>Muestra un mensaje con nivel de advertencia en la consola.</p><p><strong>Parámetros:</strong> Uno o varios valores que se mostrarán.</p><p><strong>Devuelve:</strong> undefined; no detiene la ejecución.</p>
+                </aside>
+                <aside class="function-card" id="ficha-funcion-7" aria-label="Ficha de función: console.error(valor1, ..., valorN)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>console.error(valor1, ..., valorN)</code></p>
+                    <p>Muestra un mensaje con nivel de error en la consola.</p><p><strong>Parámetros:</strong> Uno o varios valores que se mostrarán.</p><p><strong>Devuelve:</strong> undefined; por sí mismo no lanza una excepción.</p>
+                </aside>
+                                <pre><code>console.log("Información de seguimiento");
 console.warn("Aviso de prueba");
 console.error("Mensaje de error de prueba");</code></pre>
                 <p><code>console.warn()</code> y <code>console.error()</code> presentan mensajes con distinta importancia visual. Llamar a <code>console.error()</code> no provoca por sí mismo una excepción ni detiene el programa.</p>
@@ -322,11 +434,21 @@ console.error("Mensaje de error de prueba");</code></pre>
                 <h4 class="content-subtitle">Archivo externo</h4>
                 <pre><code>&lt;script src="app.js" defer&gt;&lt;/script&gt;</code></pre>
                 <p>El atributo <code>src</code> indica la ruta al archivo. Dentro de <code>app.js</code> se escriben únicamente instrucciones JavaScript, sin etiquetas <code>&lt;script&gt;</code>. Para pasar el «Hola, mundo» a esta organización, crea <code>app.js</code> junto a <code>index.html</code> y mueve allí los mensajes de consola. Retira el bloque <code>&lt;script&gt;</code> del cuerpo del HTML y añade el enlace del ejemplo en <code>&lt;head&gt;</code>. Guarda ambos archivos y recarga: los mensajes deben seguir apareciendo una sola vez. Esta será la organización de los siguientes ejercicios.</p>
-                <p>Cuando un elemento <code>&lt;script&gt;</code> tiene <code>src</code>, no se añade también código entre sus etiquetas. En ejemplos antiguos pueden aparecer atributos como <code>onclick</code> con instrucciones dentro del HTML; en esta unidad los eventos se registrarán desde JavaScript con <code>addEventListener()</code>.</p>
+                <aside class="function-card" id="ficha-funcion-8" aria-label="Ficha de función: destino.addEventListener(tipo, manejador, opciones)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>destino.addEventListener(tipo, manejador, opciones)</code></p>
+                    <p>Registra una función que se ejecutará cuando ocurra un evento en el destino.</p><p><strong>Parámetros:</strong> tipo: nombre del evento, como &quot;click&quot;. manejador: función que recibirá el objeto del evento. opciones: configuración opcional, que se estudiará más adelante.</p><p><strong>Devuelve:</strong> undefined. Se entrega la función, sin llamarla en ese momento.</p>
+                </aside>
+                                <p>Cuando un elemento <code>&lt;script&gt;</code> tiene <code>src</code>, no se añade también código entre sus etiquetas. En ejemplos antiguos pueden aparecer atributos como <code>onclick</code> con instrucciones dentro del HTML; en esta unidad los eventos se registrarán desde JavaScript con <code>addEventListener()</code>.</p>
 
                 <h3 id="sec2_5">2.5. Carga y ejecución de los scripts</h3>
                 <p>El navegador procesa el HTML progresivamente. Si un script se ejecuta antes de que exista el elemento que necesita, no podrá encontrarlo. Este fragmento permite observar el problema:</p>
-                <pre><code>&lt;script&gt;
+                <aside class="function-card" id="ficha-funcion-9" aria-label="Ficha de función: document.querySelector(selector)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>document.querySelector(selector)</code></p>
+                    <p>Busca el primer elemento que coincide con un selector CSS.</p><p><strong>Parámetros:</strong> selector: cadena con un selector válido, por ejemplo &quot;#saludo&quot; o &quot;.aviso&quot;.</p><p><strong>Devuelve:</strong> El primer Element encontrado o null si no hay coincidencias.</p>
+                </aside>
+                                <pre><code>&lt;script&gt;
     console.log(document.querySelector("#saludo"));
 &lt;/script&gt;
 &lt;p id="saludo"&gt;Hola, mundo&lt;/p&gt;</code></pre>
@@ -368,6 +490,7 @@ window.addEventListener("load", function () {
                 <div class="activity-card activity-callout" id="actividad-2-3">
                     <p><strong>2.3. Comprobar el orden de carga</strong></p>
                     <ol><li>Copia en una página de prueba el ejemplo del script situado antes del párrafo. Recarga y apunta qué muestra la consola.</li><li>Mueve la instrucción JavaScript a app.js y enlaza ese archivo desde head con defer.</li><li>Recarga, copia la nueva salida y explica por qué ahora se encuentra el párrafo. Entrega las dos versiones del código.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-6" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-6" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Inclusión y carga de JavaScript</span><span class="resource-badge badge-reading">Lectura</span></div>
@@ -477,7 +600,8 @@ console.log(nombreCurso, intentosRestantes);</code></pre>
                 <div class="resource-card expansion-card" id="otros-usos-const">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> const con funciones y otros valores</span><span class="resource-badge badge-reading">Ampliación</span></div>
                     <p><code>const</code> puede asociar un nombre a una función, ya que las funciones también son valores. Se usa tanto con expresiones de función como con funciones flecha:</p>
-                    <pre><code>const saludar = function () {
+                <aside class="function-card" id="ficha-ejemplo-1"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>saludar() y despedir()</code></p><p>Muestran un saludo o una despedida en la consola.</p><p><strong>Parámetros:</strong> No reciben parámetros.</p><p><strong>Devuelve:</strong> undefined.</p></aside>
+                                    <pre><code>const saludar = function () {
     console.log("Hola");
 };
 
@@ -504,6 +628,7 @@ puntos = 10;
 console.log(jugador, puntos);</code></pre>
                     <ol><li>Antes de ejecutarlo, escribe qué crees que ocurrirá.</li><li>Ejecuta el código y copia el mensaje de error. ¿Qué línea intenta cambiar un valor declarado con <code>const</code>?</li><li>Cambia solo la declaración de <code>puntos</code> para permitir que pase de 0 a 10. No cambies la de <code>jugador</code>.</li><li>Ejecuta de nuevo y copia las dos salidas. Explica por qué has utilizado <code>let</code> en un caso y <code>const</code> en el otro.</li></ol>
                     <p><strong>Entrega:</strong> el código corregido y tus respuestas en texto plano.</p>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-7" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-7" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec4_4">4.4. Tipos de datos de uso inicial</h3>
@@ -544,6 +669,7 @@ console.log(typeof null);     // "object"</code></pre>
                 <div class="activity-card activity-callout" id="actividad-4-2">
                     <p><strong>4.2. Predecir y comprobar tipos</strong></p>
                     <ol><li>Sin ejecutar todavía, apunta qué crees que devuelven typeof 25, typeof &quot;25&quot;, typeof true, typeof &quot;true&quot; y typeof &quot;&quot;.</li><li>Prueba las cinco expresiones con console.log() y copia sus resultados.</li><li>Explica con un ejemplo qué cambian las comillas.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-8" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-8" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec4_6">4.6. Cadenas e interpolación</h3>
@@ -562,6 +688,7 @@ console.log(&#96;Hola, $&#123;nombre&#125;. Bienvenida a $&#123;curso&#125;.&#96
                     <p><strong>4.3. Escribe tu presentación</strong></p>
                     <ol><li>Crea tres variables: <code>nombre</code> con tu nombre, <code>modulo</code> con <code>"DWEC"</code> y <code>grupo</code> con <code>"2DAW"</code>.</li><li>Usa esas variables y el operador <code>+</code> para mostrar un mensaje como <code>"Soy Ana, estudio DWEC y estoy en 2DAW."</code>.</li><li>Muestra el mismo mensaje con una plantilla de cadena: utiliza acentos graves e inserta cada variable con <code>${...}</code>.</li><li>Cambia el nombre en su declaración y ejecuta otra vez. Comprueba que se actualizan los dos mensajes sin modificar las instrucciones que los muestran.</li></ol>
                     <p><strong>Entrega:</strong> el código de las dos versiones y los mensajes obtenidos en <code>respuestas.txt</code>.</p>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-9" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-9" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec4_7">4.7. Ámbito de bloque</h3>
@@ -580,6 +707,7 @@ console.log(centro); // IES Ejemplo
                 <div class="activity-card activity-callout" id="actividad-4-4">
                     <p><strong>4.4. Comprobar la visibilidad</strong></p>
                     <ol><li>Ejecuta el ejemplo de centro y grupo. Copia los mensajes que aparecen.</li><li>Quita // de la última línea para intentar mostrar grupo fuera del bloque. Copia el error y explica por qué ocurre.</li><li>Vuelve a comentar esa línea. Añade un segundo bloque con otra variable grupo y muéstrala dentro. Comprueba que cada bloque usa su propia variable.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-10" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-10" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Variables y tipos</span><span class="resource-badge badge-reading">Lectura</span></div>
@@ -648,11 +776,27 @@ console.log((4 + 3) * 2); // 14</code></pre>
                 <div class="activity-card activity-callout" id="actividad-5-1">
                     <p><strong>5.1. Predecir una expresión</strong></p>
                     <ol><li>Apunta el resultado que esperas para 17 % 5, 2 + 3 ** 2, (2 + 3) ** 2, 8 === &quot;8&quot; y (8 &gt; 5) &amp;&amp; (8 &lt; 10).</li><li>Ejecuta cada expresión con console.log() y copia la salida.</li><li>Si te equivocaste en alguna, explica qué operación se realiza primero o qué comparación se está haciendo.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-11" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-11" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec5_5">5.5. Conversión explícita de tipos</h3>
                 <p>Cuando un dato no tiene el tipo necesario, puede convertirse de forma explícita. La conversión produce un nuevo valor; no modifica por sí sola la variable original.</p>
-                <pre><code>const texto = "24";
+                <aside class="function-card" id="ficha-funcion-10" aria-label="Ficha de función: Number(valor)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>Number(valor)</code></p>
+                    <p>Convierte un valor en un número.</p><p><strong>Parámetros:</strong> valor: dato que se quiere convertir. Una cadena vacía o formada por espacios se convierte en 0.</p><p><strong>Devuelve:</strong> El número obtenido, o NaN si la conversión de un texto no es válida.</p>
+                </aside>
+                <aside class="function-card" id="ficha-funcion-11" aria-label="Ficha de función: String(valor)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>String(valor)</code></p>
+                    <p>Obtiene la representación textual de un valor.</p><p><strong>Parámetros:</strong> valor: dato que se quiere convertir.</p><p><strong>Devuelve:</strong> Una cadena.</p>
+                </aside>
+                <aside class="function-card" id="ficha-funcion-12" aria-label="Ficha de función: Boolean(valor)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>Boolean(valor)</code></p>
+                    <p>Convierte un valor según las reglas de truthy y falsy.</p><p><strong>Parámetros:</strong> valor: dato que se quiere evaluar. Por ejemplo, &quot;false&quot; es una cadena no vacía y produce true.</p><p><strong>Devuelve:</strong> true o false.</p>
+                </aside>
+                                <pre><code>const texto = "24";
 const numero = Number(texto);
 console.log(numero + 1); // 25
 console.log(typeof texto); // "string"
@@ -674,7 +818,12 @@ console.log(Boolean("false")); // true</code></pre>
 console.log(Number("12") + 3); // 15
 console.log("12" - 3);         // 9: conversión implícita</code></pre>
                 <p>Conviene convertir antes de operar, sin depender de que cada operador trate el texto de una forma distinta. Si una conversión numérica falla, se obtiene <code>NaN</code> (<em>Not a Number</em>):</p>
-                <pre><code>const cantidad = Number("doce");
+                <aside class="function-card" id="ficha-funcion-13" aria-label="Ficha de función: Number.isNaN(valor)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>Number.isNaN(valor)</code></p>
+                    <p>Comprueba si el valor es exactamente NaN, sin convertirlo.</p><p><strong>Parámetros:</strong> valor: dato que se quiere comprobar.</p><p><strong>Devuelve:</strong> true para NaN; false para cualquier otro valor.</p>
+                </aside>
+                                <pre><code>const cantidad = Number("doce");
 console.log(cantidad); // NaN
 console.log(Number.isNaN(cantidad)); // true</code></pre>
                 <p>Para detectar <code>NaN</code>, utiliza <code>Number.isNaN()</code>; compararlo mediante <code>=== NaN</code> no funciona. <code>NaN</code> pertenece al tipo <code>number</code>.</p>
@@ -682,6 +831,7 @@ console.log(Number.isNaN(cantidad)); // true</code></pre>
                 <div class="activity-card activity-callout" id="actividad-5-2">
                     <p><strong>5.2. Del texto al cálculo</strong></p>
                     <ol><li>Crea const unidadesTexto = &quot;6&quot;; y const unidadesNuevas = 4;. Súmalas directamente y muestra el resultado.</li><li>Convierte unidadesTexto a número antes de sumar. Comprueba que ahora obtienes 10.</li><li>Repite cambiando &quot;6&quot; por &quot;seis&quot; y luego por &quot;&quot;. Apunta qué ocurre y comprueba cada conversión con Number.isNaN().</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-12" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-12" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Operadores y conversiones</span><span class="resource-badge badge-reading">Ampliación</span></div>
@@ -719,7 +869,22 @@ console.log(Number.isNaN(cantidad)); // true</code></pre>
 
                 <h3 id="sec6_2">6.2. Selección de elementos</h3>
                 <p>El DOM ofrece métodos específicos para buscar por identificador, clase o etiqueta. Los nombres distinguen mayúsculas y minúsculas:</p>
-                <ul><li><code>document.getElementById("titulo")</code>: devuelve el elemento con ese identificador, o <code>null</code>. El identificador se escribe sin <code>#</code>.</li><li><code>document.getElementsByClassName("aviso")</code>: devuelve los elementos con esa clase, sin escribir el punto.</li><li><code>document.getElementsByTagName("p")</code>: devuelve los elementos de esa etiqueta.</li></ul>
+                <aside class="function-card" id="ficha-funcion-14" aria-label="Ficha de función: document.getElementById(id)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>document.getElementById(id)</code></p>
+                    <p>Busca un elemento por su identificador.</p><p><strong>Parámetros:</strong> id: cadena con el identificador, sin el signo #.</p><p><strong>Devuelve:</strong> El elemento encontrado o null.</p>
+                </aside>
+                <aside class="function-card" id="ficha-funcion-15" aria-label="Ficha de función: document.getElementsByClassName(clases)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>document.getElementsByClassName(clases)</code></p>
+                    <p>Busca los elementos que tienen las clases indicadas.</p><p><strong>Parámetros:</strong> clases: nombres de clase sin punto, separados por espacios si se indican varios.</p><p><strong>Devuelve:</strong> Una HTMLCollection viva, que se actualiza al cambiar el documento; puede estar vacía.</p>
+                </aside>
+                <aside class="function-card" id="ficha-funcion-16" aria-label="Ficha de función: document.getElementsByTagName(etiqueta)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>document.getElementsByTagName(etiqueta)</code></p>
+                    <p>Busca elementos por su nombre de etiqueta.</p><p><strong>Parámetros:</strong> etiqueta: cadena como &quot;p&quot; o &quot;input&quot;; &quot;*&quot; selecciona todas las etiquetas.</p><p><strong>Devuelve:</strong> Una HTMLCollection viva, que puede estar vacía.</p>
+                </aside>
+                                <ul><li><code>document.getElementById("titulo")</code>: devuelve el elemento con ese identificador, o <code>null</code>. El identificador se escribe sin <code>#</code>.</li><li><code>document.getElementsByClassName("aviso")</code>: devuelve los elementos con esa clase, sin escribir el punto.</li><li><code>document.getElementsByTagName("p")</code>: devuelve los elementos de esa etiqueta.</li></ul>
                 <pre data-example="selection-classic"><code>const titulo = document.getElementById("titulo");
 const avisos = document.getElementsByClassName("aviso");
 const parrafos = document.getElementsByTagName("p");
@@ -729,7 +894,12 @@ console.log(avisos.length);   // 1 en la página de prueba.
 console.log(parrafos.length); // 2 en la página de prueba.</code></pre>
                 <p>Los dos métodos en plural devuelven una <code>HTMLCollection</code>, incluso si solo hay una coincidencia. Se consulta su tamaño con <code>length</code> y su primer elemento con <code>[0]</code>, si existe. Estas colecciones son <strong>vivas</strong>: se actualizan cuando cambian las coincidencias en el DOM.</p>
                 <h4 class="content-subtitle">Selección mediante CSS</h4>
-                <p><code>querySelector()</code> y <code>querySelectorAll()</code> permiten utilizar selectores CSS, desde una etiqueta hasta una combinación de clases y atributos:</p>
+                <aside class="function-card" id="ficha-funcion-17" aria-label="Ficha de función: document.querySelectorAll(selector)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>document.querySelectorAll(selector)</code></p>
+                    <p>Busca todos los elementos que coinciden con un selector CSS.</p><p><strong>Parámetros:</strong> selector: cadena con un selector CSS válido.</p><p><strong>Devuelve:</strong> Una NodeList estática: no se actualiza automáticamente al cambiar el documento. Puede estar vacía.</p>
+                </aside>
+                                <p><code>querySelector()</code> y <code>querySelectorAll()</code> permiten utilizar selectores CSS, desde una etiqueta hasta una combinación de clases y atributos:</p>
                 <pre data-example="selection-css"><code>const titulo = document.querySelector("#titulo");
 const aviso = document.querySelector(".aviso");
 const parrafos = document.querySelectorAll("p");
@@ -764,6 +934,7 @@ mensaje.outerHTML = '&lt;div id="mensaje" class="aviso"&gt;Nuevo elemento&lt;/di
                 <div class="activity-card activity-callout" id="actividad-6-1">
                     <p><strong>6.1. Cambiar un mensaje</strong></p>
                     <ol><li>En la página de prueba, selecciona #titulo y cambia su texto por tu nombre.</li><li>En otra prueba, asigna el texto &quot;&lt;strong&gt;Hola&lt;/strong&gt;&quot; a #mensaje usando textContent. Describe lo que ves.</li><li>Repite usando innerHTML y después outerHTML. Recarga entre pruebas. Copia el HTML resultante del elemento desde DevTools y explica qué se conserva y qué se sustituye.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-13" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-13" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec6_4">6.4. Leer campos y convertir sus datos</h3>
@@ -781,7 +952,12 @@ resultado.textContent = `El doble es ${unidades * 2}`;</code></pre>
                 <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
 mensaje.style.backgroundColor = "#e0f2fe";
 mensaje.style.padding = "12px";</code></pre>
-                <p><code>mensaje.style.backgroundColor</code> lee el valor en línea; no todos los estilos procedentes de hojas CSS. Para consultar el estilo calculado se utiliza <code>getComputedStyle(mensaje).backgroundColor</code>.</p>
+                <aside class="function-card" id="ficha-funcion-18" aria-label="Ficha de función: getComputedStyle(elemento, pseudoElemento)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>getComputedStyle(elemento, pseudoElemento)</code></p>
+                    <p>Permite consultar los estilos calculados por el navegador.</p><p><strong>Parámetros:</strong> elemento: elemento del DOM. pseudoElemento: texto opcional, como &quot;::before&quot;; se omite en estos ejemplos.</p><p><strong>Devuelve:</strong> Un objeto de estilos; por ejemplo, se puede consultar su propiedad backgroundColor.</p>
+                </aside>
+                                <p><code>mensaje.style.backgroundColor</code> lee el valor en línea; no todos los estilos procedentes de hojas CSS. Para consultar el estilo calculado se utiliza <code>getComputedStyle(mensaje).backgroundColor</code>.</p>
                 <p>Para mantener la presentación en CSS, es preferible definir clases y activarlas desde JavaScript. Añade este CSS en un elemento <code>&lt;style&gt;</code> dentro de <code>&lt;head&gt;</code> de la página de prueba:</p>
                 <pre data-example="dom-css"><code>.destacado {
     background-color: #e0f2fe;
@@ -789,7 +965,27 @@ mensaje.style.padding = "12px";</code></pre>
     padding: 12px;
 }</code></pre>
                 <p><code>classList</code> permite gestionar las clases de un elemento sin sustituir las demás:</p>
-                <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
+                <aside class="function-card" id="ficha-funcion-19" aria-label="Ficha de función: elemento.classList.add(clase1, ..., claseN)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>elemento.classList.add(clase1, ..., claseN)</code></p>
+                    <p>Añade clases CSS al elemento.</p><p><strong>Parámetros:</strong> Uno o varios nombres de clase, sin punto y sin espacios dentro de cada nombre.</p><p><strong>Devuelve:</strong> undefined.</p>
+                </aside>
+                <aside class="function-card" id="ficha-funcion-20" aria-label="Ficha de función: elemento.classList.contains(clase)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>elemento.classList.contains(clase)</code></p>
+                    <p>Comprueba si el elemento tiene una clase.</p><p><strong>Parámetros:</strong> clase: nombre de la clase, sin punto.</p><p><strong>Devuelve:</strong> true si está presente; false si no lo está.</p>
+                </aside>
+                <aside class="function-card" id="ficha-funcion-21" aria-label="Ficha de función: elemento.classList.remove(clase1, ..., claseN)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>elemento.classList.remove(clase1, ..., claseN)</code></p>
+                    <p>Elimina clases del elemento.</p><p><strong>Parámetros:</strong> Uno o varios nombres de clase, sin punto.</p><p><strong>Devuelve:</strong> undefined. Si una clase no existe, no ocurre nada.</p>
+                </aside>
+                <aside class="function-card" id="ficha-funcion-22" aria-label="Ficha de función: elemento.classList.toggle(clase, forzar)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>elemento.classList.toggle(clase, forzar)</code></p>
+                    <p>Alterna una clase: la añade si falta y la elimina si existe.</p><p><strong>Parámetros:</strong> clase: nombre sin punto. forzar: booleano opcional; true obliga a añadir y false a eliminar.</p><p><strong>Devuelve:</strong> true si la clase queda presente; false si queda ausente.</p>
+                </aside>
+                                <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
 mensaje.classList.add("destacado");
 console.log(mensaje.classList.contains("destacado")); // true
 
@@ -799,6 +995,7 @@ mensaje.classList.toggle("destacado"); // La añade de nuevo.</code></pre>
                 <div class="activity-card activity-callout" id="actividad-6-2">
                     <p><strong>6.2. Datos y presentación</strong></p>
                     <ol><li>Usa la página de prueba del apartado 6 y añade la clase destacado del ejemplo a su CSS.</li><li>Lee #unidades, convierte el valor a número y escribe en #resultado un mensaje con esa cantidad y su doble.</li><li>Añade destacado al párrafo del resultado. Cambia el valor inicial del campo a 5 en el HTML, recarga y apunta el mensaje obtenido.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-14" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-14" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec6_6">6.6. Comprobar que un elemento existe</h3>
@@ -812,6 +1009,7 @@ if (mensaje !== null) {
                 <div class="activity-card activity-callout" id="actividad-6-3">
                     <p><strong>6.3. Una búsqueda sin coincidencias</strong></p>
                     <ol><li>Copia el ejemplo que comprueba si #mensaje existe.</li><li>Cambia el selector por #mensaje-inexistente y añade console.log(mensaje) antes del if.</li><li>Ejecuta, copia la salida y explica por qué no se cambia el párrafo. Recupera el selector correcto y vuelve a probar.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-15" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-15" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Consultar y modificar el DOM</span><span class="resource-badge badge-reading">Ampliación</span></div>
@@ -861,6 +1059,7 @@ if (temperatura &lt; 15) {
                 <div class="activity-card activity-callout" id="actividad-7-1">
                     <p><strong>7.1. Comprobar los límites</strong></p>
                     <ol><li>Prueba el ejemplo de temperatura con 14, 15, 24 y 25, cambiando la variable en cada ejecución.</li><li>Antes de cada prueba, escribe qué mensaje esperas. Después copia el mensaje real.</li><li>Explica qué ocurre justo en los límites 15 y 25.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-16" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-16" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec7_3">7.3. Combinar condiciones y validar datos</h3>
@@ -873,7 +1072,12 @@ if (tieneEntrada &amp;&amp; salaAbierta) {
 } else {
     console.log("No se cumplen las condiciones de acceso");
 }</code></pre>
-                <p>Para procesar una entrada textual, comprueba primero si está vacía y después si la conversión es válida. <code>trim()</code> devuelve una cadena sin espacios en blanco al principio ni al final:</p>
+                <aside class="function-card" id="ficha-funcion-23" aria-label="Ficha de función: texto.trim()">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>texto.trim()</code></p>
+                    <p>Elimina los espacios en blanco de los extremos de una cadena.</p><p><strong>Parámetros:</strong> No recibe parámetros. Se invoca sobre la cadena que se quiere tratar.</p><p><strong>Devuelve:</strong> Una nueva cadena; no modifica la original ni elimina los espacios interiores.</p>
+                </aside>
+                                <p>Para procesar una entrada textual, comprueba primero si está vacía y después si la conversión es válida. <code>trim()</code> devuelve una cadena sin espacios en blanco al principio ni al final:</p>
                 <pre><code>const texto = " 6 ";
 const cantidad = Number(texto);
 
@@ -888,6 +1092,7 @@ if (texto.trim() === "") {
                 <div class="activity-card activity-callout" id="actividad-7-2">
                     <p><strong>7.2. Validar una entrada</strong></p>
                     <ol><li>En el ejemplo de validación, cambia texto por &quot;&quot;, &quot;   &quot;, &quot;seis&quot;, &quot;-2&quot; y &quot;0&quot;, de uno en uno.</li><li>Copia el mensaje que obtienes para cada entrada.</li><li>Explica por qué cero es válido y qué problema tendría usar solo !cantidad para rechazar datos.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-17" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-17" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec7_4">7.4. switch: alternativas según un valor</h3>
@@ -919,6 +1124,7 @@ console.log(mensaje); // En línea</code></pre>
                 <div class="activity-card activity-callout" id="actividad-7-3">
                     <p><strong>7.3. Elegir una estructura</strong></p>
                     <ol><li>Añade al switch un caso para &quot;cancelado&quot; que muestre &quot;Envío cancelado&quot;.</li><li>Prueba ese caso y otro valor que no figure en ningún case. Copia las salidas.</li><li>Reescribe el ejemplo del ternario con if y else. Prueba conectado con true y false y compara los mensajes.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-18" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-18" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec7_6">7.6. Repeticiones con for, while y do...while</h3>
@@ -947,6 +1153,7 @@ do {
                 <div class="activity-card activity-callout" id="actividad-7-4">
                     <p><strong>7.4. Repetir y acumular</strong></p>
                     <ol><li>Escribe un for que muestre los números del 1 al 5.</li><li>Antes del bucle, crea let suma = 0;. Dentro, añade cada número a suma con +=. Muestra suma después del bucle y comprueba que vale 15.</li><li>Haz otra versión con while que produzca lo mismo. Entrega ambas versiones y su salida.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-19" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-19" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec7_7">7.7. Recorrer elementos del DOM con for...of</h3>
@@ -999,7 +1206,8 @@ for (const parrafo of parrafos) {
 
                 <h3 id="sec8_2">8.2. Registrar manejadores con addEventListener()</h3>
                 <p><code>elemento.addEventListener("evento", manejador)</code> asocia una función a un evento del elemento. El nombre del evento se escribe sin el prefijo <code>on</code>: <code>"click"</code>, no <code>"onclick"</code>.</p>
-                <pre data-example="events-js"><code>const boton = document.querySelector("#saludar");
+                <aside class="function-card" id="ficha-ejemplo-2"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>mostrarSaludo()</code></p><p>Actualiza el párrafo con un saludo.</p><p><strong>Parámetros:</strong> No declara parámetros; utiliza el elemento mensaje del ejemplo.</p><p><strong>Devuelve:</strong> undefined.</p></aside>
+                                <pre data-example="events-js"><code>const boton = document.querySelector("#saludar");
 const mensaje = document.querySelector("#mensaje");
 
 function mostrarSaludo() {
@@ -1013,6 +1221,7 @@ boton.addEventListener("click", mostrarSaludo);</code></pre>
                 <div class="activity-card activity-callout" id="actividad-8-1">
                     <p><strong>8.1. Responder a una acción</strong></p>
                     <ol><li>Abre la página de prueba. Comprueba que al cargar no aparece el saludo y que aparece al pulsar Saludar.</li><li>Cambia el saludo para que muestre un texto elegido por ti.</li><li>Añade un botón type=&quot;button&quot; con el texto Borrar. Programa su click para dejar vacío #mensaje con textContent = &quot;&quot;. Entrega el HTML y el JavaScript.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-20" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-20" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec8_3">8.3. Eventos básicos: click, input, change y submit</h3>
@@ -1023,7 +1232,8 @@ boton.addEventListener("click", mostrarSaludo);</code></pre>
                     <li><strong><code>submit</code>:</strong> se produce en el formulario cuando se solicita su envío, por ejemplo mediante su botón o pulsando Intro en un campo apropiado.</li>
                 </ul>
                 <p>Este ejemplo muestra el nombre mientras se escribe y registra cuándo se confirma el cambio:</p>
-                <pre data-example="events-js"><code>const campo = document.querySelector("#nombre");
+                <aside class="function-card" id="ficha-ejemplo-3"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>mostrarNombre() y confirmarCambio()</code></p><p>La primera muestra el valor del campo en el párrafo; la segunda lo registra en la consola.</p><p><strong>Parámetros:</strong> No declaran parámetros; consultan el campo del ejemplo.</p><p><strong>Devuelve:</strong> undefined en ambos casos.</p></aside>
+                                <pre data-example="events-js"><code>const campo = document.querySelector("#nombre");
 const mensaje = document.querySelector("#mensaje");
 
 function mostrarNombre() {
@@ -1040,11 +1250,13 @@ campo.addEventListener("change", confirmarCambio);</code></pre>
                 <div class="activity-card activity-callout" id="actividad-8-2">
                     <p><strong>8.2. Comparar input y change</strong></p>
                     <ol><li>Escribe un nombre y observa el párrafo mientras escribes.</li><li>Pulsa Tab para salir del campo y copia el mensaje de la consola.</li><li>Entra y sal del campo otra vez sin cambiar nada. Cuenta cuándo se produce input y cuándo change.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-21" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-21" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec8_4">8.4. El objeto del evento y currentTarget</h3>
                 <p>El navegador entrega al manejador un objeto con información del evento. Para utilizarlo se añade un parámetro, que aquí llamaremos <code>event</code>:</p>
-                <pre data-example="events-js"><code>const campo = document.querySelector("#nombre");
+                <aside class="function-card" id="ficha-ejemplo-4"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>mostrarEntrada(event)</code></p><p>Muestra el valor del campo y registra el tipo de evento.</p><p><strong>Parámetros:</strong> event: objeto que proporciona el navegador al ejecutar el manejador.</p><p><strong>Devuelve:</strong> undefined.</p></aside>
+                                <pre data-example="events-js"><code>const campo = document.querySelector("#nombre");
 const mensaje = document.querySelector("#mensaje");
 
 function mostrarEntrada(event) {
@@ -1062,9 +1274,15 @@ campo.addEventListener("input", mostrarEntrada);</code></pre>
                 <p>Utilizar <code>currentTarget</code> facilita compartir un mismo manejador entre varios elementos. En estos ejemplos se consulta durante la ejecución del manejador; la propagación de eventos se estudiará más adelante.</p>
 
                 <h3 id="sec8_5">8.5. Comportamiento predeterminado y preventDefault()</h3>
-                <p>Algunos eventos tienen una acción predeterminada: un enlace navega y un formulario inicia su envío. <code>event.preventDefault()</code> permite cancelar esa acción cuando el evento es cancelable.</p>
+                <aside class="function-card" id="ficha-funcion-24" aria-label="Ficha de función: event.preventDefault()">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>event.preventDefault()</code></p>
+                    <p>Cancela la acción predeterminada de un evento cancelable, como el envío de un formulario.</p><p><strong>Parámetros:</strong> No recibe parámetros. Se invoca sobre el objeto del evento.</p><p><strong>Devuelve:</strong> undefined. No detiene la propagación del evento.</p>
+                </aside>
+                                <p>Algunos eventos tienen una acción predeterminada: un enlace navega y un formulario inicia su envío. <code>event.preventDefault()</code> permite cancelar esa acción cuando el evento es cancelable.</p>
                 <p>Para procesar el formulario en la página, registra <code>submit</code> en el propio formulario. Así se atiende el envío aunque no se active el botón con el ratón:</p>
-                <pre data-example="events-js"><code>const formulario = document.querySelector("#formulario");
+                <aside class="function-card" id="ficha-ejemplo-5"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>procesarFormulario(event)</code></p><p>Cancela el envío, comprueba el nombre y actualiza el mensaje.</p><p><strong>Parámetros:</strong> event: objeto del evento submit recibido del navegador.</p><p><strong>Devuelve:</strong> undefined.</p></aside>
+                                <pre data-example="events-js"><code>const formulario = document.querySelector("#formulario");
 const campo = document.querySelector("#nombre");
 const mensaje = document.querySelector("#mensaje");
 
@@ -1085,6 +1303,7 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
                 <div class="activity-card activity-callout" id="actividad-8-3">
                     <p><strong>8.3. Probar el formulario</strong></p>
                     <ol><li>Prueba el formulario con un nombre, con solo espacios y con el campo vacío.</li><li>Escribe en respuestas.txt qué sucede en cada caso y quién muestra el aviso: el navegador o tu programa.</li><li>Envía también con Intro. Comprueba que no se navega a otra página y explica qué hace preventDefault().</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-22" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-22" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec8_6">8.6. Organizar la interacción</h3>
@@ -1108,7 +1327,8 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
 
                 <h3 id="sec9_1">9.1. Definición e invocación</h3>
                 <p>Una declaración de función utiliza <code>function</code>, un nombre, una lista de parámetros entre paréntesis y un cuerpo entre llaves:</p>
-                <pre><code>function mostrarInicio() {
+                <aside class="function-card" id="ficha-ejemplo-6"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>mostrarInicio()</code></p><p>Muestra el mensaje de inicio de sesión en la consola.</p><p><strong>Parámetros:</strong> No recibe parámetros.</p><p><strong>Devuelve:</strong> undefined.</p></aside>
+                                <pre><code>function mostrarInicio() {
     console.log("Comienza la sesión");
 }
 
@@ -1119,7 +1339,8 @@ mostrarInicio();</code></pre>
 
                 <h3 id="sec9_2">9.2. Parámetros, argumentos y valores predeterminados</h3>
                 <p>Los <strong>parámetros</strong> son los nombres que aparecen en la definición. Los <strong>argumentos</strong> son los valores que se proporcionan al llamar:</p>
-                <pre><code>function saludar(nombre, saludo = "Hola") {
+                <aside class="function-card" id="ficha-ejemplo-7"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>saludar(nombre, saludo = &quot;Hola&quot;)</code></p><p>Muestra un saludo personalizado. Es una nueva versión de saludar, independiente del ejemplo del apartado 4.</p><p><strong>Parámetros:</strong> nombre: cadena con el nombre. saludo: cadena opcional; su valor predeterminado es &quot;Hola&quot;.</p><p><strong>Devuelve:</strong> undefined; muestra el mensaje, pero no lo devuelve.</p></aside>
+                                <pre><code>function saludar(nombre, saludo = "Hola") {
     console.log(`${saludo}, ${nombre}`);
 }
 
@@ -1129,12 +1350,15 @@ saludar("Luis", "Buenos días"); // Buenos días, Luis</code></pre>
                 <p>El valor predeterminado se utiliza si se omite el argumento o se pasa <code>undefined</code>. No sustituye valores como <code>null</code>, <code>0</code> o <code>""</code>. Un parámetro sin argumento ni valor predeterminado recibe <code>undefined</code>.</p>
                 <div class="activity-card activity-callout" id="actividad-9-1">
                     <p><strong>9.1. Personalizar una llamada</strong></p>
-                    <ol><li>Escribe presentar(nombre, grupo = &quot;2DAW&quot;) para mostrar el nombre y el grupo.</li><li>Prueba presentar(&quot;Ana&quot;), presentar(&quot;Luis&quot;, &quot;2DAW-B&quot;) y presentar(&quot;Eva&quot;, &quot;&quot;).</li><li>Copia las salidas y explica en qué llamada se usa el grupo predeterminado.</li></ol>
+                <aside class="function-card" id="ficha-ejemplo-8"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>presentar(nombre, grupo = &quot;2DAW&quot;)</code></p><p>Función que crearás en esta actividad para mostrar un nombre y un grupo.</p><p><strong>Parámetros:</strong> nombre: cadena. grupo: cadena opcional con valor predeterminado &quot;2DAW&quot;.</p><p><strong>Devuelve:</strong> undefined; el objetivo es mostrar los datos.</p></aside>
+                                    <ol><li>Escribe presentar(nombre, grupo = &quot;2DAW&quot;) para mostrar el nombre y el grupo.</li><li>Prueba presentar(&quot;Ana&quot;), presentar(&quot;Luis&quot;, &quot;2DAW-B&quot;) y presentar(&quot;Eva&quot;, &quot;&quot;).</li><li>Copia las salidas y explica en qué llamada se usa el grupo predeterminado.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-23" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-23" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec9_3">9.3. Devolver resultados con return</h3>
                 <p><code>return</code> termina la ejecución de la función y entrega un valor al código que la llamó. Ese valor puede guardarse o utilizarse en otra expresión:</p>
-                <pre><code>function calcularArea(base, altura) {
+                <aside class="function-card" id="ficha-ejemplo-9"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>calcularArea(base, altura)</code></p><p>Calcula el área de un rectángulo.</p><p><strong>Parámetros:</strong> base y altura: números que representan sus dimensiones.</p><p><strong>Devuelve:</strong> El número obtenido al multiplicar base por altura.</p></aside>
+                                <pre><code>function calcularArea(base, altura) {
     return base * altura;
 }
 
@@ -1142,7 +1366,8 @@ const area = calcularArea(6, 4);
 console.log(area);     // 24
 console.log(area * 2); // 48</code></pre>
                 <p><strong>Devolver y mostrar son operaciones distintas.</strong> <code>console.log()</code> escribe en la consola; no establece el resultado de la función que lo contiene:</p>
-                <pre><code>function mostrarDoble(numero) {
+                <aside class="function-card" id="ficha-ejemplo-10"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>mostrarDoble(numero)</code></p><p>Muestra en la consola el doble de un número.</p><p><strong>Parámetros:</strong> numero: número que se quiere duplicar.</p><p><strong>Devuelve:</strong> undefined.</p></aside>
+                                <pre><code>function mostrarDoble(numero) {
     console.log(numero * 2);
 }
 
@@ -1152,12 +1377,15 @@ console.log(resultado);          // undefined</code></pre>
                 <div class="didactic-note"><p><strong>El retorno termina la llamada.</strong> Las instrucciones posteriores al <code>return</code> ejecutado no se alcanzan. Escribe la expresión devuelta en la misma línea que <code>return</code>; un salto de línea justo después puede hacer que se devuelva <code>undefined</code>.</p></div>
                 <div class="activity-card activity-callout" id="actividad-9-2">
                     <p><strong>9.2. Obtener un resultado reutilizable</strong></p>
-                    <ol><li>Copia mostrarDoble() y cámbiale el nombre a obtenerDoble().</li><li>Sustituye console.log() por return para devolver el doble del número.</li><li>Llama a la función con 5, 0 y -3. Guarda cada resultado y muéstralo desde fuera de la función. Entrega el código y los tres resultados.</li></ol>
+                <aside class="function-card" id="ficha-ejemplo-11"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>obtenerDoble(numero)</code></p><p>Función que crearás para obtener el doble como resultado reutilizable.</p><p><strong>Parámetros:</strong> numero: número que se quiere duplicar.</p><p><strong>Devuelve:</strong> Un número: el doble de numero. En el apartado 9.6 se escribirá como función flecha.</p></aside>
+                                    <ol><li>Copia mostrarDoble() y cámbiale el nombre a obtenerDoble().</li><li>Sustituye console.log() por return para devolver el doble del número.</li><li>Llama a la función con 5, 0 y -3. Guarda cada resultado y muéstralo desde fuera de la función. Entrega el código y los tres resultados.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-24" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-24" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec9_4">9.4. Ámbito local y variables externas</h3>
                 <p>Los parámetros y las variables declaradas dentro de una función son locales a ella. La función puede acceder a variables de su ámbito exterior:</p>
-                <pre><code>const centro = "IES Ejemplo";
+                <aside class="function-card" id="ficha-ejemplo-12"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>crearPresentacion(nombre)</code></p><p>Construye una presentación utilizando también la variable externa centro.</p><p><strong>Parámetros:</strong> nombre: cadena con el nombre de la persona.</p><p><strong>Devuelve:</strong> Una cadena con la presentación.</p></aside>
+                                <pre><code>const centro = "IES Ejemplo";
 
 function crearPresentacion(nombre) {
     const texto = `${nombre} estudia en ${centro}`;
@@ -1171,7 +1399,8 @@ console.log(crearPresentacion("Ana"));
 
                 <h3 id="sec9_5">9.5. Funciones como valores y expresiones de función</h3>
                 <p>Las funciones también son valores. Se pueden guardar en una variable y pasar como argumento, como ocurre al registrar un manejador:</p>
-                <pre><code>const obtenerTriple = function (numero) {
+                <aside class="function-card" id="ficha-ejemplo-13"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>obtenerTriple(numero)</code></p><p>Calcula el triple de un número.</p><p><strong>Parámetros:</strong> numero: número que se quiere triplicar.</p><p><strong>Devuelve:</strong> El producto de numero por 3.</p></aside>
+                                <pre><code>const obtenerTriple = function (numero) {
     return numero * 3;
 };
 
@@ -1187,7 +1416,8 @@ console.log(obtenerTriple(4)); // 12</code></pre>
 
 console.log(obtenerDoble(7)); // 14</code></pre>
                 <p>Si el cuerpo es una única expresión, pueden omitirse las llaves y <code>return</code>. El resultado se devuelve de forma implícita:</p>
-                <pre><code>const obtenerDoble = (numero) =&gt; numero * 2;
+                <aside class="function-card" id="ficha-ejemplo-14"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>sumar(a, b) y crearAviso()</code></p><p>La primera suma dos números; la segunda construye un aviso fijo.</p><p><strong>Parámetros:</strong> sumar recibe a y b, ambos números; crearAviso no recibe parámetros.</p><p><strong>Devuelve:</strong> sumar devuelve la suma; crearAviso devuelve la cadena &quot;Operación completada&quot;.</p></aside>
+                                <pre><code>const obtenerDoble = (numero) =&gt; numero * 2;
 const sumar = (a, b) =&gt; a + b;
 const crearAviso = () =&gt; "Operación completada";
 
@@ -1200,12 +1430,14 @@ console.log(crearAviso());   // Operación completada</code></pre>
                 <div class="activity-card activity-callout" id="actividad-9-3">
                     <p><strong>9.3. Comparar formas de escritura</strong></p>
                     <ol><li>Copia calcularArea(base, altura) y pruébala con 6 y 4.</li><li>Escribe una segunda versión como función flecha con llaves y return.</li><li>Escribe una tercera con retorno implícito. Ejecuta cada versión por separado con los mismos datos y comprueba que todas devuelven 24.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-25" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-25" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
 
                 <h3 id="sec9_7">9.7. Funciones pequeñas y conexión con los eventos</h3>
                 <p>Una función debe tener una responsabilidad clara y un nombre que la exprese. Separar la obtención de un resultado de su presentación permite utilizarlo tanto en la consola como en el DOM.</p>
                 <p>En la página de prueba del apartado 8, sustituye <code>app.js</code> por este ejemplo. Una función construye el saludo y el manejador lo muestra al activar el botón:</p>
-                <pre data-example="functions-dom"><code>const boton = document.querySelector("#saludar");
+                <aside class="function-card" id="ficha-ejemplo-15"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>crearSaludo(nombre)</code></p><p>Construye un saludo sin consultar ni modificar el documento.</p><p><strong>Parámetros:</strong> nombre: cadena, que se limpia con trim().</p><p><strong>Devuelve:</strong> Una cadena con el saludo o con la indicación de escribir un nombre.</p></aside>
+                                <pre data-example="functions-dom"><code>const boton = document.querySelector("#saludar");
 const campo = document.querySelector("#nombre");
 const mensaje = document.querySelector("#mensaje");
 
@@ -1225,6 +1457,7 @@ boton.addEventListener("click", () =&gt; {
                 <div class="activity-card activity-callout" id="actividad-9-4">
                     <p><strong>9.4. Reutilizar una función</strong></p>
                     <ol><li>Prueba crearSaludo() en la consola con &quot;Ana&quot;, &quot; Luis &quot; y &quot;   &quot;. Copia los tres resultados.</li><li>Introduce esos mismos valores en el campo y pulsa Saludar. Anota si coinciden con lo anterior.</li><li>Sustituye el manejador flecha por una función con nombre. Vuelve a probar y entrega el JavaScript modificado.</li></ol>
+                <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-26" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-26" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
                 <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Funciones y funciones flecha</span><span class="resource-badge badge-reading">Ampliación</span></div>
@@ -1276,7 +1509,8 @@ boton.addEventListener("click", () =&gt; {
                 <p>Al mostrar un error, añade <code>error</code> a <code>#mensaje</code> y retira <code>exito</code>; al mostrar un éxito, realiza lo contrario. Conserva la clase base <code>mensaje</code>.</p>
 
                 <h3 id="sec10_3">10.3. Desarrollo por etapas</h3>
-                <ol>
+                <aside class="function-card" id="ficha-ejemplo-16"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>calcular(numero1, numero2, operacion)</code></p><p>Función que desarrollarás para calcular sin acceder al DOM.</p><p><strong>Parámetros:</strong> numero1 y numero2: números. operacion: cadena que identifica una de las cuatro operaciones.</p><p><strong>Devuelve:</strong> El resultado numérico cuando la operación es válida. Debes definir y documentar cómo se comunica un error.</p></aside>
+                                <ol>
                     <li><strong>Conectar la interfaz.</strong> Selecciona los elementos del DOM y registra los manejadores de envío y limpieza. Comprueba con un mensaje de consola que cada acción ejecuta su manejador una sola vez.</li>
                     <li><strong>Obtener los datos.</strong> Lee los valores dentro del manejador de envío. Comprueba las entradas y conviértelas con <code>Number()</code>.</li>
                     <li><strong>Resolver las operaciones.</strong> Utiliza <code>switch</code> o <code>if...else</code> para seleccionar el cálculo. Comprueba los casos de error antes de mostrar el resultado.</li>
@@ -1284,7 +1518,22 @@ boton.addEventListener("click", () =&gt; {
                     <li><strong>Completar la interacción.</strong> Implementa los mensajes, las clases CSS y el botón «Limpiar». Prueba varias operaciones consecutivas sin recargar.</li>
                 </ol>
                 <p>Utiliza <code>const</code> como opción habitual, <code>let</code> cuando sea necesario reasignar, nombres descriptivos y funciones con una responsabilidad clara. Emplea al menos una función flecha donde resulte legible, por ejemplo para una operación breve o un manejador.</p>
-                <div class="resource-card expansion-card">
+                <aside class="function-card" id="ficha-funcion-25" aria-label="Ficha de función: Number.isFinite(valor)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>Number.isFinite(valor)</code></p>
+                    <p>Comprueba si el dato es un número finito, sin convertirlo.</p><p><strong>Parámetros:</strong> valor: dato que se comprueba, normalmente después de convertir una entrada.</p><p><strong>Devuelve:</strong> false para NaN, Infinity, -Infinity y valores que no sean números; true para los números finitos.</p>
+                </aside>
+                <aside class="function-card" id="ficha-funcion-26" aria-label="Ficha de función: formulario.reset()">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>formulario.reset()</code></p>
+                    <p>Restaura los valores iniciales de los controles de un formulario.</p><p><strong>Parámetros:</strong> No recibe parámetros. formulario debe referenciar el elemento form.</p><p><strong>Devuelve:</strong> undefined. No limpia por sí solo los mensajes ni las clases CSS.</p>
+                </aside>
+                <aside class="function-card" id="ficha-funcion-27" aria-label="Ficha de función: elemento.focus(opciones)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>elemento.focus(opciones)</code></p>
+                    <p>Sitúa el foco en un elemento que pueda recibirlo.</p><p><strong>Parámetros:</strong> opciones: configuración opcional; en estos ejercicios se omite.</p><p><strong>Devuelve:</strong> undefined.</p>
+                </aside>
+                                <div class="resource-card expansion-card">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Ayudas para completar la práctica</span><span class="resource-badge badge-reading">Consulta</span></div>
                     <p><code>Number.isFinite(valor)</code> comprueba si un valor es un número finito: devuelve <code>false</code> para <code>NaN</code> e <code>Infinity</code>. Úsalo después de convertir y al comprobar el resultado.</p>
                     <p><code>formulario.reset()</code> restaura los valores iniciales de los controles; no limpia por sí solo los mensajes ni las clases añadidas. <code>campo.focus()</code> sitúa el foco en un campo.</p>
@@ -1323,11 +1572,40 @@ boton.addEventListener("click", () =&gt; {
                     <li><strong>Uso del lenguaje:</strong> declaraciones adecuadas, comparaciones estrictas, eventos mediante <code>addEventListener()</code> y funciones legibles.</li>
                     <li><strong>Presentación y pruebas:</strong> mensajes claros, clases coherentes y casos límite comprobados.</li>
                 </ul>
-                <p>No utilices <code>eval()</code>, el constructor <code>Function</code> ni bibliotecas para resolver las operaciones. La lógica debe desarrollarse con los operadores y las estructuras estudiadas.</p>
+                <p>No conviertas cadenas en código ejecutable ni utilices bibliotecas para resolver las operaciones. La lógica debe desarrollarse con los operadores y las estructuras estudiadas.</p>
+            <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-27" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-27" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
             </section>
 
             <footer class="document-footer">DAW / DWEC · © Ignacio García</footer>
         </main>
     </div>
+<script>
+    // Accessible delivery reminders: pointer, keyboard and touch.
+    for (const tip of document.querySelectorAll('.delivery-tip')) {
+        const trigger = tip.querySelector('.delivery-trigger');
+        const content = tip.querySelector('[role="tooltip"]');
+        const show = () => {
+            content.hidden = false;
+            trigger.setAttribute('aria-expanded', 'true');
+        };
+        const hide = () => {
+            content.hidden = true;
+            trigger.setAttribute('aria-expanded', 'false');
+        };
+        tip.addEventListener('pointerenter', show);
+        tip.addEventListener('pointerleave', () => {
+            if (document.activeElement !== trigger) hide();
+        });
+        trigger.addEventListener('focus', show);
+        trigger.addEventListener('click', show);
+        trigger.addEventListener('blur', hide);
+        trigger.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') hide();
+        });
+        document.addEventListener('pointerdown', (event) => {
+            if (!tip.contains(event.target)) hide();
+        });
+    }
+    </script>
 </body>
 </html>
