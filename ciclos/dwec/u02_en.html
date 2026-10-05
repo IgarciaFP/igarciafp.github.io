@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
+<meta content="no-cache" http-equiv="Pragma"/>
+<meta content="0" http-equiv="Expires"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="Unidad 2 de DWEC: fundamentos de JavaScript. Introducción, entorno de trabajo, primeros programas, sintaxis, variables, operadores, conversiones y DOM." name="description"/>
+<title>UD02 Basics of JavaScript — 2nd DAW</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&amp;family=Inter:wght@300;400;500;600;700&amp;family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+<link href="u01.css" rel="stylesheet"/>
+<style>
+        .loading-diagram { margin: 24px 0; }
+        .loading-diagram svg { display: block; width: 100%; max-width: 520px; height: auto; margin: 0 auto; font-family: Inter, sans-serif; }
+        /* Mostrar cada carácter de los operadores sin ligaduras tipográficas. */
+        code, pre, kbd, samp { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+        /* Se reutiliza la plantilla de DWEC U01; estos ajustes son propios de U02. */
+        .sidebar-toc { overflow: visible; }
+        .sidebar-toc ul { max-height: calc(100vh - 130px); overflow-y: auto; }
+        .sidebar-toc:focus-within { transform: translateX(0); }
+        .operators-table table { min-width: 0; }
+        .operators-table th, .operators-table td { padding: 10px; }
+        .roles-table table { min-width: 0; }
+        .roles-table th:first-child { width: 22%; }
+        .history-timeline { list-style: none; margin: 24px 0 24px 10px; padding: 0 0 0 24px; border-left: 3px solid var(--primary-border); }
+        .history-timeline li { position: relative; margin: 0; padding: 0 0 22px; break-inside: avoid; }
+        .history-timeline li:last-child { padding-bottom: 0; }
+        .history-timeline li::before { content: ""; position: absolute; left: -32px; top: 6px; width: 13px; height: 13px; border-radius: 50%; background: var(--primary-color); border: 2px solid white; }
+        .history-timeline strong { display: block; color: var(--primary-color); }
+        .history-timeline p { margin: 5px 0 0; text-align: left; }
+        .event-sequence { padding: 14px 18px; background: var(--primary-light); border-radius: 6px; }
+        .activity-card ol { margin-bottom: 0; }
+        .resource-description { text-align: left; }
+        a:focus-visible { outline: 3px solid var(--primary-border); outline-offset: 3px; }
+        @media (max-width: 700px) {
+            .sidebar-toc { position: static; width: 100%; max-height: none; transform: none; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 20px; box-shadow: none; }
+            .sidebar-toc::after { display: none; }
+            .sidebar-toc ul { max-height: none; overflow: visible; }
+            .resource-card-header { align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+            .resource-card, .activity-card { padding: 18px; }
+            .roles-table th, .roles-table td { padding: 10px; }
+            .roles-table th:first-child { width: 26%; }
+        }
+        @media print {
+        }
+
+        .function-card { margin: 22px 0; padding: 20px 24px; border: 1px solid #a5b4fc; border-left: 5px solid #4338ca; border-radius: 10px; background: #eef2ff; break-inside: avoid; }
+        .function-card .function-label { color: #3730a3; font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+        .function-card p { margin: 8px 0; text-align: left; }
+        .function-card code { overflow-wrap: anywhere; white-space: normal; }
+        .function-card .function-signature { font-size: 1.05em; font-weight: 600; }
+        .resource-card.expansion-card.expansion-purple { background: #f7f3ff; border-color: #ddd6fe; border-left-color: #7c3aed; }
+        .resource-card.expansion-card.expansion-purple .resource-title { color: #6d28d9; }
+        .resource-card.expansion-card.expansion-purple::before, .expansion-purple .badge-reading { color: #6d28d9; background: #ede9fe; border-color: #c4b5fd; }
+        .laboratory-card::before { content: "⚗ PRÁCTICA DE LABORATORIO"; }
+        .delivery-tip { position: relative; margin-top: 20px; color: #92400e; }
+        .delivery-trigger { cursor: pointer; padding: 8px 12px; border: 1px solid #d97706; border-radius: 8px; background: #fffbeb; color: #92400e; font: inherit; font-weight: 600; }
+        .delivery-trigger:focus-visible { outline: 3px solid #4338ca; outline-offset: 3px; }
+        .delivery-tooltip { position: absolute; z-index: 5; left: 0; bottom: calc(100% + 8px); margin: 0; padding: 14px; width: min(100%, 380px); box-sizing: border-box; border: 1px solid #fcd34d; border-radius: 8px; background: #fffbeb; color: #78350f; text-align: left; box-shadow: 0 5px 18px #78350f20; font-size: .95rem; }
+        .delivery-tooltip[hidden] { display: none; }
+        @media print { .delivery-tooltip[hidden], .delivery-tooltip { display: block; position: static; box-shadow: none; width: 100%; } }
+        .resource-links { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+        .resource-links .resource-link-btn { display: inline-flex; align-items: center; gap: 6px; width: auto; max-width: 100%; min-width: 0; margin: 0; white-space: normal; overflow-wrap: anywhere; box-sizing: border-box; }
+        .activity-card.activity-callout.laboratory-card { background: #eff6ff; border-color: #bfdbfe; border-left-color: #2563eb; }
+        .activity-card.activity-callout.laboratory-card::before { color: #1e40af; background: #dbeafe; border-color: #93c5fd; }
+        .activity-card.laboratory-card > p > strong { color: #1e40af; }
+        .laboratory-card .delivery-trigger, .laboratory-card .delivery-tooltip { background: #eff6ff; color: #1e40af; border-color: #93c5fd; }
+    </style>
+</head>
+<body>
+<nav aria-label="Contents Index" class="sidebar-toc">
+<h4><i aria-hidden="true" class="fa-solid fa-list-ol"></i> Contents</h4>
+<ul>
+<li><a href="#sec1">1. Introduction to JavaScript</a></li>
+<li><a class="subsection-link" href="#sec1_1">1.1. Origin and evolution</a></li>
+<li><a class="subsection-link" href="#sec1_2">1.2. JavaScript and ECMASScript</a></li>
+<li><a class="subsection-link" href="#sec1_3">1.3. Language characteristics</a></li>
+<li><a href="#sec2">2. Working environment and first programme</a></li>
+<li><a class="subsection-link" href="#sec2_1">2.1. Tools and organization</a></li>
+<li><a class="subsection-link" href="#sec2_2">2.2. Show and collect information</a></li>
+<li><a class="subsection-link" href="#sec2_3">2.3. First contact with debugging</a></li>
+<li><a class="subsection-link" href="#sec2_4">2.4. Include JavaScript</a></li>
+<li><a class="subsection-link" href="#sec2_5">2.5. Burden and execution</a></li>
+<li><a href="#sec3">3. Syntax and good practices</a></li>
+<li><a class="subsection-link" href="#sec3_1">3.1. Values, expressions and blocks</a></li>
+<li><a class="subsection-link" href="#sec3_2">3.2. Shifts and comments</a></li>
+<li><a href="#sec4">4. Variables and types of data</a></li>
+<li><a class="subsection-link" href="#sec4_1">4.1. Declaration and reassignment</a></li>
+<li><a class="subsection-link" href="#sec4_2">4.2. Identifiers and names</a></li>
+<li><a class="subsection-link" href="#sec4_3">4.3. Choosing between Const and Let</a></li>
+<li><a class="subsection-link" href="#sec4_4">4.4. Types of data</a></li>
+<li><a class="subsection-link" href="#sec4_5">4.5. Dynamic typing and typeof</a></li>
+<li><a class="subsection-link" href="#sec4_6">4.6. Chains and interpolation</a></li>
+<li><a class="subsection-link" href="#sec4_7">4.7. Block scope</a></li>
+<li><a href="#sec5">5. Operators, expressions and conversions</a></li>
+<li><a class="subsection-link" href="#sec5_1">5.1. Arithmetic and allocation operators</a></li>
+<li><a class="subsection-link" href="#sec5_2">5.2. Comparisons and strict equality</a></li>
+<li><a class="subsection-link" href="#sec5_3">5.3. Logical operators</a></li>
+<li><a class="subsection-link" href="#sec5_4">5.4 Precedence and parentheses</a></li>
+<li><a class="subsection-link" href="#sec5_5">5.5. Explicit conversion of types</a></li>
+<li><a class="subsection-link" href="#sec5_6">5.6. Usual errors when dealing with data</a></li>
+<li><a href="#sec6">6. The DOM: access and modify the page</a></li>
+<li><a class="subsection-link" href="#sec6_1">6.1. The document as an object tree</a></li>
+<li><a class="subsection-link" href="#sec6_2">6.2. Selection of elements</a></li>
+<li><a class="subsection-link" href="#sec6_3">6.3. Reading and modifying content</a></li>
+<li><a class="subsection-link" href="#sec6_4">6.4. Read fields and convert your data</a></li>
+<li><a class="subsection-link" href="#sec6_5">6.5. CSS Styles and Classes</a></li>
+<li><a class="subsection-link" href="#sec6_6">6.6. Check that an item exists</a></li>
+<li><a href="#sec7">7. Control structures</a></li>
+<li><a class="subsection-link" href="#sec7_1">7.1. Conditions and values of trusty and falsey</a></li>
+<li><a class="subsection-link" href="#sec7_2">7.2. if, else if and else</a></li>
+<li><a class="subsection-link" href="#sec7_3">7.3. Merge conditions and validate data</a></li>
+<li><a class="subsection-link" href="#sec7_4">7.4. switch: alternatives by value</a></li>
+<li><a class="subsection-link" href="#sec7_5">7.5. ternary operator</a></li>
+<li><a class="subsection-link" href="#sec7_6">7.6 Repeats with for, while and do...while</a></li>
+<li><a class="subsection-link" href="#sec7_7">7.7. Tour DOM elements with for...of</a></li>
+<li><a href="#sec8">8. Events and user interaction</a></li>
+<li><a class="subsection-link" href="#sec8_1">8.1. Events and handlers</a></li>
+<li><a class="subsection-link" href="#sec8_2">8.2. Register handlers with addEventListener()</a></li>
+<li><a class="subsection-link" href="#sec8_3">8.3. Basic events: click, input, change and submit</a></li>
+<li><a class="subsection-link" href="#sec8_4">8.4. The object of the event and currentTarget</a></li>
+<li><a class="subsection-link" href="#sec8_5">8.5. Default behavior and preventDefault()</a></li>
+<li><a class="subsection-link" href="#sec8_6">8.6. Organize interaction</a></li>
+<li><a href="#sec9">9. Functions: organizing and reusing code</a></li>
+<li><a class="subsection-link" href="#sec9_1">9.1 Definition and invocation</a></li>
+<li><a class="subsection-link" href="#sec9_2">9.2. Default parameters, arguments and values</a></li>
+<li><a class="subsection-link" href="#sec9_3">9.3 Return results with return</a></li>
+<li><a class="subsection-link" href="#sec9_4">9.4. Local scope and external variables</a></li>
+<li><a class="subsection-link" href="#sec9_5">9.5. Functions as function values and expressions</a></li>
+<li><a class="subsection-link" href="#sec9_6">9.6. Arrow Functions</a></li>
+<li><a class="subsection-link" href="#sec9_7">9.7. Small functions and connection to events</a></li>
+<li><a href="#sec10">10. Practice: calculator of two operands</a></li>
+<li><a class="subsection-link" href="#sec10_1">10.1. Starting material</a></li>
+<li><a class="subsection-link" href="#sec10_2">10.2. Behaviour required</a></li>
+<li><a class="subsection-link" href="#sec10_3">10.3. Phased development</a></li>
+<li><a class="subsection-link" href="#sec10_4">10.4. Performance tests</a></li>
+<li><a class="subsection-link" href="#sec10_5">10.5. Delivery and review criteria</a></li>
+</ul>
+</nav>
+<div class="document-wrapper">
+<main class="document-container">
+<header class="header-banner">
+<div class="header-top-row">
+<span class="module-tag">Web Development in Client Environment • 2nd DAW</span>
+<a aria-label="Read this page in Spanish" class="language-switch" href="u02_es.html" hreflang="es" lang="es"><i aria-hidden="true" class="fa-solid fa-language"></i> Español</a>
+</div>
+<h1>UD02 Basics of JavaScript</h1>
+<p class="header-subtitle">The language that allows programming the behavior of a website</p>
+</header>
+<div class="didactic-note" id="entregas-actividades"><p><strong>How to deliver activities.</strong> Use a digital workbook in plain text and deliver the activities performed each day before the end of the class. Save the initial answers of concepts, preparation and console in your workbook. From "Hello, world", save each exercise in <code>dwec/ejercicios/u01/</code> with the pattern <code>ejNN-identificacionEnCamelCase</code>: two digits, script and a description in CamelCase. Use the same base name for HTML, JavaScript, CSS if needed and answers in <code>.txt</code>. Each activity indicates its file names. When copying a test page, it adapts its attribute <code>src</code> to the JavaScript file of that exercise; keep the above solutions. Identify each exercise by number. Copy console messages as text; do not deliver captures or Word or PDF documents.</p></div>
+<section aria-labelledby="sec1">
+<h2 id="sec1"><i aria-hidden="true" class="fa-brands fa-js"></i> 1. Introduction to JavaScript</h2>
+<p><strong>JavaScript (JS)</strong> is a programming language that allows processing data and giving behavior to a web page. With it you can perform calculations, check data from a form and update the content in response to the actions of the user.</p>
+<p>In this unit you will work with JavaScript in the <strong>browser</strong>The concepts will be practiced through short examples and independent activities.</p>
+<h3 id="sec1_1">1.1. Origin and evolution</h3>
+<p>JavaScript was created by <strong>Brendan Eich in 1995</strong>, during his work on Netscape. His initial purpose was to incorporate small interactions into the pages and execute instructions in the user's browser.</p>
+<p>The appearance of different implementations required a common standard. These milestones summarize their evolution; the characteristics mentioned will be developed throughout the module.</p>
+<ol aria-label="JavaScript Timeline" class="history-timeline">
+<li><strong>1995 · Birth in Netscape</strong><p>Brendan Eich creates the language to incorporate interaction into web pages. Initially it is called Mocha, then LiveScript and finally JavaScript.</p></li>
+<li><strong>1997 · First ECMASScript standard</strong><p>Ecma International publishes ECMA-262 to establish common rules between implementations.</p></li>
+<li><strong>1999 · ECMASScript 3</strong><p>It incorporates regular expressions and exception handling. It becomes the base of JavaScript during the following decade.</p></li>
+<li><strong>2009 · ECMASScript 5</strong><p>Add strict mode, native JSON support and new methods to work with arrays.</p></li>
+<li><strong>2015 · ECMASScript 2015 (ES6)</strong><p>An important renewal: <code>let</code>, <code>const</code>, arrow functions, chain templates, classes, modules and promises.</p></li>
+<li><strong>2016 · Annual editions</strong><p>The annual publication cycle begins. Language incorporates gradual improvements through the proposal process of the TC39 committee.</p></li>
+<li><strong>2017 · Asynchronous functions</strong><p><code>async</code> y <code>await</code> They will be studied in later units.</p></li>
+<li><strong>2020 · New Language Resources</strong><p>Optional chaining is incorporated (<code>?.</code>), the null coalescence operator (<code>??</code>) and <code>BigInt</code>.</p></li>
+</ol>
+<div class="resource-card expansion-card" id="ampliacion-historia-js">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Evolution of JavaScript</span><span class="resource-badge badge-reading">Enlargement</span></div>
+<p class="resource-description">The evolution continues with annual editions. Consult the history of the editions in the introduction of ECMA-262.</p>
+<a class="resource-link-btn" href="https://tc39.es/ecma262/multipage/#sec-intro" rel="noopener noreferrer" target="_blank">ECMA-262 · History of editions</a>
+</div>
+<div class="didactic-note curiosity-card">
+<p><strong>Java and JavaScript are different languages.</strong> The similarity of the name responds to the commercial context of its origin. Learning JavaScript does not require learning Java.</p>
+</div>
+<h3 id="sec1_2">1.2. JavaScript and ECMASScript</h3>
+<p><strong>ECMASScript</strong> is the specification that defines the language rules: your syntax, your data types and your operations. It is published as the standard <strong>ECMA-262</strong> Ecma International and evolves through the work of the TC39 committee. JavaScript engines implement these rules.</p>
+<p>The browser adds tools to work with the page, such as the <strong>DOM</strong> and events. These tools are part of the web APIs and are defined in their own standards.</p>
+<p>In this unit, <strong>Modern JavaScript</strong> the use of current practices and consolidated characteristics. The evolution of the language retains compatibility with a lot of previous code; therefore, the documentation can show different ways to solve the same task.</p>
+<div class="resource-card expansion-card">
+<div class="resource-card-header">
+<span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Language and its standard</span>
+<span class="resource-badge badge-reading">Reading</span>
+</div>
+<p class="resource-description">The introduction of MDN explains the relationship between JavaScript and ECMASScript. Ecma International allows you to consult the standard editions as a reference.</p>
+<div class="resource-links"><a class="resource-link-btn" href="https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Introduction" rel="noopener noreferrer" target="_blank">MDN · Introduction to JavaScript <i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i></a>
+<a class="resource-link-btn" href="https://ecma-international.org/publications-and-standards/standards/ecma-262/" rel="noopener noreferrer" target="_blank">Ecma International · ECMA-262 <i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+</div>
+<h3 id="sec1_3">1.3. Language characteristics</h3>
+<ul>
+<li><strong>Dynamic typing.</strong> A fixed rate is not declared for each variable. Values have a type, and a variable can contain values of different types during execution. This does not eliminate the rules on which transactions each value supports.</li>
+<li><strong>Multiparadigm.</strong> It allows you to organize a program using instructions, functions and objects. In this unit instructions and functions will be used mainly.</li>
+<li><strong>I work with objects.</strong> The objects group data and related operations. In the browser they are used to represent, among other elements, the document and its controls. Their model is based on prototypes, which will be studied later.</li>
+<li><strong>Execution in different environments.</strong> In addition to browsers, there are environments like Node.js. The language is the same, but the tools available depend on the environment.</li>
+</ul>
+<figure class="loading-diagram" id="diagrama-tipado-dinamico">
+<svg aria-labelledby="tipado-titulo tipado-descripcion" role="img" viewbox="0 0 520 398" xmlns="http://www.w3.org/2000/svg">
+<title id="tipado-titulo">The same variable, values of different types</title>
+<desc id="tipado-descripcion">First data is declared with number 7. Then the Hello text is reassigned to the same variable. The name is still data; they change the value and type of the value.</desc>
+<rect fill="#f8fafc" height="396" rx="16" stroke="#cbd5e1" width="518" x="1" y="1"></rect>
+<text fill="#1e3a8a" font-size="22" font-weight="700" text-anchor="middle" x="260" y="36">Dynamic typing</text>
+<rect fill="#dbeafe" height="120" rx="12" width="472" x="24" y="56"></rect>
+<text fill="#1e3a8a" font-size="20" font-weight="700" x="44" y="86">1. We save a number</text>
+<text fill="#0f172a" font-family="monospace" font-size="23" translate="no" x="44" y="123">let dato = 7;</text>
+<text fill="#334155" font-size="19" x="44" y="155">Value: 7 · Value type: <tspan translate="no">number</tspan></text>
+<path d="M260 183 V212 M252 204 L260 212 L268 204" fill="none" stroke="#64748b" stroke-width="3"></path>
+<rect fill="#ccfbf1" height="120" rx="12" width="472" x="24" y="222"></rect>
+<text fill="#0f766e" font-size="20" font-weight="700" x="44" y="252">2. Reassigning a text</text>
+<text fill="#0f172a" font-family="monospace" font-size="23" translate="no" x="44" y="289">dato = "Hola";</text>
+<text fill="#334155" font-size="19" x="44" y="321">Value: "Hello" · Value type: <tspan translate="no">string</tspan></text>
+<text fill="#334155" font-size="19" text-anchor="middle" x="260" y="376">The variable is the same; its value has changed.</text>
+</svg>
+<figcaption class="resource-description">The type belongs to the value. Here used <code>let</code> because it allows the variable to be reassigned; it will be studied in paragraph 4.</figcaption>
+</figure>
+<p>On the web pages it is common <strong>event-directed programming</strong>: sets which instructions to execute when something happens, such as pressing a button or modifying a field. The function that responds to that event is called <strong>event handler</strong>.</p>
+<figure class="loading-diagram" id="diagrama-eventos-js">
+<svg aria-labelledby="eventos-js-titulo eventos-js-descripcion" role="img" viewbox="0 0 520 540" xmlns="http://www.w3.org/2000/svg">
+<title id="eventos-js-titulo">JavaScript responds to a user action</title>
+<desc id="eventos-js-descripcion">Example in the browser: the user press the Greet button; the event click activates a previously registered handler function; the function changes the text of a document element and appears Hello, world.</desc>
+<rect fill="#f8fafc" height="538" rx="18" stroke="#cbd5e1" width="518" x="1" y="1"></rect>
+<text fill="#1e3a8a" font-size="21" font-weight="700" text-anchor="middle" x="260" y="36">One click, one answer</text>
+<rect fill="#dbeafe" height="126" rx="12" width="472" x="24" y="58"></rect>
+<text fill="#1e3a8a" font-size="21" font-weight="700" x="44" y="89">1. The user acts</text>
+<text fill="#334155" font-size="19" x="44" y="119">Press a page button.</text>
+<rect fill="#1e3a8a" height="36" rx="7" width="132" x="44" y="133"></rect>
+<text fill="#ffffff" font-size="19" text-anchor="middle" x="110" y="157">Greet</text>
+<text fill="#1e3a8a" font-size="19" x="198" y="157">Event occurs <tspan translate="no">click</tspan>.</text>
+<path d="M260 187 V213 M253 206 L260 213 L267 206" fill="none" stroke="#64748b" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+<rect fill="#ccfbf1" height="112" rx="12" width="472" x="24" y="222"></rect>
+<text fill="#0f766e" font-size="21" font-weight="700" x="44" y="253">2. JavaScript executes the function</text>
+<text fill="#334155" font-size="19" x="44" y="283">The registered handler for that event</text>
+<text fill="#334155" font-size="19" x="44" y="311">changes the text of a DOM element.</text>
+<path d="M260 337 V363 M253 356 L260 363 L267 356" fill="none" stroke="#64748b" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+<rect fill="#dbeafe" height="142" rx="12" width="472" x="24" y="372"></rect>
+<text fill="#1e3a8a" font-size="21" font-weight="700" x="44" y="403">3. The page shows the result</text>
+<text fill="#334155" font-size="19" x="44" y="433">The user sees the updated message.</text>
+<rect fill="#ffffff" height="46" rx="7" stroke="#93c5fd" width="432" x="44" y="450"></rect>
+<text fill="#0f766e" font-size="22" font-weight="700" text-anchor="middle" x="260" y="480">Hello, world!</text>
+</svg>
+<figcaption class="resource-description">Example of event-directed programming in the browser. The click response must have been defined previously in the program.</figcaption>
+</figure>
+<div class="resource-card expansion-card">
+<div class="resource-card-header">
+<span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> What JavaScript Can Do</span>
+<span class="resource-badge badge-reading">Reading</span>
+</div>
+<p class="resource-description">Introduction to the language, the engines that run it and its possibilities and limits within the browser.</p>
+<a class="resource-link-btn" href="https://es.javascript.info/intro" rel="noopener noreferrer" target="_blank">JavaScript.info · An Introduction to JavaScript <i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i></a>
+</div>
+<div class="activity-card activity-callout" id="actividad-1-1">
+<p><strong>1.1. Understanding the concepts</strong></p>
+<ol><li>Explain with your words the relationship between JavaScript and ECMASScript.</li><li>The same variable first contains a number and then a text. What characteristic of the language does it allow to do so?</li><li>Write two user actions that can trigger an event on a page.</li></ol>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-1" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-1" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+</section>
+<section aria-labelledby="sec2">
+<h2 id="sec2"><i aria-hidden="true" class="fa-solid fa-code"></i> 2. Working environment and first programme</h2>
+<p>To program the frontend, a plain text editor and a browser with debugging tools are enough, but in class we will create a more efficient working environment.</p>
+<h3 id="sec2_1">2.1. Tools and project organization</h3>
+<p>These are the tools chosen for this course, so that we can follow the same examples. There are other editors, browsers and development tools with which JavaScript can also be programmed.</p>
+<ul>
+<li><strong>Visual Studio Code:</strong> allows editing and organizing the project files.</li>
+<li><strong>GitHub Codespaces:</strong> offers a cloud development environment, with editor and terminal accessible from the browser. It allows working in a repository without preparing the entire environment on the local computer.</li>
+<li><strong>Node.js and npm:</strong> integrated into Codespaces, allow you to run the development tools and install the dependencies of a project. They are needed to work with Vite; the JavaScript page will continue to run in the browser.</li>
+<li><strong>Vite:</strong> provides a development server that updates the page by saving changes and tools to prepare the project for publication. This unit will use the template <code>vanilla</code>, with JavaScript without frameworks.</li>
+<li><strong>Chrome:</strong> uploads the page and executes your JavaScript.</li>
+<li><strong>DevTools:</strong> are the development tools integrated in the browser. Open with <kbd>F12</kbd> or from the Chrome menu, in <em>More tools → Developer tools</em>.</li>
+</ul>
+<p>In DevTools will be used mainly <strong>Console (Console)</strong>, to execute instructions and consult messages; <strong>Sources (Sources)</strong>, to examine and debug the code; and <strong>Network (Network)</strong>, to check the load of the files.</p>
+<div class="resource-card expansion-card expansion-purple" id="ampliacion-emmet">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-wand-magic-sparkles"></i> Emmet: writing HTML and CSS with abbreviations</span><span class="resource-badge badge-reading">Enlargement</span></div>
+<p>In class it will be necessary to use <strong>Emmet</strong>, first called <strong>Zen Coding</strong>, when working with VS Code. Allows to expand abbreviations to write HTML and CSS quickly; it is integrated into the editor and does not require to install an extension.</p>
+<p>For example, <code>ul&gt;li*3</code> generates a list with three elements. Write the abbreviation in an HTML file and accept Emmet's suggestion.</p>
+<div class="resource-links"><a class="resource-link-btn" href="https://docs.emmet.io/cheat-sheet/" rel="noopener noreferrer" target="_blank">Emmet · Reference sheet</a>
+<a class="resource-link-btn" href="https://code.visualstudio.com/docs/languages/emmet" rel="noopener noreferrer" target="_blank">Emmet in VS Code</a></div>
+</div>
+<div class="activity-card activity-callout" id="actividad-2-instalacion">
+<p><strong>Preparation. Set up the necessary tools for the course.</strong></p>
+<ol>
+<li>Install Visual Studio Code and Chrome if you don’t have them. If you use older versions, upgrade them. DevTools is already part of Chrome.</li>
+<li>In VS Code, install or update the extension <strong>GitHub Codespaces</strong> and log in with your GitHub account.</li>
+<li>Create or open the Codespace of the repository indicated in class and connect to it from VS Code. <strong>Node.js and npm are already included in Codespaces remote environment</strong>; you don't have to install them on your computer for this activity.</li>
+<li>In the Codespace terminal, run <code>node --version</code> y <code>npm --version</code>. Write down the versions. If they are old or do not meet the requirements of Vite, update Node.js and npm in that environment following the instructions of the teacher.</li>
+<li>Creates the test project with these commands in the Codespace terminal. Opens the server link from the tab <strong>Ports</strong>.</li>
+</ol>
+<pre><code>npm create vite@latest prueba-js -- --template vanilla
+cd prueba-js
+npm install
+npm run dev</code></pre>
+<p>Modify a text from the home page, save and check that it is updated. Write down which tools you have prepared, the versions and the test result. The first examples of the drive can also be run in a simple HTML; the environment with Vite will be used when indicated.</p>
+<div class="resource-links"><a class="resource-link-btn" href="https://code.visualstudio.com/" rel="noopener noreferrer" target="_blank">Visual Studio Code</a>
+<a class="resource-link-btn" href="https://www.google.com/chrome/" rel="noopener noreferrer" target="_blank">Chrome</a>
+<a class="resource-link-btn" href="https://docs.github.com/en/codespaces/developing-in-a-codespace/using-github-codespaces-in-visual-studio-code" rel="noopener noreferrer" target="_blank">Connect Codespaces to VS Code</a>
+<a class="resource-link-btn" href="https://docs.github.com/en/codespaces/overview" rel="noopener noreferrer" target="_blank">GitHub Codespaces</a>
+<a class="resource-link-btn" href="https://vite.dev/guide/" rel="noopener noreferrer" target="_blank">Vite · Installation and requirements</a></div>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-2" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-2" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<div class="activity-card activity-callout laboratory-card" id="actividad-2-emmet">
+<p><strong>Laboratory practice. Emmet (Zen Coding)</strong></p>
+<p>Run Emmet's lab where you'll become a Zen programmer. Generate the final report for delivery.</p>
+<a class="resource-link-btn" href="/labs/emmet/index.html" rel="noopener noreferrer" target="_blank">Open Emmet's lab.</a>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-3" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-3" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec2_2">2.2. First Ways to Show and Collect Information</h3>
+<p>One <strong>function</strong> does a task. When you call it, the values written in parentheses are its <strong>arguments</strong>; <strong>parameters</strong> describe the data you can receive. <strong>return</strong> is the value that returns the call. A function associated with an object is called <strong>method</strong>. To invoke it, the name of the object, a point and the name of the method are written, followed by the parentheses with their arguments: <code>objeto.metodo(argumentos)</code>. In <code>console.log("Hola")</code>, <code>console</code> is the object and <code>log</code> It's the method.</p>
+<p>The tabs present the form of use we need in this unit. <code>mensaje</code> o <code>valor</code> are replaced by specific data; <code>...</code> indicates that more arguments can be passed.</p>
+<h4 class="content-subtitle">Messages on the console</h4>
+<aside aria-label="Function sheet: console.log(value1, ..., valueN)" class="function-card" id="ficha-funcion-1">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>console.log(valor1, ..., valorN)</code></p>
+<p>Displays information on the console, without adding it to the page.</p><p><strong>Parameters:</strong> One or more values of any kind, separated by commas. In console.log("Hello"), "Hello" is the argument that is passed.</p><p><strong>Returns:</strong> undefined; displaying a message does not amount to returning that message.</p>
+</aside>
+<pre><code>console.log("Comienza el programa");
+console.log(8 + 4);</code></pre>
+<p><code>console.log()</code> displays information in DevTools without adding it to the page. In this example a message and the result appear <code>12</code>. If the console also shows <code>undefined</code>, is the value returned by the call; does not indicate that it has failed.</p>
+<h4 class="content-subtitle">Browser dialogues</h4>
+<aside aria-label="Function sheet: alert(message)" class="function-card" id="ficha-funcion-2">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>alert(mensaje)</code></p>
+<p>Displays a modal warning in the browser.</p><p><strong>Parameters:</strong> message: text to be displayed; it is optional. Other values are converted into text.</p><p><strong>Returns:</strong> undefined.</p>
+</aside>
+<aside aria-label="Function tab: prompt(message, initial value)" class="function-card" id="ficha-funcion-3">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>prompt(mensaje, valorInicial)</code></p>
+<p>Opens a dialogue box to request a text.</p><p><strong>Parameters:</strong> message and valueHome: optional texts; the second initially fills in the field.</p><p><strong>Returns:</strong> A chain when accepting, even if it is empty, or null when cancelling.</p>
+</aside>
+<aside aria-label="Function tab: confirm(message)" class="function-card" id="ficha-funcion-4">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>confirm(mensaje)</code></p>
+<p>Ask for confirmation by means of a dialogue.</p><p><strong>Parameters:</strong> message: optional text describing the decision.</p><p><strong>Returns:</strong> true by accepting; false by cancelling.</p>
+</aside>
+<pre><code>alert("Bienvenido a JavaScript");
+console.log(prompt("¿Cómo te llamas?"));
+console.log(confirm("¿Quieres continuar?"));</code></pre>
+<ul>
+<li><code>alert()</code> shows a notice that the user must close.</li>
+<li><code>prompt()</code> requests a text. Returns a string when accepting, an empty string if accepted without writing, or <code>null</code> even when you write a number, you get text.</li>
+<li><code>confirm()</code> asks for a decision. <code>true</code> by accepting or <code>false</code> by cancelling.</li>
+</ul>
+<p>In the last two examples the answer of the dialog is obtained first and then shown with <code>console.log()</code>The types of these values shall be considered in paragraph 4.</p>
+<p>The dialogues are <strong>manners</strong>: while they remain open they prevent interacting with the rest of the page. They are useful for these first tests; interactive pages will also use fields and messages of the document.</p>
+<div class="didactic-note">
+<p>You may have seen the function used <code>document.write()</code> to write HTML content on a page. Its use is discouraged because it alters the document while it is being processed and, if it is called after uploading it, it can delete the existing content. In addition, interpreting as untrustworthy HTML data can enter malicious code. In this unit specific elements of the DOM will be updated using tools such as <code>textContent</code>.</p>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Document/write" rel="noopener noreferrer" target="_blank">See the MDN explanation</a>
+</div>
+<div class="activity-card activity-callout" id="actividad-2-1">
+<p><strong>2.1. Observe responses</strong></p>
+<ol><li>Open DevTools in Chrome and select the tab <strong>Console</strong>. Run the console and dialog examples separately there. Aim where each message appears.</li><li>Prompt() test three times: type a name, accept without writing and cancel. Copy the value obtained in each case.</li><li>Test confirm(): accept once and cancel again. Write down the two results.</li></ol>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-4" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-4" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<div class="resource-card expansion-card">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Console and dialogues</span><span class="resource-badge badge-reading">Consultation</span></div>
+<p class="resource-description">References to consult the purpose and values returned by each tool.</p>
+<div class="resource-links"><a class="resource-link-btn" href="https://developer.mozilla.org/es/docs/Web/API/console" rel="noopener noreferrer" target="_blank">MDN · Console</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/es/docs/Web/API/Window/alert" rel="noopener noreferrer" target="_blank">alert()</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Window/prompt" rel="noopener noreferrer" target="_blank">prompt()</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/es/docs/Web/API/Window/confirm" rel="noopener noreferrer" target="_blank">confirm()</a></div>
+</div>
+<div class="activity-card activity-callout" id="actividad-2-2">
+<p><strong>2.2. Your first program: Hello, world</strong></p>
+<ol>
+<li>Inside your repository, create the folder <code>dwec/ejercicios/u01/</code> and open it in VS Code. Inside, create the file <code>ej01-holaMundo.html</code>.</li>
+<li>Copy this page. JavaScript is written within <code>&lt;script&gt;</code>at the end of <code>&lt;body&gt;</code>:</li>
+</ol>
+<pre data-example="hola-mundo-inline"><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Primer programa JavaScript&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Primer programa JavaScript&lt;/h1&gt;
+    &lt;p&gt;Abre la consola para consultar los mensajes.&lt;/p&gt;
+
+    &lt;script&gt;
+        console.log("Hola, mundo");
+        console.log("El JavaScript del HTML se ha ejecutado");
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<ol start="3">
+<li>Save the file, open it in Chrome and view DevTools console. Check that the two messages appear in order.</li>
+<li>Add inside it <code>&lt;script&gt;</code> a third <code>console.log()</code> Save and recharge.</li>
+<li>Copy all three messages into <code>ej01-holaMundo.txt</code> and explains where they appear: on the page or on the console.</li>
+</ol>
+<p>If you don't see the messages, check that you saved the HTML, reloaded the page, and that the console isn't hiding them with its filters.</p>
+<p><strong>Delivery:</strong> <code>ej01-holaMundo.html</code> y <code>ej01-holaMundo.txt</code>both in plain text.</p>
+<p class="exercise-files"><strong>Files:</strong> <code>ej01-holaMundo.html</code>, <code>ej01-holaMundo.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-5" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-5" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec2_3">2.3. First contact with debugging</h3>
+<p><strong>Debug</strong> is to locate and understand the errors of a program. It is appropriate to distinguish a message that the programmer writes from an error detected by the browser:</p>
+<aside aria-label="Function sheet: console.warn(value1, ..., valueN)" class="function-card" id="ficha-funcion-6">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>console.warn(valor1, ..., valorN)</code></p>
+<p>Displays a warning level message on the console.</p><p><strong>Parameters:</strong> One or more values to be displayed.</p><p><strong>Returns:</strong> undefined; does not stop execution.</p>
+</aside>
+<aside aria-label="Function sheet: console.error(value1, ..., valueN)" class="function-card" id="ficha-funcion-7">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>console.error(valor1, ..., valorN)</code></p>
+<p>Displays an error level message on the console.</p><p><strong>Parameters:</strong> One or more values to be displayed.</p><p><strong>Returns:</strong> undefined; by itself it does not release an exception.</p>
+</aside>
+<pre><code>console.log("Información de seguimiento");
+console.warn("Aviso de prueba");
+console.error("Mensaje de error de prueba");</code></pre>
+<p><code>console.warn()</code> y <code>console.error()</code> messages with different visual importance. Call <code>console.error()</code> does not itself cause an exception or stop the program.</p>
+<p>When a real error appears, the console usually indicates its type, description, and related file and line. The link to that line helps locate it. If messages do not appear, check the console filters.</p>
+<h3 id="sec2_4">2.4. Ways to include JavaScript</h3>
+<p>The HTML element <code>&lt;script&gt;</code> allows to include instructions in the document or upload an external file.</p>
+<h4 class="content-subtitle">Code inside the document</h4>
+<pre><code>&lt;script&gt;
+    console.log("Hola desde el documento HTML");
+&lt;/script&gt;</code></pre>
+<p>This form is useful for small examples. The code is written between the opening and closing tags.</p>
+<h4 class="content-subtitle">External file</h4>
+<pre><code>&lt;script src="ej02-javascriptExterno.js" defer&gt;&lt;/script&gt;</code></pre>
+<p>The Attribute <code>src</code> indicates the path to the file. <code>ej02-javascriptExterno.js</code> only JavaScript instructions are written, without tags <code>&lt;script&gt;</code>.</p>
+<div class="activity-card activity-callout" id="actividad-2-js-externo">
+<p><strong>2.3. Switching JavaScript to an external file</strong></p>
+<ol>
+<li>Copy <code>ej01-holaMundo.html</code> as <code>ej02-javascriptExterno.html</code> and create <code>ej02-javascriptExterno.js</code> in the same folder. Keeps the original file.</li>
+<li>Move console messages to <code>ej02-javascriptExterno.js</code>. Copy only the JavaScript instructions, without the tags <code>&lt;script&gt;</code>.</li>
+<li>Remove the block <code>&lt;script&gt;</code> HTML body and adds in <code>&lt;head&gt;</code> the link <code>&lt;script src="ej02-javascriptExterno.js" defer&gt;&lt;/script&gt;</code>.</li>
+<li>Save both files and reload the page. Check that all three messages continue to appear once and in the same order.</li>
+<li>Deliver the two files and write down the test result in your workbook. We will use this organization in the following exercises.</li>
+</ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej02-javascriptExterno.html</code>, <code>ej02-javascriptExterno.js</code>, <code>ej02-javascriptExterno.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-js-externo" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-js-externo" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<aside aria-label="Function sheet: destination.addEventListener(type, handler, options)" class="function-card" id="ficha-funcion-8">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>destino.addEventListener(tipo, manejador, opciones)</code></p>
+<p>Record a function that will be executed when an event occurs at the destination.</p><p><strong>Parameters:</strong> type: Event name, as "click". handler: function that will receive the event object. options: optional configuration, which will be studied later.</p><p><strong>Returns:</strong> Undefined. The function is delivered, without calling it at that time.</p>
+</aside>
+<p>When an item <code>&lt;script&gt;</code> you have <code>src</code>, no code is also added between your tags. In old examples attributes such as <code>onclick</code> with instructions within HTML; in this unit events will be registered from JavaScript with <code>addEventListener()</code>.</p>
+<h3 id="sec2_5">2.5. Loading and executing scripts</h3>
+<p>The browser processes HTML progressively. If a script is executed before the item you need exists, you will not be able to find it. Therefore, it is necessary to choose when the script should be executed.</p>
+<p>The main loading options are:</p>
+<ul>
+<li><strong>Classic script without attributes:</strong> stops HTML analysis to load and execute the code.</li>
+<li><strong><code>defer</code>:</strong> downloads an external classic script while continuing the analysis and executes it when HTML is already processed. Keeps the order between deferred scripts.</li>
+<li><strong><code>async</code>:</strong> download in parallel and run when available. It does not guarantee that HTML is finished or the order between scripts.</li>
+<li><strong>Script at the end of <code>&lt;body&gt;</code>:</strong> you can access the elements written before it.</li>
+<li><strong><code>type="module"</code>:</strong> load code as a module and it differs its execution by default. The modules will be developed in another unit.</li>
+</ul>
+<p>In this practice it will be used <strong><code>&lt;script src="ej02-javascriptExterno.js" defer&gt;&lt;/script&gt;</code></strong>. <code>defer</code> has no effect on classic scripts written inside HTML and does not imply waiting for all images to be downloaded.</p>
+<div class="resource-card expansion-card" id="eventos-de-carga">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Other options: Load events</span><span class="resource-badge badge-reading">Enlargement</span></div>
+<p>An action can also be postponed until a loading event occurs:</p>
+<ul>
+<li><strong><code>DOMContentLoaded</code>:</strong> is triggered when HTML is processed and deferred scripts are finished. It does not wait for images; it is usually enough to start working with the DOM.</li>
+<li><strong><code>load</code>:</strong> also waits for resources such as images and style sheets, without waiting for images with <code>loading="lazy"</code>. It can be handled by <code>window.onload</code> o <code>window.addEventListener("load", manejador)</code>.</li>
+</ul>
+<div id="ejemplo-eventos-carga">
+<p>Add this code to <code>ej02-javascriptExterno.js</code>, linked from HTML with <code>defer</code>Open the console and reload the page:</p>
+<pre><code>document.addEventListener("DOMContentLoaded", function () {
+    console.log("1. El HTML está procesado y el DOM está listo");
+});
+
+window.addEventListener("load", function () {
+    console.log("2. Han terminado de cargar los recursos de la página");
+});</code></pre>
+</div>
+<div class="didactic-note" id="nota-onload">
+<p><strong>The property <code>onload</code> and the event <code>load</code>.</strong> <code>onload</code> receives the handler; the name of the event is <code>load</code>. A new allocation to <code>window.onload</code> replaces the previous handler; <code>addEventListener()</code> allows you to register several.</p>
+<p>It can also be written as an attribute of <code>&lt;body&gt;</code>. In this case, it responds to the window load event:</p>
+<pre><code>&lt;!-- Desaconsejado: evento en el HTML --&gt;
+&lt;body onload="console.log('Página cargada')"&gt;
+    &lt;h1&gt;Mi página&lt;/h1&gt;
+&lt;/body&gt;</code></pre>
+<p><strong>This form is not recommended because it mixes the HTML structure with the behavior.</strong> In the exercises, log the handler from the JavaScript file with <code>window.addEventListener("load", manejador)</code>.</p>
+</div>
+<div class="resource-links"><a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event" rel="noopener noreferrer" target="_blank">MDN · DOMContentLoaded</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event" rel="noopener noreferrer" target="_blank">MDN · load and onload</a></div>
+</div>
+<figure class="loading-diagram" id="diagrama-orden-carga"><svg aria-labelledby="diagrama-orden-carga-title diagrama-orden-carga-desc" role="img" viewbox="0 0 440 387" xmlns="http://www.w3.org/2000/svg"><title id="diagrama-orden-carga-title">The order of HTML matters</title><desc id="diagrama-orden-carga-desc">A script located before the paragraph searches for an item that does not yet exist. With defer, the search is done after processing the HTML.</desc><rect fill="#f8fafc" height="387" rx="12" width="440"></rect><rect fill="#fee2e2" height="64" rx="8" width="408" x="16" y="20"></rect><text fill="#0f172a" font-size="17" font-weight="700" x="30" y="45">Undefered: script appears before paragraph</text><text fill="#334155" font-size="15" x="30" y="69">1. The search for #salud is executed.</text><path d="M220 81 V97 m-5 -5 5 5 5 -5" fill="none" stroke="#64748b" stroke-width="2"></path><rect fill="#fee2e2" height="64" rx="8" width="408" x="16" y="103"></rect><text fill="#0f172a" font-size="17" font-weight="700" x="30" y="128">Search returns null</text><text fill="#334155" font-size="15" x="30" y="152">2. The browser then processes the paragraph.</text><rect fill="#dbeafe" height="64" rx="8" width="408" x="16" y="186"></rect><text fill="#0f172a" font-size="17" font-weight="700" x="30" y="211">Alternative: external file with defer</text><text fill="#334155" font-size="15" x="30" y="235">1. The HTML is processed and the paragraph is created.</text><path d="M220 247 V263 m-5 -5 5 5 5 -5" fill="none" stroke="#64748b" stroke-width="2"></path><rect fill="#ccfbf1" height="64" rx="8" width="408" x="16" y="269"></rect><text fill="#0f172a" font-size="17" font-weight="700" x="30" y="294">Script executes when HTML is finished</text><text fill="#334155" font-size="15" x="30" y="318">2. The search already finds #healing.</text></svg><figcaption class="image-caption">The order of HTML matters. Simplified scheme, without time scale.</figcaption></figure>
+<div class="resource-card expansion-card">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Inclusion and charging of JavaScript</span><span class="resource-badge badge-reading">Reading</span></div>
+<p class="resource-description">Examples of script inclusion and reference of their attributes.</p>
+<div class="resource-links"><a class="resource-link-btn" href="https://es.javascript.info/hello-world" rel="noopener noreferrer" target="_blank">JavaScript.info · Hello, world!</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script" rel="noopener noreferrer" target="_blank">MDN · The script element</a></div>
+</div>
+<aside aria-label="Function tab: document.querySelector(selector)" class="function-card" id="ficha-funcion-9">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>document.querySelector(selector)</code></p>
+<p>Find the first element that matches a CSS selector.</p><p><strong>Parameters:</strong> selector: string with a valid selector, e.g. "#salute" or ".notice".</p><p><strong>Returns:</strong> The first element found or null if there are no matches.</p>
+</aside>
+<div class="activity-card activity-callout" id="actividad-2-3">
+<p><strong>2.4. Research and choose how to load JavaScript</strong></p>
+<ol>
+<li>See the MDN and JavaScript references in this section. Compare a script at the end of <code>body</code>an external script with <code>defer</code> and another with <code>async</code>.</li>
+<li>Think of a page whose JavaScript needs to access a paragraph and run after it exists. Choose the most appropriate form of loading for that case and justify your choice. There is no better option for all projects.</li>
+<li>Create a page with <code>&lt;p id="saludo"&gt;Hola, mundo&lt;/p&gt;</code> and an external JavaScript file running <code>console.log(document.querySelector("#saludo"));</code>Link it to the option you have chosen.</li>
+<li>Open the page and check the DevTools console that the paragraph is found. Copy the output as text and explain why that result is obtained.</li>
+<li>Deliver the HTML, JavaScript and a brief explanation with the links consulted, your comparison and the test result.</li>
+</ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej03-cargaJavascript.html</code>, <code>ej03-cargaJavascript.js</code>, <code>ej03-cargaJavascript.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-6" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-6" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+</section>
+<section aria-labelledby="sec3">
+<h2 id="sec3"><i aria-hidden="true" class="fa-solid fa-align-left"></i> 3. Basic syntax and initial good practices</h2>
+<p>The <strong>syntax</strong> sets how a valid program is written. Style conventions help make that program legible and easy to modify. In the examples in this section the file will be used <code>ej02-javascriptExterno.js</code> prepared by separating JavaScript from HTML in 2.4.</p>
+<h3 id="sec3_1">3.1. Values, expressions, instructions and blocks</h3>
+<p>A <strong>value</strong> is a data that the program works with, like the number <code>12</code>the text <code>"Hola"</code> or the logical value <code>true</code>. When written directly into the code a <strong>literal</strong>.</p>
+<p>One <strong>expression</strong> is a construction that is evaluated and produces a value. <code>8 + 4</code> produces <code>12</code>. A literal can also constitute an expression.</p>
+<pre><code>console.log(8 + 4);</code></pre>
+<p>In this example, <code>8 + 4</code> is the expression that calculates the result. The whole line is a <strong>instruction</strong> who calls <code>console.log()</code> to show it. An instruction represents a step of the program.</p>
+<p>A <strong>block</strong> group instructions between keys. In this example the two instructions are executed in order:</p>
+<pre><code>{
+    console.log("Inicio del bloque");
+    console.log("Fin del bloque");
+}</code></pre>
+<p>Blocks will be used later in control structures and functions. Keys define the block; bleeding allows visual recognition of its contents.</p>
+<h3 id="sec3_2">3.2. Shifts, comments and signs of delimitation</h3>
+<p>JavaScript <strong>differentiates between upper and lowercase</strong>. Therefore, <code>console.log</code> y <code>console.Log</code> are different names. An incorrect letter can prevent an instruction from working.</p>
+<p>Comments document the code and are not executed:</p>
+<pre><code>// Comentario de una línea.
+console.log("Bienvenido");
+
+/*
+   Comentario que ocupa
+   varias líneas.
+*/
+console.log("Fin del programa");</code></pre>
+<p><code>//</code> starts a comment until the end of the line. <code>/*</code> y <code>*/</code> delimit a comment that can occupy several lines. The latter cannot be nested.</p>
+<p>It is appropriate to distinguish the signs that have already appeared:</p>
+<ul>
+<li><strong>Dates:</strong> define texts, such as <code>"Bienvenido"</code>.</li>
+<li><strong>Parenthesis:</strong> in a call, contain arguments, as in <code>console.log("Bienvenido")</code>.</li>
+<li><strong>Keys:</strong> in the above examples, define a block.</li>
+</ul>
+<div class="didactic-note" id="buenas-practicas">
+<p><strong>Good practice from the first programme.</strong> Keep a uniform indentation to recognize the blocks, type an instruction per line, and use spaces that facilitate reading. Choose descriptive names and add brief comments that explain decisions, keeping them up to date. Format coherence and readability make it easy to review and modify the code.</p>
+<a class="resource-link-btn" href="https://es.javascript.info/coding-style" rel="noopener noreferrer" target="_blank">Enlargement: Encoding style</a>
+</div>
+<div class="resource-card expansion-card">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Syntax and style</span><span class="resource-badge badge-reading">Reading</span></div>
+<p class="resource-description">See the initial paragraphs on syntax and comments. Variable statements and types will be developed at the next point in this unit.</p>
+<div class="resource-links"><a class="resource-link-btn" href="https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Grammar_and_types" rel="noopener noreferrer" target="_blank">MDN · Grammar and types</a>
+<a class="resource-link-btn" href="https://es.javascript.info/structure" rel="noopener noreferrer" target="_blank">JavaScript.info · Code structure</a></div>
+</div>
+</section>
+<section aria-labelledby="sec4">
+<h2 id="sec4"><i aria-hidden="true" class="fa-solid fa-box"></i> 4. Variables and types of data</h2>
+<p>The <strong>variables</strong> allow you to associate a name to a value and use it throughout the program. Examples will use <code>const</code> y <code>let</code>, along with descriptive names in <em>camelCase</em>.</p>
+<p>Test each fragment separately in <code>ej04-marcadorPuntos.js</code> and reload the page. So you will avoid declaring the same name several times when gathering independent examples.</p>
+<h3 id="sec4_1">4.1. Declaration, initialization and reassignment</h3>
+<p><strong>Declare</strong> a variable inserts its name into the program. <strong>Initialize</strong> is to set its initial value. <strong>reallocation</strong> replaces the value it had for another.</p>
+<pre><code>let puntuacion = 10; // Declaración e inicialización.
+console.log(puntuacion); // 10
+
+puntuacion = 15; // Reasignación.
+console.log(puntuacion); // 15</code></pre>
+<p>The sign <code>=</code> assigns a value; it does not express a comparison. When reassigning the name is written without repeating <code>let</code>.</p>
+<p>With <code>let</code> it is possible to separate the statement from the first assignment. As long as no other value is assigned, the variable contains <code>undefined</code>:</p>
+<pre><code>let mensaje;
+console.log(mensaje); // undefined
+
+mensaje = "Bienvenido";
+console.log(mensaje); // Bienvenido</code></pre>
+<p>Declares the variables before using them. Using a name that has not been declared causes a <code>ReferenceError</code>; is not the same as reading a declared variable whose value is <code>undefined</code>.</p>
+<h3 id="sec4_2">4.2. Descriptive identifiers and names</h3>
+<p>A <strong>identifier</strong> is a name that allows referring to a program element, such as a variable or a function. When declaring a variable, you choose your identifier, which must respect the rules of the language and express its meaning.</p>
+<ul>
+<li>You can start with a letter, a bass script (<code>_</code>) or the sign <code>$</code>. Many Unicode letters are also supported.</li>
+<li>You may include numbers, but don't start with them.</li>
+<li>It cannot contain spaces or medium scripts.</li>
+<li>No reserved words are used as <code>if</code>, <code>class</code> o <code>return</code>.</li>
+<li>The capital letters distinguish names: <code>nombreUsuario</code> y <code>NombreUsuario</code> They're different identifiers.</li>
+</ul>
+<p>To be used <strong>camelCase</strong>: the first word starts in lowercase and the following in uppercase, as <code>nombreUsuario</code>, <code>numeroIntentos</code> o <code>mostrarMensaje</code>.</p>
+<p>The name must express its meaning. <code>numeroIntentos</code> communicates more information than <code>n</code>. For functions that perform an action it is advisable to use a verb, such as <code>mostrarMensaje</code>A consistent language approach will be maintained.</p>
+<h3 id="sec4_3">4.3. Choosing between Const and Let</h3>
+<p>Use <strong><code>const</code> as usual option</strong> y <strong><code>let</code> when the program needs to be reassigned</strong> the variable.</p>
+<pre><code>const nombreCurso = "DWEC";
+let intentosRestantes = 3;
+
+intentosRestantes = 2;
+console.log(nombreCurso, intentosRestantes);</code></pre>
+<ul>
+<li><code>const</code> requires an initial value in your statement and does not allow it to be reassigned.</li>
+<li><code>let</code> allows you to set an initial value and change it later.</li>
+<li>Neither allows the same name to be re-declared in the same area.</li>
+</ul>
+<p>In previous code you can appear <code>var</code>. Its rules of scope are different; in this unit will be used <code>const</code> y <code>let</code>.</p>
+<div class="resource-card expansion-card" id="otros-usos-const">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> with functions and other values</span><span class="resource-badge badge-reading">Enlargement</span></div>
+<p><code>const</code> you can associate a name to a function, as the functions are also values. It is used both with function expressions and with arrow functions:</p>
+<aside class="function-card" id="ficha-ejemplo-1"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>saludar() y despedir()</code></p><p>They show a greeting or farewell at the console.</p><p><strong>Parameters:</strong> They don't get parameters.</p><p><strong>Returns:</strong> undefined.</p></aside>
+<pre><code>const saludar = function () {
+    console.log("Hola");
+};
+
+const despedir = () =&gt; console.log("Hasta pronto");
+
+saludar();
+despedir();</code></pre>
+<p>Names <code>saludar</code> y <code>despedir</code> the functions can be invoked and cannot be reassigned. Calls are placed after statements. Your syntax will be explained in the function section.</p>
+<p>It is also used for references to DOM elements, objects, arrays, and configuration values. It prevents replacing the value associated with the name, but allows to modify the content of an object or array:</p>
+<pre><code>const usuario = { nombre: "Ana" };
+usuario.nombre = "Luis";
+console.log(usuario.nombre); // Luis</code></pre>
+<p>Objects and arrays will be studied later. For configuration constants can be used <code>MAYUSCULAS_CON_GUIONES_BAJOS</code>, like <code>MAX_INTENTOS</code>; declare with <code>const</code> does not require writing all names in capital letters.</p>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const" rel="noopener noreferrer" target="_blank">MDN · const and its uses</a>
+</div>
+<div class="activity-card activity-callout" id="actividad-4-1">
+<p><strong>4.1. A Changing Marker</strong></p>
+<p>You will save a player's name and points. Copy this code to <code>ej04-marcadorPuntos.js</code>:</p>
+<pre><code>const jugador = "Ana";
+const puntos = 0;
+console.log(jugador, puntos);
+
+puntos = 10;
+console.log(jugador, puntos);</code></pre>
+<ol><li>Before you execute him, write down what you think will happen.</li><li>Run the code and copy the error message. Which line tries to change a stated value with <code>const</code>?</li><li>Change only the declaration of <code>puntos</code> to allow it to go from 0 to 10. Do not change the <code>jugador</code>.</li><li>Run again and copy the two outputs. Explain why you used <code>let</code> in a case and <code>const</code> on the other one.</li></ol>
+<p><strong>Delivery:</strong> the corrected code and your answers in plain text.</p>
+<p class="exercise-files"><strong>Files:</strong> <code>ej04-marcadorPuntos.html</code>, <code>ej04-marcadorPuntos.js</code>, <code>ej04-marcadorPuntos.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-7" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-7" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec4_4">4.4. Types of data for initial use</h3>
+<p>The <strong>type</strong> describes the value class with which the program works. In these first exercises the following will be used:</p>
+<ul>
+<li><strong><code>number</code>:</strong> represents numbers, both integers and decimals. Examples: <code>18</code> y <code>7.5</code>. The decimal separator in the code is the point.</li>
+<li><strong><code>string</code>:</strong> represents text delimited by quotes. Examples: <code>"Ana"</code>, <code>"18"</code> y <code>""</code>. A number in quotation marks is text; an empty string is also text.</li>
+<li><strong><code>boolean</code>:</strong> supports values <code>true</code> y <code>false</code>, written without quotation marks. Allows to represent states as “active” or “inactive”.</li>
+<li><strong><code>undefined</code>:</strong> is the value of a declared variable with <code>let</code> to which no other value has yet been assigned.</li>
+<li><strong><code>null</code>:</strong> is used to explicitly represent the absence of a value.</li>
+</ul>
+<pre><code>const edad = 18;
+const nombre = "Ana";
+const matriculaActiva = true;
+let observaciones;
+const tutorAsignado = null;
+
+console.log(edad, nombre, matriculaActiva);
+console.log(observaciones, tutorAsignado);</code></pre>
+<p><code>undefined</code> may also appear in other situations, such as the result of a call to <code>console.log()</code>. <code>null</code> express an explicit absence, as happens when cancelling <code>prompt()</code>. None is equivalent to an empty text.</p>
+<h3 id="sec4_5">4.5. Dynamic typing and typeof</h3>
+<p>JavaScript has <strong>dynamic typing</strong>: a variable is not associated with a fixed rate. <code>typeof</code> query the type of a value and return a string with its name.</p>
+<pre><code>let dato = 42;
+console.log(typeof dato); // "number"
+
+dato = "cuarenta y dos";
+console.log(typeof dato); // "string"</code></pre>
+<p>Reassignment is valid, but it is appropriate to maintain a consistent meaning and type for each variable when possible. This makes it easier to understand the program.</p>
+<pre><code>console.log(typeof 7.5);      // "number"
+console.log(typeof "7.5");    // "string"
+console.log(typeof false);    // "boolean"
+console.log(typeof undefined); // "undefined"
+console.log(typeof null);     // "object"</code></pre>
+<div class="didactic-note">
+<p><strong>The null case.</strong> For a historical particularity, <code>typeof null</code> returns <code>"object"</code>. However, <code>null</code> is a primitive value that represents absence, not an object with properties.</p>
+</div>
+<div class="activity-card activity-callout" id="actividad-4-2">
+<p><strong>4.2. Predict and check types</strong></p>
+<ol><li>Without running yet, point out what you think they return typeof 25, typeof "25", typeof true, typeof "true" and typeof "".</li><li>Test the five expressions with console.log() and copy their results.</li><li>An example explains what the quotes change.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej05-tiposDeDatos.html</code>, <code>ej05-tiposDeDatos.js</code>, <code>ej05-tiposDeDatos.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-8" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-8" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec4_6">4.6. Chains and interpolation</h3>
+<p>Simple strings can be written with double or simple quotation marks. The closing delimiter must match the opening one. Other quotation marks may be part of the text:</p>
+<pre><code>const saludo = "Hola";
+const aviso = 'Pulsa "Aceptar" para continuar';
+console.log(saludo, aviso);</code></pre>
+<p>The operator <code>+</code> allows concatenating, that is, joining chains. <strong>string templates</strong> use severe accents (<code>`</code>) and allow inserting values by means of <code>${expresion}</code>.</p>
+<pre><code>const nombre = "Ana";
+const curso = "DWEC";
+
+console.log("Hola, " + nombre + ". Bienvenida a " + curso + ".");
+console.log(`Hola, ${nombre}. Bienvenida a ${curso}.`);</code></pre>
+<p>Both instructions show the same message. Interpolation makes it easy to read texts that combine several variables. Single and double quotes do not interpret <code>${...}</code>.</p>
+<div class="activity-card activity-callout" id="actividad-4-3">
+<p><strong>4.3. Write your presentation</strong></p>
+<ol><li>Creates three variables: <code>nombre</code> with your name, <code>modulo</code> with <code>"DWEC"</code> y <code>grupo</code> with <code>"2DAW"</code>.</li><li>Use those variables and the operator <code>+</code> to display a message as <code>"Soy Ana, estudio DWEC y estoy en 2DAW."</code>.</li><li>Displays the same message with a string template: uses bass accents and inserts each variable with <code>${...}</code>.</li><li>Change the name in your statement and run again. Check that the two messages are updated without modifying the instructions that show them.</li></ol>
+<p><strong>Delivery:</strong> the code of the two versions and the messages obtained in <code>ej06-construirMensaje.txt</code>.</p>
+<p class="exercise-files"><strong>Files:</strong> <code>ej06-construirMensaje.html</code>, <code>ej06-construirMensaje.js</code>, <code>ej06-construirMensaje.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-9" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-9" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec4_7">4.7. Block scope</h3>
+<p>The <strong>scope</strong> determines from where a variable can be used. A declared variable with <code>let</code> o <code>const</code> inside a block is available in that block and in those containing it, but not outside it.</p>
+<pre><code>const centro = "IES Ejemplo";
+
+{
+    const grupo = "2DAW";
+    console.log(centro); // IES Ejemplo
+    console.log(grupo);  // 2DAW
+}
+
+console.log(centro); // IES Ejemplo
+// console.log(grupo); // Fuera del bloque: ReferenceError.</code></pre>
+<p>The block can access <code>centro</code>, declared in the external sphere. However, the external code cannot access <code>grupo</code>Each variable should be declared near where it is used and its scope limited to what is necessary.</p>
+<div class="activity-card activity-callout" id="actividad-4-4">
+<p><strong>4.4. Check visibility</strong></p>
+<ol><li>Run the example of center and group. Copy the messages that appear.</li><li>Remove // from the last line to try to show group outside the block. Copy the error and explain why it happens.</li><li>Add a second block with another group variable and show it inside. Check that each block uses its own variable.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej07-ambitoVariables.html</code>, <code>ej07-ambitoVariables.js</code>, <code>ej07-ambitoVariables.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-10" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-10" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<div class="resource-card expansion-card">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Variables and types</span><span class="resource-badge badge-reading">Reading</span></div>
+<p class="resource-description">References for extending declarations, scope and types of data. Objects and less common types will be studied later.</p>
+<div class="resource-links"><a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types" rel="noopener noreferrer" target="_blank">MDN · Declarations, types and scope</a>
+<a class="resource-link-btn" href="https://es.javascript.info/variables" rel="noopener noreferrer" target="_blank">JavaScript.info · Variables</a>
+<a class="resource-link-btn" href="https://es.javascript.info/types" rel="noopener noreferrer" target="_blank">JavaScript.info · Data types</a></div>
+</div>
+</section>
+<section aria-labelledby="sec5">
+<h2 id="sec5"><i aria-hidden="true" class="fa-solid fa-calculator"></i> 5. Operators, expressions and conversions</h2>
+<p>The <strong>operators</strong> The values on which they act are called <strong>operand</strong>: in <code>6 + 2</code>, the operator is <code>+</code> And the operands are <code>6</code> y <code>2</code>. Executes the examples of this section separately on the console or on <code>ej08-compararValores.js</code>.</p>
+<h3 id="sec5_1">5.1. Arithmetic and allocation operators</h3>
+<div aria-label="Arithmetic operators" class="table-scroll operators-table" role="region" tabindex="0">
+<table>
+<thead><tr><th scope="col">Operator</th><th scope="col">Operation</th><th scope="col">Example:</th></tr></thead>
+<tbody>
+<tr><td><code>+</code></td><td>Amount</td><td><code>9 + 4</code> → <code>13</code></td></tr>
+<tr><td><code>-</code></td><td>Subtract</td><td><code>9 - 4</code> → <code>5</code></td></tr>
+<tr><td><code>*</code></td><td>Multiplication</td><td><code>9 * 4</code> → <code>36</code></td></tr>
+<tr><td><code>/</code></td><td>Division</td><td><code>9 / 4</code> → <code>2.25</code></td></tr>
+<tr><td><code>%</code></td><td>Rest of the division</td><td><code>9 % 4</code> → <code>1</code></td></tr>
+<tr><td><code>**</code></td><td>Power</td><td><code>3 ** 2</code> → <code>9</code></td></tr>
+</tbody>
+</table>
+</div>
+<p><code>%</code> does not calculate percentages. For example, to obtain 20% of a quantity is multiplied by <code>20 / 100</code>.</p>
+<p>The allocation <code>=</code> saves a value. Compound operators allow updating a variable from its previous value:</p>
+<pre><code>let puntos = 10;
+puntos += 5; // Equivale a puntos = puntos + 5.
+puntos -= 2; // Equivale a puntos = puntos - 2.
+console.log(puntos); // 13</code></pre>
+<p>There are also <code>*=</code>, <code>/=</code>, <code>%=</code> y <code>**=</code>. For numerical variables, <code>contador++</code> y <code>contador--</code> increase or reduce the value in a unit. At first it is advisable to use them as independent instructions.</p>
+<h3 id="sec5_2">5.2. Comparisons and strict equality</h3>
+<p>Comparisons produce a boolean. <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code> y <code>&lt;=</code> check whether one value is greater, smaller, greater or equal, or less or equal to another.</p>
+<pre><code>const nota = 7;
+console.log(nota &gt;= 5); // true
+console.log(nota &lt; 5);  // false
+console.log(nota === 7); // true
+console.log(nota !== 7); // false</code></pre>
+<p>To be used <strong><code>===</code> y <code>!==</code></strong> to check strict equality and inequality. Do not convert operands to another type: <code>7 === "7"</code> is <code>false</code>. Operators <code>==</code> y <code>!=</code> can make implicit conversions and will be avoided in these exercises.</p>
+<div class="didactic-note"><p><strong>Assigning is not comparing.</strong> <code>nota = 5</code> changes the value of a variable; <code>nota === 5</code> see if its value is the number <code>5</code>. To compare amounts received as text, convert them first to numbers.</p></div>
+<h3 id="sec5_3">5.3. Logical operators</h3>
+<p>When working with booleans, these operators allow to express composite conditions:</p>
+<ul>
+<li><strong><code>&amp;&amp;</code> (Y):</strong> the result is <code>true</code> if both conditions are true.</li>
+<li><strong><code>||</code> (O):</strong> the result is <code>true</code> if at least one condition is true.</li>
+<li><strong><code>!</code> (NO):</strong> reverses the logical value.</li>
+</ul>
+<pre><code>const tieneEntrada = true;
+const salaAbierta = false;
+
+console.log(tieneEntrada &amp;&amp; salaAbierta); // false
+console.log(tieneEntrada || salaAbierta); // true
+console.log(!salaAbierta); // true</code></pre>
+<p><code>&amp;&amp;</code> y <code>||</code> they evaluate from left to right and can omit the second operand if the first determines the result. <strong>short-circuit evaluation</strong>. With other types of data you can return one of your operands, not necessarily a boolean; for now they will be used with conditions.</p>
+<h3 id="sec5_4">5.4 Precedence and parentheses</h3>
+<p>The <strong>precedence</strong> determines how the operations are grouped. Multiplication is performed before the sum, unless the parentheses indicate another grouping:</p>
+<pre><code>console.log(4 + 3 * 2);   // 10
+console.log((4 + 3) * 2); // 14</code></pre>
+<p>In logical expressions, <code>!</code> has a higher priority than <code>&amp;&amp;</code>, and it's bigger than <code>||</code>. Use parentheses to make the intention explicit when combining multiple operations.</p>
+<div class="activity-card activity-callout" id="actividad-5-1">
+<p><strong>5.1. Predicting an expression</strong></p>
+<ol><li>Aim the result you expect for 17 % 5, 2 + 3 ** 2, (2 + 3) ** 2, 8 ==="8" and (8 &gt; 5)</li><li>Run each expression with console.log() and copy the output.</li><li>If you were wrong about any, explain what operation is being performed first or what comparison is being made.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej08-compararValores.html</code>, <code>ej08-compararValores.js</code>, <code>ej08-compararValores.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-11" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-11" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec5_5">5.5. Explicit conversion of types</h3>
+<p>When a data does not have the necessary type, it can be converted explicitly. The conversion produces a new value; it does not modify the original variable by itself.</p>
+<aside aria-label="Function tab: Number(value)" class="function-card" id="ficha-funcion-10">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>Number(valor)</code></p>
+<p>Converts a value into a number.</p><p><strong>Parameters:</strong> value: data that you want to convert. An empty string or formed by spaces becomes 0.</p><p><strong>Returns:</strong> The number obtained, or NaN if the conversion of a text is not valid.</p>
+</aside>
+<aside aria-label="Function sheet: String(value)" class="function-card" id="ficha-funcion-11">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>String(valor)</code></p>
+<p>Gets textual representation of a value.</p><p><strong>Parameters:</strong> value: data to be converted.</p><p><strong>Returns:</strong> A chain.</p>
+</aside>
+<aside aria-label="Function tab: Boolean(value)" class="function-card" id="ficha-funcion-12">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>Boolean(valor)</code></p>
+<p>Converts a value according to the rules of truthy and falsy.</p><p><strong>Parameters:</strong> value: data to be evaluated. For example, "false" is a non-empty string and produces true.</p><p><strong>Returns:</strong> true or false.</p>
+</aside>
+<pre><code>const texto = "24";
+const numero = Number(texto);
+console.log(numero + 1); // 25
+console.log(typeof texto); // "string"
+
+console.log(String(24));    // "24"
+console.log(Boolean(1));    // true
+console.log(Boolean(0));    // false
+console.log(Boolean(""));   // false
+console.log(Boolean("false")); // true</code></pre>
+<ul>
+<li><code>Number()</code> converts to number. For example, <code>Number("6.5")</code> produces <code>6.5</code>.</li>
+<li><code>String()</code> gets a textual representation.</li>
+<li><code>Boolean()</code> gets a logical value. A string does not even empty <code>"false"</code> o <code>"0"</code>, it becomes <code>true</code>.</li>
+</ul>
+<h3 id="sec5_6">5.6. Usual errors when dealing with data</h3>
+<p>The operator <code>+</code> also connects strings. Combining a number with a string gives text:</p>
+<pre><code>console.log("12" + 3);         // "123"
+console.log(Number("12") + 3); // 15
+console.log("12" - 3);         // 9: conversión implícita</code></pre>
+<p>You should convert before trading, without depending on each operator treating the text in a different way. If a numerical conversion fails, you get <code>NaN</code> (<em>Not to Number</em>):</p>
+<aside aria-label="Function sheet: Number.isNaN(value)" class="function-card" id="ficha-funcion-13">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>Number.isNaN(valor)</code></p>
+<p>Check if the value is exactly NaN, without converting it.</p><p><strong>Parameters:</strong> value: data to be checked.</p><p><strong>Returns:</strong> true for NaN; false for any other value.</p>
+</aside>
+<pre><code>const cantidad = Number("doce");
+console.log(cantidad); // NaN
+console.log(Number.isNaN(cantidad)); // true</code></pre>
+<p>For detecting <code>NaN</code>, use <code>Number.isNaN()</code>; compare it by <code>=== NaN</code> It doesn't work. <code>NaN</code> belongs to the type <code>number</code>.</p>
+<div class="didactic-note"><p><strong>Converting does not mean validating.</strong> <code>Number("")</code>, <code>Number("   ")</code> y <code>Number(null)</code> produce <code>0</code>. Therefore, an empty entry or a cancelled dialog must be checked before interpreting the result as a quantity.</p></div>
+<div class="activity-card activity-callout" id="actividad-5-2">
+<p><strong>5.2. From text to calculation</strong></p>
+<ol><li>Create const unitsText = "6"; and const unitsNew = 4;. Add them directly and show the result.</li><li>Convert Text units to number before adding. Check that you now get 10.</li><li>Repeat by changing "6" by "six" and then by "". Point out what happens and check each conversion with Number.isNaN().</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej09-convertirDatos.html</code>, <code>ej09-convertirDatos.js</code>, <code>ej09-convertirDatos.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-12" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-12" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<div class="resource-card expansion-card">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Operators and conversions</span><span class="resource-badge badge-reading">Enlargement</span></div>
+<p class="resource-description">See additional examples and conversion rules. Less common operators will be studied when necessary.</p>
+<div class="resource-links"><a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators" rel="noopener noreferrer" target="_blank">MDN · Expressions and operators</a>
+<a class="resource-link-btn" href="https://es.javascript.info/operators" rel="noopener noreferrer" target="_blank">JavaScript.info · Basic Operators</a>
+<a class="resource-link-btn" href="https://es.javascript.info/type-conversions" rel="noopener noreferrer" target="_blank">JavaScript.info · Type conversions</a></div>
+</div>
+</section>
+<section aria-labelledby="sec6">
+<h2 id="sec6"><i aria-hidden="true" class="fa-solid fa-sitemap"></i> 6. The DOM: access and modify the page</h2>
+<p>The <strong>DOM</strong> (<em>Document Object Model</em>) represents the document by means of an object tree. JavaScript can consult those objects and modify the content of the page. In this section the changes will be made when the script is executed; the response to user actions will be studied with the events.</p>
+<h3 id="sec6_1">6.1. The document as an object tree</h3>
+<p>The object <code>document</code> represents the document loaded. HTML elements, such as a paragraph or input field, are tree nodes and have properties and methods. For example, <code>textContent</code> is a property that contains text and <code>querySelector()</code> It's a search method.</p>
+<p>Use this test page with a file <code>ej10-seleccionarElementos.js</code> in the same folder. It contains the necessary elements for the following examples:</p>
+<pre data-example="dom-html"><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Pruebas con el DOM&lt;/title&gt;
+    &lt;script src="ej10-seleccionarElementos.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1 id="titulo"&gt;Pruebas con el DOM&lt;/h1&gt;
+    &lt;p id="mensaje" class="aviso"&gt;Texto inicial&lt;/p&gt;
+    &lt;label for="unidades"&gt;Unidades&lt;/label&gt;
+    &lt;input id="unidades" type="number" value="3"&gt;
+    &lt;p id="resultado"&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>The main structure is <code>document → html → head / body</code>. Within <code>body</code> the title, paragraphs and controls are found. <code>defer</code> allows you to run <code>ej10-seleccionarElementos.js</code> when these elements already exist.</p>
+<h3 id="sec6_2">6.2. Selection of elements</h3>
+<p>The DOM offers specific methods for searching by identifier, class or tag. Names distinguish upper and lower case:</p>
+<aside aria-label="Function sheet: document.getElementById(id)" class="function-card" id="ficha-funcion-14">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>document.getElementById(id)</code></p>
+<p>Look for an item by its identifier.</p><p><strong>Parameters:</strong> id: string with identifier, without sign #.</p><p><strong>Returns:</strong> The item found or null.</p>
+</aside>
+<aside aria-label="Function tab: document.getElementsByClassName(classes)" class="function-card" id="ficha-funcion-15">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>document.getElementsByClassName(clases)</code></p>
+<p>Find the elements that have the classes indicated.</p><p><strong>Parameters:</strong> classes: undotted class names, separated by spaces if several are indicated.</p><p><strong>Returns:</strong> A living HTMLCollection, which is updated when changing the document; it can be empty.</p>
+</aside>
+<aside aria-label="Function tab: document.getElementsByTagName(tag)" class="function-card" id="ficha-funcion-16">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>document.getElementsByTagName(etiqueta)</code></p>
+<p>Look for items by their tag name.</p><p><strong>Parameters:</strong> tag: string as "p" or "input"; "*" selects all tags.</p><p><strong>Returns:</strong> A living HTMLCollection, which may be empty.</p>
+</aside>
+<ul><li><code>document.getElementById("titulo")</code>: returns the item with that identifier, or <code>null</code>. The identifier is written without <code>#</code>.</li><li><code>document.getElementsByClassName("aviso")</code>: returns the items with that class, without writing the point.</li><li><code>document.getElementsByTagName("p")</code>: returns the elements of that label.</li></ul>
+<pre data-example="selection-classic"><code>const titulo = document.getElementById("titulo");
+const avisos = document.getElementsByClassName("aviso");
+const parrafos = document.getElementsByTagName("p");
+
+console.log(titulo.textContent);
+console.log(avisos.length);   // 1 en la página de prueba.
+console.log(parrafos.length); // 2 en la página de prueba.</code></pre>
+<p>The two plural methods return a <code>HTMLCollection</code>even if there's only one match. <code>length</code> and its first element with <code>[0]</code>These collections are <strong>Lives</strong>: are updated when the matches change in the DOM.</p>
+<h4 class="content-subtitle">SSC selection</h4>
+<aside aria-label="Function tab: document.querySelectorAll(selector)" class="function-card" id="ficha-funcion-17">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>document.querySelectorAll(selector)</code></p>
+<p>Look for all the elements that match a CSS selector.</p><p><strong>Parameters:</strong> selector: string with a valid CSS selector.</p><p><strong>Returns:</strong> A static NodeList: does not automatically update when changing the document. It may be empty.</p>
+</aside>
+<p><code>querySelector()</code> y <code>querySelectorAll()</code> use CSS selectors, from a label to a combination of classes and attributes:</p>
+<pre data-example="selection-css"><code>const titulo = document.querySelector("#titulo");
+const aviso = document.querySelector(".aviso");
+const parrafos = document.querySelectorAll("p");
+
+console.log(titulo.textContent);
+console.log(aviso.textContent);
+console.log(parrafos.length); // 2</code></pre>
+<p><code>querySelector()</code> returns the first match or <code>null</code>. <code>querySelectorAll()</code> returns a <code>NodeList</code> Static: does not automatically update if matches are added or removed later. When you do not find items, it returns an empty collection.</p>
+<div class="didactic-note"><p><strong>Which one to use today?</strong> Methods <code>getElementById()</code>, <code>getElementsByClassName()</code> y <code>getElementsByTagName()</code> In modern code it is common to use <code>querySelector()</code> y <code>querySelectorAll()</code> for their flexibility; they will be the general option of this course. To search for a specific identifier, <code>getElementById()</code> remains a direct and appropriate option.</p></div>
+<p>Test each fragment separately on the page in section 6.1. Save the references you are going to reuse and check that an item exists before accessing its properties.</p>
+<h3 id="sec6_3">6.3. Reading and modifying content</h3>
+<p>The property <code>textContent</code> allows reading or replacing the text of an element:</p>
+<pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
+console.log(mensaje.textContent); // Texto inicial
+mensaje.textContent = "El contenido ha cambiado";</code></pre>
+<p>If the element contains other elements, assign <code>textContent</code> replaces all its content with text. Labels written in the string are displayed literally.</p>
+<p><code>innerHTML</code> read or replace the content by interpreting it as HTML:</p>
+<pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
+mensaje.innerHTML = "&lt;strong&gt;Aviso:&lt;/strong&gt; sesión iniciada";</code></pre>
+<div class="didactic-note"><p><strong>Text or HTML.</strong> Use <code>textContent</code> to display text and data entered by the user. <code>innerHTML</code> for controlled HTML: inserting unreliable content can allow malicious code to run. Changes to the DOM do not modify the HTML file saved to disk.</p></div>
+<p><code>outerHTML</code> also includes the tag of the element itself. On the test page, run this fragment after reloading:</p>
+<pre data-example="dom-outer"><code>const mensaje = document.querySelector("#mensaje");
+console.log(mensaje.innerHTML); // Texto inicial
+console.log(mensaje.outerHTML);
+// &lt;p id="mensaje" class="aviso"&gt;Texto inicial&lt;/p&gt;
+
+mensaje.outerHTML = '&lt;div id="mensaje" class="aviso"&gt;Nuevo elemento&lt;/div&gt;';</code></pre>
+<ul><li><code>textContent</code>: reads or replaces the text; does not interpret labels.</li><li><code>innerHTML</code>: reads or replaces the inside HTML; retains the container element.</li><li><code>outerHTML</code>: read or replace the entire item, with its label and content.</li></ul>
+<p>After assigning <code>outerHTML</code>, the variable <code>mensaje</code> keep pointing to the old item, already separated from the document. If you need to work with the new one, re-select it. Use so much <code>innerHTML</code> as <code>outerHTML</code> only with controlled HTML; for user data use <code>textContent</code>.</p>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Element/outerHTML" rel="noopener noreferrer" target="_blank">MDN · yourHTML</a>
+<div class="activity-card activity-callout" id="actividad-6-1">
+<p><strong>6.1. Change a message</strong></p>
+<ol><li>On the test page, select #title and change its text to your name.</li><li>In another test, assign the text "&lt;strong&gt;Hello&lt;/strong&gt;" to #message using textContent. Describe what you see.</li><li>Repeat using innerHTML and then yourHTML. Reload between tests. Copy the resulting HTML from the element from DevTools and explain what is preserved and what is replaced.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej10-seleccionarElementos.html</code>, <code>ej10-seleccionarElementos.js</code>, <code>ej10-seleccionarElementos.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-13" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-13" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec6_4">6.4. Read fields and convert your data</h3>
+<p>In an entry field, <code>value</code> allows reading or setting the current value. Your reading returns a string, also when the field is <code>type="number"</code>.</p>
+<pre data-example="dom-js"><code>const campo = document.querySelector("#unidades");
+const resultado = document.querySelector("#resultado");
+const unidades = Number(campo.value);
+
+resultado.textContent = `El doble es ${unidades * 2}`;</code></pre>
+<p>With initial value <code>3</code>, the page shows "Double is 6". The calculation is executed once when loading; editing the field then does not execute the script again. Events will allow to respond to those changes.</p>
+<p>To test another value for now, modify <code>value="3"</code> in HTML and reload. Remember to check empty entries before converting them: <code>Number("")</code> produces <code>0</code>. In numeric fields also exists <code>valueAsNumber</code>, which returns a number or <code>NaN</code> if you can't get it.</p>
+<h3 id="sec6_5">6.5. CSS Styles and Classes</h3>
+<p><code>style</code> modifies online styles. Properties with CSS scripts are written in <em>camelCase</em> when accessing by a point:</p>
+<pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
+mensaje.style.backgroundColor = "#e0f2fe";
+mensaje.style.padding = "12px";</code></pre>
+<aside aria-label="Function sheet: getComputedStyle(element, pseudoElement)" class="function-card" id="ficha-funcion-18">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>getComputedStyle(elemento, pseudoElemento)</code></p>
+<p>It allows you to check the styles calculated by the browser.</p><p><strong>Parameters:</strong> element: DOM element. pseudoElement: optional text, such as ":before"; omitted in these examples.</p><p><strong>Returns:</strong> An object of styles; for example, you can consult its backgroundColor property.</p>
+</aside>
+<p><code>mensaje.style.backgroundColor</code> read the online value; not all styles from CSS sheets. To consult the calculated style is used <code>getComputedStyle(mensaje).backgroundColor</code>.</p>
+<p>To keep the presentation in CSS, it is preferable to define classes and enable them from JavaScript. Add this CSS in an item <code>&lt;style&gt;</code> within <code>&lt;head&gt;</code> of the test page:</p>
+<pre data-example="dom-css"><code>.destacado {
+    background-color: #e0f2fe;
+    font-weight: bold;
+    padding: 12px;
+}</code></pre>
+<p><code>classList</code> allows the classes of one element to be managed without replacing the others:</p>
+<aside aria-label="Function tab: element.classList.add(class1, ..., classN)" class="function-card" id="ficha-funcion-19">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>elemento.classList.add(clase1, ..., claseN)</code></p>
+<p>Add CSS classes to the element.</p><p><strong>Parameters:</strong> One or more class names, pointless and without spaces within each name.</p><p><strong>Returns:</strong> undefined.</p>
+</aside>
+<aside aria-label="Function tab: element.classList.contains(class)" class="function-card" id="ficha-funcion-20">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>elemento.classList.contains(clase)</code></p>
+<p>Check if the element has a class.</p><p><strong>Parameters:</strong> class: class name, no point.</p><p><strong>Returns:</strong> true if present; false if not.</p>
+</aside>
+<aside aria-label="Function sheet: element.classList.remove(class1, ..., classN)" class="function-card" id="ficha-funcion-21">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>elemento.classList.remove(clase1, ..., claseN)</code></p>
+<p>Removes classes from the element.</p><p><strong>Parameters:</strong> One or more class names, no point.</p><p><strong>Returns:</strong> If a class doesn't exist, nothing happens.</p>
+</aside>
+<aside aria-label="Function tab: element.classList.toggle(class, force)" class="function-card" id="ficha-funcion-22">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>elemento.classList.toggle(clase, forzar)</code></p>
+<p>It alters a class: it adds it if it is missing and removes it if it exists.</p><p><strong>Parameters:</strong> class: no dot name. force: optional boolean; true forces to add and false to remove.</p><p><strong>Returns:</strong> true if the class is present; false if absent.</p>
+</aside>
+<pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
+mensaje.classList.add("destacado");
+console.log(mensaje.classList.contains("destacado")); // true
+
+mensaje.classList.remove("destacado");
+mensaje.classList.toggle("destacado"); // La añade de nuevo.</code></pre>
+<p><code>add()</code> adds a class, <code>remove()</code> eliminates it, <code>contains()</code> checks for existence and <code>toggle()</code> The name of the class is written without the selector point.</p>
+<div class="activity-card activity-callout" id="actividad-6-2">
+<p><strong>6.2. Data and presentation</strong></p>
+<ol><li>Use the test page in paragraph 6 and add the highlight class of the example to your CSS.</li><li>Read #units, convert the value to number and write #result a message with that amount and its double.</li><li>Adds highlight to the result paragraph. Changes the initial value of the field to 5 in the HTML, reloads and points to the message obtained.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej11-modificarClases.html</code>, <code>ej11-modificarClases.js</code>, <code>ej11-modificarClases.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-14" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-14" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec6_6">6.6. Check that an item exists</h3>
+<p>A search without matches returns <code>null</code>. Try to use a property of that value, such as <code>null.textContent</code>, causes a <code>TypeError</code>. Check the selector, HTML and time of execution.</p>
+<pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
+
+if (mensaje !== null) {
+    mensaje.textContent = "Elemento encontrado";
+}</code></pre>
+<p>This first use of <code>if</code> executes the block only if the element exists. Its operation will be developed in paragraph 7. If the element should be present, it is appropriate to correct the cause of its absence, in addition to avoiding error.</p>
+<div class="activity-card activity-callout" id="actividad-6-3">
+<p><strong>6.3. A search without coincidences</strong></p>
+<ol><li>Copy the example that checks if #message exists.</li><li>Change the selector to #message-inexistent and add console.log(message) before if.</li><li>Run, copy the output and explain why the paragraph is not changed. Recover the correct selector and try again.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej12-comprobarElementos.html</code>, <code>ej12-comprobarElementos.js</code>, <code>ej12-comprobarElementos.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-15" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-15" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<div class="resource-card expansion-card">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Consult and modify the DOM</span><span class="resource-badge badge-reading">Enlargement</span></div>
+<p class="resource-description">References about selection, content, fields and classes. The creation of elements and the detailed path of the tree will be discussed later.</p>
+<div class="resource-links"><a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector" rel="noopener noreferrer" target="_blank">MDN · querySelector()</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent" rel="noopener noreferrer" target="_blank">MDN · textContent</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML" rel="noopener noreferrer" target="_blank">MDN · innerHTML</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/value" rel="noopener noreferrer" target="_blank">MDN · value</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Element/classList" rel="noopener noreferrer" target="_blank">MDN · classList</a></div>
+</div>
+</section>
+<section aria-labelledby="sec7">
+<h2 id="sec7"><i aria-hidden="true" class="fa-solid fa-code-branch"></i> 7. Control structures</h2>
+<p>A program executes its instructions in order, but may need to choose between several actions or repeat a task. <strong>control structures</strong> allow these decisions to be made. Execute each example separately in <code>ej13-tomarDecisiones.js</code> and changes the data to check the different possibilities.</p>
+<h3 id="sec7_1">7.1. Conditions and values of trusty and falsey</h3>
+<p>One <strong>condition</strong> is an expression whose value is interpreted as true or false. It can be a comparison, as <code>edad &gt;= 18</code>, or a boolean variable, such as <code>sesionActiva</code>.</p>
+<p>If the value is not boolean, JavaScript interprets it according to the rules of <code>Boolean()</code>:</p>
+<ul>
+<li><strong>Falsy:</strong> values that are interpreted as false. Among the types studied are <code>false</code>, <code>0</code> (also <code>-0</code>), <code>""</code>, <code>null</code>, <code>undefined</code> y <code>NaN</code>.</li>
+<li><strong>True:</strong> values that are interpreted as true. For example, a number other than zero or a non-empty string, including <code>"0"</code>, <code>"false"</code> y <code>" "</code>.</li>
+</ul>
+<p>When a particular data is checked, an explicit condition usually better expresses the intention: <code>cantidad === 0</code> checks a zero, while <code>!cantidad</code> accepts any value <em>falsy</em>.</p>
+<h3 id="sec7_2">7.2. if, else if and else</h3>
+<p><code>if</code> executes a block when the condition is interpreted as true. Optional block <code>else</code> is executed otherwise:</p>
+<pre><code>const edad = 16;
+
+if (edad &gt;= 18) {
+    console.log("Mayor de edad");
+} else {
+    console.log("Menor de edad");
+}</code></pre>
+<p>To distinguish more alternatives is added <code>else if</code>. The conditions are checked from top to bottom and only the first corresponding branch is executed:</p>
+<pre><code>const temperatura = 24;
+
+if (temperatura &lt; 15) {
+    console.log("Temperatura baja");
+} else if (temperatura &lt; 25) {
+    console.log("Temperatura moderada");
+} else {
+    console.log("Temperatura alta");
+}</code></pre>
+<p>When the second case comes, it is already known that the temperature is not lower than <code>15</code>. Order matters: placing an overly general condition first may prevent the following from being achieved.</p>
+<div class="didactic-note"><p><strong>The writing of the conditions.</strong> Use keys even if the block contains a single instruction. Don't write <code>;</code> between the condition and the opening key. To compare uses <code>===</code>, not the allocation <code>=</code>.</p></div>
+<div class="activity-card activity-callout" id="actividad-7-1">
+<p><strong>7.1. Checking limits</strong></p>
+<ol><li>Test the temperature example with 14, 15, 24 and 25, changing the variable in each run.</li><li>Before each test, write what message you expect. Then copy the actual message.</li><li>It explains what happens right at limits 15 and 25.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej13-tomarDecisiones.html</code>, <code>ej13-tomarDecisiones.js</code>, <code>ej13-tomarDecisiones.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-16" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-16" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec7_3">7.3. Merge conditions and validate data</h3>
+<p>Operators <code>&amp;&amp;</code>, <code>||</code> y <code>!</code> allow you to combine checks without chaining many blocks:</p>
+<pre><code>const tieneEntrada = true;
+const salaAbierta = true;
+
+if (tieneEntrada &amp;&amp; salaAbierta) {
+    console.log("Puedes acceder");
+} else {
+    console.log("No se cumplen las condiciones de acceso");
+}</code></pre>
+<aside aria-label="Function tab: text.trim()" class="function-card" id="ficha-funcion-23">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>texto.trim()</code></p>
+<p>Removes blank spaces from the ends of a string.</p><p><strong>Parameters:</strong> It does not receive parameters. It is invoked on the string that you want to treat.</p><p><strong>Returns:</strong> A new string; does not modify the original or remove interior spaces.</p>
+</aside>
+<p>To process a textual entry, first check if it is empty and then if the conversion is valid. <code>trim()</code> returns a string without blanks at the beginning or end:</p>
+<pre><code>const texto = " 6 ";
+const cantidad = Number(texto);
+
+if (texto.trim() === "") {
+    console.log("Introduce una cantidad");
+} else if (Number.isNaN(cantidad) || cantidad &lt; 0) {
+    console.log("Introduce un número igual o mayor que cero");
+} else {
+    console.log(`Cantidad aceptada: ${cantidad}`);
+}</code></pre>
+<p>The example presupposes that <code>texto</code> if it comes from <code>prompt()</code>, check first if it is <code>null</code>, because cancelling the dialog does not return text and does not allow calling <code>trim()</code>.</p>
+<div class="activity-card activity-callout" id="actividad-7-2">
+<p><strong>7.2. Validate an entry</strong></p>
+<ol><li>In the validation example, change text to "", ", "six", "-2" and "0", from one to one.</li><li>Copy the message you get for each entry.</li><li>It explains why zero is valid and what problem would only use !quantity to reject data.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej14-validarEntrada.html</code>, <code>ej14-validarEntrada.js</code>, <code>ej14-validarEntrada.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-17" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-17" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec7_4">7.4. switch: alternatives by value</h3>
+<p><code>switch</code> is useful when an expression can match several specific values. <code>case</code> represents an alternative:</p>
+<pre><code>const estado = "enviado";
+
+switch (estado) {
+    case "pendiente":
+        console.log("Preparando el envío");
+        break;
+    case "enviado":
+        console.log("En camino");
+        break;
+    case "entregado":
+        console.log("Entrega completada");
+        break;
+    default:
+        console.log("Estado desconocido");
+}</code></pre>
+<p>Coincidence is verified by strict equality: <code>case 1</code> does not match <code>"1"</code>. <code>break</code> exits the <code>switch</code>; if omitted, execution continues by the instructions of the following cases. <code>default</code> is optional and is used when there is no match.</p>
+<p>To check intervals, such as a temperature between two limits, it is usually clearer to use <code>if</code> y <code>else if</code>.</p>
+<h3 id="sec7_5">7.5. ternary operator</h3>
+<p>Conditional operator or <strong>ternary</strong> select one of two values. Its shape is <code>condicion ? valorSiVerdadera : valorSiFalsa</code>:</p>
+<pre><code>const conectado = true;
+const mensaje = conectado ? "En línea" : "Sin conexión";
+console.log(mensaje); // En línea</code></pre>
+<p>It is an expression: it produces a value that can be assigned to a variable. Use it for simple choices; if each alternative requires multiple instructions, use <code>if...else</code>. Avoid nesting ternaries that make reading difficult.</p>
+<div class="activity-card activity-callout" id="actividad-7-3">
+<p><strong>7.3. Choosing a Structure</strong></p>
+<ol><li>Add a "cancelled" case showing "Cancelled Shipping" to the switch.</li><li>Test that case and another value that is not included in any case. Copy the outputs.</li><li>Rewrite the example of the ternary with if and else. Test connected with true and false and compare messages.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej15-elegirAlternativa.html</code>, <code>ej15-elegirAlternativa.js</code>, <code>ej15-elegirAlternativa.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-18" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-18" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec7_6">7.6 Repeats with for, while and do...while</h3>
+<p>A <strong>loop</strong> repeat a block of instructions. Each execution of the block is a <strong>iteration</strong>. <code>for</code> brings together initialisation, continuity condition and updating:</p>
+<pre><code>for (let numero = 1; numero &lt;= 3; numero++) {
+    console.log(numero);
+}
+// Muestra 1, 2 y 3.</code></pre>
+<p>First initialization <code>numero</code>. Before each iteration is checked <code>numero &lt;= 3</code>; if true, the block is executed and then <code>numero++</code>. When the condition is no longer fulfilled, the loop ends. The variable declared with <code>let</code> in the header is not available outside the loop.</p>
+<p><code>while</code> check the condition before executing the block. You can never execute it:</p>
+<pre><code>let pendientes = 3;
+
+while (pendientes &gt; 0) {
+    console.log(`Quedan ${pendientes}`);
+    pendientes--;
+}</code></pre>
+<p><code>do...while</code> checks the condition at the end, so the block runs at least once:</p>
+<pre><code>let intentos = 0;
+
+do {
+    console.log("Se realiza un intento");
+    intentos++;
+} while (intentos &lt; 1);</code></pre>
+<div class="didactic-note"><p><strong>The loop must be able to end.</strong> Check that the update brings the program closer to the end of the repeat. A condition that remains true can block the page. Do not use a loop to wait for the user to press a button: that interaction will be managed by events.</p></div>
+<p><code>break</code> ends the nearest loop; <code>continue</code> omits the rest of the current iteration. <code>for</code>after <code>continue</code> the update is performed and the condition is re-checked. In these first examples clear completion conditions are sufficient.</p>
+<div class="activity-card activity-callout" id="actividad-7-4">
+<p><strong>7.4. Repeat and accumulate</strong></p>
+<ol><li>Write a for that shows the numbers from 1 to 5.</li><li>Before the loop, create let sum = 0;. Inside, add each number to sum with {. Shows sum after the loop and checks that it is worth 15.</li><li>Make another version with while that produces the same. Deliver both versions and their output.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej16-practicarBucles.html</code>, <code>ej16-practicarBucles.js</code>, <code>ej16-practicarBucles.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-19" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-19" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec7_7">7.7. Tour DOM elements with for...of</h3>
+<p><code>for...of</code> runs through the values of an iterable collection. It can be used with the result of <code>querySelectorAll()</code> to act on several elements:</p>
+<pre data-example="control-dom"><code>const parrafos = document.querySelectorAll("p");
+
+for (const parrafo of parrafos) {
+    parrafo.classList.add("destacado");
+}</code></pre>
+<p>On the test page of paragraph 6, this code adds the class <code>destacado</code> to each paragraph. The stylesheet must contain the class for the change to be visible. If the selection is empty, the block is not executed.</p>
+<p><code>const parrafo</code> creates a variable for each iteration: the one from the previous iteration is not reassigned. To navigate these elements is used <code>for...of</code>; <code>for...in</code> It runs property names and has another purpose.</p>
+<div class="resource-card expansion-card">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Decisions and repetitions</span><span class="resource-badge badge-reading">Enlargement</span></div>
+<p class="resource-description">References to extend conditions, the ternary operator, switch alternatives and loops.</p>
+<div class="resource-links"><a class="resource-link-btn" href="https://es.javascript.info/ifelse" rel="noopener noreferrer" target="_blank">JavaScript.info · if and ternary operator</a>
+<a class="resource-link-btn" href="https://es.javascript.info/switch" rel="noopener noreferrer" target="_blank">JavaScript.info · switch</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Loops_and_iteration" rel="noopener noreferrer" target="_blank">MDN · Loop and iteration</a></div>
+</div>
+</section>
+<section aria-labelledby="sec8">
+<h2 id="sec8"><i aria-hidden="true" class="fa-solid fa-hand-pointer"></i> 8. Events and user interaction</h2>
+<p>The above examples were executed when loading the page. <strong>events</strong> enable you to respond to subsequent actions: activate a button, type in a field or send a form. The answer can read data, make decisions and update the DOM.</p>
+<h3 id="sec8_1">8.1. Events and handlers</h3>
+<p>A <strong>event</strong> is a notification that something has happened. <strong>handler</strong> is a function that is executed when that notification is received. Registering a handler sets the answer; it does not execute it at that time.</p>
+<p class="event-sequence"><strong>Sequence:</strong> user action → event → handler execution → page update.</p>
+<p>This paragraph shall introduce the minimum form of a function: <code>function nombre() { ... }</code> group instructions under a name. Functions and their different forms of writing will be developed in paragraph 9.</p>
+<p>Use this test page and a file <code>ej17-responderAccion.js</code> in the same folder. Try each JavaScript example separately, replacing the contents of the file and reloading the page:</p>
+<pre data-example="events-html"><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Pruebas con eventos&lt;/title&gt;
+    &lt;script src="ej17-responderAccion.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Pruebas con eventos&lt;/h1&gt;
+    &lt;button id="saludar" type="button"&gt;Saludar&lt;/button&gt;
+    &lt;form id="formulario"&gt;
+        &lt;label for="nombre"&gt;Nombre&lt;/label&gt;
+        &lt;input id="nombre" name="nombre" type="text" required&gt;
+        &lt;button type="submit"&gt;Enviar&lt;/button&gt;
+    &lt;/form&gt;
+    &lt;p id="mensaje" aria-live="polite"&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p><code>type="button"</code> identifies an action button and <code>type="submit"</code> One shipment. <code>aria-live="polite"</code> allows assistive technologies to announce updates to the message.</p>
+<h3 id="sec8_2">8.2. Register handlers with addEventListener()</h3>
+<p><code>elemento.addEventListener("evento", manejador)</code> associates a function to an element event. The event name is written without the prefix <code>on</code>: <code>"click"</code>, no <code>"onclick"</code>.</p>
+<aside class="function-card" id="ficha-ejemplo-2"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>mostrarSaludo()</code></p><p>Update the paragraph with a greeting.</p><p><strong>Parameters:</strong> It does not declare parameters; it uses the message element of the example.</p><p><strong>Returns:</strong> undefined.</p></aside>
+<pre data-example="events-js"><code>const boton = document.querySelector("#saludar");
+const mensaje = document.querySelector("#mensaje");
+
+function mostrarSaludo() {
+    mensaje.textContent = "Hola, bienvenido a la página";
+}
+
+boton.addEventListener("click", mostrarSaludo);</code></pre>
+<p>Browser runs <code>mostrarSaludo</code> Each time the button is activated. An HTML button can be activated with both the mouse and the keyboard.</p>
+<div class="didactic-note"><p><strong>Pass the function, not run it.</strong> Write <code>mostrarSaludo</code> as a second argument. If you write <code>mostrarSaludo()</code>, the function is executed during the log and its result is passed instead of the handler.</p></div>
+<p>Record handlers when items already exist, as is the case when using <code>defer</code>. <code>addEventListener()</code> allows you to associate several functions to the same event and maintains the behavior in the JavaScript file.</p>
+<div class="activity-card activity-callout" id="actividad-8-1">
+<p><strong>8.1. Respond to an action</strong></p>
+<ol><li>Opens the test page. Check that loading does not show the greeting and appears when pressing Greeting.</li><li>Change the greeting to show a text chosen by you.</li><li>Add a type="button" button with the Delete text. Schedule your click to leave empty #message with textContent = "". Delivers HTML and JavaScript.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej17-responderAccion.html</code>, <code>ej17-responderAccion.js</code>, <code>ej17-responderAccion.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-20" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-20" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec8_3">8.3. Basic events: click, input, change and submit</h3>
+<ul>
+<li><strong><code>click</code>:</strong> responds to the activation of an element, like a button.</li>
+<li><strong><code>input</code>:</strong> is produced by modifying a field by means of a user action. Allows to update a view while writing.</li>
+<li><strong><code>change</code>:</strong> indicates that a change has been confirmed. In text fields it usually occurs when you leave the field after you modify it; in a selector, when you confirm an option.</li>
+<li><strong><code>submit</code>:</strong> is produced on the form when you request it to be sent, for example by using your button or by pressing Enter in an appropriate field.</li>
+</ul>
+<p>This example shows the name while writing and recording when the change is confirmed:</p>
+<aside class="function-card" id="ficha-ejemplo-3"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>mostrarNombre() y confirmarCambio()</code></p><p>The first shows the value of the field in the paragraph; the second records it in the console.</p><p><strong>Parameters:</strong> They do not declare parameters; they consult the example field.</p><p><strong>Returns:</strong> undefined in both cases.</p></aside>
+<pre data-example="events-js"><code>const campo = document.querySelector("#nombre");
+const mensaje = document.querySelector("#mensaje");
+
+function mostrarNombre() {
+    mensaje.textContent = campo.value;
+}
+
+function confirmarCambio() {
+    console.log("Cambio confirmado:", campo.value);
+}
+
+campo.addEventListener("input", mostrarNombre);
+campo.addEventListener("change", confirmarCambio);</code></pre>
+<p>Assign a value from JavaScript by <code>campo.value = "Ana"</code> does not automatically trigger these events. If the program modifies the data, you must also update the presentation when applicable.</p>
+<div class="activity-card activity-callout" id="actividad-8-2">
+<p><strong>8.2. Compare input and change</strong></p>
+<ol><li>Write a name and observe the paragraph while you write.</li><li>Tap Tab to exit the field and copy the message from the console.</li><li>Enter and exit the field again without changing anything. Count when input is produced and when change.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej18-compararEventos.html</code>, <code>ej18-compararEventos.js</code>, <code>ej18-compararEventos.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-21" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-21" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec8_4">8.4. The object of the event and currentTarget</h3>
+<p>The browser gives the handler an object with event information. To use it, a parameter is added, which we will call here. <code>event</code>:</p>
+<aside class="function-card" id="ficha-ejemplo-4"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>mostrarEntrada(event)</code></p><p>Displays the field value and records the event type.</p><p><strong>Parameters:</strong> event: object provided by the browser when running the handler.</p><p><strong>Returns:</strong> undefined.</p></aside>
+<pre data-example="events-js"><code>const campo = document.querySelector("#nombre");
+const mensaje = document.querySelector("#mensaje");
+
+function mostrarEntrada(event) {
+    const elemento = event.currentTarget;
+    mensaje.textContent = elemento.value;
+    console.log(event.type); // input
+}
+
+campo.addEventListener("input", mostrarEntrada);</code></pre>
+<ul>
+<li><code>event.type</code> contains the event name.</li>
+<li><code>event.currentTarget</code> reference the item where the handler that is running was registered.</li>
+<li><code>event.target</code> identifies the original destination of the event. It can be an internal element: by pressing an icon within a button, the destination can be the icon and <code>currentTarget</code> the button.</li>
+</ul>
+<p>Use <code>currentTarget</code> it facilitates sharing the same handler between several elements. In these examples you consult during the execution of the handler; the spread of events will be studied later.</p>
+<h3 id="sec8_5">8.5. Default behavior and preventDefault()</h3>
+<aside aria-label="Function sheet: event.preventDefault()" class="function-card" id="ficha-funcion-24">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>event.preventDefault()</code></p>
+<p>Cancels the default action of a cancelable event, such as sending a form.</p><p><strong>Parameters:</strong> It does not receive parameters. It is invoked on the object of the event.</p><p><strong>Returns:</strong> Undefined. It does not stop the spread of the event.</p>
+</aside>
+<p>Some events have a default action: a link navigates and a form starts sending. <code>event.preventDefault()</code> allows you to cancel that action when the event is cancelled.</p>
+<p>To process the form on the page, register <code>submit</code> in the form itself. This is how the shipment is handled even if the button is not activated with the mouse:</p>
+<aside class="function-card" id="ficha-ejemplo-5"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>procesarFormulario(event)</code></p><p>Cancel the shipment, check the name and update the message.</p><p><strong>Parameters:</strong> event: object of the event submitted received from the browser.</p><p><strong>Returns:</strong> undefined.</p></aside>
+<pre data-example="events-js"><code>const formulario = document.querySelector("#formulario");
+const campo = document.querySelector("#nombre");
+const mensaje = document.querySelector("#mensaje");
+
+function procesarFormulario(event) {
+    event.preventDefault();
+    const nombre = campo.value.trim();
+
+    if (nombre === "") {
+        mensaje.textContent = "Escribe un nombre";
+    } else {
+        mensaje.textContent = `Hola, ${nombre}`;
+    }
+}
+
+formulario.addEventListener("submit", procesarFormulario);</code></pre>
+<p>The page shows the greeting without performing the conventional shipment. <code>required</code> makes the browser check the field: if it is empty, native validation prevents sending and does not occur <code>submit</code>. Checking <code>trim()</code> It also rejects an entrance formed only by spaces.</p>
+<div class="didactic-note"><p><strong>Cancelling the action does not stop the program.</strong> <code>preventDefault()</code> does not finish the handler or stop the spread of the event. The instructions below continue to be executed.</p></div>
+<div class="activity-card activity-callout" id="actividad-8-3">
+<p><strong>8.3. Test the form</strong></p>
+<ol><li>Test the form with a name, with only spaces and with the empty field.</li><li>Type in e.g.19-processForm.txt what happens in each case and who displays the notice: the browser or your program.</li><li>Also send with Enter. Check that you do not browse to another page and explain what preventDefault() does.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej19-procesarFormulario.html</code>, <code>ej19-procesarFormulario.js</code>, <code>ej19-procesarFormulario.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-22" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-22" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec8_6">8.6. Organize interaction</h3>
+<p>A simple interaction can be organized in three steps: <strong>read current data</strong>, <strong>check or process them</strong> y <strong>update the DOM</strong>. Reading from <code>value</code> must be performed within the handler when the value of the field is needed at that time.</p>
+<p>Select items and register handlers once when preparing the page. Keep each handler brief, use <code>textContent</code> to display user data and use CSS classes to change the presentation. It is not necessary to repeat a query continuously to detect the user's actions.</p>
+<div class="resource-card expansion-card">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Events and forms</span><span class="resource-badge badge-reading">Enlargement</span></div>
+<p class="resource-description">References to consult the driver's log, the event object and the behavior of the forms.</p>
+<div class="resource-links"><a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener" rel="noopener noreferrer" target="_blank">MDN · addEventListener()</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Event/currentTarget" rel="noopener noreferrer" target="_blank">MDN · currentTarget</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event" rel="noopener noreferrer" target="_blank">MDN · change</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event" rel="noopener noreferrer" target="_blank">MDN · submission</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault" rel="noopener noreferrer" target="_blank">MDN · preventDefault()</a></div>
+</div>
+</section>
+<section aria-labelledby="sec9">
+<h2 id="sec9"><i aria-hidden="true" class="fa-solid fa-cubes"></i> 9. Functions: organizing and reusing code</h2>
+<p>One <strong>function</strong> group instructions to perform a task. You can receive data and return a result. It allows you to reuse an operation and separate the program into understandable parts. In the previous section functions were used as handlers; now you will study how to define and use them.</p>
+<p>Execute each example separately in <code>ej20-personalizarLlamada.js</code> to avoid repeated statements.</p>
+<h3 id="sec9_1">9.1 Definition and invocation</h3>
+<p>A function statement uses <code>function</code>, a name, a list of parameters in parentheses and a body between keys:</p>
+<aside class="function-card" id="ficha-ejemplo-6"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>mostrarInicio()</code></p><p>Displays the login message on the console.</p><p><strong>Parameters:</strong> It doesn't get parameters.</p><p><strong>Returns:</strong> undefined.</p></aside>
+<pre><code>function mostrarInicio() {
+    console.log("Comienza la sesión");
+}
+
+mostrarInicio();
+mostrarInicio();</code></pre>
+<p>Define the function does not execute your body. <strong>call on her</strong> your name is written followed by parentheses. The example shows the message twice because there are two calls.</p>
+<p><code>mostrarInicio</code> reference to function; <code>mostrarInicio()</code> This difference explains why in <code>addEventListener()</code> the name of the handler is passed without the call brackets.</p>
+<h3 id="sec9_2">9.2. Default parameters, arguments and values</h3>
+<p>The <strong>parameters</strong> are the names in the definition. <strong>arguments</strong> are the values that are provided when calling:</p>
+<aside class="function-card" id="ficha-ejemplo-7"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>saludar(nombre, saludo = "Hola")</code></p><p>It shows a personalized greeting. It is a new version of greeting, independent of the example in paragraph 4.</p><p><strong>Parameters:</strong> name: string with name. greeting: optional string; default value is "Hello".</p><p><strong>Returns:</strong> undefined; displays the message, but does not return it.</p></aside>
+<pre><code>function saludar(nombre, saludo = "Hola") {
+    console.log(`${saludo}, ${nombre}`);
+}
+
+saludar("Ana");                 // Hola, Ana
+saludar("Luis", "Buenos días"); // Buenos días, Luis</code></pre>
+<p><code>nombre</code> y <code>saludo</code> in the second call, the arguments are <code>"Luis"</code> y <code>"Buenos días"</code>, which are assigned by position.</p>
+<p>The default value is used if the argument is omitted or passed <code>undefined</code>. Does not replace values such as <code>null</code>, <code>0</code> o <code>""</code>. A parameter without argument or default value receives <code>undefined</code>.</p>
+<div class="activity-card activity-callout" id="actividad-9-1">
+<p><strong>9.1. Customize a Call</strong></p>
+<aside class="function-card" id="ficha-ejemplo-8"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>presentar(nombre, grupo = "2DAW")</code></p><p>Function you will create in this activity to display a name and a group.</p><p><strong>Parameters:</strong> name: string. group: optional string with default value "2DAW".</p><p><strong>Returns:</strong> undefined; the goal is to show the data.</p></aside>
+<ol><li>Write file(name, group = "2DAW") to display the name and group.</li><li>Proof present("Ana"), present("Luis", "2DAW-B") and present("Eva", "").</li><li>Copy the outputs and explain in which call the default group is used.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej20-personalizarLlamada.html</code>, <code>ej20-personalizarLlamada.js</code>, <code>ej20-personalizarLlamada.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-23" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-23" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec9_3">9.3 Return results with return</h3>
+<p><code>return</code> completes the execution of the function and delivers a value to the code that called it. That value can be saved or used in another expression:</p>
+<aside class="function-card" id="ficha-ejemplo-9"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>calcularArea(base, altura)</code></p><p>Calculates the area of a rectangle.</p><p><strong>Parameters:</strong> base and height: numbers representing its dimensions.</p><p><strong>Returns:</strong> The number obtained by multiplying base by height.</p></aside>
+<pre><code>function calcularArea(base, altura) {
+    return base * altura;
+}
+
+const area = calcularArea(6, 4);
+console.log(area);     // 24
+console.log(area * 2); // 48</code></pre>
+<p><strong>Return and display are different operations.</strong> <code>console.log()</code> writes on the console; does not set the result of the function that contains it:</p>
+<aside class="function-card" id="ficha-ejemplo-10"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>mostrarDoble(numero)</code></p><p>Displays on the console twice a number.</p><p><strong>Parameters:</strong> number: number to be doubled.</p><p><strong>Returns:</strong> undefined.</p></aside>
+<pre><code>function mostrarDoble(numero) {
+    console.log(numero * 2);
+}
+
+const resultado = mostrarDoble(5); // Muestra 10.
+console.log(resultado);          // undefined</code></pre>
+<p>If you reach the end without running a <code>return</code> with value, the function returns <code>undefined</code>. Can also be written <code>return;</code> to finish it without providing another result.</p>
+<div class="didactic-note"><p><strong>The return ends the call.</strong> The instructions after the <code>return</code> executed are not reached. Write the expression returned in the same line as <code>return</code>; a line jump right after can get it back <code>undefined</code>.</p></div>
+<div class="activity-card activity-callout" id="actividad-9-2">
+<p><strong>9.2. Get a reusable result</strong></p>
+<aside class="function-card" id="ficha-ejemplo-11"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>obtenerDoble(numero)</code></p><p>Function you will create to get double as a reusable result.</p><p><strong>Parameters:</strong> number: number to be doubled.</p><p><strong>Returns:</strong> One number: twice the number. In section 9.6 it will be written as an arrow function.</p></aside>
+<ol><li>Copy displayDouble() and change the name to get Double().</li><li>Replace console.log() by return to return twice the number.</li><li>Call the function with 5, 0 and -3. Save each result and show it from outside the function. Deliver the code and the three results.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej21-devolverResultado.html</code>, <code>ej21-devolverResultado.js</code>, <code>ej21-devolverResultado.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-24" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-24" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec9_4">9.4. Local scope and external variables</h3>
+<p>The parameters and variables declared within a function are local to it. The function can access variables of its external scope:</p>
+<aside class="function-card" id="ficha-ejemplo-12"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>crearPresentacion(nombre)</code></p><p>Build a presentation using also the external center variable.</p><p><strong>Parameters:</strong> name: string with person's name.</p><p><strong>Returns:</strong> A chain with the presentation.</p></aside>
+<pre><code>const centro = "IES Ejemplo";
+
+function crearPresentacion(nombre) {
+    const texto = `${nombre} estudia en ${centro}`;
+    return texto;
+}
+
+console.log(crearPresentacion("Ana"));
+// console.log(texto); // ReferenceError: texto es local.</code></pre>
+<p><code>centro</code> is available within the function, but <code>texto</code> is not available outside. The returned value can be used in the call. In addition, <code>let</code> y <code>const</code> continue to respect the interior blocks, such as those of a <code>if</code>.</p>
+<p>For a function to be easy to reuse, it is advisable to receive the data you need by parameters and avoid modifying external variables without need.</p>
+<h3 id="sec9_5">9.5. Functions as function values and expressions</h3>
+<p>The functions are also values. They can be saved to a variable and passed as an argument, as happens when registering a handler:</p>
+<aside class="function-card" id="ficha-ejemplo-13"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>obtenerTriple(numero)</code></p><p>Calculates the triple of a number.</p><p><strong>Parameters:</strong> number: number to be tripled.</p><p><strong>Returns:</strong> The product number by 3.</p></aside>
+<pre><code>const obtenerTriple = function (numero) {
+    return numero * 3;
+};
+
+console.log(obtenerTriple(4)); // 12</code></pre>
+<p>Here you create a <strong>function expression</strong> and assigned to <code>obtenerTriple</code>. <code>const</code> prevents reassigning that name, but allows the function to be invoked as many times as necessary.</p>
+<p>A statement like <code>function mostrarInicio() { ... }</code> can be invoked before its position in the code within its scope. Instead, a function assigned to <code>const</code> can only be used after initializing the variable. Examples will be defined before calling them.</p>
+<h3 id="sec9_6">9.6. Arrow Functions</h3>
+<p>One <strong>arrow function</strong> is another way to write a function expression. <code>=&gt;</code> between parameters and body:</p>
+<pre><code>const obtenerDoble = (numero) =&gt; {
+    return numero * 2;
+};
+
+console.log(obtenerDoble(7)); // 14</code></pre>
+<p>If the body is a single expression, the keys can be omitted and <code>return</code>. The result is implicitly returned:</p>
+<aside class="function-card" id="ficha-ejemplo-14"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>sumar(a, b) y crearAviso()</code></p><p>The first adds up two numbers; the second builds a fixed notice.</p><p><strong>Parameters:</strong> add receives a and b, both numbers; createNotice does not receive parameters.</p><p><strong>Returns:</strong> add returns the sum; createNotice returns the string "Operation Completed".</p></aside>
+<pre><code>const obtenerDoble = (numero) =&gt; numero * 2;
+const sumar = (a, b) =&gt; a + b;
+const crearAviso = () =&gt; "Operación completada";
+
+console.log(obtenerDoble(7)); // 14
+console.log(sumar(3, 5));    // 8
+console.log(crearAviso());   // Operación completada</code></pre>
+<p>Without Parameters is typed <code>()</code>. With a single simple parameter, the parentheses are optional; in this unit they will be maintained by consistency. With several parameters are necessary.</p>
+<div class="didactic-note"><p><strong>Keys and return.</strong> <code>(numero) =&gt; numero * 2</code> returns the result, but <code>(numero) =&gt; { numero * 2; }</code> returns <code>undefined</code>. With a body between keys you must write <code>return</code> if you want to return a value.</p></div>
+<p>The arrow functions are not interchangeable with <code>function</code> in all cases: they do not have their own <code>this</code> and are not used as constructors. These concepts will be studied with objects. In the handlers of this unit will be used <code>event.currentTarget</code> to access the element.</p>
+<div class="activity-card activity-callout" id="actividad-9-3">
+<p><strong>9.3. Compare Writing Forms</strong></p>
+<ol><li>Copy calculateArea(base, height) and test it with 6 and 4.</li><li>Write a second version as an arrow function with keys and return.</li><li>Write a third with implied return. Run each version separately with the same data and check that all return 24.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej22-funcionesFlecha.html</code>, <code>ej22-funcionesFlecha.js</code>, <code>ej22-funcionesFlecha.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-25" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-25" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<h3 id="sec9_7">9.7. Small functions and connection to events</h3>
+<p>A function must have a clear responsibility and a name that expresses it. Separated the achievement of a result from your presentation allows you to use it both in the console and in the DOM.</p>
+<p>On the test page in paragraph 8, replaces <code>ej20-personalizarLlamada.js</code> for this example. A function builds the greeting and the handler displays it when you activate the button:</p>
+<aside class="function-card" id="ficha-ejemplo-15"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>crearSaludo(nombre)</code></p><p>Build a greeting without consulting or modifying the document.</p><p><strong>Parameters:</strong> name: string, which is cleaned with trim().</p><p><strong>Returns:</strong> A string with the greeting or with the indication of writing a name.</p></aside>
+<pre data-example="functions-dom"><code>const boton = document.querySelector("#saludar");
+const campo = document.querySelector("#nombre");
+const mensaje = document.querySelector("#mensaje");
+
+function crearSaludo(nombre) {
+    const nombreLimpio = nombre.trim();
+    if (nombreLimpio === "") {
+        return "Escribe un nombre";
+    }
+    return `Hola, ${nombreLimpio}`;
+}
+
+boton.addEventListener("click", () =&gt; {
+    mensaje.textContent = crearSaludo(campo.value);
+});</code></pre>
+<p><code>crearSaludo()</code> receives one string and returns another without consulting the document. The arrow function is passed as a handler and executes when it occurs <code>click</code>; at that time read the field and update the paragraph.</p>
+<p>For a very short response an arrow function can be used in the log. If the handler grows or reuses, it is advisable to give it a name. Clarity should guide the choice.</p>
+<div class="activity-card activity-callout" id="actividad-9-4">
+<p><strong>9.4. Reusing a function</strong></p>
+<ol><li>Try creating greeting() on the console with "Ana", "Luis" and "". Copy the three results.</li><li>Enter those same values in the field and press Greet. Note if they match the above.</li><li>Replaces the arrow handler with a name function. Retry and deliver modified JavaScript.</li></ol>
+<p class="exercise-files"><strong>Files:</strong> <code>ej23-reutilizarFuncion.html</code>, <code>ej23-reutilizarFuncion.js</code>, <code>ej23-reutilizarFuncion.txt</code>.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-26" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-26" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</div>
+<div class="resource-card expansion-card">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Arrow functions and functions</span><span class="resource-badge badge-reading">Enlargement</span></div>
+<p class="resource-description">References on parameters, return, scope and differences between the ways of defining functions. Recursiveness and closures are reserved for later.</p>
+<div class="resource-links"><a class="resource-link-btn" href="https://es.javascript.info/function-basics" rel="noopener noreferrer" target="_blank">JavaScript.info · Functions</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions" rel="noopener noreferrer" target="_blank">MDN · Function guide</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions" rel="noopener noreferrer" target="_blank">MDN · Arrow functions</a></div>
+</div>
+</section>
+<section aria-labelledby="sec10">
+<h2 id="sec10"><i aria-hidden="true" class="fa-solid fa-laptop-code"></i> 10. Practice: calculator of two operands</h2>
+<p>Develops the behavior of a calculator that allows adding, subtracting, multiplying and dividing two numbers. <strong>HTML and CSS</strong>; your job is to schedule <strong><code>ej24-calculadora.js</code></strong>, applying the contents of the unit.</p>
+<h3 id="sec10_1">10.1. Starting material</h3>
+<div class="resource-card expansion-card">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-download"></i> Practice Files</span><span class="resource-badge badge-reading">Material</span></div>
+<p class="resource-description">Download the three files and save them together in a folder called <code>calculadora</code>. The interface is ready; the JavaScript file contains only initial indications, no solution.</p>
+<div class="resource-links"><a class="resource-link-btn" download="ej24-calculadora.html" href="alumnado/u02/calculadora/index.html">Download ej24-calculator.html</a>
+<a class="resource-link-btn" download="ej24-calculadora.css" href="alumnado/u02/calculadora/estilos.css">Download ej24-calculator.css</a>
+<a class="resource-link-btn" download="ej24-calculadora.js" href="alumnado/u02/calculadora/app.js">Download ej24-calculator.js</a>
+<a class="resource-link-btn" href="alumnado/u02/calculadora/index.html" rel="noopener noreferrer" target="_blank">See the starting interface</a></div>
+</div>
+<pre><code>dwec/ejercicios/u01/
+├── ej24-calculadora.html
+├── ej24-calculadora.css
+└── ej24-calculadora.js</code></pre>
+<p>Opens the folder in VS Code and the page in Chrome. Saves the files with the names indicated. In the downloaded HTML, changes only the paths of the stylesheet and script to <code>ej24-calculadora.css</code> y <code>ej24-calculadora.js</code>, maintaining <code>defer</code>. Maintains the structure, identifiers and CSS classes.</p>
+<p>The interface includes these elements:</p>
+<ul>
+<li><code>#formulario-calculadora</code>: form whose shipment starts the calculation.</li>
+<li><code>#numero1</code> y <code>#numero2</code>: fields for operands; they support decimals.</li>
+<li><code>#operacion</code>: selector with values <code>sumar</code>, <code>restar</code>, <code>multiplicar</code> y <code>dividir</code>.</li>
+<li><code>#limpiar</code>: button that resets the interface.</li>
+<li><code>#resultado</code>: calculation output, initially <code>—</code>.</li>
+<li><code>#mensaje</code>: informational text; available CSS classes <code>error</code> y <code>exito</code>.</li>
+</ul>
+<h3 id="sec10_2">10.2. Behaviour required</h3>
+<ol>
+<li><strong>Calculate:</strong> attend the event <code>submit</code> and avoid conventional shipping with <code>preventDefault()</code>. It should work both with "Calculate" and with Enter in a field.</li>
+<li><strong>Read and validate:</strong> checks that both fields have content before converting them to numbers. It supports zero, negatives and decimals. It rejects non-numeric or non-finite data.</li>
+<li><strong>Operate:</strong> executes the selected operation respecting the order of the operands. In a division, the second number is the splitter.</li>
+<li><strong>Manage errors:</strong> do not allow to divide by zero. An unknown operation or a non-finite result must also produce an error message.</li>
+<li><strong>Show:</strong> presents the result with <code>textContent</code> and a successful message. Faced with an error, replace any previous result with <code>—</code> and shows a concrete explanation.</li>
+<li><strong>Clear:</strong> empty fields, select again "Sum", restores <code>—</code> and removes the message and status classes. Returns the focus to the first field.</li>
+</ol>
+<div class="didactic-note"><p><strong>Validation from JavaScript.</strong> The form uses <code>novalidate</code> to schedule the checks. <code>number</code> continues to condition entry: the browser may prevent writing letters or representing an invalid entry as an empty string. Do not confuse an empty field with the zero number.</p></div>
+<p>When displaying an error, add <code>error</code> a <code>#mensaje</code> and withdraws <code>exito</code>; by showing a success, it does the opposite. It retains the base class <code>mensaje</code>.</p>
+<h3 id="sec10_3">10.3. Phased development</h3>
+<aside class="function-card" id="ficha-ejemplo-16"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>calcular(numero1, numero2, operacion)</code></p><p>Function you will develop to calculate without accessing the DOM.</p><p><strong>Parameters:</strong> number1 and number2: numbers. operation: string identifying one of the four operations.</p><p><strong>Returns:</strong> The numerical result when the operation is valid. You must define and document how an error is communicated.</p></aside>
+<ol>
+<li><strong>Connect the interface.</strong> Select the DOM elements and record the dispatch and clean handlers. Check with a console message that each action executes its handler once.</li>
+<li><strong>Get the data.</strong> Read the values within the shipping handler. Check the entries and convert them with <code>Number()</code>.</li>
+<li><strong>Solve operations.</strong> Use <code>switch</code> o <code>if...else</code> to select the calculation. Check the error cases before displaying the result.</li>
+<li><strong>Organize functions.</strong> Separates the calculation of the DOM update. A function like <code>calcular(numero1, numero2, operacion)</code> you must receive the data and return the result, without reading fields or writing messages. Decide and document how you will communicate an invalid operation to the code that calls it.</li>
+<li><strong>Complete the interaction.</strong> Implement messages, CSS classes and the Clean button. Try several consecutive operations without reloading.</li>
+</ol>
+<p>Use <code>const</code> as a standard option, <code>let</code> when reassigning, descriptive names and functions with clear responsibility is necessary. Use at least one arrow function where it is readable, for example for a short operation or a handler.</p>
+<aside aria-label="Function tab: Number.isFinite(value)" class="function-card" id="ficha-funcion-25">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>Number.isFinite(valor)</code></p>
+<p>Check if the data is a finite number, without converting it.</p><p><strong>Parameters:</strong> value: data that is checked, usually after converting an input.</p><p><strong>Returns:</strong> false for NaN, Infinity, -Infinity and values other than numbers; true for finite numbers.</p>
+</aside>
+<aside aria-label="Function sheet: form.reset()" class="function-card" id="ficha-funcion-26">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>formulario.reset()</code></p>
+<p>Restores the initial values of the controls of a form.</p><p><strong>Parameters:</strong> It does not receive parameters. form must refer to the form element.</p><p><strong>Returns:</strong> undefined. It does not clean messages or CSS classes on its own.</p>
+</aside>
+<aside aria-label="Function tab: element.focus(options)" class="function-card" id="ficha-funcion-27">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>elemento.focus(opciones)</code></p>
+<p>Place the focus on an element that can receive it.</p><p><strong>Parameters:</strong> options: optional configuration; in these exercises it is omitted.</p><p><strong>Returns:</strong> undefined.</p>
+</aside>
+<div class="resource-card expansion-card">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Help to complete the practice</span><span class="resource-badge badge-reading">Consultation</span></div>
+<p><code>Number.isFinite(valor)</code> checks if a value is a finite number: returns <code>false</code> for <code>NaN</code> e <code>Infinity</code>. Use it after converting and checking the result.</p>
+<p><code>formulario.reset()</code> restores the initial values of controls; does not clean messages or classes added by itself. <code>campo.focus()</code> places the focus on a field.</p>
+<div class="resource-links"><a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite" rel="noopener noreferrer" target="_blank">MDN · Number.isFinite()</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/reset" rel="noopener noreferrer" target="_blank">MDN · reset()</a></div>
+</div>
+<h3 id="sec10_4">10.4. Performance tests</h3>
+<p>It records the result of each test. It also includes sequences of actions to check that there are no messages or results left from the previous operation.</p>
+<div aria-label="Calculator tests" class="table-scroll operators-table" role="region" tabindex="0">
+<table>
+<thead><tr><th scope="col">Test</th><th scope="col">Expected outcome</th></tr></thead>
+<tbody>
+<tr><td><code>8 + 2</code></td><td><code>10</code></td></tr>
+<tr><td><code>3 - 8</code></td><td><code>-5</code></td></tr>
+<tr><td><code>-4 × 2.5</code></td><td><code>-10</code></td></tr>
+<tr><td><code>7 ÷ 2</code></td><td><code>3.5</code></td></tr>
+<tr><td><code>0 + 5</code> y <code>0 ÷ 2</code></td><td><code>5</code> y <code>0</code>; zero is a valid entry.</td></tr>
+<tr><td><code>5 ÷ 0</code> y <code>0 ÷ 0</code></td><td>Split error between zero and result <code>—</code>.</td></tr>
+<tr><td>One or both empty fields</td><td>Mandatory entry message, without calculation.</td></tr>
+<tr><td>Invalid entry or out of numerical range</td><td>Rejected; never shown <code>NaN</code> or <code>Infinity</code> as a valid result.</td></tr>
+<tr><td>Success → error → success</td><td>Text, result and classes are updated at each step.</td></tr>
+<tr><td>Clean after calculation or failure</td><td>Initial status and focus on the first field.</td></tr>
+<tr><td>Send via Enter</td><td>Same calculation as with the button, no navigation.</td></tr>
+</tbody>
+</table>
+</div>
+<p>To check non-finite results you can test, if the browser supports this notation in the fields, <code>1e308 × 10</code>. Also directly checks the calculation function with an unknown operation.</p>
+<div class="didactic-note"><p><strong>Decimal.</strong> Some calculations, such as <code>0.1 + 0.2</code>, they can show a small difference by the binary representation of numbers. In this practice the numerical result of JavaScript is accepted; it is not mandatory to implement rounding.</p></div>
+<h3 id="sec10_5">10.5. Delivery and review criteria</h3>
+<p>Delivers folder with <code>ej24-calculadora.html</code>, <code>ej24-calculadora.css</code>, <code>ej24-calculadora.js</code> y <code>ej24-calculadora.txt</code>. In this last file, write what you proved, what result you expected, and what happened. It briefly explains what each function is for. It includes as text a correct example and another one showing an error.</p>
+<ul>
+<li><strong>Operation:</strong> the four operations, validation and cleaning meet the requirements.</li>
+<li><strong>Organization:</strong> the calculation of the interaction with the DOM is distinguished and it is avoided to repeat code unnecessarily.</li>
+<li><strong>Use of the language:</strong> appropriate statements, strict comparisons, events through <code>addEventListener()</code> and readable functions.</li>
+<li><strong>Presentation and testing:</strong> clear messages, consistent classes and proven boundary cases.</li>
+</ul>
+<p>Do not convert strings into executable code or use libraries to solve operations. Logic must be developed with the operators and structures studied.</p>
+<div class="delivery-tip"><button aria-describedby="entrega-tooltip-27" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-27" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
+</section>
+<footer class="document-footer">DAW / DWEC · © Ignacio García</footer>
+</main>
+</div>
+<script>
+    // Accessible delivery reminders: pointer, keyboard and touch.
+    for (const tip of document.querySelectorAll('.delivery-tip')) {
+        const trigger = tip.querySelector('.delivery-trigger');
+        const content = tip.querySelector('[role="tooltip"]');
+        const show = () => {
+            content.hidden = false;
+            trigger.setAttribute('aria-expanded', 'true');
+        };
+        const hide = () => {
+            content.hidden = true;
+            trigger.setAttribute('aria-expanded', 'false');
+        };
+        tip.addEventListener('pointerenter', show);
+        tip.addEventListener('pointerleave', () => {
+            if (document.activeElement !== trigger) hide();
+        });
+        trigger.addEventListener('focus', show);
+        trigger.addEventListener('click', show);
+        trigger.addEventListener('blur', hide);
+        trigger.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') hide();
+        });
+        document.addEventListener('pointerdown', (event) => {
+            if (!tip.contains(event.target)) hide();
+        });
+    }
+    </script>
+</body>
+</html>
