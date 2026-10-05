@@ -5,10 +5,8 @@ import re
 import sys
 from pathlib import Path
 
-import torch
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
 from bs4.element import Tag
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 
 ARCHIVOS_ORIGEN = [
@@ -29,6 +27,10 @@ ATRIBUTOS_TRADUCIBLES = ("alt", "title", "aria-label", "placeholder")
 
 class TraductorOffline:
     def __init__(self) -> None:
+        import torch
+        from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+
+        self._torch = torch
         hilos = max(1, min(os.cpu_count() or 2, 4))
         torch.set_num_threads(hilos)
 
@@ -94,31 +96,47 @@ class TraductorOffline:
             fragmentos.append(actual)
         return fragmentos
 
+    def _generar_traducciones(self, lote: list[str], *, num_beams: int = 2) -> list[str]:
+        entradas = self._tokenizer(
+            lote,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            max_length=MAX_TOKENS_ENTRADA,
+        )
+        with self._torch.inference_mode():
+            salidas = self._model.generate(
+                **entradas,
+                max_length=MAX_TOKENS_SALIDA,
+                num_beams=num_beams,
+                early_stopping=num_beams > 1,
+            )
+        return self._tokenizer.batch_decode(salidas, skip_special_tokens=True)
+
     def _traducir_fragmentos(self, fragmentos: list[str]) -> list[str]:
         traducciones: list[str] = []
         total_lotes = (len(fragmentos) + TAMANO_LOTE - 1) // TAMANO_LOTE
 
         for inicio in range(0, len(fragmentos), TAMANO_LOTE):
             lote = fragmentos[inicio : inicio + TAMANO_LOTE]
-            entradas = self._tokenizer(
-                lote,
-                return_tensors="pt",
-                padding=True,
-                truncation=True,
-                max_length=MAX_TOKENS_ENTRADA,
-            )
-
-            with torch.inference_mode():
-                salidas = self._model.generate(
-                    **entradas,
-                    max_length=MAX_TOKENS_SALIDA,
-                    num_beams=2,
-                    early_stopping=True,
+            traducidas = self._generar_traducciones(lote)
+            if len(traducidas) != len(lote):
+                raise RuntimeError(
+                    f"Lote {inicio // TAMANO_LOTE + 1}: se esperaban "
+                    f"{len(lote)} traducciones y se recibieron {len(traducidas)}"
                 )
-
-            traducidas = self._tokenizer.batch_decode(salidas, skip_special_tokens=True)
-            if len(traducidas) != len(lote) or any(not texto.strip() for texto in traducidas):
-                raise RuntimeError("El modelo offline devolvió un lote incompleto")
+            for indice, traducida in enumerate(traducidas):
+                if traducida.strip():
+                    continue
+                original = lote[indice]
+                print(f"  Reintentando fragmento vacío: {original[:120]!r}", flush=True)
+                reintento = self._generar_traducciones([original], num_beams=1)
+                if len(reintento) != 1 or not reintento[0].strip():
+                    raise RuntimeError(
+                        f"No se pudo traducir el fragmento {inicio + indice + 1}: "
+                        f"{original[:200]!r}"
+                    )
+                traducidas[indice] = reintento[0]
             traducciones.extend(texto.strip() for texto in traducidas)
 
             numero_lote = inicio // TAMANO_LOTE + 1
@@ -128,6 +146,7 @@ class TraductorOffline:
         return traducciones
 
     def traducir_lote(self, textos: list[str]) -> list[str]:
+        textos = [re.sub(r"\s+", " ", texto).strip() for texto in textos]
         pendientes = [
             texto for texto in dict.fromkeys(textos)
             if texto not in self._cache
@@ -154,6 +173,15 @@ def nodo_traducible(nodo: NavigableString) -> bool:
         return False
     if not any(caracter.isalpha() for caracter in nodo):
         return False
+    texto = nodo.strip()
+    # Una letra, un símbolo o un valor hexadecimal es un dato, no una frase.
+    if len(texto) == 1:
+        return False
+    svg = nodo.find_parent("svg")
+    if svg is not None:
+        titulo = svg.find("title")
+        if titulo is not None and "ASCII" in titulo.get_text() and len(texto) <= 4:
+            return False
 
     for padre in nodo.parents:
         if getattr(padre, "name", None) in ETIQUETAS_NO_TRADUCIBLES:
@@ -188,7 +216,7 @@ def configurar_documento_ingles(soup: BeautifulSoup, ruta_es: Path) -> None:
     selector_idioma["href"] = ruta_es.name
     selector_idioma["hreflang"] = "es"
     selector_idioma["lang"] = "es"
-    selector_idioma["aria-label"] = "Leer esta página en español"
+    selector_idioma["aria-label"] = "Read this page in Spanish"
 
     textos = [
         hijo
@@ -244,7 +272,22 @@ def traducir_archivo(ruta_es: Path, traductor: TraductorOffline) -> None:
 
     ruta_en = ruta_es.with_name(ruta_es.name.replace("_es.html", "_en.html"))
     ruta_temporal = ruta_en.with_suffix(f"{ruta_en.suffix}.tmp")
-    ruta_temporal.write_text(str(soup), encoding="utf-8")
+    documento = str(soup)
+    etiquetas_css = {
+        "ÍNDICE": "CONTENTS",
+        "CURIOSIDAD": "DID YOU KNOW?",
+        "PARA AMPLIAR": "FURTHER READING",
+        "ACTIVIDAD": "ACTIVITY",
+    }
+    for estilo in soup.find_all("style"):
+        original = str(estilo)
+        traducido = re.sub(
+            r'(content\s*:\s*["\'][^"\']*)(ÍNDICE|CURIOSIDAD|PARA AMPLIAR|ACTIVIDAD)([^"\']*["\'])',
+            lambda match: match[1] + etiquetas_css[match[2]] + match[3],
+            original,
+        )
+        documento = documento.replace(original, traducido)
+    ruta_temporal.write_text(documento, encoding="utf-8")
     os.replace(ruta_temporal, ruta_en)
     print(f"Creado con éxito: {ruta_en}", flush=True)
 
