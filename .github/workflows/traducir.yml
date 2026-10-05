@@ -83,7 +83,9 @@ jobs:
 
       - name: Probar traductor offline
         if: github.event_name == 'pull_request'
-        run: python -u traducir.py --smoke-test
+        run: |
+          python -u traducir.py --smoke-test
+          python -u traducir.py ciclos/ssii/u01_es.html
         env:
           HF_HUB_OFFLINE: '1'
 
