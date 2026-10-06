@@ -1927,7 +1927,12 @@ the fundamental numbering theorem can be applied, for example:</p>
 <p>Measure similar to the previous one, but exclusively for operations with actual floating point numbers, which present a higher calculation load.</p>
 <h3 id="sec4_8">4.8. Synthetic tests (Benchmarks)</h3>
 <p>They are a varied set of tests whose result at run time is more reliable than the measurement in MIPS, MFLOPS or GHZ. The result of these tests results in a ranking of power.</p>
-<div class="activity-card activity-callout" id="practica-comparacion-cpu"><h4>Practice: Identify and compare your processor</h4><p>Identify your team's CPU with Ubuntu, run a test, and compare performance and price.</p><ol><li><strong>Identify your CPU.</strong> Open a terminal with <kbd>Ctrl + Alt + T</kbd>, write <code>lscpu</code> and press Enter. Copy the "Model name", the architecture, the cores per socket, the number of sockets and the threads per core. The total cores are cores per socket × sockets; the logical threads are that total × threads per core. In a virtual machine these data describe the CPU presented to the guest system.</li><li><strong>Run the benchmark.</strong> Enter <a href="https://browserbench.org/Speedometer3.1/" rel="noopener noreferrer" target="_blank">Speedometer 3.1 from BrowserBench</a>Closes other applications and tabs, connects the laptop to the current and starts the test. Do not use the computer while running. Makes three measurements and calculates its average. Writes down the browser and its version.</li><li><strong>Check the CPU reference.</strong> Find the exact model in <a href="https://www.cpubenchmark.net/" rel="noopener noreferrer" target="_blank">PassMark CPU Benchmarks</a> and score your Mark CPU. It's a reference score collected by PassMark, not a measurement done now on your computer.</li><li><strong>Compare three processors.</strong> Use your CPU as a reference and look for two other desktop processors with a maximum price difference of 20% compared to it. If your CPU is portable or no longer sold, choose a current desktop model as a reference. Check the Mark CPU of the three in PassMark and its prices in one store, in euros and with VAT.</li><li><strong>Write a tab per processor.</strong> Includes model, cores/threads, Mark CPU, price and Mark CPU divided by price in euros. Add links and query date.</li><li><strong>Conclude.</strong> Deliver data from your team, the three measurements and the average, the tokens and an explanation of which one offers best performance per euro and which one you would choose.</li></ol><p><strong>Interprets the results:</strong> Speedometer measures the response of web applications and depends on your computer and browser. CPU Mark uses another test and other scale: compare Mark CPU with Mark CPU; do not compare its values with Speedometer.</p><p><strong>Delivery:</strong> only in text, without captures or attachments.</p></div>
+<div class="activity-card activity-callout" id="practica-comparacion-cpu">
+<p><strong>Lab: Meet and compare your CPU.</strong></p>
+<p>Identify your processor in Ubuntu, perform three measurements with Speedometer, check CPU Mark and compare the performance and price of three processors. The lab guides you step by step and generates a copy report.</p>
+<p><strong>Delivery:</strong> only in text, without captures or attachments.</p>
+<a class="resource-link-btn" href="../../labs/compara-tu-cpu.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-microchip"></i> Open the interactive laboratory</a>
+</div>
 <h2 id="sec5"><i aria-hidden="true" class="fa-solid fa-memory"></i> 5. Physical Components. Von Neumann Architecture</h2>
 <h3 id="sec5_1">5.1. Introduction: Von Neumann Architecture</h3>
 <p>The basic architecture model used in digital computers was established in <strong>1945 by John Von Neumann</strong>Hungarian physicist based in the United States.</p>
@@ -1950,7 +1955,38 @@ the fundamental numbering theorem can be applied, for example:</p>
 </ul>
 <p>The control unit and the arithmetic-logical unit are grouped in the so-called <strong>Central processing unit</strong>.</p>
 <h3 id="sec5_2">5.2. Components. Functional CPU blocks</h3>
-<p>The Central Process Unit (CPU = Central Process Unit) unifies the functional elements of Control Unit and Arithmetic-Logic Unit.</p>
+<p>The Central Process Unit (CPU = Central Processing Unit) unifies the functional elements of Control Unit and Arithmetic-Logic Unit.</p>
+<figure aria-labelledby="bloques-cpu-caption" class="image-container" id="bloques-cpu" role="group">
+<svg aria-labelledby="bloques-cpu-title bloques-cpu-desc" role="img" viewbox="0 0 960 640" xmlns="http://www.w3.org/2000/svg">
+<title id="bloques-cpu-title">Functional CPU blocks</title>
+<desc id="bloques-cpu-desc">The CPU contains the control unit, the ALU and the logs. The control unit coordinates the operations; the ALU calculates; the records temporarily store instructions, addresses and data. Buses communicate the CPU with RAM and with input/output.</desc>
+<defs><marker id="cpu-data-arrow" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path d="M0 0L10 5L0 10Z" fill="#0f766e"></path></marker><marker id="cpu-control-arrow" markerheight="7" markerwidth="7" orient="auto" refx="9" refy="5" viewbox="0 0 10 10"><path d="M0 0L10 5L0 10Z" fill="#b45309"></path></marker></defs>
+<rect fill="#f8fafc" height="640" rx="16" width="960"></rect>
+<g fill="#0f172a" font-family="Inter, Arial, sans-serif" text-anchor="middle">
+<rect fill="#eff6ff" height="465" rx="22" stroke="#1e3a8a" stroke-width="3" width="630" x="30" y="25"></rect>
+<text fill="#1e3a8a" font-size="27" font-weight="700" x="345" y="63">CPU · Central processing unit</text>
+<rect fill="white" height="135" rx="14" stroke="#b45309" stroke-width="2" width="250" x="65" y="105"></rect>
+<text font-size="23" font-weight="700" x="190" y="139">Control unit</text><text font-size="18" x="190" y="174">Decodify and coordinate</text><text font-size="16" x="190" y="206">Decoder · sequencer</text>
+<rect fill="white" height="135" rx="14" stroke="#0f766e" stroke-width="2" width="240" x="385" y="105"></rect>
+<text font-size="26" font-weight="700" x="505" y="140">ALU</text><text font-size="18" x="505" y="175">Arithmetic operations</text><text font-size="18" x="505" y="207">and logics</text>
+<rect fill="#dbeafe" height="130" rx="14" stroke="#1e3a8a" stroke-width="2" width="560" x="65" y="325"></rect>
+<text font-size="25" font-weight="700" x="345" y="360">Records</text><text font-size="19" x="345" y="394">PC · IR · MAR · data recording · status</text><text font-size="19" x="345" y="426">Instructions, addresses and temporary data</text>
+<path d="M315 160H378" marker-end="url(#cpu-control-arrow)" stroke="#b45309" stroke-dasharray="7 5" stroke-width="3"></path><path d="M190 240V315" marker-end="url(#cpu-control-arrow)" stroke="#b45309" stroke-dasharray="7 5" stroke-width="3"></path>
+<path d="M505 250V315" marker-end="url(#cpu-data-arrow)" marker-start="url(#cpu-data-arrow)" stroke="#0f766e" stroke-width="4"></path>
+<text fill="#b45309" font-size="15" x="349" y="147">Ctrl</text><text fill="#0f766e" font-size="17" text-anchor="start" x="540" y="287">Data</text>
+<rect fill="#e0f2fe" height="135" rx="14" stroke="#0369a1" stroke-width="2" width="195" x="740" y="105"></rect>
+<text font-size="25" font-weight="700" x="837" y="145">RAM Memory</text><text font-size="19" x="837" y="183">Programmes</text><text font-size="19" x="837" y="211">and data</text>
+<rect fill="#e0f2fe" height="130" rx="14" stroke="#0369a1" stroke-width="2" width="195" x="740" y="325"></rect>
+<text font-size="24" font-weight="700" x="837" y="364">In/out</text><text font-size="19" x="837" y="404">Connection with</text><text font-size="19" x="837" y="433">peripherals</text>
+<path d="M665 390H700V173H732M700 390H732" fill="none" stroke="#0f766e" stroke-width="4"></path>
+<text fill="#0f766e" font-size="18" x="835" y="268">System buses</text><text font-size="16" x="835" y="290">Data · addresses</text><text font-size="16" x="835" y="312">Ctrl</text>
+<text font-size="21" x="480" y="535">Search → decode → run → save result</text>
+<path d="M80 581H150" stroke="#0f766e" stroke-width="4"></path><text font-size="18" text-anchor="start" x="165" y="587">Transfer of information</text>
+<path d="M525 581H595" stroke="#b45309" stroke-dasharray="7 5" stroke-width="3"></path><text font-size="18" text-anchor="start" x="610" y="587">Control signals</text>
+<text fill="#475569" font-size="16" x="480" y="619">Simplified model: Real connections depend on processor architecture.</text>
+</g></svg>
+<figcaption class="image-caption" id="bloques-cpu-caption">The control unit coordinates, the ALU calculates, and records store temporary information. The CPU exchanges information with the RAM and I/O via buses.</figcaption>
+</figure>
 <h4 class="numbered-subsection" id="sec5_2_1">5.2.1. Control Unit</h4>
 <p>It is the nerve center of the computer, where the programs are processed and its function is to perform the <strong>search, load, sequencing and execution</strong> of the instructions.</p>
 <p>These instructions are written in <strong>Language Machine</strong> and are formed by a <strong>operation code</strong>, which indicates to UC which operation should be carried out, and up to <strong>two memory data or addresses</strong> which indicate the location of that data.</p>
