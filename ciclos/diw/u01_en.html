@@ -17,7 +17,7 @@
 <style>
         /* Índice con el mismo diseño y comportamiento que DWEC U02. */
         .sidebar-toc { overflow: visible; }
-        .sidebar-toc::after { content: "\f0c9"; }
+        .sidebar-toc::after { content: "\f0c9"; width: auto; right: auto; left: 100%; padding: 0 14px; }
         .sidebar-toc ul { max-height: calc(100vh - 130px); overflow-y: auto; }
         .sidebar-toc:focus-within { transform: translateX(0); }
         .sidebar-toc a.subsection-link { padding-left: 20px; font-size: 0.82rem; }
@@ -45,6 +45,22 @@
         .relation-summary { margin: 0; padding: 18px; border: 1px solid var(--border-color); border-radius: 10px; background: #f8fafc; }
         .relation-summary svg { display: block; max-width: 100%; height: auto; margin: 0 auto 12px; }
         .relation-summary figcaption { color: var(--text-muted); font-size: 0.95rem; }
+        .target-size-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+        .target-size-panel { padding: 22px; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc; }
+        .target-size-panel--large { border: 2px solid #0f766e; background: #f0fdfa; }
+        .target-size-demo { display: flex; align-items: center; justify-content: center; height: 64px; margin-bottom: 14px; }
+        .target-square { display: inline-flex; align-items: center; justify-content: center; border: 1px dashed #2563eb; background: #dbeafe; }
+        .target-square--minimum { width: 24px; height: 24px; }
+        .target-square--large { width: 44px; height: 44px; border: 1px solid #0f766e; background: #ccfbf1; }
+        .target-square span { width: 10px; height: 10px; border-radius: 50%; background: #1d4ed8; }
+        .target-square--large span { background: #0f766e; }
+        .target-size-panel h5 { margin: 0 0 8px; font-size: 1.05rem; }
+        .target-size-panel p { text-align: center; margin: 8px 0 0; }
+        .target-size-panel .target-size-note, .target-size-sources { font-size: .85rem; color: var(--text-muted); }
+        .target-size-figure .target-size-sources { text-align: center; margin-bottom: 0; }
+        .vitals-activity details { margin-top: 18px; padding: 14px; border: 1px solid #fed7aa; border-radius: 8px; background: #fff; }
+        .vitals-activity summary { cursor: pointer; font-weight: 700; color: #92400e; }
+        @media (max-width: 600px) { .target-size-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -725,7 +741,7 @@
 <tbody>
 <tr>
 <td><strong>1. Agile response</strong><br/><em>Two-second guidance rule</em></td>
-<td>Optimize the load and avoid unnecessary waiting. If an operation cannot be completed immediately, confirm that the system is working.</td>
+<td>Optimize the load and avoid unnecessary waits. If an operation cannot be completed immediately, confirm that the system is working.</td>
 <td>Show the main content quickly and then load the secondary items.</td>
 </tr>
 <tr>
@@ -959,7 +975,7 @@
 </div>
 </div>
 <div class="didactic-note activity-callout laboratory-card">
-<h5 class="exercise-title"><i class="fa-solid fa-wheat-awn"></i> Laboratory 5: Migas Amigas: Advanced UX Audit</h5>
+<h5 class="exercise-title"><i class="fa-solid fa-wheat-awn"></i> Laboratory: Migas Amigas: Advanced UX audit</h5>
 <p>Version for higher-grade training cycles: audit a fictitious bakery in ten cases, contrast Nielsen's heuristics with UX laws, justify design decisions and prepare a validation. Download a TXT report with your evidence, compensation and priorities.</p>
 <a class="resource-link-btn" href="https://igarciafp.github.io/labs/migas-amigas-superior.html" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Advanced Audit</a>
 </div>
@@ -1055,7 +1071,7 @@
 <figcaption class="image-caption">A single component supports three analyses: what the symbol represents, what the label communicates, and what purpose the action serves.</figcaption>
 </figure>
 <div class="didactic-note activity-callout laboratory-card">
-<h5 class="exercise-title"><i aria-hidden="true" class="fa-solid fa-flask"></i> Laboratory 6: One card, four decisions</h5>
+<h5 class="exercise-title"><i aria-hidden="true" class="fa-solid fa-flask"></i> Laboratory: One card, four decisions</h5>
 <p>Redesign a product card using controls of structure, appearance, distribution and purpose. Compare the before and after, test the result in narrow format and download your design with four explanations: "I have changed... for...".</p>
 <a class="resource-link-btn" href="https://igarciafp.github.io/labs/una-tarjeta-cuatro-decisiones.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i> Open the design laboratory</a>
 </div>
@@ -1306,9 +1322,10 @@
 <h3 id="sec4_3">4.3. Color and images for the web</h3>
 <h4 id="sec4_3_1">4.3.1. Color harmony</h4>
 <p>The <strong>chromatic harmony</strong> organizes the colors of an interface to build hierarchy, balance and contrast. The complementary, analogous, triadic and monochromatic combinations allow to relate the dominant color, the secondary and the accent; in an interface it is also necessary to validate that these decisions maintain sufficient readability and contrast.</p>
-<div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-palette"></i> Laboratory 7: The use of color in web design</h5>
-<p><strong>Color scan activity:</strong> Experiment with color wheel, complementary, analogous, triadic and monochromatic harmonies, rule 60–30–10 and contrast applied to interfaces. <a href="https://igarciafp.github.io/labs/colorweb.html" rel="noopener noreferrer" target="_blank">Open Color Lab</a>.</p>
+<div class="didactic-note activity-callout laboratory-card">
+<h5 class="exercise-title"><i class="fa-solid fa-palette"></i> Laboratory: The use of color in web design</h5>
+<p><strong>Color scan activity:</strong> Experiment with color wheel, complementary, analogous, triadic and monochromatic harmonies, rule 60–30–10 and contrast applied to interfaces.</p>
+<a class="resource-link-btn" href="https://igarciafp.github.io/labs/colorweb.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i> Open Color Lab</a>
 </div>
 <h4 id="sec4_3_2">4.3.2. Images for the web</h4>
 <p>The encoding of static images can be done in ways: by means of <strong>bitmaps</strong> (indicating for each bit of the screen its color) or by <strong>vector representation</strong>
@@ -1322,8 +1339,8 @@ of the same colour.</p>
 <p>A video is always going to be formed from static images, being important the number of images (frames) that are represented
 <strong>FPS</strong> and taking into account that compression can also be performed by <strong>transitions</strong> between images, that is, keeping the elements that do not change and saving information from those that do.</p>
 <figure aria-labelledby="fig-imagen-video-diw-caption" class="image-container" role="group"><svg aria-label="A pixel is encoded with RGB components; an image is a grid of those values." role="img" viewbox="0 0 900 250" xmlns="http://www.w3.org/2000/svg"><rect fill="#f8fafc" height="250" rx="14" width="900"></rect><text fill="#1e3a8a" font-family="Inter, sans-serif" font-size="22" font-weight="700" text-anchor="middle" x="450" y="35">Colour of a pixel in RGB</text><g font-family="Inter, sans-serif" text-anchor="middle"><rect fill="#fee2e2" height="72" rx="10" width="150" x="130" y="90"></rect><text fill="#b91c1c" font-size="18" font-weight="700" x="205" y="122">R = 255</text><text fill="#475569" font-size="14" x="205" y="146">red</text><rect fill="#dcfce7" height="72" rx="10" width="150" x="375" y="90"></rect><text fill="#0f766e" font-size="18" font-weight="700" x="450" y="122">G = 180</text><text fill="#475569" font-size="14" x="450" y="146">green</text><rect fill="#dbeafe" height="72" rx="10" width="150" x="620" y="90"></rect><text fill="#1e3a8a" font-size="18" font-weight="700" x="695" y="122">B = 40</text><text fill="#475569" font-size="14" x="695" y="146">blue</text><path d="M280 126h78M525 126h78" stroke="#64748b" stroke-width="3"></path><text fill="#0f172a" font-size="18" font-weight="700" x="450" y="213">RGB(255, 180, 40) → pixel color</text></g></svg><figcaption class="image-caption" id="fig-imagen-video-diw-caption">A pixel is encoded with RGB components; an image is a grid of those values.</figcaption></figure>
-<div class="didactic-note activity-callout" id="practica-representacion-imagenes-diw">
-<p><strong>Laboratory 8: Image representation.</strong></p>
+<div class="didactic-note activity-callout laboratory-card" id="practica-representacion-imagenes-diw">
+<h5 class="exercise-title"><i aria-hidden="true" class="fa-solid fa-image"></i> Laboratory: Image representation</h5>
 <p>Experiment with RGB color formation, compare images BMP, PNG, JPG, GIF, WebP and SVG, observe their quality by expanding and generate a final report with your results.</p>
 <a class="resource-link-btn" href="https://igarciafp.github.io/ciclos/ssii/alumnado/pimagenes.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-image"></i> Open Interactive Practice</a>
 </div>
@@ -1476,7 +1493,7 @@ of the same colour.</p>
 <p>The core of a design system is the <strong>Design Tokens</strong>: variables that store fundamental visual values (colours, fonts, spacings) reusable in CSS/Sass (e.g. <code>--color-primary: #1e3a8a;</code>, <code>--spacing-md: 16px;</code>).</p>
 </div>
 <div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 9: Brief review exercise (Section 4.4)</h5>
+<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 5: Brief review exercise (Section 4.4)</h5>
 <p><strong>Decomposition in Atomic Design:</strong> Select the header component (Header) of any digital platform you use on a daily basis (e.g. GitHub, YouTube or El País). Identify in writing the 5 levels of Atomic Design present in it: 1) Atoms (e.g. search button, input, avatar), 2) Molecules (e.g. full search field with icon), 3) Organisms (e.g. complete top navbar), 4) Templates (fixed headerlayout), and 5) Page (resulting screen with data from your real user).</p>
 </div>
 <!-- SUBAPARTADO NUEVO: DESIGN TOKENS (NUEVO PUNTO INTEGRADO) -->
@@ -1614,7 +1631,7 @@ of the same colour.</p>
 <p>Identity is translated into the system described in paragraph 4.4 by means of <strong>Design Tokens</strong> —color, typography, spacing and shape—and by atoms such as logo, icons and buttons. Thus, the brand remains coherent in all molecules, organisms, templates and pages.</p>
 </div>
 <div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 10: Brief review exercise (Section 4.5)</h5>
+<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 6: Brief review exercise (Section 4.5)</h5>
 <p><strong>Digital Identity Marks Classification:</strong> Search the internet and identify a real example for each of the 4 categories of visual identity studied: 1) <strong>Logo</strong> (text only), 2) <strong>Isotype</strong> (graphic only), 3) <strong>Imagotype</strong> (independent symbol and text) and 4) <strong>Isologotype</strong> It justifies in writing why each mark belongs to its corresponding category.</p>
 </div>
 <h3 id="sec4_6">4.6. Composition, UI, Mobile-First states and performance</h3>
@@ -1680,34 +1697,52 @@ of the same colour.</p>
 <h4>4.6.3. Mobile-First strategy and minimum touch area (Target Size)</h4>
 <p>The Strategy <strong>Mobile-First</strong> states that the version for small screens (with extreme space restrictions) must be designed and implemented first, prioritizing essential contents, and then expanding the interface to desktop screens by means of <em>Progressive Enhancement</em>.</p>
 <!-- Figura 1.7: SVG Target Size -->
-<div class="image-container">
-<svg height="150" viewbox="0 0 760 150" width="100%" xmlns="http://www.w3.org/2000/svg">
-<rect fill="#fafafa" height="150" rx="8" width="760" x="0" y="0"></rect>
-<g transform="translate(60, 25)">
-<rect fill="#ffffff" height="100" rx="6" stroke="#cbd5e1" width="180" x="0" y="0"></rect>
-<rect fill="#fee2e2" height="24" stroke="#dc2626" stroke-dasharray="2,2" width="24" x="78" y="20"></rect>
-<circle cx="90" cy="32" fill="#dc2626" r="6"></circle>
-<text fill="#dc2626" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" x="90" y="68">Minimum 24 x 24 px</text>
-<text fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle" x="90" y="85">WCAG 2.2 (AA)</text>
-</g>
-<g transform="translate(300, 25)">
-<rect fill="#ffffff" height="100" rx="6" stroke="#0f766e" stroke-width="2" width="400" x="0" y="0"></rect>
-<rect fill="#dcfce7" height="48" stroke="#16a34a" width="48" x="30" y="15"></rect>
-<circle cx="54" cy="39" fill="#16a34a" r="10"></circle>
-<text fill="#0f766e" font-family="Inter, sans-serif" font-size="12" font-weight="bold" x="230" y="42">Recommended: 44x44 / 48x48 px</text>
-<text fill="#475569" font-family="Inter, sans-serif" font-size="10" x="230" y="62">Standard Google Material Design and Apple HIG</text>
-<text fill="#64748b" font-family="Inter, sans-serif" font-size="9" x="230" y="78">Avoid accidental pulses with your mobile thumb.</text>
-</g>
-</svg>
-<div class="image-caption">Figure 1.7: Minimum touch area (Target Size) regulations for mobile interfaces.</div>
+<figure class="image-container target-size-figure">
+<div class="target-size-grid">
+<div class="target-size-panel">
+<div class="target-size-demo"><span class="target-square target-square--minimum"><span></span></span></div>
+<h5>24 × 24 pixels CSS</h5>
+<p>Minimum size · WCAG 2.2 AA</p>
+<p class="target-size-note">The 2.5.8 criterion allows for exceptions, such as sufficient separation between small targets.</p>
 </div>
+<div class="target-size-panel target-size-panel--large">
+<div class="target-size-demo"><span class="target-square target-square--large"><span></span></span></div>
+<h5>44 × 44 pixels CSS</h5>
+<p>Improved size · WCAG AAA</p>
+<p class="target-size-note">A larger surface makes it easy to press precisely. 2.5.5 also includes exceptions.</p>
+</div>
+</div>
+<figcaption class="image-caption">Figure 1.7: The pulsable area can be larger than the visible icon. Squares show the size of the target, not the size of the icon.</figcaption>
+<p class="target-size-sources">Reference: <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum" rel="noopener noreferrer" target="_blank">WCAG 2.5.8 (AA)</a> · <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced" rel="noopener noreferrer" target="_blank">WCAG 2.5.5 (AAA)</a>.</p>
+</figure>
 <h4>4.6.4. Visual Performance Metrics (Core Web Vitals &amp; Layout Shift)</h4>
-<p>The user experience does not depend solely on the graphic aspect, but on the <strong>Perceived yield</strong>Google and the W3C standardize three key metrics (<strong>Core Web Vitals</strong>):</p>
+<p>The user experience also depends on the content appearing soon, the interface responds quickly and the elements do not change places unexpectedly. <strong>Core Web Vitals</strong> Google measures these three dimensions:</p>
 <ul>
-<li><strong>CLS (Cumulative Layout Shift):</strong> Measure visual instability. It occurs when elements jump unexpectedly when uploading images without dimension attributes (<code>width</code> y <code>height</code>), causing accidental clicks.</li>
-<li><strong>LCP (Largest Contentful Paint):</strong> Main visual element rendering time (must be &lt; 2.5 s).</li>
-<li><strong>INP (Interaction to Next Paint):</strong> Measure the response speed of the IU after a user click (&lt; 200 ms).</li>
+<li><strong>LCP (Largest Contentful Paint):</strong> measures how long it takes to show the largest text block or visible image. A good value is ≤ 2.5 seconds.</li>
+<li><strong>INP (Interaction to Next Paint):</strong> measures the response to interactions until the next visual update is shown. A good value is ≤ 200 milliseconds.</li>
+<li><strong>CLS (Cumulative Layout Shift):</strong> measures unexpected content displacements. A good value is ≤ 0.1; it is a score, not a time. Booking space for images helps to avoid these jumps.</li>
 </ul>
+<p>These thresholds are evaluated at 75 percentile of visits, separating mobile and desktop. <a href="https://web.dev/articles/vitals" rel="noopener noreferrer" target="_blank">Reference: Core Web Vitals</a>.</p>
+<div class="didactic-note activity-callout vitals-activity">
+<h5 class="exercise-title"><i aria-hidden="true" class="fa-solid fa-pen-clip"></i> Activity 7: Slow load, slow response or visual jump?</h5>
+<p>Read all three cases. In each, it indicates <strong>which metric is related (CPL, INP or CLS)</strong>What a nuisance you'd be making and what a change you'd propose.</p>
+<ol type="A">
+<li>You open a store. The menu appears right away, but the big main image takes several seconds to show.</li>
+<li>Click "Add to Cart". The page is already loaded, but it takes time to show a response to your press.</li>
+<li>You will press "View product" and an ad appears on top: the button moves and you end up pressing another link.</li>
+</ol>
+<p><strong>Check the data:</strong> One page records LCP = 3.2 s, INP = 150 ms and CLS = 0.25 in 75 percentile. What metrics are within the good range? Which ones need to be improved?</p>
+<p><strong>Delivery:</strong> Three short answers and the interpretation of the data. It ends by explaining why a fast-loading page can still be uncomfortable.</p>
+<details>
+<summary>Consult a guidance solution after responding</summary>
+<ul>
+<li><strong>A · CPL:</strong> The main content takes time to appear. Optimizing the image and prioritizing its load can reduce the wait.</li>
+<li><strong>B · INP:</strong> The interaction takes time to produce a visual update. Reducing the JavaScript work that blocks the interface can improve the response.</li>
+<li><strong>C · CLS:</strong> a new block moves the content. Pre-booking the ad space avoids that jump.</li>
+</ul>
+<p>INP (150 ms) is in the good range. LCP (3,2 s) and CLS (0,25) need to be improved. Loading soon does not guarantee a fast response or stable composition.</p>
+</details>
+</div>
 <h3 id="sec4_7">4.7. Web components and forms</h3>
 <p>Websites structure their components in standardized modules: <strong>Header (Header)</strong>, <strong>Navigation Systems</strong> (burger menu, eyelashes, breadcrumbs), <strong>Body (Body)</strong>, <strong>Footer (Footer)</strong> y <strong>Blank spaces</strong>.</p>
 <!-- Recurso Enlace PPTX 6 -->
@@ -1729,7 +1764,7 @@ of the same colour.</p>
 </ol>
 </div>
 <div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 11: Brief review exercise (Section 4.7)</h5>
+<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 8: Brief review exercise (Section 4.7)</h5>
 <p><strong>Usability Audit in Real Forms:</strong> Access the contact form or registration of the UNED learning platform (<code>https://www.uned.es</code>) or Renfe (<code>https://www.renfe.com</code>). Inspect the code with DevTools (F12) and identify: 1) If each field inputa has its labela Explicitly linked by `for="id', 2) If the attribute `placeholder` has been mistakenly used as the only visual label, and 3) If the fields show error feedback inline when losing focus.</p>
 </div>
 <h2 id="sec5"><i class="fa-solid fa-book-atlas"></i> 5. Web interface style and design guide</h2>
@@ -2045,7 +2080,7 @@ of the same colour.</p>
 </div>
 <p>To inspect and audit existing web pages, built-in developer tools (DevTools of Chrome/Firefox) can be used alongside extensions such as <strong>ColorZilla</strong> (chromatic capture), <strong>WhatFont</strong> (type identification), <strong>Pesticide</strong> (CSS box display), <strong>Responsible Viewer</strong> (multi-device view) or <strong>Page Ruler</strong> (pixel measurement). You must verify the developer, updates and permissions before installing extensions.</p>
 <div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 12: Brief review exercise (Section 5.6)</h5>
+<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 9: Brief review exercise (Section 5.6)</h5>
 <p><strong>Typographical inspection with DevTools:</strong> Opens the news portal <code>https://www.elpais.com</code>. Using your browser’s CSS inspection panel, locate a main headline and answer the following questions: 1) Which main and reserve typographical family (*fallback*) uses?, 2) What is its pixel size or `rem` and line height (`line-height`)?, and 3) Is it a Serif or Sans-Serif font and why has it been chosen according to its reading format?</p>
 </div>
 <h3 id="sec5_7">5.7 From Figma to the guide code and governance</h3>
@@ -2466,7 +2501,7 @@ of the same colour.</p>
 <p><strong>Outcome:</strong> Elimination of wrong clicks on mobile devices and strict compliance with the WCAG 2.4.7 criterion.</p>
 </div>
 <div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 13: Brief review exercise (Part 8.1)</h5>
+<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 10: Brief review exercise (Part 8.1)</h5>
 <p><strong>Analysis and Reproduction of Redesign UI/UX (Figure 1.12):</strong> Notes in detail the comparative explanatory graph of the <strong>Figure 1.12</strong> presented in this section. In your practice notebook or prototyping software, reproduce the model of the optimized form by adding a new type field <code>&lt;select&gt;</code> Make sure you draw the explicit label. <code>&lt;label&gt;</code>, the accessible focus visual indicator and ensure that the button meets the minimum touch area (Target Size ≥ 48 × 48 px).</p>
 </div>
 <!-- 9. ERRORES FRECUENTES -->
@@ -2843,7 +2878,7 @@ of the same colour.</p>
 <div class="activities-section" id="sec12">
 <h2><i class="fa-solid fa-pen-to-square"></i> 12. Activities</h2>
 <h3>Understanding activities</h3>
-<ol start="14">
+<ol start="11">
 <li>It explains how CSS and JavaScript respectively modified the presentation and interaction of the first web pages.</li>
 <li>It arranges these milestones chronologically and justifies their impact: W3C, first Web, JavaScript, CSS1 and Responsive Web Design.</li>
 <li>Select two current visual trends and explain an advantage and a risk of accessibility or performance of each.</li>
@@ -2859,7 +2894,7 @@ of the same colour.</p>
 <li>What is CLS metric in Core Web Vitals and how does it affect usability?</li>
 </ol>
 <h3>Implementation activities</h3>
-<ol start="27">
+<ol start="24">
 <li>It uses Wayback Machine to compare three historical versions of the same site. It documents changes in grid, navigation, typography, images, mobile adaptation and calls to action.</li>
 <li>It designs a small visual timeline with semantic HTML and Responsive CSS that represents at least six milestones in the evolution of web design.</li>
 <li>Redesign a product card using consciously direction, position, space and visual gravity. It presents desktop and mobile versions and justifies each decision.</li>
@@ -2870,7 +2905,7 @@ of the same colour.</p>
 <li>Analyzes a web form and identifies if it complies with the use of `<label>` explicit and inline validation.</label></li>
 <li>Design a product card (*organism*) identifying its constituent atoms and molecules.</li>
 </ol>
-<h3>Activity 36: Professional audit UI/UX</h3>
+<h3>Activity 33: Professional audit UI/UX</h3>
 <p>Prepares a technical UI/UX audit report for an institutional portal. Evaluate the principles of usability — response, feedback, functional value, readability, consistency, navigation, errors and job protection — along with the SVG brand, the Mobile-First strategy (Target Size 48px), the accessibility of keyboard focus (ratium 3:1), the Atomic Design system and the separation of the navigation map from the <code>sitemap.xml</code> y <code>robots.txt</code>. As a final delivery, it incorporates a versioned style guide with tokens, typography, iconography, components, correct and incorrect examples and governance criteria.</p>
 </div>
 <!-- 13. ANÁLISIS DE LA WEB -->
