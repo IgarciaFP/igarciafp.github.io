@@ -2166,7 +2166,12 @@ cálculo.</p>
 <p>Son un conjunto variado de prueba cuyo resultado en tiempo de
 ejecución es más fiable que la medida en MIPS, MFLOPS o GHZ. El
 resultado de estos test da lugar a un ranking de potencia.</p>
-<div class="activity-card activity-callout" id="practica-comparacion-cpu"><h4>Práctica: identifica y compara tu procesador</h4><p>Identifica la CPU de tu equipo con Ubuntu, realiza una prueba y compara rendimiento y precio.</p><ol><li><strong>Identifica tu CPU.</strong> Abre una terminal con <kbd>Ctrl + Alt + T</kbd>, escribe <code>lscpu</code> y pulsa Intro. Copia el «Nombre del modelo» (Model name), la arquitectura, los núcleos por zócalo, el número de zócalos y los hilos por núcleo. El total de núcleos es núcleos por zócalo × zócalos; los hilos lógicos son ese total × hilos por núcleo. En una máquina virtual estos datos describen la CPU presentada al sistema invitado.</li><li><strong>Ejecuta el benchmark.</strong> Entra en <a href="https://browserbench.org/Speedometer3.1/" target="_blank" rel="noopener noreferrer">Speedometer 3.1 de BrowserBench</a>. Cierra otras aplicaciones y pestañas, conecta el portátil a la corriente e inicia la prueba. No uses el equipo mientras se ejecuta. Realiza tres mediciones y calcula su media. Anota el navegador y su versión.</li><li><strong>Consulta la referencia de CPU.</strong> Busca el modelo exacto en <a href="https://www.cpubenchmark.net/" target="_blank" rel="noopener noreferrer">PassMark CPU Benchmarks</a> y anota su CPU Mark. Es una puntuación de referencia recopilada por PassMark, no una medición realizada ahora en tu equipo.</li><li><strong>Compara tres procesadores.</strong> Usa tu CPU como referencia y busca otros dos procesadores de sobremesa con una diferencia de precio máxima del 20 % respecto a ella. Si tu CPU es de portátil o ya no se vende, elige un modelo de sobremesa actual como referencia. Consulta el CPU Mark de los tres en PassMark y sus precios en una misma tienda, en euros y con IVA.</li><li><strong>Concluye.</strong> Entrega los datos de tu equipo, las tres mediciones y la media, y una explicación de cuál ofrece mejor rendimiento por euro y cuál elegirías.</li></ol><p><strong>Interpreta los resultados:</strong> Speedometer mide la respuesta de aplicaciones web y depende del equipo y del navegador. CPU Mark utiliza otra prueba y otra escala: compara CPU Mark con CPU Mark; no compares sus valores con Speedometer.</p><p><strong>Entrega:</strong> únicamente en texto, sin capturas ni archivos adjuntos.</p></div>
+<div class="activity-card activity-callout" id="practica-comparacion-cpu">
+    <p><strong>Laboratorio: conoce y compara tu CPU.</strong></p>
+    <p>Identifica tu procesador en Ubuntu, realiza tres mediciones con Speedometer, consulta CPU Mark y compara el rendimiento y precio de tres procesadores. El laboratorio te guía paso a paso y genera un informe para copiar.</p>
+    <p><strong>Entrega:</strong> únicamente en texto, sin capturas ni archivos adjuntos.</p>
+    <a href="../../labs/compara-tu-cpu.html" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-microchip" aria-hidden="true"></i> Abrir el laboratorio interactivo</a>
+</div>
 <h2 id="sec5"><i class="fa-solid fa-memory" aria-hidden="true"></i> 5. Componentes físicos. Arquitectura Von Neumann</h2>
 <h3 id="sec5_1">5.1. Introducción. Arquitectura Von Neumann</h3>
 <p>El modelo básico de arquitectura empleada en los ordenadores
@@ -2199,9 +2204,40 @@ Neumann son por tanto:</p>
 <p>La unidad de control y la unidad aritmético-lógica se agrupan en la
 denominada <strong>unidad central de proceso</strong>.</p>
 <h3 id="sec5_2">5.2. Componentes. Bloques funcionales de la CPU</h3>
-<p>La unidad central de Proceso (CPU = Central Process Unit) unifica los
+<p>La unidad central de Proceso (CPU = Central Processing Unit) unifica los
 elementos funcionales de Unidad de Control y Unidad
 Aritmético-Lógica.</p>
+<figure class="image-container" id="bloques-cpu" role="group" aria-labelledby="bloques-cpu-caption">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" role="img" aria-labelledby="bloques-cpu-title bloques-cpu-desc">
+<title id="bloques-cpu-title">Bloques funcionales de la CPU</title>
+<desc id="bloques-cpu-desc">La CPU contiene la unidad de control, la ALU y los registros. La unidad de control coordina las operaciones; la ALU calcula; los registros guardan temporalmente instrucciones, direcciones y datos. Los buses comunican la CPU con la memoria RAM y con entrada/salida.</desc>
+<defs><marker id="cpu-data-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#0f766e"/></marker><marker id="cpu-control-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#b45309"/></marker></defs>
+<rect width="960" height="640" rx="16" fill="#f8fafc"/>
+<g font-family="Inter, Arial, sans-serif" text-anchor="middle" fill="#0f172a">
+<rect x="30" y="25" width="630" height="465" rx="22" fill="#eff6ff" stroke="#1e3a8a" stroke-width="3"/>
+<text x="345" y="63" font-size="27" font-weight="700" fill="#1e3a8a">CPU · Unidad central de proceso</text>
+<rect x="65" y="105" width="250" height="135" rx="14" fill="white" stroke="#b45309" stroke-width="2"/>
+<text x="190" y="139" font-size="23" font-weight="700">Unidad de control</text><text x="190" y="174" font-size="18">Decodifica y coordina</text><text x="190" y="206" font-size="16">Decodificador · secuenciador</text>
+<rect x="385" y="105" width="240" height="135" rx="14" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="505" y="140" font-size="26" font-weight="700">ALU</text><text x="505" y="175" font-size="18">Operaciones aritméticas</text><text x="505" y="207" font-size="18">y lógicas</text>
+<rect x="65" y="325" width="560" height="130" rx="14" fill="#dbeafe" stroke="#1e3a8a" stroke-width="2"/>
+<text x="345" y="360" font-size="25" font-weight="700">Registros</text><text x="345" y="394" font-size="19">PC · IR · MAR · registro de datos · estado</text><text x="345" y="426" font-size="19">Instrucciones, direcciones y datos temporales</text>
+<path d="M315 160H378" stroke="#b45309" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#cpu-control-arrow)"/><path d="M190 240V315" stroke="#b45309" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#cpu-control-arrow)"/>
+<path d="M505 250V315" stroke="#0f766e" stroke-width="4" marker-start="url(#cpu-data-arrow)" marker-end="url(#cpu-data-arrow)"/>
+<text x="349" y="147" font-size="15" fill="#b45309">Control</text><text x="540" y="287" text-anchor="start" font-size="17" fill="#0f766e">Datos</text>
+<rect x="740" y="105" width="195" height="135" rx="14" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/>
+<text x="837" y="145" font-size="25" font-weight="700">Memoria RAM</text><text x="837" y="183" font-size="19">Programas</text><text x="837" y="211" font-size="19">y datos</text>
+<rect x="740" y="325" width="195" height="130" rx="14" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/>
+<text x="837" y="364" font-size="24" font-weight="700">Entrada / salida</text><text x="837" y="404" font-size="19">Conexión con</text><text x="837" y="433" font-size="19">los periféricos</text>
+<path d="M665 390H700V173H732M700 390H732" fill="none" stroke="#0f766e" stroke-width="4"/>
+<text x="835" y="268" font-size="18" fill="#0f766e">Buses del sistema</text><text x="835" y="290" font-size="16">Datos · direcciones</text><text x="835" y="312" font-size="16">Control</text>
+<text x="480" y="535" font-size="21">Buscar → decodificar → ejecutar → guardar el resultado</text>
+<path d="M80 581H150" stroke="#0f766e" stroke-width="4"/><text x="165" y="587" text-anchor="start" font-size="18">Transferencia de información</text>
+<path d="M525 581H595" stroke="#b45309" stroke-width="3" stroke-dasharray="7 5"/><text x="610" y="587" text-anchor="start" font-size="18">Señales de control</text>
+<text x="480" y="619" font-size="16" fill="#475569">Modelo simplificado: las conexiones reales dependen de la arquitectura del procesador.</text>
+</g></svg>
+<figcaption class="image-caption" id="bloques-cpu-caption">La unidad de control coordina, la ALU calcula y los registros guardan información temporal. La CPU intercambia información con la RAM y con E/S mediante buses.</figcaption>
+</figure>
 <h4 id="sec5_2_1" class="numbered-subsection">5.2.1. Unidad de Control</h4>
 <p>Es el centro neurálgico del ordenador, donde se procesan los
 programas y su función consiste en realizar la <strong>búsqueda, carga,
