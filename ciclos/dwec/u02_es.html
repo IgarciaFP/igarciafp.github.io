@@ -14,6 +14,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="u01.css">
     <style>
+        /* Escribir los ejemplos forma parte de la práctica de esta unidad. */
+        .document-container { -webkit-user-select: none; user-select: none; }
+        .document-container input, .document-container textarea,
+        .document-container [contenteditable]:not([contenteditable="false"]) {
+            -webkit-user-select: text;
+            user-select: text;
+        }
         .loading-diagram { margin: 24px 0; }
         .loading-diagram svg { display: block; width: 100%; max-width: 520px; height: auto; margin: 0 auto; font-family: Inter, sans-serif; }
         /* Mostrar cada carácter de los operadores sin ligaduras tipográficas. */
@@ -151,6 +158,8 @@
                 <h1>UD02 Fundamentos de JavaScript</h1>
                 <p class="header-subtitle">El lenguaje que permite programar el comportamiento de una página web</p>
             </header>
+
+            <div class="didactic-note"><p><strong>Practica escribiendo el código.</strong> La copia de contenido está desactivada en esta página. Escribe los ejemplos en tu editor para practicar la sintaxis y detectar errores mientras programas.</p></div>
 
             <div class="didactic-note" id="entregas-actividades"><p><strong>Cómo entregar las actividades.</strong> Utiliza un cuaderno de trabajo digital en texto plano y entrega las actividades realizadas cada día antes de finalizar la clase. Guarda las respuestas iniciales de conceptos, preparación y consola en tu cuaderno de trabajo. A partir de «Hola, mundo», guarda cada ejercicio en <code>dwec/ejercicios/u01/</code> con el patrón <code>ejNN-identificacionEnCamelCase</code>: dos cifras, guion y una descripción en camelCase. Usa el mismo nombre base para el HTML, el JavaScript, el CSS si se necesita y las respuestas en <code>.txt</code>. Cada actividad indica sus nombres de archivo. Al copiar una página de prueba, adapta su atributo <code>src</code> al archivo JavaScript de ese ejercicio; conserva las soluciones anteriores. Identifica cada ejercicio por su número. Copia los mensajes de la consola como texto; no entregues capturas ni documentos de Word o PDF.</p></div>
 
@@ -1630,6 +1639,20 @@ boton.addEventListener("click", () =&gt; {
         </main>
     </div>
 <script>
+    // Evitar la copia habitual del material; no es una protección del código fuente.
+    (() => {
+        const isEditable = (target) => target instanceof Element &&
+            (target.closest('input, textarea') !== null || target.isContentEditable);
+
+        const preventContentTransfer = (event) => {
+            if (isEditable(event.target)) return;
+            event.preventDefault();
+        };
+
+        document.addEventListener('copy', preventContentTransfer, true);
+        document.addEventListener('cut', preventContentTransfer, true);
+        document.addEventListener('dragstart', preventContentTransfer, true);
+    })();
     // Accessible delivery reminders: pointer, keyboard and touch.
     for (const tip of document.querySelectorAll('.delivery-tip')) {
         const trigger = tip.querySelector('.delivery-trigger');
