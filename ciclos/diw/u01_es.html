@@ -13,49 +13,62 @@
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="u01_es.css">
+    <style>
+        /* Índice con el mismo diseño y comportamiento que DWEC U02. */
+        .sidebar-toc { overflow: visible; }
+        .sidebar-toc ul { max-height: calc(100vh - 130px); overflow-y: auto; }
+        .sidebar-toc:focus-within { transform: translateX(0); }
+        .sidebar-toc a.subsection-link { padding-left: 20px; font-size: 0.82rem; }
+        .sidebar-toc a:focus-visible { outline: 3px solid var(--primary-border); outline-offset: 3px; }
+        @media (max-width: 700px) {
+            .sidebar-toc { position: static; width: 100%; max-height: none; transform: none; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 20px; box-shadow: none; }
+            .sidebar-toc::after { display: none; }
+            .sidebar-toc ul { max-height: none; overflow: visible; }
+        }
+    </style>
 </head>
 <body>
 
 <!-- Navegación lateral deslizable actualizable -->
-<nav class="sidebar-toc">
-    <h4><i class="fa-solid fa-list-ol"></i> Contenidos</h4>
+<nav class="sidebar-toc" aria-label="Índice de contenidos">
+    <h4><i class="fa-solid fa-list-ol" aria-hidden="true"></i> Contenidos</h4>
     <ul>
         <li><a href="#sec1">1. Introducción al Diseño Web</a></li>
-        <li><a href="#sec1_1">1.1. Evolución histórica</a></li>
-        <li><a href="#sec1_2">1.2. Cronología de hitos</a></li>
-        <li><a href="#sec1_3">1.3. Tendencias y ejemplos actuales</a></li>
+        <li><a href="#sec1_1" class="subsection-link">1.1. Evolución histórica</a></li>
+        <li><a href="#sec1_2" class="subsection-link">1.2. Cronología de hitos</a></li>
+        <li><a href="#sec1_3" class="subsection-link">1.3. Tendencias y ejemplos actuales</a></li>
         <li><a href="#sec2">2. Interacción Persona-Ordenador</a></li>
-        <li><a href="#sec2_1">2.1. Fundamentos de UI e IPO</a></li>
-        <li><a href="#sec2_2">2.2. UI vs. UX</a></li>
-        <li><a href="#sec2_3">2.3. Usabilidad y accesibilidad</a></li>
+        <li><a href="#sec2_1" class="subsection-link">2.1. Fundamentos de UI e IPO</a></li>
+        <li><a href="#sec2_2" class="subsection-link">2.2. UI vs. UX</a></li>
+        <li><a href="#sec2_3" class="subsection-link">2.3. Usabilidad y accesibilidad</a></li>
         <li><a href="#sec3">3. Elementos del Diseño Gráfico</a></li>
-        <li><a href="#sec3_1">3.1. Elementos conceptuales</a></li>
-        <li><a href="#sec3_2">3.2. Elementos visuales</a></li>
-        <li><a href="#sec3_3">3.3. Elementos de relación</a></li>
-        <li><a href="#sec3_4">3.4. Elementos prácticos</a></li>
+        <li><a href="#sec3_1" class="subsection-link">3.1. Elementos conceptuales</a></li>
+        <li><a href="#sec3_2" class="subsection-link">3.2. Elementos visuales</a></li>
+        <li><a href="#sec3_3" class="subsection-link">3.3. Elementos de relación</a></li>
+        <li><a href="#sec3_4" class="subsection-link">3.4. Elementos prácticos</a></li>
         <li><a href="#sec4">4. Percepción Visual</a></li>
-        <li><a href="#sec4_1">4.1. Psicología de la Gestalt</a></li>
-        <li><a href="#sec4_2">4.2. Leyes Fundamentales de UX</a></li>
-        <li><a href="#sec4_3">4.3. Color e imágenes para la web</a></li>
-        <li><a href="#sec4_3_1">4.3.1. Armonía cromática</a></li>
-        <li><a href="#sec4_3_2">4.3.2. Imágenes para la web</a></li>
-        <li><a href="#sec4_3_3">4.3.3. Recursos</a></li>
-        <li><a href="#sec4_4">4.4. Atomic Design</a></li>
-        <li><a href="#sec4_4_1">4.4.1. Design Tokens</a></li>
-        <li><a href="#sec4_4_2">4.4.2. CSS tradicional y Tailwind CSS</a></li>
-        <li><a href="#sec4_5">4.5. Identidad Visual</a></li>
-        <li><a href="#sec4_6">4.6. Composición, Estados & Mobile-First</a></li>
-        <li><a href="#sec4_7">4.7. Componentes & Formularios Web</a></li>
+        <li><a href="#sec4_1" class="subsection-link">4.1. Psicología de la Gestalt</a></li>
+        <li><a href="#sec4_2" class="subsection-link">4.2. Leyes Fundamentales de UX</a></li>
+        <li><a href="#sec4_3" class="subsection-link">4.3. Color e imágenes para la web</a></li>
+        <li><a href="#sec4_3_1" class="subsection-link">4.3.1. Armonía cromática</a></li>
+        <li><a href="#sec4_3_2" class="subsection-link">4.3.2. Imágenes para la web</a></li>
+        <li><a href="#sec4_3_3" class="subsection-link">4.3.3. Recursos</a></li>
+        <li><a href="#sec4_4" class="subsection-link">4.4. Atomic Design</a></li>
+        <li><a href="#sec4_4_1" class="subsection-link">4.4.1. Design Tokens</a></li>
+        <li><a href="#sec4_4_2" class="subsection-link">4.4.2. CSS tradicional y Tailwind CSS</a></li>
+        <li><a href="#sec4_5" class="subsection-link">4.5. Identidad Visual</a></li>
+        <li><a href="#sec4_6" class="subsection-link">4.6. Composición, Estados & Mobile-First</a></li>
+        <li><a href="#sec4_7" class="subsection-link">4.7. Componentes & Formularios Web</a></li>
         <li><a href="#sec5">5. Guía de estilo web</a></li>
-        <li><a href="#sec5_1">5.1. Finalidad y contenidos</a></li>
-        <li><a href="#sec5_2">5.2. Proceso de creación</a></li>
-        <li><a href="#sec5_3">5.3. Sistema cromático</a></li>
-        <li><a href="#sec5_4">5.4. Sistema tipográfico</a></li>
-        <li><a href="#sec5_5">5.5. Imágenes e iconografía</a></li>
-        <li><a href="#sec5_6">5.6. Referentes y herramientas</a></li>
-        <li><a href="#sec5_7">5.7. Figma, código y gobernanza</a></li>
+        <li><a href="#sec5_1" class="subsection-link">5.1. Finalidad y contenidos</a></li>
+        <li><a href="#sec5_2" class="subsection-link">5.2. Proceso de creación</a></li>
+        <li><a href="#sec5_3" class="subsection-link">5.3. Sistema cromático</a></li>
+        <li><a href="#sec5_4" class="subsection-link">5.4. Sistema tipográfico</a></li>
+        <li><a href="#sec5_5" class="subsection-link">5.5. Imágenes e iconografía</a></li>
+        <li><a href="#sec5_6" class="subsection-link">5.6. Referentes y herramientas</a></li>
+        <li><a href="#sec5_7" class="subsection-link">5.7. Figma, código y gobernanza</a></li>
         <li><a href="#sec6">6. Investigación UX & Design Thinking</a></li>
-        <li><a href="#sec6_1_1">6.1.1. Card Sorting</a></li>
+        <li><a href="#sec6_1_1" class="subsection-link">6.1.1. Card Sorting</a></li>
         <li><a href="#sec7">7. Guía de estilo</a></li>
         <li><a href="#sec8">8. Ejemplos Prácticos</a></li>
         <li><a href="#sec9">9. Errores Frecuentes</a></li>
