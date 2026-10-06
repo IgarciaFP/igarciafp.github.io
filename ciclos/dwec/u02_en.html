@@ -28,17 +28,23 @@
         code, pre, kbd, samp { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
         /* Se reutiliza la plantilla de DWEC U01; estos ajustes son propios de U02. */
         .sidebar-toc { overflow: visible; }
+        .sidebar-toc::after { content: "\f0c9"; }
         .sidebar-toc ul { max-height: calc(100vh - 130px); overflow-y: auto; }
         .sidebar-toc:focus-within { transform: translateX(0); }
         .operators-table table { min-width: 0; }
         .operators-table th, .operators-table td { padding: 10px; }
         .roles-table table { min-width: 0; }
         .roles-table th:first-child { width: 22%; }
-        .history-timeline { list-style: none; margin: 24px 0 24px 10px; padding: 0 0 0 24px; border-left: 3px solid var(--primary-border); }
-        .history-timeline li { position: relative; margin: 0; padding: 0 0 22px; break-inside: avoid; }
-        .history-timeline li:last-child { padding-bottom: 0; }
-        .history-timeline li::before { content: ""; position: absolute; left: -32px; top: 6px; width: 13px; height: 13px; border-radius: 50%; background: var(--primary-color); border: 2px solid white; }
-        .history-timeline strong { display: block; color: var(--primary-color); }
+        .history-timeline { list-style: none; margin: 24px 0 24px 10px; padding: 0 0 0 24px; border-left: 3px solid #c7d2fe; }
+        .history-timeline li { --milestone-color: #1d4ed8; --milestone-bg: #eff6ff; position: relative; margin: 0 0 16px; padding: 16px 18px; border-left: 4px solid var(--milestone-color); border-radius: 0 12px 12px 0; background: var(--milestone-bg); break-inside: avoid; }
+        .history-timeline li:nth-child(2) { --milestone-color: #7e22ce; --milestone-bg: #faf5ff; }
+        .history-timeline li:nth-child(3) { --milestone-color: #be185d; --milestone-bg: #fdf2f8; }
+        .history-timeline li:nth-child(4) { --milestone-color: #b45309; --milestone-bg: #fffbeb; }
+        .history-timeline li:nth-child(5) { --milestone-color: #047857; --milestone-bg: #ecfdf5; }
+        .history-timeline li:nth-child(6) { --milestone-color: #0e7490; --milestone-bg: #ecfeff; }
+        .history-timeline li:last-child { margin-bottom: 0; }
+        .history-timeline li::before { content: ""; position: absolute; left: -36px; top: 20px; width: 13px; height: 13px; border-radius: 50%; background: var(--milestone-color); border: 2px solid white; box-shadow: 0 0 0 2px var(--milestone-color); }
+        .history-timeline strong { display: block; color: var(--milestone-color); }
         .history-timeline p { margin: 5px 0 0; text-align: left; }
         .event-sequence { padding: 14px 18px; background: var(--primary-light); border-radius: 6px; }
         .activity-card ol { margin-bottom: 0; }
@@ -213,7 +219,6 @@
 <li><strong>1999 · ECMASScript 3</strong><p>It incorporates regular expressions and exception handling. It becomes the base of JavaScript during the following decade.</p></li>
 <li><strong>2009 · ECMASScript 5</strong><p>Add strict mode, native JSON support and new methods to work with arrays.</p></li>
 <li><strong>2015 · ECMASScript 2015 (ES6)</strong><p>An important renewal: <code>let</code>, <code>const</code>, arrow functions, chain templates, classes, modules and promises.</p></li>
-<li><strong>2016 · Annual editions</strong><p>The annual publication cycle begins. Language incorporates gradual improvements through the proposal process of the TC39 committee.</p></li>
 <li><strong>2017 · Asynchronous functions</strong><p><code>async</code> y <code>await</code> They will be studied in later units.</p></li>
 <li><strong>2020 · New Language Resources</strong><p>Optional chaining is incorporated (<code>?.</code>), the null coalescence operator (<code>??</code>) and <code>BigInt</code>.</p></li>
 </ol>
@@ -321,7 +326,7 @@
 <p>In DevTools will be used mainly <strong>Console (Console)</strong>, to execute instructions and consult messages; <strong>Sources (Sources)</strong>, to examine and debug the code; and <strong>Network (Network)</strong>, to check the load of the files.</p>
 <div class="resource-card expansion-card expansion-purple" id="ampliacion-emmet">
 <div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-wand-magic-sparkles"></i> Emmet: writing HTML and CSS with abbreviations</span><span class="resource-badge badge-reading">Enlargement</span></div>
-<p>In class it will be necessary to use <strong>Emmet</strong>, first called <strong>Zen Coding</strong>, when working with VS Code. Allows to expand abbreviations to write HTML and CSS quickly; it is integrated into the editor and does not require installing an extension.</p>
+<p>In class it will be necessary to use <strong>Emmet</strong>, first called <strong>Zen Coding</strong>, when working with VS Code. Allows to expand abbreviations to write HTML and CSS quickly; it is integrated into the editor and does not require to install an extension.</p>
 <p>For example, <code>ul&gt;li*3</code> generates a list with three elements. Write the abbreviation in an HTML file and accept Emmet's suggestion.</p>
 <div class="resource-links"><a class="resource-link-btn" href="https://docs.emmet.io/cheat-sheet/" rel="noopener noreferrer" target="_blank">Emmet · Reference sheet</a>
 <a class="resource-link-btn" href="https://code.visualstudio.com/docs/languages/emmet" rel="noopener noreferrer" target="_blank">Emmet in VS Code</a></div>
@@ -480,11 +485,6 @@ console.error("Mensaje de error de prueba");</code></pre>
 <p class="exercise-files"><strong>Files:</strong> <code>ej02-javascriptExterno.html</code>, <code>ej02-javascriptExterno.js</code>, <code>ej02-javascriptExterno.txt</code>.</p>
 <div class="delivery-tip"><button aria-describedby="entrega-tooltip-js-externo" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-js-externo" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
 </div>
-<aside aria-label="Function sheet: destination.addEventListener(type, handler, options)" class="function-card" id="ficha-funcion-8">
-<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
-<p class="function-signature"><code>destino.addEventListener(tipo, manejador, opciones)</code></p>
-<p>Record a function that will be executed when an event occurs at the destination.</p><p><strong>Parameters:</strong> type: Event name, as "click". handler: function that will receive the event object. options: optional configuration, which will be studied later.</p><p><strong>Returns:</strong> Undefined. The function is delivered, without calling it at that time.</p>
-</aside>
 <p>When an item <code>&lt;script&gt;</code> you have <code>src</code>, no code is also added between your tags. In old examples attributes such as <code>onclick</code> with instructions within HTML; in this unit events will be registered from JavaScript with <code>addEventListener()</code>.</p>
 <h3 id="sec2_5">2.5. Loading and executing scripts</h3>
 <p>The browser processes HTML progressively. If a script is executed before the item you need exists, you will not be able to find it. Therefore, it is necessary to choose when the script should be executed.</p>
@@ -493,7 +493,6 @@ console.error("Mensaje de error de prueba");</code></pre>
 <li><strong>Classic script without attributes:</strong> stops HTML analysis to load and execute the code.</li>
 <li><strong><code>defer</code>:</strong> downloads an external classic script while continuing the analysis and executes it when HTML is already processed. Keeps the order between deferred scripts.</li>
 <li><strong><code>async</code>:</strong> download in parallel and run when available. It does not guarantee that HTML is finished or the order between scripts.</li>
-<li><strong>Script at the end of <code>&lt;body&gt;</code>:</strong> you can access the elements written before it.</li>
 <li><strong><code>type="module"</code>:</strong> load code as a module and it differs its execution by default. The modules will be developed in another unit.</li>
 </ul>
 <p>In this practice it will be used <strong><code>&lt;script src="ej02-javascriptExterno.js" defer&gt;&lt;/script&gt;</code></strong>. <code>defer</code> has no effect on classic scripts written inside HTML and does not imply waiting for all images to be downloaded.</p>
@@ -504,6 +503,11 @@ console.error("Mensaje de error de prueba");</code></pre>
 <li><strong><code>DOMContentLoaded</code>:</strong> is triggered when HTML is processed and deferred scripts are finished. It does not wait for images; it is usually enough to start working with the DOM.</li>
 <li><strong><code>load</code>:</strong> also waits for resources such as images and style sheets, without waiting for images with <code>loading="lazy"</code>. It can be handled by <code>window.onload</code> o <code>window.addEventListener("load", manejador)</code>.</li>
 </ul>
+<aside aria-label="Function sheet: destination.addEventListener(type, handler, options)" class="function-card" id="ficha-funcion-8">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>destino.addEventListener(tipo, manejador, opciones)</code></p>
+<p>Record a function that will be executed when an event occurs at the destination.</p><p><strong>Parameters:</strong> type: Event name, as "click". handler: function that will receive the event object. options: optional configuration, which will be studied later.</p><p><strong>Returns:</strong> Undefined. The function is delivered, without calling it at that time.</p>
+</aside>
 <div id="ejemplo-eventos-carga">
 <p>Add this code to <code>ej02-javascriptExterno.js</code>, linked from HTML with <code>defer</code>Open the console and reload the page:</p>
 <pre><code>document.addEventListener("DOMContentLoaded", function () {
@@ -533,20 +537,20 @@ window.addEventListener("load", function () {
 <div class="resource-links"><a class="resource-link-btn" href="https://es.javascript.info/hello-world" rel="noopener noreferrer" target="_blank">JavaScript.info · Hello, world!</a>
 <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script" rel="noopener noreferrer" target="_blank">MDN · The script element</a></div>
 </div>
-<aside aria-label="Function tab: document.querySelector(selector)" class="function-card" id="ficha-funcion-9">
-<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
-<p class="function-signature"><code>document.querySelector(selector)</code></p>
-<p>Find the first element that matches a CSS selector.</p><p><strong>Parameters:</strong> selector: string with a valid selector, e.g. "#salute" or ".notice".</p><p><strong>Returns:</strong> The first element found or null if there are no matches.</p>
-</aside>
 <div class="activity-card activity-callout" id="actividad-2-3">
 <p><strong>2.4. Research and choose how to load JavaScript</strong></p>
 <ol>
-<li>See the MDN and JavaScript references in this section. Compare a script at the end of <code>body</code>an external script with <code>defer</code> and another with <code>async</code>.</li>
+<li>See the MDN and JavaScript.info references in this section. Compare an external classic script without attributes, one with <code>defer</code> and another with <code>async</code>.</li>
 <li>Think of a page whose JavaScript needs to access a paragraph and run after it exists. Choose the most appropriate form of loading for that case and justify your choice. There is no better option for all projects.</li>
 <li>Create a page with <code>&lt;p id="saludo"&gt;Hola, mundo&lt;/p&gt;</code> and an external JavaScript file running <code>console.log(document.querySelector("#saludo"));</code>Link it to the option you have chosen.</li>
 <li>Open the page and check the DevTools console that the paragraph is found. Copy the output as text and explain why that result is obtained.</li>
 <li>Deliver the HTML, JavaScript and a brief explanation with the links consulted, your comparison and the test result.</li>
 </ol>
+<aside aria-label="Function tab: document.querySelector(selector)" class="function-card" id="ficha-funcion-9">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>document.querySelector(selector)</code></p>
+<p>Find the first element that matches a CSS selector.</p><p><strong>Parameters:</strong> selector: string with a valid selector, e.g. "#salute" or ".notice".</p><p><strong>Returns:</strong> The first element found or null if there are no matches.</p>
+</aside>
 <p class="exercise-files"><strong>Files:</strong> <code>ej03-cargaJavascript.html</code>, <code>ej03-cargaJavascript.js</code>, <code>ej03-cargaJavascript.txt</code>.</p>
 <div class="delivery-tip"><button aria-describedby="entrega-tooltip-6" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-6" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
 </div>
@@ -613,6 +617,24 @@ console.log(mensaje); // undefined
 mensaje = "Bienvenido";
 console.log(mensaje); // Bienvenido</code></pre>
 <p>Declares the variables before using them. Using a name that has not been declared causes a <code>ReferenceError</code>; is not the same as reading a declared variable whose value is <code>undefined</code>.</p>
+<div class="activity-card activity-callout" id="actividad-declaracion-variables">
+<p><strong>Brief practice: declaring, assigning and reassigning</strong></p>
+<p>Enter this code in <code>ej04-declararVariables.js</code> and link it from an HTML with <code>defer</code>:</p>
+<pre><code>let mensaje;
+console.log(mensaje);
+mensaje = "Hola";
+console.log(mensaje);
+mensaje = "Hasta pronto";
+console.log(mensaje);
+console.log(aviso);</code></pre>
+<ol>
+<li>Before you execute it, write down what you expect to see in each call to <code>console.log()</code>.</li>
+<li>Run the file and compare the output to your prediction. Identify the declaration lines, first assignment and reassignment.</li>
+<li>Explains why the first call shows <code>undefined</code> And the last one causes a <code>ReferenceError</code>.</li>
+<li>Correct the error by declaring <code>aviso</code> and assigning a text to it before using it. Run again and write down the four outputs.</li>
+</ol>
+<p><strong>Delivery:</strong> HTML, corrected JavaScript and your predictions, results and explanation in <code>ej04-declararVariables.txt</code>.</p>
+</div>
 <h3 id="sec4_2">4.2. Descriptive identifiers and names</h3>
 <p>A <strong>identifier</strong> is a name that allows referring to a program element, such as a variable or a function. When declaring a variable, you choose your identifier, which must respect the rules of the language and express its meaning.</p>
 <ul>
@@ -639,21 +661,23 @@ console.log(nombreCurso, intentosRestantes);</code></pre>
 <p>In previous code you can appear <code>var</code>. Its rules of scope are different; in this unit will be used <code>const</code> y <code>let</code>.</p>
 <div class="resource-card expansion-card" id="otros-usos-const">
 <div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> with functions and other values</span><span class="resource-badge badge-reading">Enlargement</span></div>
-<p><code>const</code> you can associate a name to a function, as the functions are also values. It is used both with function expressions and with arrow functions:</p>
-<aside class="function-card" id="ficha-ejemplo-1"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>saludar() y despedir()</code></p><p>They show a greeting or farewell at the console.</p><p><strong>Parameters:</strong> They don't get parameters.</p><p><strong>Returns:</strong> undefined.</p></aside>
+<p><code>const</code> you can associate a name to a function, as the functions are also values. In this example a function expression is used with the word <code>function</code>:</p>
 <pre><code>const saludar = function () {
     console.log("Hola");
 };
 
-const despedir = () =&gt; console.log("Hasta pronto");
+const despedir = function () {
+    console.log("Hasta pronto");
+};
 
 saludar();
 despedir();</code></pre>
 <p>Names <code>saludar</code> y <code>despedir</code> the functions can be invoked and cannot be reassigned. Calls are placed after statements. Your syntax will be explained in the function section.</p>
-<p>It is also used for references to DOM elements, objects, arrays, and configuration values. It prevents replacing the value associated with the name, but allows to modify the content of an object or array:</p>
+<p><code>const</code> also allows you to save a reference to a page item (DOM), an object or an array (a list of values), as well as configuration values. The name must continue to point to the same item, object or array, but its content may change: for example, you can modify a property from <code>usuario</code>, although not assigning another object to <code>usuario</code>That's why <code>const</code> prevents reassignment, but does not render the content immutable:</p>
 <pre><code>const usuario = { nombre: "Ana" };
 usuario.nombre = "Luis";
 console.log(usuario.nombre); // Luis</code></pre>
+<p>The advantage of <code>const</code> against <code>let</code> is that it makes clear the intention not to reassign the name and allows to detect an accidental reassignment, because it produces an error. <code>const</code> when you don't need to replace the value and <code>let</code> when you need to change; the choice helps you understand and keep the code.</p>
 <p>Objects and arrays will be studied later. For configuration constants can be used <code>MAYUSCULAS_CON_GUIONES_BAJOS</code>, like <code>MAX_INTENTOS</code>; declare with <code>const</code> does not require writing all names in capital letters.</p>
 <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const" rel="noopener noreferrer" target="_blank">MDN · const and its uses</a>
 </div>

@@ -14,48 +14,80 @@
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&amp;family=Inter:wght@300;400;500;600;700&amp;family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&amp;display=swap" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
 <link href="u01_es.css" rel="stylesheet"/>
+<style>
+        /* Índice con el mismo diseño y comportamiento que DWEC U02. */
+        .sidebar-toc { overflow: visible; }
+        .sidebar-toc::after { content: "\f0c9"; }
+        .sidebar-toc ul { max-height: calc(100vh - 130px); overflow-y: auto; }
+        .sidebar-toc:focus-within { transform: translateX(0); }
+        .sidebar-toc a.subsection-link { padding-left: 20px; font-size: 0.82rem; }
+        .sidebar-toc a:focus-visible { outline: 3px solid var(--primary-border); outline-offset: 3px; }
+        @media (max-width: 700px) {
+            .sidebar-toc { position: static; width: 100%; max-height: none; transform: none; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 20px; box-shadow: none; }
+            .sidebar-toc::after { display: none; }
+            .sidebar-toc ul { max-height: none; overflow: visible; }
+        }
+        /* Laboratorios: tarjeta y distintivo en azul claro. */
+        .didactic-note.activity-callout.laboratory-card {
+            background: #eff6ff !important;
+            border-color: #bfdbfe;
+            border-left-color: #2563eb !important;
+            box-shadow: 0 3px 14px rgba(37, 99, 235, 0.09);
+        }
+        .laboratory-card::before {
+            content: "\f0c3  LABORATORIO";
+            color: #1e40af;
+            background: #dbeafe;
+            border-color: #93c5fd;
+        }
+        .didactic-note.activity-callout.laboratory-card h5 { color: #1e40af !important; }
+        .relation-summaries { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 18px; margin: 24px 0; }
+        .relation-summary { margin: 0; padding: 18px; border: 1px solid var(--border-color); border-radius: 10px; background: #f8fafc; }
+        .relation-summary svg { display: block; max-width: 100%; height: auto; margin: 0 auto 12px; }
+        .relation-summary figcaption { color: var(--text-muted); font-size: 0.95rem; }
+    </style>
 </head>
 <body>
 <!-- Navegación lateral deslizable actualizable -->
-<nav class="sidebar-toc">
-<h4><i class="fa-solid fa-list-ol"></i> Contents</h4>
+<nav aria-label="Contents Index" class="sidebar-toc">
+<h4><i aria-hidden="true" class="fa-solid fa-list-ol"></i> Contents</h4>
 <ul>
 <li><a href="#sec1">1. Introduction to Web Design</a></li>
-<li><a href="#sec1_1">1.1. Historical developments</a></li>
-<li><a href="#sec1_2">1.2. Milestone timeline</a></li>
-<li><a href="#sec1_3">1.3. Current trends and examples</a></li>
+<li><a class="subsection-link" href="#sec1_1">1.1. Historical developments</a></li>
+<li><a class="subsection-link" href="#sec1_2">1.2. Milestone timeline</a></li>
+<li><a class="subsection-link" href="#sec1_3">1.3. Current trends and examples</a></li>
 <li><a href="#sec2">2. Person-Computer interaction</a></li>
-<li><a href="#sec2_1">2.1. Fundamentals of IU and IPO</a></li>
-<li><a href="#sec2_2">2.2. IU vs. UX</a></li>
-<li><a href="#sec2_3">2.3. Usability and accessibility</a></li>
+<li><a class="subsection-link" href="#sec2_1">2.1. Fundamentals of IU and IPO</a></li>
+<li><a class="subsection-link" href="#sec2_2">2.2. IU vs. UX</a></li>
+<li><a class="subsection-link" href="#sec2_3">2.3. Usability and accessibility</a></li>
 <li><a href="#sec3">3. Elements of Graphic Design</a></li>
-<li><a href="#sec3_1">3.1. Conceptual elements</a></li>
-<li><a href="#sec3_2">3.2. Visual elements</a></li>
-<li><a href="#sec3_3">3.3. Elements of relationship</a></li>
-<li><a href="#sec3_4">3.4. Practical elements</a></li>
+<li><a class="subsection-link" href="#sec3_1">3.1. Conceptual elements</a></li>
+<li><a class="subsection-link" href="#sec3_2">3.2. Visual elements</a></li>
+<li><a class="subsection-link" href="#sec3_3">3.3. Elements of relationship</a></li>
+<li><a class="subsection-link" href="#sec3_4">3.4. Practical elements</a></li>
 <li><a href="#sec4">4. Visual perception</a></li>
-<li><a href="#sec4_1">4.1. Gestalt Psychology</a></li>
-<li><a href="#sec4_2">4.2. Fundamental Laws of UX</a></li>
-<li><a href="#sec4_3">4.3. Color and images for the web</a></li>
-<li><a href="#sec4_3_1">4.3.1. Color harmony</a></li>
-<li><a href="#sec4_3_2">4.3.2. Images for the web</a></li>
-<li><a href="#sec4_3_3">4.3.3. Resources</a></li>
-<li><a href="#sec4_4">4.4. Atomic Design</a></li>
-<li><a href="#sec4_4_1">4.4.1. Design Tokens</a></li>
-<li><a href="#sec4_4_2">4.4.2. Traditional CSS and Tailwind CSS</a></li>
-<li><a href="#sec4_5">4.5. Visual identity</a></li>
-<li><a href="#sec4_6">4.6. Membership, States &amp; Mobile-First</a></li>
-<li><a href="#sec4_7">4.7. Web Components &amp; Forms</a></li>
+<li><a class="subsection-link" href="#sec4_1">4.1. Gestalt Psychology</a></li>
+<li><a class="subsection-link" href="#sec4_2">4.2. Fundamental Laws of UX</a></li>
+<li><a class="subsection-link" href="#sec4_3">4.3. Color and images for the web</a></li>
+<li><a class="subsection-link" href="#sec4_3_1">4.3.1. Color harmony</a></li>
+<li><a class="subsection-link" href="#sec4_3_2">4.3.2. Images for the web</a></li>
+<li><a class="subsection-link" href="#sec4_3_3">4.3.3. Resources</a></li>
+<li><a class="subsection-link" href="#sec4_4">4.4. Atomic Design</a></li>
+<li><a class="subsection-link" href="#sec4_4_1">4.4.1. Design Tokens</a></li>
+<li><a class="subsection-link" href="#sec4_4_2">4.4.2. Traditional CSS and Tailwind CSS</a></li>
+<li><a class="subsection-link" href="#sec4_5">4.5. Visual identity</a></li>
+<li><a class="subsection-link" href="#sec4_6">4.6. Membership, States &amp; Mobile-First</a></li>
+<li><a class="subsection-link" href="#sec4_7">4.7. Web Components &amp; Forms</a></li>
 <li><a href="#sec5">5. Web style guide</a></li>
-<li><a href="#sec5_1">5.1. Purpose and contents</a></li>
-<li><a href="#sec5_2">5.2. Creation process</a></li>
-<li><a href="#sec5_3">5.3. Chromatic system</a></li>
-<li><a href="#sec5_4">5.4. Typographical system</a></li>
-<li><a href="#sec5_5">5.5. Images and iconography</a></li>
-<li><a href="#sec5_6">5.6. Referents and tools</a></li>
-<li><a href="#sec5_7">5.7. Figma, code and governance</a></li>
+<li><a class="subsection-link" href="#sec5_1">5.1. Purpose and contents</a></li>
+<li><a class="subsection-link" href="#sec5_2">5.2. Creation process</a></li>
+<li><a class="subsection-link" href="#sec5_3">5.3. Chromatic system</a></li>
+<li><a class="subsection-link" href="#sec5_4">5.4. Typographical system</a></li>
+<li><a class="subsection-link" href="#sec5_5">5.5. Images and iconography</a></li>
+<li><a class="subsection-link" href="#sec5_6">5.6. Referents and tools</a></li>
+<li><a class="subsection-link" href="#sec5_7">5.7. Figma, code and governance</a></li>
 <li><a href="#sec6">6. Research UX &amp; Design Thinking</a></li>
-<li><a href="#sec6_1_1">6.1.1. Card Sorting</a></li>
+<li><a class="subsection-link" href="#sec6_1_1">6.1.1. Card Sorting</a></li>
 <li><a href="#sec7">7. Style Guide</a></li>
 <li><a href="#sec8">8. Practical examples</a></li>
 <li><a href="#sec9">9. Common Mistakes</a></li>
@@ -192,7 +224,7 @@
 <rect fill="#ffffff" height="135" rx="6" stroke="#6d28d9" stroke-width="2" width="210" x="0" y="0"></rect>
 <rect fill="#f5f3ff" height="28" rx="6" width="210" x="0" y="0"></rect>
 <text fill="#6d28d9" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" x="105" y="19">&amp; Mobile Design Systems (Current)</text>
-<text fill="#475569" font-family="Inter, sans-serif" font-size="10" x="15" y="48">• Mobile-First strategy (48px)</text>
+<text fill="#475569" font-family="Inter, sans-serif" font-size="10" x="15" y="48">• Mobile-First strategy</text>
 <text fill="#475569" font-family="Inter, sans-serif" font-size="10" x="15" y="66">• Design Tokens and Atomic Design</text>
 <text fill="#475569" font-family="Inter, sans-serif" font-size="10" x="15" y="84">• Universal Accessibility (WCAG)</text>
 <text fill="#475569" font-family="Inter, sans-serif" font-size="10" x="15" y="102">• Speed Metrics (Core Web Vitals)</text>
@@ -200,8 +232,6 @@
 </svg>
 <div class="image-caption">Figure 1.0: Evolution of technical and methodological approaches in web interface planning.</div>
 </div>
-<p>In the current professional environment of the profile of Senior Technician in Web Application Development (DAW), a developer not only builds functional code; he must ensure that screens are intuitive, accessible, coherent and aesthetically balanced. Understand interaction models, visual perception laws (Gestalt), the fundamental laws of UX, the methodology of <strong>Atomic Design</strong>, the normative numerical ratios of accessibility and adaptive layout structures is essential for a digital product to be functional and interpretable by any user.</p>
-<p>To address this professional module, it is advisable to have previous knowledge of HTML layout and CSS style sheets, as well as general notions about how the web works. The contents are coordinated with Learning Results oriented to the design, planning and prototyping of high quality adaptive interfaces.</p>
 <h3 id="sec1_1">1.1. Historical evolution of web design</h3>
 <p>The web design has not evolved solely because of aesthetic changes. Each stage responds to new technical capabilities, devices, connection speeds and usage expectations. The Web went from organizing linked and almost exclusively textual documents to offering interactive, accessible, adaptive and even immersive applications. Understanding this evolution allows us to distinguish between <strong>visual tendency</strong> a real improvement in communication, usability or performance.</p>
 <h3 id="sec1_2">1.2. Key milestone timeline</h3>
@@ -316,7 +346,7 @@
 <a class="resource-link-btn" href="https://alistapart.com/article/responsive-web-design/" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Original article about Responsive Web Design</a>
 </div>
 <div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity: The Evolution of Yahoo</h5>
+<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 1: The Evolution of Yahoo</h5>
 <p>Enter <code>www.yahoo.com</code> in Wayback Machine and compare <strong>three moments</strong>: one of the first available catches, an intermediate catch (e.g. between 2005 and 2010) and the current page. Choose dates with catches that can be consulted and write them down.</p>
 <p>It records for each version how distribution, menu, amount of content, typography, images and advertising change. It explains what changes improve or hinder browsing and justifies your response with visible examples. It delivers the links of the captures and a brief comparison with the current website.</p>
 <a class="resource-link-btn" href="https://web.archive.org/" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Wayback Machine</a>
@@ -452,7 +482,7 @@
 <p>Before incorporating a visual resource, the team must justify what need it solves and check it with four filters: <strong>utility</strong>, <strong>accessibility</strong>, <strong>performance</strong> y <strong>consistency with identity</strong>. A new interface that hides controls, slows down the load or excludes users is a backlash, even if it is striking.</p>
 </div>
 <div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity: Choose your favorite web design</h5>
+<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 2: Choose your favorite web design</h5>
 <p>Visit the Awwwards nominated site gallery and choose the web design you like best. Share the name and link of the site chosen and briefly explain what elements of its design motivate your choice (e.g. colors, typography, composition or navigation).</p>
 <a class="resource-link-btn" href="https://www.awwwards.com/websites/nominees/" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Explore nominated sites</a>
 </div>
@@ -587,7 +617,7 @@
             “Something that looks great but is difficult to use represents a large UI with a poor UX. While something very usable that looks terrible is an example of a great UX with a poor UI” — Helga Moreno.
         </blockquote>
 <div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Brief review exercise (Section 2.2)</h5>
+<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 3: Brief review exercise (Section 2.2)</h5>
 <p><strong>UI vs UX Disconnect Diagnosis:</strong> Identify and describe an example of your daily Internet experience where you have encountered a <em>"Excellent UI but lousy UX"</em> (e.g. a website with 3D animations or spectacular typography but with confusing forms or inaccessible buttons) and an inverse example of <em>"Lotty IU but great UX"</em> (such as government portals or aesthetically simple but extremely quick wikis to accomplish your task). Justify the answer in 4 lines.</p>
 </div>
 <h3 id="sec2_3">2.3. Usability and accessibility</h3>
@@ -695,7 +725,7 @@
 <tbody>
 <tr>
 <td><strong>1. Agile response</strong><br/><em>Two-second guidance rule</em></td>
-<td>Optimize the load and avoid unnecessary waits. If an operation cannot be completed immediately, confirm that the system is working.</td>
+<td>Optimize the load and avoid unnecessary waiting. If an operation cannot be completed immediately, confirm that the system is working.</td>
 <td>Show the main content quickly and then load the secondary items.</td>
 </tr>
 <tr>
@@ -920,14 +950,18 @@
 <a class="resource-link-btn" href="https://youtu.be/YkF8zVIZzXE" rel="noopener noreferrer" target="_blank"><i class="fa-brands fa-youtube"></i> Watch video on YouTube</a>
 </div>
 <div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-wheat-awn"></i> Migas Amigas: Advanced UX audit</h5>
+<h5 class="exercise-title"><i aria-hidden="true" class="fa-solid fa-eye"></i> Activity 4: Observe three websites and propose improvements</h5>
+<p>Look at the following web pages and indicate what changes you would make in each one to improve your design and make it easier to use. Write only a list of changes for each website.</p>
+<div class="flex-wrap-group">
+<a class="resource-link-btn" href="https://arngren.net/" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i> Arngren</a>
+<a class="resource-link-btn" href="https://www.bikezona.com/home/" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i> BikeZona</a>
+<a class="resource-link-btn" href="https://museum.lingscars.com/" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i> LINGSCARS</a>
+</div>
+</div>
+<div class="didactic-note activity-callout laboratory-card">
+<h5 class="exercise-title"><i class="fa-solid fa-wheat-awn"></i> Laboratory 5: Migas Amigas: Advanced UX Audit</h5>
 <p>Version for higher-grade training cycles: audit a fictitious bakery in ten cases, contrast Nielsen's heuristics with UX laws, justify design decisions and prepare a validation. Download a TXT report with your evidence, compensation and priorities.</p>
 <a class="resource-link-btn" href="https://igarciafp.github.io/labs/migas-amigas-superior.html" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Advanced Audit</a>
-</div>
-<div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-clipboard-check"></i> Practical laboratory: Ten lenses for an interface</h5>
-<p><strong>Heuristic evaluation activity:</strong> In pairs, compare three websites using the ten heuristics of Nielsen. Complete the guided missions, collect evidence, value each principle and make a final diagnosis.</p>
-<a class="resource-link-btn" href="https://igarciafp.github.io/labs/accesibilidad.html" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open the heuristic assessment laboratory</a>
 </div>
 <h2 id="sec3"><i class="fa-solid fa-shapes"></i> 3. Graphic Design Elements Applied to the Web</h2>
 <p>The interface design articulates four groups of complementary elements:</p>
@@ -947,19 +981,7 @@
 <a class="resource-link-btn" href="http://www.slideshare.net/GennesisPia/introduccin-al-diseo-14121258" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> View slide in SlideShare</a>
 </div>
 <h3 id="sec3_1">3.1. Conceptual elements</h3>
-<p>The conceptual elements allow to analyze the <strong>geometric structure</strong> They are abstractions: by drawing them we give them size, color or thickness and we make them visible representations. In an interface they help to locate, delimit, organize surfaces and suggest depth.</p>
-<h4>3.1.1. Point</h4>
-<p>The <strong>point</strong> indicates a position and, as a geometric concept, lacks dimensions. Its graphic representation is a small mark with respect to the surrounding space. An isolated point attracts attention; several points can form a rhythm or point a path.</p>
-<p><strong>Web application:</strong> The visible point is a small circle with size and color; that representation should not be confused with the abstract concept. If it works as a control, its pulsable area may be larger than the drawn mark.</p>
-<h4>3.1.2. Line</h4>
-<p>The <strong>line</strong> has length and direction; conceptually it is not wide. It can be understood as the path of a point. Its visible representation needs thickness and can be straight, curved, continuous or discontinuous. It serves to separate, connect or guide the look.</p>
-<p><strong>Web application:</strong> a separator distinguishes blocks of content and a line of progress connects stages of a process. It must provide organization: accumulating unnecessary edges can fragment reading.</p>
-<h4>3.1.3. Plan</h4>
-<p>The <strong>flat</strong> is a surface with two dimensions, length and width, without conceptual thickness. In a graphic composition it is represented by a delimited area. Its contour allows to recognize a unit and distinguish it from the background.</p>
-<p><strong>Web application:</strong> a card, a side panel or the background of a section define surfaces that gather information. The user perceives that the title, image and action located on the same card are related.</p>
-<h4>3.1.4. Volume</h4>
-<p>The <strong>volume</strong> It incorporates a third dimension: depth. In a two-dimensional screen it is represented by perspective, changes of light, shadows and overlap; the image suggests depth even if the physical surface of the display is flat.</p>
-<p><strong>Web application:</strong> a shadow can make a drop-down menu appear to be above the content. Lifting should communicate a useful relationship between layers, maintaining readability and preventing the relief from being the only sign of interaction.</p>
+<p>Conceptual elements define the structure: the <strong>point</strong> indicates a position; <strong>line</strong> separates or guides; <strong>flat</strong> defines a surface; and <strong>volume</strong> provides depth, suggested on screen with shadows and overlaps.</p>
 <figure aria-label="Examples of conceptual elements; scroll horizontally if necessary" class="table-scroll" role="region" tabindex="0">
 <svg aria-labelledby="diw-concepts-title diw-concepts-desc" height="476" role="img" style="display:block;width:100%;min-width:680px;height:auto;margin:0 auto;font-family:Inter,Arial,sans-serif;" viewbox="0 0 760 476" width="760" xmlns="http://www.w3.org/2000/svg">
 <title id="diw-concepts-title">From abstract concept to representation</title><desc id="diw-concepts-desc">Four examples: point as an indicator of a carousel; line as a separator between contents; plane as a surface of a card; volume as a suggested depth with faces of a cube and overlapping layers.</desc>
@@ -969,22 +991,7 @@
 <figcaption class="image-caption">Examples of conceptual elements: location, delimitation, surface and depth suggested in an interface.</figcaption>
 </figure>
 <h3 id="sec3_2">3.2. Visual elements</h3>
-<p>The visual elements determine <strong>how we perceive the forms</strong>. The same structure can acquire very different appearances and hierarchies by changing its attributes. Form, measurement, color and texture are studied; in this application to web design is also treated typography in a specific way because of its importance in reading.</p>
-<h4>3.2.1. Form</h4>
-<p>The <strong>shape</strong> is the configuration that allows to identify and distinguish an element by its contour and organization. It can be geometric, organic or irregular. Repeated forms help to recognize components with a common behavior.</p>
-<p><strong>Web application:</strong> a circular avatar and a rectangular button have different silhouettes. A family of buttons must maintain coherent shapes; a coloured rectangle, by itself, does not guarantee that the user recognizes it as an action.</p>
-<h4>3.2.2 Measure</h4>
-<p>The <strong>measure</strong> It is perceived in relation to other elements and the space available: increasing a piece usually gives it more visual presence. The scale allows to differentiate main, secondary and auxiliary information.</p>
-<p><strong>Web application:</strong> the title of a card may be greater than its metadata, while controls need appropriate dimensions to interact. By adapting a page to the mobile, proportions and distribution are readjusted without losing the hierarchy.</p>
-<h4>3.2.3. Colour</h4>
-<p>The <strong>colour</strong> allows differentiating elements, grouping categories, expressing identity and communicating states. It can be analyzed by nuance, saturation and luminosity. Its effect depends on the surrounding colors, contrast and cultural and usage context.</p>
-<p><strong>Web application:</strong> a confirmation message can use green and a red error, accompanied by text and symbols. The meaning should not depend only on the color: "Saved correctly" or "Check the mail" explain the state even if the colors are not distinguished.</p>
-<h4>3.2.4. Texture</h4>
-<p>The <strong>texture</strong> describes the appearance of a surface: smooth, granulated, woven or material-like. In a conventional interface it is visually perceived, without involving a real touch sensation. It can arise from patterns, images or repetitions of small shapes.</p>
-<p><strong>Web application:</strong> a background with a subtle plot can differentiate an illustrative area. Behind texts or forms, an intense texture introduces noise and makes it difficult to distinguish the content; it is advisable to reserve clean surfaces for reading.</p>
-<h4>3.2.5. Typography</h4>
-<p>The <strong>font</strong> organizes the visual form of written language through family, size, weight, interline and spacing. These decisions build hierarchy, tone and legibility; they do not reduce themselves to choosing an attractive source.</p>
-<p><strong>Web application:</strong> titles, paragraphs and annotations should be distinguished in a coherent manner. The visual hierarchy is accompanied by an appropriate HTML structure: extending a letter with CSS does not convert a paragraph into a semantic header.</p>
+<p>The <strong>shape</strong> identifies the elements; <strong>measure</strong> establishes its importance; <strong>colour</strong> difference and communicates; <strong>texture</strong> characterises surfaces; and <strong>font</strong> organizes the reading. Use these attributes consistently and accompany the color states with text or symbols.</p>
 <figure aria-label="Examples of visual elements; scroll horizontally if necessary" class="table-scroll" role="region" tabindex="0">
 <svg aria-labelledby="diw-visuals-title diw-visuals-desc" height="684" role="img" style="display:block;width:100%;min-width:680px;height:auto;margin:0 auto;font-family:Inter,Arial,sans-serif;" viewbox="0 0 760 684" width="760" xmlns="http://www.w3.org/2000/svg">
 <title id="diw-visuals-title">An interface becomes visible through its attributes</title><desc id="diw-visuals-desc">Examples of circular and rectangular shape; sizes that establish hierarchy; status messages with color, text and symbols; smooth and plotted surface; and typographic hierarchy. The last box integrates these attributes into a card.</desc>
@@ -993,26 +1000,10 @@
 <g transform="translate(24 60)"><rect fill="#ffffff" height="192" rx="10" stroke="#cbd5e1" width="344"></rect><text fill="#1e3a8a" font-size="17" font-weight="700" x="18" y="29">Form</text><circle cx="86" cy="94" fill="#0f766e" r="34"></circle><rect fill="#1e3a8a" height="68" rx="12" width="126" x="158" y="60"></rect><text fill="#475569" font-size="14" x="18" y="171">Circular Avatar and rectangular button.</text></g><g transform="translate(392 60)"><rect fill="#ffffff" height="192" rx="10" stroke="#cbd5e1" width="344"></rect><text fill="#1e3a8a" font-size="17" font-weight="700" x="18" y="29">Measure</text><rect fill="#93c5fd" height="35" rx="5" width="57" x="37" y="92"></rect><rect fill="#3b82f6" height="54" rx="5" width="76" x="123" y="73"></rect><rect fill="#1e3a8a" height="76" rx="5" width="82" x="225" y="51"></rect><text fill="#475569" font-size="14" x="18" y="171">The scale establishes a visual hierarchy.</text></g><g transform="translate(24 268)"><rect fill="#ffffff" height="192" rx="10" stroke="#cbd5e1" width="344"></rect><text fill="#1e3a8a" font-size="17" font-weight="700" x="18" y="29">Colour</text><rect fill="#f0fdfa" height="36" rx="6" width="294" x="25" y="55"></rect><text fill="#115e59" font-size="16" x="41" y="79">✓ Saved correctly</text><rect fill="#fef2f2" height="36" rx="6" width="294" x="25" y="103"></rect><text fill="#991b1b" font-size="16" x="41" y="127">Check the email</text><text fill="#475569" font-size="14" x="18" y="171">The state is also expressed with text.</text></g><g transform="translate(392 268)"><rect fill="#ffffff" height="192" rx="10" stroke="#cbd5e1" width="344"></rect><text fill="#1e3a8a" font-size="17" font-weight="700" x="18" y="29">Texture</text><defs><pattern height="9" id="diw-visuals-pattern" patternunits="userSpaceOnUse" width="9"><rect fill="#eff6ff" height="9" width="9"></rect><circle cx="3" cy="3" fill="#93c5fd" r="1.4"></circle></pattern></defs><rect fill="#eff6ff" height="85" rx="6" stroke="#94a3b8" width="124" x="32" y="56"></rect><rect fill="url(#diw-visuals-pattern)" height="85" rx="6" stroke="#94a3b8" width="124" x="187" y="56"></rect><text fill="#475569" font-size="14" x="18" y="171">Smooth surface facing visual frame.</text></g><g transform="translate(24 476)"><rect fill="#ffffff" height="192" rx="10" stroke="#cbd5e1" width="344"></rect><text fill="#1e3a8a" font-size="17" font-weight="700" x="18" y="29">Type</text><text fill="#0f172a" font-size="29" font-weight="700" x="27" y="76">Main title</text><text fill="#334155" font-size="18" x="27" y="105">Reading Text</text><text fill="#475569" font-size="14" x="27" y="132">Supplementary information</text><text fill="#475569" font-size="14" x="18" y="171">Size, weight and spacing guide reading.</text></g><g transform="translate(392 476)"><rect fill="#ffffff" height="192" rx="10" stroke="#cbd5e1" width="344"></rect><text fill="#1e3a8a" font-size="17" font-weight="700" x="18" y="29">Joint implementation</text><rect fill="#eff6ff" height="98" rx="9" width="288" x="28" y="46"></rect><circle cx="70" cy="84" fill="#0f766e" r="22"></circle><text fill="#1e3a8a" font-size="18" font-weight="700" x="106" y="71">Design course</text><text fill="#475569" font-size="14" x="106" y="94">Unit 1 · Web interfaces</text><rect fill="#1e3a8a" height="26" rx="6" width="122" x="106" y="108"></rect><text fill="#ffffff" font-size="13" text-anchor="middle" x="167" y="126">View Content</text><text fill="#475569" font-size="14" x="18" y="171">Attributes act together.</text></g></svg>
 <figcaption class="image-caption">Examples of shape, measurement, color, texture and typography, with a card that combines these attributes.</figcaption>
 </figure>
-<div class="example-box"><h4>From Visual Attribute to Implementation</h4><p>In CSS, the contour can be defined with edges and <code>border-radius</code>; measurement, with dimensions and proportions; color, with <code>color</code> y <code>background-color</code>; texture, with images or patterns; and typography, with properties like <code>font-family</code>, <code>font-weight</code> y <code>line-height</code>. The technical choice must respond to the visual intention and allow the adaptation of the content.</p></div>
 <h3 id="sec3_3">3.3. Relationship elements: direction, position, space and gravity</h3>
-<p>The relationship elements explain <strong>where the forms are located, how they are oriented and what perceptive link they maintain with each other and with the framework</strong>. In an interface they are not isolated properties: they are combined to order attention, build hierarchy and lead the person to the next action.</p>
-<div aria-label="Relationship elements applied to web design" class="table-scroll" role="region" tabindex="0">
-<table>
-<thead>
-<tr>
-<th>Element</th>
-<th>Analysis question</th>
-<th>Application in a web interface</th>
-<th>Example:</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Address Entry</strong></td>
-<td>Where does the look seem to advance?</td>
-<td>The horizontal, vertical, diagonal or curved orientation establishes a visual path. The diagonals usually suggest dynamism; the vertical axes, stability.</td>
-<td class="visual-cell">
-<svg height="90" viewbox="0 0 160 90" width="160" xmlns="http://www.w3.org/2000/svg">
+<p>The relationship elements organize the components and guide the attention. Their distribution must remain clear when adapting the interface to different screens.</p>
+<div class="relation-summaries">
+<figure class="relation-summary"><svg height="90" viewbox="0 0 160 90" width="160" xmlns="http://www.w3.org/2000/svg">
 <rect fill="#0f172a" height="90" rx="6" width="160"></rect>
 <!-- Direction flow line and arrows -->
 <path d="M 20 65 L 60 25 L 140 25" fill="none" stroke="#38bdf8" stroke-linecap="round" stroke-width="3"></path>
@@ -1021,48 +1012,24 @@
 <circle cx="60" cy="25" fill="#38bdf8" r="5"></circle>
 <circle cx="140" cy="25" fill="#38bdf8" r="5"></circle>
 <text fill="#94a3b8" font-family="Inter, sans-serif" font-size="8" font-weight="bold" text-anchor="middle" x="80" y="75">Guided by the Lookout</text>
-</svg>
-<div class="visual-note">Visual axes and reading flow</div>
-</td>
-</tr>
-<tr>
-<td><strong>Position</strong></td>
-<td>Where is each element with respect to the frame and others?</td>
-<td>The grid, alignment, and symmetrical or asymmetrical distribution determine order, emphasis, and functional relationship.</td>
-<td class="visual-cell">
-<svg height="90" viewbox="0 0 160 90" width="160" xmlns="http://www.w3.org/2000/svg">
+</svg><figcaption><strong>Address Entry</strong>. Orient the look and mark the reading path.</figcaption></figure>
+<figure class="relation-summary"><svg height="90" viewbox="0 0 160 90" width="160" xmlns="http://www.w3.org/2000/svg">
 <rect fill="#f8fafc" height="90" rx="6" stroke="#cbd5e1" width="160"></rect>
 <!-- Grid layout and deliberate positioning -->
 <rect fill="#eff6ff" height="60" rx="4" stroke="#3b82f6" stroke-width="1.5" width="40" x="15" y="15"></rect>
 <rect fill="#0f766e" height="26" rx="4" width="83" x="62" y="15"></rect>
 <rect fill="#d97706" height="27" rx="4" width="83" x="62" y="48"></rect>
 <circle cx="35" cy="45" fill="#2563eb" r="8"></circle>
-</svg>
-<div class="visual-note">Grid distribution and proximity</div>
-</td>
-</tr>
-<tr>
-<td><strong>Space</strong></td>
-<td>What occupies the composition and which zones are left free?</td>
-<td>Positive space contains information; negative space separates, groups and offers visual rest. Overlay and scale can also suggest depth.</td>
-<td class="visual-cell">
-<svg height="90" viewbox="0 0 160 90" width="160" xmlns="http://www.w3.org/2000/svg">
+</svg><figcaption><strong>Position</strong>. Place and align each element with the set.</figcaption></figure>
+<figure class="relation-summary"><svg height="90" viewbox="0 0 160 90" width="160" xmlns="http://www.w3.org/2000/svg">
 <rect fill="#1e293b" height="90" rx="6" width="160"></rect>
 <!-- Positive vs Negative space balance -->
 <rect fill="#0284c7" height="50" rx="6" width="50" x="20" y="20"></rect>
 <rect fill="none" height="50" rx="6" stroke="#38bdf8" stroke-dasharray="4,4" stroke-width="2" width="50" x="90" y="20"></rect>
 <text fill="#ffffff" font-family="Inter, sans-serif" font-size="8" font-weight="bold" text-anchor="middle" x="45" y="48">Subject matter</text>
 <text fill="#38bdf8" font-family="Inter, sans-serif" font-size="8" font-weight="bold" text-anchor="middle" x="115" y="48">Air / Gap</text>
-</svg>
-<div class="visual-note">Balance between full and negative space (gap)</div>
-</td>
-</tr>
-<tr>
-<td><strong>Visual severity</strong></td>
-<td>What element seems heavier, more stable or unstable?</td>
-<td>Size, contrast, density, color and location modify the perceived weight. A low element usually seems more settled; a high or isolated element can generate tension.</td>
-<td class="visual-cell">
-<svg height="90" viewbox="0 0 160 90" width="160" xmlns="http://www.w3.org/2000/svg">
+</svg><figcaption><strong>Space</strong>. Separate blocks, group the related and avoid saturation.</figcaption></figure>
+<figure class="relation-summary"><svg height="90" viewbox="0 0 160 90" width="160" xmlns="http://www.w3.org/2000/svg">
 <rect fill="#0f172a" height="90" rx="6" width="160"></rect>
 <!-- Visual weight scale / balance -->
 <rect fill="#64748b" height="20" rx="3" width="30" x="20" y="20"></rect>
@@ -1070,40 +1037,10 @@
 <!-- Heavy anchor element -->
 <rect fill="#1e3a8a" height="40" rx="6" stroke="#38bdf8" stroke-width="2" width="75" x="65" y="35"></rect>
 <text fill="#ffffff" font-family="Inter, sans-serif" font-size="9" font-weight="bold" text-anchor="middle" x="102" y="58">High Weight (CTA)</text>
-</svg>
-<div class="visual-note">Contrast of visual weight and attraction</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="advanced-concept-box">
-<h4><i class="fa-solid fa-compass-drafting"></i> From Perceptive Concept to CSS</h4>
-<p><strong>Position</strong> y <strong>space</strong> not equal only to CSS properties <code>position</code> o <code>gap</code>. Perceptive relationships are materialized by Grid, Flexbox, margins, alignments, scale, contrast and visual order. The chosen technique should retain the relationship when changing the content, language or screen size.</p>
-</div>
-<div class="example-box">
-<h3><i class="fa-solid fa-cart-shopping"></i> Integrated example: product card</h3>
-<p>On an e-commerce card, the <strong>address</strong> leads from image to name, price and CTA; <strong>position</strong> maintains price and action within the same unit; <strong>space</strong> group the unsaturated related; and <strong>visual gravity</strong> converts the price or button into points of attention. If the card changes to a single column on mobile, these relationships should be maintained even if the layout changes.</p>
-</div>
-<div class="resource-card expansion-card">
-<div class="resource-card-header">
-<span class="resource-title"><i class="fa-solid fa-up-down-left-right"></i> Elements of relationship in design</span>
-<span class="resource-badge badge-reading">Recommended Reading</span>
-</div>
-<div class="resource-description">Eniun resource on direction, position, space and gravity, with visual examples of its influence on the location, hierarchy and flow of a composition.</div>
-<a class="resource-link-btn" href="https://www.eniun.com/elementos-relacion-direccion-posicion-espacio-gravedad/" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Read article by Eniun</a>
+</svg><figcaption><strong>Visual severity</strong>. Size, contrast and location determine which attracts more attention.</figcaption></figure>
 </div>
 <h3 id="sec3_4">3.4. Practical elements</h3>
-<p>Practical elements relate design to <strong>what it represents, the message it communicates and the purpose it fulfills</strong>. They explain why a form appears in the interface and what the person should understand or get when finding it.</p>
-<h4>3.4.1 Representation</h4>
-<p>The <strong>representation</strong> it refers to what a form shows or evokes. It can realistically reproduce a reference, simplify it or stylize it. On the web, photographs, illustrations and icons employ different degrees of similarity and abstraction.</p>
-<p><strong>Example:</strong> a photograph shows the appearance of a product; a drawing simplifies its features; the icon of a cart represents an object linked to the purchase. The similarity does not guarantee that all users interpret the symbol in the same way.</p>
-<h4>3.4.2. Meaning</h4>
-<p>The <strong>meaning</strong> is the message or idea that the design communicates. It depends on the conventions, labels, location and expectations of the person who interprets it. The same symbol can acquire different senses depending on the context.</p>
-<p><strong>Example:</strong> a heart can mean "I like" or "Save to favorites". A clear label allows to distinguish both intentions. In the "Download notes (PDF)" button, the text indicates what will be obtained and in what format.</p>
-<h4>3.4.3. Function</h4>
-<p>The <strong>function</strong> is the purpose of the design: to inform, orient, identify or allow an action, among others. In an interactive component there must be coherence between the appearance, the message and the result of its use.</p>
-<p><strong>Example:</strong> a download button serves to get a file; a navigation link serves to access another content. If a control announces a download but executes a different action, its behavior contradicts the stated meaning.</p>
+<p>The <strong>representation</strong> is what shows an element; the <strong>meaning</strong>, what it communicates; and the <strong>function</strong>On a button, the icon, the label and the action must be consistent.</p>
 <figure aria-label="Examples of practical elements; scroll horizontally if necessary" class="table-scroll" role="region" tabindex="0">
 <svg aria-labelledby="diw-practical-title diw-practical-desc" height="438" role="img" style="display:block;width:100%;min-width:680px;height:auto;margin:0 auto;font-family:Inter,Arial,sans-serif;" viewbox="0 0 760 438" width="760" xmlns="http://www.w3.org/2000/svg">
 <title id="diw-practical-title">Representation, meaning and function</title><desc id="diw-practical-desc">The same download button analyzed from three perspectives: the arrow on a tray represents a download action; its meaning is to obtain a copy of the material; its function is to start the download of the PDF. Text and format clarify the action.</desc>
@@ -1117,7 +1054,11 @@
 <g transform="translate(24 194)"><rect fill="#ffffff" height="214" rx="10" stroke="#cbd5e1" width="224"></rect><text fill="#1e3a8a" font-size="18" font-weight="700" x="16" y="31">Representation</text><text fill="#0f766e" font-size="15" font-weight="600" x="16" y="62">What is represented?</text><text fill="#334155" font-size="13" x="16" y="99">Arrow to a tray:</text><text fill="#334155" font-size="13" x="16" y="124">conventional symbol</text><text fill="#334155" font-size="13" x="16" y="149">discharge.</text></g><g transform="translate(268 194)"><rect fill="#ffffff" height="214" rx="10" stroke="#cbd5e1" width="224"></rect><text fill="#1e3a8a" font-size="18" font-weight="700" x="16" y="31">Meaning</text><text fill="#0f766e" font-size="15" font-weight="600" x="16" y="62">What do you communicate?</text><text fill="#334155" font-size="13" x="16" y="99">You can get a copy</text><text fill="#334155" font-size="13" x="16" y="124">of the notes in PDF.</text><text fill="#334155" font-size="13" x="16" y="149">The tag clarifies the message.</text></g><g transform="translate(512 194)"><rect fill="#ffffff" height="214" rx="10" stroke="#cbd5e1" width="224"></rect><text fill="#1e3a8a" font-size="18" font-weight="700" x="16" y="31">Function</text><text fill="#0f766e" font-size="15" font-weight="600" x="16" y="62">What's it for?</text><text fill="#334155" font-size="13" x="16" y="99">Start downloading the file</text><text fill="#334155" font-size="13" x="16" y="124">to consult and keep it.</text><text fill="#334155" font-size="13" x="16" y="149">The action must do so.</text></g></svg>
 <figcaption class="image-caption">A single component supports three analyses: what the symbol represents, what the label communicates, and what purpose the action serves.</figcaption>
 </figure>
-<div class="example-box"><h4>Application: review a control before publishing</h4><p>For a download button, check that the icon and tag help identify the action, that the resource name and its format are understandable and that the activation delivers the expected file. In the implementation, a link to the resource can take on the look of a button without losing its semantic link.</p></div>
+<div class="didactic-note activity-callout laboratory-card">
+<h5 class="exercise-title"><i aria-hidden="true" class="fa-solid fa-flask"></i> Laboratory 6: One card, four decisions</h5>
+<p>Redesign a product card using controls of structure, appearance, distribution and purpose. Compare the before and after, test the result in narrow format and download your design with four explanations: "I have changed... for...".</p>
+<a class="resource-link-btn" href="https://igarciafp.github.io/labs/una-tarjeta-cuatro-decisiones.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i> Open the design laboratory</a>
+</div>
 <h2 id="sec4"><i class="fa-solid fa-eye"></i> 4. Visual perception</h2>
 <h3 id="sec4_1">4.1. Gestalt Psychology</h3>
 <p>The <strong>visual perception</strong> is the active interpretation performed by the brain of the light stimuli. <strong>Gestalt</strong> ("form" or "configuration") formulated psychological laws that explain how the mind visually groups individual elements to perceive a structured "all".</p>
@@ -1366,7 +1307,7 @@
 <h4 id="sec4_3_1">4.3.1. Color harmony</h4>
 <p>The <strong>chromatic harmony</strong> organizes the colors of an interface to build hierarchy, balance and contrast. The complementary, analogous, triadic and monochromatic combinations allow to relate the dominant color, the secondary and the accent; in an interface it is also necessary to validate that these decisions maintain sufficient readability and contrast.</p>
 <div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-palette"></i> Laboratory: the use of color in web design</h5>
+<h5 class="exercise-title"><i class="fa-solid fa-palette"></i> Laboratory 7: The use of color in web design</h5>
 <p><strong>Color scan activity:</strong> Experiment with color wheel, complementary, analogous, triadic and monochromatic harmonies, rule 60–30–10 and contrast applied to interfaces. <a href="https://igarciafp.github.io/labs/colorweb.html" rel="noopener noreferrer" target="_blank">Open Color Lab</a>.</p>
 </div>
 <h4 id="sec4_3_2">4.3.2. Images for the web</h4>
@@ -1382,7 +1323,7 @@ of the same colour.</p>
 <strong>FPS</strong> and taking into account that compression can also be performed by <strong>transitions</strong> between images, that is, keeping the elements that do not change and saving information from those that do.</p>
 <figure aria-labelledby="fig-imagen-video-diw-caption" class="image-container" role="group"><svg aria-label="A pixel is encoded with RGB components; an image is a grid of those values." role="img" viewbox="0 0 900 250" xmlns="http://www.w3.org/2000/svg"><rect fill="#f8fafc" height="250" rx="14" width="900"></rect><text fill="#1e3a8a" font-family="Inter, sans-serif" font-size="22" font-weight="700" text-anchor="middle" x="450" y="35">Colour of a pixel in RGB</text><g font-family="Inter, sans-serif" text-anchor="middle"><rect fill="#fee2e2" height="72" rx="10" width="150" x="130" y="90"></rect><text fill="#b91c1c" font-size="18" font-weight="700" x="205" y="122">R = 255</text><text fill="#475569" font-size="14" x="205" y="146">red</text><rect fill="#dcfce7" height="72" rx="10" width="150" x="375" y="90"></rect><text fill="#0f766e" font-size="18" font-weight="700" x="450" y="122">G = 180</text><text fill="#475569" font-size="14" x="450" y="146">green</text><rect fill="#dbeafe" height="72" rx="10" width="150" x="620" y="90"></rect><text fill="#1e3a8a" font-size="18" font-weight="700" x="695" y="122">B = 40</text><text fill="#475569" font-size="14" x="695" y="146">blue</text><path d="M280 126h78M525 126h78" stroke="#64748b" stroke-width="3"></path><text fill="#0f172a" font-size="18" font-weight="700" x="450" y="213">RGB(255, 180, 40) → pixel color</text></g></svg><figcaption class="image-caption" id="fig-imagen-video-diw-caption">A pixel is encoded with RGB components; an image is a grid of those values.</figcaption></figure>
 <div class="didactic-note activity-callout" id="practica-representacion-imagenes-diw">
-<p><strong>Practice: imaging laboratory.</strong></p>
+<p><strong>Laboratory 8: Image representation.</strong></p>
 <p>Experiment with RGB color formation, compare images BMP, PNG, JPG, GIF, WebP and SVG, observe their quality by expanding and generate a final report with your results.</p>
 <a class="resource-link-btn" href="https://igarciafp.github.io/ciclos/ssii/alumnado/pimagenes.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-image"></i> Open Interactive Practice</a>
 </div>
@@ -1535,7 +1476,7 @@ of the same colour.</p>
 <p>The core of a design system is the <strong>Design Tokens</strong>: variables that store fundamental visual values (colours, fonts, spacings) reusable in CSS/Sass (e.g. <code>--color-primary: #1e3a8a;</code>, <code>--spacing-md: 16px;</code>).</p>
 </div>
 <div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Brief review exercise (Section 4.4)</h5>
+<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 9: Brief review exercise (Section 4.4)</h5>
 <p><strong>Decomposition in Atomic Design:</strong> Select the header component (Header) of any digital platform you use on a daily basis (e.g. GitHub, YouTube or El País). Identify in writing the 5 levels of Atomic Design present in it: 1) Atoms (e.g. search button, input, avatar), 2) Molecules (e.g. full search field with icon), 3) Organisms (e.g. complete top navbar), 4) Templates (fixed headerlayout), and 5) Page (resulting screen with data from your real user).</p>
 </div>
 <!-- SUBAPARTADO NUEVO: DESIGN TOKENS (NUEVO PUNTO INTEGRADO) -->
@@ -1673,7 +1614,7 @@ of the same colour.</p>
 <p>Identity is translated into the system described in paragraph 4.4 by means of <strong>Design Tokens</strong> —color, typography, spacing and shape—and by atoms such as logo, icons and buttons. Thus, the brand remains coherent in all molecules, organisms, templates and pages.</p>
 </div>
 <div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Brief review exercise (Section 4.5)</h5>
+<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 10: Brief review exercise (Section 4.5)</h5>
 <p><strong>Digital Identity Marks Classification:</strong> Search the internet and identify a real example for each of the 4 categories of visual identity studied: 1) <strong>Logo</strong> (text only), 2) <strong>Isotype</strong> (graphic only), 3) <strong>Imagotype</strong> (independent symbol and text) and 4) <strong>Isologotype</strong> It justifies in writing why each mark belongs to its corresponding category.</p>
 </div>
 <h3 id="sec4_6">4.6. Composition, UI, Mobile-First states and performance</h3>
@@ -1788,7 +1729,7 @@ of the same colour.</p>
 </ol>
 </div>
 <div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Brief Review Exercise (Section 4.7)</h5>
+<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 11: Brief review exercise (Section 4.7)</h5>
 <p><strong>Usability Audit in Real Forms:</strong> Access the contact form or registration of the UNED learning platform (<code>https://www.uned.es</code>) or Renfe (<code>https://www.renfe.com</code>). Inspect the code with DevTools (F12) and identify: 1) If each field inputa has its labela Explicitly linked by `for="id', 2) If the attribute `placeholder` has been mistakenly used as the only visual label, and 3) If the fields show error feedback inline when losing focus.</p>
 </div>
 <h2 id="sec5"><i class="fa-solid fa-book-atlas"></i> 5. Web interface style and design guide</h2>
@@ -2104,7 +2045,7 @@ of the same colour.</p>
 </div>
 <p>To inspect and audit existing web pages, built-in developer tools (DevTools of Chrome/Firefox) can be used alongside extensions such as <strong>ColorZilla</strong> (chromatic capture), <strong>WhatFont</strong> (type identification), <strong>Pesticide</strong> (CSS box display), <strong>Responsible Viewer</strong> (multi-device view) or <strong>Page Ruler</strong> (pixel measurement). You must verify the developer, updates and permissions before installing extensions.</p>
 <div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Brief Review Exercise (Section 5.6)</h5>
+<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 12: Brief review exercise (Section 5.6)</h5>
 <p><strong>Typographical inspection with DevTools:</strong> Opens the news portal <code>https://www.elpais.com</code>. Using your browser’s CSS inspection panel, locate a main headline and answer the following questions: 1) Which main and reserve typographical family (*fallback*) uses?, 2) What is its pixel size or `rem` and line height (`line-height`)?, and 3) Is it a Serif or Sans-Serif font and why has it been chosen according to its reading format?</p>
 </div>
 <h3 id="sec5_7">5.7 From Figma to the guide code and governance</h3>
@@ -2525,7 +2466,7 @@ of the same colour.</p>
 <p><strong>Outcome:</strong> Elimination of wrong clicks on mobile devices and strict compliance with the WCAG 2.4.7 criterion.</p>
 </div>
 <div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Brief Review Exercise (Section 8.1)</h5>
+<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 13: Brief review exercise (Part 8.1)</h5>
 <p><strong>Analysis and Reproduction of Redesign UI/UX (Figure 1.12):</strong> Notes in detail the comparative explanatory graph of the <strong>Figure 1.12</strong> presented in this section. In your practice notebook or prototyping software, reproduce the model of the optimized form by adding a new type field <code>&lt;select&gt;</code> Make sure you draw the explicit label. <code>&lt;label&gt;</code>, the accessible focus visual indicator and ensure that the button meets the minimum touch area (Target Size ≥ 48 × 48 px).</p>
 </div>
 <!-- 9. ERRORES FRECUENTES -->
@@ -2902,7 +2843,7 @@ of the same colour.</p>
 <div class="activities-section" id="sec12">
 <h2><i class="fa-solid fa-pen-to-square"></i> 12. Activities</h2>
 <h3>Understanding activities</h3>
-<ol>
+<ol start="14">
 <li>It explains how CSS and JavaScript respectively modified the presentation and interaction of the first web pages.</li>
 <li>It arranges these milestones chronologically and justifies their impact: W3C, first Web, JavaScript, CSS1 and Responsive Web Design.</li>
 <li>Select two current visual trends and explain an advantage and a risk of accessibility or performance of each.</li>
@@ -2918,7 +2859,7 @@ of the same colour.</p>
 <li>What is CLS metric in Core Web Vitals and how does it affect usability?</li>
 </ol>
 <h3>Implementation activities</h3>
-<ol>
+<ol start="27">
 <li>It uses Wayback Machine to compare three historical versions of the same site. It documents changes in grid, navigation, typography, images, mobile adaptation and calls to action.</li>
 <li>It designs a small visual timeline with semantic HTML and Responsive CSS that represents at least six milestones in the evolution of web design.</li>
 <li>Redesign a product card using consciously direction, position, space and visual gravity. It presents desktop and mobile versions and justifies each decision.</li>
@@ -2929,7 +2870,7 @@ of the same colour.</p>
 <li>Analyzes a web form and identifies if it complies with the use of `<label>` explicit and inline validation.</label></li>
 <li>Design a product card (*organism*) identifying its constituent atoms and molecules.</li>
 </ol>
-<h3>Professional activity</h3>
+<h3>Activity 36: Professional audit UI/UX</h3>
 <p>Prepares a technical UI/UX audit report for an institutional portal. Evaluate the principles of usability — response, feedback, functional value, readability, consistency, navigation, errors and job protection — along with the SVG brand, the Mobile-First strategy (Target Size 48px), the accessibility of keyboard focus (ratium 3:1), the Atomic Design system and the separation of the navigation map from the <code>sitemap.xml</code> y <code>robots.txt</code>. As a final delivery, it incorporates a versioned style guide with tokens, typography, iconography, components, correct and incorrect examples and governance criteria.</p>
 </div>
 <!-- 13. ANÁLISIS DE LA WEB -->
