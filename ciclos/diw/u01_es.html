@@ -16,7 +16,7 @@
     <style>
         /* Índice con el mismo diseño y comportamiento que DWEC U02. */
         .sidebar-toc { overflow: visible; }
-        .sidebar-toc::after { content: "\f0c9"; }
+        .sidebar-toc::after { content: "\f0c9"; width: auto; right: auto; left: 100%; padding: 0 14px; }
         .sidebar-toc ul { max-height: calc(100vh - 130px); overflow-y: auto; }
         .sidebar-toc:focus-within { transform: translateX(0); }
         .sidebar-toc a.subsection-link { padding-left: 20px; font-size: 0.82rem; }
@@ -44,6 +44,22 @@
         .relation-summary { margin: 0; padding: 18px; border: 1px solid var(--border-color); border-radius: 10px; background: #f8fafc; }
         .relation-summary svg { display: block; max-width: 100%; height: auto; margin: 0 auto 12px; }
         .relation-summary figcaption { color: var(--text-muted); font-size: 0.95rem; }
+        .target-size-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+        .target-size-panel { padding: 22px; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc; }
+        .target-size-panel--large { border: 2px solid #0f766e; background: #f0fdfa; }
+        .target-size-demo { display: flex; align-items: center; justify-content: center; height: 64px; margin-bottom: 14px; }
+        .target-square { display: inline-flex; align-items: center; justify-content: center; border: 1px dashed #2563eb; background: #dbeafe; }
+        .target-square--minimum { width: 24px; height: 24px; }
+        .target-square--large { width: 44px; height: 44px; border: 1px solid #0f766e; background: #ccfbf1; }
+        .target-square span { width: 10px; height: 10px; border-radius: 50%; background: #1d4ed8; }
+        .target-square--large span { background: #0f766e; }
+        .target-size-panel h5 { margin: 0 0 8px; font-size: 1.05rem; }
+        .target-size-panel p { text-align: center; margin: 8px 0 0; }
+        .target-size-panel .target-size-note, .target-size-sources { font-size: .85rem; color: var(--text-muted); }
+        .target-size-figure .target-size-sources { text-align: center; margin-bottom: 0; }
+        .vitals-activity details { margin-top: 18px; padding: 14px; border: 1px solid #fed7aa; border-radius: 8px; background: #fff; }
+        .vitals-activity summary { cursor: pointer; font-weight: 700; color: #92400e; }
+        @media (max-width: 600px) { .target-size-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -1837,35 +1853,54 @@ de los que sí.</p>
         <p>La estrategia <strong>Mobile-First</strong> establece que se debe diseñar e implementar primero la versión para pantallas pequeñas (con restricciones extremas de espacio) priorizando los contenidos esenciales, para posteriormente expandir la interfaz hacia pantallas de escritorio mediante <em>Progressive Enhancement</em>.</p>
 
         <!-- Figura 1.7: SVG Target Size -->
-        <div class="image-container">
-            <svg viewBox="0 0 760 150" width="100%" height="150" xmlns="http://www.w3.org/2000/svg">
-                <rect x="0" y="0" width="760" height="150" rx="8" fill="#fafafa"/>
-                <g transform="translate(60, 25)">
-                    <rect x="0" y="0" width="180" height="100" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
-                    <rect x="78" y="20" width="24" height="24" fill="#fee2e2" stroke="#dc2626" stroke-dasharray="2,2"/>
-                    <circle cx="90" cy="32" r="6" fill="#dc2626"/>
-                    <text x="90" y="68" fill="#dc2626" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Mínimo 24 x 24 px</text>
-                    <text x="90" y="85" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Criterio WCAG 2.2 (AA)</text>
-                </g>
-                <g transform="translate(300, 25)">
-                    <rect x="0" y="0" width="400" height="100" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
-                    <rect x="30" y="15" width="48" height="48" fill="#dcfce7" stroke="#16a34a"/>
-                    <circle cx="54" cy="39" r="10" fill="#16a34a"/>
-                    <text x="230" y="42" fill="#0f766e" font-family="Inter, sans-serif" font-size="12" font-weight="bold">Recomendado: 44x44 / 48x48 px</text>
-                    <text x="230" y="62" fill="#475569" font-family="Inter, sans-serif" font-size="10">Estándar de Google Material Design y Apple HIG</text>
-                    <text x="230" y="78" fill="#64748b" font-family="Inter, sans-serif" font-size="9">Evita pulsaciones accidentales con el pulgar móvil.</text>
-                </g>
-            </svg>
-            <div class="image-caption">Figura 1.7: Normativa de área táctil mínima (Target Size) para interfaces móviles.</div>
-        </div>
+        <figure class="image-container target-size-figure">
+            <div class="target-size-grid">
+                <div class="target-size-panel">
+                    <div class="target-size-demo"><span class="target-square target-square--minimum"><span></span></span></div>
+                    <h5>24 × 24 píxeles CSS</h5>
+                    <p>Tamaño mínimo · WCAG 2.2 AA</p>
+                    <p class="target-size-note">El criterio 2.5.8 admite excepciones, como una separación suficiente entre objetivos pequeños.</p>
+                </div>
+                <div class="target-size-panel target-size-panel--large">
+                    <div class="target-size-demo"><span class="target-square target-square--large"><span></span></span></div>
+                    <h5>44 × 44 píxeles CSS</h5>
+                    <p>Tamaño mejorado · WCAG AAA</p>
+                    <p class="target-size-note">Una superficie mayor facilita pulsar con precisión. El criterio 2.5.5 también contempla excepciones.</p>
+                </div>
+            </div>
+            <figcaption class="image-caption">Figura 1.7: El área pulsable puede ser mayor que el icono visible. Los cuadrados muestran el tamaño del objetivo, no el del icono.</figcaption>
+            <p class="target-size-sources">Referencia: <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum" target="_blank" rel="noopener noreferrer">WCAG 2.5.8 (AA)</a> · <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced" target="_blank" rel="noopener noreferrer">WCAG 2.5.5 (AAA)</a>.</p>
+        </figure>
 
-        <h4>4.6.4. Métricas de rendimiento visual (Core Web Vitals & Layout Shift)</h4>
-        <p>La experiencia de usuario no depende únicamente del aspecto gráfico, sino del <strong>rendimiento percibido</strong>. Google y la W3C estandarizan tres métricas clave (<strong>Core Web Vitals</strong>):</p>
+        <h4>4.6.4. Métricas de rendimiento visual (Core Web Vitals &amp; Layout Shift)</h4>
+        <p>La experiencia de usuario también depende de que el contenido aparezca pronto, la interfaz responda con rapidez y los elementos no cambien de sitio inesperadamente. Las <strong>Core Web Vitals</strong> de Google miden estas tres dimensiones:</p>
         <ul>
-            <li><strong>CLS (Cumulative Layout Shift):</strong> Mide la inestabilidad visual. Ocurre cuando elementos saltan inesperadamente al cargar imágenes sin atributos de dimensión (<code>width</code> y <code>height</code>), provocando clics accidentales.</li>
-            <li><strong>LCP (Largest Contentful Paint):</strong> Tiempo de renderizado del elemento visual principal (debe ser &lt; 2.5 s).</li>
-            <li><strong>INP (Interaction to Next Paint):</strong> Mide la velocidad de respuesta de la UI tras una pulsación del usuario (&lt; 200 ms).</li>
+            <li><strong>LCP (Largest Contentful Paint):</strong> mide cuánto tarda en mostrarse el mayor bloque de texto o imagen visible. Un valor bueno es ≤ 2,5 segundos.</li>
+            <li><strong>INP (Interaction to Next Paint):</strong> mide la respuesta a las interacciones hasta que se muestra la siguiente actualización visual. Un valor bueno es ≤ 200 milisegundos.</li>
+            <li><strong>CLS (Cumulative Layout Shift):</strong> mide los desplazamientos inesperados del contenido. Un valor bueno es ≤ 0,1; es una puntuación, no un tiempo. Reservar espacio para las imágenes ayuda a evitar estos saltos.</li>
         </ul>
+        <p>Estos umbrales se evalúan en el percentil 75 de las visitas, separando móvil y escritorio. <a href="https://web.dev/articles/vitals" target="_blank" rel="noopener noreferrer">Referencia: Core Web Vitals</a>.</p>
+
+        <div class="didactic-note activity-callout vitals-activity">
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip" aria-hidden="true"></i> Actividad 7: ¿Carga lenta, respuesta lenta o salto visual?</h5>
+            <p>Lee los tres casos. En cada uno, indica <strong>qué métrica está relacionada (LCP, INP o CLS)</strong>, qué molestia causa y qué cambio propondrías.</p>
+            <ol type="A">
+                <li>Abres una tienda. El menú aparece enseguida, pero la gran imagen principal tarda varios segundos en mostrarse.</li>
+                <li>Pulsas «Añadir al carrito». La página ya está cargada, pero tarda en mostrar una respuesta a tu pulsación.</li>
+                <li>Vas a pulsar «Ver producto» y aparece un anuncio encima: el botón se desplaza y acabas pulsando otro enlace.</li>
+            </ol>
+            <p><strong>Comprueba los datos:</strong> una página registra LCP = 3,2 s, INP = 150 ms y CLS = 0,25 en el percentil 75. ¿Qué métricas están dentro del rango bueno? ¿Cuáles necesitan mejorar?</p>
+            <p><strong>Entrega:</strong> tres respuestas breves y la interpretación de los datos. Termina explicando por qué una página que carga rápido puede seguir resultando incómoda.</p>
+            <details>
+                <summary>Consultar una solución orientativa después de responder</summary>
+                <ul>
+                    <li><strong>A · LCP:</strong> el contenido principal tarda en aparecer. Optimizar la imagen y priorizar su carga puede reducir la espera.</li>
+                    <li><strong>B · INP:</strong> la interacción tarda en producir una actualización visual. Reducir el trabajo de JavaScript que bloquea la interfaz puede mejorar la respuesta.</li>
+                    <li><strong>C · CLS:</strong> un bloque nuevo desplaza el contenido. Reservar de antemano el espacio del anuncio evita ese salto.</li>
+                </ul>
+                <p>INP (150 ms) está en el rango bueno. LCP (3,2 s) y CLS (0,25) necesitan mejorar. Cargar pronto no garantiza una respuesta rápida ni una composición estable.</p>
+            </details>
+        </div>
 
         <h3 id="sec4_7">4.7. Componentes y formularios web</h3>
         <p>Las páginas web estructuran sus componentes en módulos estandarizados: <strong>Cabecera (Header)</strong>, <strong>Sistemas de Navegación</strong> (menú hamburguesa, pestañas, migas de pan), <strong>Cuerpo (Body)</strong>, <strong>Pie de página (Footer)</strong> y <strong>Espacios en blanco</strong>.</p>
@@ -1891,7 +1926,7 @@ de los que sí.</p>
         </div>
 
         <div class="didactic-note activity-callout">
-            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 7: Ejercicio breve de repaso (Apartado 4.7)</h5>
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 8: Ejercicio breve de repaso (Apartado 4.7)</h5>
             <p><strong>Auditoría de Usabilidad en Formularios Reales:</strong> Accede al formulario de contacto o registro de la plataforma de aprendizaje de la UNED (<code>https://www.uned.es</code>) o de Renfe (<code>https://www.renfe.com</code>). Inspecciona el código con las DevTools (F12) e identifica: 1) Si cada campo `&lt;input&gt;` cuenta con su etiqueta `&lt;label&gt;` explícita vinculada mediante `for="id"`, 2) Si se ha utilizado erróneamente el atributo `placeholder` como única etiqueta visual, y 3) Si los campos muestran feedback de error inline al perder el foco.</p>
         </div>
 
@@ -2234,7 +2269,7 @@ de los que sí.</p>
         <p>Para inspeccionar e auditar páginas web existentes pueden utilizarse las herramientas integradas para desarrolladores (DevTools de Chrome/Firefox) junto a extensiones como <strong>ColorZilla</strong> (captura cromática), <strong>WhatFont</strong> (identificación tipográfica), <strong>Pesticide</strong> (visualización de cajas CSS), <strong>Responsive Viewer</strong> (vista multidispositivo) o <strong>Page Ruler</strong> (medición de píxeles). Se debe verificar el desarrollador, actualizaciones y permisos antes de instalar extensiones.</p>
 
         <div class="didactic-note activity-callout">
-            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 8: Ejercicio breve de repaso (Apartado 5.6)</h5>
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 9: Ejercicio breve de repaso (Apartado 5.6)</h5>
             <p><strong>Inspección Tipográfica con DevTools:</strong> Abre el portal periodístico <code>https://www.elpais.com</code>. Utilizando el panel de inspección CSS de tu navegador, localiza un titular principal y responde a las siguientes preguntas: 1) ¿Qué familia tipográfica principal y de reserva (*fallback*) utiliza?, 2) ¿Cuál es su tamaño en píxeles o `rem` y su altura de línea (`line-height`)?, y 3) ¿Se trata de una tipografía Serif o Sans-Serif y por qué se ha elegido según su formato de lectura?</p>
         </div>
 
@@ -2711,7 +2746,7 @@ de los que sí.</p>
         </div>
 
         <div class="didactic-note activity-callout">
-            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 9: Ejercicio breve de repaso (Apartado 8.1)</h5>
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 10: Ejercicio breve de repaso (Apartado 8.1)</h5>
             <p><strong>Análisis y Reproducción del Rediseño UI/UX (Figura 1.12):</strong> Observa detalladamente el gráfico explicativo comparativo de la <strong>Figura 1.12</strong> presentado en esta sección. En tu cuaderno de prácticas o software de prototipado, reproduce la maqueta del formulario optimizado agregando un nuevo campo de tipo <code>&lt;select&gt;</code> para "Franja horaria de entrega". Asegúrate de dibujar la etiqueta explícita <code>&lt;label&gt;</code>, el indicador visual de foco accesible y garantizar que el botón cumpla el área táctil mínima (Target Size &ge; 48 &times; 48 px).</p>
         </div>
 
@@ -3134,7 +3169,7 @@ de los que sí.</p>
             <h2><i class="fa-solid fa-pen-to-square"></i> 12. Actividades</h2>
 
             <h3>Actividades de comprensión</h3>
-            <ol start="10">
+            <ol start="11">
                 <li>Explica cómo CSS y JavaScript modificaron respectivamente la presentación y la interacción de las primeras páginas web.</li>
                 <li>Ordena cronológicamente estos hitos y justifica su impacto: W3C, primera Web, JavaScript, CSS1 y Responsive Web Design.</li>
                 <li>Selecciona dos tendencias visuales actuales y explica una ventaja y un riesgo de accesibilidad o rendimiento de cada una.</li>
@@ -3151,7 +3186,7 @@ de los que sí.</p>
             </ol>
 
             <h3>Actividades de aplicación</h3>
-            <ol start="23">
+            <ol start="24">
                 <li>Utiliza Wayback Machine para comparar tres versiones históricas de un mismo sitio. Documenta cambios en retícula, navegación, tipografía, imágenes, adaptación móvil y llamadas a la acción.</li>
                 <li>Diseña una pequeña línea temporal visual con HTML semántico y CSS responsivo que represente al menos seis hitos de la evolución del diseño web.</li>
                 <li>Rediseña una tarjeta de producto utilizando conscientemente dirección, posición, espacio y gravedad visual. Presenta las versiones de escritorio y móvil y justifica cada decisión.</li>
@@ -3163,7 +3198,7 @@ de los que sí.</p>
                 <li>Diseña una tarjeta de producto (*organismo*) identificando cuáles son sus átomos y moléculas constitutivas.</li>
             </ol>
 
-            <h3>Actividad 32: Auditoría profesional UI/UX</h3>
+            <h3>Actividad 33: Auditoría profesional UI/UX</h3>
             <p>Elabora un informe técnico de auditoría UI/UX para un portal institucional. Evalúa los principios de usabilidad —respuesta, feedback, valor funcional, legibilidad, consistencia, navegación, errores y protección del trabajo— junto con la marca SVG, la estrategia Mobile-First (Target Size 48px), la accesibilidad de focos por teclado (ratio 3:1), el sistema Atomic Design y la separación del mapa de navegación frente a <code>sitemap.xml</code> y <code>robots.txt</code>. Como entrega final, incorpora una guía de estilo versionada con tokens, tipografía, iconografía, componentes, ejemplos correctos e incorrectos y criterios de gobernanza.</p>
         </div>
 
