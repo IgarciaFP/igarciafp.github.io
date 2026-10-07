@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -101,7 +102,9 @@
 <li><a class="subsection-link" href="#sec2_5">2.5. Burden and execution</a></li>
 <li><a href="#sec3">3. Syntax and good practices</a></li>
 <li><a class="subsection-link" href="#sec3_1">3.1. Values, expressions and blocks</a></li>
-<li><a class="subsection-link" href="#sec3_2">3.2. Shifts and comments</a></li>
+<li><a class="subsection-link" href="#sec3_2">3.2. Shifts and delimiters</a></li>
+<li><a class="subsection-link" href="#sec3_3">3.3. Comments on JavaScript</a></li>
+<li><a class="subsection-link" href="#sec3_4">3.4. Strict mode: use strict</a></li>
 <li><a href="#sec4">4. Variables and types of data</a></li>
 <li><a class="subsection-link" href="#sec4_1">4.1. Declaration and reassignment</a></li>
 <li><a class="subsection-link" href="#sec4_2">4.2. Identifiers and names</a></li>
@@ -113,7 +116,7 @@
 <li><a href="#sec5">5. Operators, expressions and conversions</a></li>
 <li><a class="subsection-link" href="#sec5_1">5.1. Arithmetic and allocation operators</a></li>
 <li><a class="subsection-link" href="#sec5_2">5.2. Comparisons and strict equality</a></li>
-<li><a class="subsection-link" href="#sec5_3">5.3. Logical operators</a></li>
+<li><a class="subsection-link" href="#sec5_3">5.3. Logical operators and null coalescence</a></li>
 <li><a class="subsection-link" href="#sec5_4">5.4 Precedence and parentheses</a></li>
 <li><a class="subsection-link" href="#sec5_5">5.5. Explicit conversion of types</a></li>
 <li><a class="subsection-link" href="#sec5_6">5.6. Usual errors when dealing with data</a></li>
@@ -400,11 +403,6 @@ console.log(confirm("¿Quieres continuar?"));</code></pre>
 <p>You may have seen the function used <code>document.write()</code> to write HTML content on a page. Its use is discouraged because it alters the document while it is being processed and, if it is called after uploading it, it can delete the existing content. In addition, interpreting as untrustworthy HTML data can enter malicious code. In this unit specific elements of the DOM will be updated using tools such as <code>textContent</code>.</p>
 <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Document/write" rel="noopener noreferrer" target="_blank">See the MDN explanation</a>
 </div>
-<div class="activity-card activity-callout" id="actividad-2-1">
-<p><strong>2.1. Observe responses</strong></p>
-<ol><li>Open DevTools in Chrome and select the tab <strong>Console</strong>. Run the console and dialog examples separately there. Aim where each message appears.</li><li>Prompt() test three times: type a name, accept without writing and cancel. Copy the value obtained in each case.</li><li>Test confirm(): accept once and cancel again. Write down the two results.</li></ol>
-<div class="delivery-tip"><button aria-describedby="entrega-tooltip-4" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-4" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
-</div>
 <div class="resource-card expansion-card">
 <div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Console and dialogues</span><span class="resource-badge badge-reading">Consultation</span></div>
 <p class="resource-description">References to consult the purpose and values returned by each tool.</p>
@@ -537,23 +535,6 @@ window.addEventListener("load", function () {
 <div class="resource-links"><a class="resource-link-btn" href="https://es.javascript.info/hello-world" rel="noopener noreferrer" target="_blank">JavaScript.info · Hello, world!</a>
 <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script" rel="noopener noreferrer" target="_blank">MDN · The script element</a></div>
 </div>
-<div class="activity-card activity-callout" id="actividad-2-3">
-<p><strong>2.4. Research and choose how to load JavaScript</strong></p>
-<ol>
-<li>See the MDN and JavaScript.info references in this section. Compare an external classic script without attributes, one with <code>defer</code> and another with <code>async</code>.</li>
-<li>Think of a page whose JavaScript needs to access a paragraph and run after it exists. Choose the most appropriate form of loading for that case and justify your choice. There is no better option for all projects.</li>
-<li>Create a page with <code>&lt;p id="saludo"&gt;Hola, mundo&lt;/p&gt;</code> and an external JavaScript file running <code>console.log(document.querySelector("#saludo"));</code>Link it to the option you have chosen.</li>
-<li>Open the page and check the DevTools console that the paragraph is found. Copy the output as text and explain why that result is obtained.</li>
-<li>Deliver the HTML, JavaScript and a brief explanation with the links consulted, your comparison and the test result.</li>
-</ol>
-<aside aria-label="Function tab: document.querySelector(selector)" class="function-card" id="ficha-funcion-9">
-<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
-<p class="function-signature"><code>document.querySelector(selector)</code></p>
-<p>Find the first element that matches a CSS selector.</p><p><strong>Parameters:</strong> selector: string with a valid selector, e.g. "#salute" or ".notice".</p><p><strong>Returns:</strong> The first element found or null if there are no matches.</p>
-</aside>
-<p class="exercise-files"><strong>Files:</strong> <code>ej03-cargaJavascript.html</code>, <code>ej03-cargaJavascript.js</code>, <code>ej03-cargaJavascript.txt</code>.</p>
-<div class="delivery-tip"><button aria-describedby="entrega-tooltip-6" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-6" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
-</div>
 </section>
 <section aria-labelledby="sec3">
 <h2 id="sec3"><i aria-hidden="true" class="fa-solid fa-align-left"></i> 3. Basic syntax and initial good practices</h2>
@@ -569,8 +550,15 @@ window.addEventListener("load", function () {
     console.log("Fin del bloque");
 }</code></pre>
 <p>Blocks will be used later in control structures and functions. Keys define the block; bleeding allows visual recognition of its contents.</p>
-<h3 id="sec3_2">3.2. Shifts, comments and signs of delimitation</h3>
+<h3 id="sec3_2">3.2. Shifts and signs of delimitation</h3>
 <p>JavaScript <strong>differentiates between upper and lowercase</strong>. Therefore, <code>console.log</code> y <code>console.Log</code> are different names. An incorrect letter can prevent an instruction from working.</p>
+<p>It is appropriate to distinguish the signs that have already appeared:</p>
+<ul>
+<li><strong>Dates:</strong> define texts, such as <code>"Bienvenido"</code>.</li>
+<li><strong>Parenthesis:</strong> in a call, contain arguments, as in <code>console.log("Bienvenido")</code>.</li>
+<li><strong>Keys:</strong> in the above examples, define a block.</li>
+</ul>
+<h3 id="sec3_3">3.3. Comments on JavaScript</h3>
 <p>Comments document the code and are not executed:</p>
 <pre><code>// Comentario de una línea.
 console.log("Bienvenido");
@@ -581,12 +569,26 @@ console.log("Bienvenido");
 */
 console.log("Fin del programa");</code></pre>
 <p><code>//</code> starts a comment until the end of the line. <code>/*</code> y <code>*/</code> delimit a comment that can occupy several lines. The latter cannot be nested.</p>
-<p>It is appropriate to distinguish the signs that have already appeared:</p>
-<ul>
-<li><strong>Dates:</strong> define texts, such as <code>"Bienvenido"</code>.</li>
-<li><strong>Parenthesis:</strong> in a call, contain arguments, as in <code>console.log("Bienvenido")</code>.</li>
-<li><strong>Keys:</strong> in the above examples, define a block.</li>
-</ul>
+<p>A line comment may also appear after an instruction. Use the comments to explain the purpose or reason for a decision, not to repeat what the code already expresses. You can comment on a temporary instruction to test the rest of the program:</p>
+<pre><code>console.log("Inicio"); // Marca el comienzo de la prueba.
+// console.log("Mensaje desactivado durante la prueba");
+console.log("Fin");</code></pre>
+<p>The comment symbols within a string are text: <code>console.log("https://ejemplo.com");</code> displays the full address. JavaScript files are used <code>//</code> y <code>/* ... */</code>; reservation <code>&lt;!-- ... --&gt;</code> for HTML comments.</p>
+<h3 id="sec3_4">3.4. Strict mode: <code>"use strict"</code></h3>
+<p>The <strong>strict mode</strong> converts some errors that could go unnoticed into explicit errors. In a classic script is activated by typing <code>"use strict";</code> at first, before the instructions; there may be blank comments and lines in front:</p>
+<pre><code>// Archivo ej02-javascriptExterno.js
+"use strict";
+
+console.log("Programa en modo estricto");</code></pre>
+<p>For example, assigning a value to a name that has not been declared causes a <code>ReferenceError</code>. Test this fragment in a separate file, without a prior declaration of <code>puntosPrueba</code>:</p>
+<pre><code>"use strict";
+
+puntosPrueba = 10; // ReferenceError: falta declarar la variable.
+console.log("Fin"); // No se ejecuta porque el error detiene este script.</code></pre>
+<p>Without strict mode, that mapping in a classic script can create an accidental global variable. The solution is to declare the name, not remove the directive: <code>let puntosPrueba = 10;</code>The statements shall be considered in paragraph 4.</p>
+<p>The directive affects the script where it appears, not all the files on the page. You can also activate the strict mode within a function with simple parameters, if placed at the beginning of your body. Write it into any block or after an ordinary instruction does not activate it.</p>
+<div class="didactic-note"><p><strong>Classic Scripts and modules.</strong> In the classic files of the exercises, write <code>"use strict";</code> at the beginning. Scripts with <code>type="module"</code> they already work in strict mode automatically; they don't need the directive. <code>defer</code> only affects the load and execution: does not activate the strict mode.</p></div>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode" rel="noopener noreferrer" target="_blank">MDN · Strict mode</a>
 <div class="didactic-note" id="buenas-practicas">
 <p><strong>Good practice from the first programme.</strong> Keep a uniform indentation to recognize the blocks, type an instruction per line, and use spaces that facilitate reading. Choose descriptive names and add brief comments that explain decisions, keeping them up to date. Format coherence and readability make it easy to review and modify the code.</p>
 <a class="resource-link-btn" href="https://es.javascript.info/coding-style" rel="noopener noreferrer" target="_blank">Enlargement: Encoding style</a>
@@ -680,20 +682,6 @@ console.log(usuario.nombre); // Luis</code></pre>
 <p>The advantage of <code>const</code> against <code>let</code> is that it makes clear the intention not to reassign the name and allows to detect an accidental reassignment, because it produces an error. <code>const</code> when you don't need to replace the value and <code>let</code> when you need to change; the choice helps you understand and keep the code.</p>
 <p>Objects and arrays will be studied later. For configuration constants can be used <code>MAYUSCULAS_CON_GUIONES_BAJOS</code>, like <code>MAX_INTENTOS</code>; declare with <code>const</code> does not require writing all names in capital letters.</p>
 <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const" rel="noopener noreferrer" target="_blank">MDN · const and its uses</a>
-</div>
-<div class="activity-card activity-callout" id="actividad-4-1">
-<p><strong>4.1. A Changing Marker</strong></p>
-<p>You will save a player's name and points. Copy this code to <code>ej04-marcadorPuntos.js</code>:</p>
-<pre><code>const jugador = "Ana";
-const puntos = 0;
-console.log(jugador, puntos);
-
-puntos = 10;
-console.log(jugador, puntos);</code></pre>
-<ol><li>Before you execute him, write down what you think will happen.</li><li>Run the code and copy the error message. Which line tries to change a stated value with <code>const</code>?</li><li>Change only the declaration of <code>puntos</code> to allow it to go from 0 to 10. Do not change the <code>jugador</code>.</li><li>Run again and copy the two outputs. Explain why you used <code>let</code> in a case and <code>const</code> on the other one.</li></ol>
-<p><strong>Delivery:</strong> the corrected code and your answers in plain text.</p>
-<p class="exercise-files"><strong>Files:</strong> <code>ej04-marcadorPuntos.html</code>, <code>ej04-marcadorPuntos.js</code>, <code>ej04-marcadorPuntos.txt</code>.</p>
-<div class="delivery-tip"><button aria-describedby="entrega-tooltip-7" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-7" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
 </div>
 <h3 id="sec4_4">4.4. Types of data for initial use</h3>
 <p>The <strong>type</strong> describes the value class with which the program works. In these first exercises the following will be used:</p>
@@ -795,6 +783,8 @@ console.log(centro); // IES Ejemplo
 <tr><td><code>/</code></td><td>Division</td><td><code>9 / 4</code> → <code>2.25</code></td></tr>
 <tr><td><code>%</code></td><td>Rest of the division</td><td><code>9 % 4</code> → <code>1</code></td></tr>
 <tr><td><code>**</code></td><td>Power</td><td><code>3 ** 2</code> → <code>9</code></td></tr>
+<tr><td><code>++</code></td><td>Increase: increases the variable by 1</td><td><code>let n = 4; n++;</code> → <code>n</code> Okay. <code>5</code></td></tr>
+<tr><td><code>--</code></td><td>Decrement: reduces the variable by 1</td><td><code>let n = 4; n--;</code> → <code>n</code> Okay. <code>3</code></td></tr>
 </tbody>
 </table>
 </div>
@@ -804,7 +794,22 @@ console.log(centro); // IES Ejemplo
 puntos += 5; // Equivale a puntos = puntos + 5.
 puntos -= 2; // Equivale a puntos = puntos - 2.
 console.log(puntos); // 13</code></pre>
-<p>There are also <code>*=</code>, <code>/=</code>, <code>%=</code> y <code>**=</code>. For numerical variables, <code>contador++</code> y <code>contador--</code> increase or reduce the value in a unit. At first it is advisable to use them as independent instructions.</p>
+<p>There are also <code>*=</code>, <code>/=</code>, <code>%=</code> y <code>**=</code>. Multiply, divide, calculate the rest or raise to one power and save the result in the same variable:</p>
+<pre><code>let cantidad = 12;
+cantidad *= 2;  // 24
+cantidad /= 3;  // 8
+cantidad %= 3;  // 2
+cantidad **= 3; // 8
+console.log(cantidad); // 8</code></pre>
+<h4>Increase and decrease: prefix and suffix</h4>
+<p><code>++</code> y <code>--</code> modify the variable, so we will use <code>let</code>. Writings in front (<code>++contador</code>), return the value after the change; written back (<code>contador++</code>), return the above value. In both cases the variable ends up increased in a unit. The same happens with <code>--</code>, but subtracting one unit:</p>
+<pre><code>let contador = 3;
+console.log(contador++); // 3: devuelve el valor anterior.
+console.log(contador);   // 4: la variable ya ha cambiado.
+console.log(++contador); // 5: incrementa y devuelve el nuevo valor.
+console.log(contador--); // 5: devuelve el valor anterior y deja 4.
+console.log(--contador); // 3: decrementa y devuelve el nuevo valor.</code></pre>
+<p>If you only need to change an accountant, write <code>contador++;</code> o <code>contador--;</code> avoid modifying the same variable several times within an expression: it makes it difficult to understand the result.</p>
 <h3 id="sec5_2">5.2. Comparisons and strict equality</h3>
 <p>Comparisons produce a boolean. <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code> y <code>&lt;=</code> check whether one value is greater, smaller, greater or equal, or less or equal to another.</p>
 <pre><code>const nota = 7;
@@ -814,7 +819,7 @@ console.log(nota === 7); // true
 console.log(nota !== 7); // false</code></pre>
 <p>To be used <strong><code>===</code> y <code>!==</code></strong> to check strict equality and inequality. Do not convert operands to another type: <code>7 === "7"</code> is <code>false</code>. Operators <code>==</code> y <code>!=</code> can make implicit conversions and will be avoided in these exercises.</p>
 <div class="didactic-note"><p><strong>Assigning is not comparing.</strong> <code>nota = 5</code> changes the value of a variable; <code>nota === 5</code> see if its value is the number <code>5</code>. To compare amounts received as text, convert them first to numbers.</p></div>
-<h3 id="sec5_3">5.3. Logical operators</h3>
+<h3 id="sec5_3">5.3. Logical operators and null coalescence</h3>
 <p>When working with booleans, these operators allow to express composite conditions:</p>
 <ul>
 <li><strong><code>&amp;&amp;</code> (Y):</strong> the result is <code>true</code> if both conditions are true.</li>
@@ -827,15 +832,48 @@ const salaAbierta = false;
 console.log(tieneEntrada &amp;&amp; salaAbierta); // false
 console.log(tieneEntrada || salaAbierta); // true
 console.log(!salaAbierta); // true</code></pre>
-<p><code>&amp;&amp;</code> y <code>||</code> they evaluate from left to right and can omit the second operand if the first determines the result. <strong>short-circuit evaluation</strong>. With other types of data you can return one of your operands, not necessarily a boolean; for now they will be used with conditions.</p>
+<p><code>&amp;&amp;</code> y <code>||</code> they evaluate from left to right and can omit the second operand if the first determines the result. <strong>short-circuit evaluation</strong>. With other data types return one of their operands, not necessarily a boolean. When checking them as a condition, values like <code>false</code>, <code>0</code>, <code>""</code>, <code>null</code>, <code>undefined</code> y <code>NaN</code> are considered false; they are called <em>falsy</em>. The others are considered true (<em>trusty</em>). <code>||</code> returns the first operand if it is true and, if not, evaluates and returns the second; <code>&amp;&amp;</code> returns the first if it is falsey and, if not, evaluates and returns the second.</p>
+<h4>Non-coalescence: <code>??</code></h4>
+<p><code>valor ?? alternativa</code> returns the alternative only when <code>valor</code> is <code>null</code> o <code>undefined</code>. Allows to give a default value when a data is missing, retaining valid values as <code>0</code>, <code>false</code> or an empty string. Do not modify the variable and only evaluate the alternative if you need it:</p>
+<pre><code>let nombre;
+console.log(nombre ?? "Sin nombre"); // "Sin nombre"
+console.log(null ?? "Sin dato");     // "Sin dato"
+console.log(0 ?? 10);                // 0
+console.log(false ?? true);          // false
+console.log("" ?? "Sin texto");      // ""
+console.log(0 || 10);                // 10: || también sustituye los valores falsy.</code></pre>
+<p><strong><code>??</code> y <code>||</code> are not equivalent.</strong> If zero means ‘no unit’, <code>unidades ?? 1</code> retains that zero; <code>unidades || 1</code> Choose according to which values you consider absent.</p>
+<h4>Logical assignment: <code>??=</code>, <code>||=</code> y <code>&amp;&amp;=</code></h4>
+<p>These operators only assign the value on the right when their condition is met. If not met, they retain the current value and do not evaluate the expression on the right:</p>
+<ul>
+<li><code>dato ??= alternativa</code>: assigns if <code>dato</code> is <code>null</code> o <code>undefined</code>.</li>
+<li><code>dato ||= alternativa</code>: assigns if <code>dato</code> is falsy, including <code>0</code>, <code>false</code> o <code>""</code>.</li>
+<li><code>dato &amp;&amp;= nuevoValor</code>: assigns if <code>dato</code> It's trusty.</li>
+</ul>
+<pre><code>let alias;
+alias ??= "Invitado";
+console.log(alias); // "Invitado"
+
+let unidades = 0;
+unidades ??= 1;
+console.log(unidades); // 0: no es null ni undefined.
+
+let titulo = "";
+titulo ||= "Sin título";
+console.log(titulo); // "Sin título"
+
+let aviso = "Pendiente";
+aviso &amp;&amp;= "Revisado";
+console.log(aviso); // "Revisado"</code></pre>
 <h3 id="sec5_4">5.4 Precedence and parentheses</h3>
 <p>The <strong>precedence</strong> determines how the operations are grouped. Multiplication is performed before the sum, unless the parentheses indicate another grouping:</p>
 <pre><code>console.log(4 + 3 * 2);   // 10
 console.log((4 + 3) * 2); // 14</code></pre>
 <p>In logical expressions, <code>!</code> has a higher priority than <code>&amp;&amp;</code>, and it's bigger than <code>||</code>. Use parentheses to make the intention explicit when combining multiple operations.</p>
+<p>Cannot be mixed <code>??</code> directly with <code>||</code> o <code>&amp;&amp;</code> without parenthesis: produces a <code>SyntaxError</code>. For example, <code>(null ?? 0) || 10</code> is valid and returns <code>10</code>; <code>null ?? 0 || 10</code> It's not valid.</p>
 <div class="activity-card activity-callout" id="actividad-5-1">
 <p><strong>5.1. Predicting an expression</strong></p>
-<ol><li>Aim the result you expect for 17 % 5, 2 + 3 ** 2, (2 + 3) ** 2, 8 ==="8" and (8 &gt; 5)</li><li>Run each expression with console.log() and copy the output.</li><li>If you were wrong about any, explain what operation is being performed first or what comparison is being made.</li></ol>
+<ol><li>Aim the result you expect for 17 % 5, 2 + 3 ** 2, (2 + 3) ** 2, 8 === "8", (8 &gt; 5) <code>0 ?? 10</code>, <code>0 || 10</code> y <code>null ?? "Sin dato"</code>.</li><li>Run each expression with console.log() and copy the output.</li><li>If you were wrong about any, explain what operation is being performed first or what comparison is being made.</li></ol>
 <p class="exercise-files"><strong>Files:</strong> <code>ej08-compararValores.html</code>, <code>ej08-compararValores.js</code>, <code>ej08-compararValores.txt</code>.</p>
 <div class="delivery-tip"><button aria-describedby="entrega-tooltip-11" aria-expanded="false" class="delivery-trigger" type="button"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> Delivery <i aria-hidden="true" class="fa-solid fa-circle-info"></i></button><p class="delivery-tooltip" hidden="" id="entrega-tooltip-11" role="tooltip">Perform it in your workbook and hand it over before finishing the class along with all the activities carried out that day.</p></div>
 </div>
@@ -951,6 +989,11 @@ console.log(avisos.length);   // 1 en la página de prueba.
 console.log(parrafos.length); // 2 en la página de prueba.</code></pre>
 <p>The two plural methods return a <code>HTMLCollection</code>even if there's only one match. <code>length</code> and its first element with <code>[0]</code>These collections are <strong>Lives</strong>: are updated when the matches change in the DOM.</p>
 <h4 class="content-subtitle">SSC selection</h4>
+<aside aria-label="Function tab: document.querySelector(selector)" class="function-card" id="ficha-funcion-9">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>document.querySelector(selector)</code></p>
+<p>Find the first element that matches a CSS selector.</p><p><strong>Parameters:</strong> selector: string with a valid selector, e.g. "#salute" or ".notice".</p><p><strong>Returns:</strong> The first element found or null if there are no matches.</p>
+</aside>
 <aside aria-label="Function tab: document.querySelectorAll(selector)" class="function-card" id="ficha-funcion-17">
 <p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
 <p class="function-signature"><code>document.querySelectorAll(selector)</code></p>
