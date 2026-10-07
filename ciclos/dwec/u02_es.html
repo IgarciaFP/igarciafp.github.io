@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -100,7 +101,9 @@
             <li><a href="#sec2_5" class="subsection-link">2.5. Carga y ejecución</a></li>
             <li><a href="#sec3">3. Sintaxis y buenas prácticas</a></li>
             <li><a href="#sec3_1" class="subsection-link">3.1. Valores, expresiones y bloques</a></li>
-            <li><a href="#sec3_2" class="subsection-link">3.2. Mayúsculas y comentarios</a></li>
+            <li><a href="#sec3_2" class="subsection-link">3.2. Mayúsculas y delimitadores</a></li>
+            <li><a href="#sec3_3" class="subsection-link">3.3. Comentarios en JavaScript</a></li>
+            <li><a href="#sec3_4" class="subsection-link">3.4. Modo estricto: use strict</a></li>
             <li><a href="#sec4">4. Variables y tipos de datos</a></li>
             <li><a href="#sec4_1" class="subsection-link">4.1. Declaración y reasignación</a></li>
             <li><a href="#sec4_2" class="subsection-link">4.2. Identificadores y nombres</a></li>
@@ -112,7 +115,7 @@
             <li><a href="#sec5">5. Operadores, expresiones y conversiones</a></li>
             <li><a href="#sec5_1" class="subsection-link">5.1. Operadores aritméticos y de asignación</a></li>
             <li><a href="#sec5_2" class="subsection-link">5.2. Comparaciones e igualdad estricta</a></li>
-            <li><a href="#sec5_3" class="subsection-link">5.3. Operadores lógicos</a></li>
+            <li><a href="#sec5_3" class="subsection-link">5.3. Operadores lógicos y coalescencia nula</a></li>
             <li><a href="#sec5_4" class="subsection-link">5.4. Precedencia y paréntesis</a></li>
             <li><a href="#sec5_5" class="subsection-link">5.5. Conversión explícita de tipos</a></li>
             <li><a href="#sec5_6" class="subsection-link">5.6. Errores habituales al operar con datos</a></li>
@@ -600,8 +603,16 @@ window.addEventListener("load", function () {
                 <p>Los bloques se utilizarán más adelante en estructuras de control y funciones. Las llaves delimitan el bloque; el sangrado permite reconocer visualmente su contenido.</p>
 
 
-                <h3 id="sec3_2">3.2. Mayúsculas, comentarios y signos de delimitación</h3>
+                <h3 id="sec3_2">3.2. Mayúsculas y signos de delimitación</h3>
                 <p>JavaScript <strong>distingue entre mayúsculas y minúsculas</strong>. Por tanto, <code>console.log</code> y <code>console.Log</code> son nombres diferentes. Una letra incorrecta puede impedir que una instrucción funcione.</p>
+                <p>Conviene distinguir los signos que ya han aparecido:</p>
+                <ul>
+                    <li><strong>Comillas:</strong> delimitan textos, como <code>"Bienvenido"</code>.</li>
+                    <li><strong>Paréntesis:</strong> en una llamada, contienen los argumentos, como en <code>console.log("Bienvenido")</code>.</li>
+                    <li><strong>Llaves:</strong> en los ejemplos anteriores, delimitan un bloque.</li>
+                </ul>
+
+                <h3 id="sec3_3">3.3. Comentarios en JavaScript</h3>
                 <p>Los comentarios documentan el código y no se ejecutan:</p>
                 <pre><code>// Comentario de una línea.
 console.log("Bienvenido");
@@ -612,12 +623,27 @@ console.log("Bienvenido");
 */
 console.log("Fin del programa");</code></pre>
                 <p><code>//</code> inicia un comentario hasta el final de la línea. <code>/*</code> y <code>*/</code> delimitan un comentario que puede ocupar varias líneas. Estos últimos no se pueden anidar.</p>
-                <p>Conviene distinguir los signos que ya han aparecido:</p>
-                <ul>
-                    <li><strong>Comillas:</strong> delimitan textos, como <code>"Bienvenido"</code>.</li>
-                    <li><strong>Paréntesis:</strong> en una llamada, contienen los argumentos, como en <code>console.log("Bienvenido")</code>.</li>
-                    <li><strong>Llaves:</strong> en los ejemplos anteriores, delimitan un bloque.</li>
-                </ul>
+                <p>Un comentario de línea también puede aparecer después de una instrucción. Utiliza los comentarios para explicar el propósito o el motivo de una decisión, no para repetir lo que el código ya expresa. Puedes comentar una instrucción temporalmente para probar el resto del programa:</p>
+                <pre><code>console.log("Inicio"); // Marca el comienzo de la prueba.
+// console.log("Mensaje desactivado durante la prueba");
+console.log("Fin");</code></pre>
+                <p>Los símbolos de comentario dentro de una cadena son texto: <code>console.log("https://ejemplo.com");</code> muestra la dirección completa. En archivos JavaScript se usan <code>//</code> y <code>/* ... */</code>; reserva <code>&lt;!-- ... --&gt;</code> para comentarios del HTML.</p>
+
+                <h3 id="sec3_4">3.4. Modo estricto: <code>"use strict"</code></h3>
+                <p>El <strong>modo estricto</strong> convierte algunos errores que podrían pasar inadvertidos en errores explícitos. En un script clásico se activa escribiendo <code>"use strict";</code> al principio, antes de las instrucciones; puede haber comentarios y líneas en blanco delante:</p>
+                <pre><code>// Archivo ej02-javascriptExterno.js
+"use strict";
+
+console.log("Programa en modo estricto");</code></pre>
+                <p>Por ejemplo, asignar un valor a un nombre que no se ha declarado provoca un <code>ReferenceError</code>. Prueba este fragmento en un archivo independiente, sin una declaración previa de <code>puntosPrueba</code>:</p>
+                <pre><code>"use strict";
+
+puntosPrueba = 10; // ReferenceError: falta declarar la variable.
+console.log("Fin"); // No se ejecuta porque el error detiene este script.</code></pre>
+                <p>Sin modo estricto, esa asignación en un script clásico puede crear una variable global accidental. La solución es declarar el nombre, no quitar la directiva: <code>let puntosPrueba = 10;</code>. Las declaraciones se estudiarán en el apartado 4.</p>
+                <p>La directiva afecta al script donde aparece, no a todos los archivos de la página. También puede activar el modo estricto dentro de una función con parámetros simples, si se coloca al comienzo de su cuerpo. Escribirla dentro de un bloque cualquiera o después de una instrucción ordinaria no lo activa.</p>
+                <div class="didactic-note"><p><strong>Scripts clásicos y módulos.</strong> En los archivos clásicos de los ejercicios, escribe <code>"use strict";</code> al principio. Los scripts con <code>type="module"</code> ya funcionan en modo estricto automáticamente; no necesitan la directiva. El atributo <code>defer</code> solo afecta a la carga y ejecución: no activa el modo estricto.</p></div>
+                <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Modo estricto</a>
 
                 <div class="didactic-note" id="buenas-practicas">
                     <p><strong>Buenas prácticas desde el primer programa.</strong> Mantén una indentación uniforme para reconocer los bloques, escribe una instrucción por línea y utiliza espacios que faciliten la lectura. Elige nombres descriptivos y añade comentarios breves que expliquen decisiones, manteniéndolos actualizados. La coherencia de formato y la legibilidad facilitan revisar y modificar el código.</p>
@@ -839,6 +865,8 @@ console.log(centro); // IES Ejemplo
                             <tr><td><code>/</code></td><td>División</td><td><code>9 / 4</code> → <code>2.25</code></td></tr>
                             <tr><td><code>%</code></td><td>Resto de la división</td><td><code>9 % 4</code> → <code>1</code></td></tr>
                             <tr><td><code>**</code></td><td>Potencia</td><td><code>3 ** 2</code> → <code>9</code></td></tr>
+                            <tr><td><code>++</code></td><td>Incremento: aumenta la variable en 1</td><td><code>let n = 4; n++;</code> → <code>n</code> vale <code>5</code></td></tr>
+                            <tr><td><code>--</code></td><td>Decremento: reduce la variable en 1</td><td><code>let n = 4; n--;</code> → <code>n</code> vale <code>3</code></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -848,7 +876,22 @@ console.log(centro); // IES Ejemplo
 puntos += 5; // Equivale a puntos = puntos + 5.
 puntos -= 2; // Equivale a puntos = puntos - 2.
 console.log(puntos); // 13</code></pre>
-                <p>También existen <code>*=</code>, <code>/=</code>, <code>%=</code> y <code>**=</code>. Para variables numéricas, <code>contador++</code> y <code>contador--</code> aumentan o reducen el valor en una unidad. Al principio conviene usarlos como instrucciones independientes.</p>
+                <p>También existen <code>*=</code>, <code>/=</code>, <code>%=</code> y <code>**=</code>. Multiplican, dividen, calculan el resto o elevan a una potencia y guardan el resultado en la misma variable:</p>
+                <pre><code>let cantidad = 12;
+cantidad *= 2;  // 24
+cantidad /= 3;  // 8
+cantidad %= 3;  // 2
+cantidad **= 3; // 8
+console.log(cantidad); // 8</code></pre>
+                <h4>Incremento y decremento: prefijo y sufijo</h4>
+                <p><code>++</code> y <code>--</code> modifican la variable, por lo que utilizaremos <code>let</code>. Escritos delante (<code>++contador</code>), devuelven el valor después del cambio; escritos detrás (<code>contador++</code>), devuelven el valor anterior. En ambos casos la variable termina incrementada en una unidad. Lo mismo sucede con <code>--</code>, pero restando una unidad:</p>
+                <pre><code>let contador = 3;
+console.log(contador++); // 3: devuelve el valor anterior.
+console.log(contador);   // 4: la variable ya ha cambiado.
+console.log(++contador); // 5: incrementa y devuelve el nuevo valor.
+console.log(contador--); // 5: devuelve el valor anterior y deja 4.
+console.log(--contador); // 3: decrementa y devuelve el nuevo valor.</code></pre>
+                <p>Si solo necesitas cambiar un contador, escribe <code>contador++;</code> o <code>contador--;</code> como instrucciones independientes. Evita modificar la misma variable varias veces dentro de una expresión: dificulta entender el resultado.</p>
 
                 <h3 id="sec5_2">5.2. Comparaciones e igualdad estricta</h3>
                 <p>Las comparaciones producen un booleano. Los operadores <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code> y <code>&lt;=</code> comprueban si un valor es mayor, menor, mayor o igual, o menor o igual que otro.</p>
@@ -860,7 +903,7 @@ console.log(nota !== 7); // false</code></pre>
                 <p>Se utilizarán <strong><code>===</code> y <code>!==</code></strong> para comprobar igualdad y desigualdad estrictas. No convierten los operandos a otro tipo: <code>7 === "7"</code> es <code>false</code>. Los operadores <code>==</code> y <code>!=</code> pueden realizar conversiones implícitas y se evitarán en estos ejercicios.</p>
                 <div class="didactic-note"><p><strong>Asignar no es comparar.</strong> <code>nota = 5</code> cambia el valor de una variable; <code>nota === 5</code> consulta si su valor es el número <code>5</code>. Para comparar cantidades recibidas como texto, conviértelas primero a números.</p></div>
 
-                <h3 id="sec5_3">5.3. Operadores lógicos</h3>
+                <h3 id="sec5_3">5.3. Operadores lógicos y coalescencia nula</h3>
                 <p>Cuando se trabaja con booleanos, estos operadores permiten expresar condiciones compuestas:</p>
                 <ul>
                     <li><strong><code>&amp;&amp;</code> (Y):</strong> el resultado es <code>true</code> si ambas condiciones son verdaderas.</li>
@@ -873,16 +916,50 @@ const salaAbierta = false;
 console.log(tieneEntrada &amp;&amp; salaAbierta); // false
 console.log(tieneEntrada || salaAbierta); // true
 console.log(!salaAbierta); // true</code></pre>
-                <p><code>&amp;&amp;</code> y <code>||</code> evalúan de izquierda a derecha y pueden omitir el segundo operando si el primero determina el resultado. Es la <strong>evaluación en cortocircuito</strong>. Con otros tipos de datos pueden devolver uno de sus operandos, no necesariamente un booleano; por ahora se emplearán con condiciones.</p>
+                <p><code>&amp;&amp;</code> y <code>||</code> evalúan de izquierda a derecha y pueden omitir el segundo operando si el primero determina el resultado. Es la <strong>evaluación en cortocircuito</strong>. Con otros tipos de datos devuelven uno de sus operandos, no necesariamente un booleano. Al comprobarlos como condición, valores como <code>false</code>, <code>0</code>, <code>""</code>, <code>null</code>, <code>undefined</code> y <code>NaN</code> se consideran falsos; se denominan <em>falsy</em>. Los demás se consideran verdaderos (<em>truthy</em>). <code>||</code> devuelve el primer operando si es truthy y, si no, evalúa y devuelve el segundo; <code>&amp;&amp;</code> devuelve el primero si es falsy y, si no, evalúa y devuelve el segundo.</p>
+
+                <h4>Coalescencia nula: <code>??</code></h4>
+                <p><code>valor ?? alternativa</code> devuelve la alternativa únicamente cuando <code>valor</code> es <code>null</code> o <code>undefined</code>. Permite dar un valor predeterminado cuando falta un dato, conservando valores válidos como <code>0</code>, <code>false</code> o una cadena vacía. No modifica la variable y solo evalúa la alternativa si la necesita:</p>
+                <pre><code>let nombre;
+console.log(nombre ?? "Sin nombre"); // "Sin nombre"
+console.log(null ?? "Sin dato");     // "Sin dato"
+console.log(0 ?? 10);                // 0
+console.log(false ?? true);          // false
+console.log("" ?? "Sin texto");      // ""
+console.log(0 || 10);                // 10: || también sustituye los valores falsy.</code></pre>
+                <p><strong><code>??</code> y <code>||</code> no son equivalentes.</strong> Si cero significa «ninguna unidad», <code>unidades ?? 1</code> conserva ese cero; <code>unidades || 1</code> lo sustituye por uno. Elige según qué valores consideres ausentes.</p>
+                <h4>Asignación lógica: <code>??=</code>, <code>||=</code> y <code>&amp;&amp;=</code></h4>
+                <p>Estos operadores solo asignan el valor de la derecha cuando se cumple su condición. Si no se cumple, conservan el valor actual y no evalúan la expresión de la derecha:</p>
+                <ul>
+                    <li><code>dato ??= alternativa</code>: asigna si <code>dato</code> es <code>null</code> o <code>undefined</code>.</li>
+                    <li><code>dato ||= alternativa</code>: asigna si <code>dato</code> es falsy, incluido <code>0</code>, <code>false</code> o <code>""</code>.</li>
+                    <li><code>dato &amp;&amp;= nuevoValor</code>: asigna si <code>dato</code> es truthy.</li>
+                </ul>
+                <pre><code>let alias;
+alias ??= "Invitado";
+console.log(alias); // "Invitado"
+
+let unidades = 0;
+unidades ??= 1;
+console.log(unidades); // 0: no es null ni undefined.
+
+let titulo = "";
+titulo ||= "Sin título";
+console.log(titulo); // "Sin título"
+
+let aviso = "Pendiente";
+aviso &amp;&amp;= "Revisado";
+console.log(aviso); // "Revisado"</code></pre>
 
                 <h3 id="sec5_4">5.4. Precedencia y paréntesis</h3>
                 <p>La <strong>precedencia</strong> determina cómo se agrupan las operaciones. La multiplicación se realiza antes que la suma, salvo que los paréntesis indiquen otra agrupación:</p>
                 <pre><code>console.log(4 + 3 * 2);   // 10
 console.log((4 + 3) * 2); // 14</code></pre>
                 <p>En expresiones lógicas, <code>!</code> tiene mayor prioridad que <code>&amp;&amp;</code>, y este mayor que <code>||</code>. Utiliza paréntesis para hacer explícita la intención cuando combines varias operaciones.</p>
+                <p>No se puede mezclar <code>??</code> directamente con <code>||</code> o <code>&amp;&amp;</code> sin paréntesis: produce un <code>SyntaxError</code>. Por ejemplo, <code>(null ?? 0) || 10</code> es válido y devuelve <code>10</code>; <code>null ?? 0 || 10</code> no es válido.</p>
                 <div class="activity-card activity-callout" id="actividad-5-1">
                     <p><strong>5.1. Predecir una expresión</strong></p>
-                    <ol><li>Apunta el resultado que esperas para 17 % 5, 2 + 3 ** 2, (2 + 3) ** 2, 8 === &quot;8&quot; y (8 &gt; 5) &amp;&amp; (8 &lt; 10).</li><li>Ejecuta cada expresión con console.log() y copia la salida.</li><li>Si te equivocaste en alguna, explica qué operación se realiza primero o qué comparación se está haciendo.</li></ol>
+                    <ol><li>Apunta el resultado que esperas para 17 % 5, 2 + 3 ** 2, (2 + 3) ** 2, 8 === &quot;8&quot;, (8 &gt; 5) &amp;&amp; (8 &lt; 10), <code>0 ?? 10</code>, <code>0 || 10</code> y <code>null ?? "Sin dato"</code>.</li><li>Ejecuta cada expresión con console.log() y copia la salida.</li><li>Si te equivocaste en alguna, explica qué operación se realiza primero o qué comparación se está haciendo.</li></ol>
                 <p class="exercise-files"><strong>Archivos:</strong> <code>ej08-compararValores.html</code>, <code>ej08-compararValores.js</code>, <code>ej08-compararValores.txt</code>.</p>
                     <div class="delivery-tip"><button type="button" class="delivery-trigger" aria-describedby="entrega-tooltip-11" aria-expanded="false"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Entrega <i class="fa-solid fa-circle-info" aria-hidden="true"></i></button><p class="delivery-tooltip" role="tooltip" id="entrega-tooltip-11" hidden>Realízala en tu cuaderno de trabajo y entrégala antes de finalizar la clase junto con todas las actividades realizadas ese día.</p></div>
                 </div>
