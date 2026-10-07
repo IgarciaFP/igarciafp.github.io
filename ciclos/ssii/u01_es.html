@@ -896,7 +896,7 @@
     .learning-section { margin-top: 48px; }
     .learning-section h2, .learning-section h3, .learning-section h4 { scroll-margin-top: 76px; }
     .learning-section p { text-align: left; }
-    .learning-section .initial-state { max-width: 480px; margin: 24px auto; padding: 10px; scroll-margin-top: 76px; }
+    .learning-section .initial-state { max-width: 960px; margin: 24px auto; padding: 8px; scroll-margin-top: 76px; overflow-x: auto; }
     .learning-section .initial-state svg { display: block; width: 100%; height: auto; }
     .learning-section .section-lead { font-size: 1.18rem; color: var(--secondary-color); }
     .learning-section .objectives-box { padding: 22px 26px; }
@@ -929,6 +929,7 @@
         .learning-section details { padding: 12px; }
         .learning-section .table-scroll::before { content: 'Desliza la tabla para ver todas las columnas →'; display: block; padding: 9px 12px; color: #475569; background: #f8fafc; font-size: 0.8rem; }
     }
+    @media (max-width: 480px) { .learning-section .initial-state svg { min-width: 520px; } }
     @media (prefers-reduced-motion: reduce) { .sidebar-toc { transition: none; } }
     @media print {
         .toc-toggle { display: none; }
@@ -2248,44 +2249,53 @@ binario.</p>
 <div class="example-box"><h4>Ejemplo resuelto: cargar, sumar y guardar</h4><p>Usaremos una máquina didáctica: cada instrucción ocupa una posición, <code>R</code> es un registro de trabajo y <code>[20]</code> representa el contenido de la posición 20 de memoria. Inicialmente, <code>[20] = 7</code>, <code>[21] = 5</code> y <code>[22] = 0</code>.</p><p>El programa contiene <code>CARGAR R, [20]</code> en la posición 0, <code>SUMAR R, [21]</code> en la 1 y <code>GUARDAR R, [22]</code> en la 2. Son instrucciones inventadas para aprender; su formato real depende del procesador.</p>
 
 <figure class="image-container initial-state" id="estado-inicial-ejemplo">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 680" role="img" aria-labelledby="estado-inicial-ejemplo-title estado-inicial-ejemplo-desc">
-  <title id="estado-inicial-ejemplo-title">Estado inicial del ejemplo: 7 + 5</title>
-  <desc id="estado-inicial-ejemplo-desc">Antes de ejecutar el programa: PC vale 0; R e IR aún no se han cargado. En la memoria común, las posiciones 0, 1 y 2 contienen CARGAR R, [20], SUMAR R, [21] y GUARDAR R, [22]. Los datos iniciales son [20] = 7, [21] = 5 y [22] = 0. La siguiente instrucción que se buscará es la de la posición 0.</desc>
-  <defs><marker id="estado-inicial-ejemplo-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#0f766e"/></marker></defs>
-  <rect width="400" height="680" rx="14" fill="#f8fafc"/>
-  <g font-family="Inter, Arial, sans-serif" fill="#0f172a">
-    <text x="20" y="33" font-size="22" font-weight="700">Estado inicial</text>
-    <text x="20" y="58" font-size="16">Todavía no se ha ejecutado ninguna instrucción.</text>
-    <rect x="16" y="77" width="368" height="116" rx="12" fill="#eff6ff" stroke="#1e3a8a" stroke-width="2"/>
-    <text x="32" y="103" font-size="19" font-weight="700" fill="#1e3a8a">CPU · registros</text>
-    <text x="32" y="139" font-size="22" font-weight="700">PC = 0</text>
-    <text x="174" y="139" font-size="22">R = —</text>
-    <text x="287" y="139" font-size="22">IR = —</text>
-    <text x="32" y="174" font-size="16">— : aún no se ha cargado el valor.</text>
-    <path d="M53 199V265" stroke="#0f766e" stroke-width="3" marker-end="url(#estado-inicial-ejemplo-arrow)"/>
-    <text x="74" y="225" font-size="17" fill="#115e59">El PC señala la posición 0.</text>
-    <text x="74" y="248" font-size="17" fill="#115e59">Siguiente paso: buscar su instrucción.</text>
-    <rect x="16" y="275" width="368" height="359" rx="12" fill="white" stroke="#64748b" stroke-width="2"/>
-    <text x="32" y="305" font-size="20" font-weight="700">RAM · instrucciones y datos</text>
-    <text x="32" y="336" font-size="16" font-weight="700">Dirección</text>
-    <text x="144" y="336" font-size="16" font-weight="700">Contenido</text>
-    <rect x="26" y="347" width="348" height="40" rx="5" fill="#ccfbf1"/>
-    <g font-family="Consolas, monospace" font-size="19">
-      <text x="56" y="373" font-weight="700">0</text><text x="144" y="373">CARGAR R, [20]</text>
-      <text x="56" y="415">1</text><text x="144" y="415">SUMAR R, [21]</text>
-      <text x="56" y="457">2</text><text x="144" y="457">GUARDAR R, [22]</text>
-    </g>
-    <text x="32" y="491" font-size="15" fill="#475569">… Se omiten las posiciones 3 a 19 …</text>
-    <path d="M28 504H372M28 545H372M28 586H372" stroke="#cbd5e1"/>
-    <g font-family="Consolas, monospace" font-size="22">
-      <text x="49" y="533">20</text><text x="144" y="533">7</text>
-      <text x="49" y="574">21</text><text x="144" y="574" font-weight="700">5</text>
-      <text x="49" y="616">22</text><text x="144" y="616">0</text>
-    </g>
-    <text x="20" y="661" font-size="16">La posición 22 conserva su valor inicial: 0.</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 560" role="img" aria-labelledby="estado-inicial-ejemplo-title estado-inicial-ejemplo-desc">
+<title id="estado-inicial-ejemplo-title">Ejemplo: 7 + 5: CPU y memoria</title>
+<desc id="estado-inicial-ejemplo-desc">A la izquierda, la CPU contiene la unidad de control, que coordina la ejecución, y la ALU, que realiza operaciones. Todavía no se ha ejecutado ninguna instrucción: PC = 0 y el registro R aún no tiene un dato cargado. A la derecha, la RAM almacena las instrucciones CARGAR R, [20], SUMAR R, [21] y GUARDAR R, [22] en las posiciones 0, 1 y 2; y los datos 7, 5 y 0 en las posiciones 20, 21 y 22. Los buses conectan la CPU y la memoria.</desc>
+<defs><marker id="estado-inicial-ejemplo-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#0f766e"/></marker></defs>
+<rect width="640" height="560" rx="12" fill="#f8fafc"/>
+<g font-family="Inter, Arial, sans-serif" fill="#0f172a">
+  <text x="16" y="32" font-size="23" font-weight="700">Estado inicial · antes de ejecutar</text>
+  <rect x="12" y="62" width="238" height="414" rx="14" fill="#eff6ff" stroke="#1e3a8a" stroke-width="2"/>
+  <text x="131" y="94" text-anchor="middle" font-size="25" font-weight="700" fill="#1e3a8a">CPU</text>
+  <rect x="26" y="111" width="210" height="136" rx="10" fill="#fff7ed" stroke="#b45309" stroke-width="2"/>
+  <text x="131" y="139" text-anchor="middle" font-size="24" font-weight="700">UC</text>
+  <text x="131" y="164" text-anchor="middle" font-size="18" font-weight="700">Unidad de control</text>
+  <text x="131" y="188" text-anchor="middle" font-size="16">Coordina la ejecución</text>
+  <text x="131" y="213" text-anchor="middle" font-size="19" font-weight="700">PC = 0</text>
+  <text x="131" y="236" text-anchor="middle" font-size="14">Próxima instrucción: [0]</text>
+  <path d="M131 252V270" stroke="#0f766e" stroke-width="3" marker-end="url(#estado-inicial-ejemplo-arrow)"/>
+  <rect x="26" y="280" width="210" height="102" rx="10" fill="#f0fdf4" stroke="#0f766e" stroke-width="2"/>
+  <text x="131" y="312" text-anchor="middle" font-size="24" font-weight="700">ALU</text>
+  <text x="131" y="339" text-anchor="middle" font-size="18">Opera con los datos</text>
+  <text x="131" y="366" text-anchor="middle" font-size="16">Aún no ha calculado</text>
+  <rect x="26" y="403" width="210" height="52" rx="8" fill="white" stroke="#93c5fd"/>
+  <text x="131" y="435" text-anchor="middle" font-size="17">R: sin dato cargado</text>
+
+  <rect x="300" y="62" width="328" height="414" rx="14" fill="white" stroke="#475569" stroke-width="2"/>
+  <text x="464" y="94" text-anchor="middle" font-size="25" font-weight="700">MEMORIA RAM</text>
+  <text x="316" y="124" font-size="17" font-weight="700">Dirección</text>
+  <text x="424" y="124" font-size="17" font-weight="700">Contenido almacenado</text>
+  <rect x="310" y="138" width="308" height="111" rx="6" fill="#eff6ff"/>
+  <g font-family="Consolas, monospace" font-size="19">
+    <text x="350" y="165">0</text><text x="424" y="165">CARGAR R, [20]</text>
+    <text x="350" y="201">1</text><text x="424" y="201">SUMAR R, [21]</text>
+    <text x="350" y="237">2</text><text x="424" y="237">GUARDAR R, [22]</text>
   </g>
+  <text x="464" y="272" text-anchor="middle" font-size="15" fill="#475569">… posiciones 3 a 19 no mostradas …</text>
+  <rect x="310" y="291" width="308" height="129" rx="6" fill="#fef3c7"/>
+  <path d="M310 334H618M310 377H618" stroke="#d6b75f"/>
+  <g font-family="Consolas, monospace" font-size="23" font-weight="700">
+    <text x="343" y="321">20</text><text x="472" y="321">7</text>
+    <text x="343" y="364">21</text><text x="472" y="364">5</text>
+    <text x="343" y="407">22</text><text x="472" y="407">0</text>
+  </g>
+  <text x="464" y="447" text-anchor="middle" font-size="16">Instrucciones y datos en la misma RAM</text>
+  <path d="M131 483V508H464V483" fill="none" stroke="#0f766e" stroke-width="3" marker-start="url(#estado-inicial-ejemplo-arrow)" marker-end="url(#estado-inicial-ejemplo-arrow)"/>
+  <text x="320" y="543" text-anchor="middle" font-size="20" fill="#115e59">Buses: datos, direcciones y control</text>
+</g>
 </svg>
-<figcaption class="image-caption">Estado inicial del ejemplo: 7 + 5. PC = 0; [20] = 7; [21] = 5; [22] = 0. R e IR se cargarán durante la ejecución.</figcaption>
+<figcaption class="image-caption">Ejemplo: 7 + 5. La UC coordina y la ALU calcula. Las instrucciones están en las posiciones 0–2; los datos iniciales son [20] = 7, [21] = 5 y [22] = 0. La posición 22 todavía no contiene el resultado.</figcaption>
 </figure>
 <div class="table-scroll" role="region" aria-label="Traza de las tres instrucciones" tabindex="0"><table><caption>Estado al terminar cada instrucción</caption><thead><tr><th scope="col">Posición</th><th scope="col">Instrucción</th><th scope="col">Qué sucede</th><th scope="col">R</th><th scope="col">Memoria [22]</th></tr></thead><tbody><tr><th scope="row">0</th><td>CARGAR R, [20]</td><td>Se copia el 7 desde la RAM al registro.</td><td>7</td><td>0</td></tr><tr><th scope="row">1</th><td>SUMAR R, [21]</td><td>La ALU suma el 5 leído de la RAM al 7 de R.</td><td>12</td><td>0</td></tr><tr><th scope="row">2</th><td>GUARDAR R, [22]</td><td>Se copia el 12 del registro a la RAM.</td><td>12</td><td>12</td></tr></tbody></table></div><p><strong>Fíjate:</strong> la suma modifica R; la posición 22 cambia al ejecutar GUARDAR. Guardar aquí significa escribir en RAM, no guardar un archivo en el SSD.</p></div>
 <h4 id="sec5_2_1" class="numbered-subsection">5.2.1. Unidad de control: buscar, decodificar y ejecutar</h4>
@@ -2296,44 +2306,53 @@ binario.</p>
 <p>La ALU realiza operaciones aritméticas y lógicas, como sumar, restar, comparar, aplicar AND, OR o XOR y desplazar bits. Por ejemplo, <code>0101 AND 0011 = 0001</code>: solo queda a 1 una posición si ambos bits de entrada son 1.</p><p>Las capacidades concretas dependen de la CPU. Las operaciones en coma flotante pueden realizarse en unidades especializadas; no debemos imaginar toda la CPU como una única calculadora científica.</p>
 <div class="activity-card activity-callout"><h4>Ahora tú: predice y comprueba · 8 minutos</h4><ol><li>Parte del estado inicial del esquema: la posición 21 contiene 9 en lugar de 5. Reconstruye la tabla del ejemplo.</li><li>Indica el valor de R y de [22] tras cada instrucción.</li><li>Explica qué hace la UC y qué hace la ALU en la suma. ¿Qué pasaría si se omitiera GUARDAR?</li></ol>
 <figure class="image-container initial-state" id="estado-inicial-actividad">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 680" role="img" aria-labelledby="estado-inicial-actividad-title estado-inicial-actividad-desc">
-  <title id="estado-inicial-actividad-title">Estado inicial de la actividad: 7 + 9</title>
-  <desc id="estado-inicial-actividad-desc">Antes de ejecutar el programa: PC vale 0; R e IR aún no se han cargado. En la memoria común, las posiciones 0, 1 y 2 contienen CARGAR R, [20], SUMAR R, [21] y GUARDAR R, [22]. Los datos iniciales son [20] = 7, [21] = 9 y [22] = 0. La siguiente instrucción que se buscará es la de la posición 0.</desc>
-  <defs><marker id="estado-inicial-actividad-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#0f766e"/></marker></defs>
-  <rect width="400" height="680" rx="14" fill="#f8fafc"/>
-  <g font-family="Inter, Arial, sans-serif" fill="#0f172a">
-    <text x="20" y="33" font-size="22" font-weight="700">Estado inicial</text>
-    <text x="20" y="58" font-size="16">Todavía no se ha ejecutado ninguna instrucción.</text>
-    <rect x="16" y="77" width="368" height="116" rx="12" fill="#eff6ff" stroke="#1e3a8a" stroke-width="2"/>
-    <text x="32" y="103" font-size="19" font-weight="700" fill="#1e3a8a">CPU · registros</text>
-    <text x="32" y="139" font-size="22" font-weight="700">PC = 0</text>
-    <text x="174" y="139" font-size="22">R = —</text>
-    <text x="287" y="139" font-size="22">IR = —</text>
-    <text x="32" y="174" font-size="16">— : aún no se ha cargado el valor.</text>
-    <path d="M53 199V265" stroke="#0f766e" stroke-width="3" marker-end="url(#estado-inicial-actividad-arrow)"/>
-    <text x="74" y="225" font-size="17" fill="#115e59">El PC señala la posición 0.</text>
-    <text x="74" y="248" font-size="17" fill="#115e59">Siguiente paso: buscar su instrucción.</text>
-    <rect x="16" y="275" width="368" height="359" rx="12" fill="white" stroke="#64748b" stroke-width="2"/>
-    <text x="32" y="305" font-size="20" font-weight="700">RAM · instrucciones y datos</text>
-    <text x="32" y="336" font-size="16" font-weight="700">Dirección</text>
-    <text x="144" y="336" font-size="16" font-weight="700">Contenido</text>
-    <rect x="26" y="347" width="348" height="40" rx="5" fill="#ccfbf1"/>
-    <g font-family="Consolas, monospace" font-size="19">
-      <text x="56" y="373" font-weight="700">0</text><text x="144" y="373">CARGAR R, [20]</text>
-      <text x="56" y="415">1</text><text x="144" y="415">SUMAR R, [21]</text>
-      <text x="56" y="457">2</text><text x="144" y="457">GUARDAR R, [22]</text>
-    </g>
-    <text x="32" y="491" font-size="15" fill="#475569">… Se omiten las posiciones 3 a 19 …</text>
-    <path d="M28 504H372M28 545H372M28 586H372" stroke="#cbd5e1"/>
-    <g font-family="Consolas, monospace" font-size="22">
-      <text x="49" y="533">20</text><text x="144" y="533">7</text>
-      <text x="49" y="574">21</text><text x="144" y="574" font-weight="700">9</text>
-      <text x="49" y="616">22</text><text x="144" y="616">0</text>
-    </g>
-    <text x="20" y="661" font-size="16">La posición 22 conserva su valor inicial: 0.</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 560" role="img" aria-labelledby="estado-inicial-actividad-title estado-inicial-actividad-desc">
+<title id="estado-inicial-actividad-title">Actividad: 7 + 9: CPU y memoria</title>
+<desc id="estado-inicial-actividad-desc">A la izquierda, la CPU contiene la unidad de control, que coordina la ejecución, y la ALU, que realiza operaciones. Todavía no se ha ejecutado ninguna instrucción: PC = 0 y el registro R aún no tiene un dato cargado. A la derecha, la RAM almacena las instrucciones CARGAR R, [20], SUMAR R, [21] y GUARDAR R, [22] en las posiciones 0, 1 y 2; y los datos 7, 9 y 0 en las posiciones 20, 21 y 22. Los buses conectan la CPU y la memoria.</desc>
+<defs><marker id="estado-inicial-actividad-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#0f766e"/></marker></defs>
+<rect width="640" height="560" rx="12" fill="#f8fafc"/>
+<g font-family="Inter, Arial, sans-serif" fill="#0f172a">
+  <text x="16" y="32" font-size="23" font-weight="700">Estado inicial · antes de ejecutar</text>
+  <rect x="12" y="62" width="238" height="414" rx="14" fill="#eff6ff" stroke="#1e3a8a" stroke-width="2"/>
+  <text x="131" y="94" text-anchor="middle" font-size="25" font-weight="700" fill="#1e3a8a">CPU</text>
+  <rect x="26" y="111" width="210" height="136" rx="10" fill="#fff7ed" stroke="#b45309" stroke-width="2"/>
+  <text x="131" y="139" text-anchor="middle" font-size="24" font-weight="700">UC</text>
+  <text x="131" y="164" text-anchor="middle" font-size="18" font-weight="700">Unidad de control</text>
+  <text x="131" y="188" text-anchor="middle" font-size="16">Coordina la ejecución</text>
+  <text x="131" y="213" text-anchor="middle" font-size="19" font-weight="700">PC = 0</text>
+  <text x="131" y="236" text-anchor="middle" font-size="14">Próxima instrucción: [0]</text>
+  <path d="M131 252V270" stroke="#0f766e" stroke-width="3" marker-end="url(#estado-inicial-actividad-arrow)"/>
+  <rect x="26" y="280" width="210" height="102" rx="10" fill="#f0fdf4" stroke="#0f766e" stroke-width="2"/>
+  <text x="131" y="312" text-anchor="middle" font-size="24" font-weight="700">ALU</text>
+  <text x="131" y="339" text-anchor="middle" font-size="18">Opera con los datos</text>
+  <text x="131" y="366" text-anchor="middle" font-size="16">Aún no ha calculado</text>
+  <rect x="26" y="403" width="210" height="52" rx="8" fill="white" stroke="#93c5fd"/>
+  <text x="131" y="435" text-anchor="middle" font-size="17">R: sin dato cargado</text>
+
+  <rect x="300" y="62" width="328" height="414" rx="14" fill="white" stroke="#475569" stroke-width="2"/>
+  <text x="464" y="94" text-anchor="middle" font-size="25" font-weight="700">MEMORIA RAM</text>
+  <text x="316" y="124" font-size="17" font-weight="700">Dirección</text>
+  <text x="424" y="124" font-size="17" font-weight="700">Contenido almacenado</text>
+  <rect x="310" y="138" width="308" height="111" rx="6" fill="#eff6ff"/>
+  <g font-family="Consolas, monospace" font-size="19">
+    <text x="350" y="165">0</text><text x="424" y="165">CARGAR R, [20]</text>
+    <text x="350" y="201">1</text><text x="424" y="201">SUMAR R, [21]</text>
+    <text x="350" y="237">2</text><text x="424" y="237">GUARDAR R, [22]</text>
   </g>
+  <text x="464" y="272" text-anchor="middle" font-size="15" fill="#475569">… posiciones 3 a 19 no mostradas …</text>
+  <rect x="310" y="291" width="308" height="129" rx="6" fill="#fef3c7"/>
+  <path d="M310 334H618M310 377H618" stroke="#d6b75f"/>
+  <g font-family="Consolas, monospace" font-size="23" font-weight="700">
+    <text x="343" y="321">20</text><text x="472" y="321">7</text>
+    <text x="343" y="364">21</text><text x="472" y="364">9</text>
+    <text x="343" y="407">22</text><text x="472" y="407">0</text>
+  </g>
+  <text x="464" y="447" text-anchor="middle" font-size="16">Instrucciones y datos en la misma RAM</text>
+  <path d="M131 483V508H464V483" fill="none" stroke="#0f766e" stroke-width="3" marker-start="url(#estado-inicial-actividad-arrow)" marker-end="url(#estado-inicial-actividad-arrow)"/>
+  <text x="320" y="543" text-anchor="middle" font-size="20" fill="#115e59">Buses: datos, direcciones y control</text>
+</g>
 </svg>
-<figcaption class="image-caption">Estado inicial de la actividad: 7 + 9. PC = 0; [20] = 7; [21] = 9; [22] = 0. R e IR se cargarán durante la ejecución.</figcaption>
+<figcaption class="image-caption">Actividad: 7 + 9. La UC coordina y la ALU calcula. Las instrucciones están en las posiciones 0–2; los datos iniciales son [20] = 7, [21] = 9 y [22] = 0. La posición 22 todavía no contiene el resultado.</figcaption>
 </figure>
 <details class="answer"><summary>Comprobar la traza con el dato 9</summary><p>Tras CARGAR: R = 7 y [22] = 0. Tras SUMAR: R = 16 y [22] = 0. Tras GUARDAR: R = 16 y [22] = 16. La UC coordina y la ALU suma. Sin GUARDAR, el resultado quedaría en R y [22] seguiría valiendo 0.</p></details></div>
 <div class="resource-card expansion-card"><h4>Explora el simulador de Von Neumann</h4><p>Localiza la memoria, el PC y la instrucción actual. Ejecuta paso a paso un programa sencillo: <strong>antes de cada paso predice qué cambia y después anota lo observado</strong>. La sintaxis puede ser distinta de nuestro ejemplo; adapta las instrucciones a las disponibles. Si no puedes acceder al simulador, utiliza la tabla anterior.</p><a href="http://lab.xitrus.es/VonNeumann/" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Abrir el simulador</a></div>
