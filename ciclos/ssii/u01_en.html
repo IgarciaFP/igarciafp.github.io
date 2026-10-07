@@ -891,9 +891,68 @@
             .header-top-row { align-items: flex-start; }
             .language-switch { font-size: 0.8rem; padding: 6px 10px; }
         }
-</style></head>
+</style>
+<style>
+    /* Guided learning, sections 4–6. */
+    .learning-section { margin-top: 48px; }
+    .learning-section h2, .learning-section h3, .learning-section h4 { scroll-margin-top: 76px; }
+    .learning-section p { text-align: left; }
+    #cuatro-libertades { scroll-margin-top: 76px; }
+    #cuatro-libertades svg { display: block; width: 100%; }
+    .api-demo { padding: 18px; margin: 20px 0; border: 1px solid #cbd5e1; border-radius: 8px; background: white; }
+    #api-response { white-space: pre-wrap; overflow-wrap: anywhere; }
+    .api-demo button:disabled { opacity: 0.65; cursor: wait; }
+    .api-demo label { display: block; font-weight: 600; margin-bottom: 6px; }
+    .api-demo select { display: block; width: 100%; padding: 9px; margin-bottom: 16px; font: inherit; border: 1px solid #64748b; border-radius: 6px; }
+    .api-demo button { padding: 12px 16px; font: inherit; font-weight: 600; color: white; background: #1e3a8a; border: 0; border-radius: 6px; cursor: pointer; }
+
+    .learning-section .section-lead { font-size: 1.18rem; color: var(--secondary-color); }
+    .learning-section .objectives-box { padding: 22px 26px; }
+    .learning-section .objectives-box ul { margin-bottom: 0; }
+    .learning-section h4 { margin-top: 0; }
+    .learning-section h4.numbered-subsection { margin-top: 28px; }
+    .learning-section .table-scroll { border: 1px solid var(--border-color); border-radius: 8px; }
+    .learning-section .table-scroll table { min-width: 560px; }
+    .learning-section caption { text-align: left; padding: 12px 16px; font-weight: 700; color: var(--primary-color); background: #f8fafc; }
+    .learning-section th[scope="row"] { background: transparent; color: var(--text-dark); }
+    .learning-section th, .learning-section td { padding: 12px 14px; vertical-align: top; }
+    .learning-section details { padding: 14px 18px; margin: 20px 0; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; }
+    .learning-section details.answer { border-left: 4px solid var(--secondary-color); }
+    .learning-section details.extension { border-left: 4px solid var(--purple-color); background: #faf5ff; }
+    .learning-section summary { cursor: pointer; color: var(--primary-color); font-weight: 600; }
+    .learning-section details[open] summary { margin-bottom: 14px; }
+    .learning-section details p:last-child, .learning-section details ul:last-child { margin-bottom: 0; }
+    .learning-section :focus-visible, .toc-toggle:focus-visible, .sidebar-toc a:focus-visible { outline: 3px solid #d97706; outline-offset: 3px; }
+    .toc-toggle { position: fixed; top: 20px; left: 12px; z-index: 10000; padding: 10px 16px; border: 1px solid #fff; border-radius: 7px; background: var(--primary-color); color: #fff; font: 600 0.9rem 'Inter', sans-serif; cursor: pointer; }
+    .sidebar-toc { top: 70px; max-height: calc(100vh - 90px); transform: translateX(-100%); visibility: hidden; }
+    .sidebar-toc::after { content: none; }
+    .sidebar-toc.is-open { transform: translateX(0); visibility: visible; }
+    .sidebar-toc h4 { margin-top: 0; }
+    @media (max-width: 700px) {
+        .toc-toggle { top: 0; left: 0; width: 100%; border-radius: 0; min-height: 48px; text-align: left; }
+        .sidebar-toc { top: 54px; max-height: calc(100vh - 66px); }
+        body { padding-top: 60px; }
+        .learning-section .case-study-box, .learning-section .example-box { padding: 20px 18px; }
+        .learning-section .objectives-box, .learning-section .activity-card { padding: 20px 16px; }
+        .learning-section details { padding: 12px; }
+        .learning-section .table-scroll::before { content: 'Desliza la tabla para ver todas las columnas →'; display: block; padding: 9px 12px; color: #475569; background: #f8fafc; font-size: 0.8rem; }
+    }
+    @media (prefers-reduced-motion: reduce) { .sidebar-toc { transition: none; } }
+    @media print {
+        .toc-toggle { display: none; }
+        .learning-section .table-scroll { overflow: visible; }
+        .learning-section .table-scroll table { min-width: 0; }
+        .learning-section .table-scroll::before { display: none; }
+        .learning-section th, .learning-section td { padding: 6px; }
+        .learning-section .activity-card { break-inside: auto; }
+        .learning-section details { break-inside: avoid; }
+    }
+</style>
+<noscript><style>.toc-toggle{display:none}.sidebar-toc{position:static;transform:none;visibility:visible;width:100%;max-height:none;margin-bottom:24px;border-radius:8px}</style></noscript>
+</head>
 <body>
-<nav aria-label="Contents Index" class="sidebar-toc"><h4><i aria-hidden="true" class="fa-solid fa-list-ol"></i> Contents</h4><ul><li><a href="#evaluacion-inicial">Initial evaluation</a></li><li><a href="#sec1">1. Introduction and previous definitions</a></li><li><a class="subsection-link" href="#sec1_1">1.1. Hardware and Software</a></li><li><a class="subsection-link" href="#sec1_2">1.2. Computers and Computers</a></li><li><a class="subsection-link" href="#sec1_3">1.3. Digital</a></li><li><a href="#sec2">2. Communication of information</a></li><li><a class="subsection-link" href="#sec2_1">2.1 Elements of a communication system</a></li><li><a href="#sec3">3. Internal representation of information</a></li><li><a class="subsection-link" href="#sec3_1">3.1. Computer units and magnitudes</a></li><li><a class="subsection-link" href="#sec3_1_4">3.1.4 Conversion of units</a></li><li><a class="subsection-link" href="#sec3_2">3.2. Representation of information</a></li><li><a class="subsection-link" href="#sec3_3">3.3. Numbering systems</a></li><li><a href="#sec4">4. Features of a digital computer</a></li><li><a class="subsection-link" href="#sec4_1">4.1. Word length:</a></li><li><a class="subsection-link" href="#sec4_2">4.2. Main Report (RAM)</a></li><li><a class="subsection-link" href="#sec4_3">4.3. Secondary report</a></li><li><a class="subsection-link" href="#sec4_4">4.4. Bandwidth</a></li><li><a class="subsection-link" href="#sec4_5">4.5. Clock frequency</a></li><li><a class="subsection-link" href="#sec4_6">4.6. MIPS (Millions of Instructions per second)</a></li><li><a class="subsection-link" href="#sec4_7">4.7. MFLOPS</a></li><li><a class="subsection-link" href="#sec4_8">4.8. Synthetic tests (Benchmarks)</a></li><li><a href="#sec5">5. Physical Components. Von Neumann Architecture</a></li><li><a class="subsection-link" href="#sec5_1">5.1. Introduction: Von Neumann Architecture</a></li><li><a class="subsection-link" href="#sec5_2">5.2. Components. Functional CPU blocks</a></li><li><a class="subsection-link" href="#sec5_3">5.3. Role and Purpose of Internal Memory</a></li><li><a class="subsection-link" href="#sec5_4">5.4. I/O buses</a></li><li><a class="subsection-link" href="#sec5_5">5.5. Peripherals</a></li><li><a href="#sec6">6. Logical Components: Software</a></li><li><a class="subsection-link" href="#sec6_2">6.1. Resources</a></li></ul></nav>
+<button aria-controls="unit-toc" aria-expanded="false" class="toc-toggle" type="button">Contents</button>
+<nav aria-label="Contents Index" class="sidebar-toc" id="unit-toc"><h4><i aria-hidden="true" class="fa-solid fa-list-ol"></i> Contents</h4><ul><li><a href="#evaluacion-inicial">Initial evaluation</a></li><li><a href="#sec1">1. Introduction and previous definitions</a></li><li><a class="subsection-link" href="#sec1_1">1.1. Hardware and Software</a></li><li><a class="subsection-link" href="#sec1_2">1.2. Computers and Computers</a></li><li><a class="subsection-link" href="#sec1_3">1.3. Digital</a></li><li><a href="#sec2">2. Communication of information</a></li><li><a class="subsection-link" href="#sec2_1">2.1 Elements of a communication system</a></li><li><a href="#sec3">3. Internal representation of information</a></li><li><a class="subsection-link" href="#sec3_1">3.1. Computer units and magnitudes</a></li><li><a class="subsection-link" href="#sec3_1_4">3.1.4 Conversion of units</a></li><li><a class="subsection-link" href="#sec3_2">3.2. Representation of information</a></li><li><a class="subsection-link" href="#sec3_3">3.3. Numbering systems</a></li><li><a href="#sec4">4. Features of a digital computer</a></li><li><a class="subsection-link" href="#sec4_1">4.1. Word length</a></li><li><a class="subsection-link" href="#sec4_2">4.2. Main memory: RAM</a></li><li><a class="subsection-link" href="#sec4_3">4.3. Secondary memory: storage</a></li><li><a class="subsection-link" href="#sec4_4">4.4. Bandwidth</a></li><li><a class="subsection-link" href="#sec4_5">4.5. Clock frequency</a></li><li><a class="subsection-link" href="#sec4_6">4.6. MIPS: a measure with limits</a></li><li><a class="subsection-link" href="#sec4_7">4.7. MFLOPS: floating point calculation</a></li><li><a class="subsection-link" href="#sec4_8">4.8. Benchmarks: measuring before completion</a></li><li><a href="#sec5">5. Physical Components. Von Neumann Architecture</a></li><li><a class="subsection-link" href="#sec5_1">5.1. The stored programme</a></li><li><a class="subsection-link" href="#sec5_2">5.2. CPU components and operation</a></li><li><a class="subsection-link" href="#sec5_3">5.3. Memory: capacity, speed and persistence</a></li><li><a class="subsection-link" href="#sec5_4">5.4. Buses: address, data and control</a></li><li><a class="subsection-link" href="#sec5_5">5.5. Peripherals: connecting and using</a></li><li><a href="#sec6">6. Logical components: software</a></li><li><a class="subsection-link" href="#software-funcion">6.1. What software is and how it is classified</a></li><li><a class="subsection-link" href="#software-desarrollo">6.2. Creating programs: compiling is not checking everything</a></li><li><a class="subsection-link" href="#software-api">6.3. Libraries and APIs: reuse and communicate</a></li><li><a class="subsection-link" href="#software-empresa">6.4. CRM, ERP and DSS: starting from a need</a></li><li><a class="subsection-link" href="#software-licencias">6.5. Licenses: Free does not mean free</a></li><li><a class="subsection-link" href="#sec6_1">6.6. Final challenge: a proposal for the shop</a></li></ul></nav>
 <div class="document-wrapper"><main class="document-container"><div class="header-banner"><div class="header-top-row"><span class="module-tag">Computer Architecture • Educational Unit 01</span><a aria-label="Read this page in Spanish" class="language-switch" href="u01_es.html" hreflang="es" lang="es"><i aria-hidden="true" class="fa-solid fa-language"></i> Español</a></div><h1>UD01 Computer architecture</h1><p class="header-subtitle">Physical and logical components</p></div>
 <figure aria-labelledby="portada-caption" class="image-container unit-cover" id="portada-unidad" role="group">
 <svg aria-labelledby="portada-title portada-desc" role="img" viewbox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg">
@@ -1901,61 +1960,46 @@ the fundamental numbering theorem can be applied, for example:</p>
 <p>It understands binary as intermediate code, learns to group bits of three into three and four into four, and practices the four conversion paths with guided examples.</p>
 <a class="resource-link-btn" href="alumnado/p0105.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-code-branch"></i> Open Interactive Practice</a>
 </div>
+<section aria-labelledby="sec4" class="learning-section">
 <h2 id="sec4"><i aria-hidden="true" class="fa-solid fa-gauge-high"></i> 4. Features of a digital computer</h2>
-<blockquote>
-<p>There are a number of features or parameters that allow us to compare digital computers. We list in this section the relevant features of a digital computer.</p>
-</blockquote>
-<h3 id="sec4_1">4.1. Word length:</h3>
-<blockquote>
-<p>The length of the bit chain that the computer can handle simultaneously (in parallel). Thus a 32-bit computer can perform operations with operands of this size at once. Currently, 32 and 64bit computers are marketed</p>
-</blockquote>
-<h3 id="sec4_2">4.2. Main Report (RAM)</h3>
-<ul>
-<li>
-<p>Main internal memory size of the computer. The basic unit is byte or octet (8 bits) although multiples are usually used</p>
-</li>
-</ul>
-<h3 id="sec4_3">4.3. Secondary report</h3>
-<p>Amount of storage or permanent memory available to the computer (usually, hard drive capacity, gigabytes or terabytes)</p>
+<div class="case-study-box"><h3>Before we start: two teams, one decision</h3><p>A store needs a computer for billing, office and many browser tabs. Two computers cost the same: <strong>A has 8 GB of RAM and an announced 3.8 GHz CPU; B has 16 GB of RAM and another CPU at 3.2 GHz</strong>They both have a 512 GB SSD.</p><p>Write your first choice and what data you lack. At the end of the section, check your answer: GHz alone does not allow you to decide.</p></div>
+<div aria-label="Guide to Equipment Characteristics" class="table-scroll" role="region" tabindex="0"><table><caption>Four questions to read a technical file</caption><thead><tr><th scope="col">Question</th><th scope="col">What to look at</th><th scope="col">What does it mean?</th></tr></thead><tbody><tr><th scope="row">How much can you store or keep in use?</th><td>RAM and storage</td><td>Capacity, expressed in bytes and multiples.</td></tr><tr><th scope="row">At what rate do you transfer information?</th><td>Bandwig</td><td>Amount of information per second.</td></tr><tr><th scope="row">How do you process the instructions?</th><td>Architecture, word length and frequency</td><td>CPU features; none summarizes performance alone.</td></tr><tr><th scope="row">How do you solve a task?</th><td>Performance tests</td><td>Measured result for a specific workload.</td></tr></tbody></table></div>
+<h3 id="sec4_1">4.1. Word length</h3>
+<p>The word length is the number of bits that the CPU handles as a natural unit in certain operations. In a 64-bit architecture, general purpose logs usually allow transactions with values of that size. This does not mean that all instructions, all buses or all addresses are 64 bits.</p>
+<div class="didactic-note"><h4>Frequent error: "64 bits means double speed"</h4><p>The word length describes a feature of the architecture. Running time also depends on the program, CPU design, memory and other factors. We cannot deduce that a 64-bit computer is twice as fast as a 32-bit computer.</p></div>
+<h3 id="sec4_2">4.2. Main memory: RAM</h3>
+<p>RAM keeps instructions and data from running programs. Its capacity is expressed in bytes and multiples. It is a memory <strong>volatile</strong>: loses its contents when the equipment is turned off.</p>
+<p><strong>Example:</strong> opening multiple applications and documents increases the memory required. If the available RAM is insufficient, the system can resort to storage, usually much slower. Adding RAM can help in that situation, but does not speed up all tasks equally.</p>
+<h3 id="sec4_3">4.3. Secondary memory: storage</h3>
+<p>A SSD or hard drive retains programs and files when you turn off your computer. <strong>capacity</strong> indicates how much you can save; your <strong>speed</strong> indicates at what rate you can read or write. They are different characteristics.</p>
+<div class="example-box"><h4>Solved example: save and work</h4><p>A computer has 16 GB of RAM and a 512 GB SSD. The saved document remains in the SSD. When opening, the program uses RAM to work with it. By saving the changes, they are written into storage. Extending the RAM to 32 GB does not increase the capacity of the SSD.</p></div>
+<div class="activity-card activity-callout"><h4>Now you · 3 minutes</h4><p>One team warns that there is no space to save photos. Another slows down when opening many applications. What data would you check first in each case?</p></div>
 <h3 id="sec4_4">4.4. Bandwidth</h3>
-<p>The bandwidth is the amount of information per unit of time that can be transmitted via a bus or I/O unit. It is measured in MB/s Mb/s or GT/s</p>
+<p>The bandwidth indicates the amount of information that can be transmitted per unit of time. <strong>MB/s</strong> (megabytes per second) or <strong>Mb/s</strong> (megabits per second).Remember: one byte contains eight bits.</p>
+<div class="example-box"><h4>Example solved: How long does a transfer take?</h4><p>To transfer a 600 MB file at a constant speed of 100 Mb/s, we first unify the drives: <strong>100 8 = 12.5 MB/s</strong>. Then we calculate the time: <strong>600 = 12.5 = 48 seconds</strong>.</p><p>It is an ideal calculation with decimal units: it does not include communication overloads, waits or device limits. The actual transfer may take longer.</p></div>
+<details class="extension"><summary>To enlarge: GT/s and latency</summary><p>GT/s expresses billions of transfers per second. To convert it into a data rate you need to know the useful bits of each transfer, the number of lines and the encoding of the link. Latency measures the waiting time until you get a response; it is not the same as bandwidth.</p></details>
+<div class="activity-card activity-callout"><h4>Now you · 2 minutes</h4><p>How long would it take to transfer a file from 300 MB to 50 MB/s? And at 50 Mb/s?</p></div>
 <h3 id="sec4_5">4.5. Clock frequency</h3>
-<p>Frequency with which the internal oscillator (watch) coordinates the computer operations, usually measured in MHZ or GHZRemember: A Mhz is...</p>
-<h3 id="sec4_6">4.6. MIPS (Millions of Instructions per second)</h3>
-<p>Computer performance measure, which indicates the number of machine instructions a processor can run in a second, grouped into millions.</p>
-<h3 id="sec4_7">4.7. MFLOPS</h3>
-<p>Measure similar to the previous one, but exclusively for operations with actual floating point numbers, which present a higher calculation load.</p>
-<h3 id="sec4_8">4.8. Synthetic tests (Benchmarks)</h3>
-<p>They are a varied set of tests whose result at run time is more reliable than the measurement in MIPS, MFLOPS or GHZ. The result of these tests results in a ranking of power.</p>
-<div class="activity-card activity-callout" id="practica-comparacion-cpu">
-<p><strong>Lab: Meet and compare your CPU.</strong></p>
-<p>Identify your processor in Ubuntu, perform three measurements with Speedometer, check CPU Mark and compare the performance and price of three processors. The lab guides you step by step and generates a copy report.</p>
-<p><strong>Delivery:</strong> only in text, without captures or attachments.</p>
-<a class="resource-link-btn" href="../../labs/compara-tu-cpu.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-microchip"></i> Open the interactive laboratory</a>
-</div>
+<p>The clock provides a signal that coordinates processing steps. Frequency indicates cycles per second: <strong>1 MHz = 1 million cycles/s; 1 GHz = 1 billion cycles/s</strong>.</p>
+<p>A 3 GHz processor performs three billion cycles per second. <strong>does not equal three billion instructions per second</strong>: An instruction may require several cycles and a CPU may overlap instructions or complete several in one cycle. Architecture, cores, memory and workload are also influenced.</p>
+<h3 id="sec4_6">4.6. MIPS: a measure with limits</h3>
+<details class="extension"><summary>To expand: millions of instructions per second</summary><p>MIPS indicates how many millions of instructions are executed per second in a test. Not all instructions do the same job, and architectures may need different amounts of instructions to solve a task. Therefore, it is not a universal sorting of processors.</p></details>
+<h3 id="sec4_7">4.7. MFLOPS: floating point calculation</h3>
+<details class="extension"><summary>To expand: millions of floating-point operations per second</summary><p>MFLOPS expresses millions of floating-point operations per second. It is used in numerical calculation loads. The accuracy used and whether the value is theoretical or measured must be indicated. Do not predict for itself the speed when opening a browser or document.</p></details>
+<h3 id="sec4_8">4.8. Benchmarks: measuring before completion</h3>
+<p>A <strong>benchmark</strong> It is a performance test with a defined workload. It can measure a real application or synthetic tasks. Its results are useful when the test looks like the use we are interested in and the conditions are comparable.</p>
+<ol><li><strong>Defines the task:</strong> browse, compile, edit video, etc.</li><li><strong>Controls the conditions:</strong> program version, power and open applications.</li><li><strong>Repeat and record:</strong> preserves all measurements and explains their variation.</li><li><strong>Plays:</strong> compares only scores from the same test and version; checks if a higher or lower value represents an improvement.</li></ol>
+<div class="resource-card" id="practica-comparacion-cpu"><h4>Laboratory: Meet and compare your CPU</h4><p><strong>Before:</strong> predict which initial case team you would choose and explain what you need to measure. <strong>During:</strong> identify your CPU in Ubuntu, perform three measurements and consult comparable models. <strong>Then:</strong> Check your prediction with the evidence obtained.</p><p>Speedometer measures the response of web applications: they influence the computer and browser, not just the CPU. CPU Mark is another test, with another scale; their scores are not numerically compared to those of Speedometer.</p><a class="resource-link-btn" href="../../labs/compara-tu-cpu.html" rel="noopener noreferrer" target="_blank">Open the interactive laboratory</a><p><strong>Delivery:</strong> only in text. A good conclusion includes data, measurement conditions, intended use and limits of comparison.</p></div>
+<details class="answer"><summary>Return to the initial case: A or B?</summary><p>The 16 GB of Team B can be an advantage if the load needs more than 8 GB. But we do not know the CPU models, the actual memory consumption and their performance in those tasks. An informed response explains these limitations and requests data; it does not choose only by GHz.</p></details>
+</section>
+<section aria-labelledby="sec5" class="learning-section">
 <h2 id="sec5"><i aria-hidden="true" class="fa-solid fa-memory"></i> 5. Physical Components. Von Neumann Architecture</h2>
-<h3 id="sec5_1">5.1. Introduction: Von Neumann Architecture</h3>
-<p>The basic architecture model used in digital computers was established in <strong>1945 by John Von Neumann</strong>Hungarian physicist based in the United States.</p>
-<p>His great contribution to pre-existing architectures (hardvard architecture mainly) was to eliminate <strong>the programming logic based on relays or wired connections</strong>, unifying data memory and program memory into a <strong>single main memory</strong> and thus simplifying the dual management of data control and programme.
-<strong>incremental space availability</strong> in memory as this can be divided between data and programs at will.</p>
-<p>The <strong>functional elements</strong> of the Von Neumann architecture are therefore:</p>
-<ul>
-<li>
-<p><strong>Control Unit</strong></p>
-</li>
-<li>
-<p><strong>Arithmetic-logical unit</strong></p>
-</li>
-<li>
-<p><strong>Main Memory</strong></p>
-</li>
-<li>
-<p><strong>I/O unit</strong></p>
-</li>
-</ul>
-<p>The control unit and the arithmetic-logical unit are grouped in the so-called <strong>Central processing unit</strong>.</p>
-<h3 id="sec5_2">5.2. Components. Functional CPU blocks</h3>
-<p>The Central Process Unit (CPU = Central Processing Unit) unifies the functional elements of Control Unit and Arithmetic-Logic Unit.</p>
+<h3 id="sec5_1">5.1. The stored programme</h3>
+<p>In the Von Neumann model, <strong>instructions and data are stored in a common main memory</strong>. The CPU gets instructions from that memory, interprets them and coordinates their execution. Input/output allows you to exchange information with the outside.</p>
+<p>This model will help us reason about the basic functioning. Current computers incorporate many improvements and do not literally reproduce all the details of the scheme.</p>
+<details class="extension"><summary>To enlarge: Von Neumann and Harvard</summary><p>The Harvard model separates memories and access paths for instructions and data. The essential difference is that separation, not that one model necessarily has wired programming. Some CPUs combine common main memory with separate caches for instructions and data.</p></details>
+<h3 id="sec5_2">5.2. CPU components and operation</h3>
+<p>The <strong>control unit (UC)</strong> coordination; <strong>arythmetic-logical unit (ALU)</strong> operates with the data; <strong>records</strong> temporarily retain values within the CPU. First look at the set and then follow the example.</p>
 <figure aria-labelledby="bloques-cpu-caption" class="image-container" id="bloques-cpu" role="group">
 <svg aria-labelledby="bloques-cpu-title bloques-cpu-desc" role="img" viewbox="0 0 960 640" xmlns="http://www.w3.org/2000/svg">
 <title id="bloques-cpu-title">Functional CPU blocks</title>
@@ -1967,11 +2011,11 @@ the fundamental numbering theorem can be applied, for example:</p>
 <text fill="#1e3a8a" font-size="27" font-weight="700" x="345" y="63">CPU · Central processing unit</text>
 <rect fill="white" height="135" rx="14" stroke="#b45309" stroke-width="2" width="250" x="65" y="105"></rect>
 <text font-size="23" font-weight="700" x="190" y="139">Control unit</text><text font-size="18" x="190" y="174">Decodify and coordinate</text><text font-size="16" x="190" y="206">Decoder · sequencer</text>
-<rect fill="white" height="135" rx="14" stroke="#0f766e" stroke-width="2" width="240" x="385" y="105"></rect>
-<text font-size="26" font-weight="700" x="505" y="140">ALU</text><text font-size="18" x="505" y="175">Arithmetic operations</text><text font-size="18" x="505" y="207">and logics</text>
+<path d="M385 105H475L505 135L535 105H625L575 240H435Z" fill="white" stroke="#0f766e" stroke-width="2"></path>
+<text font-size="26" font-weight="700" x="505" y="165">ALU</text><text font-size="16" x="505" y="191">Operations</text><text font-size="16" x="505" y="216">arithmetic and logic</text>
 <rect fill="#dbeafe" height="130" rx="14" stroke="#1e3a8a" stroke-width="2" width="560" x="65" y="325"></rect>
 <text font-size="25" font-weight="700" x="345" y="360">Records</text><text font-size="19" x="345" y="394">PC · IR · MAR · data recording · status</text><text font-size="19" x="345" y="426">Instructions, addresses and temporary data</text>
-<path d="M315 160H378" marker-end="url(#cpu-control-arrow)" stroke="#b45309" stroke-dasharray="7 5" stroke-width="3"></path><path d="M190 240V315" marker-end="url(#cpu-control-arrow)" stroke="#b45309" stroke-dasharray="7 5" stroke-width="3"></path>
+<path d="M315 160H402" marker-end="url(#cpu-control-arrow)" stroke="#b45309" stroke-dasharray="7 5" stroke-width="3"></path><path d="M190 240V315" marker-end="url(#cpu-control-arrow)" stroke="#b45309" stroke-dasharray="7 5" stroke-width="3"></path>
 <path d="M505 250V315" marker-end="url(#cpu-data-arrow)" marker-start="url(#cpu-data-arrow)" stroke="#0f766e" stroke-width="4"></path>
 <text fill="#b45309" font-size="15" x="349" y="147">Ctrl</text><text fill="#0f766e" font-size="17" text-anchor="start" x="540" y="287">Data</text>
 <rect fill="#e0f2fe" height="135" rx="14" stroke="#0369a1" stroke-width="2" width="195" x="740" y="105"></rect>
@@ -1987,303 +2031,188 @@ the fundamental numbering theorem can be applied, for example:</p>
 </g></svg>
 <figcaption class="image-caption" id="bloques-cpu-caption">The control unit coordinates, the ALU calculates, and records store temporary information. The CPU exchanges information with the RAM and I/O via buses.</figcaption>
 </figure>
-<h4 class="numbered-subsection" id="sec5_2_1">5.2.1. Control Unit</h4>
-<p>It is the nerve center of the computer, where the programs are processed and its function is to perform the <strong>search, load, sequencing and execution</strong> of the instructions.</p>
-<p>These instructions are written in <strong>Language Machine</strong> and are formed by a <strong>operation code</strong>, which indicates to UC which operation should be carried out, and up to <strong>two memory data or addresses</strong> which indicate the location of that data.</p>
-<p>To perform its work, UC uses the following elements:</p>
-<p><strong>Records,</strong> some visible to the user and others do not<strong>,</strong> These include:</p>
-<ul>
-<li>
-<p><strong>Programme counter(PC)</strong>. Contains at all times the memory address of the following command to execute.</p>
-</li>
-<li>
-<p><strong>Instruction(IR) Record</strong> Stores the current instruction, which will carry with it the operating code and, where appropriate, the operands or memory addresses of the same.</p>
-</li>
-<li>
-<p><strong>Recording of memory addresses (MAR)</strong> They are used to store memory addresses containing the data of an instruction or the place where to store the result of it.</p>
-</li>
-<li>
-<p><strong>Memory Exchange Record(MIR):</strong> Any recovered memory information is stored temporarily.</p>
-</li>
-<li>
-<p><strong>Status records (Flags/PSW)</strong>It contains information on the outcome of the previous operation of the logical arithmetic unit and possible anomalous situations, such as overflows, interruptions, etc.</p>
-</li>
-<li>
-<p><strong>Other records,</strong> as the <strong>generic records</strong> which can be used by the programmes themselves and others <strong>specific records</strong> used by the processor (<strong>stack pointer, baseline log</strong>etc.) and that depend on their concrete architecture.</p>
-</li>
-</ul>
-<p><strong>Clock</strong>. The clock is an oscillator circuit that autonomously generates a signal in the form of pulses at constant intervals that mark the moments in which the different steps of each instruction must begin.</p>
-<p><strong>Decoder.</strong> It is responsible for extracting the operating code from the current instruction, analyzing it and issuing the necessary signals to the other elements for execution through the sequencer.</p>
-<p><strong>Sequencer.</strong> It generates a series of very elementary commands that allow to execute the current instruction, in a synchronous way with the system clock.</p>
-<p>Finally, it should be noted that the Control Units can be classified as <strong>two<br/>
-categories</strong>:</p>
-<ul>
-<li>
-<p><strong>UC wired.</strong> Logic is implemented in hardware, which makes it UC of <strong>specific purpose</strong> And it's not modifiable.</p>
-</li>
-<li>
-<p><strong>Microprogrammed UC.</strong> In them, logic is implemented as a stored program as <strong>firmware</strong>Which allows for his subsequent rewriting.</p>
-</li>
-</ul>
-<h4 class="numbered-subsection" id="sec5_2_2">5.2.2. Arithmetic-Logic Unit</h4>
-<p>It is the functional unit responsible for performing arithmetic and logic operations. <strong>under the supervision of the control unit</strong>.</p>
-<p>The operations that this unit can carry out <strong>They used to be very elementary.</strong>since they were normally composed of a summer-restoring circuit, and based all arithmetic operations on sums, decomposing complex operations into elementary steps.</p>
-<p><strong>Currently</strong> the Arithmetic Unit has taken on great importance and the type of operations it carries out is very complex, being similar to a <strong>scientific calculator of high speed and high precision.</strong></p>
-<p>The operations that ALU is capable of performing are classified into three groups:</p>
-<ul>
-<li>
-<p><strong>Arithmetic</strong>. Usually are the sum (ADD), subtraction (SUB), multiplication (MUL), division (DIV) and change of sign.</p>
-</li>
-<li>
-<p><strong>Logic</strong>. Usually they are denial (NOT), logical sum (OR), logical product (AND) and exclusive sum (XOR).</p>
-</li>
-<li>
-<p><strong>Displacement</strong>. It consists of moving the bits of a word a certain number of positions to the right or to the left.</p>
-</li>
-</ul>
-<p>The number of operators that can accept the arithmetic-logical unit is also variable, classified as operators <strong>monodic, diadic and triadic</strong> if you are able to work with one, two or three data simultaneously respectively</p>
-<div class="resource-card expansion-card">
-<div class="resource-card-header">
-<span class="resource-title"><i class="fa-solid fa-microchip"></i> Von Neumann Simulator</span>
-<span class="resource-badge badge-tool">Tool</span>
-</div>
-<div class="resource-description">Online simulator to explore the basic functioning of Von Neumann architecture.</div>
-<a class="resource-link-btn" href="http://lab.xitrus.es/VonNeumann/" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open the simulator</a>
-</div>
-<h3 id="sec5_3">5.3. Role and Purpose of Internal Memory</h3>
-<p>Memory is considered a single functional component, composed of cells that can store <strong>bits</strong> independently, with two basic operations: <strong>reading and writing</strong>.</p>
-<p>However, the limitations in terms of <strong>performance, economic cost and speed</strong> make it necessary to structure it.</p>
+<h4 class="numbered-subsection" id="sec5_2_1">5.2.1. Control unit: search, decode and execute</h4>
+<ol><li><strong>Find:</strong> the program counter (<strong>PC</strong>) indicates where to obtain the following instruction. This is copied into the instruction log (<strong>IR</strong>). In a sequential execution, the PC moves to the direction of the next instruction.</li><li><strong>Decodify:</strong> UC interprets the operation and its operands. For example, in a sum instruction identifies the operation and the data you should work with.</li><li><strong>Run:</strong> UC emits signals to read the data, activate the ALU and write the result where appropriate. The cycle is then repeated.</li></ol>
+<p>An instruction includes an operating code and may include operands or references to them. Its number and format depends on the architecture. Jumps can change the next PC address.</p>
+<details class="extension"><summary>To expand: other UC records and organization</summary><ul><li><strong>MAR:</strong> in the didactic model, it contains the address of the memory position to which it is accessed.</li><li><strong>MDR or MBR:</strong> temporarily retains the data that is read or written. In some materials it appears as MIR.</li><li><strong>Status log:</strong> collects indicators as zero result, carry or overflow, according to the architecture.</li><li><strong>Decoder and sequencer:</strong> interpret the instruction and order the necessary signals, coordinated by the clock.</li><li><strong>Control wired or microprogrammed:</strong> Signals can be generated by circuit logic or microinstructions. This does not in itself determine that the processor is general or specific in purpose. The ability to update the microcode depends on the design.</li></ul></details>
+<h4 class="numbered-subsection" id="sec5_2_2">5.2.2. ALU: Data operations</h4>
+<p>The ALU performs arithmetic and logical operations, such as adding, subtracting, comparing, applying AND, OR or XOR and scrolling bits. <code>0101 AND 0011 = 0001</code>: Only 1 position remains if both input bits are 1.</p><p>Concrete capabilities depend on the CPU. Floating point operations can be performed in specialized units; we should not imagine the entire CPU as a single scientific calculator.</p>
+<div class="resource-card expansion-card"><h4>Explore the Von Neumann simulator</h4><p>Locates the memory, PC and current instruction. Run a simple program step by step: <strong>before each step predicts what changes and then notes what is observed</strong>. Use the instructions available in the simulator and record what changes at each step. If you cannot access, describe the phases of search, decoding and execution from the CPU schema.</p><a class="resource-link-btn" href="http://lab.xitrus.es/VonNeumann/" rel="noopener noreferrer" target="_blank">Open the simulator</a></div>
+<h3 id="sec5_3">5.3. Memory: capacity, speed and persistence</h3>
+<p><strong>Starting question:</strong> If the records are so fast, why don't we save all our files in them? Their capacity is very small and their cost per bit is high. That's why different levels are combined.</p>
 <h4 class="numbered-subsection" id="sec5_3_1">5.3.1. Memory hierarchy</h4>
-<p>The author <strong>Pedro de Miguel de Anasagasti</strong>in his book Fundamentals of Computers, he characterizes memory according to:</p>
-<ul>
-<li>
-<p>The cost per bit</p>
-</li>
-<li>
-<p>Time taken to access information</p>
-</li>
-<li>
-<p>Storage capacity or size</p>
-</li>
-</ul>
-<p>The desired values for a memory are a large storage capacity, a small access time, and a reduced price. However, this combination does not exist: <strong>A quick memory is a expensive memory.</strong> This limitation is valid from the time the first memories emerged to the present day. Fast memories, without refresh cycles, with almost non-existent latencies, require the use of expensive components: integrated bistables of high conductivity, whose manufacturing process is expensive and whose materials are expensive. <strong>more memory capacity, more economic cost.</strong></p>
-<p>Fortunately. <strong>not all memory needs to be accessed at a given time</strong>. This enables the instructions and data required by the processor <strong>can be hierarchized in different memories</strong> depending on the immediacy required for your process.</p>
-<p>The hierarchy of memory then conforms to <strong>very fast, expensive and low capacity memories</strong> for data in process up to <strong>relatively slow, high capacity and low cost memories per bit</strong> for data that will not be processed in the near future (not in the next few seconds). The different memories from lower to higher capacity and higher at lower speed and cost are classified as:</p>
-<ul>
-<li>
-<p><strong>Records</strong> (processor)</p>
-</li>
-<li>
-<p><strong>Memory cache</strong> (structured in levels: L1, L2, L3, etc.)</p>
-</li>
-<li>
-<p><strong>Main Memory</strong> (Dynamic RAM)</p>
-</li>
-<li>
-<p><strong>Secondary memory</strong> (hard disks and solid state)</p>
-</li>
-<li>
-<p><strong>Auxiliary mass memory</strong> (backing brackets)</p>
-</li>
-</ul>
-<p>Data must be transferred from memory to memory according to the required availability.</p>
 <figure aria-labelledby="jerarquia-memoria-caption" class="image-container" id="jerarquia-memoria" role="group"><svg aria-labelledby="jerarquia-memoria-title jerarquia-memoria-desc" role="img" viewbox="0 0 900 490" xmlns="http://www.w3.org/2000/svg"><title id="jerarquia-memoria-title">Pyramid of the memory hierarchy</title><desc id="jerarquia-memoria-desc">In general, upwards increases speed and cost per bit; downwards increase capacity and access time. Data is transferred between levels.</desc><rect fill="#f8fafc" height="490" rx="16" width="900"></rect><g font-family="Inter, Arial, sans-serif"><text fill="#0f172a" font-size="28" text-anchor="middle" x="450" y="38">Memory Hierarchy</text><polygon fill="#1e3a8a" points="450,65 340,140 560,140"></polygon><polygon fill="#1e3a8a" points="340,140 560,140 608,202 292,202"></polygon><text fill="white" font-size="21" text-anchor="middle" x="450" y="179">Records</text><polygon fill="#0369a1" points="292,205 608,205 656,267 244,267"></polygon><text fill="white" font-size="21" text-anchor="middle" x="450" y="244">Cache: L1, L2, L3</text><polygon fill="#0f766e" points="244,270 656,270 704,332 196,332"></polygon><text fill="white" font-size="21" text-anchor="middle" x="450" y="309">Main memory: RAM</text><polygon fill="#0e7490" points="196,335 704,335 752,397 148,397"></polygon><text fill="white" font-size="21" text-anchor="middle" x="450" y="374">Secondary memory: SSD and HDD</text><polygon fill="#334155" points="148,400 752,400 800,462 100,462"></polygon><text fill="white" font-size="21" text-anchor="middle" x="450" y="439">Auxiliary memory: backup supports</text><path d="M85 370V165l-9 17m9-17 9 17M815 165v205l-9-17m9 17 9-17" fill="none" stroke="#0f766e" stroke-width="4"></path><text fill="#0f766e" font-size="20" text-anchor="middle" x="105" y="100">Upwards</text><text fill="#0f172a" font-size="17" text-anchor="middle" x="105" y="126">More speed</text><text fill="#0f172a" font-size="17" text-anchor="middle" x="105" y="150">Higher cost/bit</text><text fill="#0f766e" font-size="20" text-anchor="middle" x="785" y="100">Down</text><text fill="#0f172a" font-size="17" text-anchor="middle" x="785" y="126">More capacity</text><text fill="#0f172a" font-size="17" text-anchor="middle" x="785" y="150">More latency</text></g></svg><figcaption class="image-caption" id="jerarquia-memoria-caption">In general, upwards increases speed and cost per bit; downwards increase capacity and access time. Data is transferred between levels.</figcaption></figure>
-<h4 class="numbered-subsection" id="sec5_3_2">5.3.2. Functions by level</h4>
-<p>As we see in the hierarchy of memory, the <strong>internal memory</strong> is composed of 3 levels, each of which has the following specific functions:</p>
-<ul>
-<li>
-<p><strong>Level 0</strong> - Records: Stores data on which the control unit is working directly.</p>
-</li>
-<li>
-<p><strong>Level 1</strong> - Cache: Memory formed by integrated circuits SRAM. In turn it is divided into several levels. It is used to minimize accesses to the main memory.</p>
-</li>
-<li>
-<p><strong>Level 2</strong> - Main memory. Memory formed by DRAM, whose function is to store the instructions and data that are being used in the execution of a process.</p>
-</li>
-</ul>
-<h3 id="sec5_4">5.4. I/O buses</h3>
-<p>The set of components of a computer communicates with each other through certain paths, which constitute the interconnection structure, or I/O buses.</p>
-<p>In the architecture Von Neumann are distinguished the buses
-<strong>data, address and control</strong>:</p>
-<figure aria-labelledby="esquema-buses-caption" class="image-container" id="esquema-buses" role="group"><svg aria-labelledby="esquema-buses-title esquema-buses-desc" role="img" viewbox="0 0 900 660" xmlns="http://www.w3.org/2000/svg"><title id="esquema-buses-title">The three system buses</title><desc id="esquema-buses-desc">Address, data and control buses connect CPU, RAM and I/O. The example shows how the CPU requests a reading and receives the data from the memory.</desc><rect fill="#f8fafc" height="660" rx="16" width="900"></rect><g font-family="Inter, Arial, sans-serif"><text fill="#0f172a" font-size="28" text-anchor="middle" x="450" y="38">CPU, memory and input/output</text><rect fill="#e0f2fe" height="260" rx="12" stroke="#0369a1" stroke-width="2" width="150" x="25" y="105"></rect><text fill="#0f172a" font-size="22" text-anchor="middle" x="100.0" y="243.0">CPU</text><rect fill="#e0f2fe" height="115" rx="12" stroke="#0369a1" stroke-width="2" width="175" x="700" y="95"></rect><text fill="#0f172a" font-size="22" text-anchor="middle" x="787.5" y="160.5">RAM</text><rect fill="#e0f2fe" height="115" rx="12" stroke="#0369a1" stroke-width="2" width="175" x="700" y="275"></rect><text fill="#0f172a" font-size="22" text-anchor="middle" x="787.5" y="340.5">Unit I/O</text><path d="M175 160H380M380 100V390M380 115H700M380 295H700" fill="none" stroke="#1d4ed8" stroke-width="4"></path><text fill="#1d4ed8" font-size="20" text-anchor="start" x="190" y="148">Addresses</text><path d="M175 225H475M475 100V390M475 149H700M475 329H700" fill="none" stroke="#0f766e" stroke-width="4"></path><text fill="#0f766e" font-size="20" text-anchor="start" x="190" y="213">Data</text><path d="M175 290H570M570 100V390M570 183H700M570 363H700" fill="none" stroke="#b45309" stroke-width="4"></path><text fill="#b45309" font-size="20" text-anchor="start" x="190" y="278">Ctrl</text><text fill="#0f172a" font-size="25" text-anchor="middle" x="450" y="436">Example: read a data from the RAM</text><text fill="#1d4ed8" font-size="23" text-anchor="middle" x="450" y="478">1. CPU → RAM: address 42</text><text fill="#b45309" font-size="23" text-anchor="middle" x="450" y="514">2. CPU → RAM: read order</text><text fill="#0f766e" font-size="23" text-anchor="middle" x="450" y="550">3. RAM → CPU: data stored</text><text fill="#0f172a" font-size="18" text-anchor="middle" x="450" y="604">Data: both senses · Directions: from CPU in this model</text><text fill="#0f172a" font-size="18" text-anchor="middle" x="450" y="631">Control: commands and responses according to the signal (reading, writing, interrupting...).</text></g></svg><figcaption class="image-caption" id="esquema-buses-caption">Address, data and control buses connect CPU, RAM and I/O. The example shows how the CPU requests a reading and receives the data from the memory.</figcaption></figure>
-<h4 class="numbered-subsection" id="sec5_4_1">5.4.1. Data Bus:</h4>
-<p>The data bus allows the exchange of data between the CPU and the rest of units.</p>
-<h4 class="numbered-subsection" id="sec5_4_2">5.4.2. Address bus:</h4>
-<p>RAM is addressable, so that each memory cell has its own address. Addresses are a number that selects a memory cell within the main memory or in the address space of the input/output unit.<br/>
-<br/>
-The address bus is a channel of the microprocessor completely independent of the data bus where the memory address of the data in transit is established.<br/>
-<br/>
-The steering bus consists of the set of electrical lines necessary to establish a direction. The memory capacity that can be directed depends on the amount of bits that make up the direction bus, being 2<sup>n</sup> the maximum bit size of the memory bank that can be addressed with n lines. For example, to address a 256 bit memory, at least 8 lines are necessary, as 2<sup>8</sup> = 256. In addition, control lines may be required to indicate when the address is available on the bus. This depends on the bus design itself.</p>
-<h4 class="numbered-subsection" id="sec5_4_3">5.4.3. Control bus:</h4>
-<p>The control bus governs the use and access of data and address lines. Since these lines are shared by all components, it has to be provided with certain mechanisms that control their use. Control signals transmit both commands and synchronization information, preventing a collision of information in the system.</p>
-<h4 class="numbered-subsection" id="sec5_4_4">5.4.4 Multiplexed buses:</h4>
-<p>Some designs use multiplexed electric lines for the address bus and data bus. This means that the same set of electrical lines behave a few times as a address bus and other times as a data bus, but never at the same time. A control line allows you to discern which of the two functions is active.</p>
-<h3 id="sec5_5">5.5. Peripherals</h3>
-<p>Peripherals are interconnected to the I/O unit by using a <strong>interface</strong> with access specifications
-<strong>standardized</strong> both at form level, voltage level and communication protocols.</p>
-<p>Each peripheral has a <strong>control circuit</strong>
-(or controller) that manages all the logic of it.</p>
-<p>The peculiarities of each device are managed transparently by the operating system by means of a <strong>driver software (driver)</strong> which is normally provided by the manufacturer himself.</p>
-<p>Peripherals can be classified in devices such as
-<strong>Entry</strong>, of <strong>Output</strong>, or of entry and exit; the latter are of type <strong>storage</strong> o
-<strong>communication</strong>.</p>
+<p>In general, the closer a processing level is, the lower its capacity and access time and the higher its cost per bit. The cache takes advantage of the fact that programs usually reuse data and instructions and access nearby positions. <strong>All levels have latency</strong>Even if it's too small.</p>
+<h4 class="numbered-subsection" id="sec5_3_2">5.3.2. What each level keeps</h4>
+<div aria-label="Functions of memory levels" class="table-scroll" role="region" tabindex="0"><table><caption>Qualitative comparison in a regular team</caption><thead><tr><th scope="col">Level</th><th scope="col">Function</th><th scope="col">Capacity/speed</th><th scope="col">Do you keep data without power?</th></tr></thead><tbody><tr><th scope="row">Records</th><td>Values and instructions used directly by the CPU.</td><td>Very small / very high</td><td>No</td></tr><tr><th scope="row">Cache L1, L2, L3</th><td>Copies of information that can prevent access to RAM; usually SRAM.</td><td>Small/high</td><td>No</td></tr><tr><th scope="row">RAM</th><td>Instructions and data on ongoing programmes; usually DRAM.</td><td>Older/less than cache</td><td>No</td></tr><tr><th scope="row">SSD or hard disk</th><td>Files and programs stored.</td><td>Large/less than RAM</td><td>Yes</td></tr><tr><th scope="row">Supports</th><td>Copies to retrieve information.</td><td>Depends on less immediate support/access</td><td>Yes, on non-volatile supports</td></tr></tbody></table></div>
+<div class="example-box"><h4>Solved example: open, edit and save a document</h4>
+<p>Ana has a document saved in the SSD. She opens it, changes a paragraph and saves the new version. Let's see where the information is at every moment:</p>
+<ol><li><strong>Before opening:</strong> the file remains in storage, which keeps the data without power.</li><li><strong>When opening:</strong> the program loads the necessary data into RAM. The CPU works with information in caches and logs.</li><li><strong>When editing it:</strong> changes are kept in memory. The saved file can still contain the previous version.</li><li><strong>When saving:</strong> changes are written in storage.</li></ol>
+<p><strong>If the power is cut off before saving,</strong> Ana may lose changes that were only in volatile memory. A persistent copy created by self-saved may allow to recover part or all of the work.</p></div>
+<h3 id="sec5_4">5.4. Buses: address, data and control</h3>
+<p>In the simplified model, buses communicate CPU, memory and input/output. For example, reading a value 7 stored in position 20 requires three types of information: <strong>where</strong> read (direction 20), <strong>what operation</strong> perform (reading) and <strong>what value</strong> transfer (7).</p>
+<figure aria-labelledby="esquema-buses-caption" class="image-container" id="esquema-buses" role="group"><svg aria-labelledby="esquema-buses-title esquema-buses-desc" role="img" viewbox="0 0 900 660" xmlns="http://www.w3.org/2000/svg"><title id="esquema-buses-title">The three system buses</title><desc id="esquema-buses-desc">Address, data and control buses connect CPU, RAM and I/O. The example shows how the CPU requests a reading and receives the data from the memory.</desc><rect fill="#f8fafc" height="660" rx="16" width="900"></rect><g font-family="Inter, Arial, sans-serif"><text fill="#0f172a" font-size="28" text-anchor="middle" x="450" y="38">CPU, memory and input/output</text><rect fill="#e0f2fe" height="260" rx="12" stroke="#0369a1" stroke-width="2" width="150" x="25" y="105"></rect><text fill="#0f172a" font-size="22" text-anchor="middle" x="100.0" y="243.0">CPU</text><rect fill="#e0f2fe" height="115" rx="12" stroke="#0369a1" stroke-width="2" width="175" x="700" y="95"></rect><text fill="#0f172a" font-size="22" text-anchor="middle" x="787.5" y="160.5">RAM</text><rect fill="#e0f2fe" height="115" rx="12" stroke="#0369a1" stroke-width="2" width="175" x="700" y="275"></rect><text fill="#0f172a" font-size="22" text-anchor="middle" x="787.5" y="340.5">Unit I/O</text><path d="M175 160H380M380 100V390M380 115H700M380 295H700" fill="none" stroke="#1d4ed8" stroke-width="4"></path><text fill="#1d4ed8" font-size="20" text-anchor="start" x="190" y="148">Addresses</text><path d="M175 225H475M475 100V390M475 149H700M475 329H700" fill="none" stroke="#0f766e" stroke-width="4"></path><text fill="#0f766e" font-size="20" text-anchor="start" x="190" y="213">Data</text><path d="M175 290H570M570 100V390M570 183H700M570 363H700" fill="none" stroke="#b45309" stroke-width="4"></path><text fill="#b45309" font-size="20" text-anchor="start" x="190" y="278">Ctrl</text><text fill="#0f172a" font-size="25" text-anchor="middle" x="450" y="436">Example: read a data from the RAM</text><text fill="#1d4ed8" font-size="23" text-anchor="middle" x="450" y="478">1. CPU → RAM: address 20</text><text fill="#b45309" font-size="23" text-anchor="middle" x="450" y="514">2. CPU → RAM: read order</text><text fill="#0f766e" font-size="23" text-anchor="middle" x="450" y="550">3. RAM → CPU: data 7</text><text fill="#0f172a" font-size="18" text-anchor="middle" x="450" y="604">Data: both senses · Directions: from CPU in this model</text><text fill="#0f172a" font-size="18" text-anchor="middle" x="450" y="631">Control: commands and responses according to the signal (reading, writing, interrupting...).</text></g></svg><figcaption class="image-caption" id="esquema-buses-caption">Address, data and control buses connect CPU, RAM and I/O. The example shows how the CPU requests a reading and receives the data from the memory.</figcaption></figure>
+<h4 class="numbered-subsection" id="sec5_4_1">5.4.1. Data Bus: the content</h4><p>It carries instructions and data. In a reading, the memory delivers the requested content; in a writing, it receives the value that you want to store.</p>
+<h4 class="numbered-subsection" id="sec5_4_2">5.4.2. Address bus: position</h4><p>Select the position you access. With <strong>n bits of address can be identified 2<sup>n</sup> positions</strong>. To calculate the capacity we need to know how much each position holds.</p>
+<div class="example-box"><h4>Solved example: positions and bytes</h4><p>With 8 bits of direction there are 2<sup>8</sup> = <strong>256 positions</strong>, numbered from 0 to 255. If each position contains a byte, the addressable capacity is <strong>256 bytes</strong>. If each position contained two bytes, it would be 512 bytes. The number of positions does not change.</p></div>
+<div class="activity-card activity-callout" id="actividad-limite-memoria"><h4>Activity: How much RAM can a current processor use? · 20 minutes</h4>
+<p>Investigate the <strong>Intel Core Ultra 9 285K</strong> in their <a href="https://www.intel.com/content/www/us/en/products/sku/241060/intel-core-ultra-9-processor-285k-36m-cache-up-to-5-70-ghz/specifications.html" rel="noopener noreferrer" target="_blank">Intel official tab</a>. The objective is to distinguish the theoretical address space from RAM that a real team can support.</p>
+<ol><li>Locates the instruction set and the maximum memory capacity supported by the processor. Write down the data, its unit, the link and the query date.</li><li>Calculates how many bytes would allow you to address <strong>64 bits of direction</strong> if each address identifies a byte. Express the result in EiB (1 EiB = 2<sup>60</sup> bytes) and compare it with Intel's published capability.</li><li>Reason why "64-bit processor" does not mean that it implements 64 bits of physical address or that it supports that theoretical amount of RAM. Distinguish word length, implemented physical address bits, and memory driver supported capacity. Do not deduct the physical width from the commercial name.</li><li>Solve this <strong>platform assumption</strong>: a compatible plate supports two modules up to 64 GiB each and the operating system has a limit of 64 GiB of RAM. The compatibility of these modules is deemed to be verified and the processor supports a capacity higher than that of the plate. Calculates the maximum capacity of the plate and the maximum RAM usable by the set. What element imposes the limit? Would it be enough to change the CPU?</li><li>For a real computer, indicate what you would consult about plate, number of slots, type and capacity of modules, firmware and OS editing before purchasing an extension.</li></ol>
+<p><strong>Delivery:</strong> calculation with units, official source and a conclusion that distinguishes the theoretical, processor and equipment limits. Keep the unit used by the manufacturer; do not confuse decimal GB with GiB.</p></div>
+<h4 class="numbered-subsection" id="sec5_4_3">5.4.3. Control bus: operation</h4><p>It carries signals such as reading, writing and synchronization to coordinate exchanges. A direction and data are not enough: it is also necessary to indicate which operation is requested and when it should be carried out.</p>
+<h4 class="numbered-subsection" id="sec5_4_4">5.4.4 Multiplexed buses</h4><details class="extension"><summary>To enlarge: share lines at different times</summary><p>Some designs use the same physical lines for addresses and data at different times. Control signals allow you to interpret what is being transmitted. The three types of model information do not require the use of three sets of independent cables on all equipment.</p></details>
+<h3 id="sec5_5">5.5. Peripherals: connecting and using</h3>
+<p>Peripherals exchange information with the computer. <strong>entry</strong> provide data; <strong>exit</strong> present results; <strong>input/output</strong> they do both, like a touch screen, an external unit, or a network adapter.</p>
 <figure aria-labelledby="esquema-perifericos-caption" class="image-container" id="esquema-perifericos" role="group"><svg aria-labelledby="esquema-perifericos-title esquema-perifericos-desc" role="img" viewbox="0 0 900 590" xmlns="http://www.w3.org/2000/svg"><title id="esquema-perifericos-title">Types of peripherals</title><desc id="esquema-perifericos-desc">The input carries information to the computer; the output presents it to the outside; the input/output devices exchange information in both directions.</desc><rect fill="#f8fafc" height="590" rx="16" width="900"></rect><g font-family="Inter, Arial, sans-serif"><text fill="#0f172a" font-size="28" text-anchor="middle" x="450" y="38">Peripherals and sense of information</text><rect fill="#e0f2fe" height="90" rx="14" stroke="#0369a1" stroke-width="2" width="300" x="300" y="200"></rect><text fill="#1e3a8a" font-size="23" text-anchor="middle" x="450.0" y="235">ORDER</text><rect fill="#e0f2fe" height="100" rx="14" stroke="#0369a1" stroke-width="2" width="250" x="20" y="85"></rect><text fill="#1e3a8a" font-size="23" text-anchor="middle" x="145.0" y="120">Entered</text><rect fill="#e0f2fe" height="100" rx="14" stroke="#0369a1" stroke-width="2" width="250" x="630" y="85"></rect><text fill="#1e3a8a" font-size="23" text-anchor="middle" x="755.0" y="120">Exit</text><rect fill="#e0f2fe" height="100" rx="14" stroke="#0369a1" stroke-width="2" width="340" x="280" y="390"></rect><text fill="#1e3a8a" font-size="23" text-anchor="middle" x="450.0" y="425">ENTRY / OUTCOME</text><text fill="#0f172a" font-size="18" text-anchor="middle" x="145" y="145">Keyboard · mouse · microphone</text><text fill="#0f172a" font-size="17" text-anchor="middle" x="755" y="145">Monitor · Printer · Speakers</text><text fill="#0f172a" font-size="19" text-anchor="middle" x="450" y="450">Storage: external disk</text><text fill="#0f172a" font-size="19" text-anchor="middle" x="450" y="477">Communication: Network adapter</text><text fill="#0f172a" font-size="19" text-anchor="middle" x="450" y="265">Operating system + drivers</text><defs><marker id="perifericos-flecha" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="9" refy="5" viewbox="0 0 10 10"><path d="M0 0L10 5L0 10Z" fill="#0f766e"></path></marker></defs><g fill="none" marker-end="url(#perifericos-flecha)" stroke="#0f766e" stroke-width="4"><path d="M145 185V245H292"></path><path d="M608 245H755V193"></path><path d="M450 300V380" marker-start="url(#perifericos-flecha)"></path></g><text fill="#0f172a" font-size="18" text-anchor="start" x="475" y="345">Read and write/send and receive</text><text fill="#0f172a" font-size="20" text-anchor="middle" x="450" y="535">The interface connects; the controller manages the device;</text><text fill="#0f172a" font-size="20" text-anchor="middle" x="450" y="565">the driver allows the operating system to use it.</text></g></svg><figcaption class="image-caption" id="esquema-perifericos-caption">The input carries information to the computer; the output presents it to the outside; the input/output devices exchange information in both directions.</figcaption></figure>
-<div class="activity-card activity-callout" id="practica-eleccion-perifericos"><h4>Activity: equips a job with 100 €</h4><p>A company has a computer tower and needs the necessary peripherals for an office post. You have a maximum budget of <strong>100 €</strong>.</p><ol><li>Search in <a href="https://www.amazon.es/" rel="noopener noreferrer" target="_blank">Amazon.com</a> the peripherals you would include without exceeding the budget.</li><li>For each product, type name and model, price, link, type of connection and whether it is input, output or input/output.</li><li>Justify why it is essential and check its compatibility with the equipment connectors and Ubuntu. Indicate what information you use to check it.</li><li>Calculates the total cost with VAT and possible shipping costs, and the remaining money. Indicates the date of consultation.</li><li>It explains what peripherals you would leave for future enlargement and why.</li></ol><p>No purchase is required.</p><p><strong>Delivery:</strong> only in text, without captures or attachments.</p></div>
-<h2 id="sec6"><i aria-hidden="true" class="fa-solid fa-cubes"></i> 6. Logical Components: Software</h2>
-<p><strong>What is Software?</strong></p>
-<p>The simplest definition to understand what Software is is that it is computer programs that are installed on computers, tablets, smartphones or digital clocks, among others, these programs serve to perform different specific tasks, among the most common ones: writing a letter in Word, keeping an account of a business in Excel, or making the presentation of a product with PowerPoint, among many others.</p>
-<p>Software is considered to be the logical and intangible equipment of a computer, encompassing all computer applications, the development of these software has become a leading industry in the global economy, the software moves millions of euros each year, Microsoft is the largest and most well-known company, was founded in 1975 by Bill Gates and Paul Allen, managing to be the reference when we talk all about what is software, thanks to its Windows operating system and its suite of office programs Word, Excel, PowerPoint, etc.</p>
-<p>As an interesting fact, the word “software” comes from the English language, but the Royal Spanish Academy accepted its use thanks to the massification among Spanish speakers. According to the HKSAR, Software is a set of programs, instructions and computer rules that allow to execute tasks on a computer.</p>
-<p>To know a little beyond what Software is, we can say that it is developed through different types of programming languages, these different types of languages allow to control the behavior of a device that contains a computer, through a set of symbols and syntactic and semantic rules that define its elements and expressions, programming languages allow to specify precisely what data a computer should operate on.</p>
-<p><strong>Types of Software</strong></p>
-<p>Although it is true that every company that develops software can have its own way of looking at the types of software it develops and its definition of what software is, there is a classification of software in which most of the software sector coincide globally, leaving it in a simple and real way to understand the types of software for people who do not have a technical profile or who are not programmers.</p>
-<ol start="0" type="A">
-<li><p><strong>System Software</strong></p></li>
-</ol>
-<p>This type of software is also known as a basic software, within this classification are operating systems such as
-<strong>Windows, MacOS, Android or Linux</strong>, this is the type of software that computers require to be able to start the computer and to be able to use other applications or software, they are in charge of communication between the operating system and the hardware that composes the computer, some are designed to manage the own resources of the computer or to configure the interface according to the preferences of the users.</p>
-<p>The classification of <strong>System Software</strong> is as follows:</p>
-<ul>
-<li>
-<p>Operating systems</p>
-</li>
-<li>
-<p>Device Controllers</p>
-</li>
-<li>
-<p>Diagnostic tools</p>
-</li>
-<li>
-<p>Correction and Optimization Tools</p>
-</li>
-<li>
-<p>Servers/services</p>
-</li>
-<li>
-<p>System Utilities</p>
-</li>
-<li>
-<p>Programming Software</p>
-</li>
-</ul>
-<p>After operating system as a fundamental type of software in today's computing, <strong>programming software</strong> is behind, its importance is key, thanks to this type of software it is possible to develop other applications and systems that are used on computers for different tasks making use of logical and programming knowledge.</p>
-<p>The programmers, for example, develop in a text editor and then compile it by the program to verify that everything is okay and the code is correct, this applies to any programming language. <strong>Integrated development environments (IDEs)</strong>
-, which are a computer program with a series of programming tools.</p>
-<p>The Programming Software Classification is as follows:</p>
-<ul>
-<li>
-<p>Editors</p>
-</li>
-<li>
-<p>Compilers</p>
-</li>
-<li>
-<p>Interpreters</p>
-</li>
-<li>
-<p>Linkers</p>
-</li>
-<li>
-<p>Debuggers</p>
-</li>
-<li>
-<p>(App Programming Interface) API</p>
-</li>
-<li>
-<p>Function libraries (library)</p>
-</li>
-<li>
-<p>Integrated Development Environments (IDE)</p>
-</li>
-</ul>
-<ol start="2" type="A">
-<li>
-<p><strong>Application Software (Apps)</strong></p>
-</li>
-</ol>
-<p>This type of software is the one that we use the most today, today with the penetration of the Internet and smartphones, the applications are the most used, are included all the programs, applications or utilities that we manage within our computer, tablet or mobile, these software speaking technically are those software designed for end users, most are already designed and focused to be used in each operating system specifically.</p>
-<p>The best known example of this software is Microsoft's Office suite or package: Word, Excel, PowerPoint, etc. Also communication programs, games, for editing multimedia, antivirus, and many more.</p>
-<p>The classification of the application software is as follows:</p>
-<ul>
-<li>
-<p>Industrial Control and Automation System Applications</p>
-</li>
-<li>
-<p><strong>Office applications (distributed in packages or suites)</strong></p>
-</li>
-<li>
-<p>Educational software</p>
-</li>
-<li>
-<p>Medical software</p>
-</li>
-<li>
-<p>Numerical Calculation Software</p>
-</li>
-<li>
-<p>Assisted Design Software</p>
-</li>
-<li>
-<p>Numerical Control Software</p>
-</li>
-<li>
-<p>Cloud applications</p>
-</li>
-</ul>
-<p><strong>C. Specific software</strong></p>
-<p>Corporate or specific purpose applications: solve specific aspects of the operation of the company (accounting, billing, hours worked control...). . Examples: the Contaplus products of SAGE and InvoiceSOL software of the Sun. Visual Studio Code, Eclipse or NetBeans as software development environments.</p>
-<p>The specific software can be classified in turn into:</p>
-<p>-Professionalized software.</p>
-<p>-Customer Relationship Systems (CRM)</p>
-<p>- Enterprise Resource Planning Systems (ERPs)</p>
-<p>-Support Decision Systems (DSS)</p>
-<p>- Custom software.</p>
-<p><strong>Professionalized Software:</strong></p>
-<p>They are characteristic programs of a profession and very specific, such as the software of programming mentioned above, but also professional editing programs of audio/video, development of models of 3D engineering (AutoDesk, Skechup, ...), development of video games (Unity, Unreal engine) web development, etc. </p>
-<p><strong>CRM</strong></p>
-<p>Customer Relationship Management (CRM), known as FrontOffice, are software intended to cover the entire sales process and the monitoring of it by a company, from initial marketing, to sales funnel, after-sales services, etc., looking for the loyalty of existing customers and the acquisition of new customers.</p>
-<p>A CRM is composed of at least three modules:</p>
-<ul>
-<li>
-<p><strong>Sales module:</strong> to manage the after-sales process</p>
-</li>
-<li>
-<p><strong>Marketing module</strong>: for the optimization of the marketing process</p>
-</li>
-<li>
-<p><strong>Support and customer service module</strong>: manages contracts, services, communications, social networks, etc.</p>
-</li>
-</ul>
-<p><strong>ERP</strong></p>
-<p>Systems of <strong>Enterprise Resource Planning</strong> Enterprise Resource Planning (ERP) and known as <strong>BackOffice</strong> integrate various modules that provide solutions to the comprehensive management of the business, including billing, accounting, sales, purchases, human resources, warehouse, manufacturing, etc.</p>
-<p><strong>DSS</strong></p>
-<p>Information systems for decision support use exit information from ERMs and CRMs to manage decision-making at management level.</p>
-<p><strong>Custom-made software</strong></p>
-<p>This category includes business websites, intranets and any software developed on purpose for a specific function within the company, which, because of its specificity, cannot be shared in a general way, and which requires enormous support, training and maintenance work.</p>
-<span aria-hidden="true" id="sec6_1"></span>
-<div class="activity-card activity-callout"><p>It designs a code similar to ASCII that, in addition to representing the information, cifre it by means of a displacement like that of the César method.</p></div>
-<div class="activity-card activity-callout" id="practica-software-empresa"><h4>Activity: Choose the software for a small business</h4><p>A store needs to manage its customers, issue invoices, control stocks and sell online.</p><ol><li>List what programs you would include to meet these needs and indicate what you would use each one for. <strong>Free software</strong> and explains why, according to his license.</li><li>Would you need custom software? Propose a situation that justifies it.</li><li>When would it be useful to incorporate a <strong>DSS, CRM or ERP</strong>? Give a concrete example of each one's use in the store.</li><li>The store has little budget: what would you implement first and what would you leave for later? Justify your proposal.</li></ol><p><strong>Delivery:</strong> only in text, without captures or attachments.</p></div>
-<h3 id="sec6_2">6.1. Resources</h3>
-<p><strong>Bibliography</strong></p>
-<p>Teacher notes (Workbook)</p>
-<p>Assembly and Maintenance of Equipment. Edt. Synthesis – Unit 1</p>
-<h4 class="content-subtitle">Other resources</h4>
-<div class="resource-card expansion-card">
-<div class="resource-card-header">
-<span class="resource-title"><i class="fa-brands fa-youtube"></i> Hack me if you can.</span>
-<span class="resource-badge badge-video">Video</span>
-</div>
-<div class="resource-description">News on computer security and cyber threats.</div>
-<a class="resource-link-btn" href="https://youtu.be/zewkqnInHVY" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Watch the video</a>
-</div>
-<div class="resource-card expansion-card">
-<div class="resource-card-header">
-<span class="resource-title"><i class="fa-solid fa-atom"></i> Quantum computer</span>
-<span class="resource-badge badge-video">Video</span>
-</div>
-<div class="resource-description">Audiovisual introduction to the principles and possibilities of quantum computing.</div>
-<a class="resource-link-btn" href="https://youtu.be/O9TA2faf6nw" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Watch the video</a>
-</div>
+<p>The <strong>interface</strong> defines connection and communication; <strong>controller</strong> is the circuit that manages the device; <strong>driver</strong> is the software that allows the operating system to use it. The driver can be integrated into the system or provided separately.</p>
+<div class="example-box"><h4>Solved Example: A Connected Printer</h4><p>That the cable fits does not guarantee that we can print. We must check the interface, the model support on the operating system and the controller or protocol available. If we do not have sufficient evidence, we note "compatibility to be checked".</p></div>
+<div class="activity-card activity-callout" id="practica-eleccion-perifericos"><h4>Activity: equips a job with 100 € · 20 minutes</h4>
+<p><strong>Post sheet:</strong> tower with Ubuntu 24.04 LTS, HDMI output, four USB-A ports and operational network connection. The company has no monitor, keyboard or mouse for that position. The job is to bill, write documents and navigate.</p>
+<ol><li>Search for real products in a store. Select the essential peripherals without exceeding 100 € and class them as entry, exit or entry/exit.</li><li>For each product indicates name and model, price, link and date of consultation. You can consider reconditioned products if you indicate their status.</li><li>Check connectors, necessary cables and Ubuntu compatibility. Provide the source used; if you do not find sufficient evidence, indicate.</li><li>Calculate the total cost with VAT, cables and shipping costs, and the remaining money. If you do not find a viable combination, document the search and justify what condition should be reviewed.</li><li>It explains what peripherals you would postpone and why. You don't need to buy anything.</li></ol>
+<p><strong>Delivery:</strong> only in text. Need, classification, compatibility, calculation and justification are assessed.</p></div>
+</section>
+<section aria-labelledby="sec6" class="learning-section">
+<h2 id="sec6"><i aria-hidden="true" class="fa-solid fa-cubes"></i> 6. Logical components: software</h2>
+<div class="case-study-box"><h3>The case: the shop grows</h3><p>A store uses a computer to record sales. Now it needs to issue invoices, control stocks, remember customer queries and sell over the Internet. It has little budget and wants to start with the essentials.</p><p>During this section you will meet criteria to propose a solution. You do not need to buy or hire any service.</p></div>
+<h3 id="software-funcion">6.1. What software is and how it is classified</h3>
+<p>The software is the set of programs and instructions that allows you to perform tasks on a computer system. It can be run on our computer, on a server or in a way divided between them.</p>
+<div aria-label="Types of software according to their function" class="table-scroll" role="region" tabindex="0"><table><caption>Educational classification according to main function</caption><thead><tr><th scope="col">Type</th><th scope="col">What it's for</th><th scope="col">Example in the store</th></tr></thead><tbody><tr><th scope="row">System</th><td>Manage resources and allow programs and devices to work.</td><td>Printer operating system and controller.</td></tr><tr><th scope="row">Implementation</th><td>Solve user tasks.</td><td>Billing, browser and spreadsheet.</td></tr><tr><th scope="row">Development</th><td>Create, translate, test and debug programs.</td><td>Editor, compiler and debugger used to build the web.</td></tr></tbody></table></div>
+<p>Other criteria answer different questions: <strong>general or specialized</strong> describes the use; <strong>standard or custom</strong>, how it is obtained; <strong>free or owner</strong>, licence permits; <strong>local or cloud</strong>These tags can be combined.</p>
+<div class="example-box"><h4>Solved example: multiple tags for a program</h4><p>A billing program can be application software, specialized in management, standard, free and installed on a store server. Being specialized does not make it a category incompatible with "application", nor does it imply that it is tailor-made.</p></div>
+<div class="activity-card activity-callout"><h4>Now you · 3 minutes</h4><p>Sort by its function: the operating system, the browser used to sell and the debugger used to fix the web. Can you know if they are free with this data alone?</p></div>
+<h3 id="software-desarrollo">6.2. Creating programs: compiling is not checking everything</h3>
+<ul><li><strong>Editor:</strong> allows you to write and modify code.</li><li><strong>Compilation:</strong> translates code to another representation and can detect certain errors, such as syntax or types according to language.</li><li><strong>Interpreter:</strong> executes instructions using a program that processes them. Environments can combine interpretation and compilation.</li><li><strong>Debugger:</strong> allows you to stop execution and inspect values to locate errors.</li><li><strong>IDE:</strong> integrates several development tools into an environment.</li></ul>
+<div class="example-box"><h4>Solved example: the wrong discount</h4><p>We want to apply a 10% discount to 100 €. The correct formula is <code>precio * 0.90</code>, which gives 90€. If we write <code>precio * 1.10</code>, we get 110€.</p><p>The two expressions can be valid for the compiler. The second has a <strong>logic error</strong>: calculates a surcharge. <strong>Compiling without errors does not guarantee that a program works properly</strong> or that meets its requirements.</p></div>
+<h3 id="software-api">6.3. Libraries and APIs: reuse and communicate</h3>
+<p>One <strong>library</strong> contains reusable code, for example functions to generate documents. <strong>API</strong> (application programming interface) defines how a program can use functions or services from another component: available operations, data to provide, and responses to receive.</p>
+<p>An API is not an editor: the editor is used to write code; the API is the interface that that code uses. It may belong to a library, operating system or remote service. <strong>Not all APIs are Internet services.</strong></p>
+<div class="example-box"><h4>Solved example: consult stocks</h4><p>The web of the store needs to know if there are any notebooks left. Use the inventory system API to request the inventory of a product. The system consults your data and returns a response, for example "there are 8 units left".</p><p>The API documentation specifies which identifier to send, how to interpret the response, and which errors or permissions to consider. The website does not need to know all the internal details of the inventory.</p></div>
+<div class="activity-card activity-callout" id="actividad-api-publica"><h4>Activity: contact a public API via POST · 15 minutes</h4>
+<p>Use <a href="https://httpbin.org/#/HTTP_Methods/post_post" rel="noopener noreferrer" target="_blank">httpbin: POST /post documentation</a>, a public testing service that returns information about the request received. You do not need an account or a key. We will send only the fictitious data of this form; no purchase is made.</p>
+<p><strong>URL and method are different things:</strong> writing a URL to the browser bar normally makes a GET request. To send POST to <code>https://httpbin.org/post?curso=ssii</code> We'll use a form. <code>curso=ssii</code> travels in the URL; the form fields travel in the body of the request.</p>
+<form action="https://httpbin.org/post?curso=ssii" class="api-demo" method="post">
+<label for="api-producto">Fictional product</label><select id="api-producto" name="producto"><option value="cuaderno">Notebook</option><option value="lapiz">Pencil</option></select>
+<label for="api-cantidad">Amount</label><select id="api-cantidad" name="cantidad"><option value="2">2</option><option value="4">4</option></select>
+<button type="submit">Send POST to httpbin</button>
+</form>
+<p id="api-status" role="status"></p><pre aria-label="Respuesta de httpbin" hidden="" id="api-response"></pre>
+<p>The answer will appear below the form. Change the values to repeat the shipment.</p>
+<ol><li>Check the documentation and identify the method, route and type of response.</li><li>Send a request with the initial values. In the JSON response (data organized as keys and values), locate <code>url</code>, <code>args</code> y <code>form</code>Each one relates to what you sent.</li><li>Change the product and quantity and repeat the shipment. Describe which parts change and which remain.</li><li>Open <a href="https://httpbin.org/post?curso=ssii" rel="noopener noreferrer" target="_blank">the same URL as link</a>. Compare the result with the form and explain how important the HTTP method is. Check the documentation if an error appears.</li><li>It explains why receiving an echo of the data does not show that an order has been created in a store.</li></ol>
+<p><strong>Delivery:</strong> URL, method, sent values and description of the results, only in text. If the service does not respond, log the error and date; do not invent the answer and try again later.</p></div>
+<h3 id="software-empresa">6.4. CRM, ERP and DSS: starting from a need</h3>
+<p><strong>CRM (Customer Relationship Management, Customer Relations Management):</strong> is a system that organizes information and interactions with customers and potential customers. It allows you to register contacts, queries, sales opportunities and follow-up actions so that the business and customer support team shares a history.</p>
+<p><strong>ERP (Enterprise Resource Planning):</strong> integrates internal processes of an organization, such as purchases, sales, inventory, billing and accounting. Its modules share information to reduce duplications and coordinate work: a sale can be reflected in the warehouse and invoicing.</p>
+<p><strong>DSS (Decision Support System, decision support system):</strong> It combines data and analysis tools to compare alternatives and study scenarios. It helps to decide, for example, how much stock to buy, but the final decision is for people and depends on the quality of the data and assumptions.</p>
+<div aria-label="Store and Business Systems Needs" class="table-scroll" role="region" tabindex="0"><table><caption>What problem do we want to solve?</caption><thead><tr><th scope="col">Status</th><th scope="col">System</th><th scope="col">Specific use</th></tr></thead><tbody><tr><th scope="row">You forget customer queries and follow-ups.</th><td><strong>CRM</strong>: management of customer relations.</td><td>Register a query, assign tracking and recover history.</td></tr><tr><th scope="row">Sales, invoices and stocks do not match.</th><td><strong>ERP</strong>: business resource planning.</td><td>Integrate sales, purchases, warehouse and billing to share data.</td></tr><tr><th scope="row">We have to decide how much to buy for the next campaign.</th><td><strong>DSS</strong>: decision support system.</td><td>Analyze data and compare demand, cost and stock scenarios.</td></tr></tbody></table></div>
+<p>A DSS helps assess alternatives; it does not eliminate the need for human judgment or guarantee a correct prediction. It can use data from an ERP, a CRM, and other sources. An ERP may include CRM functions: <strong>three separate products are not required to be purchased</strong>.</p>
+<div class="activity-card activity-callout"><h4>Now you: decide what to implant first · 5 minutes</h4><p>The store loses sales because it advertises sold out products, but receives few customer queries. What need would you attend first and with what kind of solution? Why not start directly with a DSS?</p></div>
+<details class="extension"><summary>To expand: standard and custom software</summary><p>Standard software is used by configuration and sometimes extensions. Custom software is developed for specific requirements. For example, integration that an old system needs and no available option is adequately covered can be justified. Before ordering it you have to evaluate adaptation of existing solutions, cost, support and maintenance. A business website is not necessarily custom software.</p></details>
+<h3 id="software-licencias">6.5. Licenses: Free does not mean free</h3>
+<p>The <strong>license</strong> sets the permits and conditions of use, modification and distribution. The price answers another question: how much it costs to obtain the program or to contract associated services.</p>
+<figure class="image-container" id="cuatro-libertades">
+<svg aria-labelledby="libertades-title libertades-desc" role="img" viewbox="0 0 640 460" xmlns="http://www.w3.org/2000/svg">
+<title id="libertades-title">The four freedoms of free software</title>
+<desc id="libertades-desc">Freedom 0: run the program for any purpose. Freedom 1: study how it works and modify it. Freedom 2: redistribute copies. Freedom 3: distribute modified versions. Freedoms 1 and 3 require access to the source code.</desc>
+<rect fill="#f8fafc" height="460" rx="16" width="640"></rect>
+<g fill="#0f172a" font-family="Inter, Arial, sans-serif">
+<text font-size="25" font-weight="700" x="24" y="38">Four freedoms, same principle</text>
+<rect fill="#eff6ff" height="148" rx="14" stroke="#93c5fd" width="292" x="20" y="64"></rect>
+<circle cx="54" cy="99" fill="#1e3a8a" r="20"></circle><text fill="white" font-size="23" font-weight="700" text-anchor="middle" x="54" y="107">0</text>
+<text font-size="23" font-weight="700" x="86" y="106">Run</text><text font-size="20" x="38" y="146">Use the program to</text><text font-size="20" x="38" y="176">any purpose.</text>
+<rect fill="#f0fdf4" height="148" rx="14" stroke="#86efac" width="292" x="328" y="64"></rect>
+<circle cx="362" cy="99" fill="#0f766e" r="20"></circle><text fill="white" font-size="23" font-weight="700" text-anchor="middle" x="362" y="107">1</text>
+<text font-size="22" font-weight="700" x="394" y="106">Study and Change</text><text font-size="20" x="346" y="146">Understand how it works</text><text font-size="20" x="346" y="176">and modify the program.</text>
+<rect fill="#fff7ed" height="148" rx="14" stroke="#fdba74" width="292" x="20" y="232"></rect>
+<circle cx="54" cy="267" fill="#9a3412" r="20"></circle><text fill="white" font-size="23" font-weight="700" text-anchor="middle" x="54" y="275">2</text>
+<text font-size="23" font-weight="700" x="86" y="274">Share copies</text><text font-size="20" x="38" y="314">Redistributing the programme</text><text font-size="20" x="38" y="344">to help others.</text>
+<rect fill="#faf5ff" height="148" rx="14" stroke="#c4b5fd" width="292" x="328" y="232"></rect>
+<circle cx="362" cy="267" fill="#6d28d9" r="20"></circle><text fill="white" font-size="23" font-weight="700" text-anchor="middle" x="362" y="275">3</text>
+<text font-size="22" font-weight="700" x="394" y="274">Share Changes</text><text font-size="20" x="346" y="314">Distribute your versions</text><text font-size="20" x="346" y="344">modified.</text>
+<text font-size="20" font-weight="700" text-anchor="middle" x="320" y="418">Studying and modifying requires source code.</text>
+<text font-size="17" text-anchor="middle" x="320" y="445">Free describes permits, not the price.</text>
+</g></svg>
+<figcaption class="image-caption">Freedoms are numbered from 0 to 3. <a href="https://www.gnu.org/philosophy/free-sw.es.html" rel="noopener noreferrer" target="_blank">Definition of the GNU project</a>.</figcaption></figure>
+<p>Seeing the source code alone is not enough: the license must allow these four freedoms.</p>
+<div aria-label="Difference between permits and price" class="table-scroll" role="region" tabindex="0"><table><caption>Two separate axes: license and price</caption><thead><tr><th scope="col">Hypothetical case</th><th scope="col">Free?</th><th scope="col">Free?</th><th scope="col">Reason</th></tr></thead><tbody><tr><th scope="row">Program with the four freedoms and download free of charge</th><td>Yes</td><td>Yes, the download</td><td>Permits and price meet both criteria.</td></tr><tr><th scope="row">Free program with a copy distributed for a price</th><td>Yes</td><td>No, that copy.</td><td>Collecting for distributing it does not eliminate the freedoms of your license.</td></tr><tr><th scope="row">Free program that forbids modification and redistribution</th><td>No</td><td>Yes</td><td>Not paying does not grant the freedoms of free software.</td></tr></tbody></table></div>
+<p>Free software can be used commercially. It can also generate hosting, installation, training or support costs. Owner software does not necessarily mean payment software.</p>
+<div class="example-box"><h4>Solved example: justify a license</h4><p>Two cards announce "free download". The first adds "no modification or redistribution"; the second grants the four freedoms and provides the source code. Only the second one meets the conditions of free software: the download price did not allow the comparison to be resolved.</p></div>
+<div class="activity-card activity-callout"><h4>Now you: check before labeling · 6 minutes</h4><ol><li>Investigate the browser <strong>Chromium</strong>. Locate your license on the <a href="https://chromium.googlesource.com/chromium/src/+/main/LICENSE" rel="noopener noreferrer" target="_blank">LICENSE file from your official repository</a>. Also consult the third-party component notices of the analyzed version.</li><li>Write down the exact name of the product, version or editing, license, link and date.</li><li>Explain what permissions justify calling it a free or proprietary one. If the evidence is insufficient, indicate it.</li><li>Separates the price of the program from possible payment services.</li></ol></div>
+<h3 id="sec6_1">6.6. Final challenge: a proposal for the shop</h3>
+<div class="activities-section" id="practica-software-empresa"><h4>Decides, justifies and recognizes what is missing · 25 minutes</h4><p>Recover the case of the store: you need to check in, control inventory, manage customers and sell over the Internet. Prepare a brief proposal, only in text.</p><ol><li>It relates each need to an application or module and classifies it by its function.</li><li>Propose an implementation order compatible with a limited budget. Explain whether CRM, ERP or DSS bring value now or later.</li><li>For at least two specific programs, identify edition and license with official sources. Distinguish permissions, price and associated services.</li><li>Describes an API communication between the web and inventory: what you request, what you receive, and how to act if the query fails.</li><li>It indicates a situation that would justify tailor-made development and an alternative that you would consider earlier.</li><li>Propose a proof of calculation of a discount with entry and expected result. Explain why compiling is not enough.</li></ol><p><strong>Support format:</strong> need → solution → reason → license and source → priority → limitation pending.</p>
+<div aria-label="Criteria for assessing the challenge" class="table-scroll" role="region" tabindex="0"><table><caption>What will be valued · 10 points</caption><thead><tr><th scope="col">Criterion</th><th scope="col">Evidence expected</th><th scope="col">Points</th></tr></thead><tbody><tr><th scope="row">Requirements and classification</th><td>Related solutions and tasks without mixing function, license and modality.</td><td>2</td></tr><tr><th scope="row">Licences</th><td>Identify two editions and their licenses with sources; distinguish free and free.</td><td>2</td></tr><tr><th scope="row">Business priority</th><td>Justify the order and role of CRM, ERP and DSS, including a possible wait.</td><td>2</td></tr><tr><th scope="row">IPRs and custom development</th><td>Describes request, response and failure; compares adaptation and development.</td><td>2</td></tr><tr><th scope="row">Tests and limits</th><td>Includes entry and expected result; recognizes uncertainties and limits.</td><td>2</td></tr></tbody></table></div><p>There is no single correct list of programs. It matters that the choice responds to needs and is supported by evidence.</p></div>
+<details class="extension"><summary>Linking activity: recover the encoding of information</summary><p>Go back to the <a href="#sec3_2">paragraph 3.2</a> and designs a code similar to ASCII with a scroll like the Caesar method. Defines the alphabet, encodes a word and explains how to retrieve it. Distinguish represent encryption information; a Caesar scroll does not provide adequate security for real data.</p></details>
+<div class="activity-card activity-callout" id="actividad-repaso"><h4>Check what you learned</h4><ol><li>Explains why more GHz does not guarantee more performance.</li><li>It describes the functions of UC and ALU and their relationship to memory.</li><li>Distinguish compile, test, use an API and choose a license.</li></ol><p>Answer without looking at the notes. Then review your explanations and write down what you had to correct.</p></div>
+<details class="extension"><summary>Optional expansion: security and quantum computing</summary><p>These videos expand the drive; they are not necessary to solve previous exercises.</p><ul><li><a href="https://youtu.be/zewkqnInHVY" rel="noopener noreferrer" target="_blank">Hack me if you can.</a>: notes a threat and which component or program is affected.</li><li><a href="https://youtu.be/O9TA2faf6nw" rel="noopener noreferrer" target="_blank">Quantum computer</a>: identifies a difference with the model studied and a doubt to debate.</li></ul></details>
+</section>
 <footer class="document-footer">© Ignacio García 2020</footer></main></div>
+<script>
+(() => {
+    const toggle = document.querySelector('.toc-toggle');
+    const toc = document.getElementById('unit-toc');
+    function setOpen(open) {
+        toc.classList.toggle('is-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.textContent = open ? 'Cerrar índice' : 'Índice';
+    }
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    toc.addEventListener('click', event => {
+        const link = event.target.closest('a');
+        if (!link) return;
+        setOpen(false);
+        const heading = document.getElementById(link.hash.slice(1));
+        if (heading) {
+            heading.setAttribute('tabindex', '-1');
+            heading.focus({ preventScroll: true });
+        }
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+            setOpen(false);
+            toggle.focus();
+        }
+    });
+    const apiForm = document.querySelector('.api-demo');
+    if (apiForm) apiForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        const button = apiForm.querySelector('button');
+        const status = document.getElementById('api-status');
+        const output = document.getElementById('api-response');
+        button.disabled = true;
+        output.hidden = true;
+        output.textContent = '';
+        status.textContent = 'Enviando POST a httpbin…';
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+        try {
+            const response = await fetch(apiForm.action, {
+                method: 'POST',
+                body: new URLSearchParams(new FormData(apiForm)),
+                credentials: 'omit',
+                signal: controller.signal
+            });
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            const data = await response.json();
+            output.textContent = JSON.stringify({url: data.url, args: data.args, form: data.form}, null, 2);
+            output.hidden = false;
+            status.textContent = 'Respuesta recibida · HTTP ' + response.status + '. Se muestran los campos url, args y form.';
+        } catch (error) {
+            status.textContent = 'No se pudo obtener respuesta: ' + (error.name === 'AbortError' ? 'tiempo de espera agotado' : error.message) + '. Registra el error y vuelve a intentarlo más tarde.';
+        } finally {
+            clearTimeout(timeout);
+            button.disabled = false;
+        }
+    });
+    // Make answers and extensions available in the printed copy, then restore the reading state.
+    let printClosed = [];
+    window.addEventListener('beforeprint', () => {
+        printClosed = [...document.querySelectorAll('.learning-section details:not([open])')];
+        printClosed.forEach(detail => { detail.open = true; });
+    });
+    window.addEventListener('afterprint', () => {
+        printClosed.forEach(detail => { detail.open = false; });
+        printClosed = [];
+    });
+})();
+</script>
 </body>
 </html>
