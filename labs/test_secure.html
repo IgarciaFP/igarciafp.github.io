@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Prueba de concepto de un laboratorio de binario con pantalla completa obligatoria, seguimiento de foco y visibilidad, y reinicio recuperable en la tercera incidencia.">
+  <title>Binario · Pantalla completa y foco</title>
+  <style>
+    :root {
+      --ink: #182b39; --muted: #526778; --paper: #f4f6f8; --line: #dce4e9;
+      --blue: #2459bb; --blue-soft: #edf3ff; --green: #146249;
+      --amber: #855100; --amber-soft: #fff5df; --red: #a42e39; --red-soft: #fff0f1;
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--paper); color: var(--ink); line-height: 1.55; }
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .48; }
+    [hidden] { display: none !important; }
+    :focus-visible { outline: 3px solid #2672df; outline-offset: 4px; }
+    .skip { position: absolute; top: -80px; left: 16px; z-index: 10; background: white; padding: 12px; }
+    .skip:focus { top: 8px; }
+    .wrap { width: min(1120px, calc(100% - 48px)); margin: auto; }
+    header { background: white; border-bottom: 1px solid var(--line); }
+    .bar { min-height: 78px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 750; letter-spacing: -.03em; font-size: 21px; }
+    .brand-mark { display: grid; place-items: center; width: 40px; height: 40px; background: var(--ink); color: white; border-radius: 11px; font-family: ui-monospace, monospace; font-size: 16px; letter-spacing: -.06em; }
+    .brand small { font-size: 13px; color: var(--muted); font-weight: 500; letter-spacing: 0; }
+    .tag { font-size: 11px; letter-spacing: .075em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 99px; padding: 7px 12px; color: var(--muted); font-weight: 750; }
+    .hero { padding: 38px 0 24px; }
+    .eyebrow { font-size: 11px; letter-spacing: .12em; font-weight: 800; color: var(--blue); text-transform: uppercase; margin: 0 0 8px; }
+    h1 { font-size: clamp(30px, 4vw, 44px); line-height: 1.16; letter-spacing: -.045em; margin: 0 0 12px; }
+    .lead { color: var(--muted); max-width: 790px; margin: 0; font-size: 16px; }
+    .rules { background: var(--ink); color: white; border-radius: var(--radius); padding: 21px 26px; margin-bottom: 26px; display: grid; grid-template-columns: 1.1fr 1.9fr; gap: 30px; align-items: center; }
+    .rules strong { display: block; font-size: 17px; margin-bottom: 3px; }
+    .rules p { color: #ccdae4; margin: 0; font-size: 13px; }
+    .steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .step { font-size: 12px; color: #c7d4df; }
+    .step b { display: block; color: white; font-size: 13px; margin-top: 7px; }
+    .step-number { display: inline-grid; place-items: center; width: 29px; height: 29px; border: 1px solid #7c91a2; border-radius: 50%; font: 700 12px ui-monospace, monospace; }
+    .step.done .step-number { background: #fff0cf; border-color: #fff0cf; color: #694205; }
+    .step:last-child.done .step-number { background: #ffd8dc; color: #8c1826; border-color: #ffd8dc; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(290px, 1fr); gap: 24px; align-items: start; }
+    .card { background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; }
+    .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    h2 { font-size: 19px; letter-spacing: -.025em; margin: 0 0 3px; }
+    h3 { margin: 0 0 8px; font-size: 14px; }
+    .hint { color: var(--muted); font-size: 13px; margin: 0; }
+    .number { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .badge { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; font-size: 11px; font-weight: 750; padding: 6px 10px; border-radius: 99px; background: #edf1f4; color: var(--muted); }
+    .badge::before { content: ""; width: 6px; height: 6px; background: currentColor; border-radius: 50%; }
+    .badge[data-phase="active"] { background: #e7f5ee; color: var(--green); }
+    .badge[data-phase="reset"], .badge[data-phase="review"] { background: var(--red-soft); color: var(--red); }
+    .badge[data-phase="submitted"] { background: var(--blue-soft); color: var(--blue); }
+    .start-box { padding: 16px; background: #f7f9fc; border: 1px solid var(--line); border-radius: 12px; margin: 16px 0 24px; }
+    .consent { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--muted); }
+    .consent input { margin: 5px 0 0; flex-shrink: 0; accent-color: var(--blue); width: 16px; height: 16px; }
+    .start-box button { margin-top: 14px; }
+    .btn { min-height: 43px; border: 1px solid var(--line); padding: 10px 16px; border-radius: 9px; background: white; color: var(--ink); font-weight: 650; font-size: 13px; }
+    .btn:not(:disabled):hover { background: #eff3f7; }
+    .btn-primary { background: var(--blue); color: white; border-color: var(--blue); }
+    .btn-primary:not(:disabled):hover { background: #1b489e; }
+    .btn-danger { color: var(--red); border-color: #edc5c9; }
+    .wide { width: 100%; }
+    fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+    legend { font-size: 13px; font-weight: 700; margin-bottom: 8px; padding: 0; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+    .question + .question { border-top: 1px solid var(--line); margin-top: 23px; padding-top: 23px; }
+    .question-label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+    .q-no { color: var(--blue); font-family: ui-monospace, monospace; font-size: 12px; margin-right: 7px; }
+    .conversion { display: flex; gap: 16px; align-items: center; }
+    .source { flex-shrink: 0; min-width: 82px; font-size: 29px; font-weight: 650; line-height: 1.1; white-space: nowrap; }
+    sub { font-size: .48em; margin-left: 3px; }
+    .arrow { color: #768898; font-size: 22px; }
+    input[type="text"], input[type="number"], textarea { width: 100%; border: 1px solid #b9c8d4; border-radius: 9px; padding: 11px 13px; color: var(--ink); background: white; }
+    .conversion input { min-width: 0; font-family: ui-monospace, monospace; letter-spacing: .09em; }
+    input::placeholder, textarea::placeholder { color: #657987; opacity: 1; font-size: 13px; letter-spacing: 0; }
+    input:disabled, textarea:disabled { color: #586a78; background: #f7f9fb; opacity: 1; }
+    textarea { resize: vertical; min-height: 86px; font-size: 14px; }
+    .bits { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 12px; }
+    .bit { display: grid; justify-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 11px 4px; background: #f8fafc; font: 700 17px ui-monospace, monospace; cursor: pointer; }
+    .bit:has(input:checked) { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
+    .bit input { width: 16px; height: 16px; margin: 0; accent-color: var(--blue); }
+    .sum { min-height: 20px; margin: 11px 0 0; color: var(--muted); font-size: 12px; }
+    .optional { color: var(--muted); font-size: 12px; font-weight: 400; }
+    .form-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 24px; }
+    .form-footer .hint { max-width: 260px; font-size: 12px; }
+    .notice { padding: 13px 16px; border-radius: 10px; font-size: 13px; background: var(--blue-soft); color: #234675; margin: 16px 0 0; }
+    .notice.warn { background: var(--amber-soft); color: var(--amber); }
+    .notice.error { background: var(--red-soft); color: var(--red); }
+    aside { display: grid; gap: 18px; }
+    .counter-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 12px 0 14px; }
+    .counter { font-size: 50px; font-weight: 650; letter-spacing: -.075em; line-height: 1.15; }
+    .counter span { font-size: 21px; color: #657a8b; font-weight: 450; letter-spacing: -.02em; }
+    .counter-note { font-size: 12px; max-width: 126px; color: var(--muted); }
+    .meter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 16px; }
+    .meter i { height: 5px; background: #e8edf2; border-radius: 4px; }
+    .meter i.filled { background: #b67716; }
+    .meter i:last-child.filled { background: var(--red); }
+    .meta { display: flex; justify-content: space-between; font-size: 12px; gap: 12px; color: var(--muted); }
+    .activity { border-top: 1px solid var(--line); padding-top: 17px; margin-top: 17px; }
+    .log { list-style: none; padding: 0; margin: 12px 0 0; max-height: 184px; overflow: auto; }
+    .log li { border-left: 2px solid #d8e2ef; padding: 0 0 13px 12px; margin-left: 3px; font-size: 12px; color: var(--muted); }
+    .log li:last-child { padding-bottom: 0; }
+    .log time { display: block; font: 10px ui-monospace, monospace; color: #6b7d8c; margin-bottom: 3px; }
+    .tools { background: #fffcf5; border-color: #e9dfc8; }
+    .tools .eyebrow { color: var(--amber); }
+    .tools .btn { margin-top: 9px; }
+    .tools .hint { margin: 7px 0 4px; font-size: 12px; }
+    .footnote { padding: 22px 0 32px; color: var(--muted); font-size: 12px; }
+    .footnote p { margin: 5px 0; }
+    dialog { width: min(470px, calc(100% - 32px)); border: 1px solid var(--line); border-radius: 20px; padding: 30px; color: var(--ink); box-shadow: 0 24px 100px #0c1c3f40; }
+    dialog::backdrop { background: #132336a3; backdrop-filter: blur(3px); }
+    .dialog-icon { width: 46px; height: 46px; display: grid; place-items: center; background: var(--amber-soft); color: var(--amber); border-radius: 13px; font-size: 24px; font-weight: 700; margin-bottom: 18px; }
+    dialog[data-kind="reset"] .dialog-icon { background: var(--red-soft); color: var(--red); }
+    dialog h2 { font-size: 25px; margin: 4px 0 12px; }
+    dialog p { color: var(--muted); font-size: 14px; }
+    dialog .btn { margin-top: 16px; }
+    html:fullscreen { overflow: auto; background: var(--paper); }
+    .guard-panel { padding: 14px 16px; margin: 0 0 22px; background: #f7f9fc; border: 1px solid var(--line); border-radius: 12px; }
+    .guard-statuses { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 8px; }
+    .guard-status { font-size: 11px; font-weight: 700; border-radius: 6px; padding: 5px 8px; background: var(--amber-soft); color: var(--amber); }
+    .guard-status[data-ok="true"] { background: #e7f5ee; color: var(--green); }
+    .badge[data-phase="paused"] { background: var(--amber-soft); color: var(--amber); }
+    dialog { max-height: calc(100dvh - 32px); overflow: auto; }
+    @media (max-width: 800px) {
+      .layout { grid-template-columns: 1fr; }
+      .rules { grid-template-columns: 1fr; gap: 20px; }
+      aside { grid-template-columns: 1fr 1fr; }
+      .card { padding: 22px; }
+    }
+    @media (max-width: 540px) {
+      .wrap { width: calc(100% - 28px); }
+      .bar { min-height: 68px; }
+      .brand small { display: none; }
+      .tag { font-size: 9px; padding: 6px 9px; }
+      .hero { padding-top: 28px; }
+      .lead { font-size: 14px; }
+      .rules { padding: 20px; }
+      .steps { gap: 10px; }
+      .step { font-size: 11px; }
+      .step b { font-size: 12px; }
+      .card { padding: 20px; }
+      .card-head { flex-wrap: wrap; }
+      aside { grid-template-columns: 1fr; }
+      .conversion { gap: 10px; }
+      .source { font-size: 24px; min-width: 67px; }
+      .bits { gap: 5px; }
+      .bit { font-size: 15px; }
+      .form-footer { align-items: stretch; flex-direction: column; }
+      .form-footer .hint { max-width: none; }
+      dialog { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+<a class="skip" href="#main">Ir al laboratorio</a>
+<header>
+  <div class="wrap bar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">01</span> binario <small>/ laboratorio de aula</small></div>
+    <span class="tag">Prueba de concepto · v2.0</span>
+  </div>
+</header>
+<main id="main" class="wrap">
+  <section class="hero" aria-labelledby="page-title">
+    <p class="eyebrow">Sistemas de numeración</p>
+    <h1 id="page-title">Piensa en bits. Mantén el foco.</h1>
+    <p class="lead">Resuelve en pantalla completa, con esta página visible y enfocada. Perder cualquiera de estas condiciones genera una incidencia: dos avisos y reinicio recuperable en la tercera.</p>
+  </section>
+
+  <section class="rules" aria-label="Norma de la actividad">
+    <div><strong>Dos avisos. Un reinicio.</strong><p>El seguimiento empieza al pulsar «Comenzar» y termina al entregar o reiniciarse el formulario.</p></div>
+    <ol class="steps">
+      <li class="step" id="step-1"><span class="step-number">01</span><b>Primer aviso</b>Conservas tus respuestas.</li>
+      <li class="step" id="step-2"><span class="step-number">02</span><b>Último aviso</b>La siguiente salida reinicia.</li>
+      <li class="step" id="step-3"><span class="step-number">03</span><b>Reinicio</b>El formulario queda vacío.</li>
+    </ol>
+  </section>
+
+  <p id="compatibility" class="notice error" role="alert" hidden></p>
+  <noscript><p class="notice error">Debes activar JavaScript para usar esta prueba. El formulario permanece deshabilitado.</p></noscript>
+
+  <div class="layout">
+    <section class="card" aria-labelledby="exercise-title">
+      <div class="card-head">
+        <div><h2 id="exercise-title">Del decimal al binario</h2><p class="hint">Construye el resultado y comprueba su valor.</p></div>
+        <span id="phase" class="badge" data-phase="ready" role="status">En espera</span>
+      </div>
+
+      <div class="start-box" id="start-box">
+        <label class="consent"><input type="checkbox" id="consent"><span>He leído la norma: debo mantener la pantalla completa, la visibilidad y el foco. Cambiar de ventana o pestaña, minimizar, salir de pantalla completa o recargar puede generar una incidencia. La tercera vacía mis respuestas. Si necesito salir, aviso al profesor.</span></label>
+        <button class="btn btn-primary" type="button" id="start" disabled>Entrar en pantalla completa y comenzar</button>
+      </div>
+
+      <div class="guard-panel" aria-label="Condiciones de la práctica">
+        <div class="guard-statuses">
+          <span class="guard-status" id="status-fullscreen">Pantalla completa: no</span>
+          <span class="guard-status" id="status-focus">Foco: comprobando</span>
+          <span class="guard-status" id="status-visible">Visibilidad: comprobando</span>
+        </div>
+        <p class="hint" id="guard-note" role="status">El formulario se habilitará al comenzar en pantalla completa.</p>
+      </div>
+      <p id="fullscreen-error" class="notice error" role="alert" hidden></p>
+      <form id="lab-form" autocomplete="off">
+        <fieldset id="answer-fields" disabled>
+          <legend class="sr-only">Respuestas del laboratorio de binario</legend>
+          <div class="question">
+            <label class="question-label" for="binary"><span class="q-no">01</span>Convierte 45 a binario usando seis bits</label>
+            <div class="conversion"><span class="source number">45<sub>10</sub></span><span class="arrow" aria-hidden="true">→</span><input id="binary" name="binary" type="text" inputmode="numeric" pattern="[01]{6}" maxlength="6" placeholder="Escribe seis bits" title="Escribe exactamente seis caracteres, solo 0 o 1." required></div>
+          </div>
+          <div class="question">
+            <fieldset><legend><span class="q-no">02</span>Selecciona los pesos que suman 45</legend><p class="hint">Cada casilla marcada representa un bit con valor 1.</p>
+              <div class="bits">
+                <label class="bit">32<input name="weights" type="checkbox" value="32" aria-label="Peso 32"></label>
+                <label class="bit">16<input name="weights" type="checkbox" value="16" aria-label="Peso 16"></label>
+                <label class="bit">8<input name="weights" type="checkbox" value="8" aria-label="Peso 8"></label>
+                <label class="bit">4<input name="weights" type="checkbox" value="4" aria-label="Peso 4"></label>
+                <label class="bit">2<input name="weights" type="checkbox" value="2" aria-label="Peso 2"></label>
+                <label class="bit">1<input name="weights" type="checkbox" value="1" aria-label="Peso 1"></label>
+              </div>
+              <p id="sum" class="sum" aria-live="polite">Suma seleccionada: —</p>
+            </fieldset>
+          </div>
+          <div class="question">
+            <label class="question-label" for="decimal"><span class="q-no">03</span>Convierte este número binario a decimal</label>
+            <div class="conversion"><span class="source number">11010<sub>2</sub></span><span class="arrow" aria-hidden="true">→</span><input id="decimal" name="decimal" type="number" min="0" max="63" step="1" placeholder="Valor decimal" required></div>
+          </div>
+          <div class="question">
+            <label class="question-label" for="reasoning">Explica tu procedimiento <span class="optional">· opcional</span></label>
+            <textarea id="reasoning" name="reasoning" maxlength="1200" placeholder="¿Cómo has elegido los pesos de cada bit?"></textarea>
+          </div>
+        </fieldset>
+        <div class="form-footer"><p class="hint">«Entregar» solo corrige esta demo. No envía datos al profesor.</p><button class="btn btn-primary" id="submit" type="submit" disabled>Entregar respuestas</button></div>
+      </form>
+      <p id="result" class="notice" role="status" hidden></p>
+      <p id="review-note" class="notice warn" role="status" hidden>Copia recuperada para revisión. El formulario permanece bloqueado; un nuevo intento empieza vacío.</p>
+    </section>
+
+    <aside aria-label="Seguimiento y herramientas de prueba">
+      <section class="card" aria-labelledby="tracking-title">
+        <p class="eyebrow">Pantalla completa · Foco · Visibilidad</p><h2 id="tracking-title">Seguimiento del intento</h2>
+        <div class="counter-row"><div class="counter number"><b id="count">0</b><span> / 3</span></div><p class="counter-note" id="counter-note">Sin seguimiento hasta comenzar.</p></div>
+        <div class="meter" aria-hidden="true"><i id="meter-1"></i><i id="meter-2"></i><i id="meter-3"></i></div>
+        <div class="meta"><span id="attempt">Intento: —</span><span id="away">Tiempo fuera: 0 s</span></div>
+        <div class="activity"><h3>Registro local</h3><p class="hint" id="empty-log">Todavía no hay incidencias.</p><ol id="log" class="log" aria-label="Últimos eventos, del más reciente al más antiguo"></ol></div>
+      </section>
+      <section class="card tools" id="demo-tools" aria-labelledby="tools-title">
+        <p class="eyebrow">Solo para pruebas</p><h2 id="tools-title">Prueba el comportamiento</h2>
+        <p class="hint">Prueba cambiando de ventana, saliendo de pantalla completa o con estas simulaciones identificadas en el registro.</p>
+        <button class="btn wide" type="button" id="simulate" disabled>Simular una ocultación</button>
+        <button class="btn wide" type="button" id="simulate-blur" disabled>Simular pérdida de foco</button>
+        <button class="btn wide" type="button" id="simulate-combined" disabled>Simular salida con tres eventos</button>
+        <button class="btn wide" type="button" id="exit-fullscreen" hidden>Salir de pantalla completa (real)</button>
+        <button class="btn wide" type="button" id="recover" disabled>Recuperar última copia</button>
+        <button class="btn btn-danger wide" type="button" id="restart">Reiniciar demo completa</button>
+        <p class="hint">Estos controles no están protegidos: no son un acceso de profesor. Se deben retirar al integrar la demo.</p>
+      </section>
+    </aside>
+  </div>
+  <footer class="footnote">
+    <p><strong>Transparencia:</strong> no se leen otras pestañas ni se identifica qué aplicación se utiliza. Una incidencia no demuestra que se haya consultado una calculadora. El foco puede perderse también al usar controles del navegador o del sistema.</p>
+    <p id="storage-status" role="status">Comprobando el guardado en esta pestaña…</p>
+    <p>HTML autónomo · Sin dependencias externas · Sin envíos de datos · No bloquea el navegador · Escape permite salir de pantalla completa</p>
+  </footer>
+</main>
+
+<dialog id="warning" aria-labelledby="warning-title" aria-describedby="warning-message warning-detail">
+  <div class="dialog-icon" aria-hidden="true">!</div>
+  <p class="eyebrow" id="warning-kicker">Seguimiento del entorno</p>
+  <h2 id="warning-title">Aviso de la actividad</h2>
+  <p id="warning-message"></p>
+  <p id="warning-detail"></p>
+  <p id="dialog-error" class="notice error" role="alert" hidden></p>
+  <button id="acknowledge" type="button" class="btn btn-primary wide" autofocus>Entendido, continuar</button>
+</dialog>
+
+<script>
+(() => {
+  "use strict";
+
+  // PRUEBA DE CONCEPTO. Cliente manipulable, sin autenticación ni envíos de datos.
+  // Integración: adaptar readAnswers/writeAnswers, inicio y entrega al laboratorio real.
+  const LIMIT = 3;
+  const SHOW_DEMO_TOOLS = true; // Retirar los controles públicos antes de usar en evaluación.
+  const RETURN_SETTLE_MS = 200; // Solo agrupa la recuperación; nunca retrasa el recuento.
+  const STORAGE_KEY = "binario-environment-poc:v2:" + location.pathname;
+  const VALID_WEIGHTS = [32, 16, 8, 4, 2, 1];
+  const REASONS = {
+    hidden: "página oculta", blur: "pérdida de foco",
+    fullscreen: "salida de pantalla completa", pagehide: "recarga o abandono de la página"
+  };
+  const $ = (id) => document.getElementById(id);
+  const form = $("lab-form");
+  const fields = $("answer-fields");
+  const dialog = $("warning");
+  const root = document.documentElement;
+  const supportsAPIs = "visibilityState" in document && typeof document.hasFocus === "function"
+    && typeof dialog.showModal === "function" && typeof root.requestFullscreen === "function"
+    && document.fullscreenEnabled === true;
+  let storageAvailable = true;
+  let storageNote = "";
+  let returnTimer = null;
+  let busy = false;
+  let errorText = "";
+
+  function emptyAnswers() { return { binary: "", weights: [], decimal: "", reasoning: "" }; }
+  function newState() {
+    return { version: 2, phase: "ready", attempt: 0, count: 0, awaySince: null,
+      awayMs: 0, episode: null, lastReasons: [], pending: null,
+      answers: emptyAnswers(), backup: null, result: null, events: [] };
+  }
+  function sanitizeAnswers(value) {
+    const a = value && typeof value === "object" ? value : {};
+    const text = (key, max) => typeof a[key] === "string" ? a[key].slice(0, max) : "";
+    return { binary: text("binary", 6), decimal: text("decimal", 20), reasoning: text("reasoning", 1200),
+      weights: VALID_WEIGHTS.filter((n) => Array.isArray(a.weights) && a.weights.includes(n)) };
+  }
+  const validReasons = (a) => Object.keys(REASONS).filter((r) => Array.isArray(a) && a.includes(r));
+  const validTime = (n) => Number.isFinite(n) && n >= 0 && n <= 8640000000000000;
+
+  // Saneado de guardados accidentales, NO protección frente a manipulación deliberada.
+  function loadState() {
+    let raw;
+    try { raw = sessionStorage.getItem(STORAGE_KEY); }
+    catch { storageAvailable = false; return newState(); }
+    if (!raw) return newState();
+    try {
+      const s = JSON.parse(raw);
+      if (!s || s.version !== 2 || !["ready", "active", "submitted", "reset", "review"].includes(s.phase)
+          || !Number.isInteger(s.count) || s.count < 0 || s.count > LIMIT
+          || !Number.isSafeInteger(s.attempt) || s.attempt < 0
+          || (s.phase === "active" && s.count >= LIMIT)) throw new Error("Estado inválido");
+      return { ...newState(), phase: s.phase, attempt: s.attempt, count: s.count,
+        answers: sanitizeAnswers(s.answers), lastReasons: validReasons(s.lastReasons),
+        awaySince: validTime(s.awaySince) ? s.awaySince : null,
+        awayMs: Number.isFinite(s.awayMs) && s.awayMs >= 0 ? s.awayMs : 0,
+        episode: s.episode && validTime(s.episode.at) ? {
+          at: s.episode.at, reasons: validReasons(s.episode.reasons), source: s.episode.source === "demo" ? "demo" : "real"
+        } : null,
+        pending: ["first", "last", "reset", "resume"].includes(s.pending) ? s.pending : null,
+        result: Number.isInteger(s.result) && s.result >= 0 && s.result <= 3 ? s.result : null,
+        backup: s.backup && typeof s.backup === "object" ? {
+          answers: sanitizeAnswers(s.backup.answers), attempt: Number.isSafeInteger(s.backup.attempt) ? s.backup.attempt : 0
+        } : null,
+        events: (Array.isArray(s.events) ? s.events : [])
+          .filter((e) => e && typeof e.text === "string" && validTime(e.at))
+          .slice(-40).map((e) => ({ at: e.at, text: e.text.slice(0, 300) })) };
+    } catch {
+      storageNote = "Se descartó un guardado no válido. La demo empieza de nuevo. ";
+      return newState();
+    }
+  }
+  let state = loadState();
+  // Al restaurar un intento no se inventa otra salida por arrancar sin fullscreen.
+  // pagehide/visibilitychange guardan la salida anterior cuando el navegador los emite.
+  let restoring = state.phase === "active";
+  if (restoring && !state.pending) state.pending = "resume";
+
+  function readSignals() {
+    return { visible: document.visibilityState === "visible", focused: document.hasFocus(),
+      fullscreen: document.fullscreenElement === root };
+  }
+  let signals = readSignals();
+  const isSafe = (s) => s.visible && s.focused && s.fullscreen;
+  function canAnswer() {
+    return supportsAPIs && state.phase === "active" && !state.pending && !state.episode
+      && !restoring && !busy && isSafe(signals) && isSafe(readSignals());
+  }
+  function updateStorageStatus() {
+    $("storage-status").textContent = storageNote + (storageAvailable
+      ? "Guardado local de esta pestaña: respuestas, contador y copia. La recarga puede generar una incidencia; para continuar se exige de nuevo pantalla completa. No es almacenamiento permanente ni seguro."
+      : "Guardado no disponible. La demo funciona en memoria: los datos, el contador y la copia se pierden al recargar.");
+  }
+  function persist() {
+    if (storageAvailable) {
+      try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+      catch { storageAvailable = false; }
+    }
+    updateStorageStatus();
+  }
+  function addEvent(text) {
+    state.events.push({ at: Date.now(), text });
+    state.events = state.events.slice(-40);
+  }
+  function readAnswers() {
+    return { binary: $("binary").value,
+      weights: Array.from(form.querySelectorAll('[name="weights"]:checked'), (el) => Number(el.value)),
+      decimal: $("decimal").value, reasoning: $("reasoning").value };
+  }
+  function writeAnswers(answers) {
+    $("binary").value = answers.binary;
+    $("decimal").value = answers.decimal;
+    $("reasoning").value = answers.reasoning;
+    form.querySelectorAll('[name="weights"]').forEach((el) => { el.checked = answers.weights.includes(Number(el.value)); });
+    updateSum();
+  }
+  function updateSum() {
+    const weights = readAnswers().weights;
+    $("sum").textContent = weights.length
+      ? "Suma seleccionada: " + weights.join(" + ") + " = " + weights.reduce((a, b) => a + b, 0)
+      : "Suma seleccionada: —";
+  }
+  function render() {
+    const active = state.phase === "active";
+    const enabled = canAnswer();
+    const phases = { ready: "En espera", active: enabled ? "En curso" : "En pausa", submitted: "Entregado", reset: "Reiniciado", review: "En revisión" };
+    $("phase").textContent = phases[state.phase];
+    $("phase").dataset.phase = active && !enabled ? "paused" : state.phase;
+    $("count").textContent = String(state.count);
+    $("attempt").textContent = "Intento: " + (state.attempt || "—");
+    $("away").textContent = "Tiempo fuera: " + Math.round(state.awayMs / 1000) + " s";
+    $("counter-note").textContent = active
+      ? (state.count === 2 ? "La próxima incidencia reinicia el formulario." : "Una incidencia por salida, aunque coincidan varios eventos.")
+      : state.phase === "ready" ? "Sin seguimiento hasta comenzar." : "Intento detenido. No se suman incidencias.";
+    for (let n = 1; n <= LIMIT; n++) {
+      $("step-" + n).classList.toggle("done", n <= state.count);
+      $("meter-" + n).classList.toggle("filled", n <= state.count);
+    }
+    for (const [key, label] of [["fullscreen", "Pantalla completa"], ["focused", "Foco"], ["visible", "Visibilidad"]]) {
+      const el = $(key === "focused" ? "status-focus" : "status-" + key);
+      el.dataset.ok = String(signals[key]);
+      el.textContent = label + ": " + (signals[key] ? "sí" : "no");
+    }
+    $("guard-note").textContent = active
+      ? enabled ? "Puedes resolver: pantalla completa, página visible y foco activo."
+        : "Respuestas bloqueadas. Vuelve al laboratorio y pulsa «Continuar» en el aviso; se requiere pantalla completa y foco."
+      : state.phase === "ready" ? "Maximizar o pulsar F11 no sustituye al botón de inicio de esta demo."
+      : "El seguimiento ha terminado. Un nuevo intento empieza vacío y exige pantalla completa.";
+    fields.disabled = !enabled;
+    $("submit").disabled = !enabled;
+    $("start-box").hidden = active;
+    $("start").textContent = busy && !active ? "Activando pantalla completa…"
+      : state.attempt ? "Pantalla completa y nuevo intento (vacío)" : "Entrar en pantalla completa y comenzar";
+    $("start").disabled = !$("consent").checked || !supportsAPIs || Boolean(state.pending) || busy;
+    for (const id of ["simulate", "simulate-blur", "simulate-combined"]) $(id).disabled = !enabled;
+    $("exit-fullscreen").hidden = !signals.fullscreen;
+    $("exit-fullscreen").disabled = busy;
+    $("recover").disabled = !state.backup || !["reset", "review"].includes(state.phase) || Boolean(state.pending) || busy;
+    $("restart").disabled = busy || active; // Evita el confirm nativo durante un intento.
+    $("restart").title = active ? "Entrega o termina el intento antes de reiniciar toda la demo." : "";
+    $("review-note").hidden = state.phase !== "review";
+    $("result").hidden = state.result === null;
+    if (state.result !== null) $("result").textContent = "Entrega local completada: " + state.result + "/3 apartados correctos. El seguimiento ha terminado. La explicación no se califica automáticamente.";
+    $("fullscreen-error").hidden = !errorText;
+    $("fullscreen-error").textContent = errorText;
+    $("dialog-error").hidden = !errorText;
+    $("dialog-error").textContent = errorText;
+    $("empty-log").hidden = state.events.length > 0;
+    const fragment = document.createDocumentFragment();
+    for (const event of [...state.events].reverse()) {
+      const li = document.createElement("li");
+      const time = document.createElement("time");
+      const date = new Date(event.at);
+      time.dateTime = date.toISOString();
+      time.textContent = date.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      li.append(time, document.createTextNode(event.text));
+      fragment.append(li);
+    }
+    $("log").replaceChildren(fragment);
+  }
+
+  // No se fuerza window.focus(): el aviso se presenta dentro del laboratorio al volver.
+  function showNotice() {
+    if (!state.pending || !signals.visible || !signals.focused || !supportsAPIs || busy) return;
+    const reset = state.pending === "reset";
+    const resume = state.pending === "resume";
+    dialog.dataset.kind = reset ? "reset" : "warning";
+    $("warning-kicker").textContent = resume ? "Intento recuperado" : "Incidencia " + state.count + " de " + LIMIT;
+    $("warning-title").textContent = reset ? "Formulario reiniciado" : resume ? "Vuelve a pantalla completa" : state.pending === "last" ? "Último aviso" : "Primer aviso";
+    const reasonText = state.lastReasons.map((r) => REASONS[r]).join(" · ");
+    $("warning-message").textContent = reset
+      ? "Se ha registrado la tercera incidencia. Se han vaciado todas las respuestas y se ha detenido este intento."
+      : resume ? "Se ha recuperado el intento guardado. Las respuestas seguirán bloqueadas hasta que vuelvas a pantalla completa."
+      : (reasonText ? "Detectado: " + reasonText + ". " : "Has salido del entorno de la práctica. ")
+        + (state.pending === "last" ? "La próxima incidencia borrará las respuestas de este intento." : "Tus respuestas se conservan. La tercera incidencia las borrará.");
+    $("warning-detail").textContent = reset
+      ? "Se conserva una copia local para revisión. Puedes recuperarla con la herramienta de demo; no es un acceso docente protegido."
+      : "Para continuar: pantalla completa, página visible y foco. Varios eventos de una misma salida cuentan solo una vez. Si necesitas salir, avisa al profesor.";
+    $("acknowledge").textContent = reset ? "Entendido, revisar el reinicio"
+      : signals.fullscreen ? "Entendido, continuar" : "Volver a pantalla completa y continuar";
+    $("acknowledge").disabled = busy;
+    if (!dialog.open) dialog.showModal();
+  }
+  function cancelRecovery() {
+    if (returnTimer !== null) clearTimeout(returnTimer);
+    returnTimer = null;
+  }
+  function finishEpisode() {
+    cancelRecovery();
+    if (state.awaySince !== null) state.awayMs += Math.max(0, Date.now() - state.awaySince);
+    state.awaySince = null;
+    state.episode = null;
+  }
+
+  /** Guarda una incidencia inmediatamente. Las señales relacionadas comparten episodio. */
+  function recordIncident(reasons, source = "real") {
+    if (state.phase !== "active" || restoring) return;
+    if (state.episode) {
+      const extra = reasons.filter((r) => !state.episode.reasons.includes(r));
+      if (extra.length) {
+        state.episode.reasons.push(...extra);
+        state.lastReasons = [...state.episode.reasons];
+        addEvent("Misma incidencia " + state.count + ": también " + extra.map((r) => REASONS[r]).join(" · ") + ". No se suma otra.");
+      }
+      return;
+    }
+    state.answers = readAnswers();
+    state.count += 1;
+    state.awaySince = Date.now();
+    state.episode = { at: state.awaySince, reasons: [...reasons], source };
+    state.lastReasons = [...reasons];
+    addEvent("Incidencia " + state.count + "/" + LIMIT + (source === "demo" ? " · SIMULADA · " : " · navegador · ") + reasons.map((r) => REASONS[r]).join(" · "));
+    if (state.count >= LIMIT) {
+      state.backup = { answers: sanitizeAnswers(state.answers), attempt: state.attempt };
+      state.answers = emptyAnswers();
+      state.result = null;
+      state.phase = "reset";
+      state.pending = "reset";
+      $("consent").checked = false;
+      finishEpisode();
+      writeAnswers(state.answers); // Vacía el DOM, el estado, el cálculo y después el guardado.
+      addEvent("Formulario vaciado. Copia del intento " + state.attempt + " conservada para revisión.");
+    } else state.pending = state.count === LIMIT - 1 ? "last" : "first";
+  }
+
+  function monitor(next = readSignals(), source = "real", forcedReasons = []) {
+    signals = next;
+    const reasons = [...new Set([
+      ...(!next.visible ? ["hidden"] : []), ...(!next.focused ? ["blur"] : []),
+      ...(!next.fullscreen ? ["fullscreen"] : []), ...forcedReasons
+    ])];
+    if (reasons.length) {
+      cancelRecovery();
+      recordIncident(reasons, source);
+    } else if (state.episode && state.phase === "active" && !restoring && returnTimer === null) {
+      // Solo se rearma tras recuperar TODAS las condiciones de forma estable.
+      // No hay contador temporizado ni sanción por duración.
+      returnTimer = setTimeout(() => {
+        returnTimer = null;
+        signals = readSignals();
+        if (isSafe(signals) && state.phase === "active" && !restoring) {
+          finishEpisode();
+          persist(); render(); showNotice();
+        } else monitor(signals);
+      }, RETURN_SETTLE_MS);
+    }
+    persist(); render(); showNotice();
+  }
+
+  async function enterFullscreen() {
+    if (document.fullscreenElement === root) return;
+    if (!supportsAPIs) throw new Error("Pantalla completa no disponible");
+    // Debe invocarse desde el clic; no se solicita automáticamente al recuperar foco.
+    // El diálogo se cierra para no quedar por debajo del elemento fullscreen en la top layer.
+    if (dialog.open) dialog.close();
+    let timer;
+    try {
+      await Promise.race([
+        root.requestFullscreen(),
+        new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("Sin respuesta del navegador")), 5000); })
+      ]);
+      if (document.fullscreenElement !== root) throw new Error("La pantalla completa no se ha activado");
+    } finally { clearTimeout(timer); }
+  }
+  function setFullscreenError() {
+    errorText = "No se pudo activar la pantalla completa. La práctica sigue bloqueada. Abre el HTML como página independiente y revisa los permisos del navegador; después vuelve a pulsar el botón.";
+  }
+
+  $("consent").addEventListener("change", render);
+  $("start").addEventListener("click", async () => {
+    if (!supportsAPIs || !$("consent").checked || state.phase === "active" || state.pending || busy || document.hidden) return;
+    busy = true; errorText = ""; render();
+    try {
+      await enterFullscreen();
+      signals = readSignals();
+      if (!isSafe(signals)) throw new Error("La página no está enfocada o visible");
+      cancelRecovery(); restoring = false;
+      Object.assign(state, { phase: "active", attempt: state.attempt + 1, count: 0, awayMs: 0,
+        awaySince: null, episode: null, lastReasons: [], pending: null, result: null, answers: emptyAnswers() });
+      writeAnswers(state.answers);
+      addEvent("Intento " + state.attempt + " iniciado en pantalla completa. Seguimiento de foco y visibilidad activo.");
+    } catch { setFullscreenError(); }
+    finally {
+      busy = false; signals = readSignals(); persist(); render(); showNotice();
+      if (canAnswer()) $("binary").focus();
+    }
+  });
+
+  async function acknowledge() {
+    if (!state.pending || busy || document.hidden || !document.hasFocus()) return;
+    if (state.pending === "reset") {
+      state.pending = null; errorText = "";
+      addEvent("Reinicio reconocido.");
+      if (dialog.open) dialog.close();
+      persist(); render(); $("consent").focus(); return;
+    }
+    busy = true; errorText = ""; $("acknowledge").disabled = true; render();
+    try {
+      await enterFullscreen();
+      signals = readSignals();
+      if (!isSafe(signals)) throw new Error("Falta visibilidad o foco");
+      // No cerrar un eventual aviso de reinicio ocurrido mientras se pedía fullscreen.
+      if (state.phase !== "active") return;
+      restoring = false; finishEpisode();
+      addEvent(state.pending === "resume" ? "Intento reanudado en pantalla completa." : "Aviso reconocido. Se reanuda en pantalla completa y con foco.");
+      state.pending = null;
+      if (dialog.open) dialog.close();
+    } catch { setFullscreenError(); }
+    finally {
+      busy = false; signals = readSignals(); persist(); render(); showNotice();
+      if (canAnswer()) $("binary").focus();
+    }
+  }
+  $("acknowledge").addEventListener("click", acknowledge);
+  // No se atrapa la salida del navegador. Escape no equivale a aceptar ni habilita el formulario.
+  dialog.addEventListener("cancel", (event) => { event.preventDefault(); });
+
+  form.addEventListener("input", () => {
+    if (!canAnswer()) { writeAnswers(state.answers); return; }
+    state.answers = readAnswers(); updateSum(); persist();
+  });
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    monitor();
+    if (!canAnswer() || !form.reportValidity()) return;
+    state.answers = readAnswers();
+    const a = state.answers;
+    state.result = Number(a.binary === "101101") + Number(a.weights.join(",") === "32,8,4,1")
+      + Number(a.decimal !== "" && Number(a.decimal) === 26);
+    state.phase = "submitted"; $("consent").checked = false;
+    finishEpisode();
+    addEvent("Entrega local completada. Seguimiento terminado.");
+    persist(); render();
+  });
+
+  document.addEventListener("visibilitychange", () => monitor());
+  document.addEventListener("fullscreenchange", () => monitor());
+  // Sin captura: cambiar entre los inputs NO cuenta como perder el foco de la ventana.
+  window.addEventListener("blur", (event) => {
+    if (event.target === window) monitor({ ...readSignals(), focused: false });
+  });
+  window.addEventListener("focus", (event) => { if (event.target === window) monitor(); });
+  window.addEventListener("pagehide", () => {
+    monitor(readSignals(), "real", ["pagehide"]);
+    cancelRecovery();
+  });
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted && state.phase === "active") {
+      restoring = true;
+      if (!state.pending) state.pending = "resume";
+    }
+    monitor();
+  });
+
+  $("demo-tools").hidden = !SHOW_DEMO_TOOLS;
+  function simulate(kind) {
+    if (!SHOW_DEMO_TOOLS || !canAnswer()) return;
+    const base = readSignals();
+    if (kind === "combined") {
+      monitor({ ...base, focused: false }, "demo");
+      monitor({ ...base, focused: false, visible: false }, "demo");
+      monitor({ visible: false, focused: false, fullscreen: false }, "demo");
+    } else monitor({ ...base, [kind]: false }, "demo");
+    monitor(base, "demo");
+  }
+  $("simulate").addEventListener("click", () => simulate("visible"));
+  $("simulate-blur").addEventListener("click", () => simulate("focused"));
+  $("simulate-combined").addEventListener("click", () => simulate("combined"));
+  $("exit-fullscreen").addEventListener("click", async () => {
+    if (!SHOW_DEMO_TOOLS || busy || !document.fullscreenElement) return;
+    try { await document.exitFullscreen(); }
+    catch { errorText = "No se pudo salir mediante el botón. Usa Escape o los controles del navegador."; render(); }
+  });
+  $("recover").addEventListener("click", () => {
+    if (!SHOW_DEMO_TOOLS || !state.backup || !["reset", "review"].includes(state.phase) || state.pending || busy) return;
+    state.answers = sanitizeAnswers(state.backup.answers); state.phase = "review";
+    writeAnswers(state.answers);
+    addEvent("Copia del intento " + state.backup.attempt + " recuperada para revisión (control público de demo).");
+    persist(); render();
+  });
+  $("restart").addEventListener("click", () => {
+    if (!SHOW_DEMO_TOOLS || busy || state.phase === "active"
+        || !window.confirm("¿Reiniciar la demo? Se borrarán las respuestas, el contador, el registro y la copia local.")) return;
+    cancelRecovery(); restoring = false; state = newState(); errorText = "";
+    signals = readSignals(); $("consent").checked = false;
+    if (dialog.open) dialog.close();
+    writeAnswers(state.answers); persist(); render();
+  });
+
+  writeAnswers(state.answers);
+  if (!supportsAPIs) {
+    $("compatibility").hidden = false;
+    $("compatibility").textContent = "Pantalla completa, visibilidad o diálogo modal no disponibles o no permitidos. La práctica permanece bloqueada. Abre el HTML en una pestaña independiente de un navegador de escritorio compatible; una previsualización incrustada puede impedir la pantalla completa.";
+  }
+  persist(); render(); showNotice();
+})();
+
+</script>
+</body>
+</html>
