@@ -890,9 +890,68 @@
             .header-top-row { align-items: flex-start; }
             .language-switch { font-size: 0.8rem; padding: 6px 10px; }
         }
-</style></head>
+</style>
+<style>
+    /* Guided learning, sections 4–6. */
+    .learning-section { margin-top: 48px; }
+    .learning-section h2, .learning-section h3, .learning-section h4 { scroll-margin-top: 76px; }
+    .learning-section p { text-align: left; }
+    #cuatro-libertades { scroll-margin-top: 76px; }
+    #cuatro-libertades svg { display: block; width: 100%; }
+    .api-demo { padding: 18px; margin: 20px 0; border: 1px solid #cbd5e1; border-radius: 8px; background: white; }
+    #api-response { white-space: pre-wrap; overflow-wrap: anywhere; }
+    .api-demo button:disabled { opacity: 0.65; cursor: wait; }
+    .api-demo label { display: block; font-weight: 600; margin-bottom: 6px; }
+    .api-demo select { display: block; width: 100%; padding: 9px; margin-bottom: 16px; font: inherit; border: 1px solid #64748b; border-radius: 6px; }
+    .api-demo button { padding: 12px 16px; font: inherit; font-weight: 600; color: white; background: #1e3a8a; border: 0; border-radius: 6px; cursor: pointer; }
+
+    .learning-section .section-lead { font-size: 1.18rem; color: var(--secondary-color); }
+    .learning-section .objectives-box { padding: 22px 26px; }
+    .learning-section .objectives-box ul { margin-bottom: 0; }
+    .learning-section h4 { margin-top: 0; }
+    .learning-section h4.numbered-subsection { margin-top: 28px; }
+    .learning-section .table-scroll { border: 1px solid var(--border-color); border-radius: 8px; }
+    .learning-section .table-scroll table { min-width: 560px; }
+    .learning-section caption { text-align: left; padding: 12px 16px; font-weight: 700; color: var(--primary-color); background: #f8fafc; }
+    .learning-section th[scope="row"] { background: transparent; color: var(--text-dark); }
+    .learning-section th, .learning-section td { padding: 12px 14px; vertical-align: top; }
+    .learning-section details { padding: 14px 18px; margin: 20px 0; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; }
+    .learning-section details.answer { border-left: 4px solid var(--secondary-color); }
+    .learning-section details.extension { border-left: 4px solid var(--purple-color); background: #faf5ff; }
+    .learning-section summary { cursor: pointer; color: var(--primary-color); font-weight: 600; }
+    .learning-section details[open] summary { margin-bottom: 14px; }
+    .learning-section details p:last-child, .learning-section details ul:last-child { margin-bottom: 0; }
+    .learning-section :focus-visible, .toc-toggle:focus-visible, .sidebar-toc a:focus-visible { outline: 3px solid #d97706; outline-offset: 3px; }
+    .toc-toggle { position: fixed; top: 20px; left: 12px; z-index: 10000; padding: 10px 16px; border: 1px solid #fff; border-radius: 7px; background: var(--primary-color); color: #fff; font: 600 0.9rem 'Inter', sans-serif; cursor: pointer; }
+    .sidebar-toc { top: 70px; max-height: calc(100vh - 90px); transform: translateX(-100%); visibility: hidden; }
+    .sidebar-toc::after { content: none; }
+    .sidebar-toc.is-open { transform: translateX(0); visibility: visible; }
+    .sidebar-toc h4 { margin-top: 0; }
+    @media (max-width: 700px) {
+        .toc-toggle { top: 0; left: 0; width: 100%; border-radius: 0; min-height: 48px; text-align: left; }
+        .sidebar-toc { top: 54px; max-height: calc(100vh - 66px); }
+        body { padding-top: 60px; }
+        .learning-section .case-study-box, .learning-section .example-box { padding: 20px 18px; }
+        .learning-section .objectives-box, .learning-section .activity-card { padding: 20px 16px; }
+        .learning-section details { padding: 12px; }
+        .learning-section .table-scroll::before { content: 'Desliza la tabla para ver todas las columnas →'; display: block; padding: 9px 12px; color: #475569; background: #f8fafc; font-size: 0.8rem; }
+    }
+    @media (prefers-reduced-motion: reduce) { .sidebar-toc { transition: none; } }
+    @media print {
+        .toc-toggle { display: none; }
+        .learning-section .table-scroll { overflow: visible; }
+        .learning-section .table-scroll table { min-width: 0; }
+        .learning-section .table-scroll::before { display: none; }
+        .learning-section th, .learning-section td { padding: 6px; }
+        .learning-section .activity-card { break-inside: auto; }
+        .learning-section details { break-inside: avoid; }
+    }
+</style>
+<noscript><style>.toc-toggle{display:none}.sidebar-toc{position:static;transform:none;visibility:visible;width:100%;max-height:none;margin-bottom:24px;border-radius:8px}</style></noscript>
+</head>
 <body>
-<nav class="sidebar-toc" aria-label="Índice de contenidos"><h4><i class="fa-solid fa-list-ol" aria-hidden="true"></i> Contenidos</h4><ul><li><a href="#evaluacion-inicial">Evaluación inicial</a></li><li><a href="#sec1">1. Introducción y definiciones previas</a></li><li><a href="#sec1_1" class="subsection-link">1.1. Hardware y Software</a></li><li><a href="#sec1_2" class="subsection-link">1.2. Informática y Ordenador</a></li><li><a href="#sec1_3" class="subsection-link">1.3. Digital</a></li><li><a href="#sec2">2. Comunicación de la información</a></li><li><a href="#sec2_1" class="subsection-link">2.1. Elementos de un sistema de comunicación</a></li><li><a href="#sec3">3. Representación interna de la información</a></li><li><a href="#sec3_1" class="subsection-link">3.1. Unidades y magnitudes informáticas</a></li><li><a href="#sec3_1_4" class="subsection-link">3.1.4. Conversión de unidades</a></li><li><a href="#sec3_2" class="subsection-link">3.2. Representación de la información</a></li><li><a href="#sec3_3" class="subsection-link">3.3. Sistemas de numeración</a></li><li><a href="#sec4">4. Características de un ordenador digital</a></li><li><a href="#sec4_1" class="subsection-link">4.1. Longitud de palabra:</a></li><li><a href="#sec4_2" class="subsection-link">4.2. Memoria Principal (RAM)</a></li><li><a href="#sec4_3" class="subsection-link">4.3. Memoria Secundaria</a></li><li><a href="#sec4_4" class="subsection-link">4.4. Ancho de banda</a></li><li><a href="#sec4_5" class="subsection-link">4.5. Frecuencia de reloj</a></li><li><a href="#sec4_6" class="subsection-link">4.6. MIPS (Millones de Instrucciones por segundo)</a></li><li><a href="#sec4_7" class="subsection-link">4.7. MFLOPS</a></li><li><a href="#sec4_8" class="subsection-link">4.8. Test sintéticos (Benchmarks)</a></li><li><a href="#sec5">5. Componentes físicos. Arquitectura Von Neumann</a></li><li><a href="#sec5_1" class="subsection-link">5.1. Introducción. Arquitectura Von Neumann</a></li><li><a href="#sec5_2" class="subsection-link">5.2. Componentes. Bloques funcionales de la CPU</a></li><li><a href="#sec5_3" class="subsection-link">5.3. Función y Propósito de la Memoria Interna</a></li><li><a href="#sec5_4" class="subsection-link">5.4. Buses de E/S</a></li><li><a href="#sec5_5" class="subsection-link">5.5. Periféricos</a></li><li><a href="#sec6">6. Componentes lógicos: Software</a></li><li><a href="#sec6_2" class="subsection-link">6.1. Recursos</a></li></ul></nav>
+<button type="button" class="toc-toggle" aria-controls="unit-toc" aria-expanded="false">Índice</button>
+<nav id="unit-toc" class="sidebar-toc" aria-label="Índice de contenidos"><h4><i class="fa-solid fa-list-ol" aria-hidden="true"></i> Contenidos</h4><ul><li><a href="#evaluacion-inicial">Evaluación inicial</a></li><li><a href="#sec1">1. Introducción y definiciones previas</a></li><li><a href="#sec1_1" class="subsection-link">1.1. Hardware y Software</a></li><li><a href="#sec1_2" class="subsection-link">1.2. Informática y Ordenador</a></li><li><a href="#sec1_3" class="subsection-link">1.3. Digital</a></li><li><a href="#sec2">2. Comunicación de la información</a></li><li><a href="#sec2_1" class="subsection-link">2.1. Elementos de un sistema de comunicación</a></li><li><a href="#sec3">3. Representación interna de la información</a></li><li><a href="#sec3_1" class="subsection-link">3.1. Unidades y magnitudes informáticas</a></li><li><a href="#sec3_1_4" class="subsection-link">3.1.4. Conversión de unidades</a></li><li><a href="#sec3_2" class="subsection-link">3.2. Representación de la información</a></li><li><a href="#sec3_3" class="subsection-link">3.3. Sistemas de numeración</a></li><li><a href="#sec4">4. Características de un ordenador digital</a></li><li><a href="#sec4_1" class="subsection-link">4.1. Longitud de palabra</a></li><li><a href="#sec4_2" class="subsection-link">4.2. Memoria principal: RAM</a></li><li><a href="#sec4_3" class="subsection-link">4.3. Memoria secundaria: almacenamiento</a></li><li><a href="#sec4_4" class="subsection-link">4.4. Ancho de banda</a></li><li><a href="#sec4_5" class="subsection-link">4.5. Frecuencia de reloj</a></li><li><a href="#sec4_6" class="subsection-link">4.6. MIPS: una medida con límites</a></li><li><a href="#sec4_7" class="subsection-link">4.7. MFLOPS: cálculo en coma flotante</a></li><li><a href="#sec4_8" class="subsection-link">4.8. Benchmarks: medir antes de concluir</a></li><li><a href="#sec5">5. Componentes físicos. Arquitectura de Von Neumann</a></li><li><a href="#sec5_1" class="subsection-link">5.1. El programa almacenado</a></li><li><a href="#sec5_2" class="subsection-link">5.2. Componentes y funcionamiento de la CPU</a></li><li><a href="#sec5_3" class="subsection-link">5.3. Memoria: capacidad, rapidez y persistencia</a></li><li><a href="#sec5_4" class="subsection-link">5.4. Buses: dirección, datos y control</a></li><li><a href="#sec5_5" class="subsection-link">5.5. Periféricos: conectar y utilizar</a></li><li><a href="#sec6">6. Componentes lógicos: software</a></li><li><a href="#software-funcion" class="subsection-link">6.1. Qué es el software y cómo se clasifica</a></li><li><a href="#software-desarrollo" class="subsection-link">6.2. Crear programas: compilar no es comprobarlo todo</a></li><li><a href="#software-api" class="subsection-link">6.3. Bibliotecas y API: reutilizar y comunicar</a></li><li><a href="#software-empresa" class="subsection-link">6.4. CRM, ERP y DSS: partir de una necesidad</a></li><li><a href="#software-licencias" class="subsection-link">6.5. Licencias: libre no significa gratuito</a></li><li><a href="#sec6_1" class="subsection-link">6.6. Reto final: una propuesta para la tienda</a></li></ul></nav>
 <div class="document-wrapper"><main class="document-container"><div class="header-banner"><div class="header-top-row"><span class="module-tag">Arquitectura de Ordenadores • Unidad Didáctica 01</span><a class="language-switch" href="u01_en.html" hreflang="en" lang="en" aria-label="Read this page in English"><i class="fa-solid fa-language" aria-hidden="true"></i> English</a></div><h1>UD01 Arquitectura de un ordenador</h1><p class="header-subtitle">Componentes físicos y lógicos</p></div>
 <figure class="image-container unit-cover" id="portada-unidad" role="group" aria-labelledby="portada-caption">
     <svg viewBox="0 0 1200 500" role="img" aria-labelledby="portada-title portada-desc" xmlns="http://www.w3.org/2000/svg">
@@ -2121,92 +2180,47 @@ binario.</p>
     <p>Comprende el binario como código intermedio, aprende a agrupar bits de tres en tres y de cuatro en cuatro, y practica los cuatro recorridos de conversión con ejemplos guiados.</p>
     <a href="alumnado/p0105.html" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-code-branch" aria-hidden="true"></i> Abrir la práctica interactiva</a>
 </div>
+<section class="learning-section" aria-labelledby="sec4">
 <h2 id="sec4"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i> 4. Características de un ordenador digital</h2>
-<blockquote>
-<p>Hay una serie de características o parámetros que nos permiten
-comparar ordenadores digitales. Listamos en este apartado las
-características relevantes de un ordenador digital.</p>
-</blockquote>
-<h3 id="sec4_1">4.1. Longitud de palabra:</h3>
-<blockquote>
-<p>Longitud de la cadena de bits que el computador puede manejar
-simultáneamente (en paralelo). Así un ordenador de 32 bits puede
-realizar operaciones con operandos de este tamaño de una sola vez. En la
-actualidad, se comercializan computadoras de 32 y 64bits</p>
-</blockquote>
-<h3 id="sec4_2">4.2. Memoria Principal (RAM)</h3>
-<ul>
-<li>
-<p>Tamaño de la memoria interna principal del computador. La unidad
-básica es el byte u octeto (8 bits) aunque habitualmente se emplean
-múltiplos</p>
-</li>
-</ul>
-<h3 id="sec4_3">4.3. Memoria Secundaria</h3>
-<p>Cantidad de memoria de almacenamiento o permanente de que dispone el
-ordenador (habitualmente, capacidad del disco duro, en gigabytes o
-terabytes)</p>
+<div class="case-study-box"><h3>Antes de empezar: dos equipos, una decisión</h3><p>Una tienda necesita un ordenador para facturación, ofimática y muchas pestañas del navegador. Dos equipos cuestan lo mismo: <strong>A tiene 8 GB de RAM y una CPU anunciada a 3,8 GHz; B tiene 16 GB de RAM y otra CPU a 3,2 GHz</strong>. Ambos tienen un SSD de 512 GB.</p><p>Escribe tu primera elección y qué datos te faltan. Al terminar el apartado, revisa tu respuesta: los GHz por sí solos no permiten decidir.</p></div>
+<div class="table-scroll" role="region" aria-label="Guía de características del equipo" tabindex="0"><table><caption>Cuatro preguntas para leer una ficha técnica</caption><thead><tr><th scope="col">Pregunta</th><th scope="col">Qué mirar</th><th scope="col">Qué significa</th></tr></thead><tbody><tr><th scope="row">¿Cuánto puede guardar o mantener en uso?</th><td>RAM y almacenamiento</td><td>Capacidad, expresada en bytes y sus múltiplos.</td></tr><tr><th scope="row">¿A qué ritmo transfiere información?</th><td>Ancho de banda</td><td>Cantidad de información por segundo.</td></tr><tr><th scope="row">¿Cómo procesa las instrucciones?</th><td>Arquitectura, longitud de palabra y frecuencia</td><td>Características de la CPU; ninguna resume por sí sola el rendimiento.</td></tr><tr><th scope="row">¿Cómo resuelve una tarea?</th><td>Pruebas de rendimiento</td><td>Resultado medido para una carga de trabajo concreta.</td></tr></tbody></table></div>
+<h3 id="sec4_1">4.1. Longitud de palabra</h3>
+<p>La longitud de palabra es el número de bits que la CPU maneja como unidad natural en determinadas operaciones. En una arquitectura de 64 bits, los registros de propósito general suelen permitir operaciones con valores de ese tamaño. Esto no significa que todas las instrucciones, todos los buses o todas las direcciones tengan 64 bits.</p>
+<div class="didactic-note"><h4>Error frecuente: «64 bits significa el doble de velocidad»</h4><p>La longitud de palabra describe una característica de la arquitectura. El tiempo de ejecución también depende del programa, del diseño de la CPU, de la memoria y de otros factores. No podemos deducir que un equipo de 64 bits sea el doble de rápido que uno de 32 bits.</p></div>
+<h3 id="sec4_2">4.2. Memoria principal: RAM</h3>
+<p>La RAM mantiene instrucciones y datos de los programas en ejecución. Su capacidad se expresa en bytes y sus múltiplos. Es una memoria <strong>volátil</strong>: pierde su contenido al apagarse el equipo.</p>
+<p><strong>Ejemplo:</strong> abrir varias aplicaciones y documentos aumenta la memoria necesaria. Si la RAM disponible resulta insuficiente, el sistema puede recurrir al almacenamiento, normalmente mucho más lento. Añadir RAM puede ayudar en esa situación, pero no acelera por igual todas las tareas.</p>
+<h3 id="sec4_3">4.3. Memoria secundaria: almacenamiento</h3>
+<p>Un SSD o un disco duro conserva programas y archivos al apagar el equipo. Su <strong>capacidad</strong> indica cuánto puede guardar; su <strong>velocidad</strong> indica a qué ritmo puede leer o escribir. Son características diferentes.</p>
+<div class="example-box"><h4>Ejemplo resuelto: guardar y trabajar</h4><p>Un equipo tiene 16 GB de RAM y un SSD de 512 GB. El documento guardado permanece en el SSD. Al abrirlo, el programa utiliza RAM para trabajar con él. Al guardar los cambios, se escriben en el almacenamiento. Ampliar la RAM a 32 GB no aumenta la capacidad del SSD.</p></div>
+<div class="activity-card activity-callout"><h4>Ahora tú · 3 minutos</h4><p>Un equipo avisa de que no queda espacio para guardar fotografías. Otro se ralentiza al abrir muchas aplicaciones. ¿Qué dato comprobarías primero en cada caso?</p></div>
 <h3 id="sec4_4">4.4. Ancho de banda</h3>
-<p>El ancho de banda es la cantidad de información por unidad de tiempo
-que se puede transmitir a través de un bus o unidad de E/S. Se mide en
-MB/s Mb/s o GT/s</p>
+<p>El ancho de banda indica la cantidad de información que puede transmitirse por unidad de tiempo. Se suele expresar en <strong>MB/s</strong> (megabytes por segundo) o <strong>Mb/s</strong> (megabits por segundo). Recuerda: un byte contiene ocho bits.</p>
+<div class="example-box"><h4>Ejemplo resuelto: ¿cuánto tarda una transferencia?</h4><p>Para transferir un archivo de 600 MB a una velocidad constante de 100 Mb/s, primero unificamos las unidades: <strong>100 ÷ 8 = 12,5 MB/s</strong>. Después calculamos el tiempo: <strong>600 ÷ 12,5 = 48 segundos</strong>.</p><p>Es un cálculo ideal con unidades decimales: no incluye sobrecargas de comunicación, esperas ni límites del dispositivo. La transferencia real puede tardar más.</p></div>
+<details class="extension"><summary>Para ampliar: GT/s y latencia</summary><p>GT/s expresa miles de millones de transferencias por segundo. Para convertirlo en una tasa de datos hay que conocer los bits útiles de cada transferencia, el número de líneas y la codificación del enlace. La latencia mide el tiempo de espera hasta obtener una respuesta; no es lo mismo que el ancho de banda.</p></details>
+<div class="activity-card activity-callout"><h4>Ahora tú · 2 minutos</h4><p>¿Cuánto tardaría en transferirse un archivo de 300 MB a 50 MB/s? ¿Y a 50 Mb/s?</p></div>
 <h3 id="sec4_5">4.5. Frecuencia de reloj</h3>
-<p>Frecuencia con la que el oscilador interno (reloj) coordina las
-operaciones del ordenador, habitualmente medidas en MHZ o GHZRecuerda:
-Un Mhz es...</p>
-<h3 id="sec4_6">4.6. MIPS (Millones de Instrucciones por segundo)</h3>
-<p>Medida de rendimiento del computador, que indica el número de
-instrucciones máquina que puede ejecutar un procesador en un segundo,
-agrupadas en millones.</p>
-<h3 id="sec4_7">4.7. MFLOPS</h3>
-<p>Medida análoga a la anterior, pero exclusivamente para operaciones
-con números reales en coma flotante, que presentan mayor carga de
-cálculo.</p>
-<h3 id="sec4_8">4.8. Test sintéticos (Benchmarks)</h3>
-<p>Son un conjunto variado de prueba cuyo resultado en tiempo de
-ejecución es más fiable que la medida en MIPS, MFLOPS o GHZ. El
-resultado de estos test da lugar a un ranking de potencia.</p>
-<div class="activity-card activity-callout" id="practica-comparacion-cpu">
-    <p><strong>Laboratorio: conoce y compara tu CPU.</strong></p>
-    <p>Identifica tu procesador en Ubuntu, realiza tres mediciones con Speedometer, consulta CPU Mark y compara el rendimiento y precio de tres procesadores. El laboratorio te guía paso a paso y genera un informe para copiar.</p>
-    <p><strong>Entrega:</strong> únicamente en texto, sin capturas ni archivos adjuntos.</p>
-    <a href="../../labs/compara-tu-cpu.html" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-microchip" aria-hidden="true"></i> Abrir el laboratorio interactivo</a>
-</div>
-<h2 id="sec5"><i class="fa-solid fa-memory" aria-hidden="true"></i> 5. Componentes físicos. Arquitectura Von Neumann</h2>
-<h3 id="sec5_1">5.1. Introducción. Arquitectura Von Neumann</h3>
-<p>El modelo básico de arquitectura empleada en los ordenadores
-digitales fue establecido en <strong>1945 por John Von Neumann</strong>,
-físico húngaro afincado en Estados Unidos.</p>
-<p>Su gran aportación con respecto a las arquitecturas preexistentes
-(arquitectura Hardvard principalmente) fue eliminar <strong>la lógica de
-programación basada en relés o conexiones cableadas</strong>, unificando
-memoria de datos y memoria de programa en una <strong>única memoria
-principal</strong> y simplificando por consiguiente la doble gestión de
-control de datos y programa. De esta forma además se garantiza la
-<strong>disponibilidad incremental de espacio</strong> en memoria ya que
-este se puede dividir entre datos y programas a voluntad.</p>
-<p>Los <strong>elementos funcionales</strong> de la arquitectura Von
-Neumann son por tanto:</p>
-<ul>
-<li>
-<p><strong>Unidad de Control</strong></p>
-</li>
-<li>
-<p><strong>Unidad Aritmético-lógica</strong></p>
-</li>
-<li>
-<p><strong>Memoria Principal</strong></p>
-</li>
-<li>
-<p><strong>Unidad de E/S</strong></p>
-</li>
-</ul>
-<p>La unidad de control y la unidad aritmético-lógica se agrupan en la
-denominada <strong>unidad central de proceso</strong>.</p>
-<h3 id="sec5_2">5.2. Componentes. Bloques funcionales de la CPU</h3>
-<p>La unidad central de Proceso (CPU = Central Processing Unit) unifica los
-elementos funcionales de Unidad de Control y Unidad
-Aritmético-Lógica.</p>
+<p>El reloj proporciona una señal que coordina pasos del procesamiento. La frecuencia indica ciclos por segundo: <strong>1 MHz = un millón de ciclos/s; 1 GHz = mil millones de ciclos/s</strong>.</p>
+<p>Un procesador a 3 GHz realiza tres mil millones de ciclos por segundo. Esto <strong>no equivale a tres mil millones de instrucciones por segundo</strong>: una instrucción puede necesitar varios ciclos y una CPU puede solapar instrucciones o completar varias en un ciclo. También influyen la arquitectura, los núcleos, la memoria y la carga de trabajo.</p>
+<h3 id="sec4_6">4.6. MIPS: una medida con límites</h3>
+<details class="extension"><summary>Para ampliar: millones de instrucciones por segundo</summary><p>MIPS indica cuántos millones de instrucciones se ejecutan por segundo en una prueba. No todas las instrucciones hacen el mismo trabajo, y las arquitecturas pueden necesitar cantidades distintas de instrucciones para resolver una tarea. Por ello, no es una clasificación universal de procesadores.</p></details>
+<h3 id="sec4_7">4.7. MFLOPS: cálculo en coma flotante</h3>
+<details class="extension"><summary>Para ampliar: millones de operaciones en coma flotante por segundo</summary><p>MFLOPS expresa millones de operaciones en coma flotante por segundo. Se utiliza en cargas de cálculo numérico. Debe indicarse la precisión empleada y si el valor es teórico o medido. No predice por sí solo la rapidez al abrir un navegador o un documento.</p></details>
+<h3 id="sec4_8">4.8. Benchmarks: medir antes de concluir</h3>
+<p>Un <strong>benchmark</strong> es una prueba de rendimiento con una carga de trabajo definida. Puede medir una aplicación real o tareas sintéticas. Sus resultados son útiles cuando la prueba se parece al uso que nos interesa y las condiciones son comparables.</p>
+<ol><li><strong>Define la tarea:</strong> navegar, compilar, editar vídeo, etc.</li><li><strong>Controla las condiciones:</strong> versión del programa, alimentación y aplicaciones abiertas.</li><li><strong>Repite y registra:</strong> conserva todas las mediciones y explica su variación.</li><li><strong>Interpreta:</strong> compara solo puntuaciones de la misma prueba y versión; comprueba si un valor mayor o menor representa una mejora.</li></ol>
+<div class="resource-card" id="practica-comparacion-cpu"><h4>Laboratorio: conoce y compara tu CPU</h4><p><strong>Antes:</strong> predice qué equipo del caso inicial elegirías y explica qué necesitas medir. <strong>Durante:</strong> identifica tu CPU en Ubuntu, realiza tres mediciones y consulta modelos comparables. <strong>Después:</strong> revisa tu predicción con las evidencias obtenidas.</p><p>Speedometer mide la respuesta de aplicaciones web: influyen el equipo y el navegador, no solo la CPU. CPU Mark es otra prueba, con otra escala; sus puntuaciones no se comparan numéricamente con las de Speedometer.</p><a href="../../labs/compara-tu-cpu.html" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Abrir el laboratorio interactivo</a><p><strong>Entrega:</strong> únicamente en texto. Una buena conclusión incluye datos, condiciones de medida, uso previsto y límites de la comparación.</p></div>
+<details class="answer"><summary>Volver al caso inicial: ¿A o B?</summary><p>Los 16 GB del equipo B pueden ser una ventaja si la carga necesita más de 8 GB. Pero desconocemos los modelos de CPU, el consumo real de memoria y su rendimiento en esas tareas. Una respuesta fundamentada explicita estas limitaciones y solicita datos; no elige únicamente por los GHz.</p></details>
+</section>
+
+<section class="learning-section" aria-labelledby="sec5">
+<h2 id="sec5"><i class="fa-solid fa-memory" aria-hidden="true"></i> 5. Componentes físicos. Arquitectura de Von Neumann</h2>
+<h3 id="sec5_1">5.1. El programa almacenado</h3>
+<p>En el modelo de Von Neumann, <strong>las instrucciones y los datos se almacenan en una memoria principal común</strong>. La CPU obtiene instrucciones de esa memoria, las interpreta y coordina su ejecución. La entrada/salida permite intercambiar información con el exterior.</p>
+<p>Este modelo nos servirá para razonar sobre el funcionamiento básico. Los ordenadores actuales incorporan muchas mejoras y no reproducen literalmente todos los detalles del esquema.</p>
+<details class="extension"><summary>Para ampliar: Von Neumann y Harvard</summary><p>En el modelo Harvard se separan las memorias y los caminos de acceso para instrucciones y datos. La diferencia esencial es esa separación, no que uno de los modelos tenga necesariamente programación cableada. Algunas CPU combinan memoria principal común con cachés separadas para instrucciones y datos.</p></details>
+<h3 id="sec5_2">5.2. Componentes y funcionamiento de la CPU</h3>
+<p>La <strong>unidad de control (UC)</strong> coordina; la <strong>unidad aritmético-lógica (ALU)</strong> opera con los datos; los <strong>registros</strong> conservan temporalmente valores dentro de la CPU. Observa primero el conjunto y después sigue el ejemplo.</p>
 <figure class="image-container" id="bloques-cpu" role="group" aria-labelledby="bloques-cpu-caption">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" role="img" aria-labelledby="bloques-cpu-title bloques-cpu-desc">
 <title id="bloques-cpu-title">Bloques funcionales de la CPU</title>
@@ -2218,11 +2232,11 @@ Aritmético-Lógica.</p>
 <text x="345" y="63" font-size="27" font-weight="700" fill="#1e3a8a">CPU · Unidad central de proceso</text>
 <rect x="65" y="105" width="250" height="135" rx="14" fill="white" stroke="#b45309" stroke-width="2"/>
 <text x="190" y="139" font-size="23" font-weight="700">Unidad de control</text><text x="190" y="174" font-size="18">Decodifica y coordina</text><text x="190" y="206" font-size="16">Decodificador · secuenciador</text>
-<rect x="385" y="105" width="240" height="135" rx="14" fill="white" stroke="#0f766e" stroke-width="2"/>
-<text x="505" y="140" font-size="26" font-weight="700">ALU</text><text x="505" y="175" font-size="18">Operaciones aritméticas</text><text x="505" y="207" font-size="18">y lógicas</text>
+<path d="M385 105H475L505 135L535 105H625L575 240H435Z" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="505" y="165" font-size="26" font-weight="700">ALU</text><text x="505" y="191" font-size="16">Operaciones</text><text x="505" y="216" font-size="16">aritméticas y lógicas</text>
 <rect x="65" y="325" width="560" height="130" rx="14" fill="#dbeafe" stroke="#1e3a8a" stroke-width="2"/>
 <text x="345" y="360" font-size="25" font-weight="700">Registros</text><text x="345" y="394" font-size="19">PC · IR · MAR · registro de datos · estado</text><text x="345" y="426" font-size="19">Instrucciones, direcciones y datos temporales</text>
-<path d="M315 160H378" stroke="#b45309" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#cpu-control-arrow)"/><path d="M190 240V315" stroke="#b45309" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#cpu-control-arrow)"/>
+<path d="M315 160H402" stroke="#b45309" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#cpu-control-arrow)"/><path d="M190 240V315" stroke="#b45309" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#cpu-control-arrow)"/>
 <path d="M505 250V315" stroke="#0f766e" stroke-width="4" marker-start="url(#cpu-data-arrow)" marker-end="url(#cpu-data-arrow)"/>
 <text x="349" y="147" font-size="15" fill="#b45309">Control</text><text x="540" y="287" text-anchor="start" font-size="17" fill="#0f766e">Datos</text>
 <rect x="740" y="105" width="195" height="135" rx="14" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/>
@@ -2238,514 +2252,190 @@ Aritmético-Lógica.</p>
 </g></svg>
 <figcaption class="image-caption" id="bloques-cpu-caption">La unidad de control coordina, la ALU calcula y los registros guardan información temporal. La CPU intercambia información con la RAM y con E/S mediante buses.</figcaption>
 </figure>
-<h4 id="sec5_2_1" class="numbered-subsection">5.2.1. Unidad de Control</h4>
-<p>Es el centro neurálgico del ordenador, donde se procesan los
-programas y su función consiste en realizar la <strong>búsqueda, carga,
-secuenciación y ejecución</strong> de las instrucciones.</p>
-<p>Estas instrucciones están escritas en <strong>Lenguaje
-Máquina</strong> y están formadas por un <strong>código de
-operación</strong>, que indica a la UC qué operación debe realizarse, y
-por hasta <strong>dos datos o direcciones de memoria</strong> que
-indican la localización de esos datos.</p>
-<p>Para realizar su trabajo, la UC utiliza los siguientes elementos:</p>
-<p><strong>Registros,</strong> algunos visibles al usuario y otros
-no<strong>,</strong> entre los que cabe destacar:</p>
-<ul>
-<li>
-<p><strong>Contador de programa(PC)</strong>. Contiene en todo momento
-la dirección de memoria de la siguiente instrucción a ejecutar.</p>
-</li>
-<li>
-<p><strong>Registro de instrucción(IR)</strong> Almacena la instrucción
-en curso, que llevará consigo el código de operación y en su caso, los
-operandos o las direcciones de memoria de los mismos.</p>
-</li>
-<li>
-<p><strong>Registro de direcciones de memoria (MAR)</strong> Se utilizan
-para almacenar direcciones de memoria que contienen los datos de una
-instrucción o el lugar donde almacenar el resultado de la misma.</p>
-</li>
-<li>
-<p><strong>Registro de intercambio de memoria(MIR):</strong> Se almacena
-de forma temporal cualquier información recuperada de memoria.</p>
-</li>
-<li>
-<p><strong>Registros de estado (Flags/PSW)</strong>. Contiene
-información sobre el resultado de la operación anterior de la unidad
-aritmético lógica y de posibles situaciones anómalas, como
-desbordamientos, interrupciones, etc.</p>
-</li>
-<li>
-<p><strong>Otros registros,</strong> como los <strong>registros
-genéricos</strong> que pueden ser utilizados por los propios programas y
-otros <strong>registros específicos</strong> utilizados por el
-procesador (<strong>puntero de pila, registro de base</strong>, etc) y
-que dependen de su arquitectura concreta.</p>
-</li>
-</ul>
-<p><strong>Reloj</strong>. El reloj es un circuito oscilador que genera
-autónomamente una señal en forma de pulsos a intervalos constantes que
-marcan los instantes en que han de comenzar los distintos pasos de que
-consta cada instrucción.</p>
-<p><strong>Decodificador.</strong> Se encarga de extraer el código de
-operación de la instrucción en curso, analizarlo y emitir las señales
-necesarias al resto de elementos para su ejecución a través del
-secuenciador.</p>
-<p><strong>Secuenciador.</strong> Genera una serie de órdenes muy
-elementales que permiten ejecutar la instrucción en curso, de forma
-síncrona con el reloj del sistema.</p>
-<p>Por último, cabe señalar que las Unidades de Control se pueden
-clasificar en <strong>dos<br>
-categorías</strong>:</p>
-<ul>
-<li>
-<p><strong>UC cableadas.</strong> La lógica está implementada en el
-hardware, lo que las convierte en UC de <strong>propósito
-específico</strong> y no es modificable.</p>
-</li>
-<li>
-<p><strong>UC microprogramadas.</strong> En ellas, la lógica se
-implementa como un programa almacenado como <strong>firmware</strong>,
-lo que permite su posterior reescritura.</p>
-</li>
-</ul>
-<h4 id="sec5_2_2" class="numbered-subsection">5.2.2. Unidad Aritmético-Lógica</h4>
-<p>Es la unidad funcional encargada de realizar las operaciones
-aritméticas y lógicas <strong>bajo la supervisión de la unidad de
-control</strong>.</p>
-<p>Las operaciones que puede efectuar esta unidad <strong>solían ser muy
-elementales</strong>, puesto que normalmente estaban formadas por un
-circuito sumador-restador, y basaban todas las operaciones aritméticas
-en sumas, descomponiendo las operaciones complejas en pasos
-elementales.</p>
-<p><strong>Actualmente</strong> la Unidad Aritmética ha cobrado gran
-importancia y el tipo de operaciones que realiza es muy complejo, siendo
-similar a una <strong>calculadora científica de alta velocidad y gran
-precisión.</strong></p>
-<p>Las operaciones que es capaz de realizar la ALU se clasifican en tres
-grupos:</p>
-<ul>
-<li>
-<p><strong>Aritméticas</strong>. Normalmente son la suma (ADD), la resta
-(SUB), la multiplicación (MUL), la división (DIV) y el cambio de
-signo.</p>
-</li>
-<li>
-<p><strong>Lógicas</strong>. Normalmente son la negación (NOT), la suma
-lógica (OR), el producto lógico (AND) y la suma exclusiva (XOR).</p>
-</li>
-<li>
-<p><strong>Desplazamiento</strong>. Consiste en desplazar los bits de
-una palabra un determinado número de posiciones hacia la derecha o hacia
-la izquierda.</p>
-</li>
-</ul>
-<p>El número de operadores que puede aceptar la unidad aritmético-lógica
-también es variable, clasificándose en operadores <strong>monádicos,
-diádicos y triádicos</strong> si es capaz de trabajar con uno, dos o
-tres datos de forma simultánea respectivamente</p>
-
-
-<div class="resource-card expansion-card">
-    <div class="resource-card-header">
-        <span class="resource-title"><i class="fa-solid fa-microchip"></i> Simulador de Von Neumann</span>
-        <span class="resource-badge badge-tool">Herramienta</span>
-    </div>
-    <div class="resource-description">Simulador en línea para explorar el funcionamiento básico de la arquitectura de Von Neumann.</div>
-    <a href="http://lab.xitrus.es/VonNeumann/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir el simulador</a>
-</div>
-
-
-<h3 id="sec5_3">5.3. Función y Propósito de la Memoria Interna</h3>
-<p>La memoria es considerada un único componente funcional, compuesto de
-celdas que pueden almacenar <strong>bits</strong> de forma
-independiente, con dos operaciones básicas: <strong>lectura y
-escritura</strong>.</p>
-<p>Sin embargo las limitaciones en términos de <strong>rendimiento,
-coste económico y velocidad</strong> hacen necesaria una estructuración
-de la misma.</p>
+<h4 id="sec5_2_1" class="numbered-subsection">5.2.1. Unidad de control: buscar, decodificar y ejecutar</h4>
+<ol><li><strong>Buscar:</strong> el contador de programa (<strong>PC</strong>) señala dónde obtener la siguiente instrucción. Esta se copia en el registro de instrucción (<strong>IR</strong>). En una ejecución secuencial, el PC avanza a la dirección de la siguiente instrucción.</li><li><strong>Decodificar:</strong> la UC interpreta la operación y sus operandos. Por ejemplo, en una instrucción de suma identifica la operación y los datos con los que debe trabajar.</li><li><strong>Ejecutar:</strong> la UC emite señales para leer el dato, activar la ALU y escribir el resultado donde corresponda. Después se repite el ciclo.</li></ol>
+<p>Una instrucción incluye un código de operación y puede incluir operandos o referencias a ellos. Su número y formato dependen de la arquitectura. Los saltos pueden cambiar la siguiente dirección del PC.</p>
+<details class="extension"><summary>Para ampliar: otros registros y organización de la UC</summary><ul><li><strong>MAR:</strong> en el modelo didáctico, contiene la dirección de la posición de memoria a la que se accede.</li><li><strong>MDR o MBR:</strong> conserva temporalmente el dato que se lee o escribe. En algunos materiales aparece como MIR.</li><li><strong>Registro de estado:</strong> recoge indicadores como resultado cero, acarreo o desbordamiento, según la arquitectura.</li><li><strong>Decodificador y secuenciador:</strong> interpretan la instrucción y ordenan las señales necesarias, coordinadas por el reloj.</li><li><strong>Control cableado o microprogramado:</strong> las señales pueden generarse mediante lógica de circuitos o mediante microinstrucciones. Esto no determina por sí solo que el procesador sea de propósito general o específico. La posibilidad de actualizar el microcódigo depende del diseño.</li></ul></details>
+<h4 id="sec5_2_2" class="numbered-subsection">5.2.2. ALU: operaciones con datos</h4>
+<p>La ALU realiza operaciones aritméticas y lógicas, como sumar, restar, comparar, aplicar AND, OR o XOR y desplazar bits. Por ejemplo, <code>0101 AND 0011 = 0001</code>: solo queda a 1 una posición si ambos bits de entrada son 1.</p><p>Las capacidades concretas dependen de la CPU. Las operaciones en coma flotante pueden realizarse en unidades especializadas; no debemos imaginar toda la CPU como una única calculadora científica.</p>
+<div class="resource-card expansion-card"><h4>Explora el simulador de Von Neumann</h4><p>Localiza la memoria, el PC y la instrucción actual. Ejecuta paso a paso un programa sencillo: <strong>antes de cada paso predice qué cambia y después anota lo observado</strong>. Utiliza las instrucciones disponibles en el simulador y registra qué cambia en cada paso. Si no puedes acceder, describe las fases de búsqueda, decodificación y ejecución a partir del esquema de la CPU.</p><a href="http://lab.xitrus.es/VonNeumann/" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Abrir el simulador</a></div>
+<h3 id="sec5_3">5.3. Memoria: capacidad, rapidez y persistencia</h3>
+<p><strong>Pregunta de partida:</strong> si los registros son tan rápidos, ¿por qué no guardamos en ellos todos nuestros archivos? Su capacidad es muy pequeña y su coste por bit es elevado. Por eso se combinan distintos niveles.</p>
 <h4 id="sec5_3_1" class="numbered-subsection">5.3.1. Jerarquía de memoria</h4>
-<p>El autor <strong>Pedro de Miguel de Anasagasti</strong>, en su libro
-Fundamentos de los computadores, caracteriza la memoria según:</p>
-<ul>
-<li>
-<p>El coste por bit</p>
-</li>
-<li>
-<p>Tiempo que se tarda en acceder a la información</p>
-</li>
-<li>
-<p>Capacidad de almacenamiento o tamaño</p>
-</li>
-</ul>
-<p>Los valores deseados para una memoria son una gran capacidad de
-almacenamiento, un tiempo de acceso pequeño, y un precio reducido. Sin
-embargo, ésta combinación no existe: <strong>una memoria rápida es una
-memoria cara.</strong> Esta limitación es válida desde que surgieron las
-primeras memorias hasta la actualidad. Las memorias rápidas, sin ciclos
-de refresco, con latencias casi inexistentes, requieren del uso de
-componentes caros: biestables integrados de alta conductividad, cuyo
-proceso de fabricación es caro y cuyos materiales son caros. De este
-imperativo se deduce que a <strong>más capacidad de memoria, más coste
-económico.</strong></p>
-<p>Afortunadamente <strong>no toda la memoria necesita ser accedida en
-un momento dado</strong>. Esto posibilita que las instrucciones y datos
-requeridos por el procesador <strong>se puedan jerarquizar en distintas
-memorias</strong> dependiendo de la inmediatez necesaria para su
-proceso.</p>
-<p>La jerarquía de memoria se conforma entonces con <strong>memorias muy
-rápidas, caras y de baja capacidad</strong> para los datos en proceso
-hasta <strong>memorias relativamente lentas, de alta capacidad y bajo
-coste por bit</strong> para los datos que no van a ser procesados en un
-futuro próximo (no en los próximos segundos). Las distintas memorias de
-menor a mayor capacidad y de mayor a menor velocidad y coste se
-clasifican en:</p>
-<ul>
-<li>
-<p><strong>Registros</strong> (del procesador)</p>
-</li>
-<li>
-<p><strong>Memoria caché</strong> (estructurada en niveles: L1, L2, L3,
-etc)</p>
-</li>
-<li>
-<p><strong>Memoria Principal</strong> (RAM Dinámica)</p>
-</li>
-<li>
-<p><strong>Memoria secundaria</strong> (Discos duros y de estado
-sólido)</p>
-</li>
-<li>
-<p><strong>Memoria masiva auxiliar</strong> (Soportes de respaldo)</p>
-</li>
-</ul>
-<p>Los datos deben ser transferidos de una memoria a otra según la
-disponibilidad necesaria.</p>
 <figure class="image-container" id="jerarquia-memoria" role="group" aria-labelledby="jerarquia-memoria-caption"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 490" role="img" aria-labelledby="jerarquia-memoria-title jerarquia-memoria-desc"><title id="jerarquia-memoria-title">Pirámide de la jerarquía de memoria</title><desc id="jerarquia-memoria-desc">En general, hacia arriba aumenta la velocidad y el coste por bit; hacia abajo aumentan la capacidad y el tiempo de acceso. Los datos se transfieren entre niveles.</desc><rect width="900" height="490" rx="16" fill="#f8fafc"/><g font-family="Inter, Arial, sans-serif"><text x="450" y="38" text-anchor="middle" font-size="28" fill="#0f172a">Jerarquía de memoria</text><polygon points="450,65 340,140 560,140" fill="#1e3a8a"/><polygon points="340,140 560,140 608,202 292,202" fill="#1e3a8a"/><text x="450" y="179" text-anchor="middle" font-size="21" fill="white">Registros</text><polygon points="292,205 608,205 656,267 244,267" fill="#0369a1"/><text x="450" y="244" text-anchor="middle" font-size="21" fill="white">Caché: L1, L2, L3</text><polygon points="244,270 656,270 704,332 196,332" fill="#0f766e"/><text x="450" y="309" text-anchor="middle" font-size="21" fill="white">Memoria principal: RAM</text><polygon points="196,335 704,335 752,397 148,397" fill="#0e7490"/><text x="450" y="374" text-anchor="middle" font-size="21" fill="white">Memoria secundaria: SSD y HDD</text><polygon points="148,400 752,400 800,462 100,462" fill="#334155"/><text x="450" y="439" text-anchor="middle" font-size="21" fill="white">Memoria auxiliar: soportes de respaldo</text><path d="M85 370V165l-9 17m9-17 9 17M815 165v205l-9-17m9 17 9-17" fill="none" stroke="#0f766e" stroke-width="4"/><text x="105" y="100" text-anchor="middle" font-size="20" fill="#0f766e">Hacia arriba</text><text x="105" y="126" text-anchor="middle" font-size="17" fill="#0f172a">Más velocidad</text><text x="105" y="150" text-anchor="middle" font-size="17" fill="#0f172a">Mayor coste/bit</text><text x="785" y="100" text-anchor="middle" font-size="20" fill="#0f766e">Hacia abajo</text><text x="785" y="126" text-anchor="middle" font-size="17" fill="#0f172a">Más capacidad</text><text x="785" y="150" text-anchor="middle" font-size="17" fill="#0f172a">Más latencia</text></g></svg><figcaption class="image-caption" id="jerarquia-memoria-caption">En general, hacia arriba aumenta la velocidad y el coste por bit; hacia abajo aumentan la capacidad y el tiempo de acceso. Los datos se transfieren entre niveles.</figcaption></figure>
-<h4 id="sec5_3_2" class="numbered-subsection">5.3.2. Funciones por niveles</h4>
-<p>Como vemos en la jerarquía de memoria, la <strong>memoria
-interna</strong> está compuesta por 3 niveles. Cada uno de los cuales
-tienen las siguientes funciones específicas:</p>
-<ul>
-<li>
-<p><strong>Nivel 0</strong> - Registros: Almacena datos sobre los que la
-unidad de control está trabajando directamente.</p>
-</li>
-<li>
-<p><strong>Nivel 1</strong> - Caché: Memoria formada por circuitos
-integrados SRAM. A su vez se encuentra dividida en varios niveles. Se
-utiliza para minimizar los accesos a la memoria principal.</p>
-</li>
-<li>
-<p><strong>Nivel 2</strong> - Memoria principal. Memoria formada por
-DRAM, cuya función es almacenar las instrucciones y datos que se están
-utilizando en la ejecución de un proceso.</p>
-</li>
-</ul>
-<h3 id="sec5_4">5.4. Buses de E/S</h3>
-<p>El conjunto de componentes de un ordenador se comunica entre sí
-mediante ciertos caminos, que constituyen la estructura de
-interconexión, o buses de E/S.</p>
-<p>En la arquitectura Von Neumann se distinguen los buses de
-<strong>datos, dirección y control</strong>:</p>
-<figure class="image-container" id="esquema-buses" role="group" aria-labelledby="esquema-buses-caption"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 660" role="img" aria-labelledby="esquema-buses-title esquema-buses-desc"><title id="esquema-buses-title">Los tres buses del sistema</title><desc id="esquema-buses-desc">Los buses de direcciones, datos y control conectan CPU, RAM y E/S. El ejemplo muestra cómo la CPU solicita una lectura y recibe el dato de la memoria.</desc><rect width="900" height="660" rx="16" fill="#f8fafc"/><g font-family="Inter, Arial, sans-serif"><text x="450" y="38" text-anchor="middle" font-size="28" fill="#0f172a">CPU, memoria y entrada/salida</text><rect x="25" y="105" width="150" height="260" rx="12" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/><text x="100.0" y="243.0" text-anchor="middle" font-size="22" fill="#0f172a">CPU</text><rect x="700" y="95" width="175" height="115" rx="12" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/><text x="787.5" y="160.5" text-anchor="middle" font-size="22" fill="#0f172a">RAM</text><rect x="700" y="275" width="175" height="115" rx="12" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/><text x="787.5" y="340.5" text-anchor="middle" font-size="22" fill="#0f172a">Unidad E/S</text><path d="M175 160H380M380 100V390M380 115H700M380 295H700" stroke="#1d4ed8" stroke-width="4" fill="none"/><text x="190" y="148" text-anchor="start" font-size="20" fill="#1d4ed8">Direcciones</text><path d="M175 225H475M475 100V390M475 149H700M475 329H700" stroke="#0f766e" stroke-width="4" fill="none"/><text x="190" y="213" text-anchor="start" font-size="20" fill="#0f766e">Datos</text><path d="M175 290H570M570 100V390M570 183H700M570 363H700" stroke="#b45309" stroke-width="4" fill="none"/><text x="190" y="278" text-anchor="start" font-size="20" fill="#b45309">Control</text><text x="450" y="436" text-anchor="middle" font-size="25" fill="#0f172a">Ejemplo: leer un dato de la RAM</text><text x="450" y="478" text-anchor="middle" font-size="23" fill="#1d4ed8">1. CPU → RAM: dirección 42</text><text x="450" y="514" text-anchor="middle" font-size="23" fill="#b45309">2. CPU → RAM: orden de lectura</text><text x="450" y="550" text-anchor="middle" font-size="23" fill="#0f766e">3. RAM → CPU: dato almacenado</text><text x="450" y="604" text-anchor="middle" font-size="18" fill="#0f172a">Datos: ambos sentidos · Direcciones: desde la CPU en este modelo</text><text x="450" y="631" text-anchor="middle" font-size="18" fill="#0f172a">Control: órdenes y respuestas según la señal (lectura, escritura, interrupción…).</text></g></svg><figcaption class="image-caption" id="esquema-buses-caption">Los buses de direcciones, datos y control conectan CPU, RAM y E/S. El ejemplo muestra cómo la CPU solicita una lectura y recibe el dato de la memoria.</figcaption></figure>
-<h4 id="sec5_4_1" class="numbered-subsection">5.4.1. Bus de datos:</h4>
-<p>El bus de datos permite el intercambio de datos entre la CPU y el
-resto de unidades.</p>
-<h4 id="sec5_4_2" class="numbered-subsection">5.4.2. Bus de direcciones:</h4>
-<p>La memoria RAM es direccionable, de forma que cada celda de memoria
-tiene su propia dirección. Las direcciones son un número que selecciona
-una celda de memoria dentro de la memoria principal o en el espacio de
-direcciones de la unidad de entrada/salida.<br>
-<br>
-El bus de direcciones es un canal del microprocesador totalmente
-independiente del bus de datos donde se establece la dirección de
-memoria del dato en tránsito.<br>
-<br>
-El bus de dirección consiste en el conjunto de líneas eléctricas
-necesarias para establecer una dirección. La capacidad de la memoria que
-se puede direccionar depende de la cantidad de bits que conforman el bus
-de direcciones, siendo 2<sup>n</sup> el tamaño máximo en bits del banco
-de memoria que se podrá direccionar con n líneas. Por ejemplo, para
-direccionar una memoria de 256 bits, son necesarias al menos 8 líneas,
-pues 2<sup>8</sup> = 256. Adicionalmente pueden ser necesarias líneas de
-control para señalar cuándo la dirección está disponible en el bus. Esto
-depende del diseño del propio bus.</p>
-<h4 id="sec5_4_3" class="numbered-subsection">5.4.3. Bus de control:</h4>
-<p>El bus de control gobierna el uso y acceso a las líneas de datos y de
-direcciones. Como estas líneas están compartidas por todos los
-componentes, tiene que proveerse de determinados mecanismos que
-controlen su utilización. Las señales de control transmiten tanto
-órdenes como información de sincronización, evitando que haya colisión
-de información en el sistema.</p>
-<h4 id="sec5_4_4" class="numbered-subsection">5.4.4. Buses multiplexados:</h4>
-<p>Algunos diseños utilizan líneas eléctricas multiplexadas para el bus
-de direcciones y el bus de datos. Esto significa que un mismo conjunto
-de líneas eléctricas se comportan unas veces como bus de direcciones y
-otras veces como bus de datos, pero nunca al mismo tiempo. Una línea de
-control permite discernir cuál de las dos funciones está activa.</p>
-<h3 id="sec5_5">5.5. Periféricos</h3>
-<p>Los periféricos se interconectan a la unidad de E/S mediante el uso
-de una <strong>interfaz</strong> con especificaciones de acceso
-<strong>estandarizadas</strong> tanto a nivel de forma, como de voltaje
-y de protocolos de comunicación.</p>
-<p>Cada periférico dispone de un <strong>circuito controlador</strong>
-(o controladora) que gestiona toda la lógica del mismo.</p>
-<p>Las peculiaridades de cada dispositivo son gestionadas de forma
-transparente por el sistema operativo mediante un <strong>software
-controlador (driver)</strong> que es normalmente provisto por el propio
-fabricante.</p>
-<p>Los periféricos pueden ser clasificados en dispositivos de
-<strong>Entrada</strong>, de <strong>Salida</strong>, o de Entrada y
-Salida; estos últimos son de tipo <strong>almacenamiento</strong> o
-<strong>comunicación</strong>.</p>
+<p>En general, cuanto más cerca está un nivel del procesamiento, menor es su capacidad y su tiempo de acceso y mayor su coste por bit. La caché aprovecha que los programas suelen reutilizar datos e instrucciones y acceder a posiciones cercanas. <strong>Todos los niveles tienen latencia</strong>, aunque sea muy pequeña.</p>
+<h4 id="sec5_3_2" class="numbered-subsection">5.3.2. Qué guarda cada nivel</h4>
+<div class="table-scroll" role="region" aria-label="Funciones de los niveles de memoria" tabindex="0"><table><caption>Comparación cualitativa en un equipo habitual</caption><thead><tr><th scope="col">Nivel</th><th scope="col">Función</th><th scope="col">Capacidad / rapidez</th><th scope="col">¿Conserva datos sin alimentación?</th></tr></thead><tbody><tr><th scope="row">Registros</th><td>Valores e instrucciones utilizados directamente por la CPU.</td><td>Muy pequeña / muy alta</td><td>No</td></tr><tr><th scope="row">Caché L1, L2, L3</th><td>Copias de información que pueden evitar accesos a la RAM; habitualmente SRAM.</td><td>Pequeña / alta</td><td>No</td></tr><tr><th scope="row">RAM</th><td>Instrucciones y datos de programas en ejecución; habitualmente DRAM.</td><td>Mayor / menor que la caché</td><td>No</td></tr><tr><th scope="row">SSD o disco duro</th><td>Archivos y programas almacenados.</td><td>Grande / menor que la RAM</td><td>Sí</td></tr><tr><th scope="row">Soportes de respaldo</th><td>Copias para recuperar información.</td><td>Depende del soporte / acceso menos inmediato</td><td>Sí, en soportes no volátiles</td></tr></tbody></table></div>
+<div class="example-box"><h4>Ejemplo resuelto: abrir, editar y guardar un documento</h4>
+<p>Ana tiene un documento guardado en el SSD. Lo abre, cambia un párrafo y guarda la nueva versión. Veamos dónde está la información en cada momento:</p>
+<ol><li><strong>Antes de abrirlo:</strong> el archivo permanece en el almacenamiento, que conserva los datos sin alimentación.</li><li><strong>Al abrirlo:</strong> el programa carga los datos necesarios en RAM. La CPU trabaja con información en cachés y registros.</li><li><strong>Al editarlo:</strong> los cambios se mantienen en memoria. El archivo guardado puede seguir conteniendo la versión anterior.</li><li><strong>Al guardar:</strong> los cambios se escriben en el almacenamiento.</li></ol>
+<p><strong>Si se corta la alimentación antes de guardar,</strong> Ana puede perder los cambios que solo estaban en memoria volátil. Una copia persistente creada mediante autoguardado puede permitir recuperar parte o todo el trabajo.</p></div>
+<h3 id="sec5_4">5.4. Buses: dirección, datos y control</h3>
+<p>En el modelo simplificado, los buses comunican CPU, memoria y entrada/salida. Por ejemplo, para leer un valor 7 almacenado en la posición 20 hacen falta tres tipos de información: <strong>dónde</strong> leer (dirección 20), <strong>qué operación</strong> realizar (lectura) y <strong>qué valor</strong> se transfiere (7).</p>
+<figure class="image-container" id="esquema-buses" role="group" aria-labelledby="esquema-buses-caption"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 660" role="img" aria-labelledby="esquema-buses-title esquema-buses-desc"><title id="esquema-buses-title">Los tres buses del sistema</title><desc id="esquema-buses-desc">Los buses de direcciones, datos y control conectan CPU, RAM y E/S. El ejemplo muestra cómo la CPU solicita una lectura y recibe el dato de la memoria.</desc><rect width="900" height="660" rx="16" fill="#f8fafc"/><g font-family="Inter, Arial, sans-serif"><text x="450" y="38" text-anchor="middle" font-size="28" fill="#0f172a">CPU, memoria y entrada/salida</text><rect x="25" y="105" width="150" height="260" rx="12" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/><text x="100.0" y="243.0" text-anchor="middle" font-size="22" fill="#0f172a">CPU</text><rect x="700" y="95" width="175" height="115" rx="12" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/><text x="787.5" y="160.5" text-anchor="middle" font-size="22" fill="#0f172a">RAM</text><rect x="700" y="275" width="175" height="115" rx="12" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/><text x="787.5" y="340.5" text-anchor="middle" font-size="22" fill="#0f172a">Unidad E/S</text><path d="M175 160H380M380 100V390M380 115H700M380 295H700" stroke="#1d4ed8" stroke-width="4" fill="none"/><text x="190" y="148" text-anchor="start" font-size="20" fill="#1d4ed8">Direcciones</text><path d="M175 225H475M475 100V390M475 149H700M475 329H700" stroke="#0f766e" stroke-width="4" fill="none"/><text x="190" y="213" text-anchor="start" font-size="20" fill="#0f766e">Datos</text><path d="M175 290H570M570 100V390M570 183H700M570 363H700" stroke="#b45309" stroke-width="4" fill="none"/><text x="190" y="278" text-anchor="start" font-size="20" fill="#b45309">Control</text><text x="450" y="436" text-anchor="middle" font-size="25" fill="#0f172a">Ejemplo: leer un dato de la RAM</text><text x="450" y="478" text-anchor="middle" font-size="23" fill="#1d4ed8">1. CPU → RAM: dirección 20</text><text x="450" y="514" text-anchor="middle" font-size="23" fill="#b45309">2. CPU → RAM: orden de lectura</text><text x="450" y="550" text-anchor="middle" font-size="23" fill="#0f766e">3. RAM → CPU: dato 7</text><text x="450" y="604" text-anchor="middle" font-size="18" fill="#0f172a">Datos: ambos sentidos · Direcciones: desde la CPU en este modelo</text><text x="450" y="631" text-anchor="middle" font-size="18" fill="#0f172a">Control: órdenes y respuestas según la señal (lectura, escritura, interrupción…).</text></g></svg><figcaption class="image-caption" id="esquema-buses-caption">Los buses de direcciones, datos y control conectan CPU, RAM y E/S. El ejemplo muestra cómo la CPU solicita una lectura y recibe el dato de la memoria.</figcaption></figure>
+<h4 id="sec5_4_1" class="numbered-subsection">5.4.1. Bus de datos: el contenido</h4><p>Transporta instrucciones y datos. En una lectura, la memoria entrega el contenido solicitado; en una escritura, recibe el valor que se quiere almacenar.</p>
+<h4 id="sec5_4_2" class="numbered-subsection">5.4.2. Bus de direcciones: la posición</h4><p>Selecciona la posición a la que se accede. Con <strong>n bits de dirección se pueden identificar 2<sup>n</sup> posiciones</strong>. Para calcular la capacidad necesitamos saber cuánto guarda cada posición.</p>
+<div class="example-box"><h4>Ejemplo resuelto: posiciones y bytes</h4><p>Con 8 bits de dirección hay 2<sup>8</sup> = <strong>256 posiciones</strong>, numeradas de 0 a 255. Si cada posición contiene un byte, la capacidad direccionable es <strong>256 bytes</strong>. Si cada posición contuviera dos bytes, sería de 512 bytes. El número de posiciones no cambia.</p></div>
+<div class="activity-card activity-callout" id="actividad-limite-memoria"><h4>Actividad: ¿cuánta RAM puede utilizar un procesador actual? · 20 minutos</h4>
+<p>Investiga el <strong>Intel Core Ultra 9 285K</strong> en su <a href="https://www.intel.com/content/www/us/en/products/sku/241060/intel-core-ultra-9-processor-285k-36m-cache-up-to-5-70-ghz/specifications.html" target="_blank" rel="noopener noreferrer">ficha oficial de Intel</a>. El objetivo es distinguir el espacio de direcciones teórico de la RAM que puede admitir un equipo real.</p>
+<ol><li>Localiza el juego de instrucciones y la capacidad máxima de memoria admitida por el procesador. Anota el dato, su unidad, el enlace y la fecha de consulta.</li><li>Calcula cuántos bytes permitirían direccionar <strong>64 bits de dirección</strong> si cada dirección identificara un byte. Expresa el resultado en EiB (1 EiB = 2<sup>60</sup> bytes) y compáralo con la capacidad que publica Intel.</li><li>Razona por qué «procesador de 64 bits» no significa que implemente 64 bits de dirección física ni que admita esa cantidad teórica de RAM. Distingue longitud de palabra, bits de dirección física implementados y capacidad admitida por el controlador de memoria. No deduzcas el ancho físico a partir del nombre comercial.</li><li>Resuelve este <strong>supuesto de plataforma</strong>: una placa compatible admite dos módulos de hasta 64 GiB cada uno y el sistema operativo tiene un límite de 64 GiB de RAM. Se da por verificada la compatibilidad de esos módulos y que el procesador admite una capacidad superior a la de la placa. Calcula la capacidad máxima de la placa y la RAM máxima utilizable por el conjunto. ¿Qué elemento impone el límite? ¿Bastaría con cambiar la CPU?</li><li>Para un equipo real, indica qué consultarías sobre placa, número de ranuras, tipo y capacidad de módulos, firmware y edición del sistema operativo antes de comprar una ampliación.</li></ol>
+<p><strong>Entrega:</strong> cálculos con unidades, fuente oficial y una conclusión que distinga los límites teórico, del procesador y del equipo. Conserva la unidad que utilice el fabricante; no confundas GB decimales con GiB.</p></div>
+<h4 id="sec5_4_3" class="numbered-subsection">5.4.3. Bus de control: la operación</h4><p>Transporta señales como lectura, escritura y sincronización para coordinar los intercambios. Una dirección y un dato no bastan: también hay que indicar qué operación se solicita y cuándo debe realizarse.</p>
+<h4 id="sec5_4_4" class="numbered-subsection">5.4.4. Buses multiplexados</h4><details class="extension"><summary>Para ampliar: compartir líneas en momentos diferentes</summary><p>Algunos diseños utilizan las mismas líneas físicas para direcciones y datos en distintos momentos. Las señales de control permiten interpretar qué se está transmitiendo. Los tres tipos de información del modelo no obligan a utilizar tres conjuntos de cables independientes en todos los equipos.</p></details>
+<h3 id="sec5_5">5.5. Periféricos: conectar y utilizar</h3>
+<p>Los periféricos intercambian información con el ordenador. Los de <strong>entrada</strong> aportan datos; los de <strong>salida</strong> presentan resultados; los de <strong>entrada/salida</strong> hacen ambas cosas, como una pantalla táctil, una unidad externa o un adaptador de red.</p>
 <figure class="image-container" id="esquema-perifericos" role="group" aria-labelledby="esquema-perifericos-caption"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 590" role="img" aria-labelledby="esquema-perifericos-title esquema-perifericos-desc"><title id="esquema-perifericos-title">Tipos de periféricos</title><desc id="esquema-perifericos-desc">La entrada lleva información al ordenador; la salida la presenta al exterior; los dispositivos de entrada/salida intercambian información en ambos sentidos.</desc><rect width="900" height="590" rx="16" fill="#f8fafc"/><g font-family="Inter, Arial, sans-serif"><text x="450" y="38" text-anchor="middle" font-size="28" fill="#0f172a">Periféricos y sentido de la información</text><rect x="300" y="200" width="300" height="90" rx="14" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/><text x="450.0" y="235" text-anchor="middle" font-size="23" fill="#1e3a8a">ORDENADOR</text><rect x="20" y="85" width="250" height="100" rx="14" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/><text x="145.0" y="120" text-anchor="middle" font-size="23" fill="#1e3a8a">ENTRADA</text><rect x="630" y="85" width="250" height="100" rx="14" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/><text x="755.0" y="120" text-anchor="middle" font-size="23" fill="#1e3a8a">SALIDA</text><rect x="280" y="390" width="340" height="100" rx="14" fill="#e0f2fe" stroke="#0369a1" stroke-width="2"/><text x="450.0" y="425" text-anchor="middle" font-size="23" fill="#1e3a8a">ENTRADA / SALIDA</text><text x="145" y="145" text-anchor="middle" font-size="18" fill="#0f172a">Teclado · ratón · micrófono</text><text x="755" y="145" text-anchor="middle" font-size="17" fill="#0f172a">Monitor · impresora · altavoces</text><text x="450" y="450" text-anchor="middle" font-size="19" fill="#0f172a">Almacenamiento: disco externo</text><text x="450" y="477" text-anchor="middle" font-size="19" fill="#0f172a">Comunicación: adaptador de red</text><text x="450" y="265" text-anchor="middle" font-size="19" fill="#0f172a">Sistema operativo + drivers</text><defs><marker id="perifericos-flecha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#0f766e"/></marker></defs><g fill="none" stroke="#0f766e" stroke-width="4" marker-end="url(#perifericos-flecha)"><path d="M145 185V245H292"/><path d="M608 245H755V193"/><path d="M450 300V380" marker-start="url(#perifericos-flecha)"/></g><text x="475" y="345" text-anchor="start" font-size="18" fill="#0f172a">Lee y escribe / envía y recibe</text><text x="450" y="535" text-anchor="middle" font-size="20" fill="#0f172a">La interfaz conecta; la controladora gestiona el dispositivo;</text><text x="450" y="565" text-anchor="middle" font-size="20" fill="#0f172a">el driver permite que el sistema operativo lo utilice.</text></g></svg><figcaption class="image-caption" id="esquema-perifericos-caption">La entrada lleva información al ordenador; la salida la presenta al exterior; los dispositivos de entrada/salida intercambian información en ambos sentidos.</figcaption></figure>
-<div class="activity-card activity-callout" id="practica-eleccion-perifericos"><h4>Actividad: equipa un puesto de trabajo con 100 €</h4><p>Una empresa dispone de una torre de ordenador y necesita los periféricos imprescindibles para un puesto de oficina. Tienes un presupuesto máximo de <strong>100 €</strong>.</p><ol><li>Busca en <a href="https://www.amazon.es/" target="_blank" rel="noopener noreferrer">Amazon.es</a> los periféricos que incluirías sin superar el presupuesto.</li><li>Para cada producto, escribe nombre y modelo, precio, enlace, tipo de conexión y si es de entrada, salida o entrada/salida.</li><li>Justifica por qué es imprescindible y comprueba su compatibilidad con los conectores del equipo y con Ubuntu. Indica qué información utilizas para comprobarlo.</li><li>Calcula el coste total con IVA y posibles gastos de envío, y el dinero restante. Indica la fecha de consulta.</li><li>Explica qué periféricos dejarías para una futura ampliación y por qué.</li></ol><p>No es necesario realizar ninguna compra.</p><p><strong>Entrega:</strong> únicamente en texto, sin capturas ni archivos adjuntos.</p></div>
-<h2 id="sec6"><i class="fa-solid fa-cubes" aria-hidden="true"></i> 6. Componentes lógicos: Software</h2>
-<p><strong>¿Qué es Software?</strong></p>
-<p>La definición más simple para entender qué es Software es que son los
-programas informáticos que se instalan en los ordenadores, tablets,
-teléfonos inteligentes o reloj digital, entre otros, estos programas
-sirven para realizar diferentes tareas específicas, entre las más
-comunes por ejemplo: escribir una carta en Word, llevar la contabilidad
-de un negocio en Excel, o hacer la presentación de un producto con
-PowerPoint, entre muchas otras más.</p>
-<p>Se considera Software al equipamiento lógico e intangible de un
-ordenador, abarcando todas las aplicaciones informáticas, el desarrollo
-de estos software se han convertido en una industria protagonista en la
-economía global, el software mueve millones de euros cada año, Microsoft
-es la empresa más grande y conocida, fue fundada en 1975 por Bill Gates
-y Paul Allen, logrando ser el referente cuando hablamos todo sobre qué
-es software, gracias a su sistema operativo Windows y su suite de
-programas de oficina Word, Excel, PowerPoint, etc.</p>
-<p>Como dato interesante, la palabra “software” proviene del idioma
-inglés, pero la Real Academia Española aceptó su uso gracias a la
-masificación entre hispanohablantes. Según la RAE, Software es un
-conjunto de programas, instrucciones y reglas informáticas que permiten
-ejecutar tareas en un ordenador.</p>
-<p>Para saber un poco más allá de qué es Software, podemos decir que es
-desarrollado mediante distintos tipos de lenguajes de programación,
-estos distintos tipos de lenguajes permiten controlar el comportamiento
-de un dispositivo que contenga un ordenador, a través de un conjunto de
-símbolos y reglas sintácticas y semánticas que definen sus elementos y
-expresiones, los lenguajes de programación permiten especificar de forma
-precisa sobre qué datos debe operar un ordenador.</p>
-<p><strong>Tipos de Software</strong></p>
-<p>Aunque es verdad que cada empresa que desarrolle software puede tener
-su propia manera de ver los tipos de software que desarrolla y su
-definición acerca de qué es Software, existen una clasificación de los
-software en la que coinciden la mayorías dentro del sector de software a
-nivel mundial, dejando así de una forma simple y real de entender los
-tipos de software para las personas que no tienen un perfil técnico o
-que no son programadores.</p>
-<ol start="0" type="A">
-<li><p><strong>Software de Sistema</strong></p></li>
-</ol>
-<p>Este tipo de software es también conocido como un software base,
-dentro de esta clasificación se encuentran los sistemas operativos como
-<strong>Windows, MacOS, Android  o Linux</strong>, este es el tipo de
-software que requieren los ordenadores para que sean capaces de iniciar
-el ordenador y poder utilizar otras aplicaciones o software, son los
-encargados de la comunicación entre el sistema operativo y el hardware
-que compone el ordenador, algunos están diseñados para administrar los
-propios recursos del ordenador o de configurar la interfaz según las
-preferencias de los usuarios.</p>
-<p>La clasificación del <strong>Software de sistema</strong> queda de la
-siguiente manera:</p>
-<ul>
-<li>
-<p>Sistemas operativos</p>
-</li>
-<li>
-<p>Controladores de dispositivo</p>
-</li>
-<li>
-<p>Herramientas de diagnóstico</p>
-</li>
-<li>
-<p>Herramientas de Corrección y Optimización</p>
-</li>
-<li>
-<p>Servidores/servicios</p>
-</li>
-<li>
-<p>Utilidades del sistema</p>
-</li>
-<li>
-<p>Software de Programación</p>
-</li>
-</ul>
-<p>Después del sistema operativo como un tipo de software fundamental en
-la informática de hoy, <strong>el software de programación</strong> está
-detrás, su importancia es clave, gracias a este tipo de software es
-posible desarrollar otras aplicaciones y sistemas que son usados en los
-ordenadores para diferentes tareas haciendo uso de conocimientos lógicos
-y de programación.</p>
-<p>Los programadores por ejemplo desarrollan en un editor de texto y
-luego lo compila el programa para verificar que todo está bien y el
-código es correcto, esto aplica para cualquier lenguaje de programación.
-Hoy existen los <strong>entornos de desarrollo integrados (IDE)</strong>
-, que son un programa informático con una serie de herramientas de
-programación.</p>
-<p>La Clasificación del software de programación es la siguiente:</p>
-<ul>
-<li>
-<p>Editores</p>
-</li>
-<li>
-<p>Compiladores</p>
-</li>
-<li>
-<p>Intérpretes</p>
-</li>
-<li>
-<p>Enlazadores</p>
-</li>
-<li>
-<p>Depuradores</p>
-</li>
-<li>
-<p>(Interfaz de programación de aplicaciones) API</p>
-</li>
-<li>
-<p>Bibliotecas de funciones (library)</p>
-</li>
-<li>
-<p>Entornos de Desarrollo Integrados (IDE)</p>
-</li>
-</ul>
-<ol start="2" type="A">
-<li>
-<p><strong>Software de Aplicación (Apps)</strong></p>
-</li>
-</ol>
-<p>Este tipo de software es el que más utilizamos el día a día, hoy con
-la penetración de Internet y los teléfonos inteligentes, las
-aplicaciones son las más usadas, están incluidas todos los programas,
-aplicaciones o utilidades que manejamos dentro de nuestro ordenador,
-tablet o móvil, estos software hablando de forma técnica son aquellos
-software diseñados para los usuarios finales, la mayoría ya están
-diseñados y enfocados para ser utilizados en cada sistema operativo
-específicamente.</p>
-<p>El ejemplo más conocido de este software es el paquete o suite de
-Office de Microsoft: Word, Excel, PowerPoint, etc. También los programas
-de comunicación, juegos, para edición de multimedia, antivirus, y muchos
-otros más.</p>
-<p>La clasificación del software de aplicación queda de la siguiente
-manera:</p>
-<ul>
-<li>
-<p>Aplicaciones de Sistema de control y automatización industrial</p>
-</li>
-<li>
-<p><strong>Aplicaciones ofimáticas (distribuidas en paquetes o
-suites)</strong></p>
-</li>
-<li>
-<p>Software educativo</p>
-</li>
-<li>
-<p>Software médico</p>
-</li>
-<li>
-<p>Software de Cálculo Numérico</p>
-</li>
-<li>
-<p>Software de Diseño Asistido</p>
-</li>
-<li>
-<p>Software de Control Numérico</p>
-</li>
-<li>
-<p>Aplicaciones en la nube</p>
-</li>
-</ul>
-<p><strong>C. Software específico</strong></p>
-<p>Aplicaciones corporativas o de propósito específico: resuelven
-aspectos concretos del funcionamiento de la empresa (contabilidad,
-facturación, control de horas trabajadas...). . Ejemplos: los productos
-Contaplus de SAGE y FacturaSOL de software del Sol. Visual Studio Code,
-Eclipse o NetBeans como entornos de desarrollo de software.</p>
-<p>El software específico se puede clasificar a su vez en:</p>
-<p>-Software profesionalizado.</p>
-<p>-Sistemas de relación con el cliente (CRM)</p>
-<p>-Sistemas de planificación de recursos empresariales (ERP)</p>
-<p>-Sistemas de Decisión de soporte (DSS)</p>
-<p>-Software a medida.</p>
-<p><strong>Software Profesionalizado:</strong></p>
-<p>Son programas característicos de una profesión y muy específicos,
-como por ejemplo el software de programación antes mencionado, pero
-también programas de edición profesional de audio/video, desarrollo de
-modelos de ingeniería en 3D (AutoDesk, Skechup, …), desarrollo de
-videojuegos (Unity, Unreal engine) desarrollo web, etc. </p>
-<p><strong>CRM</strong></p>
-<p>Los Sistemas de relación con el cliente (Customer Relationship
-Management - CRM), conocidos como FrontOffice, son software destinado a
-cubrir todo el proceso de venta y el seguimiento de la misma por parte
-de una compañía, desde el marketing inicial, al embudo de ventas,
-servicios postventa, etc., buscando la fidelización de los clientes ya
-existentes y la captación de nuevos clientes.</p>
-<p>Un CRM está compuesto como mínimo de tres módulos:</p>
-<ul>
-<li>
-<p><strong>Módulo de ventas:</strong> para gestionar el proceso de
-postventa</p>
-</li>
-<li>
-<p><strong>Módulo de marketing</strong>: para la optimización del
-proceso de marketing</p>
-</li>
-<li>
-<p><strong>Módulo de soporte y atención al cliente</strong>: gestiona
-las contrataciones, servicios, comunicaciones, redes sociales, etc.</p>
-</li>
-</ul>
-<p><strong>ERP</strong></p>
-<p>Los Sistemas de <strong>Planificación de Recursos
-Empresariales</strong> (ERP por sus siglas en inglés Enterprise Resource
-Planning) y conocidos como <strong>BackOffice</strong> integran diversos
-módulos que dan solución a la gestión integral del negocio, incluyendo
-la facturación, contabilidad, ventas, compras, recursos humanos,
-almacén, fabricación, etc.</p>
-<p><strong>DSS</strong></p>
-<p>Los sistemas de información para el apoyo a la toma de decisiones
-utilizan la información de salida de los ERM y los CRM para gestionar la
-toma de decisiones a nivel gerencial.</p>
-<p><strong>Software “a medida”</strong></p>
-<p>En esta categoría se engloban las páginas web empresariales,
-intranets y cualquier software desarrollado a propósito para una función
-específica dentro de la empresa, que por su especificidad no puede ser
-compartido de forma general, y que requiere de una enorme labor de
-soporte, formación y mantenimiento.</p>
-<span id="sec6_1" aria-hidden="true"></span>
-<div class="activity-card activity-callout"><p>Diseña un código similar a ASCII que, además de representar la información, la cifre mediante un desplazamiento como el del método César.</p></div>
+<p>La <strong>interfaz</strong> define la conexión y la comunicación; la <strong>controladora</strong> es el circuito que gestiona el dispositivo; el <strong>driver</strong> es el software que permite al sistema operativo utilizarlo. El driver puede venir integrado en el sistema o proporcionarse por separado.</p>
+<div class="example-box"><h4>Ejemplo resuelto: una impresora conectada</h4><p>Que el cable encaje no garantiza que podamos imprimir. Debemos comprobar la interfaz, el soporte del modelo en el sistema operativo y el controlador o protocolo disponible. Si no tenemos evidencias suficientes, anotamos «compatibilidad pendiente de comprobar».</p></div>
+<div class="activity-card activity-callout" id="practica-eleccion-perifericos"><h4>Actividad: equipa un puesto de trabajo con 100 € · 20 minutos</h4>
+<p><strong>Ficha del puesto:</strong> torre con Ubuntu 24.04 LTS, salida HDMI, cuatro puertos USB-A y conexión de red operativa. La empresa no tiene monitor, teclado ni ratón para ese puesto. El trabajo consiste en facturar, escribir documentos y navegar.</p>
+<ol><li>Busca productos reales en una tienda. Selecciona los periféricos imprescindibles sin superar los 100 € y clasifícalos como entrada, salida o entrada/salida.</li><li>Para cada producto indica nombre y modelo, precio, enlace y fecha de consulta. Puedes considerar productos reacondicionados si señalas su estado.</li><li>Comprueba conectores, cables necesarios y compatibilidad con Ubuntu. Aporta la fuente utilizada; si no encuentras evidencia suficiente, indícalo.</li><li>Calcula el coste total con IVA, cables y gastos de envío, y el dinero restante. Si no encuentras una combinación viable, documenta la búsqueda y justifica qué condición habría que revisar.</li><li>Explica qué periféricos aplazarías y por qué. No es necesario comprar nada.</li></ol>
+<p><strong>Entrega:</strong> únicamente en texto. Se valoran necesidad, clasificación, compatibilidad, cálculo y justificación.</p></div>
+</section>
 
-<div class="activity-card activity-callout" id="practica-software-empresa"><h4>Actividad: elige el software para una pequeña empresa</h4><p>Una tienda necesita gestionar sus clientes, emitir facturas, controlar las existencias y vender por Internet.</p><ol><li>Enumera qué programas incluirías para cubrir estas necesidades e indica para qué utilizarías cada uno. Señala cuáles son <strong>software libre</strong> y explica por qué, atendiendo a su licencia.</li><li>¿Necesitaría software a medida? Propón una situación que lo justifique.</li><li>¿Cuándo sería útil incorporar un <strong>DSS, CRM o ERP</strong>? Pon un ejemplo concreto de uso de cada uno en la tienda.</li><li>La tienda tiene poco presupuesto: ¿qué implantarías primero y qué dejarías para más adelante? Justifica tu propuesta.</li></ol><p><strong>Entrega:</strong> únicamente en texto, sin capturas ni archivos adjuntos.</p></div>
-<h3 id="sec6_2">6.1. Recursos</h3>
-<p><strong>Bibliografía</strong></p>
-<p>Apuntes del profesor (Cuaderno de trabajo)</p>
-<p>Montaje y Mantenimiento de Equipos. Edt. Síntesis – Unidad 1</p>
-<h4 class="content-subtitle">Otros recursos</h4>
-<div class="resource-card expansion-card">
-    <div class="resource-card-header">
-        <span class="resource-title"><i class="fa-brands fa-youtube"></i> Hackeame si puedes</span>
-        <span class="resource-badge badge-video">Vídeo</span>
-    </div>
-    <div class="resource-description">Actualidad de la seguridad informática y las amenazas cibernéticas.</div>
-    <a href="https://youtu.be/zewkqnInHVY" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver el vídeo</a>
-</div>
-
-<div class="resource-card expansion-card">
-    <div class="resource-card-header">
-        <span class="resource-title"><i class="fa-solid fa-atom"></i> El ordenador cuántico</span>
-        <span class="resource-badge badge-video">Vídeo</span>
-    </div>
-    <div class="resource-description">Introducción audiovisual a los principios y posibilidades de la computación cuántica.</div>
-    <a href="https://youtu.be/O9TA2faf6nw" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver el vídeo</a>
-</div>
-
-
+<section class="learning-section" aria-labelledby="sec6">
+<h2 id="sec6"><i class="fa-solid fa-cubes" aria-hidden="true"></i> 6. Componentes lógicos: software</h2>
+<div class="case-study-box"><h3>El caso: la tienda crece</h3><p>Una tienda utiliza un ordenador para registrar ventas. Ahora necesita emitir facturas, controlar existencias, recordar consultas de clientes y vender por Internet. Tiene poco presupuesto y quiere empezar por lo imprescindible.</p><p>Durante este apartado irás reuniendo criterios para proponer una solución. No es necesario comprar ni contratar ningún servicio.</p></div>
+<h3 id="software-funcion">6.1. Qué es el software y cómo se clasifica</h3>
+<p>El software es el conjunto de programas e instrucciones que permite realizar tareas en un sistema informático. Puede ejecutarse en nuestro equipo, en un servidor o de forma repartida entre ambos.</p>
+<div class="table-scroll" role="region" aria-label="Tipos de software según su función" tabindex="0"><table><caption>Clasificación didáctica según la función principal</caption><thead><tr><th scope="col">Tipo</th><th scope="col">Para qué sirve</th><th scope="col">Ejemplo en la tienda</th></tr></thead><tbody><tr><th scope="row">Sistema</th><td>Gestionar recursos y permitir que funcionen los programas y dispositivos.</td><td>Sistema operativo y controlador de la impresora.</td></tr><tr><th scope="row">Aplicación</th><td>Resolver tareas del usuario.</td><td>Facturación, navegador y hoja de cálculo.</td></tr><tr><th scope="row">Desarrollo</th><td>Crear, traducir, probar y depurar programas.</td><td>Editor, compilador y depurador utilizados para construir la web.</td></tr></tbody></table></div>
+<p>Otros criterios responden a preguntas distintas: <strong>general o especializado</strong> describe el uso; <strong>estándar o a medida</strong>, cómo se obtiene; <strong>libre o propietario</strong>, los permisos de la licencia; <strong>local o en la nube</strong>, dónde se ejecuta. Estas etiquetas pueden combinarse.</p>
+<div class="example-box"><h4>Ejemplo resuelto: varias etiquetas para un programa</h4><p>Un programa de facturación puede ser software de aplicación, especializado en gestión, estándar, libre e instalado en un servidor de la tienda. Ser especializado no lo convierte en una categoría incompatible con «aplicación», ni implica que sea a medida.</p></div>
+<div class="activity-card activity-callout"><h4>Ahora tú · 3 minutos</h4><p>Clasifica por su función: el sistema operativo, el navegador usado para vender y el depurador usado para corregir la web. ¿Puedes saber si son libres solo con estos datos?</p></div>
+<h3 id="software-desarrollo">6.2. Crear programas: compilar no es comprobarlo todo</h3>
+<ul><li><strong>Editor:</strong> permite escribir y modificar código.</li><li><strong>Compilador:</strong> traduce código a otra representación y puede detectar ciertos errores, como los de sintaxis o tipos según el lenguaje.</li><li><strong>Intérprete:</strong> ejecuta instrucciones mediante un programa que las procesa. Los entornos pueden combinar interpretación y compilación.</li><li><strong>Depurador:</strong> permite detener la ejecución e inspeccionar valores para localizar errores.</li><li><strong>IDE:</strong> integra varias herramientas de desarrollo en un entorno.</li></ul>
+<div class="example-box"><h4>Ejemplo resuelto: el descuento equivocado</h4><p>Queremos aplicar un 10 % de descuento a 100 €. La fórmula correcta es <code>precio * 0.90</code>, que da 90 €. Si escribimos <code>precio * 1.10</code>, obtenemos 110 €.</p><p>Las dos expresiones pueden ser válidas para el compilador. La segunda tiene un <strong>error de lógica</strong>: calcula un recargo. <strong>Compilar sin errores no garantiza que un programa funcione correctamente</strong> ni que cumpla sus requisitos.</p></div>
+<h3 id="software-api">6.3. Bibliotecas y API: reutilizar y comunicar</h3>
+<p>Una <strong>biblioteca</strong> contiene código reutilizable, por ejemplo funciones para generar documentos. Una <strong>API</strong> (interfaz de programación de aplicaciones) define cómo un programa puede utilizar funciones o servicios de otro componente: operaciones disponibles, datos que debe proporcionar y respuestas que puede recibir.</p>
+<p>Una API no es un editor: el editor sirve para escribir código; la API es la interfaz que ese código utiliza. Puede pertenecer a una biblioteca, al sistema operativo o a un servicio remoto. <strong>No todas las API son servicios de Internet.</strong></p>
+<div class="example-box"><h4>Ejemplo resuelto: consultar existencias</h4><p>La web de la tienda necesita saber si quedan cuadernos. Utiliza la API del sistema de inventario para solicitar las existencias de un producto. El sistema consulta sus datos y devuelve una respuesta, por ejemplo «quedan 8 unidades».</p><p>La documentación de la API especifica qué identificador enviar, cómo interpretar la respuesta y qué errores o permisos considerar. La web no necesita conocer todos los detalles internos del inventario.</p></div>
+<div class="activity-card activity-callout" id="actividad-api-publica"><h4>Actividad: comunícate con una API pública mediante POST · 15 minutos</h4>
+<p>Utiliza <a href="https://httpbin.org/#/HTTP_Methods/post_post" target="_blank" rel="noopener noreferrer">httpbin: documentación de POST /post</a>, un servicio público de pruebas que devuelve información sobre la petición recibida. No necesita cuenta ni clave. Enviaremos únicamente los datos ficticios de este formulario; no se realiza ninguna compra.</p>
+<p><strong>URL y método son cosas distintas:</strong> escribir una URL en la barra del navegador realiza normalmente una petición GET. Para enviar POST a <code>https://httpbin.org/post?curso=ssii</code> utilizaremos un formulario. <code>curso=ssii</code> viaja en la URL; los campos del formulario viajan en el cuerpo de la petición.</p>
+<form class="api-demo" action="https://httpbin.org/post?curso=ssii" method="post">
+<label for="api-producto">Producto ficticio</label><select id="api-producto" name="producto"><option value="cuaderno">Cuaderno</option><option value="lapiz">Lápiz</option></select>
+<label for="api-cantidad">Cantidad</label><select id="api-cantidad" name="cantidad"><option value="2">2</option><option value="4">4</option></select>
+<button type="submit">Enviar POST a httpbin</button>
+</form>
+<p id="api-status" role="status"></p><pre id="api-response" aria-label="Respuesta de httpbin" hidden></pre>
+<p>La respuesta aparecerá debajo del formulario. Cambia los valores para repetir el envío.</p>
+<ol><li>Consulta la documentación e identifica el método, la ruta y el tipo de respuesta.</li><li>Envía una petición con los valores iniciales. En la respuesta JSON (datos organizados como claves y valores), localiza <code>url</code>, <code>args</code> y <code>form</code>. Relaciona cada uno con lo que has enviado.</li><li>Cambia el producto y la cantidad y repite el envío. Describe qué partes cambian y cuáles permanecen.</li><li>Abre <a href="https://httpbin.org/post?curso=ssii" target="_blank" rel="noopener noreferrer">la misma URL como enlace</a>. Compara el resultado con el formulario y razona qué importancia tiene el método HTTP. Consulta la documentación si aparece un error.</li><li>Explica por qué recibir un eco de los datos no demuestra que se haya creado un pedido en una tienda.</li></ol>
+<p><strong>Entrega:</strong> URL, método, valores enviados y descripción de los resultados, únicamente en texto. Si el servicio no responde, registra el error y la fecha; no inventes la respuesta y vuelve a intentarlo más tarde.</p></div>
+<h3 id="software-empresa">6.4. CRM, ERP y DSS: partir de una necesidad</h3>
+<p><strong>CRM (Customer Relationship Management, gestión de las relaciones con clientes):</strong> es un sistema que organiza la información y las interacciones con clientes y posibles clientes. Permite registrar contactos, consultas, oportunidades de venta y acciones de seguimiento para que el equipo comercial y de atención al cliente comparta un historial.</p>
+<p><strong>ERP (Enterprise Resource Planning, planificación de recursos empresariales):</strong> integra procesos internos de una organización, como compras, ventas, inventario, facturación y contabilidad. Sus módulos comparten información para reducir duplicidades y coordinar el trabajo: una venta puede reflejarse en el almacén y en la facturación.</p>
+<p><strong>DSS (Decision Support System, sistema de apoyo a la toma de decisiones):</strong> combina datos y herramientas de análisis para comparar alternativas y estudiar escenarios. Ayuda a decidir, por ejemplo, cuánto stock comprar, pero la decisión final corresponde a las personas y depende de la calidad de los datos y de los supuestos.</p>
+<div class="table-scroll" role="region" aria-label="Necesidades de la tienda y sistemas empresariales" tabindex="0"><table><caption>¿Qué problema queremos resolver?</caption><thead><tr><th scope="col">Situación</th><th scope="col">Sistema</th><th scope="col">Uso concreto</th></tr></thead><tbody><tr><th scope="row">Se olvidan consultas y seguimientos de clientes.</th><td><strong>CRM</strong>: gestión de las relaciones con clientes.</td><td>Registrar una consulta, asignar seguimiento y recuperar el historial.</td></tr><tr><th scope="row">La venta, la factura y las existencias no coinciden.</th><td><strong>ERP</strong>: planificación de recursos empresariales.</td><td>Integrar ventas, compras, almacén y facturación para compartir datos.</td></tr><tr><th scope="row">Hay que decidir cuánto comprar para la próxima campaña.</th><td><strong>DSS</strong>: sistema de apoyo a la toma de decisiones.</td><td>Analizar datos y comparar escenarios de demanda, coste y stock.</td></tr></tbody></table></div>
+<p>Un DSS ayuda a valorar alternativas; no elimina la necesidad de criterio humano ni garantiza una predicción correcta. Puede utilizar datos de un ERP, un CRM y otras fuentes. Un ERP puede incluir funciones de CRM: <strong>no es obligatorio adquirir tres productos separados</strong>.</p>
+<div class="activity-card activity-callout"><h4>Ahora tú: decide qué implantar primero · 5 minutos</h4><p>La tienda pierde ventas porque anuncia productos agotados, pero recibe pocas consultas de clientes. ¿Qué necesidad atenderías primero y con qué tipo de solución? ¿Por qué no empezar directamente por un DSS?</p></div>
+<details class="extension"><summary>Para ampliar: software estándar y a medida</summary><p>El software estándar se utiliza mediante configuración y, a veces, extensiones. El software a medida se desarrolla para requisitos concretos. Por ejemplo, puede justificarse una integración que un sistema antiguo necesite y ninguna opción disponible cubra adecuadamente. Antes de encargarla hay que valorar adaptación de soluciones existentes, coste, soporte y mantenimiento. Una web empresarial no es necesariamente software a medida.</p></details>
+<h3 id="software-licencias">6.5. Licencias: libre no significa gratuito</h3>
+<p>La <strong>licencia</strong> establece los permisos y condiciones de uso, modificación y distribución. El precio responde a otra pregunta: cuánto cuesta obtener el programa o contratar servicios asociados.</p>
+<figure class="image-container" id="cuatro-libertades">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 460" role="img" aria-labelledby="libertades-title libertades-desc">
+<title id="libertades-title">Las cuatro libertades del software libre</title>
+<desc id="libertades-desc">Libertad 0: ejecutar el programa para cualquier propósito. Libertad 1: estudiar cómo funciona y modificarlo. Libertad 2: redistribuir copias. Libertad 3: distribuir versiones modificadas. Las libertades 1 y 3 requieren acceso al código fuente.</desc>
+<rect width="640" height="460" rx="16" fill="#f8fafc"/>
+<g font-family="Inter, Arial, sans-serif" fill="#0f172a">
+<text x="24" y="38" font-size="25" font-weight="700">Cuatro libertades, un mismo principio</text>
+<rect x="20" y="64" width="292" height="148" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+<circle cx="54" cy="99" r="20" fill="#1e3a8a"/><text x="54" y="107" text-anchor="middle" fill="white" font-size="23" font-weight="700">0</text>
+<text x="86" y="106" font-size="23" font-weight="700">Ejecutar</text><text x="38" y="146" font-size="20">Usar el programa para</text><text x="38" y="176" font-size="20">cualquier propósito.</text>
+<rect x="328" y="64" width="292" height="148" rx="14" fill="#f0fdf4" stroke="#86efac"/>
+<circle cx="362" cy="99" r="20" fill="#0f766e"/><text x="362" y="107" text-anchor="middle" fill="white" font-size="23" font-weight="700">1</text>
+<text x="394" y="106" font-size="22" font-weight="700">Estudiar y cambiar</text><text x="346" y="146" font-size="20">Entender cómo funciona</text><text x="346" y="176" font-size="20">y modificar el programa.</text>
+<rect x="20" y="232" width="292" height="148" rx="14" fill="#fff7ed" stroke="#fdba74"/>
+<circle cx="54" cy="267" r="20" fill="#9a3412"/><text x="54" y="275" text-anchor="middle" fill="white" font-size="23" font-weight="700">2</text>
+<text x="86" y="274" font-size="23" font-weight="700">Compartir copias</text><text x="38" y="314" font-size="20">Redistribuir el programa</text><text x="38" y="344" font-size="20">para ayudar a los demás.</text>
+<rect x="328" y="232" width="292" height="148" rx="14" fill="#faf5ff" stroke="#c4b5fd"/>
+<circle cx="362" cy="267" r="20" fill="#6d28d9"/><text x="362" y="275" text-anchor="middle" fill="white" font-size="23" font-weight="700">3</text>
+<text x="394" y="274" font-size="22" font-weight="700">Compartir cambios</text><text x="346" y="314" font-size="20">Distribuir tus versiones</text><text x="346" y="344" font-size="20">modificadas.</text>
+<text x="320" y="418" text-anchor="middle" font-size="20" font-weight="700">Estudiar y modificar requiere código fuente.</text>
+<text x="320" y="445" text-anchor="middle" font-size="17">Libre describe permisos, no el precio.</text>
+</g></svg>
+<figcaption class="image-caption">Las libertades se numeran del 0 al 3. <a href="https://www.gnu.org/philosophy/free-sw.es.html" target="_blank" rel="noopener noreferrer">Definición del proyecto GNU</a>.</figcaption></figure>
+<p>Ver el código fuente por sí solo no basta: la licencia debe permitir estas cuatro libertades.</p>
+<div class="table-scroll" role="region" aria-label="Diferencia entre permisos y precio" tabindex="0"><table><caption>Dos ejes independientes: licencia y precio</caption><thead><tr><th scope="col">Caso hipotético</th><th scope="col">¿Libre?</th><th scope="col">¿Gratuito?</th><th scope="col">Razón</th></tr></thead><tbody><tr><th scope="row">Programa con las cuatro libertades y descarga sin coste</th><td>Sí</td><td>Sí, la descarga</td><td>Los permisos y el precio cumplen ambos criterios.</td></tr><tr><th scope="row">Programa libre con una copia distribuida por un precio</th><td>Sí</td><td>No, esa copia</td><td>Cobrar por distribuirlo no elimina las libertades de su licencia.</td></tr><tr><th scope="row">Programa sin coste que prohíbe modificar y redistribuir</th><td>No</td><td>Sí</td><td>No pagar no concede las libertades del software libre.</td></tr></tbody></table></div>
+<p>El software libre puede utilizarse comercialmente. También puede generar gastos de alojamiento, instalación, formación o soporte. Software propietario no significa necesariamente software de pago.</p>
+<div class="example-box"><h4>Ejemplo resuelto: justificar una licencia</h4><p>Dos fichas anuncian «descarga gratis». La primera añade «no se permite modificar ni redistribuir». La segunda concede las cuatro libertades y proporciona el código fuente. Solo la segunda reúne las condiciones de software libre: el precio de descarga no permitía resolver la comparación.</p></div>
+<div class="activity-card activity-callout"><h4>Ahora tú: verifica antes de etiquetar · 6 minutos</h4><ol><li>Investiga el navegador <strong>Chromium</strong>. Localiza su licencia en el <a href="https://chromium.googlesource.com/chromium/src/+/main/LICENSE" target="_blank" rel="noopener noreferrer">archivo LICENSE de su repositorio oficial</a>. Consulta también los avisos de componentes de terceros de la versión analizada.</li><li>Anota el nombre exacto del producto, versión o edición, licencia, enlace y fecha.</li><li>Explica qué permisos justifican llamarlo libre o propietario. Si la evidencia es insuficiente, indícalo.</li><li>Separa el precio del programa de posibles servicios de pago.</li></ol></div>
+<h3 id="sec6_1">6.6. Reto final: una propuesta para la tienda</h3>
+<div class="activities-section" id="practica-software-empresa"><h4>Decide, justifica y reconoce lo que falta · 25 minutos</h4><p>Recupera el caso de la tienda: necesita facturar, controlar existencias, gestionar clientes y vender por Internet. Prepara una propuesta breve, únicamente en texto.</p><ol><li>Relaciona cada necesidad con una aplicación o módulo y clasifícalo por su función.</li><li>Propón un orden de implantación compatible con un presupuesto limitado. Explica si CRM, ERP o DSS aportan valor ahora o más adelante.</li><li>Para al menos dos programas concretos, identifica edición y licencia con fuentes oficiales. Distingue permisos, precio y servicios asociados.</li><li>Describe una comunicación mediante API entre la web y el inventario: qué solicita, qué recibe y cómo actuar si la consulta falla.</li><li>Indica una situación que justificaría desarrollo a medida y una alternativa que estudiarías antes.</li><li>Propón una prueba del cálculo de un descuento con entrada y resultado esperado. Explica por qué compilar no basta.</li></ol><p><strong>Formato de ayuda:</strong> necesidad → solución → motivo → licencia y fuente → prioridad → limitación pendiente.</p>
+<div class="table-scroll" role="region" aria-label="Criterios de evaluación del reto" tabindex="0"><table><caption>Qué se valorará · 10 puntos</caption><thead><tr><th scope="col">Criterio</th><th scope="col">Evidencia esperada</th><th scope="col">Puntos</th></tr></thead><tbody><tr><th scope="row">Necesidades y clasificación</th><td>Relaciona soluciones y tareas sin mezclar función, licencia y modalidad.</td><td>2</td></tr><tr><th scope="row">Licencias</th><td>Identifica dos ediciones y sus licencias con fuentes; distingue libre y gratuito.</td><td>2</td></tr><tr><th scope="row">Priorización empresarial</th><td>Justifica el orden y el papel de CRM, ERP y DSS, incluida una posible espera.</td><td>2</td></tr><tr><th scope="row">API y desarrollo a medida</th><td>Describe petición, respuesta y fallo; compara adaptación y desarrollo.</td><td>2</td></tr><tr><th scope="row">Pruebas y límites</th><td>Incluye entrada y resultado esperado; reconoce incertidumbres y límites.</td><td>2</td></tr></tbody></table></div><p>No hay una única lista correcta de programas. Importa que la elección responda a necesidades y se apoye en evidencias.</p></div>
+<details class="extension"><summary>Actividad de enlace: recuperar la codificación de la información</summary><p>Vuelve al <a href="#sec3_2">apartado 3.2</a> y diseña un código similar a ASCII con un desplazamiento como el método César. Define el alfabeto, codifica una palabra y explica cómo recuperarla. Distingue representar información de cifrarla; un desplazamiento César no proporciona seguridad adecuada para datos reales.</p></details>
+<div class="activity-card activity-callout" id="actividad-repaso"><h4>Comprueba lo que has aprendido</h4><ol><li>Explica por qué más GHz no garantizan más rendimiento.</li><li>Describe las funciones de la UC y la ALU y su relación con la memoria.</li><li>Distingue compilar, probar, utilizar una API y elegir una licencia.</li></ol><p>Responde sin mirar los apuntes. Después revisa tus explicaciones y anota qué has tenido que corregir.</p></div>
+<details class="extension"><summary>Ampliación opcional: seguridad y computación cuántica</summary><p>Estos vídeos amplían la unidad; no son necesarios para resolver los ejercicios anteriores.</p><ul><li><a href="https://youtu.be/zewkqnInHVY" target="_blank" rel="noopener noreferrer">Hackeame si puedes</a>: anota una amenaza y qué componente o programa se ve afectado.</li><li><a href="https://youtu.be/O9TA2faf6nw" target="_blank" rel="noopener noreferrer">El ordenador cuántico</a>: identifica una diferencia con el modelo estudiado y una duda para debatir.</li></ul></details>
+</section>
 
 <footer class="document-footer">© Ignacio García 2020</footer></main></div>
+<script>
+(() => {
+    const toggle = document.querySelector('.toc-toggle');
+    const toc = document.getElementById('unit-toc');
+    function setOpen(open) {
+        toc.classList.toggle('is-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.textContent = open ? 'Cerrar índice' : 'Índice';
+    }
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    toc.addEventListener('click', event => {
+        const link = event.target.closest('a');
+        if (!link) return;
+        setOpen(false);
+        const heading = document.getElementById(link.hash.slice(1));
+        if (heading) {
+            heading.setAttribute('tabindex', '-1');
+            heading.focus({ preventScroll: true });
+        }
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+            setOpen(false);
+            toggle.focus();
+        }
+    });
+    const apiForm = document.querySelector('.api-demo');
+    if (apiForm) apiForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        const button = apiForm.querySelector('button');
+        const status = document.getElementById('api-status');
+        const output = document.getElementById('api-response');
+        button.disabled = true;
+        output.hidden = true;
+        output.textContent = '';
+        status.textContent = 'Enviando POST a httpbin…';
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+        try {
+            const response = await fetch(apiForm.action, {
+                method: 'POST',
+                body: new URLSearchParams(new FormData(apiForm)),
+                credentials: 'omit',
+                signal: controller.signal
+            });
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            const data = await response.json();
+            output.textContent = JSON.stringify({url: data.url, args: data.args, form: data.form}, null, 2);
+            output.hidden = false;
+            status.textContent = 'Respuesta recibida · HTTP ' + response.status + '. Se muestran los campos url, args y form.';
+        } catch (error) {
+            status.textContent = 'No se pudo obtener respuesta: ' + (error.name === 'AbortError' ? 'tiempo de espera agotado' : error.message) + '. Registra el error y vuelve a intentarlo más tarde.';
+        } finally {
+            clearTimeout(timeout);
+            button.disabled = false;
+        }
+    });
+    // Make answers and extensions available in the printed copy, then restore the reading state.
+    let printClosed = [];
+    window.addEventListener('beforeprint', () => {
+        printClosed = [...document.querySelectorAll('.learning-section details:not([open])')];
+        printClosed.forEach(detail => { detail.open = true; });
+    });
+    window.addEventListener('afterprint', () => {
+        printClosed.forEach(detail => { detail.open = false; });
+        printClosed = [];
+    });
+})();
+</script>
 </body>
 </html>
