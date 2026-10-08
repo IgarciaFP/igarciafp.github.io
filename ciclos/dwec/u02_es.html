@@ -864,18 +864,41 @@ console.log(mensaje);</code></pre>
                 <p>Los <strong>operadores</strong> permiten realizar cálculos, comparar valores y combinar condiciones. Los valores sobre los que actúan se denominan <strong>operandos</strong>: en <code>6 + 2</code>, el operador es <code>+</code> y los operandos son <code>6</code> y <code>2</code>. Ejecuta los ejemplos de este apartado por separado en la consola o en <code>ej08-compararValores.js</code>.</p>
 
                 <h3 id="sec5_1">5.1. Operadores aritméticos y de asignación</h3>
-                <div class="table-scroll operators-table" role="region" aria-label="Operadores aritméticos" tabindex="0">
+                <p>Un operador <strong>unario (o monario)</strong> actúa sobre un solo operando; uno <strong>binario</strong>, sobre dos. Por ejemplo, <code>-x</code> es unario y <code>x - y</code> es binario. La tabla reúne los operadores aritméticos, todas las asignaciones y el operador coma. Las comparaciones y los operadores lógicos y bit a bit se explican en los apartados siguientes.</p>
+                <p>Cada ejemplo es independiente. La flecha <code>→</code> indica el resultado o el valor final; no forma parte del código JavaScript. Las asignaciones lógicas y bit a bit se incluyen como referencia y se desarrollan en el apartado 5.3.</p>
+                <div class="table-scroll operators-table" role="region" aria-label="Operadores unarios y binarios: aritmética y asignación" tabindex="0">
                     <table>
-                        <thead><tr><th scope="col">Operador</th><th scope="col">Operación</th><th scope="col">Ejemplo</th></tr></thead>
+                        <thead><tr><th scope="col">Operador</th><th scope="col">Tipo</th><th scope="col">Operación</th><th scope="col">Ejemplo y resultado</th></tr></thead>
                         <tbody>
-                            <tr><td><code>+</code></td><td>Suma</td><td><code>9 + 4</code> → <code>13</code></td></tr>
-                            <tr><td><code>-</code></td><td>Resta</td><td><code>9 - 4</code> → <code>5</code></td></tr>
-                            <tr><td><code>*</code></td><td>Multiplicación</td><td><code>9 * 4</code> → <code>36</code></td></tr>
-                            <tr><td><code>/</code></td><td>División</td><td><code>9 / 4</code> → <code>2.25</code></td></tr>
-                            <tr><td><code>%</code></td><td>Resto de la división</td><td><code>9 % 4</code> → <code>1</code></td></tr>
-                            <tr><td><code>**</code></td><td>Potencia</td><td><code>3 ** 2</code> → <code>9</code></td></tr>
-                            <tr><td><code>++</code></td><td>Incremento: aumenta la variable en 1</td><td><code>let n = 4; n++;</code> → <code>n</code> vale <code>5</code></td></tr>
-                            <tr><td><code>--</code></td><td>Decremento: reduce la variable en 1</td><td><code>let n = 4; n--;</code> → <code>n</code> vale <code>3</code></td></tr>
+                            <tr><td><code>+x</code></td><td>Unario</td><td>Conversión a número</td><td><code>+ "12" → 12</code></td></tr>
+                            <tr><td><code>-x</code></td><td>Unario</td><td>Cambio de signo</td><td><code>-(-4) → 4</code></td></tr>
+                            <tr><td><code>++x</code></td><td>Unario, prefijo</td><td>Incrementa y devuelve el nuevo valor</td><td><code>let x = 4; ++x → 5 (x = 5)</code></td></tr>
+                            <tr><td><code>x++</code></td><td>Unario, sufijo</td><td>Devuelve el valor anterior e incrementa</td><td><code>let x = 4; x++ → 4 (x = 5)</code></td></tr>
+                            <tr><td><code>--x</code></td><td>Unario, prefijo</td><td>Decrementa y devuelve el nuevo valor</td><td><code>let x = 4; --x → 3 (x = 3)</code></td></tr>
+                            <tr><td><code>x--</code></td><td>Unario, sufijo</td><td>Devuelve el valor anterior y decrementa</td><td><code>let x = 4; x-- → 4 (x = 3)</code></td></tr>
+                            <tr><td><code>x + y</code></td><td>Binario</td><td>Suma; con cadenas, concatenación</td><td><code>9 + 4 → 13; "9" + "4" → "94"</code></td></tr>
+                            <tr><td><code>x - y</code></td><td>Binario</td><td>Resta</td><td><code>9 - 4 → 5</code></td></tr>
+                            <tr><td><code>x * y</code></td><td>Binario</td><td>Multiplicación</td><td><code>9 * 4 → 36</code></td></tr>
+                            <tr><td><code>x / y</code></td><td>Binario</td><td>División</td><td><code>9 / 4 → 2.25</code></td></tr>
+                            <tr><td><code>x % y</code></td><td>Binario</td><td>Resto</td><td><code>9 % 4 → 1</code></td></tr>
+                            <tr><td><code>x ** y</code></td><td>Binario</td><td>Potencia</td><td><code>3 ** 2 → 9</code></td></tr>
+                            <tr><td><code>x = y</code></td><td>Binario</td><td>Asignación</td><td><code>let x; x = 4; → x vale 4</code></td></tr>
+                            <tr><td><code>x += y</code></td><td>Binario</td><td>Suma o concatenación y asignación</td><td><code>let x = 9; x += 4; → x vale 13</code></td></tr>
+                            <tr><td><code>x -= y</code></td><td>Binario</td><td>Resta y asignación</td><td><code>let x = 9; x -= 4; → x vale 5</code></td></tr>
+                            <tr><td><code>x *= y</code></td><td>Binario</td><td>Multiplicación y asignación</td><td><code>let x = 9; x *= 4; → x vale 36</code></td></tr>
+                            <tr><td><code>x /= y</code></td><td>Binario</td><td>División y asignación</td><td><code>let x = 9; x /= 4; → x vale 2.25</code></td></tr>
+                            <tr><td><code>x %= y</code></td><td>Binario</td><td>Resto y asignación</td><td><code>let x = 9; x %= 4; → x vale 1</code></td></tr>
+                            <tr><td><code>x **= y</code></td><td>Binario</td><td>Potencia y asignación</td><td><code>let x = 3; x **= 2; → x vale 9</code></td></tr>
+                            <tr><td><code>x &lt;&lt;= y</code></td><td>Binario</td><td>Desplaza bits a la izquierda y asigna</td><td><code>let x = 5; x &lt;&lt;= 1; → x vale 10</code></td></tr>
+                            <tr><td><code>x &gt;&gt;= y</code></td><td>Binario</td><td>Desplaza bits a la derecha conservando el signo y asigna</td><td><code>let x = -8; x &gt;&gt;= 1; → x vale -4</code></td></tr>
+                            <tr><td><code>x &gt;&gt;&gt;= y</code></td><td>Binario</td><td>Desplaza bits a la derecha rellenando con ceros y asigna</td><td><code>let x = 8; x &gt;&gt;&gt;= 1; → x vale 4</code></td></tr>
+                            <tr><td><code>x &amp;= y</code></td><td>Binario</td><td>AND bit a bit y asignación</td><td><code>let x = 6; x &amp;= 3; → x vale 2</code></td></tr>
+                            <tr><td><code>x ^= y</code></td><td>Binario</td><td>XOR bit a bit y asignación</td><td><code>let x = 6; x ^= 3; → x vale 5</code></td></tr>
+                            <tr><td><code>x |= y</code></td><td>Binario</td><td>OR bit a bit y asignación</td><td><code>let x = 6; x |= 3; → x vale 7</code></td></tr>
+                            <tr><td><code>x &amp;&amp;= y</code></td><td>Binario</td><td>Asigna solo si x es truthy</td><td><code>let x = "Sí"; x &amp;&amp;= "Hecho"; → x vale "Hecho"</code></td></tr>
+                            <tr><td><code>x ||= y</code></td><td>Binario</td><td>Asigna solo si x es falsy</td><td><code>let x = ""; x ||= "Sin texto"; → x vale "Sin texto"</code></td></tr>
+                            <tr><td><code>x ??= y</code></td><td>Binario</td><td>Asigna solo si x es null o undefined</td><td><code>let x; x ??= 4; → x vale 4</code></td></tr>
+                            <tr><td><code>x, y</code></td><td>Binario</td><td>Evalúa ambos operandos y devuelve el segundo</td><td><code>(3 + 2, 4 * 2) → 8</code></td></tr>
                         </tbody>
                     </table>
                 </div>
