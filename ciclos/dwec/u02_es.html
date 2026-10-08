@@ -881,7 +881,8 @@ console.log(mensaje);</code></pre>
                 </div>
                 <h4>Otros operadores: unarios, binarios y ternario</h4>
                 <p>Un operador <strong>unario (o monario)</strong> actúa sobre un solo operando; uno <strong>binario</strong>, sobre dos; y uno <strong>ternario</strong>, sobre tres. En la tabla anterior, <code>++</code> y <code>--</code> son unarios; la suma, la resta, la multiplicación, la división, el resto y la potencia son binarios. Los signos <code>+</code> y <code>-</code> también tienen los usos unarios que se muestran a continuación.</p>
-                <p>Esta segunda tabla recoge los operadores añadidos: los signos unarios, la asignación simple, las asignaciones compuestas, la coma y el condicional ternario. Cada ejemplo es independiente y la flecha <code>→</code> indica el resultado; no forma parte del código.</p>
+                <p>Esta segunda tabla recoge los operadores añadidos: los signos unarios, la asignación simple, las asignaciones compuestas, la coma, el condicional ternario y los operadores bit a bit. Cada ejemplo es independiente y la flecha <code>→</code> indica el resultado; no forma parte del código.</p>
+                <p>En estos ejemplos se utilizan valores <code>number</code>: las operaciones bit a bit trabajan con enteros de 32 bits. <code>~</code>, <code>&amp;</code>, <code>|</code>, <code>^</code>, <code>&lt;&lt;</code> y <code>&gt;&gt;</code> producen un entero con signo; <code>&gt;&gt;&gt;</code> produce uno sin signo. No confundas <code>&amp;</code> y <code>|</code> con los operadores lógicos <code>&amp;&amp;</code> y <code>||</code>.</p>
                 <div class="table-scroll operators-table" role="region" aria-label="Otros operadores unarios, binarios y ternario" tabindex="0">
                     <table>
                         <thead><tr><th scope="col">Operador</th><th scope="col">Tipo</th><th scope="col">Operación</th><th scope="col">Ejemplo y resultado</th></tr></thead>
@@ -892,6 +893,13 @@ console.log(mensaje);</code></pre>
                             <tr><td><code>[operador]=</code></td><td>Binario</td><td>Asignación compuesta: combina una operación con la asignación de su resultado, por ejemplo <code>+=</code>, <code>-=</code> o <code>*=</code>. Los corchetes indican un marcador, no se escriben en el código.</td><td><code>let x = 9; x += 4;</code> → <code>x</code> vale <code>13</code>; equivale a <code>x = x + 4</code>.</td></tr>
                             <tr><td><code>x, y</code></td><td>Binario</td><td>Evalúa ambos operandos y devuelve el segundo</td><td><code>(3 + 2, 4 * 2) → 8</code></td></tr>
                             <tr><td><code>condición ? valorSiVerdadera : valorSiFalsa</code></td><td>Ternario</td><td>Devuelve uno de dos valores según la condición. Solo evalúa la alternativa elegida. Se desarrolla en el <a href="#sec7_5">apartado 7.5</a>.</td><td><code>const edad = 20;</code><br><code>edad &gt;= 18 ? "Mayor de edad" : "Menor de edad"</code> → <code>"Mayor de edad"</code></td></tr>
+                            <tr><td><code>~x</code></td><td>Unario</td><td>NOT bit a bit: invierte todos los bits.</td><td><code>~5 → -6</code></td></tr>
+                            <tr><td><code>x &amp; y</code></td><td>Binario</td><td>AND bit a bit: cada bit vale 1 si ambos bits son 1.</td><td><code>6 &amp; 3 → 2</code></td></tr>
+                            <tr><td><code>x | y</code></td><td>Binario</td><td>OR bit a bit: cada bit vale 1 si al menos uno de los bits es 1.</td><td><code>6 | 3 → 7</code></td></tr>
+                            <tr><td><code>x ^ y</code></td><td>Binario</td><td>XOR bit a bit: cada bit vale 1 si los dos bits son distintos.</td><td><code>6 ^ 3 → 5</code></td></tr>
+                            <tr><td><code>x &lt;&lt; y</code></td><td>Binario</td><td>Desplaza los bits a la izquierda y rellena con ceros a la derecha.</td><td><code>5 &lt;&lt; 1 → 10</code></td></tr>
+                            <tr><td><code>x &gt;&gt; y</code></td><td>Binario</td><td>Desplaza los bits a la derecha conservando el signo.</td><td><code>-8 &gt;&gt; 1 → -4</code></td></tr>
+                            <tr><td><code>x &gt;&gt;&gt; y</code></td><td>Binario</td><td>Desplaza los bits a la derecha rellenando con ceros a la izquierda.</td><td><code>-8 &gt;&gt;&gt; 1 → 2147483644</code></td></tr>
                         </tbody>
                     </table>
                 </div>
