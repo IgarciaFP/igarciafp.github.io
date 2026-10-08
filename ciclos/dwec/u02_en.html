@@ -327,7 +327,7 @@
 <p>In DevTools will be used mainly <strong>Console (Console)</strong>, to execute instructions and consult messages; <strong>Sources (Sources)</strong>, to examine and debug the code; and <strong>Network (Network)</strong>, to check the load of the files.</p>
 <div class="resource-card expansion-card expansion-purple" id="ampliacion-emmet">
 <div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-wand-magic-sparkles"></i> Emmet: writing HTML and CSS with abbreviations</span><span class="resource-badge badge-reading">Enlargement</span></div>
-<p>In class it will be necessary to use <strong>Emmet</strong>, first called <strong>Zen Coding</strong>, when working with VS Code. Allows to expand abbreviations to write HTML and CSS quickly; it is integrated into the editor and does not require to install an extension.</p>
+<p>In class it will be necessary to use <strong>Emmet</strong>, first called <strong>Zen Coding</strong>, when working with VS Code. Allows to expand abbreviations to write HTML and CSS quickly; it is integrated into the editor and does not require installing an extension.</p>
 <p>For example, <code>ul&gt;li*3</code> generates a list with three elements. Write the abbreviation in an HTML file and accept Emmet's suggestion.</p>
 <div class="resource-links"><a class="resource-link-btn" href="https://docs.emmet.io/cheat-sheet/" rel="noopener noreferrer" target="_blank">Emmet · Reference sheet</a>
 <a class="resource-link-btn" href="https://code.visualstudio.com/docs/languages/emmet" rel="noopener noreferrer" target="_blank">Emmet in VS Code</a></div>
@@ -802,6 +802,30 @@ console.log(mensaje);</code></pre>
 <tr><td><code>**</code></td><td>Power</td><td><code>3 ** 2</code> → <code>9</code></td></tr>
 <tr><td><code>++</code></td><td>Increase: increases the variable by 1</td><td><code>let n = 4; n++;</code> → <code>n</code> Okay. <code>5</code></td></tr>
 <tr><td><code>--</code></td><td>Decrement: reduces the variable by 1</td><td><code>let n = 4; n--;</code> → <code>n</code> Okay. <code>3</code></td></tr>
+</tbody>
+</table>
+</div>
+<h4>Other operators: unaries, binaries and ternaries</h4>
+<p>An operator <strong>unary (or monary)</strong> acts on a single operand; one <strong>binary</strong>, over two; and one <strong>ternary</strong>In the table above, <code>++</code> y <code>--</code> are unary; the sum, subtraction, multiplication, division, rest and potency are binary. <code>+</code> y <code>-</code> also have the unary uses shown below.</p>
+<p>This second table lists the added operators: the unary signs, the simple assignment, the composite assignments, the comma, the conditional ternary and the bit-to-bit operators. Each example is independent and the arrow <code>→</code> indicates the result; it is not part of the code.</p>
+<p>These examples use values <code>number</code>: bit to bit operations work with 32 bit integers. <code>~</code>, <code>&amp;</code>, <code>|</code>, <code>^</code>, <code>&lt;&lt;</code> y <code>&gt;&gt;</code> produce an integer with a sign; <code>&gt;&gt;&gt;</code> produces one without a sign. <code>&amp;</code> y <code>|</code> with the logical operators <code>&amp;&amp;</code> y <code>||</code>.</p>
+<div aria-label="Other unary, binary and ternary operators" class="table-scroll operators-table" role="region" tabindex="0">
+<table>
+<thead><tr><th scope="col">Operator</th><th scope="col">Type</th><th scope="col">Operation</th><th scope="col">Example and result</th></tr></thead>
+<tbody>
+<tr><td><code>+x</code></td><td>Unary</td><td>Conversion to number</td><td><code>+ "12" → 12</code></td></tr>
+<tr><td><code>-x</code></td><td>Unary</td><td>Signal change</td><td><code>-(-4) → 4</code></td></tr>
+<tr><td><code>x = y</code></td><td>Binary</td><td>Allocation</td><td><code>let x; x = 4; → x vale 4</code></td></tr>
+<tr><td><code>[operador]=</code></td><td>Binary</td><td>Composite assignment: combines an operation with the allocation of its result, for example <code>+=</code>, <code>-=</code> o <code>*=</code>The brackets indicate a marker, not written in the code.</td><td><code>let x = 9; x += 4;</code> → <code>x</code> Okay. <code>13</code>; equals <code>x = x + 4</code>.</td></tr>
+<tr><td><code>x, y</code></td><td>Binary</td><td>Evaluate both operands and return the second</td><td><code>(3 + 2, 4 * 2) → 8</code></td></tr>
+<tr><td><code>condición ? valorSiVerdadera : valorSiFalsa</code></td><td>Ternary</td><td>Returns one of two values according to the condition. It only evaluates the chosen alternative. It develops in the <a href="#sec7_5">paragraph 7.5</a>.</td><td><code>const edad = 20;</code><br/><code>edad &gt;= 18 ? "Mayor de edad" : "Menor de edad"</code> → <code>"Mayor de edad"</code></td></tr>
+<tr><td><code>~x</code></td><td>Unary</td><td>NOT bit to bit: inverts all bits.</td><td><code>~5 → -6</code></td></tr>
+<tr><td><code>x &amp; y</code></td><td>Binary</td><td>AND bit to bit: each bit is worth 1 if both bits are 1.</td><td><code>6 &amp; 3 → 2</code></td></tr>
+<tr><td><code>x | y</code></td><td>Binary</td><td>OR bit to bit: each bit is worth 1 if at least one bit is 1.</td><td><code>6 | 3 → 7</code></td></tr>
+<tr><td><code>x ^ y</code></td><td>Binary</td><td>XOR bit to bit: each bit is worth 1 if the two bits are different.</td><td><code>6 ^ 3 → 5</code></td></tr>
+<tr><td><code>x &lt;&lt; y</code></td><td>Binary</td><td>Move the bits to the left and fill with zeros to the right.</td><td><code>5 &lt;&lt; 1 → 10</code></td></tr>
+<tr><td><code>x &gt;&gt; y</code></td><td>Binary</td><td>Move the bits to the right while retaining the sign.</td><td><code>-8 &gt;&gt; 1 → -4</code></td></tr>
+<tr><td><code>x &gt;&gt;&gt; y</code></td><td>Binary</td><td>Move the bits to the right by filling with zeros to the left.</td><td><code>-8 &gt;&gt;&gt; 1 → 2147483644</code></td></tr>
 </tbody>
 </table>
 </div>
