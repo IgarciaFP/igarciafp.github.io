@@ -759,7 +759,7 @@ console.log(usuario.nombre); // Luis</code></pre>
                 <h3 id="sec4_4">4.4. Tipos de datos de uso inicial</h3>
                 <p>El <strong>tipo</strong> describe la clase de valor con la que trabaja el programa. En estos primeros ejercicios se utilizarán los siguientes:</p>
                 <ul>
-                    <li><strong><code>number</code>:</strong> representa números, tanto enteros como decimales. Ejemplos: <code>18</code> y <code>7.5</code>. El separador decimal en el código es el punto.</li>
+                    <li><strong><code>number</code>:</strong> representa números, tanto enteros como decimales. Ejemplos: <code>18</code> y <code>7.5</code>. El separador decimal en el código es el punto. Este tipo incluye el valor especial <code>NaN</code>, que indica un resultado numérico no válido.</li>
                     <li><strong><code>string</code>:</strong> representa texto delimitado por comillas. Ejemplos: <code>"Ana"</code>, <code>"18"</code> y <code>""</code>. Un número entre comillas es texto; una cadena vacía también es texto.</li>
                     <li><strong><code>boolean</code>:</strong> admite los valores <code>true</code> y <code>false</code>, escritos sin comillas. Permite representar estados como «activo» o «inactivo».</li>
                     <li><strong><code>undefined</code>:</strong> es el valor de una variable declarada con <code>let</code> a la que todavía no se ha asignado otro valor.</li>
@@ -774,6 +774,20 @@ const tutorAsignado = null;
 console.log(edad, nombre, matriculaActiva);
 console.log(observaciones, tutorAsignado);</code></pre>
                 <p><code>undefined</code> puede aparecer también en otras situaciones, como el resultado de una llamada a <code>console.log()</code>. <code>null</code> expresa una ausencia explícita, como ocurre al cancelar <code>prompt()</code>. Ninguno equivale a un texto vacío.</p>
+
+                <h4>NaN: un resultado numérico no válido</h4>
+                <p><code>NaN</code> significa <em>Not a Number</em>. Puede aparecer al convertir un texto no numérico o al realizar una operación como <code>0 / 0</code>. Es un valor especial del tipo <code>number</code>, no un tipo de dato independiente ni la cadena <code>"NaN"</code>.</p>
+                <pre><code>const cantidadNoValida = Number("hola");
+console.log(cantidadNoValida); // NaN
+console.log(0 / 0); // NaN
+console.log(typeof cantidadNoValida); // "number"
+console.log(cantidadNoValida + 5); // NaN</code></pre>
+                <p><code>Number()</code> intenta convertir un valor a número. <code>typeof</code> consulta su tipo; ambos se desarrollan en los siguientes apartados. Un resultado <code>NaN</code> suele propagarse en los cálculos posteriores, por lo que conviene detectarlo antes de continuar.</p>
+                <p>Para comprobarlo, utiliza <code>Number.isNaN(valor)</code>, que devuelve un booleano y no convierte el argumento. Comparar con <code>NaN</code> mediante <code>==</code> o <code>===</code> no sirve: ni siquiera es igual a sí mismo.</p>
+                <pre><code>console.log(Number.isNaN(cantidadNoValida)); // true
+console.log(cantidadNoValida === NaN); // false
+console.log(Number.isNaN("hola")); // false: es texto, no NaN.</code></pre>
+                <p><code>NaN</code> representa un resultado numérico no válido; <code>undefined</code> y <code>null</code> representan situaciones distintas de ausencia de valor. Una división como <code>1 / 0</code> produce <code>Infinity</code>, no <code>NaN</code>. Las conversiones y sus comprobaciones se amplían en el <a href="#sec5_5">apartado 5.5</a>.</p>
 
                 <h4>Enteros grandes: BigInt</h4><p><code>number</code> representa con exactitud todos los enteros hasta <code>Number.MAX_SAFE_INTEGER</code> (<code>2 ** 53 - 1</code>). Para enteros mayores que requieran precisión exacta existe <code>bigint</code>: añade <code>n</code> al literal. No representa decimales ni se mezcla directamente con <code>number</code> en operaciones aritméticas.</p><pre><code>const poblacionSimulada = 9007199254740993n;
 console.log(poblacionSimulada + 2n); // 9007199254740995n
