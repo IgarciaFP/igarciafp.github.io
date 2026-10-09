@@ -104,11 +104,9 @@
         <li><a href="#sec5">5. Guía de estilo web</a></li>
         <li><a href="#sec5_1" class="subsection-link">5.1. Finalidad y contenidos</a></li>
         <li><a href="#sec5_2" class="subsection-link">5.2. Proceso de creación</a></li>
-        <li><a href="#sec5_3" class="subsection-link">5.3. Sistema cromático</a></li>
         <li><a href="#sec5_6" class="subsection-link">5.6. Referentes y herramientas</a></li>
         <li><a href="#sec5_7" class="subsection-link">5.7. Figma, código y gobernanza</a></li>
         <li><a href="#sec6">6. Investigación UX & Design Thinking</a></li>
-        <li><a href="#sec6_1_1" class="subsection-link">6.1.1. Card Sorting</a></li>
         <li><a href="#sec7">7. Guía de estilo</a></li>
         <li><a href="#sec8">8. Ejemplos Prácticos</a></li>
         <li><a href="#sec9">9. Errores Frecuentes</a></li>
@@ -2208,67 +2206,6 @@ de los que sí.</p>
             <p>La guía no debe quedar estancada en un documento estático. Necesita un responsable de mantenimiento, número de versión, fecha de actualización, historial de cambios (changelog) y un procedimiento para proponer, revisar, probar y retirar reglas. Toda modificación debe sincronizar el diseño visual, el código y la documentación.</p>
         </div>
 
-        <h3 id="sec5_3">5.3. Documentación del sistema cromático</h3>
-        <p>El apartado 4.3 explica la percepción y la psicología del color. La guía de estilo convierte esas decisiones en reglas operativas: nombres semánticos, valores exactos, combinaciones autorizadas y restricciones normativas de accesibilidad.</p>
-
-        <div class="table-scroll" role="region" aria-label="Aspectos que deben documentarse en el sistema cromático" tabindex="0">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Aspecto</th>
-                        <th>Criterio de documentación</th>
-                        <th>Ejemplo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Jerarquía de paleta</strong></td>
-                        <td>Definir color dominante, secundarios y acento. La proporción 60/30/10 puede utilizarse como punto de partida para estructurar el equilibrio.</td>
-                        <td>Fondo neutro dominante (60%), azul de marca para estructura (30%) y ámbar reservado para CTA (10%).</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Armonía cromática</strong></td>
-                        <td>Indicar si la paleta es análoga, complementaria o monocromática y qué función cumple cada combinación en la pantalla.</td>
-                        <td>Azul y naranja complementarios para diferenciar elementos informativos de acciones principales.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Propiedades del color</strong></td>
-                        <td>Registrar tono (Hue), saturación y luminosidad (HSL) para generar variantes previsibles de estado.</td>
-                        <td>Variantes HSL de un azul para fondo suave, borde, estado hover y texto activo.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Estados funcionales</strong></td>
-                        <td>Asignar tokens semánticos a éxito, aviso, error e información sin depender exclusivamente del color para comunicar.</td>
-                        <td>Mensaje de error en rojo acompañado siempre por icono explicativo y texto informativo accesible.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Verificación de Contraste</strong></td>
-                        <td>Registrar las parejas de primer plano y fondo que cumplen WCAG (4.5:1 para texto normal y 3:1 para UI).</td>
-                        <td>Texto normal en negro carbón sobre crema con relación de contraste comprobada de 15.8:1.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <pre><code>:root {
-  /* Tokens de Marca */
-  --color-brand-primary: #1e3a8a;
-  --color-brand-accent: #d97706;
-  --color-bg-neutral: #f8fafc;
-  --color-text: #0f172a;
-
-  /* Tokens de Estado Semántico */
-  --color-success: #15803d;
-  --color-warning: #b45309;
-  --color-error: #b91c1c;
-  --color-info: #0369a1;
-}</code></pre>
-
-        <div class="didactic-note curiosity-card">
-            <h5><i class="fa-solid fa-earth-europe"></i> Psicología del color contextualizada</h5>
-            <p>Asociaciones como azul–confianza, verde–naturaleza o rojo–urgencia orientan una hipótesis de diseño, pero no son leyes universales. Su interpretación depende de la cultura, el sector industrial, la combinación cromática, la saturación y la experiencia previa; por ello, deben validarse siempre con el público objetivo real.</p>
-        </div>
-
         <h3 id="sec5_6">5.6. Referentes y herramientas de inspección</h3>
         <p>El estudio de manuales y sistemas de diseño de empresas consolidadas permite aprender patrones probados en millones de usuarios:</p>
 
@@ -2446,71 +2383,7 @@ de los que sí.</p>
         </div>
 
         <!-- SUBAPARTADO NUEVO: CARD SORTING (NUEVO PUNTO INTEGRADO) -->
-        <h3 id="sec6_1_1">6.1.1. Card Sorting: Organización de la Arquitectura de Información</h3>
-        <p>El <strong>Card Sorting</strong> (clasificación de tarjetas) es una técnica cuantitativa y cualitativa de investigación de usuarios empleada en las fases de <em>Empatizar</em> y <em>Definir</em>. Su propósito principal es descubrir el <strong>modelo mental</strong> de las personas usuarias para organizar, categorizar y etiquetar los contenidos de un sitio web o aplicación de la forma más intuitiva posible antes de definir la estructura final del menú o el mapa de navegación.</p>
 
-        <!-- Figura 1.10.1: Diagrama SVG de Card Sorting (NUEVO) -->
-        <div class="image-container">
-            <svg viewBox="0 0 760 230" width="100%" height="230" xmlns="http://www.w3.org/2000/svg">
-                <rect x="0" y="0" width="760" height="230" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
-                <text x="380" y="28" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Metodología de Card Sorting en Investigación UX (Arquitectura de Información)</text>
-
-                <!-- Bloque 1: Tarjetas de Contenido sueltas -->
-                <g transform="translate(30, 48)">
-                    <rect x="0" y="0" width="180" height="150" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
-                    <rect x="0" y="0" width="180" height="26" rx="6" fill="#fffbeb"/>
-                    <text x="90" y="18" fill="#d97706" font-family="Inter, sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle">1. Tarjetas (Contenidos)</text>
-                    <rect x="15" y="38" width="150" height="22" rx="3" fill="#fef3c7" stroke="#b45309"/>
-                    <text x="90" y="53" fill="#78350f" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Editar Perfil</text>
-                    <rect x="15" y="66" width="150" height="22" rx="3" fill="#fef3c7" stroke="#b45309"/>
-                    <text x="90" y="81" fill="#78350f" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Historial de Pedidos</text>
-                    <rect x="15" y="94" width="150" height="22" rx="3" fill="#fef3c7" stroke="#b45309"/>
-                    <text x="90" y="109" fill="#78350f" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Métodos de Pago</text>
-                    <text x="90" y="135" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5" font-style="italic">Conceptos desordenados</text>
-                </g>
-
-                <path d="M 220 120 L 250 120" stroke="#d97706" stroke-width="2.5"/>
-
-                <!-- Bloque 2: Proceso de Agrupación del Usuario -->
-                <g transform="translate(260, 48)">
-                    <rect x="0" y="0" width="220" height="150" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
-                    <rect x="0" y="0" width="220" height="26" rx="6" fill="#f0fdf4"/>
-                    <text x="110" y="18" fill="#0f766e" font-family="Inter, sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle">2. Evaluación por Usuarios</text>
-                    <text x="12" y="45" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• <strong>Card Sorting Abierto:</strong></text>
-                    <text x="20" y="62" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5">El usuario agrupa y nombra categorías.</text>
-                    <text x="12" y="85" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• <strong>Card Sorting Cerrado:</strong></text>
-                    <text x="20" y="102" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5">Categorías prefijadas por el equipo.</text>
-                    <text x="12" y="125" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• <strong>Card Sorting Híbrido:</strong> Mezcla ambos.</text>
-                </g>
-
-                <path d="M 490 120 L 520 120" stroke="#0f766e" stroke-width="2.5"/>
-
-                <!-- Bloque 3: Estructura del Menú resultante -->
-                <g transform="translate(530, 48)">
-                    <rect x="0" y="0" width="200" height="150" rx="6" fill="#ffffff" stroke="#1e3a8a" stroke-width="2"/>
-                    <rect x="0" y="0" width="200" height="26" rx="6" fill="#eff6ff"/>
-                    <text x="100" y="18" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle">3. Mapa de Navegación UX</text>
-                    <rect x="15" y="38" width="170" height="30" rx="4" fill="#3b82f6"/>
-                    <text x="100" y="57" fill="#ffffff" font-family="Inter, sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle">Menú "Mi Cuenta"</text>
-                    <rect x="25" y="74" width="150" height="18" fill="#f1f5f9"/>
-                    <text x="100" y="87" fill="#475569" font-family="Inter, sans-serif" font-size="8.5" text-anchor="middle">├─ Datos Personales</text>
-                    <rect x="25" y="95" width="150" height="18" fill="#f1f5f9"/>
-                    <text x="100" y="108" fill="#475569" font-family="Inter, sans-serif" font-size="8.5" text-anchor="middle">└─ Facturación y Pagos</text>
-                    <text x="100" y="135" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5" font-style="italic">Modelo mental validado</text>
-                </g>
-            </svg>
-            <div class="image-caption">Figura 1.10.1: Dinámica de Card Sorting: desde tarjetas aisladas hasta la ordenación del menú de navegación.</div>
-        </div>
-
-        <p>Durante una sesión de Card Sorting, los participantes reciben un conjunto de tarjetas (físicas en papel o digitales mediante herramientas como Optimal Workshop) con conceptos, contenidos o funcionalidades de la web y se les solicita que las organicen en grupos que tengan sentido para ellos:</p>
-        
-        <ul>
-            <li><strong>Card Sorting Abierto:</strong> Los usuarios agrupan las tarjetas libremente y crean sus propios nombres para cada categoría. Es ideal en etapas iniciales para descubrir nuevas nomenclaturas y patrones grupales.</li>
-            <li><strong>Card Sorting Cerrado:</strong> Los participantes organizan las tarjetas dentro de categorías fijas preestablecidas por el equipo de diseño. Sirve para evaluar si la estructura existente es comprensible.</li>
-            <li><strong>Card Sorting Híbrido:</strong> Los usuarios disponen de categorías prefijadas pero se les permite crear nuevas etiquetas si consideran que algún contenido no encaja.</li>
-        </ul>
-
-        <p>Una vez completado el estudio, se analizan los resultados mediante matrices de similitud y dendrogramas para construir la <strong>Arquitectura de la Información (IA)</strong> y el mapa de navegación final de la aplicación web.</p>
 
         <!-- Recurso Enlace Card Sorting (NUEVO) -->
         <div class="resource-card expansion-card">
