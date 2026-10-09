@@ -97,9 +97,10 @@
         <li><a href="#sec4_4_1" class="subsection-link">4.4.1. Design Tokens</a></li>
         <li><a href="#sec4_4_2" class="subsection-link">4.4.2. CSS tradicional y Tailwind CSS</a></li>
         <li><a href="#sec4_6" class="subsection-link">4.6. Composición, Estados & Mobile-First</a></li>
-        <li><a href="#sec4_7" class="subsection-link">4.7. Componentes & Formularios Web</a></li>
-        <li><a href="#sec4_7_1" class="subsection-link">4.7.1. Categorización de marcas visuales</a></li>
-        <li><a href="#sec4_7_2" class="subsection-link">4.7.2. Iconografía e independencia de resolución</a></li>
+        <li><a href="#sec4_7" class="subsection-link">4.7. Tipografía, logotipo e iconografía</a></li>
+        <li><a href="#sec4_7_1" class="subsection-link">4.7.1. Tipografía</a></li>
+        <li><a href="#sec4_7_2" class="subsection-link">4.7.2. Logotipo</a></li>
+        <li><a href="#sec4_7_3" class="subsection-link">4.7.3. Iconografía</a></li>
         <li><a href="#sec5">5. Guía de estilo web</a></li>
         <li><a href="#sec5_1" class="subsection-link">5.1. Finalidad y contenidos</a></li>
         <li><a href="#sec5_2" class="subsection-link">5.2. Proceso de creación</a></li>
@@ -1871,38 +1872,37 @@ de los que sí.</p>
             <p class="target-size-sources">Referencia: <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum" target="_blank" rel="noopener noreferrer">WCAG 2.5.8 (AA)</a> · <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced" target="_blank" rel="noopener noreferrer">WCAG 2.5.5 (AAA)</a>.</p>
         </figure>
 
-        <h3 id="sec4_7">4.7. Componentes y formularios web</h3>
-        <p>Las páginas web estructuran sus componentes en módulos estandarizados: <strong>Cabecera (Header)</strong>, <strong>Sistemas de Navegación</strong> (menú hamburguesa, pestañas, migas de pan), <strong>Cuerpo (Body)</strong>, <strong>Pie de página (Footer)</strong> y <strong>Espacios en blanco</strong>.</p>
+        <h3 id="sec4_7">4.7. Tipografía, logotipo e iconografía</h3>
+        <p>La identidad de una interfaz se construye con tres recursos complementarios: la <strong>tipografía</strong> organiza y da voz al contenido, el <strong>logotipo</strong> identifica la marca y la <strong>iconografía</strong> ayuda a reconocer acciones e información. Sus decisiones deben quedar recogidas en la guía de estilo.</p>
 
-        <!-- Recurso Enlace PPTX 6 -->
+        <h4 id="sec4_7_1">4.7.1. Tipografía</h4>
+        <p>Diseñar la tipografía implica elegir cómo se presenta y se lee el texto, no solo escoger una fuente. Distingue familias <strong>serif</strong> (con remates), <strong>sans serif</strong> (sin remates) y <strong>monoespaciadas</strong> (caracteres de igual anchura, habituales en código). Serif y sans serif pueden funcionar en pantalla: comprueba su legibilidad en el contexto real.</p>
+        <ul>
+            <li><strong>Jerarquía:</strong> diferencia títulos, subtítulos, cuerpo y textos auxiliares mediante tamaño, peso y espacio, manteniendo una escala coherente.</li>
+            <li><strong>Lectura:</strong> ajusta interlineado, longitud de línea y alineación. Evita bloques extensos en mayúsculas y comprueba el resultado con textos reales.</li>
+            <li><strong>Consistencia:</strong> limita las familias y variantes a las necesarias; asigna una función a cada una.</li>
+            <li><strong>Implementación:</strong> define fuentes alternativas en <code>font-family</code>, tamaños relativos e interlineado sin unidad; revisa la lectura en móvil y al ampliar el texto.</li>
+        </ul>
+        <p>Ejemplo inicial para experimentar —ajusta los valores al contenido y al diseño—:</p>
+        <pre><code>.texto-lectura {
+    font-family: system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 65ch;
+}</code></pre>
+        <p><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Text_styling/Fundamentals" target="_blank" rel="noopener noreferrer">Referencia: fundamentos de tipografía y estilos de texto en MDN</a>.</p>
+
         <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-font"></i> Tipografía Digital y Legibilidad Web</span>
                 <span class="resource-badge badge-video">Vídeo Didáctico</span>
             </div>
-            <div class="resource-description">Tutorial en vídeo sobre la elección de fuentes Sans Serif (pantalla) vs Serif (impresión), interlineado y comportamiento multiplataforma.</div>
-            <a href="https://youtu.be/EbV3-AJQElQ?si=UE82rp5szt2rTumm" target="_blank" class="resource-link-btn"><i class="fa-fab fa-youtube"></i> Ver tutorial de Tipografía en YouTube</a>
+            <div class="resource-description">Recurso para analizar familias tipográficas, interlineado y legibilidad. Contrasta las propuestas con el tamaño, el contenido y el contexto de uso de tu interfaz.</div>
+            <a href="https://youtu.be/EbV3-AJQElQ?si=UE82rp5szt2rTumm" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-brands fa-youtube"></i> Ver tutorial de Tipografía en YouTube</a>
         </div>
 
-        <div class="advanced-concept-box">
-            <h4><i class="fa-solid fa-pen-to-square"></i> Patrones de Usabilidad en Formularios Web (WCAG 3.3)</h4>
-            <p>Los formularios son el punto neurálgico de interacción en aplicaciones web. Para maximizar la usabilidad deben seguir tres patrones clave:</p>
-            <ol>
-                <li><strong>Validación Inline en Tiempo Real:</strong> Informar de errores o aciertos inmediatamente al perder el foco del campo (evento <code>blur</code>), sin esperar al envío global del formulario.</li>
-                <li><strong>Etiquetado Explícito (<code>&lt;label&gt;</code>):</strong> Vincular siempre las etiquetas a sus entradas mediante <code>for="id"</code>. Nunca sustituir la etiqueta por un <code>placeholder</code>, ya que este desaparece al escribir y destruye la accesibilidad.</li>
-                <li><strong>Máscaras y Formato Automático:</strong> Aplicar formato guiado para datos complejos (IBAN, teléfonos, fechas) aligerando la carga del usuario.</li>
-            </ol>
-        </div>
-
-        <div class="didactic-note activity-callout">
-            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 8: Ejercicio breve de repaso (Apartado 4.7)</h5>
-            <p><strong>Auditoría de Usabilidad en Formularios Reales:</strong> Accede al formulario de contacto o registro de la plataforma de aprendizaje de la UNED (<code>https://www.uned.es</code>) o de Renfe (<code>https://www.renfe.com</code>). Inspecciona el código con las DevTools (F12) e identifica: 1) Si cada campo `&lt;input&gt;` cuenta con su etiqueta `&lt;label&gt;` explícita vinculada mediante `for="id"`, 2) Si se ha utilizado erróneamente el atributo `placeholder` como única etiqueta visual, y 3) Si los campos muestran feedback de error inline al perder el foco.</p>
-        
-            <div class="delivery-tip"><a class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
-</div>
-
-        <h4 id="sec4_7_1">4.7.1. Categorización de marcas visuales</h4>
-        <p>En el desarrollo de interfaces web es fundamental clasificar técnicamente la marca corporativa:</p>
+        <h4 id="sec4_7_2">4.7.2. Logotipo</h4>
+        <p>El signo de marca permite identificar quién ofrece el producto o servicio. Aunque a menudo se llama «logo» al conjunto, conviene distinguir estas cuatro formas de representación:</p>
 
         <!-- Figura 1.4: Tipos de Marcas Visuales -->
         <div class="image-container">
@@ -1946,8 +1946,26 @@ de los que sí.</p>
             <li><strong>Isologotipo:</strong> Integración indivisible de texto y símbolo gráfico dentro de una figura unificada.</li>
         </ul>
 
-        <h4 id="sec4_7_2">4.7.2. Iconografía e independencia de resolución</h4>
-        <p>Los gráficos vectoriales (<strong>SVG</strong>) garantizan escalabilidad infinita en pantallas móviles y monitores 4K. La iconografía debe inclinarse por convenciones conocidas (lupa para buscar, carrito para compra) combinada con etiquetas de texto en operaciones clave.</p>
+
+        <p>Al incorporarlo a una web, respeta sus proporciones, el área de protección y las versiones autorizadas para fondos claros y oscuros. Comprueba que se reconoce en tamaños pequeños; una versión reducida o un favicon requiere una adaptación prevista, no un recorte arbitrario.</p>
+        <p>Conserva un original vectorial cuando corresponda. Si el logotipo enlaza al inicio, su nombre accesible debe comunicar ese destino, por ejemplo «Migas Amigas, inicio».</p>
+
+        <div class="didactic-note activity-callout">
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 6: Clasificación de marcas visuales (Apartado 4.7.2)</h5>
+            <p><strong>Clasificación de Marcas de Identidad Digital:</strong> Busca en internet e identifica un ejemplo real para cada una de las 4 categorías de identidad visual estudiadas: 1) <strong>Logotipo</strong> (solo texto), 2) <strong>Isotipo</strong> (solo gráfico), 3) <strong>Imagotipo</strong> (símbolo y texto independientes) y 4) <strong>Isologotipo</strong> (texto y gráficos indivisibles). Justifica por escrito por qué cada marca pertenece a su categoría correspondiente.</p>
+        
+            <div class="delivery-tip"><a class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
+</div>
+
+        <h4 id="sec4_7_3">4.7.3. Iconografía</h4>
+        <p>Los iconos representan acciones, objetos o estados. Elige símbolos reconocibles para tu público —como una lupa para buscar— y acompáñalos de texto cuando su significado pueda resultar ambiguo. Un icono de interfaz cumple una función distinta del símbolo que identifica una marca.</p>
+        <ul>
+            <li><strong>Familia visual:</strong> mantén un criterio común de trazo, relleno, proporciones y esquinas; evita mezclar estilos sin una razón.</li>
+            <li><strong>Tamaño y alineación:</strong> ajusta el peso visual y la posición respecto al texto. El área pulsable del botón puede ser mayor que el dibujo del icono.</li>
+            <li><strong>Formato:</strong> SVG permite redimensionar formas vectoriales sin pixelarlas. Aun así, comprueba que los detalles siguen siendo legibles al reducirlas.</li>
+            <li><strong>Significado accesible:</strong> un botón que solo contiene un icono necesita un nombre que describa su acción. Si el icono repite un texto visible, evita que se anuncie dos veces.</li>
+        </ul>
+        <p>Por ejemplo, un botón con una lupa puede incluir el texto visible «Buscar». Si solo muestra la lupa, proporciona ese nombre al botón; el gráfico decorativo puede ocultarse a las tecnologías de asistencia con <code>aria-hidden="true"</code>. <a href="https://www.w3.org/WAI/tutorials/images/functional/" target="_blank" rel="noopener noreferrer">Referencia: imágenes funcionales, W3C WAI</a>.</p>
 
         <div class="didactic-note curiosity-card">
             <h5><i class="fa-solid fa-link"></i> Relación entre identidad visual y Atomic Design</h5>
@@ -1955,11 +1973,11 @@ de los que sí.</p>
         </div>
 
         <div class="didactic-note activity-callout">
-            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 6: Ejercicio breve de repaso (Apartado 4.7)</h5>
-            <p><strong>Clasificación de Marcas de Identidad Digital:</strong> Busca en internet e identifica un ejemplo real para cada una de las 4 categorías de identidad visual estudiadas: 1) <strong>Logotipo</strong> (solo texto), 2) <strong>Isotipo</strong> (solo gráfico), 3) <strong>Imagotipo</strong> (símbolo y texto independientes) y 4) <strong>Isologotipo</strong> (texto y gráficos indivisibles). Justifica por escrito por qué cada marca pertenece a su categoría correspondiente.</p>
-        
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 8: Tipografía, logotipo e iconografía (Apartado 4.7)</h5>
+            <p>Selecciona una web y prepara una ficha visual con tres capturas: <strong>tipografía, logotipo e iconos</strong>. Identifica la jerarquía del texto y las familias utilizadas; clasifica el signo de marca; y comprueba si los iconos mantienen un estilo coherente y si sus acciones se entienden.</p>
+            <p>Propón una mejora concreta para cada bloque y muestra cómo quedaría mediante un boceto o una captura anotada. Entrega la ficha con una breve justificación de las tres decisiones.</p>
             <div class="delivery-tip"><a class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
-</div>
+        </div>
 
         <h2 id="sec5"><i class="fa-solid fa-book-atlas"></i> 5. Guía de estilo y diseño de interfaces web</h2>
         <p>Una <strong>guía de estilo web</strong> —también denominada manual de <em>look and feel</em> o manual de interfaz visual— documenta las decisiones visuales, verbales, tipográficas, cromáticas e interactivas de un producto digital. Su finalidad es que diseñadores, desarrolladores frontend, redactores de contenido (UX Writers) y futuras personas encargadas del mantenimiento apliquen criterios estandarizados y coherentes sin tener que reinterpretar la marca en cada nueva pantalla o módulo.</p>
