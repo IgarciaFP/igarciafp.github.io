@@ -3,349 +3,298 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Laboratorio Interactivo: Leyes de UX, Gestalt y Heurísticas de Nielsen</title>
+  <title>Laboratorio Completo: Leyes de UX, Gestalt y Heurísticas de Nielsen</title>
   <style>
     :root {
       --primary: #2563eb;
       --secondary: #0ea5e9;
+      --dark: #0f172a;
       --bg: #f8fafc;
       --card-bg: #ffffff;
-      --text: #0f172a;
+      --text: #1e293b;
+      --border: #cbd5e1;
       --accent: #f59e0b;
       --success: #10b981;
       --error: #ef4444;
-      --border: #e2e8f0;
     }
 
     * { box-sizing: border-box; }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      line-height: 1.6;
       margin: 0;
       padding: 20px;
+      line-height: 1.5;
     }
 
     header {
-      text-align: center;
-      padding: 24px;
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
-      border-radius: 16px;
-      margin-bottom: 30px;
-      box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
+      padding: 24px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 20px;
     }
 
-    header h1 { margin: 0 0 10px 0; font-size: 1.8rem; }
+    header h1 { margin: 0 0 8px 0; font-size: 1.8rem; }
     header p { margin: 0; opacity: 0.95; font-size: 1rem; }
 
-    main { max-width: 960px; margin: 0 auto; }
+    main { max-width: 1000px; margin: 0 auto; }
 
     .card {
       background: var(--card-bg);
       padding: 24px;
-      margin-bottom: 24px;
       border-radius: 12px;
       border: 1px solid var(--border);
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      margin-bottom: 24px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
-    h2 {
-      color: var(--primary);
-      border-bottom: 2px solid var(--border);
-      padding-bottom: 8px;
-      margin-top: 0;
+    /* Tabs Nav */
+    .tabs-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
     }
 
-    h3 { color: #334155; margin-top: 20px; }
+    .tab-btn {
+      flex: 1;
+      min-width: 150px;
+      padding: 12px;
+      background: #e2e8f0;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--text);
+      transition: all 0.2s;
+    }
 
-    .grid-2 {
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Student Form */
+    .form-group {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 16px;
+      margin-bottom: 20px;
     }
 
-    @media (max-width: 768px) {
-      .grid-2 { grid-template-columns: 1fr; }
+    input[type="text"], select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1rem;
     }
 
+    /* Concept Grid */
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .concept-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      background: #f8fafc;
+    }
+
+    .concept-card h4 {
+      margin: 0 0 8px 0;
+      color: var(--primary);
+    }
+
+    /* Demo Sandbox */
     .demo-box {
       background: #f1f5f9;
-      padding: 20px;
+      padding: 16px;
       border-radius: 8px;
-      border: 1px solid #cbd5e1;
+      border: 1px dashed var(--border);
+      margin-top: 10px;
+      min-height: 100px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 150px;
-    }
-
-    .controls {
-      display: flex;
-      flex-direction: column;
       gap: 10px;
-      width: 100%;
-    }
-
-    label { font-weight: 600; font-size: 0.9rem; }
-
-    input[type="range"], select, input[type="text"] {
-      width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #cbd5e1;
-    }
-
-    .btn-test {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    }
-
-    .btn-test:hover { opacity: 0.9; transform: translateY(-1px); }
-
-    /* Estilos específicos de experimentos */
-    .gestalt-items { display: flex; transition: all 0.3s ease; }
-    .shape { width: 32px; height: 32px; background: var(--accent); border-radius: 4px; }
-    .shape.circle { border-radius: 50%; }
-    .shape.highlight { background: var(--error); transform: scale(1.15); }
-
-    .feedback-msg {
-      margin-top: 10px;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      background: #e2e8f0;
     }
 
     /* Quiz */
-    .question { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed var(--border); }
-    .opt-label {
+    .quiz-q {
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .quiz-opt {
       display: block;
       padding: 10px;
       margin: 6px 0;
-      background: #f8fafc;
-      border: 1px solid var(--border);
+      background: #f1f5f9;
       border-radius: 6px;
       cursor: pointer;
     }
-    .opt-label:hover { background: #e2e8f0; }
+
+    .quiz-opt:hover { background: #e2e8f0; }
 
     .btn-submit {
       background: var(--success);
       color: white;
-      font-size: 1.1rem;
       font-weight: bold;
+      font-size: 1.1rem;
       padding: 14px 28px;
       border: none;
       border-radius: 8px;
-      cursor: pointer;
       width: 100%;
+      cursor: pointer;
     }
+
+    /* Custom Demos */
+    .shape { width: 30px; height: 30px; background: var(--primary); border-radius: 4px; }
+    .shape.circle { border-radius: 50%; }
+    .shape.highlight { background: var(--accent); transform: scale(1.2); }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>🧠 Laboratorio Digital: UX, Gestalt y Heurísticas de Nielsen</h1>
-  <p>Explora de forma práctica cómo el cerebro humano percibe las interfaces digitales</p>
+  <h1>🧪 Laboratorio de Experiencia de Usuario (UI/UX)</h1>
+  <p>12 Leyes de la UX + Principios de la Gestalt + 10 Heurísticas de Nielsen</p>
 </header>
 
 <main>
 
-  <!-- Registro del Alumno -->
+  <!-- Registro de Estudiante -->
   <section class="card">
-    <h2>📋 Datos del Alumno</h2>
-    <div class="grid-2">
+    <h3>📋 Registro del Alumno</h3>
+    <div class="form-group">
       <div>
-        <label for="nombre">Nombre completo:</label>
-        <input type="text" id="nombre" placeholder="Ej: Alex Fernández" required>
+        <label>Nombre y Apellidos:</label>
+        <input type="text" id="alumno-nombre" placeholder="Ej: María López" required>
       </div>
       <div>
-        <label for="curso">Curso y Grupo:</label>
-        <input type="text" id="curso" placeholder="Ej: 2º ESO A" required>
+        <label>Curso / Grupo:</label>
+        <input type="text" id="alumno-curso" placeholder="Ej: 1º ESO B" required>
       </div>
     </div>
   </section>
+
+  <!-- Navegación por pestañas -->
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="openTab('leyes')">1. 12 Leyes UX</button>
+    <button class="tab-btn" onclick="openTab('gestalt')">2. Gestalt</button>
+    <button class="tab-btn" onclick="openTab('nielsen')">3. 10 Nielsen</button>
+    <button class="tab-btn" onclick="openTab('quiz')">4. Test & Reporte</button>
+  </div>
 
   <!-- BLOQUE 1: 12 LEYES DE LA UX -->
-  <section class="card">
-    <h2>1. Las Leyes de la UX (Diseño y Psicología)</h2>
-    
-    <h3>1.1 Ley de Fitts y Ley de Hick</h3>
-    <p><strong>Fitts:</strong> Un objetivo es más rápido de alcanzar cuanto más grande sea. <br><strong>Hick:</strong> Cuantas más opciones das al usuario, más tiempo tarda en decidir.</p>
-    
-    <div class="grid-2">
-      <div class="controls">
-        <label for="fitts-size">Ajustar tamaño del botón (Fitts):</label>
-        <input type="range" id="fitts-size" min="10" max="60" value="20">
-        
-        <label for="hick-count" style="margin-top: 15px;">Número de opciones de menú (Hick):</label>
-        <select id="hick-count">
-          <option value="2">2 opciones (Rápido)</option>
-          <option value="5">5 opciones (Normal)</option>
-          <option value="12">12 opciones (Lento / Confuso)</option>
-        </select>
-      </div>
-      
-      <div class="demo-box">
-        <div id="hick-container" style="display:flex; gap:5px; flex-wrap:wrap; margin-bottom:15px;"></div>
-        <button id="fitts-target" class="btn-test">¡Haz Clic Aquí!</button>
-      </div>
-    </div>
+  <div id="tab-leyes" class="tab-content active card">
+    <h2>1. Las 12 Leyes Fundamentales de la UX</h2>
+    <p>Principios psicológicos que determinan cómo interactuamos con aplicaciones y páginas web.</p>
 
-    <h3>1.2 Ley de Von Restorff (Efecto de Aislamiento)</h3>
-    <p>Cuando hay varios elementos similares, el que difiere en color o forma se recuerda mejor.</p>
-    <div class="grid-2">
-      <div class="controls">
-        <label for="restorff-toggle">Activar elemento destacado:</label>
-        <button class="btn-test" id="restorff-btn" onclick="toggleRestorff()">Cambiar Destacado</button>
+    <!-- Experimentos Interactivos Destacados -->
+    <h3>Experimentos Interactivos</h3>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>Ley de Fitts</h4>
+        <p>Los botones más grandes y cercanos son más fáciles de pulsar.</p>
+        <input type="range" id="fitts-slider" min="10" max="50" value="20">
+        <div class="demo-box">
+          <button id="fitts-btn" style="padding: 5px 10px; background: var(--primary); color:white; border:none; border-radius:4px;">¡Púlsame!</button>
+        </div>
       </div>
-      <div class="demo-box">
-        <div style="display:flex; gap:12px;" id="restorff-group">
+
+      <div class="concept-card">
+        <h4>Ley de Hick</h4>
+        <p>Más opciones = más tiempo para tomar una decisión.</p>
+        <select id="hick-select" onchange="updateHick()">
+          <option value="2">2 Opciones (Rápido)</option>
+          <option value="6">6 Opciones (Medio)</option>
+          <option value="12">12 Opciones (Lento)</option>
+        </select>
+        <div class="demo-box" id="hick-box"></div>
+      </div>
+
+      <div class="concept-card">
+        <h4>Ley de Von Restorff</h4>
+        <p>El elemento que difiere visualmente es el que más se recuerda.</p>
+        <button onclick="toggleRestorff()" style="padding:6px 12px; margin-bottom:8px;">Destacar Elemento</button>
+        <div class="demo-box" style="flex-direction:row;">
           <div class="shape"></div>
           <div class="shape"></div>
-          <div class="shape" id="special-shape"></div>
+          <div class="shape" id="restorff-target"></div>
           <div class="shape"></div>
         </div>
       </div>
     </div>
-  </section>
+
+    <!-- Catálogo de las 12 Leyes -->
+    <h3>Catálogo Completo de las 12 Leyes</h3>
+    <div class="concept-grid">
+      <div class="concept-card"><strong>1. Ley de Fitts:</strong> Objetos más grandes y cercanos se alcanzan más rápido.</div>
+      <div class="concept-card"><strong>2. Ley de Hick:</strong> A mayor número de opciones, más tiempo de decisión.</div>
+      <div class="concept-card"><strong>3. Ley de Jakob:</strong> Los usuarios prefieren webs que funcionen igual a las que ya conocen.</div>
+      <div class="concept-card"><strong>4. Ley de Miller:</strong> La memoria de trabajo almacena unos 7 (±2) elementos a la vez.</div>
+      <div class="concept-card"><strong>5. Ley de Parkinson:</strong> Cualquier tarea se expande hasta consumir todo el tiempo disponible.</div>
+      <div class="concept-card"><strong>6. Ley de Postel:</strong> Sé flexible con lo que recibes del usuario y estricto con lo que envías.</div>
+      <div class="concept-card"><strong>7. Regla del Pico-Final:</strong> Evaluamos una experiencia por su punto más intenso y su final.</div>
+      <div class="concept-card"><strong>8. Efecto de Posición Serial:</strong> Recordamos mejor el primer y el último elemento de una lista.</div>
+      <div class="concept-card"><strong>9. Ley de Tesler:</strong> Todo sistema tiene un nivel de complejidad que no se puede reducir más.</div>
+      <div class="concept-card"><strong>10. Ley de Von Restorff:</strong> El elemento diferente destaca y se recuerda mejor.</div>
+      <div class="concept-card"><strong>11. Efecto Zeigarnik:</strong> Las tareas incompletas se recuerdan más que las finalizadas.</div>
+      <div class="concept-card"><strong>12. Umbral de Doherty:</strong> Una app debe responder en menos de 400ms para mantener la atención.</div>
+    </div>
+  </div>
 
   <!-- BLOQUE 2: PRINCIPIOS DE LA GESTALT -->
-  <section class="card">
-    <h2>2. Leyes de la Gestalt (Percepción Visual)</h2>
-    <p>Nuestro cerebro agrupa formas según su cercanía, parecido y continuidad.</p>
+  <div id="tab-gestalt" class="tab-content card">
+    <h2>2. Leyes de la Gestalt aplicadas al Diseño Web</h2>
+    <p>Cómo nuestro cerebro organiza los elementos visuales en un todo estructurado.</p>
 
-    <div class="grid-2">
-      <div class="controls">
-        <label for="gestalt-gap">Ley de Proximidad (Distancia entre elementos):</label>
-        <input type="range" id="gestalt-gap" min="4" max="45" value="40">
-
-        <label for="gestalt-sim" style="margin-top:15px;">Ley de Semejanza (Agrupar por forma/color):</label>
-        <select id="gestalt-sim" onchange="updateSemejanza()">
-          <option value="same">Todas las figuras iguales</option>
-          <option value="diff">Alternar círculos y cuadrados</option>
-        </select>
+    <h3>Experimento de Proximidad y Semejanza</h3>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>Proximidad</h4>
+        <p>Distancia entre elementos para agruparlos:</p>
+        <input type="range" id="gestalt-gap" min="5" max="50" value="30">
+        <div class="demo-box" style="flex-direction:row;" id="gestalt-box">
+          <div class="shape"></div>
+          <div class="shape"></div>
+          <div class="shape"></div>
+        </div>
       </div>
 
-      <div class="demo-box">
-        <div class="gestalt-items" id="gestalt-box" style="gap: 40px;">
-          <div class="shape" id="g1"></div>
-          <div class="shape" id="g2"></div>
-          <div class="shape" id="g3"></div>
-          <div class="shape" id="g4"></div>
+      <div class="concept-card">
+        <h4>Semejanza</h4>
+        <p>Agrupación por forma o color:</p>
+        <button onclick="toggleSemejanza()" style="padding:6px 12px; margin-bottom:8px;">Cambiar Formas</button>
+        <div class="demo-box" style="flex-direction:row;" id="sem-box">
+          <div class="shape"></div>
+          <div class="shape" id="sem-1"></div>
+          <div class="shape"></div>
+          <div class="shape" id="sem-2"></div>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- BLOQUE 3: HEURÍSTICAS DE JAKOB NIELSEN -->
-  <section class="card">
-    <h2>3. Principios de Usabilidad de Jakob Nielsen</h2>
-    <p>Reglas fundamentales para asegurar que una interfaz sea fácil e intuitiva.</p>
-
-    <div class="grid-2">
-      <div class="controls">
-        <p><strong>Heurística #1: Visibilidad del estado del sistema</strong></p>
-        <button class="btn-test" onclick="simularCarga()">Enviar datos de formulario</button>
-      </div>
-
-      <div class="demo-box">
-        <div id="nielsen-status">Esperando acción del usuario...</div>
-        <div id="loader-bar" style="width:100%; background:#e2e8f0; height:8px; border-radius:4px; margin-top:8px; display:none;">
-          <div id="loader-fill" style="width:0%; background:var(--success); height:100%; border-radius:4px; transition: width 1.5s;"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CUESTIONARIO EVALUATIVO -->
-  <section class="card">
-    <h2>📝 Cuestionario Final de Evaluación</h2>
-    <form id="quiz-form">
-
-      <div class="question">
-        <p><strong>1. ¿Qué nos enseña la Ley de Hick sobre los menús de navegación?</strong></p>
-        <label class="opt-label"><input type="radio" name="p1" value="A"> A) Cuantas más opciones pongamos, más rápida es la decisión.</label>
-        <label class="opt-label"><input type="radio" name="p1" value="B"> B) Cuantas más opciones se presentan, más tiempo y esfuerzo le toma al usuario decidir.</label>
-        <label class="opt-label"><input type="radio" name="p1" value="C"> C) Los menús no deben contener texto, solo emoticonos.</label>
-      </div>
-
-      <div class="question">
-        <p><strong>2. Según el principio de Proximidad de la Gestalt, ¿cómo percibimos los elementos cercanos entre sí?</strong></p>
-        <label class="opt-label"><input type="radio" name="p2" value="A"> A) Como objetos totalmente independientes y sin relación.</label>
-        <label class="opt-label"><input type="radio" name="p2" value="B"> B) Como un grupo o unidad con un significado compartido.</label>
-        <label class="opt-label"><input type="radio" name="p2" value="C"> C) Como si tuvieran siempre el mismo tamaño.</label>
-      </div>
-
-      <div class="question">
-        <p><strong>3. ¿Cuál de las siguientes acciones cumple la 1ª Heurística de Nielsen (Visibilidad del Estado)?</strong></p>
-        <label class="opt-label"><input type="radio" name="p3" value="A"> A) Mostrar un indicador visual de carga cuando se procesa un pago o descarga.</label>
-        <label class="opt-label"><input type="radio" name="p3" value="B"> B) Dejar la pantalla en blanco sin indicar si la web está cargando o no.</label>
-        <label class="opt-label"><input type="radio" name="p3" value="C"> C) Cambiar los botones de posición aleatoriamente.</label>
-      </div>
-
-      <div class="question">
-        <p><strong>4. Según la Ley de Von Restorff, ¿cómo conseguimos que un botón de "Comprar" o "Suscribirse" destaque?</strong></p>
-        <label class="opt-label"><input type="radio" name="p4" value="A"> A) Haciéndolo exactamente igual a todo el resto del texto.</label>
-        <label class="opt-label"><input type="radio" name="p4" value="B"> B) Ocultándolo en el pie de página.</label>
-        <label class="opt-label"><input type="radio" name="p4" value="C"> C) Dándole un color o aspecto visual diferente respecto a los elementos que le rodean.</label>
-      </div>
-
-      <button type="button" class="btn-submit" onclick="generarInformeTXT()">Completar y Generar Informe (.txt)</button>
-    </form>
-  </section>
-
-</main>
-
-<script>
-  // LÓGICA DE INTERACTIVIDAD
-  // 1. Fitts & Hick
-  const fittsSize = document.getElementById('fitts-size');
-  const fittsTarget = document.getElementById('fitts-target');
-  fittsSize.addEventListener('input', (e) => {
-    fittsTarget.style.padding = `${e.target.value / 2}px ${e.target.value}px`;
-    fittsTarget.style.fontSize = `${12 + e.target.value / 5}px`;
-  });
-
-  const hickCount = document.getElementById('hick-count');
-  const hickContainer = document.getElementById('hick-container');
-  function renderHick() {
-    hickContainer.innerHTML = '';
-    const num = parseInt(hickCount.value);
-    for(let i=1; i<=num; i++) {
-      const btn = document.createElement('button');
-      btn.textContent = `Opción ${i}`;
-      btn.style.fontSize = '0.75rem';
-      btn.style.padding = '4px 8px';
-      hickContainer.appendChild(btn);
-    }
-  }
-  hickCount.addEventListener('change', renderHick);
-  renderHick();
-
-  // 2. Restorff
-  let restorffState = false;
-  function toggleRestorff() {
-    const el = document.getElementById('special-shape');
-    restorffState = !restorffState;
-    if(restorffState) {
-      el.classList.add('highlight');
-    } else {
-      el.classList.remove('highlight');
-    }
-  }
-
-  // 3. Gestalt
-  const gestaltGap = document.getElementById('gestalt-gap');
-  const gestaltBox = document.getElementById('gestalt-box');
-  gestaltGap.addEventListener('input', (e)
+    <h3>Leyes Clave de la Gestalt</h3>
+    <div class="concept-grid">
+      <div class="concept-card"><strong>1. Proximidad:</strong> Objetos cercanos se perciben como un mismo grupo.</div>
+      <div class="concept-card"><strong>2. Semejanza:</strong> Elementos con mismo color/forma se asocian entre sí.</div>
+      <div class="concept-card"><strong>3. Continuidad:</strong> El ojo sigue la trayectoria visual más fluida y continua.</div>
+      <div class="concept-card"><strong>4. Cierre:</strong> El cerebro completa las figuras incompletas de forma automática.</div>
+      <div class="concept-card"><strong>5. Figura y Fondo:</strong> Distinguimos el objeto principal (figura) del contexto (fondo).</div>
+      <div class="concept-card"><strong>6. Reg
