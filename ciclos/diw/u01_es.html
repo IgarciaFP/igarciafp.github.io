@@ -105,7 +105,6 @@
         <li><a href="#sec5_1" class="subsection-link">5.1. Finalidad y contenidos</a></li>
         <li><a href="#sec5_2" class="subsection-link">5.2. Proceso de creación</a></li>
         <li><a href="#sec5_3" class="subsection-link">5.3. Sistema cromático</a></li>
-        <li><a href="#sec5_5" class="subsection-link">5.5. Imágenes e iconografía</a></li>
         <li><a href="#sec5_6" class="subsection-link">5.6. Referentes y herramientas</a></li>
         <li><a href="#sec5_7" class="subsection-link">5.7. Figma, código y gobernanza</a></li>
         <li><a href="#sec6">6. Investigación UX & Design Thinking</a></li>
@@ -2003,12 +2002,48 @@ de los que sí.</p>
         <h4 id="sec4_7_3">4.7.3. Iconografía</h4>
         <p>Los iconos representan acciones, objetos o estados. Elige símbolos reconocibles para tu público —como una lupa para buscar— y acompáñalos de texto cuando su significado pueda resultar ambiguo. Un icono de interfaz cumple una función distinta del símbolo que identifica una marca.</p>
         <ul>
-            <li><strong>Familia visual:</strong> mantén un criterio común de trazo, relleno, proporciones y esquinas; evita mezclar estilos sin una razón.</li>
+            <li><strong>Familia visual:</strong> mantén un criterio común de trazo, relleno, proporciones y esquinas; evita mezclar estilos sin una razón. Define una rejilla base coherente, por ejemplo de 16, 24, 32 o 48 píxeles.</li>
             <li><strong>Tamaño y alineación:</strong> ajusta el peso visual y la posición respecto al texto. El área pulsable del botón puede ser mayor que el dibujo del icono.</li>
             <li><strong>Formato:</strong> SVG permite redimensionar formas vectoriales sin pixelarlas. Aun así, comprueba que los detalles siguen siendo legibles al reducirlas.</li>
-            <li><strong>Significado accesible:</strong> un botón que solo contiene un icono necesita un nombre que describa su acción. Si el icono repite un texto visible, evita que se anuncie dos veces.</li>
+            <li><strong>Significado accesible:</strong> un botón que solo contiene un icono necesita un nombre que describa su acción, por ejemplo mediante <code>aria-label</code>. Si el icono repite un texto visible, evita que se anuncie dos veces.</li>
         </ul>
         <p>Por ejemplo, un botón con una lupa puede incluir el texto visible «Buscar». Si solo muestra la lupa, proporciona ese nombre al botón; el gráfico decorativo puede ocultarse a las tecnologías de asistencia con <code>aria-hidden="true"</code>. <a href="https://www.w3.org/WAI/tutorials/images/functional/" target="_blank" rel="noopener noreferrer">Referencia: imágenes funcionales, W3C WAI</a>.</p>
+
+        <h5 id="sec5_5">Formatos y pautas para imágenes e iconos</h5>
+        <div class="table-scroll" role="region" aria-label="Formatos gráficos para imágenes e iconos" tabindex="0">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Formato o Técnica</th>
+                        <th>Uso Recomendado</th>
+                        <th>Precaución Técnica</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>SVG (Scalable Vector Graphics)</strong></td>
+                        <td>Logotipos, ilustraciones vectoriales e iconos interactivos escalables.</td>
+                        <td>Optimizar el código XML (SVGO) y proporcionar etiqueta accesible cuando comunique información.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WebP / AVIF</strong></td>
+                        <td>Fotografías e imágenes complejas con alta tasa de compresión sin pérdida.</td>
+                        <td>Definir dimensiones explícitas (width/height) para evitar saltos de pantalla (CLS).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PNG</strong></td>
+                        <td>Imágenes de mapa de bits que requieren transparencias complejas.</td>
+                        <td>Suele producir archivos de mayor peso; requiere optimización de paleta.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Icon Fonts (FontAwesome, etc.)</strong></td>
+                        <td>Colecciones de iconos tratadas como fuentes tipográficas.</td>
+                        <td>SVG ofrece mejor control semántico y accesibilidad; evitar que un fallo de carga oculte la acción.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p><strong>Proporciones y compresión:</strong> establece relaciones de aspecto coherentes para las imágenes de cada componente; por ejemplo, 16:9 para una cabecera, 4:3 para un artículo o 1:1 para un producto, según las necesidades del diseño. Ajusta la compresión al contenido y a la calidad visual requerida.</p>
 
         <div class="didactic-note curiosity-card">
             <h5><i class="fa-solid fa-link"></i> Relación entre identidad visual y Atomic Design</h5>
@@ -2232,49 +2267,6 @@ de los que sí.</p>
             <h5><i class="fa-solid fa-earth-europe"></i> Psicología del color contextualizada</h5>
             <p>Asociaciones como azul–confianza, verde–naturaleza o rojo–urgencia orientan una hipótesis de diseño, pero no son leyes universales. Su interpretación depende de la cultura, el sector industrial, la combinación cromática, la saturación y la experiencia previa; por ello, deben validarse siempre con el público objetivo real.</p>
         </div>
-
-        <h3 id="sec5_5">5.5. Pautas para imágenes e iconografía</h3>
-
-        <div class="table-scroll" role="region" aria-label="Formatos gráficos para imágenes e iconos" tabindex="0">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Formato o Técnica</th>
-                        <th>Uso Recomendado</th>
-                        <th>Precaución Técnica</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>SVG (Scalable Vector Graphics)</strong></td>
-                        <td>Logotipos, ilustraciones vectoriales e iconos interactivos escalables.</td>
-                        <td>Optimizar el código XML (SVGO) y proporcionar etiqueta accesible cuando comunique información.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>WebP / AVIF</strong></td>
-                        <td>Fotografías e imágenes complejas con alta tasa de compresión sin pérdida.</td>
-                        <td>Definir dimensiones explícitas (width/height) para evitar saltos de pantalla (CLS).</td>
-                    </tr>
-                    <tr>
-                        <td><strong>PNG</strong></td>
-                        <td>Imágenes de mapa de bits que requieren transparencias complejas.</td>
-                        <td>Suele producir archivos de mayor peso; requiere optimización de paleta.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Icon Fonts (FontAwesome, etc.)</strong></td>
-                        <td>Colecciones de iconos tratadas como fuentes tipográficas.</td>
-                        <td>SVG ofrece mejor control semántico y accesibilidad; evitar que un fallo de carga oculte la acción.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <ul>
-            <li>Mantener coherencia en la iconografía: estilo visual (línea o relleno), esquinas (rectas o redondeadas), grosor del trazo y rejilla base de 16, 24, 32 o 48px.</li>
-            <li>Aprovechar metáforas conocidas y acompañar acciones críticas con texto descriptivo para reducir dudas.</li>
-            <li>Marcar iconos decorativos con <code>aria-hidden="true"</code>; los botones de solo icono requieren un nombre accesible mediante <code>aria-label</code>.</li>
-            <li>Establecer proporciones estándar de imagen (16:9 para cabeceras, 4:3 para artículos, 1:1 para productos) y compresión adecuada.</li>
-        </ul>
 
         <h3 id="sec5_6">5.6. Referentes y herramientas de inspección</h3>
         <p>El estudio de manuales y sistemas de diseño de empresas consolidadas permite aprender patrones probados en millones de usuarios:</p>
