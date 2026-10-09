@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio Interactivo: Bootstrap & Atomic Design</title>
+    <!-- Tailwind CSS for modern app layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap 5 CSS & JS for real component rendering inside preview containers -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        atom: '#ec4899',     // Pink
+                        molecule: '#8b5cf6', // Purple
+                        organism: '#3b82f6', // Blue
+                        template: '#f59e0b', // Amber
+                        page: '#10b981'      // Emerald
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar and preview fixes */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Scoped bootstrap preview override to prevent Tailwind interference */
+        .bs-preview-area {
+            font-family: var(--bs-body-font-family) !important;
+            font-size: var(--bs-body-font-size) !important;
+        }
+        .lab-intro { background:white; border:1px solid #cbd5e1; border-radius:14px; padding:20px; margin-bottom:24px; }
+        .lab-intro a { color:#4338ca; text-decoration:underline; }
+        .student-row { border-top:1px solid #e2e8f0; padding:18px 0; }
+        .student-fields { display:grid; grid-template-columns:1fr 180px; gap:12px; }
+        .student-row label { display:block; font-size:.875rem; font-weight:600; }
+        .student-row input,.student-row select,.student-row textarea { width:100%; padding:10px; border:1px solid #94a3b8; border-radius:8px; background:white; font:inherit; }
+        .student-row textarea { min-height:78px; margin-top:5px; }
+        button:focus-visible,a:focus-visible,[role="button"]:focus-visible { outline:3px solid #f59e0b; outline-offset:3px; }
+        #inventory-container [role="button"]:focus { outline:3px solid #7c3aed; }
+        header h1 { font-size:1rem; }
+        .min-w-0 { min-width:0; }
+        #sim-canvas, #bootstrap-live-preview { overflow-x:auto; }
+        #draft-status { font-size:.85rem;color:#475569;margin-bottom:0; }
+        @media(max-width:640px){.student-fields{grid-template-columns:1fr} header .h-16{height:auto;min-height:64px} #canvas-url-bar{overflow-wrap:anywhere} #canvas-type-indicator{white-space:normal} }
+    </style>
+</head>
+<body class="h-full font-sans text-slate-800 antialiased flex flex-col">
+
+    <!-- Navigation Header -->
+    <header class="bg-slate-900 text-white sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-gradient-to-tr from-purple-600 to-indigo-500 p-2 rounded-xl shadow-lg">
+                        <i class="fa-solid fa-cubes text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg leading-tight">Laboratorio Web: Bootstrap & Atomic Design</h1>
+                        <p class="text-xs text-slate-400">Apartado 4.4 • Diseño de Interfaces Modulares</p>
+                    </div>
+                </div>
+                <!-- Nav Tabs -->
+                <nav class="hidden md:flex space-x-1 bg-slate-800 p-1 rounded-xl text-sm font-medium">
+                    <button onclick="switchTab('inventory')" id="tab-inventory" class="tab-btn px-4 py-2 rounded-lg text-white bg-purple-600 transition">
+                        <i class="fa-solid fa-list-check mr-2"></i>1. Inventario
+                    </button>
+                    <button onclick="switchTab('simulator')" id="tab-simulator" class="tab-btn px-4 py-2 rounded-lg text-slate-300 hover:text-white transition">
+                        <i class="fa-solid fa-puzzle-piece mr-2"></i>2. Simulador
+                    </button>
+                    <button onclick="switchTab('challenge')" id="tab-challenge" class="tab-btn px-4 py-2 rounded-lg text-slate-300 hover:text-white transition">
+                        <i class="fa-solid fa-gamepad mr-2"></i>3. Desafío
+                    </button>
+                    <button onclick="switchTab('report')" id="tab-report" class="tab-btn px-4 py-2 rounded-lg text-slate-300 hover:text-white transition">
+                        <i class="fa-solid fa-file-export mr-2"></i>4. Entrega
+                    </button>
+                </nav>
+            </div>
+        </div>
+        <!-- Mobile Nav Bar -->
+        <div class="md:hidden flex justify-around bg-slate-800 p-2 text-xs font-medium border-t border-slate-700">
+            <button onclick="switchTab('inventory')" id="mob-tab-inventory" class="text-purple-400 flex flex-col items-center">
+                <i class="fa-solid fa-list-check text-base"></i>Inventario
+            </button>
+            <button onclick="switchTab('simulator')" id="mob-tab-simulator" class="text-slate-400 flex flex-col items-center">
+                <i class="fa-solid fa-puzzle-piece text-base"></i>Simulador
+            </button>
+            <button onclick="switchTab('challenge')" id="mob-tab-challenge" class="text-slate-400 flex flex-col items-center">
+                <i class="fa-solid fa-gamepad text-base"></i>Desafío
+            </button>
+            <button onclick="switchTab('report')" id="mob-tab-report" class="text-slate-400 flex flex-col items-center">
+                <i class="fa-solid fa-file-export text-base"></i>Entrega
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+        <div class="lab-intro"><a href="../ciclos/diw/u01_es.html#sec4_4_2">← Volver a la actividad 5</a>
+        <p>Explora los ejemplos, completa tu inventario, construye una plantilla y conviértela en una página. Después realiza el desafío y descarga el informe para entregarlo.</p>
+        <p><strong>No hay una equivalencia única:</strong> las etiquetas de los ejemplos son propuestas razonadas. Puedes defender otro nivel si explicas la composición y el propósito del componente.</p>
+        <p><a href="https://getbootstrap.com/docs/5.3/components/buttons/" target="_blank" rel="noopener noreferrer">Documentación de Bootstrap</a> · <a href="https://atomicdesign.bradfrost.com/chapter-2/" target="_blank" rel="noopener noreferrer">Atomic Design, por Brad Frost</a></p>
+        <p id="draft-status" role="status"></p></div>
+
+        <!-- SECTION 1: INVENTORY -->
+        <section id="sec-inventory" class="space-y-6">
+            <!-- Intro Banner -->
+            <div class="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+                <div class="relative z-10 max-w-3xl">
+                    <span class="inline-block px-3 py-1 bg-purple-500/30 text-purple-200 text-xs font-semibold rounded-full mb-3 border border-purple-400/30">Sección 1 de 4</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold mb-2">Inventario Interactivo de Componentes</h2>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        Explora siete componentes de Bootstrap 5.3. Analiza su estructura para comprender cómo se clasifican en el paradigma de <b>Atomic Design</b> (Átomos, Moléculas o Organismos).
+                    </p>
+                </div>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-filter text-slate-400"></i>
+                    <span class="text-sm font-semibold text-slate-700">Clasificación orientativa:</span>
+                </div>
+                <div class="flex flex-wrap gap-2" id="filter-buttons">
+                    <button onclick="filterInventory('all', this)" class="filter-btn active px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-slate-900 text-white transition">Todos (7)</button>
+                    <button onclick="filterInventory('Átomo', this)" class="filter-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition">🧪 Átomos</button>
+                    <button onclick="filterInventory('Molécula', this)" class="filter-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition">🧬 Moléculas</button>
+                    <button onclick="filterInventory('Organismo', this)" class="filter-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition">🦠 Organismos</button>
+                </div>
+            </div>
+
+            <!-- Components Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- List / Table Area (Left Column) -->
+                <div class="lg:col-span-7 space-y-4" id="inventory-container">
+                    <!-- Cards injected by JS -->
+                </div>
+
+                <!-- Preview Panel (Right Column Sticky) -->
+                <div class="lg:col-span-5">
+                    <div class="sticky top-20 bg-white rounded-xl border border-slate-200 shadow-md p-5 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-desktop text-purple-600"></i>
+                                Previsualización en Vivo
+                            </h3>
+                            <span id="preview-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-pink-100 text-pink-700 border border-pink-200">
+                                Átomo
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500">Renderizado directo con el motor original de Bootstrap 5:</p>
+                        
+                        <!-- Interactive Preview Box -->
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 min-h-[220px] flex items-center justify-center overflow-x-auto bs-preview-area" id="bootstrap-live-preview">
+                            <!-- Dynamic Content -->
+                        </div>
+
+                        <!-- Code snippet toggle -->
+                        <div class="space-y-2">
+                            <button onclick="toggleCodeSnippet()" class="text-xs font-semibold text-purple-600 hover:text-purple-800 flex items-center gap-1">
+                                <i class="fa-solid fa-code"></i> <span id="code-btn-text">Ver código HTML de Bootstrap</span>
+                            </button>
+                            <pre id="code-snippet-box" class="hidden bg-slate-900 text-purple-300 p-3 rounded-lg text-xs overflow-x-auto font-mono max-h-40"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: SIMULATOR -->
+        <section id="sec-simulator" class="hidden space-y-6">
+            <!-- Intro Banner -->
+            <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-2xl p-6 text-white shadow-xl">
+                <div class="max-w-3xl">
+                    <span class="inline-block px-3 py-1 bg-blue-500/30 text-blue-200 text-xs font-semibold rounded-full mb-3 border border-blue-400/30">Sección 2 de 4</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold mb-2">Simulador: De Componentes a Página</h2>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        Combina los elementos modulares para armar una <b>Plantilla (*Template*)</b> y comprueba cómo se transforma en una <b>Página (*Page*)</b> real al inyectarle contenido concreto.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Controls bar -->
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-3 w-full sm:w-auto">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Modo de Vista:</span>
+                    <div class="inline-flex rounded-lg bg-slate-100 p-1 border border-slate-200 w-full sm:w-auto justify-center">
+                        <button id="btn-mode-template" onclick="setSimulatorMode('template')" class="px-4 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition bg-amber-500 text-white shadow-sm">
+                            <i class="fa-solid fa-wireframe text-xs mr-1"></i> 1. Plantilla (Wireframe)
+                        </button>
+                        <button id="btn-mode-page" onclick="setSimulatorMode('page')" class="px-4 py-1.5 rounded-md text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition">
+                            <i class="fa-solid fa-wand-magic-sparkles text-xs mr-1 text-emerald-500"></i> 2. Página (Inyectar Datos)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-2 text-xs text-slate-500">
+                    <i class="fa-solid fa-circle-info text-blue-500"></i>
+                    <span>Haz clic en los componentes de la izquierda para activarlos/desactivarlos en el lienzo.</span>
+                </div>
+            </div>
+
+            <!-- Layout Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Palette / Blocks (Left) -->
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                        <h3 class="font-bold text-slate-800 text-sm flex items-center justify-between">
+                            <span>Componentes Disponibles</span>
+                            <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">Bloques</span>
+                        </h3>
+
+                        <!-- Organism: Navbar -->
+                        <div onclick="toggleSimComponent('navbar')" id="sim-card-navbar" class="sim-toggle-card cursor-pointer p-3 rounded-lg border-2 border-slate-200 hover:border-blue-400 transition bg-slate-50 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-700 font-bold">Organismo</span>
+                                <h4 class="font-bold text-slate-800 text-sm mt-1">Barra de Navegación</h4>
+                                <p class="text-xs text-slate-500">Logo + Enlaces + Buscador</p>
+                            </div>
+                            <div class="status-icon text-slate-300 text-xl"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+
+                        <!-- Molecule: Hero Banner -->
+                        <div onclick="toggleSimComponent('hero')" id="sim-card-hero" class="sim-toggle-card cursor-pointer p-3 rounded-lg border-2 border-slate-200 hover:border-purple-400 transition bg-slate-50 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs px-2 py-0.5 rounded bg-purple-100 text-purple-700 font-bold">Molécula</span>
+                                <h4 class="font-bold text-slate-800 text-sm mt-1">Bloque Hero / Banner</h4>
+                                <p class="text-xs text-slate-500">Título + Mensaje + Botón Átomo</p>
+                            </div>
+                            <div class="status-icon text-slate-300 text-xl"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+
+                        <!-- Organisms Grid: Cards -->
+                        <div onclick="toggleSimComponent('cards')" id="sim-card-cards" class="sim-toggle-card cursor-pointer p-3 rounded-lg border-2 border-slate-200 hover:border-blue-400 transition bg-slate-50 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-700 font-bold">Organismos (x3)</span>
+                                <h4 class="font-bold text-slate-800 text-sm mt-1">Grilla de Tarjetas</h4>
+                                <p class="text-xs text-slate-500">Contenedor de productos/servicios</p>
+                            </div>
+                            <div class="status-icon text-slate-300 text-xl"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+
+                        <!-- Organism: Accordion -->
+                        <div onclick="toggleSimComponent('accordion')" id="sim-card-accordion" class="sim-toggle-card cursor-pointer p-3 rounded-lg border-2 border-slate-200 hover:border-blue-400 transition bg-slate-50 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-700 font-bold">Organismo</span>
+                                <h4 class="font-bold text-slate-800 text-sm mt-1">Acordeón Preguntas</h4>
+                                <p class="text-xs text-slate-500">Sección colapsable FAQ</p>
+                            </div>
+                            <div class="status-icon text-slate-300 text-xl"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+
+                        <!-- Molecule: Alert -->
+                        <div onclick="toggleSimComponent('alert')" id="sim-card-alert" class="sim-toggle-card cursor-pointer p-3 rounded-lg border-2 border-slate-200 hover:border-purple-400 transition bg-slate-50 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs px-2 py-0.5 rounded bg-purple-100 text-purple-700 font-bold">Molécula</span>
+                                <h4 class="font-bold text-slate-800 text-sm mt-1">Alerta Informativa</h4>
+                                <p class="text-xs text-slate-500">Banner promocional o aviso</p>
+                            </div>
+                            <div class="status-icon text-slate-300 text-xl"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Canvas Area (Right) -->
+                <div class="lg:col-span-8">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-md p-4 sm:p-6 space-y-4">
+                        <div class="flex items-center justify-between border-b pb-3 border-slate-100">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-3 h-3 rounded-full bg-red-400"></span>
+                                <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
+                                <span class="w-3 h-3 rounded-full bg-green-400"></span>
+                                <span class="ml-2 text-xs font-mono text-slate-400" id="canvas-url-bar">https://mi-sitio-web.com/plantilla</span>
+                            </div>
+                            <span id="canvas-type-indicator" class="text-xs font-bold px-2.5 py-1 rounded bg-amber-100 text-amber-800 border border-amber-300">
+                                VISTA: PLANTILLA (TEMPLATE)
+                            </span>
+                        </div>
+
+                        <!-- Dynamic Render Canvas -->
+                        <div id="sim-canvas" class="bg-slate-100 rounded-lg p-4 min-h-[450px] space-y-4 border-2 border-dashed border-slate-300 bs-preview-area transition-all">
+                            <!-- Injected components render here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CHALLENGE / QUIZ -->
+        <section id="sec-challenge" class="hidden space-y-6">
+            <!-- Intro Banner -->
+            <div class="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 rounded-2xl p-6 text-white shadow-xl">
+                <div class="max-w-3xl">
+                    <span class="inline-block px-3 py-1 bg-emerald-500/30 text-emerald-200 text-xs font-semibold rounded-full mb-3 border border-emerald-400/30">Sección 3 de 4</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold mb-2">Desafío: Clasificación de Componentes</h2>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        Demuestra lo que has aprendido. Observa cada componente o fragmento de código y clasifícalo en el nivel de Atomic Design más adecuado para el ejemplo.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Quiz Main Card -->
+            <div class="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+                <!-- Top Status Bar -->
+                <div class="bg-slate-900 text-white p-4 flex items-center justify-between text-sm">
+                    <div class="flex items-center space-x-4">
+                        <span>Pregunta: <b id="quiz-progress-text" class="text-emerald-400">1 / 5</b></span>
+                        <span>Puntaje: <b id="quiz-score-text" class="text-yellow-400">0 pts</b></span>
+                    </div>
+                    <div class="w-32 bg-slate-700 rounded-full h-2">
+                        <div id="quiz-progress-bar" class="bg-emerald-400 h-2 rounded-full transition-all duration-300" style="width: 20%"></div>
+                    </div>
+                </div>
+
+                <!-- Quiz Content -->
+                <div class="p-6 sm:p-8 space-y-6" id="quiz-box">
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Desafío interactivo</span>
+                        <h3 class="text-xl font-bold text-slate-800 mt-1" id="quiz-question-title">¿A qué nivel pertenece este elemento?</h3>
+                    </div>
+
+                    <!-- Component Display Box inside Quiz -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 flex flex-col items-center justify-center min-h-[160px] bs-preview-area" id="quiz-component-preview">
+                        <!-- Rendered component question -->
+                    </div>
+
+                    <!-- Code preview associated -->
+                    <pre class="bg-slate-900 text-emerald-300 p-3 rounded-lg text-xs font-mono overflow-x-auto" id="quiz-code-view"></pre>
+
+                    <!-- Answer Options Buttons -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                        <button onclick="checkQuizAnswer('Átomo')" class="quiz-option-btn p-4 rounded-xl border-2 border-slate-200 hover:border-pink-500 hover:bg-pink-50 font-bold text-slate-700 hover:text-pink-700 transition flex flex-col items-center space-y-1">
+                            <span class="text-2xl">🧪</span>
+                            <span>Átomo</span>
+                        </button>
+                        <button onclick="checkQuizAnswer('Molécula')" class="quiz-option-btn p-4 rounded-xl border-2 border-slate-200 hover:border-purple-500 hover:bg-purple-50 font-bold text-slate-700 hover:text-purple-700 transition flex flex-col items-center space-y-1">
+                            <span class="text-2xl">🧬</span>
+                            <span>Molécula</span>
+                        </button>
+                        <button onclick="checkQuizAnswer('Organismo')" class="quiz-option-btn p-4 rounded-xl border-2 border-slate-200 hover:border-blue-500 hover:bg-blue-50 font-bold text-slate-700 hover:text-blue-700 transition flex flex-col items-center space-y-1">
+                            <span class="text-2xl">🦠</span>
+                            <span>Organismo</span>
+                        </button>
+                    </div>
+
+                    <!-- Explanation Modal / Feedback Box -->
+                    <div id="quiz-feedback" class="hidden p-4 rounded-xl border space-y-2">
+                        <div class="flex items-center space-x-2 font-bold text-sm" id="quiz-feedback-title"></div>
+                        <p class="text-xs sm:text-sm text-slate-600" id="quiz-feedback-text"></p>
+                        <button onclick="nextQuizQuestion()" class="mt-2 px-4 py-2 bg-slate-900 text-white font-semibold text-xs rounded-lg hover:bg-slate-800 transition">
+                            Siguiente Pregunta <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Finished State -->
+                <div id="quiz-finished-box" class="hidden p-8 text-center space-y-6">
+                    <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-4xl mx-auto shadow-inner">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-extrabold text-slate-800">¡Desafío Completado!</h3>
+                        <p class="text-slate-500 text-sm mt-1">Has demostrado tus conocimientos sobre la modularidad de Bootstrap.</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 inline-block px-8">
+                        <span class="text-xs text-slate-400 font-bold uppercase block">Puntuación Final</span>
+                        <span class="text-4xl font-extrabold text-slate-800" id="quiz-final-score">0 / 500</span>
+                    </div>
+                    <div>
+                        <button onclick="resetQuiz()" class="px-6 py-2.5 bg-purple-600 text-white font-bold text-sm rounded-xl hover:bg-purple-700 transition shadow-md">
+                            <i class="fa-solid fa-rotate-right mr-2"></i>Repetir Desafío
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: REPORT & SUBMISSION -->
+        <section id="sec-report" class="hidden space-y-6">
+            <!-- Intro Banner -->
+            <div class="bg-gradient-to-r from-amber-900 via-orange-900 to-slate-900 rounded-2xl p-6 text-white shadow-xl">
+                <div class="max-w-3xl">
+                    <span class="inline-block px-3 py-1 bg-amber-500/30 text-amber-200 text-xs font-semibold rounded-full mb-3 border border-amber-400/30">Sección 4 de 4</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold mb-2">Informe de Entrega del Alumno</h2>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        Completa tus datos personales, redacta tus conclusiones del laboratorio y descarga tu informe oficial en formato .TXT para entregárselo a tu profesor.
+                    </p>
+                </div>
+            </div>
+
+            <div class="lab-intro"><h3>Tu inventario de componentes</h3><p>Completa la función, el nivel y tu justificación para los siete ejemplos. Puedes consultar las otras pestañas sin perder el trabajo.</p><div id="student-inventory"></div></div>
+            <!-- Form Card -->
+            <div class="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-md p-6 sm:p-8 space-y-6">
+                <h3 class="text-lg font-bold text-slate-800 border-b pb-3 border-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-user-graduate text-purple-600"></i>
+                    Datos de Identificación
+                </h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre Completo del Alumno *</label>
+                        <input type="text" id="report-student-name" placeholder="Ej: María García López" class="w-full p-3 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Curso / Grupo *</label>
+                        <input type="text" id="report-student-group" placeholder="Ej: 2º DAW - Grupo A" class="w-full p-3 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="space-y-4 pt-2">
+                    <h3 class="text-lg font-bold text-slate-800 border-b pb-3 border-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-pen-to-square text-purple-600"></i>
+                        Preguntas de Reflexión Pedagógica
+                    </h3>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">1. Justifica por qué un botón puede analizarse como átomo y una tarjeta como molécula u organismo según su composición y contexto.</label>
+                        <textarea id="report-q1" rows="3" class="w-full p-3 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none" placeholder="Escribe tu justificación breve aquí..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">2. ¿Cómo has combinado los componentes en tu plantilla y qué cambia al incorporar contenido concreto para convertirla en una página?</label>
+                        <textarea id="report-q2" rows="3" class="w-full p-3 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none" placeholder="Explica la diferencia entre estructura vacía y contenido real..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Summary statistics block -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <span class="text-xs text-slate-500 block">Puntaje obtenido en el Desafío:</span>
+                        <span class="text-xl font-bold text-emerald-600" id="report-score-display">0 / 500 pts</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-500 block">Fecha de realización:</span>
+                        <span class="text-sm font-semibold text-slate-700" id="report-date-display">--/--/----</span>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-2">
+                    <button onclick="downloadReport()" class="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-sm rounded-xl shadow-lg hover:from-purple-700 hover:to-indigo-700 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-download"></i>
+                        Generar y descargar informe de práctica (.txt)
+                    </button>
+                </div>
+            </div>
+            <p class="lab-intro">Después de descargar el informe, <a href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer">abre el formulario de entrega de la actividad 5</a> y sigue sus indicaciones.</p>
+        </section>
+
+    </main>
+
+    <script>
+        /* ==========================================
+           1. DATA INVENTORY SPECIFICATION
+           ========================================== */
+        const inventoryData = [
+            {
+                id: 'btn',
+                name: 'Botón',
+                bsClass: '.btn',
+                level: 'Átomo',
+                levelBadgeClass: 'bg-pink-100 text-pink-700 border-pink-300',
+                functionDesc: 'Permite al usuario desencadenar una acción directa como enviar, guardar o abrir.',
+                justification: 'Es un elemento básico e indivisible en la interfaz. Si se descompone más, pierde su sentido de interacción.',
+                htmlSnippet: `<button type="button" class="btn btn-primary shadow-sm"><i class="fa-solid fa-paper-plane me-1"></i> Enviar Formulario</button>`,
+                composition: ['Etiqueta HTML <button>', 'Estilos de interacción hover/active', 'Texto o icono interior']
+            },
+            {
+                id: 'btn-group',
+                name: 'Grupo de Botones',
+                bsClass: '.btn-group',
+                level: 'Molécula',
+                levelBadgeClass: 'bg-purple-100 text-purple-700 border-purple-300',
+                functionDesc: 'Agrupa visual y funcionalmente un conjunto de botones relacionados en una sola línea.',
+                justification: 'Surge de la combinación de dos o más átomos simples (varios botones) alineados bajo un mismo propósito visual.',
+                htmlSnippet: `<div class="btn-group" role="group">
+  <button type="button" class="btn btn-outline-primary active">Izquierda</button>
+  <button type="button" class="btn btn-outline-primary">Centro</button>
+  <button type="button" class="btn btn-outline-primary">Derecha</button>
+</div>`,
+                composition: ['Contenedor .btn-group', 'Múltiples botones .btn (Átomos)']
+            },
+            {
+                id: 'alert',
+                name: 'Alerta Informativa',
+                bsClass: '.alert',
+                level: 'Molécula',
+                levelBadgeClass: 'bg-purple-100 text-purple-700 border-purple-300',
+                functionDesc: 'Muestra mensajes contextuales destacados de éxito, advertencia o error.',
+                justification: 'Combina texto de aviso con un botón de cierre funcional (.btn-close) formando una unidad interactiva ligera.',
+                htmlSnippet: `<div class="alert alert-warning alert-dismissible fade show w-100 mb-0" role="alert">
+  <strong><i class="fa-solid fa-triangle-exclamation me-1"></i> ¡Atención!</strong> Tu sesión caducará en 5 minutos.
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>`,
+                composition: ['Contenedor .alert', 'Texto descriptivo', 'Botón de cierre .btn-close (Átomo)']
+            },
+            {
+                id: 'card',
+                name: 'Tarjeta',
+                bsClass: '.card',
+                level: 'Organismo',
+                levelBadgeClass: 'bg-blue-100 text-blue-700 border-blue-300',
+                functionDesc: 'Contenedor flexible para agrupar contenido multimedia, títulos, textos y acciones.',
+                justification: 'Funciona como un módulo complejo e independiente formado por encabezado, imagen, cuerpo de texto y botones de acción.',
+                htmlSnippet: `<div class="card shadow-sm" style="max-width: 300px;">
+  <div class="bg-slate-200 text-slate-500 text-center py-4 text-xs font-mono">IMAGEN / MULTIMEDIA</div>
+  <div class="card-body">
+    <h5 class="card-title font-bold">Tarjeta de Producto</h5>
+    <p class="card-text text-muted text-sm">Resumen descriptivo del artículo disponible en la tienda.</p>
+    <a href="#" class="btn btn-primary btn-sm">Comprar Ahora</a>
+  </div>
+</div>`,
+                composition: ['Contenedor .card', 'Imagen / Cabecera', 'Títulos y textos', 'Botón de llamada a la acción (.btn)']
+            },
+            {
+                id: 'navbar',
+                name: 'Barra de Navegación',
+                bsClass: '.navbar',
+                level: 'Organismo',
+                levelBadgeClass: 'bg-blue-100 text-blue-700 border-blue-300',
+                functionDesc: 'Proporciona la estructura global de navegación del sitio web con marca y menú.',
+                justification: 'Es una estructura compleja que integra múltiples moléculas y átomos: isotipo/logotipo, lista de enlaces de menú y barra de búsqueda.',
+                htmlSnippet: `<nav class="navbar navbar-expand-lg bg-body-tertiary rounded w-100">
+  <div class="container-fluid">
+    <a class="navbar-brand font-bold text-primary" href="#">MiSitioWeb</a>
+    <div class="collapse navbar-collapse show" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link active" href="#">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Servicios</a></li>
+      </ul>
+      <form class="d-flex" role="search">
+        <input class="form-control me-2 form-control-sm" type="search" placeholder="Buscar...">
+        <button class="btn btn-outline-success btn-sm" type="submit">OK</button>
+      </form>
+    </div>
+  </div>
+</nav>`,
+                composition: ['Logotipo/Marca (.navbar-brand)', 'Menú de navegación (.nav-link)', 'Formulario de búsqueda (.form-control + .btn)']
+            },
+            {
+                id: 'accordion',
+                name: 'Acordeón',
+                bsClass: '.accordion',
+                level: 'Organismo',
+                levelBadgeClass: 'bg-blue-100 text-blue-700 border-blue-300',
+                functionDesc: 'Organiza y colapsa grandes volúmenes de texto desplegables verticalmente.',
+                justification: 'Agrupa un conjunto ordenado de paneles colapsables interconectados mediante lógica JavaScript y estilos avanzados.',
+                htmlSnippet: `<div class="accordion w-100" id="accordionExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button text-sm font-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+        ¿Qué es Bootstrap?
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse show">
+      <div class="accordion-body text-xs text-muted">
+        Es el framework CSS más popular para diseñar sitios web responsivos.
+      </div>
+    </div>
+  </div>
+</div>`,
+                composition: ['Contenedor principal .accordion', 'Secciones de cabecera (.accordion-header)', 'Paneles de contenido (.accordion-body)']
+            },
+            {
+                id: 'modal',
+                name: 'Ventana Modal',
+                bsClass: '.modal',
+                level: 'Organismo',
+                levelBadgeClass: 'bg-blue-100 text-blue-700 border-blue-300',
+                functionDesc: 'Cuadro de diálogo superpuesto para avisos críticos, formularios o confirmaciones.',
+                justification: 'Es una interfaz completa en sí misma, compuesta de encabezado con botón de cierre, cuerpo descriptivo y pie con botones de acción.',
+                htmlSnippet: `<div class="modal-dialog m-0 w-100">
+  <div class="modal-content shadow">
+    <div class="modal-header">
+      <h5 class="modal-title font-bold text-sm">Confirmar Acción</h5>
+      <button type="button" class="btn-close"></button>
+    </div>
+    <div class="modal-body text-xs text-muted">
+      ¿Estás seguro de que deseas guardar las modificaciones realizadas?
+    </div>
+    <div class="modal-footer py-2">
+      <button type="button" class="btn btn-secondary btn-sm">Cancelar</button>
+      <button type="button" class="btn btn-primary btn-sm">Confirmar</button>
+    </div>
+  </div>
+</div>`,
+                composition: ['Modal Header (Título + .btn-close)', 'Modal Body (Contenido principal)', 'Modal Footer (Botones de acción .btn)']
+            }
+        ];
+
+        /* Selected Inventory Item */
+        let currentSelectedId = 'btn';
+
+        /* ==========================================
+           2. INVENTORY FUNCTIONS
+           ========================================== */
+        function renderInventory(filterLevel = 'all') {
+            const container = document.getElementById('inventory-container');
+            container.innerHTML = '';
+
+            const filtered = filterLevel === 'all' 
+                ? inventoryData 
+                : inventoryData.filter(item => item.level === filterLevel);
+
+            filtered.forEach(item => {
+                const isSelected = item.id === currentSelectedId;
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-xl border transition cursor-pointer ${isSelected ? 'bg-purple-50/50 border-purple-500 shadow-sm' : 'bg-white border-slate-200 hover:border-slate-300'}`;
+                card.onclick = () => selectInventoryItem(item.id);
+                card.tabIndex = 0;
+                card.setAttribute('role','button');
+                card.setAttribute('aria-label','Explorar '+item.name);
+                card.onkeydown = event => { if(event.key==='Enter'||event.key===' '){event.preventDefault();selectInventoryItem(item.id);} };
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <h4 class="font-bold text-slate-800 text-base">${item.name}</h4>
+                                <code class="text-xs bg-slate-100 text-purple-700 px-1.5 py-0.5 rounded font-mono">${item.bsClass}</code>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1">${item.functionDesc}</p>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold border ${item.levelBadgeClass}">
+                            ${item.level}
+                        </span>
+                    </div>
+
+                    <div class="mt-3 pt-3 border-t border-slate-100 text-xs space-y-1">
+                        <p class="text-slate-500"><b class="text-slate-700">Justificación orientativa:</b> ${item.justification}</p>
+                        <div class="flex flex-wrap gap-1 mt-2">
+                            ${item.composition.map(c => `<span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] font-medium">• ${c}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            // Update live preview for current selected
+            updateLivePreview();
+        }
+
+        function filterInventory(level, trigger) {
+            // Update button styles
+            document.querySelectorAll('#filter-buttons .filter-btn').forEach(btn => {
+                btn.className = 'filter-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+            });
+            trigger.className = 'filter-btn active px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-slate-900 text-white transition';
+
+            renderInventory(level);
+        }
+
+        function selectInventoryItem(id) {
+            currentSelectedId = id;
+            renderInventory(getCurrentFilterLevel());
+        }
+
+        function getCurrentFilterLevel() {
+            const activeBtn = document.querySelector('#filter-buttons .filter-btn.bg-slate-900');
+            if (!activeBtn) return 'all';
+            if (activeBtn.innerText.includes('Átomos')) return 'Átomo';
+            if (activeBtn.innerText.includes('Moléculas')) return 'Molécula';
+            if (activeBtn.innerText.includes('Organismos')) return 'Organismo';
+            return 'all';
+        }
+
+        function updateLivePreview() {
+            const item = inventoryData.find(i => i.id === currentSelectedId) || inventoryData[0];
+            const previewBox = document.getElementById('bootstrap-live-preview');
+            const badge = document.getElementById('preview-badge');
+            const codeBox = document.getElementById('code-snippet-box');
+
+            document.getElementById('inventory-modal')?.remove();
+            previewBox.innerHTML = item.htmlSnippet;
+            if(item.id === 'modal'){
+                previewBox.innerHTML = '<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#inventory-modal">Abrir diálogo de ejemplo</button><div class="modal fade" id="inventory-modal" tabindex="-1" aria-labelledby="inventory-modal-title" aria-hidden="true">'+item.htmlSnippet.replace('modal-dialog m-0 w-100','modal-dialog').replace('class="modal-title font-bold text-sm"','class="modal-title font-bold text-sm" id="inventory-modal-title"').replace('class="btn-close"','class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"').replace('class="btn btn-secondary btn-sm"','class="btn btn-secondary btn-sm" data-bs-dismiss="modal"').replace('class="btn btn-primary btn-sm"','class="btn btn-primary btn-sm" data-bs-dismiss="modal"')+'</div>';
+            }
+            const modal=previewBox.querySelector('#inventory-modal');if(modal)document.body.append(modal);
+            previewBox.querySelectorAll('input').forEach(input=>{if(!input.hasAttribute('aria-label'))input.setAttribute('aria-label','Búsqueda de ejemplo');});
+            badge.innerText = item.level;
+            badge.className = `px-2.5 py-0.5 rounded-full text-xs font-bold border ${item.levelBadgeClass}`;
+            
+            // Format code snippet text
+            codeBox.innerText = item.htmlSnippet;
+        }
+
+        function toggleCodeSnippet() {
+            const codeBox = document.getElementById('code-snippet-box');
+            const btnText = document.getElementById('code-btn-text');
+            if (codeBox.classList.contains('hidden')) {
+                codeBox.classList.remove('hidden');
+                btnText.innerText = 'Ocultar código HTML';
+            } else {
+                codeBox.classList.add('hidden');
+                btnText.innerText = 'Ver código HTML de Bootstrap';
+            }
+        }
+
+        /* ==========================================
+           3. SIMULATOR LOGIC (DE COMPONENTES A PAGINA)
+           ========================================== */
+        let simState = {
+            navbar: true,
+            hero: true,
+            cards: true,
+            accordion: false,
+            alert: false
+        };
+
+        let simMode = 'template'; // 'template' or 'page'
+
+        function toggleSimComponent(key) {
+            simState[key] = !simState[key];
+            updateSimUI();
+        }
+
+        function setSimulatorMode(mode) {
+            simMode = mode;
+            const btnTemplate = document.getElementById('btn-mode-template');
+            const btnPage = document.getElementById('btn-mode-page');
+            const indicator = document.getElementById('canvas-type-indicator');
+            const urlBar = document.getElementById('canvas-url-bar');
+
+            if (mode === 'template') {
+                btnTemplate.className = 'px-4 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition bg-amber-500 text-white shadow-sm';
+                btnPage.className = 'px-4 py-1.5 rounded-md text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition';
+                indicator.className = 'text-xs font-bold px-2.5 py-1 rounded bg-amber-100 text-amber-800 border border-amber-300';
+                indicator.innerText = 'VISTA: PLANTILLA (TEMPLATE)';
+                urlBar.innerText = 'https://mi-sitio-web.com/plantilla-wireframe';
+            } else {
+                btnPage.className = 'px-4 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition bg-emerald-600 text-white shadow-sm';
+                btnTemplate.className = 'px-4 py-1.5 rounded-md text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition';
+                indicator.className = 'text-xs font-bold px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 border border-emerald-300';
+                indicator.innerText = 'VISTA: PÁGINA FINAL (DATOS REALES)';
+                urlBar.innerText = 'https://mi-tienda-online.com/inicio';
+            }
+
+            renderSimCanvas();
+        }
+
+        function updateSimUI() {
+            // Update toggle cards style
+            Object.keys(simState).forEach(key => {
+                const card = document.getElementById(`sim-card-${key}`);
+                const icon = card.querySelector('.status-icon');
+                card.setAttribute('aria-pressed', String(simState[key]));
+                if (simState[key]) {
+                    card.classList.add('border-blue-500', 'bg-blue-50/40');
+                    card.classList.remove('border-slate-200', 'bg-slate-50');
+                    icon.className = 'status-icon text-blue-600 text-xl';
+                } else {
+                    card.classList.remove('border-blue-500', 'bg-blue-50/40');
+                    card.classList.add('border-slate-200', 'bg-slate-50');
+                    icon.className = 'status-icon text-slate-300 text-xl';
+                }
+            });
+
+            renderSimCanvas();
+        }
+
+        function renderSimCanvas() {
+            const canvas = document.getElementById('sim-canvas');
+            canvas.innerHTML = '';
+
+            let hasContent = false;
+
+            // 1. NAVBAR
+            if (simState.navbar) {
+                hasContent = true;
+                const el = document.createElement('div');
+                if (simMode === 'template') {
+                    el.innerHTML = `
+                        <div class="p-3 bg-slate-300 border-2 border-dashed border-slate-400 rounded text-center text-xs font-mono text-slate-700">
+                            <b>[ORGANISMO: NAVBAR]</b> - &lt;Logo / Menú / Buscador Wireframe&gt;
+                        </div>`;
+                } else {
+                    el.innerHTML = `
+                        <nav class="navbar navbar-expand-lg bg-white shadow-sm rounded border px-3">
+                            <span class="navbar-brand font-bold text-indigo-600"><i class="fa-solid fa-rocket me-1"></i> TechStore</span>
+                            <div class="ms-auto flex items-center space-x-3 text-xs font-semibold text-slate-600">
+                                <a href="#" class="text-indigo-600">Inicio</a>
+                                <a href="#">Cursos</a>
+                                <a href="#">Contacto</a>
+                                <button class="btn btn-primary btn-sm rounded-pill px-3">Acceder</button>
+                            </div>
+                        </nav>`;
+                }
+                canvas.appendChild(el);
+            }
+
+            // 2. ALERT
+            if (simState.alert) {
+                hasContent = true;
+                const el = document.createElement('div');
+                if (simMode === 'template') {
+                    el.innerHTML = `
+                        <div class="p-2 bg-purple-200 border border-purple-400 rounded text-center text-xs font-mono text-purple-800">
+                            <b>[MOLÉCULA: ALERT]</b> - Mensaje contextual de aviso + Botón de Cierre
+                        </div>`;
+                } else {
+                    el.innerHTML = `
+                        <div class="alert alert-info alert-dismissible fade show mb-0 py-2 text-xs" role="alert">
+                            <i class="fa-solid fa-bullhorn me-2"></i> <b>¡Oferta de temporada!</b> 20% de descuento en todos los componentes esta semana.
+                            <button type="button" class="btn-close py-2" data-bs-dismiss="alert"></button>
+                        </div>`;
+                }
+                canvas.appendChild(el);
+            }
+
+            // 3. HERO BANNER
+            if (simState.hero) {
+                hasContent = true;
+                const el = document.createElement('div');
+                if (simMode === 'template') {
+                    el.innerHTML = `
+                        <div class="p-6 bg-slate-200 border-2 border-dashed border-slate-400 rounded text-center space-y-2">
+                            <p class="font-mono text-xs text-slate-600"><b>[MOLÉCULA: HERO BANNER]</b></p>
+                            <div class="h-4 bg-slate-300 rounded w-1/2 mx-auto"></div>
+                            <div class="h-3 bg-slate-300 rounded w-3/4 mx-auto"></div>
+                            <div class="inline-block px-4 py-2 bg-pink-400 text-white rounded text-xs font-mono"><b>[ÁTOMO: BOTÓN]</b></div>
+                        </div>`;
+                } else {
+                    el.innerHTML = `
+                        <div class="p-6 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl shadow text-center space-y-3">
+                            <h2 class="text-xl font-extrabold">Aprende Desarrollo Web Modular</h2>
+                            <p class="text-xs text-indigo-100 max-w-lg mx-auto">Domina Bootstrap 5 y el diseño de interfaces escalables mediante Atomic Design.</p>
+                            <button class="btn btn-warning font-bold text-xs shadow px-4 py-2"><i class="fa-solid fa-play me-1"></i> Empezar Laboratorio</button>
+                        </div>`;
+                }
+                canvas.appendChild(el);
+            }
+
+            // 4. CARDS GRID
+            if (simState.cards) {
+                hasContent = true;
+                const el = document.createElement('div');
+                if (simMode === 'template') {
+                    el.innerHTML = `
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div class="p-4 bg-slate-200 border-2 border-dashed border-slate-400 rounded text-center text-xs font-mono space-y-2">
+                                <b>[ORGANISMO: TARJETA 1]</b>
+                                <div class="h-16 bg-slate-300 rounded"></div>
+                                <div class="h-3 bg-slate-300 rounded"></div>
+                            </div>
+                            <div class="p-4 bg-slate-200 border-2 border-dashed border-slate-400 rounded text-center text-xs font-mono space-y-2">
+                                <b>[ORGANISMO: TARJETA 2]</b>
+                                <div class="h-16 bg-slate-300 rounded"></div>
+                                <div class="h-3 bg-slate-300 rounded"></div>
+                            </div>
+                            <div class="p-4 bg-slate-200 border-2 border-dashed border-slate-400 rounded text-center text-xs font-mono space-y-2">
+                                <b>[ORGANISMO: TARJETA 3]</b>
+                                <div class="h-16 bg-slate-300 rounded"></div>
+                                <div class="h-3 bg-slate-300 rounded"></div>
+                            </div>
+                        </div>`;
+                } else {
+                    el.innerHTML = `
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div class="card shadow-sm border-0">
+                                <div class="bg-indigo-100 text-indigo-500 p-4 text-center text-2xl"><i class="fa-solid fa-code"></i></div>
+                                <div class="card-body p-3">
+                                    <h6 class="font-bold text-xs">HTML5 & CSS3</h6>
+                                    <p class="text-[11px] text-muted">Estructura y estilos estándar de la web moderna.</p>
+                                    <button class="btn btn-outline-primary btn-sm w-100 mt-2 text-xs">Ver Módulo</button>
+                                </div>
+                            </div>
+                            <div class="card shadow-sm border-0">
+                                <div class="bg-purple-100 text-purple-500 p-4 text-center text-2xl"><i class="fa-solid fa-cubes"></i></div>
+                                <div class="card-body p-3">
+                                    <h6 class="font-bold text-xs">Bootstrap 5</h6>
+                                    <p class="text-[11px] text-muted">Componentes responsivos y sistema de rejilla.</p>
+                                    <button class="btn btn-outline-primary btn-sm w-100 mt-2 text-xs">Ver Módulo</button>
+                                </div>
+                            </div>
+                            <div class="card shadow-sm border-0">
+                                <div class="bg-pink-100 text-pink-500 p-4 text-center text-2xl"><i class="fa-solid fa-atom"></i></div>
+                                <div class="card-body p-3">
+                                    <h6 class="font-bold text-xs">Atomic Design</h6>
+                                    <p class="text-[11px] text-muted">Metodología modular de creación de interfaces.</p>
+                                    <button class="btn btn-outline-primary btn-sm w-100 mt-2 text-xs">Ver Módulo</button>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+                canvas.appendChild(el);
+            }
+
+            // 5. ACCORDION
+            if (simState.accordion) {
+                hasContent = true;
+                const el = document.createElement('div');
+                if (simMode === 'template') {
+                    el.innerHTML = `
+                        <div class="p-3 bg-slate-200 border-2 border-dashed border-slate-400 rounded text-center text-xs font-mono">
+                            <b>[ORGANISMO: ACORDEÓN DE PREGUNTAS]</b> - Bloque desplegable
+                        </div>`;
+                } else {
+                    el.innerHTML = `
+                        <div class="accordion" id="accordionSim">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button py-2 text-xs font-bold" type="button" data-bs-toggle="collapse" data-bs-target="#accSim1">
+                                        ¿Se necesita saber programar para usar Bootstrap?
+                                    </button>
+                                </h2>
+                                <div id="accSim1" class="accordion-collapse collapse show">
+                                    <div class="accordion-body text-xs text-slate-600">
+                                        Solo requieres conocimientos básicos de HTML y clases CSS.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+                canvas.appendChild(el);
+            }
+
+            if (!hasContent) {
+                canvas.innerHTML = `
+                    <div class="h-64 flex flex-col items-center justify-center text-slate-400 space-y-2">
+                        <i class="fa-solid fa-layer-group text-3xl"></i>
+                        <p class="text-xs">El lienzo está vacío. Activa componentes en la columna izquierda.</p>
+                    </div>`;
+            }
+        }
+
+        /* ==========================================
+           4. GAMIFIED QUIZ / CHALLENGE LOGIC
+           ========================================== */
+        const quizQuestions = [
+            {
+                title: "¿A qué nivel pertenece una insignia individual (.badge) que muestra una etiqueta de texto?",
+                previewHtml: `<span class="badge bg-success font-bold text-sm">Nuevo Producto</span>`,
+                code: `<span class="badge bg-success">Nuevo Producto</span>`,
+                correct: 'Átomo',
+                explanation: 'Correcto. Una insignia o badge es un elemento indivisible de interfaz (Átomo).'
+            },
+            {
+                title: "¿A qué nivel pertenece una barra de búsqueda que combina un campo de texto (.form-control) y un botón (.btn)?",
+                previewHtml: `
+                    <div class="input-group" style="max-width: 320px;">
+                        <input type="text" class="form-control form-control-sm" placeholder="Buscar artículo...">
+                        <button class="btn btn-primary btn-sm"><i class="fa-solid fa-search"></i> Buscar</button>
+                    </div>`,
+                code: `<div class="input-group">
+  <input type="text" class="form-control" placeholder="Buscar...">
+  <button class="btn btn-primary">Buscar</button>
+</div>`,
+                correct: 'Molécula',
+                explanation: '¡Excelente! Combina dos átomos simples (input + botón) para cumplir una función específica.'
+            },
+            {
+                title: "¿A qué nivel pertenece una ventana emergente Modal completa con cabecera, mensaje y botones de decisión?",
+                previewHtml: `
+                    <div class="modal-content shadow-sm p-3 border rounded w-100">
+                        <h6 class="font-bold border-b pb-1 text-xs">Eliminar Elemento</h6>
+                        <p class="text-xs text-muted my-2">¿Confirmas la eliminación permanente?</p>
+                        <div class="text-end">
+                            <button class="btn btn-danger btn-sm">Eliminar</button>
+                        </div>
+                    </div>`,
+                code: `<div class="modal-dialog">
+  <div class="modal-content"> ... </div>
+</div>`,
+                correct: 'Organismo',
+                explanation: '¡Muy bien! Es una estructura compleja, autónoma y con funcionalidad completa (Organismo).'
+            },
+            {
+                title: "¿A qué nivel pertenece un icono flotante interactivo de red social?",
+                previewHtml: `<a href="#" class="btn btn-dark rounded-circle p-2"><i class="fa-brands fa-github text-lg"></i></a>`,
+                code: `<a href="#" class="btn btn-dark rounded-circle"><i class="fa-brands fa-github"></i></a>`,
+                correct: 'Átomo',
+                explanation: 'Correcto. Funciona como un elemento atómico de interacción simple.'
+            },
+            {
+                title: "¿A qué nivel pertenece una tarjeta de usuario con foto de perfil, nombre, descripción y botón de seguir?",
+                previewHtml: `
+                    <div class="card p-3 text-center shadow-sm" style="max-width: 220px;">
+                        <div class="w-12 h-12 rounded-full bg-purple-500 text-white font-bold flex items-center justify-center mx-auto mb-2 text-sm">JD</div>
+                        <h6 class="font-bold text-xs mb-0">Juan Díaz</h6>
+                        <p class="text-[10px] text-slate-400">Diseñador UI/UX</p>
+                        <button class="btn btn-outline-primary btn-sm text-[10px] mt-2 py-0.5">Seguir</button>
+                    </div>`,
+                code: `<div class="card">
+  <img src="...">
+  <div class="card-body"> ... </div>
+</div>`,
+                correct: 'Organismo',
+                explanation: '¡Exacto! Agrupa múltiples imágenes, textos y botones en una unidad conceptual compleja.'
+            }
+        ];
+
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+
+        function loadQuizQuestion() {
+            const q = quizQuestions[currentQuizIndex];
+            document.getElementById('quiz-progress-text').innerText = `${currentQuizIndex + 1} / ${quizQuestions.length}`;
+            document.getElementById('quiz-progress-bar').style.width = `${((currentQuizIndex + 1) / quizQuestions.length) * 100}%`;
+            document.getElementById('quiz-score-text').innerText = `${quizScore} pts`;
+            
+            document.getElementById('quiz-question-title').innerText = q.title;
+            document.getElementById('quiz-component-preview').innerHTML = q.previewHtml;
+            document.getElementById('quiz-code-view').innerText = q.code;
+
+            // Hide feedback
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.className = 'hidden p-4 rounded-xl border space-y-2';
+
+            // Enable buttons
+            document.querySelectorAll('.quiz-option-btn').forEach(btn => btn.disabled = false);
+        }
+
+        function checkQuizAnswer(selectedLevel) {
+            if (quizAnswers[currentQuizIndex]) return;
+            quizAnswers[currentQuizIndex] = selectedLevel;
+            const q = quizQuestions[currentQuizIndex];
+            const feedback = document.getElementById('quiz-feedback');
+            const feedbackTitle = document.getElementById('quiz-feedback-title');
+            const feedbackText = document.getElementById('quiz-feedback-text');
+
+            // Disable option buttons after answering
+            document.querySelectorAll('.quiz-option-btn').forEach(btn => btn.disabled = true);
+
+            if ((q.accepted || [q.correct]).includes(selectedLevel)) {
+                quizScore += 100;
+                feedback.className = 'p-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-900 space-y-2 block';
+                feedbackTitle.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i> <span>Clasificación compatible con el ejemplo (+100 pts)</span>`;
+            } else {
+                feedback.className = 'p-4 rounded-xl border border-red-200 bg-red-50 text-red-900 space-y-2 block';
+                feedbackTitle.innerHTML = `<i class="fa-solid fa-circle-xmark text-red-600"></i> <span>Revisa la composición. Propuesta orientativa: ${q.correct}</span>`;
+            }
+
+            feedbackText.innerText = q.explanation;
+            document.getElementById('quiz-score-text').innerText = `${quizScore} pts`;
+            document.getElementById('report-score-display').innerText = `${quizScore} / ${quizQuestions.length * 100} pts`;
+        }
+
+        function nextQuizQuestion() {
+            if (!quizAnswers[currentQuizIndex]) return;
+            currentQuizIndex++;
+            if (currentQuizIndex < quizQuestions.length) {
+                loadQuizQuestion();
+            } else {
+                // Show quiz finished
+                document.getElementById('quiz-box').classList.add('hidden');
+                document.getElementById('quiz-finished-box').classList.remove('hidden');
+                document.getElementById('quiz-final-score').innerText = `${quizScore} / ${quizQuestions.length * 100}`;
+            }
+        }
+
+        function resetQuiz() {
+            quizAnswers = [];
+            currentQuizIndex = 0;
+            quizScore = 0;
+            document.getElementById('quiz-box').classList.remove('hidden');
+            document.getElementById('quiz-finished-box').classList.add('hidden');
+            loadQuizQuestion();
+            document.getElementById('report-score-display').innerText = '0 / 500 pts';
+            saveDraft();
+        }
+
+        /* ==========================================
+           5. TAB NAVIGATION & REPORT GENERATION
+           ========================================== */
+        function switchTab(tabKey) {
+            // Hide all sections
+            ['inventory', 'simulator', 'challenge', 'report'].forEach(k => {
+                document.getElementById(`sec-${k}`).classList.add('hidden');
+            });
+
+            // Show selected section
+            document.getElementById(`sec-${tabKey}`).classList.remove('hidden');
+
+            // Update desktop tabs styling
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = 'tab-btn px-4 py-2 rounded-lg text-slate-300 hover:text-white transition';
+            });
+            const activeNavBtn = document.getElementById(`tab-${tabKey}`);
+            if (activeNavBtn) {
+                activeNavBtn.className = 'tab-btn px-4 py-2 rounded-lg text-white bg-purple-600 transition';
+            }
+
+            ['inventory','simulator','challenge','report'].forEach(key=>{
+                for(const prefix of ['tab-','mob-tab-']){const button=document.getElementById(prefix+key);button?.setAttribute('aria-pressed',String(key===tabKey));}
+                const mobile=document.getElementById('mob-tab-'+key);mobile.classList.toggle('text-purple-400',key===tabKey);mobile.classList.toggle('text-slate-400',key!==tabKey);
+            });
+            // Update date on report tab opening
+            if (tabKey === 'report') {
+                const today = new Date().toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                document.getElementById('report-date-display').innerText = today;
+            }
+        }
+
+        let quizAnswers = [];
+        const draftKey = 'bootstrap-atomic-lab-v1';
+        const reportIds = ['report-student-name','report-student-group','report-q1','report-q2'];
+        const inventoryAnswers = {};
+        const docs = {'btn':'buttons','btn-group':'button-group','alert':'alerts','card':'card','navbar':'navbar','accordion':'accordion','modal':'modal'};
+        quizQuestions.forEach(q => {
+            if (q.correct === 'Organismo') {
+                q.accepted = ['Molécula','Organismo'];
+                q.explanation = 'Este módulo combina elementos de interfaz. Puede tratarse como molécula o como organismo según su complejidad y autonomía. Justifica el criterio en tu inventario; la etiqueta por sí sola no basta.';
+            }
+        });
+        function renderStudentInventory(){
+            const host=document.getElementById('student-inventory');
+            inventoryData.forEach(item=>{
+                inventoryAnswers[item.id] ||= {function:'',level:'',reason:''};
+                const row=document.createElement('div');row.className='student-row';
+                row.innerHTML=`<h4>${item.name} <code>${item.bsClass}</code></h4><a href="https://getbootstrap.com/docs/5.3/components/${docs[item.id] || item.id}/" target="_blank" rel="noopener noreferrer">Consultar documentación</a><div class="student-fields"><div><label for="own-${item.id}-function">Función</label><input id="own-${item.id}-function" maxlength="700"></div><div><label for="own-${item.id}-level">Nivel propuesto</label><select id="own-${item.id}-level"><option value="">Elige un nivel</option><option>Átomo</option><option>Molécula</option><option>Organismo</option></select></div></div><label for="own-${item.id}-reason">Composición y justificación</label><textarea id="own-${item.id}-reason" maxlength="2500" placeholder="Qué elementos combina y por qué propones ese nivel"></textarea>`;
+                host.append(row);
+                for(const field of ['function','level','reason']){
+                    const input=document.getElementById(`own-${item.id}-${field}`);
+                    input.value=inventoryAnswers[item.id][field] || '';
+                    input.addEventListener('input',()=>{inventoryAnswers[item.id][field]=input.value;saveDraft();});
+                }
+            });
+        }
+        function saveDraft(){
+            try{localStorage.setItem(draftKey,JSON.stringify({inventoryAnswers,simState,simMode,quizAnswers,currentQuizIndex,quizScore,report:Object.fromEntries(reportIds.map(id=>[id,document.getElementById(id).value]))}));document.getElementById('draft-status').textContent='Borrador guardado en este navegador. Descarga el informe para entregarlo.';}
+            catch{document.getElementById('draft-status').textContent='El guardado local no está disponible. Descarga el informe antes de cerrar.';}
+        }
+        function downloadReport(){
+            const incomplete=inventoryData.find(item=>['function','level','reason'].some(field=>!inventoryAnswers[item.id][field].trim()));
+            if(incomplete){switchTab('report');document.getElementById(`own-${incomplete.id}-function`).focus();alert('Completa la función, el nivel y la justificación de '+incomplete.name+'.');return;}
+            const empty=reportIds.find(id=>!document.getElementById(id).value.trim());
+            if(empty){document.getElementById(empty).focus();alert('Completa los datos y las dos reflexiones antes de descargar.');return;}
+            if(quizAnswers.filter(Boolean).length<quizQuestions.length){switchTab('challenge');alert('Termina los cinco casos del desafío antes de descargar.');return;}
+            const content=[
+                'LABORATORIO: BOOTSTRAP Y ATOMIC DESIGN',
+                'Nombre: '+document.getElementById('report-student-name').value,
+                'Grupo: '+document.getElementById('report-student-group').value,
+                'Fecha: '+new Date().toLocaleString('es-ES'),
+                '\nINVENTARIO PROPIO',
+                ...inventoryData.map(item=>{const a=inventoryAnswers[item.id];return `${item.name} (${item.bsClass})\nFunción: ${a.function}\nNivel: ${a.level}\nJustificación: ${a.reason}\n`;}),
+                '\nSIMULADOR',
+                'Bloques incluidos: '+Object.keys(simState).filter(k=>simState[k]).join(', '),
+                'Vista final: '+simMode,
+                '\nDESAFÍO ORIENTATIVO',
+                ...quizQuestions.map((q,i)=>`${i+1}. ${q.title}\nMi elección: ${quizAnswers[i]}\nOrientación: ${q.explanation}`),
+                'Puntos de práctica: '+quizScore+'/500. La valoración de las justificaciones corresponde al docente.',
+                '\nREFLEXIONES',
+                '1. Clasificación según composición y contexto:\n'+document.getElementById('report-q1').value,
+                '2. Cómo combinar los componentes en una plantilla y convertirla en página:\n'+document.getElementById('report-q2').value,
+                '\nNo existe una equivalencia obligatoria entre un componente Bootstrap y un nivel de Atomic Design.'
+            ].join('\n');
+            const url=URL.createObjectURL(new Blob([content],{type:'text/plain;charset=utf-8'}));
+            const link=document.createElement('a');link.href=url;link.download='laboratorio-bootstrap-atomic-design.txt';link.click();setTimeout(()=>URL.revokeObjectURL(url),10000);
+        }
+        window.onload = function(){
+            try{const saved=JSON.parse(localStorage.getItem(draftKey)||'null');if(saved){
+                for(const item of inventoryData){const value=saved.inventoryAnswers?.[item.id];if(value)inventoryAnswers[item.id]={function:String(value.function||''),level:String(value.level||''),reason:String(value.reason||'')};}
+                if(saved.simState)for(const key of Object.keys(simState))simState[key]=!!saved.simState[key];
+                simMode=saved.simMode==='page'?'page':'template';
+                quizAnswers=Array.isArray(saved.quizAnswers)?saved.quizAnswers.slice(0,quizQuestions.length):[];
+                quizScore=quizQuestions.reduce((score,q,i)=>score+((q.accepted||[q.correct]).includes(quizAnswers[i])?100:0),0);
+                currentQuizIndex=quizAnswers.findIndex(a=>!a);if(currentQuizIndex<0)currentQuizIndex=quizAnswers.length;
+                reportIds.forEach(id=>document.getElementById(id).value=String(saved.report?.[id]||''));
+            }}catch{}
+            renderInventory();updateSimUI();setSimulatorMode(simMode);renderStudentInventory();
+            if(currentQuizIndex>=quizQuestions.length){document.getElementById('quiz-box').classList.add('hidden');document.getElementById('quiz-finished-box').classList.remove('hidden');document.getElementById('quiz-final-score').innerText=quizScore+' / 500';}else loadQuizQuestion();
+            document.getElementById('report-score-display').innerText=quizScore+' / 500 pts';
+            for(const id of reportIds){const el=document.getElementById(id);el.maxLength=2500;const label=el.previousElementSibling;if(label?.tagName==='LABEL')label.htmlFor=id;el.addEventListener('input',saveDraft);}
+            document.querySelectorAll('.sim-toggle-card').forEach(el=>{el.tabIndex=0;el.setAttribute('role','button');el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}});});
+            document.addEventListener('click',event=>{if(event.target.closest('a[href="#"]'))event.preventDefault();setTimeout(saveDraft,0);});
+        };
+    </script>
+<footer class="max-w-7xl mx-auto p-6 text-sm text-slate-500">DIW · Bootstrap y Atomic Design · Borrador local; la entrega se realiza mediante el formulario de la actividad 5.</footer>
+</body>
+</html>
+</html>
