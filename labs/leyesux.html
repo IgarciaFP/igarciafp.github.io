@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laboratorio de Experiencia de Usuario (UX) - 12 Leyes, Gestalt y Nielsen</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --accent: #f59e0b;
+      --success: #10b981;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: var(--primary);
+      color: white;
+      border-radius: 12px;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .section-card {
+      background: var(--card-bg);
+      padding: 24px;
+      margin-bottom: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: var(--primary);
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 8px;
+    }
+
+    .interactive-demo {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      background: #f1f5f9;
+      padding: 20px;
+      border-radius: 8px;
+      align-items: center;
+    }
+
+    .demo-target {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 120px;
+      background: #e2e8f0;
+      border-radius: 8px;
+    }
+
+    .btn-target {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quiz-option {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .quiz-option:hover {
+      background: #e2e8f0;
+    }
+
+    .student-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .student-info input {
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .btn-action {
+      background: var(--success);
+      color: white;
+      font-weight: bold;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🚀 Laboratorio de Diseño Digital: UX, Gestalt y Nielsen</h1>
+  <p>Aprende cómo las webs y apps se diseñan para ser fáciles e intuitivas de usar</p>
+</header>
+
+<main>
+
+  <!-- Datos del Alumno -->
+  <section class="section-card">
+    <h2>0. Registro de Estudiante</h2>
+    <div class="student-info">
+      <div>
+        <label for="nombre">Nombre y Apellidos:</label>
+        <input type="text" id="nombre" placeholder="Ej: Lucía García" required style="width: 100%;">
+      </div>
+      <div>
+        <label for="curso">Curso / Grupo:</label>
+        <input type="text" id="curso" placeholder="Ej: 1º ESO B" required style="width: 100%;">
+      </div>
+    </div>
+  </section>
+
+  <!-- Experimento 1: Ley de Fitts -->
+  <section class="section-card">
+    <h2>1. Ley de Fitts (Leyes de UX)</h2>
+    <p>Cuanto más grande y cercano esté un botón, más fácil y rápido es hacer clic en él.</p>
+    <div class="interactive-demo">
+      <div>
+        <label for="fitts-slider">Tamaño del Botón de Acción:</label><br>
+        <input type="range" id="fitts-slider" min="15" max="80" value="20">
+      </div>
+      <div class="demo-target">
+        <button id="fitts-btn" class="btn-target" style="padding: 5px 10px; font-size: 12px;">¡Haz Clic Aquí!</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experimento 2: Proximidad de Gestalt -->
+  <section class="section-card">
+    <h2>2. Ley de Proximidad (Principios de la Gestalt)</h2>
+    <p>Los elementos que están cerca entre sí se perciben como parte de un mismo grupo.</p>
+    <div class="interactive-demo">
+      <div>
+        <label for="gestalt-slider">Distancia entre elementos:</label><br>
+        <input type="range" id="gestalt-slider" min="2" max="40" value="30">
+      </div>
+      <div class="demo-target">
+        <div id="gestalt-group" style="display: flex; gap: 30px;">
+          <div style="width: 30px; height: 30px; background: var(--accent); border-radius: 50%;"></div>
+          <div style="width: 30px; height: 30px; background: var(--accent); border-radius: 50%;"></div>
+          <div style="width: 30px; height: 30px; background: var(--accent); border-radius: 50%;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cuestionario Evaluativo -->
+  <section class="section-card">
+    <h2>3. Evaluación Final de Conceptos</h2>
+    <form id="quiz-form">
+      
+      <div>
+        <p><strong>P1. Según la Ley de Fitts, ¿cómo debemos diseñar el botón principal de una app?</strong></p>
+        <label class="quiz-option"><input type="radio" name="q1" value="A"> A) Muy pequeño y oculto en una esquina.</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="B"> B) Grande y fácil de alcanzar con el dedo.</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="C"> C) Del mismo color que el fondo para que no destaque.</label>
+      </div>
+
+      <div>
+        <p><strong>P2. ¿Qué afirma la Ley de Proximidad de la Gestalt?</strong></p>
+        <label class="quiz-option"><input type="radio" name="q2" value="A"> A) Los objetos cercanos entre sí parecen pertenecer al mismo grupo.</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="B"> B) Las pantallas deben tener más de 10 colores distintos.</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="C"> C) Los botones deben cambiar de sitio todo el tiempo.</label>
+      </div>
+
+      <div>
+        <p><strong>P3. Según las Heurísticas de Jakob Nielsen, la visibilidad del estado del sistema significa que:</strong></p>
+        <label class="quiz-option"><input type="radio" name="q3" value="A"> A) La aplicación nunca debe avisar al usuario de lo que ocurre.</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="B"> B) La app debe informar siempre de lo que está haciendo (ej. barra de carga).</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="C"> C) Todo el texto debe estar escrito en mayúsculas.</label>
+      </div>
+
+      <button type="button" class="btn-action" onclick="finalizarLaboratorio()">Finalizar y Descargar Informe (.txt)</button>
+    </form>
+  </section>
+
+</main>
+
+<script>
+  // Interactividad Experimento 1: Fitts
+  const fittsSlider = document.getElementById('fitts-slider');
+  const fittsBtn = document.getElementById('fitts-btn');
+
+  fittsSlider.addEventListener('input', (e) => {
+    const val = e.target.value;
+    fittsBtn.style.padding = `${val / 2}px ${val}px`;
+    fittsBtn.style.fontSize = `${10 + val / 4}px`;
+  });
+
+  // Interactividad Experimento 2: Gestalt
+  const gestaltSlider = document.getElementById('gestalt-slider');
+  const gestaltGroup = document.getElementById('gestalt-group');
+
+  gestaltSlider.addEventListener('input', (e) => {
+    gestaltGroup.style.gap = `${e.target.value}px`;
+  });
+
+  // Generación e Impresión del Informe TXT
+  function finalizarLaboratorio() {
+    const nombre = document.getElementById('nombre').value.trim();
+    const curso = document.getElementById('curso').value.trim();
+
+    if (!nombre || !curso) {
+      alert('Por favor, completa tu Nombre y Curso antes de finalizar.');
+      return;
+    }
+
+    // Respuestas correctas: q1=B, q2=A, q3=B
+    const form = document.getElementById('quiz-form');
+    const q1 = form.q1.value;
+    const q2 = form.q2.value;
+    const q3 = form.q3.value;
+
+    if (!q1 || !q2 || !q3) {
+      alert('Por favor, responde a todas las preguntas del test.');
+      return;
+    }
+
+    let aciertos = 0;
+    if (q1 === 'B') aciertos++;
+    if (q2 === 'A') aciertos++;
+    if (q3 === 'B') aciertos++;
+
+    const porcentaje = Math.round((aciertos / 3) * 100);
+    const fecha = new Date().toLocaleString('es-ES');
+
+    // Generar archivo de texto plano (.txt)
+    const informeTXT = `
+=====================================================
+   INFORME DE LABORATORIO: UX, GESTALT Y NIELSEN
+=====================================================
+Estudiante : ${nombre}
+Curso      : ${curso}
+Fecha      : ${fecha}
+
+-----------------------------------------------------
+1. RESULTADOS DE LA EVALUACIÓN
+-----------------------------------------------------
+Aciertos Totales  : ${aciertos} de 3
+Calificación Final: ${porcentaje}%
+Valoración        : ${porcentaje >= 66 ? 'COMPRENDIDO (Aprobado)' : 'REQUIERE REPASO'}
+
+-----------------------------------------------------
+2. DETALLE DE RESPUESTAS
+-----------------------------------------------------
+Pregunta 1 (Ley de Fitts)      : Selección [ ${q1} ] -> ${q1 === 'B' ? 'CORRECTO' : 'INCORRECTO (Correcta: B)'}
+Pregunta 2 (Gestalt Proximidad): Selección [ ${q2} ] -> ${q2 === 'A' ? 'CORRECTO' : 'INCORRECTO (Correcta: A)'}
+Pregunta 3 (Heurística Nielsen): Selección [ ${q3} ] -> ${q3 === 'B' ? 'CORRECTO' : 'INCORRECTO (Correcta: B)'}
+
+=====================================================
+  Laboratorio Interactivo de Diseño y Usabilidad Web
+=====================================================
+`.trim();
+
+    // Iniciar descarga
+    const blob = new Blob([informeTXT], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `informe_ux_${nombre.toLowerCase().replace(/\s+/g, '_')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+</script>
+
+</body>
+</html>
