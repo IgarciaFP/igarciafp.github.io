@@ -1,702 +1,138 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light">
-  <meta name="description" content="Prueba de concepto de un laboratorio de binario con pantalla completa obligatoria, seguimiento de foco y visibilidad, y reinicio recuperable en la tercera incidencia.">
-  <title>Binario · Pantalla completa y foco</title>
-  <style>
-    :root {
-      --ink: #182b39; --muted: #526778; --paper: #f4f6f8; --line: #dce4e9;
-      --blue: #2459bb; --blue-soft: #edf3ff; --green: #146249;
-      --amber: #855100; --amber-soft: #fff5df; --red: #a42e39; --red-soft: #fff0f1;
-      --radius: 18px;
-    }
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--paper); color: var(--ink); line-height: 1.55; }
-    button, input, textarea { font: inherit; }
-    button { cursor: pointer; }
-    button:disabled { cursor: not-allowed; opacity: .48; }
-    [hidden] { display: none !important; }
-    :focus-visible { outline: 3px solid #2672df; outline-offset: 4px; }
-    .skip { position: absolute; top: -80px; left: 16px; z-index: 10; background: white; padding: 12px; }
-    .skip:focus { top: 8px; }
-    .wrap { width: min(1120px, calc(100% - 48px)); margin: auto; }
-    header { background: white; border-bottom: 1px solid var(--line); }
-    .bar { min-height: 78px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-    .brand { display: flex; align-items: center; gap: 12px; font-weight: 750; letter-spacing: -.03em; font-size: 21px; }
-    .brand-mark { display: grid; place-items: center; width: 40px; height: 40px; background: var(--ink); color: white; border-radius: 11px; font-family: ui-monospace, monospace; font-size: 16px; letter-spacing: -.06em; }
-    .brand small { font-size: 13px; color: var(--muted); font-weight: 500; letter-spacing: 0; }
-    .tag { font-size: 11px; letter-spacing: .075em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 99px; padding: 7px 12px; color: var(--muted); font-weight: 750; }
-    .hero { padding: 38px 0 24px; }
-    .eyebrow { font-size: 11px; letter-spacing: .12em; font-weight: 800; color: var(--blue); text-transform: uppercase; margin: 0 0 8px; }
-    h1 { font-size: clamp(30px, 4vw, 44px); line-height: 1.16; letter-spacing: -.045em; margin: 0 0 12px; }
-    .lead { color: var(--muted); max-width: 790px; margin: 0; font-size: 16px; }
-    .rules { background: var(--ink); color: white; border-radius: var(--radius); padding: 21px 26px; margin-bottom: 26px; display: grid; grid-template-columns: 1.1fr 1.9fr; gap: 30px; align-items: center; }
-    .rules strong { display: block; font-size: 17px; margin-bottom: 3px; }
-    .rules p { color: #ccdae4; margin: 0; font-size: 13px; }
-    .steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-    .step { font-size: 12px; color: #c7d4df; }
-    .step b { display: block; color: white; font-size: 13px; margin-top: 7px; }
-    .step-number { display: inline-grid; place-items: center; width: 29px; height: 29px; border: 1px solid #7c91a2; border-radius: 50%; font: 700 12px ui-monospace, monospace; }
-    .step.done .step-number { background: #fff0cf; border-color: #fff0cf; color: #694205; }
-    .step:last-child.done .step-number { background: #ffd8dc; color: #8c1826; border-color: #ffd8dc; }
-    .layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(290px, 1fr); gap: 24px; align-items: start; }
-    .card { background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; }
-    .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
-    h2 { font-size: 19px; letter-spacing: -.025em; margin: 0 0 3px; }
-    h3 { margin: 0 0 8px; font-size: 14px; }
-    .hint { color: var(--muted); font-size: 13px; margin: 0; }
-    .number { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
-    .badge { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; font-size: 11px; font-weight: 750; padding: 6px 10px; border-radius: 99px; background: #edf1f4; color: var(--muted); }
-    .badge::before { content: ""; width: 6px; height: 6px; background: currentColor; border-radius: 50%; }
-    .badge[data-phase="active"] { background: #e7f5ee; color: var(--green); }
-    .badge[data-phase="reset"], .badge[data-phase="review"] { background: var(--red-soft); color: var(--red); }
-    .badge[data-phase="submitted"] { background: var(--blue-soft); color: var(--blue); }
-    .start-box { padding: 16px; background: #f7f9fc; border: 1px solid var(--line); border-radius: 12px; margin: 16px 0 24px; }
-    .consent { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--muted); }
-    .consent input { margin: 5px 0 0; flex-shrink: 0; accent-color: var(--blue); width: 16px; height: 16px; }
-    .start-box button { margin-top: 14px; }
-    .btn { min-height: 43px; border: 1px solid var(--line); padding: 10px 16px; border-radius: 9px; background: white; color: var(--ink); font-weight: 650; font-size: 13px; }
-    .btn:not(:disabled):hover { background: #eff3f7; }
-    .btn-primary { background: var(--blue); color: white; border-color: var(--blue); }
-    .btn-primary:not(:disabled):hover { background: #1b489e; }
-    .btn-danger { color: var(--red); border-color: #edc5c9; }
-    .wide { width: 100%; }
-    fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
-    legend { font-size: 13px; font-weight: 700; margin-bottom: 8px; padding: 0; }
-    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
-    .question + .question { border-top: 1px solid var(--line); margin-top: 23px; padding-top: 23px; }
-    .question-label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
-    .q-no { color: var(--blue); font-family: ui-monospace, monospace; font-size: 12px; margin-right: 7px; }
-    .conversion { display: flex; gap: 16px; align-items: center; }
-    .source { flex-shrink: 0; min-width: 82px; font-size: 29px; font-weight: 650; line-height: 1.1; white-space: nowrap; }
-    sub { font-size: .48em; margin-left: 3px; }
-    .arrow { color: #768898; font-size: 22px; }
-    input[type="text"], input[type="number"], textarea { width: 100%; border: 1px solid #b9c8d4; border-radius: 9px; padding: 11px 13px; color: var(--ink); background: white; }
-    .conversion input { min-width: 0; font-family: ui-monospace, monospace; letter-spacing: .09em; }
-    input::placeholder, textarea::placeholder { color: #657987; opacity: 1; font-size: 13px; letter-spacing: 0; }
-    input:disabled, textarea:disabled { color: #586a78; background: #f7f9fb; opacity: 1; }
-    textarea { resize: vertical; min-height: 86px; font-size: 14px; }
-    .bits { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 12px; }
-    .bit { display: grid; justify-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 11px 4px; background: #f8fafc; font: 700 17px ui-monospace, monospace; cursor: pointer; }
-    .bit:has(input:checked) { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
-    .bit input { width: 16px; height: 16px; margin: 0; accent-color: var(--blue); }
-    .sum { min-height: 20px; margin: 11px 0 0; color: var(--muted); font-size: 12px; }
-    .optional { color: var(--muted); font-size: 12px; font-weight: 400; }
-    .form-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 24px; }
-    .form-footer .hint { max-width: 260px; font-size: 12px; }
-    .notice { padding: 13px 16px; border-radius: 10px; font-size: 13px; background: var(--blue-soft); color: #234675; margin: 16px 0 0; }
-    .notice.warn { background: var(--amber-soft); color: var(--amber); }
-    .notice.error { background: var(--red-soft); color: var(--red); }
-    aside { display: grid; gap: 18px; }
-    .counter-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 12px 0 14px; }
-    .counter { font-size: 50px; font-weight: 650; letter-spacing: -.075em; line-height: 1.15; }
-    .counter span { font-size: 21px; color: #657a8b; font-weight: 450; letter-spacing: -.02em; }
-    .counter-note { font-size: 12px; max-width: 126px; color: var(--muted); }
-    .meter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 16px; }
-    .meter i { height: 5px; background: #e8edf2; border-radius: 4px; }
-    .meter i.filled { background: #b67716; }
-    .meter i:last-child.filled { background: var(--red); }
-    .meta { display: flex; justify-content: space-between; font-size: 12px; gap: 12px; color: var(--muted); }
-    .activity { border-top: 1px solid var(--line); padding-top: 17px; margin-top: 17px; }
-    .log { list-style: none; padding: 0; margin: 12px 0 0; max-height: 184px; overflow: auto; }
-    .log li { border-left: 2px solid #d8e2ef; padding: 0 0 13px 12px; margin-left: 3px; font-size: 12px; color: var(--muted); }
-    .log li:last-child { padding-bottom: 0; }
-    .log time { display: block; font: 10px ui-monospace, monospace; color: #6b7d8c; margin-bottom: 3px; }
-    .tools { background: #fffcf5; border-color: #e9dfc8; }
-    .tools .eyebrow { color: var(--amber); }
-    .tools .btn { margin-top: 9px; }
-    .tools .hint { margin: 7px 0 4px; font-size: 12px; }
-    .footnote { padding: 22px 0 32px; color: var(--muted); font-size: 12px; }
-    .footnote p { margin: 5px 0; }
-    dialog { width: min(470px, calc(100% - 32px)); border: 1px solid var(--line); border-radius: 20px; padding: 30px; color: var(--ink); box-shadow: 0 24px 100px #0c1c3f40; }
-    dialog::backdrop { background: #132336a3; backdrop-filter: blur(3px); }
-    .dialog-icon { width: 46px; height: 46px; display: grid; place-items: center; background: var(--amber-soft); color: var(--amber); border-radius: 13px; font-size: 24px; font-weight: 700; margin-bottom: 18px; }
-    dialog[data-kind="reset"] .dialog-icon { background: var(--red-soft); color: var(--red); }
-    dialog h2 { font-size: 25px; margin: 4px 0 12px; }
-    dialog p { color: var(--muted); font-size: 14px; }
-    dialog .btn { margin-top: 16px; }
-    html:fullscreen { overflow: auto; background: var(--paper); }
-    .guard-panel { padding: 14px 16px; margin: 0 0 22px; background: #f7f9fc; border: 1px solid var(--line); border-radius: 12px; }
-    .guard-statuses { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 8px; }
-    .guard-status { font-size: 11px; font-weight: 700; border-radius: 6px; padding: 5px 8px; background: var(--amber-soft); color: var(--amber); }
-    .guard-status[data-ok="true"] { background: #e7f5ee; color: var(--green); }
-    .badge[data-phase="paused"] { background: var(--amber-soft); color: var(--amber); }
-    dialog { max-height: calc(100dvh - 32px); overflow: auto; }
-    @media (max-width: 800px) {
-      .layout { grid-template-columns: 1fr; }
-      .rules { grid-template-columns: 1fr; gap: 20px; }
-      aside { grid-template-columns: 1fr 1fr; }
-      .card { padding: 22px; }
-    }
-    @media (max-width: 540px) {
-      .wrap { width: calc(100% - 28px); }
-      .bar { min-height: 68px; }
-      .brand small { display: none; }
-      .tag { font-size: 9px; padding: 6px 9px; }
-      .hero { padding-top: 28px; }
-      .lead { font-size: 14px; }
-      .rules { padding: 20px; }
-      .steps { gap: 10px; }
-      .step { font-size: 11px; }
-      .step b { font-size: 12px; }
-      .card { padding: 20px; }
-      .card-head { flex-wrap: wrap; }
-      aside { grid-template-columns: 1fr; }
-      .conversion { gap: 10px; }
-      .source { font-size: 24px; min-width: 67px; }
-      .bits { gap: 5px; }
-      .bit { font-size: 15px; }
-      .form-footer { align-items: stretch; flex-direction: column; }
-      .form-footer .hint { max-width: none; }
-      dialog { padding: 24px; }
-    }
-  </style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UX Lab · Diseña para personas</title>
+<style>
+:root{--ink:#182c31;--muted:#50636a;--paper:#f4f4ed;--card:#fff;--teal:#006a60;--lime:#d7f279;--line:#cbd5d0;--orange:#a33d14}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 system-ui,Segoe UI,sans-serif}button,input,textarea,select{font:inherit}button,a,input,textarea,select{touch-action:manipulation}button{cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:10px 17px;background:#fff;color:var(--ink);font-weight:650}button:hover{border-color:var(--teal);background:#edf5f1}button:disabled{opacity:.55;cursor:default}button.primary{background:var(--teal);color:#fff;border-color:var(--teal)}button.dark{background:var(--ink);color:#fff}button.active{background:var(--ink);color:#fff}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #bd4c21;outline-offset:4px}a{color:#005e57;text-underline-offset:3px}h1,h2,h3,p{margin-top:0}h1{font-size:clamp(36px,6vw,66px);line-height:1.05;letter-spacing:-2px;max-width:730px;margin-bottom:20px}h2{font-size:30px;line-height:1.2;letter-spacing:-.8px}h3{font-size:20px;line-height:1.25;margin-bottom:12px}.wrap{max-width:1160px;margin:auto;padding:0 28px}.top{border-bottom:1px solid var(--line);background:var(--paper)}.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:17px;padding-bottom:17px}.brand{font-size:22px;font-weight:850;letter-spacing:-1px}.brand span{color:var(--teal)}.tiny,.muted{color:var(--muted)}.tiny{font-size:13px}.eyebrow{text-transform:uppercase;font-size:12px;font-weight:800;letter-spacing:2px;color:var(--teal);margin-bottom:16px}.tools,.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.tools{justify-content:flex-end}.clock{font-variant-numeric:tabular-nums;min-width:55px}.hero{display:grid;grid-template-columns:1.5fr 1fr;gap:48px;padding:45px 0 25px;align-items:center}.lead{font-size:19px;max-width:680px}.art{background:var(--ink);border-radius:24px;min-height:255px;position:relative;padding:30px;color:white;display:flex;align-items:center;justify-content:center}.art svg{width:100%;max-width:300px}.tag{display:inline-block;border-radius:100px;background:#e5eee7;padding:5px 12px;font-size:12px;font-weight:750}.tag.lime{background:var(--lime)}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.spaced{margin-top:24px}.nav{display:flex;gap:6px;overflow-x:auto;padding:20px 0 16px}.nav button{white-space:nowrap;font-size:14px;padding:9px 13px}.progress{height:5px;background:#dce3dc;border-radius:5px;overflow:hidden}.progress div{height:100%;background:var(--teal);transition:width .2s}.section-head{display:flex;justify-content:space-between;align-items:start;gap:20px;margin:25px 0}.section-head h2{margin-bottom:8px}.number{font-size:13px;font-weight:800;color:var(--teal)}.sandbox{background:#f1f4ef;border-radius:12px;padding:18px;margin:16px 0;min-height:145px}.sandbox button{margin:4px}.feedback{border-left:4px solid var(--teal);padding:10px 13px;background:#edf5f0;margin-top:14px;font-size:14px}.note{border-left:4px solid #d9a745;background:#fff8e5;padding:14px 18px}.metrics{font-size:13px;color:var(--muted);margin:12px 0}.linkbox{background:#eaf0eb;padding:15px;border-radius:12px;font-size:14px;margin-top:16px}.linkbox p:last-child{margin-bottom:0}label{display:block;font-weight:650;margin:12px 0 6px}input[type=text],input[type=number],textarea,select{width:100%;padding:11px 12px;border:1px solid #879b95;border-radius:8px;color:var(--ink);background:white}textarea{resize:vertical;min-height:85px}input[type=range]{width:100%}fieldset{border:0;padding:0;margin:0 0 22px}legend{font-weight:750;margin-bottom:10px}.option{display:flex;align-items:start;gap:10px;padding:11px 14px;border:1px solid var(--line);border-radius:9px;font-weight:450;cursor:pointer}.option:has(input:checked){background:#e4f1e9;border-color:var(--teal)}input[type=radio]{margin-top:5px;accent-color:var(--teal)}.footer{border-top:1px solid var(--line);margin-top:35px;padding:22px 0 35px;font-size:13px}.footer p{margin-bottom:6px}.hidden{display:none!important}.split{display:flex;justify-content:space-between;gap:15px;align-items:center}.digits{font:700 26px/2 ui-monospace,monospace;letter-spacing:2px;overflow-wrap:anywhere}.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{padding:8px 13px;background:#fff;border:1px solid var(--line);border-radius:8px}.dot{display:inline-block;width:28px;height:28px;border-radius:50%;background:var(--teal);border:2px solid var(--teal)}.square{border-radius:3px}.dots{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;padding:16px 5px}.group{display:flex;gap:8px;align-items:center}.region{border:2px solid var(--teal);border-radius:12px;padding:13px}.targetarea{height:190px;position:relative;background:white;border:1px dashed #8da29a;border-radius:10px;margin:10px 0}.targetarea button{position:absolute;margin:0;padding:0;border-radius:50%;background:var(--teal);color:#fff}.targetarea .start{left:5%;top:70px;width:70px;height:48px;border-radius:8px}.targetarea .target{right:6%;top:62px}.list{display:flex;flex-wrap:wrap;gap:7px}.list button{font-size:14px;padding:8px 10px;margin:0}.stat{font-size:36px;font-weight:800;line-height:1.2}.correct{color:#00664d}.incorrect{color:#a33218}.report table{border-collapse:collapse;width:100%;font-size:14px;margin:15px 0}.report th,.report td{text-align:left;border-bottom:1px solid var(--line);padding:10px;vertical-align:top}.table-scroll{overflow:auto}.result-item{break-inside:avoid;border-bottom:1px solid var(--line);padding:15px 0}.report p{overflow-wrap:anywhere}summary{cursor:pointer;font-weight:750;padding:6px 0}.help-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.help-grid p{background:#f1f4ef;padding:12px;border-radius:8px;margin:0;font-size:14px}.aesthetic{padding:18px;max-width:320px}.aesthetic.pretty{background:#153f43;color:white;border-radius:20px;box-shadow:0 8px 0 #d0dfd4}.aesthetic.plain{background:#fff;border:1px solid #758881}.aesthetic label{color:inherit}.aesthetic .cost{font-size:30px;font-weight:800}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}#notice{margin:14px 0}dialog{max-width:480px;border:1px solid var(--line);border-radius:20px;padding:30px}dialog::backdrop{background:#142b3177}@media(max-width:760px){.wrap{padding:0 16px}.hero{grid-template-columns:1fr;gap:20px;padding-top:30px}.art{min-height:160px}.art svg{max-height:160px}.grid,.three,.help-grid{grid-template-columns:1fr}.top .wrap{align-items:start}.tools{gap:6px}.tools button{padding:6px 9px;font-size:13px}.card{padding:18px}.section-head{display:block}h2{font-size:26px}.report th,.report td{padding:7px}}@media print{body{background:#fff;font-size:11pt}.top,.nav,.progress,.footer,.no-print,#notice{display:none!important}.wrap{max-width:none;padding:0}.card{border:0;padding:0}.report h2{font-size:22pt}.report h3{margin-top:20px}.report .three{display:flex;gap:25px}.report .stat{font-size:23pt}.report table{font-size:10pt}.report .result-item{break-inside:avoid}a{color:inherit}}
+</style>
 </head>
 <body>
-<a class="skip" href="#main">Ir al laboratorio</a>
-<header>
-  <div class="wrap bar">
-    <div class="brand"><span class="brand-mark" aria-hidden="true">01</span> binario <small>/ laboratorio de aula</small></div>
-    <span class="tag">Prueba de concepto · v2.0</span>
-  </div>
-</header>
-<main id="main" class="wrap">
-  <section class="hero" aria-labelledby="page-title">
-    <p class="eyebrow">Sistemas de numeración</p>
-    <h1 id="page-title">Piensa en bits. Mantén el foco.</h1>
-    <p class="lead">Resuelve en pantalla completa, con esta página visible y enfocada. Perder cualquiera de estas condiciones genera una incidencia: dos avisos y reinicio recuperable en la tercera.</p>
-  </section>
-
-  <section class="rules" aria-label="Norma de la actividad">
-    <div><strong>Dos avisos. Un reinicio.</strong><p>El seguimiento empieza al pulsar «Comenzar» y termina al entregar o reiniciarse el formulario.</p></div>
-    <ol class="steps">
-      <li class="step" id="step-1"><span class="step-number">01</span><b>Primer aviso</b>Conservas tus respuestas.</li>
-      <li class="step" id="step-2"><span class="step-number">02</span><b>Último aviso</b>La siguiente salida reinicia.</li>
-      <li class="step" id="step-3"><span class="step-number">03</span><b>Reinicio</b>El formulario queda vacío.</li>
-    </ol>
-  </section>
-
-  <p id="compatibility" class="notice error" role="alert" hidden></p>
-  <noscript><p class="notice error">Debes activar JavaScript para usar esta prueba. El formulario permanece deshabilitado.</p></noscript>
-
-  <div class="layout">
-    <section class="card" aria-labelledby="exercise-title">
-      <div class="card-head">
-        <div><h2 id="exercise-title">Del decimal al binario</h2><p class="hint">Construye el resultado y comprueba su valor.</p></div>
-        <span id="phase" class="badge" data-phase="ready" role="status">En espera</span>
-      </div>
-
-      <div class="start-box" id="start-box">
-        <label class="consent"><input type="checkbox" id="consent"><span>He leído la norma: debo mantener la pantalla completa, la visibilidad y el foco. Cambiar de ventana o pestaña, minimizar, salir de pantalla completa o recargar puede generar una incidencia. La tercera vacía mis respuestas. Si necesito salir, aviso al profesor.</span></label>
-        <button class="btn btn-primary" type="button" id="start" disabled>Entrar en pantalla completa y comenzar</button>
-      </div>
-
-      <div class="guard-panel" aria-label="Condiciones de la práctica">
-        <div class="guard-statuses">
-          <span class="guard-status" id="status-fullscreen">Pantalla completa: no</span>
-          <span class="guard-status" id="status-focus">Foco: comprobando</span>
-          <span class="guard-status" id="status-visible">Visibilidad: comprobando</span>
-        </div>
-        <p class="hint" id="guard-note" role="status">El formulario se habilitará al comenzar en pantalla completa.</p>
-      </div>
-      <p id="fullscreen-error" class="notice error" role="alert" hidden></p>
-      <form id="lab-form" autocomplete="off">
-        <fieldset id="answer-fields" disabled>
-          <legend class="sr-only">Respuestas del laboratorio de binario</legend>
-          <div class="question">
-            <label class="question-label" for="binary"><span class="q-no">01</span>Convierte 45 a binario usando seis bits</label>
-            <div class="conversion"><span class="source number">45<sub>10</sub></span><span class="arrow" aria-hidden="true">→</span><input id="binary" name="binary" type="text" inputmode="numeric" pattern="[01]{6}" maxlength="6" placeholder="Escribe seis bits" title="Escribe exactamente seis caracteres, solo 0 o 1." required></div>
-          </div>
-          <div class="question">
-            <fieldset><legend><span class="q-no">02</span>Selecciona los pesos que suman 45</legend><p class="hint">Cada casilla marcada representa un bit con valor 1.</p>
-              <div class="bits">
-                <label class="bit">32<input name="weights" type="checkbox" value="32" aria-label="Peso 32"></label>
-                <label class="bit">16<input name="weights" type="checkbox" value="16" aria-label="Peso 16"></label>
-                <label class="bit">8<input name="weights" type="checkbox" value="8" aria-label="Peso 8"></label>
-                <label class="bit">4<input name="weights" type="checkbox" value="4" aria-label="Peso 4"></label>
-                <label class="bit">2<input name="weights" type="checkbox" value="2" aria-label="Peso 2"></label>
-                <label class="bit">1<input name="weights" type="checkbox" value="1" aria-label="Peso 1"></label>
-              </div>
-              <p id="sum" class="sum" aria-live="polite">Suma seleccionada: —</p>
-            </fieldset>
-          </div>
-          <div class="question">
-            <label class="question-label" for="decimal"><span class="q-no">03</span>Convierte este número binario a decimal</label>
-            <div class="conversion"><span class="source number">11010<sub>2</sub></span><span class="arrow" aria-hidden="true">→</span><input id="decimal" name="decimal" type="number" min="0" max="63" step="1" placeholder="Valor decimal" required></div>
-          </div>
-          <div class="question">
-            <label class="question-label" for="reasoning">Explica tu procedimiento <span class="optional">· opcional</span></label>
-            <textarea id="reasoning" name="reasoning" maxlength="1200" placeholder="¿Cómo has elegido los pesos de cada bit?"></textarea>
-          </div>
-        </fieldset>
-        <div class="form-footer"><p class="hint">«Entregar» solo corrige esta demo. No envía datos al profesor.</p><button class="btn btn-primary" id="submit" type="submit" disabled>Entregar respuestas</button></div>
-      </form>
-      <p id="result" class="notice" role="status" hidden></p>
-      <p id="review-note" class="notice warn" role="status" hidden>Copia recuperada para revisión. El formulario permanece bloqueado; un nuevo intento empieza vacío.</p>
-    </section>
-
-    <aside aria-label="Seguimiento y herramientas de prueba">
-      <section class="card" aria-labelledby="tracking-title">
-        <p class="eyebrow">Pantalla completa · Foco · Visibilidad</p><h2 id="tracking-title">Seguimiento del intento</h2>
-        <div class="counter-row"><div class="counter number"><b id="count">0</b><span> / 3</span></div><p class="counter-note" id="counter-note">Sin seguimiento hasta comenzar.</p></div>
-        <div class="meter" aria-hidden="true"><i id="meter-1"></i><i id="meter-2"></i><i id="meter-3"></i></div>
-        <div class="meta"><span id="attempt">Intento: —</span><span id="away">Tiempo fuera: 0 s</span></div>
-        <div class="activity"><h3>Registro local</h3><p class="hint" id="empty-log">Todavía no hay incidencias.</p><ol id="log" class="log" aria-label="Últimos eventos, del más reciente al más antiguo"></ol></div>
-      </section>
-      <section class="card tools" id="demo-tools" aria-labelledby="tools-title">
-        <p class="eyebrow">Solo para pruebas</p><h2 id="tools-title">Prueba el comportamiento</h2>
-        <p class="hint">Prueba cambiando de ventana, saliendo de pantalla completa o con estas simulaciones identificadas en el registro.</p>
-        <button class="btn wide" type="button" id="simulate" disabled>Simular una ocultación</button>
-        <button class="btn wide" type="button" id="simulate-blur" disabled>Simular pérdida de foco</button>
-        <button class="btn wide" type="button" id="simulate-combined" disabled>Simular salida con tres eventos</button>
-        <button class="btn wide" type="button" id="exit-fullscreen" hidden>Salir de pantalla completa (real)</button>
-        <button class="btn wide" type="button" id="recover" disabled>Recuperar última copia</button>
-        <button class="btn btn-danger wide" type="button" id="restart">Reiniciar demo completa</button>
-        <p class="hint">Estos controles no están protegidos: no son un acceso de profesor. Se deben retirar al integrar la demo.</p>
-      </section>
-    </aside>
-  </div>
-  <footer class="footnote">
-    <p><strong>Transparencia:</strong> no se leen otras pestañas ni se identifica qué aplicación se utiliza. Una incidencia no demuestra que se haya consultado una calculadora. El foco puede perderse también al usar controles del navegador o del sistema.</p>
-    <p id="storage-status" role="status">Comprobando el guardado en esta pestaña…</p>
-    <p>HTML autónomo · Sin dependencias externas · Sin envíos de datos · No bloquea el navegador · Escape permite salir de pantalla completa</p>
-  </footer>
-</main>
-
-<dialog id="warning" aria-labelledby="warning-title" aria-describedby="warning-message warning-detail">
-  <div class="dialog-icon" aria-hidden="true">!</div>
-  <p class="eyebrow" id="warning-kicker">Seguimiento del entorno</p>
-  <h2 id="warning-title">Aviso de la actividad</h2>
-  <p id="warning-message"></p>
-  <p id="warning-detail"></p>
-  <p id="dialog-error" class="notice error" role="alert" hidden></p>
-  <button id="acknowledge" type="button" class="btn btn-primary wide" autofocus>Entendido, continuar</button>
-</dialog>
-
+<header class="top"><div class="wrap"><div class="brand">UX<span> / </span>LAB <span class="tiny">01</span></div><div class="tools"><span class="tiny">Tiempo activo</span><strong class="clock" id="clock">00:00</strong><button id="pause" onclick="togglePause()" disabled>Pausar</button><button onclick="navigate('guide')">Guía y fuentes</button></div></div></header>
+<div class="wrap"><nav class="nav no-print" id="nav" aria-label="Recorrido"></nav><div class="progress no-print" role="progressbar" aria-label="Experiencias realizadas" aria-valuemin="0" aria-valuemax="12" aria-valuenow="0" id="progress"><div id="bar" style="width:0%"></div></div><div id="notice" role="status" aria-live="polite"></div><main id="main" tabindex="-1"></main><footer class="footer"><p><b>Explora → compara → explica.</b> El tiempo orienta; la velocidad no da puntos.</p><p>Datos solo en este navegador. Descarga el informe antes de cerrar o cambiar de dispositivo. No se envían automáticamente al profesor.</p><div class="row"><span id="storageStatus">Guardado local disponible.</span><button onclick="document.getElementById('resetDialog').showModal()">Nueva sesión</button></div></footer></div>
+<dialog id="resetDialog"><h2>¿Empezar de nuevo?</h2><p>Se borrarán las respuestas y el progreso de esta sesión en este navegador. Descarga antes tu informe.</p><div class="row"><button onclick="this.closest('dialog').close()">Cancelar</button><button class="primary" onclick="resetSession()">Borrar y empezar</button></div></dialog>
 <script>
-(() => {
-  "use strict";
-
-  // PRUEBA DE CONCEPTO. Cliente manipulable, sin autenticación ni envíos de datos.
-  // Integración: adaptar readAnswers/writeAnswers, inicio y entrega al laboratorio real.
-  const LIMIT = 3;
-  const SHOW_DEMO_TOOLS = true; // Retirar los controles públicos antes de usar en evaluación.
-  const RETURN_SETTLE_MS = 200; // Solo agrupa la recuperación; nunca retrasa el recuento.
-  const STORAGE_KEY = "binario-environment-poc:v2:" + location.pathname;
-  const VALID_WEIGHTS = [32, 16, 8, 4, 2, 1];
-  const REASONS = {
-    hidden: "página oculta", blur: "pérdida de foco",
-    fullscreen: "salida de pantalla completa", pagehide: "recarga o abandono de la página"
-  };
-  const $ = (id) => document.getElementById(id);
-  const form = $("lab-form");
-  const fields = $("answer-fields");
-  const dialog = $("warning");
-  const root = document.documentElement;
-  const supportsAPIs = "visibilityState" in document && typeof document.hasFocus === "function"
-    && typeof dialog.showModal === "function" && typeof root.requestFullscreen === "function"
-    && document.fullscreenEnabled === true;
-  let storageAvailable = true;
-  let storageNote = "";
-  let returnTimer = null;
-  let busy = false;
-  let errorText = "";
-
-  function emptyAnswers() { return { binary: "", weights: [], decimal: "", reasoning: "" }; }
-  function newState() {
-    return { version: 2, phase: "ready", attempt: 0, count: 0, awaySince: null,
-      awayMs: 0, episode: null, lastReasons: [], pending: null,
-      answers: emptyAnswers(), backup: null, result: null, events: [] };
-  }
-  function sanitizeAnswers(value) {
-    const a = value && typeof value === "object" ? value : {};
-    const text = (key, max) => typeof a[key] === "string" ? a[key].slice(0, max) : "";
-    return { binary: text("binary", 6), decimal: text("decimal", 20), reasoning: text("reasoning", 1200),
-      weights: VALID_WEIGHTS.filter((n) => Array.isArray(a.weights) && a.weights.includes(n)) };
-  }
-  const validReasons = (a) => Object.keys(REASONS).filter((r) => Array.isArray(a) && a.includes(r));
-  const validTime = (n) => Number.isFinite(n) && n >= 0 && n <= 8640000000000000;
-
-  // Saneado de guardados accidentales, NO protección frente a manipulación deliberada.
-  function loadState() {
-    let raw;
-    try { raw = sessionStorage.getItem(STORAGE_KEY); }
-    catch { storageAvailable = false; return newState(); }
-    if (!raw) return newState();
-    try {
-      const s = JSON.parse(raw);
-      if (!s || s.version !== 2 || !["ready", "active", "submitted", "reset", "review"].includes(s.phase)
-          || !Number.isInteger(s.count) || s.count < 0 || s.count > LIMIT
-          || !Number.isSafeInteger(s.attempt) || s.attempt < 0
-          || (s.phase === "active" && s.count >= LIMIT)) throw new Error("Estado inválido");
-      return { ...newState(), phase: s.phase, attempt: s.attempt, count: s.count,
-        answers: sanitizeAnswers(s.answers), lastReasons: validReasons(s.lastReasons),
-        awaySince: validTime(s.awaySince) ? s.awaySince : null,
-        awayMs: Number.isFinite(s.awayMs) && s.awayMs >= 0 ? s.awayMs : 0,
-        episode: s.episode && validTime(s.episode.at) ? {
-          at: s.episode.at, reasons: validReasons(s.episode.reasons), source: s.episode.source === "demo" ? "demo" : "real"
-        } : null,
-        pending: ["first", "last", "reset", "resume"].includes(s.pending) ? s.pending : null,
-        result: Number.isInteger(s.result) && s.result >= 0 && s.result <= 3 ? s.result : null,
-        backup: s.backup && typeof s.backup === "object" ? {
-          answers: sanitizeAnswers(s.backup.answers), attempt: Number.isSafeInteger(s.backup.attempt) ? s.backup.attempt : 0
-        } : null,
-        events: (Array.isArray(s.events) ? s.events : [])
-          .filter((e) => e && typeof e.text === "string" && validTime(e.at))
-          .slice(-40).map((e) => ({ at: e.at, text: e.text.slice(0, 300) })) };
-    } catch {
-      storageNote = "Se descartó un guardado no válido. La demo empieza de nuevo. ";
-      return newState();
-    }
-  }
-  let state = loadState();
-  // Al restaurar un intento no se inventa otra salida por arrancar sin fullscreen.
-  // pagehide/visibilitychange guardan la salida anterior cuando el navegador los emite.
-  let restoring = state.phase === "active";
-  if (restoring && !state.pending) state.pending = "resume";
-
-  function readSignals() {
-    return { visible: document.visibilityState === "visible", focused: document.hasFocus(),
-      fullscreen: document.fullscreenElement === root };
-  }
-  let signals = readSignals();
-  const isSafe = (s) => s.visible && s.focused && s.fullscreen;
-  function canAnswer() {
-    return supportsAPIs && state.phase === "active" && !state.pending && !state.episode
-      && !restoring && !busy && isSafe(signals) && isSafe(readSignals());
-  }
-  function updateStorageStatus() {
-    $("storage-status").textContent = storageNote + (storageAvailable
-      ? "Guardado local de esta pestaña: respuestas, contador y copia. La recarga puede generar una incidencia; para continuar se exige de nuevo pantalla completa. No es almacenamiento permanente ni seguro."
-      : "Guardado no disponible. La demo funciona en memoria: los datos, el contador y la copia se pierden al recargar.");
-  }
-  function persist() {
-    if (storageAvailable) {
-      try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-      catch { storageAvailable = false; }
-    }
-    updateStorageStatus();
-  }
-  function addEvent(text) {
-    state.events.push({ at: Date.now(), text });
-    state.events = state.events.slice(-40);
-  }
-  function readAnswers() {
-    return { binary: $("binary").value,
-      weights: Array.from(form.querySelectorAll('[name="weights"]:checked'), (el) => Number(el.value)),
-      decimal: $("decimal").value, reasoning: $("reasoning").value };
-  }
-  function writeAnswers(answers) {
-    $("binary").value = answers.binary;
-    $("decimal").value = answers.decimal;
-    $("reasoning").value = answers.reasoning;
-    form.querySelectorAll('[name="weights"]').forEach((el) => { el.checked = answers.weights.includes(Number(el.value)); });
-    updateSum();
-  }
-  function updateSum() {
-    const weights = readAnswers().weights;
-    $("sum").textContent = weights.length
-      ? "Suma seleccionada: " + weights.join(" + ") + " = " + weights.reduce((a, b) => a + b, 0)
-      : "Suma seleccionada: —";
-  }
-  function render() {
-    const active = state.phase === "active";
-    const enabled = canAnswer();
-    const phases = { ready: "En espera", active: enabled ? "En curso" : "En pausa", submitted: "Entregado", reset: "Reiniciado", review: "En revisión" };
-    $("phase").textContent = phases[state.phase];
-    $("phase").dataset.phase = active && !enabled ? "paused" : state.phase;
-    $("count").textContent = String(state.count);
-    $("attempt").textContent = "Intento: " + (state.attempt || "—");
-    $("away").textContent = "Tiempo fuera: " + Math.round(state.awayMs / 1000) + " s";
-    $("counter-note").textContent = active
-      ? (state.count === 2 ? "La próxima incidencia reinicia el formulario." : "Una incidencia por salida, aunque coincidan varios eventos.")
-      : state.phase === "ready" ? "Sin seguimiento hasta comenzar." : "Intento detenido. No se suman incidencias.";
-    for (let n = 1; n <= LIMIT; n++) {
-      $("step-" + n).classList.toggle("done", n <= state.count);
-      $("meter-" + n).classList.toggle("filled", n <= state.count);
-    }
-    for (const [key, label] of [["fullscreen", "Pantalla completa"], ["focused", "Foco"], ["visible", "Visibilidad"]]) {
-      const el = $(key === "focused" ? "status-focus" : "status-" + key);
-      el.dataset.ok = String(signals[key]);
-      el.textContent = label + ": " + (signals[key] ? "sí" : "no");
-    }
-    $("guard-note").textContent = active
-      ? enabled ? "Puedes resolver: pantalla completa, página visible y foco activo."
-        : "Respuestas bloqueadas. Vuelve al laboratorio y pulsa «Continuar» en el aviso; se requiere pantalla completa y foco."
-      : state.phase === "ready" ? "Maximizar o pulsar F11 no sustituye al botón de inicio de esta demo."
-      : "El seguimiento ha terminado. Un nuevo intento empieza vacío y exige pantalla completa.";
-    fields.disabled = !enabled;
-    $("submit").disabled = !enabled;
-    $("start-box").hidden = active;
-    $("start").textContent = busy && !active ? "Activando pantalla completa…"
-      : state.attempt ? "Pantalla completa y nuevo intento (vacío)" : "Entrar en pantalla completa y comenzar";
-    $("start").disabled = !$("consent").checked || !supportsAPIs || Boolean(state.pending) || busy;
-    for (const id of ["simulate", "simulate-blur", "simulate-combined"]) $(id).disabled = !enabled;
-    $("exit-fullscreen").hidden = !signals.fullscreen;
-    $("exit-fullscreen").disabled = busy;
-    $("recover").disabled = !state.backup || !["reset", "review"].includes(state.phase) || Boolean(state.pending) || busy;
-    $("restart").disabled = busy || active; // Evita el confirm nativo durante un intento.
-    $("restart").title = active ? "Entrega o termina el intento antes de reiniciar toda la demo." : "";
-    $("review-note").hidden = state.phase !== "review";
-    $("result").hidden = state.result === null;
-    if (state.result !== null) $("result").textContent = "Entrega local completada: " + state.result + "/3 apartados correctos. El seguimiento ha terminado. La explicación no se califica automáticamente.";
-    $("fullscreen-error").hidden = !errorText;
-    $("fullscreen-error").textContent = errorText;
-    $("dialog-error").hidden = !errorText;
-    $("dialog-error").textContent = errorText;
-    $("empty-log").hidden = state.events.length > 0;
-    const fragment = document.createDocumentFragment();
-    for (const event of [...state.events].reverse()) {
-      const li = document.createElement("li");
-      const time = document.createElement("time");
-      const date = new Date(event.at);
-      time.dateTime = date.toISOString();
-      time.textContent = date.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-      li.append(time, document.createTextNode(event.text));
-      fragment.append(li);
-    }
-    $("log").replaceChildren(fragment);
-  }
-
-  // No se fuerza window.focus(): el aviso se presenta dentro del laboratorio al volver.
-  function showNotice() {
-    if (!state.pending || !signals.visible || !signals.focused || !supportsAPIs || busy) return;
-    const reset = state.pending === "reset";
-    const resume = state.pending === "resume";
-    dialog.dataset.kind = reset ? "reset" : "warning";
-    $("warning-kicker").textContent = resume ? "Intento recuperado" : "Incidencia " + state.count + " de " + LIMIT;
-    $("warning-title").textContent = reset ? "Formulario reiniciado" : resume ? "Vuelve a pantalla completa" : state.pending === "last" ? "Último aviso" : "Primer aviso";
-    const reasonText = state.lastReasons.map((r) => REASONS[r]).join(" · ");
-    $("warning-message").textContent = reset
-      ? "Se ha registrado la tercera incidencia. Se han vaciado todas las respuestas y se ha detenido este intento."
-      : resume ? "Se ha recuperado el intento guardado. Las respuestas seguirán bloqueadas hasta que vuelvas a pantalla completa."
-      : (reasonText ? "Detectado: " + reasonText + ". " : "Has salido del entorno de la práctica. ")
-        + (state.pending === "last" ? "La próxima incidencia borrará las respuestas de este intento." : "Tus respuestas se conservan. La tercera incidencia las borrará.");
-    $("warning-detail").textContent = reset
-      ? "Se conserva una copia local para revisión. Puedes recuperarla con la herramienta de demo; no es un acceso docente protegido."
-      : "Para continuar: pantalla completa, página visible y foco. Varios eventos de una misma salida cuentan solo una vez. Si necesitas salir, avisa al profesor.";
-    $("acknowledge").textContent = reset ? "Entendido, revisar el reinicio"
-      : signals.fullscreen ? "Entendido, continuar" : "Volver a pantalla completa y continuar";
-    $("acknowledge").disabled = busy;
-    if (!dialog.open) dialog.showModal();
-  }
-  function cancelRecovery() {
-    if (returnTimer !== null) clearTimeout(returnTimer);
-    returnTimer = null;
-  }
-  function finishEpisode() {
-    cancelRecovery();
-    if (state.awaySince !== null) state.awayMs += Math.max(0, Date.now() - state.awaySince);
-    state.awaySince = null;
-    state.episode = null;
-  }
-
-  /** Guarda una incidencia inmediatamente. Las señales relacionadas comparten episodio. */
-  function recordIncident(reasons, source = "real") {
-    if (state.phase !== "active" || restoring) return;
-    if (state.episode) {
-      const extra = reasons.filter((r) => !state.episode.reasons.includes(r));
-      if (extra.length) {
-        state.episode.reasons.push(...extra);
-        state.lastReasons = [...state.episode.reasons];
-        addEvent("Misma incidencia " + state.count + ": también " + extra.map((r) => REASONS[r]).join(" · ") + ". No se suma otra.");
-      }
-      return;
-    }
-    state.answers = readAnswers();
-    state.count += 1;
-    state.awaySince = Date.now();
-    state.episode = { at: state.awaySince, reasons: [...reasons], source };
-    state.lastReasons = [...reasons];
-    addEvent("Incidencia " + state.count + "/" + LIMIT + (source === "demo" ? " · SIMULADA · " : " · navegador · ") + reasons.map((r) => REASONS[r]).join(" · "));
-    if (state.count >= LIMIT) {
-      state.backup = { answers: sanitizeAnswers(state.answers), attempt: state.attempt };
-      state.answers = emptyAnswers();
-      state.result = null;
-      state.phase = "reset";
-      state.pending = "reset";
-      $("consent").checked = false;
-      finishEpisode();
-      writeAnswers(state.answers); // Vacía el DOM, el estado, el cálculo y después el guardado.
-      addEvent("Formulario vaciado. Copia del intento " + state.attempt + " conservada para revisión.");
-    } else state.pending = state.count === LIMIT - 1 ? "last" : "first";
-  }
-
-  function monitor(next = readSignals(), source = "real", forcedReasons = []) {
-    signals = next;
-    const reasons = [...new Set([
-      ...(!next.visible ? ["hidden"] : []), ...(!next.focused ? ["blur"] : []),
-      ...(!next.fullscreen ? ["fullscreen"] : []), ...forcedReasons
-    ])];
-    if (reasons.length) {
-      cancelRecovery();
-      recordIncident(reasons, source);
-    } else if (state.episode && state.phase === "active" && !restoring && returnTimer === null) {
-      // Solo se rearma tras recuperar TODAS las condiciones de forma estable.
-      // No hay contador temporizado ni sanción por duración.
-      returnTimer = setTimeout(() => {
-        returnTimer = null;
-        signals = readSignals();
-        if (isSafe(signals) && state.phase === "active" && !restoring) {
-          finishEpisode();
-          persist(); render(); showNotice();
-        } else monitor(signals);
-      }, RETURN_SETTLE_MS);
-    }
-    persist(); render(); showNotice();
-  }
-
-  async function enterFullscreen() {
-    if (document.fullscreenElement === root) return;
-    if (!supportsAPIs) throw new Error("Pantalla completa no disponible");
-    // Debe invocarse desde el clic; no se solicita automáticamente al recuperar foco.
-    // El diálogo se cierra para no quedar por debajo del elemento fullscreen en la top layer.
-    if (dialog.open) dialog.close();
-    let timer;
-    try {
-      await Promise.race([
-        root.requestFullscreen(),
-        new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("Sin respuesta del navegador")), 5000); })
-      ]);
-      if (document.fullscreenElement !== root) throw new Error("La pantalla completa no se ha activado");
-    } finally { clearTimeout(timer); }
-  }
-  function setFullscreenError() {
-    errorText = "No se pudo activar la pantalla completa. La práctica sigue bloqueada. Abre el HTML como página independiente y revisa los permisos del navegador; después vuelve a pulsar el botón.";
-  }
-
-  $("consent").addEventListener("change", render);
-  $("start").addEventListener("click", async () => {
-    if (!supportsAPIs || !$("consent").checked || state.phase === "active" || state.pending || busy || document.hidden) return;
-    busy = true; errorText = ""; render();
-    try {
-      await enterFullscreen();
-      signals = readSignals();
-      if (!isSafe(signals)) throw new Error("La página no está enfocada o visible");
-      cancelRecovery(); restoring = false;
-      Object.assign(state, { phase: "active", attempt: state.attempt + 1, count: 0, awayMs: 0,
-        awaySince: null, episode: null, lastReasons: [], pending: null, result: null, answers: emptyAnswers() });
-      writeAnswers(state.answers);
-      addEvent("Intento " + state.attempt + " iniciado en pantalla completa. Seguimiento de foco y visibilidad activo.");
-    } catch { setFullscreenError(); }
-    finally {
-      busy = false; signals = readSignals(); persist(); render(); showNotice();
-      if (canAnswer()) $("binary").focus();
-    }
-  });
-
-  async function acknowledge() {
-    if (!state.pending || busy || document.hidden || !document.hasFocus()) return;
-    if (state.pending === "reset") {
-      state.pending = null; errorText = "";
-      addEvent("Reinicio reconocido.");
-      if (dialog.open) dialog.close();
-      persist(); render(); $("consent").focus(); return;
-    }
-    busy = true; errorText = ""; $("acknowledge").disabled = true; render();
-    try {
-      await enterFullscreen();
-      signals = readSignals();
-      if (!isSafe(signals)) throw new Error("Falta visibilidad o foco");
-      // No cerrar un eventual aviso de reinicio ocurrido mientras se pedía fullscreen.
-      if (state.phase !== "active") return;
-      restoring = false; finishEpisode();
-      addEvent(state.pending === "resume" ? "Intento reanudado en pantalla completa." : "Aviso reconocido. Se reanuda en pantalla completa y con foco.");
-      state.pending = null;
-      if (dialog.open) dialog.close();
-    } catch { setFullscreenError(); }
-    finally {
-      busy = false; signals = readSignals(); persist(); render(); showNotice();
-      if (canAnswer()) $("binary").focus();
-    }
-  }
-  $("acknowledge").addEventListener("click", acknowledge);
-  // No se atrapa la salida del navegador. Escape no equivale a aceptar ni habilita el formulario.
-  dialog.addEventListener("cancel", (event) => { event.preventDefault(); });
-
-  form.addEventListener("input", () => {
-    if (!canAnswer()) { writeAnswers(state.answers); return; }
-    state.answers = readAnswers(); updateSum(); persist();
-  });
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    monitor();
-    if (!canAnswer() || !form.reportValidity()) return;
-    state.answers = readAnswers();
-    const a = state.answers;
-    state.result = Number(a.binary === "101101") + Number(a.weights.join(",") === "32,8,4,1")
-      + Number(a.decimal !== "" && Number(a.decimal) === 26);
-    state.phase = "submitted"; $("consent").checked = false;
-    finishEpisode();
-    addEvent("Entrega local completada. Seguimiento terminado.");
-    persist(); render();
-  });
-
-  document.addEventListener("visibilitychange", () => monitor());
-  document.addEventListener("fullscreenchange", () => monitor());
-  // Sin captura: cambiar entre los inputs NO cuenta como perder el foco de la ventana.
-  window.addEventListener("blur", (event) => {
-    if (event.target === window) monitor({ ...readSignals(), focused: false });
-  });
-  window.addEventListener("focus", (event) => { if (event.target === window) monitor(); });
-  window.addEventListener("pagehide", () => {
-    monitor(readSignals(), "real", ["pagehide"]);
-    cancelRecovery();
-  });
-  window.addEventListener("pageshow", (event) => {
-    if (event.persisted && state.phase === "active") {
-      restoring = true;
-      if (!state.pending) state.pending = "resume";
-    }
-    monitor();
-  });
-
-  $("demo-tools").hidden = !SHOW_DEMO_TOOLS;
-  function simulate(kind) {
-    if (!SHOW_DEMO_TOOLS || !canAnswer()) return;
-    const base = readSignals();
-    if (kind === "combined") {
-      monitor({ ...base, focused: false }, "demo");
-      monitor({ ...base, focused: false, visible: false }, "demo");
-      monitor({ visible: false, focused: false, fullscreen: false }, "demo");
-    } else monitor({ ...base, [kind]: false }, "demo");
-    monitor(base, "demo");
-  }
-  $("simulate").addEventListener("click", () => simulate("visible"));
-  $("simulate-blur").addEventListener("click", () => simulate("focused"));
-  $("simulate-combined").addEventListener("click", () => simulate("combined"));
-  $("exit-fullscreen").addEventListener("click", async () => {
-    if (!SHOW_DEMO_TOOLS || busy || !document.fullscreenElement) return;
-    try { await document.exitFullscreen(); }
-    catch { errorText = "No se pudo salir mediante el botón. Usa Escape o los controles del navegador."; render(); }
-  });
-  $("recover").addEventListener("click", () => {
-    if (!SHOW_DEMO_TOOLS || !state.backup || !["reset", "review"].includes(state.phase) || state.pending || busy) return;
-    state.answers = sanitizeAnswers(state.backup.answers); state.phase = "review";
-    writeAnswers(state.answers);
-    addEvent("Copia del intento " + state.backup.attempt + " recuperada para revisión (control público de demo).");
-    persist(); render();
-  });
-  $("restart").addEventListener("click", () => {
-    if (!SHOW_DEMO_TOOLS || busy || state.phase === "active"
-        || !window.confirm("¿Reiniciar la demo? Se borrarán las respuestas, el contador, el registro y la copia local.")) return;
-    cancelRecovery(); restoring = false; state = newState(); errorText = "";
-    signals = readSignals(); $("consent").checked = false;
-    if (dialog.open) dialog.close();
-    writeAnswers(state.answers); persist(); render();
-  });
-
-  writeAnswers(state.answers);
-  if (!supportsAPIs) {
-    $("compatibility").hidden = false;
-    $("compatibility").textContent = "Pantalla completa, visibilidad o diálogo modal no disponibles o no permitidos. La práctica permanece bloqueada. Abre el HTML en una pestaña independiente de un navegador de escritorio compatible; una previsualización incrustada puede impedir la pantalla completa.";
-  }
-  persist(); render(); showNotice();
-})();
-
+'use strict';
+const KEY='ux-lab-12-v1';
+const laws=[
+ {name:'Fitts',def:'El tamaño y la distancia de un objetivo influyen en alcanzarlo.',gest:'Figura–fondo ayuda a localizar el botón; Fitts trata de alcanzarlo. Son aspectos distintos.',h:'H5 · Un botón cómodo reduce pulsaciones accidentales.',slug:'fittss-law'},
+ {name:'Jakob',def:'Las convenciones conocidas facilitan aprender una interfaz.',gest:'La experiencia previa ayuda a interpretar símbolos (relación didáctica).',h:'H4 · Mantén convenciones conocidas.',slug:'jakobs-law'},
+ {name:'Hick',def:'Más opciones y más complejidad pueden alargar una decisión.',gest:'La simplicidad visual puede acompañar una decisión sencilla, pero no es la misma ley.',h:'H8 · Prioriza opciones relevantes.',slug:'hicks-law'},
+ {name:'Miller',def:'La memoria inmediata es limitada; agrupar información puede ayudar.',gest:'La proximidad permite formar bloques visuales que facilitan la agrupación.',h:'H6 · Deja la información necesaria a la vista.',slug:'millers-law'},
+ {name:'Postel',def:'Acepta entradas razonables y devuelve información clara y consistente.',gest:'No tiene equivalencia directa en Gestalt: trata sobre cómo se interpreta una entrada.',h:'H9 · Explica cómo corregir una entrada que no puedes interpretar.',slug:'postels-law'},
+ {name:'Tesler',def:'Parte de la complejidad permanece: decide quién la gestiona.',gest:'Simplificar la apariencia no elimina el trabajo necesario. Es una comparación, no una equivalencia.',h:'H7 · Automatiza cálculos para facilitar la tarea.',slug:'teslers-law'},
+ {name:'Proximidad',def:'Lo cercano suele percibirse como un grupo.',gest:'Es el propio principio de proximidad de Gestalt: relación directa.',h:'H8 · Separa grupos para organizar la lectura.',slug:'law-of-proximity'},
+ {name:'Región común',def:'Un límite compartido sugiere pertenencia al mismo grupo.',gest:'Principio de agrupación perceptiva: una región puede competir con la proximidad.',h:'H4 · Usa tarjetas con una estructura consistente.',slug:'law-of-common-region'},
+ {name:'Semejanza',def:'Las características compartidas sugieren una relación entre elementos.',gest:'Es el principio de semejanza de Gestalt: relación directa.',h:'H4 · Acciones con la misma función deben parecer relacionadas.',slug:'law-of-similarity'},
+ {name:'Prägnanz',def:'Tendemos a interpretar formas ambiguas mediante estructuras simples.',gest:'Se relaciona directamente con buena forma o simplicidad perceptiva.',h:'H8 · Una estructura clara ayuda; no implica ocultar contenido necesario.',slug:'law-of-pragnanz'},
+ {name:'Von Restorff',def:'Un elemento diferente puede destacar en el recuerdo.',gest:'Romper la semejanza crea una diferencia perceptiva; destacar no garantiza recordar.',h:'H1 · Destaca el estado relevante con texto y forma.',slug:'von-restorff-effect'},
+ {name:'Estética–usabilidad',def:'Una apariencia atractiva puede hacer que algo parezca más fácil de usar.',gest:'Simetría y figura–fondo pueden mejorar la composición; no prueban su usabilidad.',h:'H8 · La estética debe apoyar la tarea, no tapar fallos.',slug:'aesthetic-usability-effect'}
+];
+const stations=[
+ {title:'Llegar y reconocer',sub:'¿Un botón se encuentra… o se adivina?',prompt:'Compara los tiempos de los botones y tus intentos con los iconos. ¿Qué cambiarías en la app del instituto y por qué?',ids:[0,1]},
+ {title:'Elegir y recordar',sub:'Dale un respiro a tu cabeza.',prompt:'¿Qué cambió al reducir opciones y agrupar números? Usa un dato o una observación y propone una mejora.',ids:[2,3]},
+ {title:'Que trabaje la interfaz',sub:'Una app también puede hacer los deberes.',prompt:'¿Qué trabajo hiciste tú y qué trabajo hizo el sistema? Explica una mejora que respete las entradas del usuario sin adivinarlas.',ids:[4,5]},
+ {title:'Ver grupos invisibles',sub:'El espacio también comunica.',prompt:'¿Cuándo cambió tu percepción de los grupos? Explica la diferencia entre acercar elementos y rodearlos con un borde.',ids:[6,7]},
+ {title:'Encontrar un patrón',sub:'Parecidos, formas y significados.',prompt:'¿Por qué no conviene que «Borrar» y «Guardar» parezcan la misma acción? Relaciona tu propuesta con semejanza o buena forma.',ids:[8,9]},
+ {title:'Llamar la atención',sub:'Bonito no significa que funcione.',prompt:'Compara lo que te llamó la atención con lo que pudiste hacer. ¿Cómo comprobarías si una app bonita es realmente fácil de usar?',ids:[10,11]}
+];
+const heuristics=[['Estado visible','Muestra qué está ocurriendo.'],['Lenguaje cotidiano','Habla como tus usuarios.'],['Control y libertad','Permite cancelar o deshacer.'],['Consistencia','Reutiliza convenciones y patrones.'],['Prevenir errores','Evita fallos antes de que ocurran.'],['Reconocer, no recordar','Mantén pistas e información visibles.'],['Flexibilidad y eficiencia','Facilita caminos rápidos adecuados.'],['Diseño estético y minimalista','Da prioridad a lo relevante.'],['Recuperarse de errores','Explica el problema y la solución.'],['Ayuda y documentación','Ofrece instrucciones breves y localizables.']];
+const questions=[
+ ['En una pantalla táctil fallas al pulsar «Enviar». ¿Qué cambio aplica Fitts?', ['Hacer el botón más grande y fácil de alcanzar.','Cambiar solo el color del fondo.','Ocultar el botón hasta el final.'],0,'Fitts se refiere a alcanzar objetivos. Un área de pulsación mayor puede reducir errores (H5).'],
+ ['Una tienda usa una cesta reconocible para las compras. ¿Qué conexión es más directa?', ['Jakob y H4: aprovechar convenciones.','Miller: mostrar exactamente siete productos.','Tesler: eliminar todos los cálculos.'],0,'La experiencia con otras tiendas crea expectativas. Jakob y consistencia (H4) respaldan esa decisión.'],
+ ['Para elegir una actividad, un menú muestra 30 opciones mezcladas. ¿Qué probarías primero?', ['Añadir otras 30 para equilibrar.','Organizarlas por intereses y mostrar opciones relevantes.','Hacer todas las letras más pequeñas.'],1,'Hick sugiere estudiar el coste de decidir. Organizar opciones puede facilitarlo; el resultado debe probarse con personas.'],
+ ['Una app obliga a memorizar un código largo entre pantallas. ¿Qué solución combina Miller con H6?', ['Exigir códigos de siete letras siempre.','Dejar el código visible o permitir copiarlo, y agruparlo.','Decorar la pantalla de entrada.'],1,'Agrupar puede ayudar a la memoria; mantener el código accesible evita depender de ella. Siete no es una regla universal de menús.'],
+ ['El formulario recibe «9/10/2026». ¿Qué comportamiento aplica Postel de manera responsable?', ['Rechazarlo aunque sea comprensible.','Guardar cualquier texto como fecha.','Aceptar la fecha válida y mostrar «09/10/2026»; preguntar si hay ambigüedad.'],2,'Ser flexible no significa aceptar datos inválidos ni adivinar significados ambiguos. H9 ayuda cuando hace falta corregir.'],
+ ['Al comprar entradas, la app calcula descuentos y muestra el desglose. Según Tesler…', ['La complejidad del cálculo ha pasado al sistema.','El cálculo deja de existir.','El usuario debe memorizar la fórmula.'],0,'El trabajo necesario sigue existiendo; el sistema lo asume. El desglose permite revisar el resultado.'],
+ ['Acercas una etiqueta a su campo y separas el siguiente bloque. ¿Qué principio actúa?', ['Proximidad, compartida por UX y Gestalt.','Von Restorff, por el precio.','Postel, por el formato de fecha.'],0,'La distancia visual sugiere qué elementos van juntos, incluso sin un borde.'],
+ ['Dos recursos alejados parecen parte del mismo bloque porque una tarjeta los rodea. ¿Por qué?', ['Región común.','Fitts.','Miller.'],0,'El límite compartido crea una señal de pertenencia; no hace falta que todo esté pegado.'],
+ ['Todos los enlaces tienen subrayado y estilo común. ¿Qué relación se aplica?', ['Semejanza y H4: una función común tiene una apariencia coherente.','Postel y H9: corregir una fecha.','Hick: mostrar siempre una sola opción.'],0,'La semejanza agrupa perceptivamente; la consistencia ayuda a reconocer funciones. El color solo no debe ser la única pista.'],
+ ['Ves dos figuras superpuestas como un círculo y un cuadrado simples. Es un ejemplo de…', ['Tesler: automatizar una operación.','Prägnanz: preferir una organización perceptiva sencilla.','Jakob: seguir una convención de compras.'],1,'La buena forma trata de cómo organizamos lo que vemos, no de borrar contenido útil de cualquier interfaz.'],
+ ['Una etiqueta «Pendiente» tiene forma y texto distintos del resto. ¿Qué predice Von Restorff?', ['Que toda la clase la recordará sin excepción.','Que puede recordarse mejor por ser diferente.','Que hará más rápidos todos los botones.'],1,'El aislamiento puede favorecer el recuerdo, pero una demostración individual no garantiza el efecto ni prueba una ley.'],
+ ['La versión bonita te pareció fácil, pero ambas fallan al pagar. ¿Qué concluyes?', ['La bonita funciona mejor aunque el pago falle.','La percepción estética basta para medir usabilidad.','Hay que separar impresión y desempeño, y reparar el fallo.'],2,'Estética–usabilidad describe una percepción. Mide también éxito, errores y esfuerzo; una apariencia atractiva no arregla un fallo.']
+];
+function blank(){return {version:1,alias:'',group:'',started:false,paused:false,seconds:0,page:'home',records:Array.from({length:12},()=>[]),notes:Array(6).fill(''),answers:Array(12).fill(null),map:['','',''],redesign:'',submitted:false,finishedAt:null};}
+let s=blank(),storageOK=true;
+try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved&&saved.version===1&&Array.isArray(saved.records)&&saved.records.length===12&&Array.isArray(saved.answers)&&saved.answers.length===12)s={...s,...saved};}catch(e){storageOK=false;}
+let volatile={},lastTick=Date.now();
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>`${Math.floor(n/60).toString().padStart(2,'0')}:${Math.floor(n%60).toString().padStart(2,'0')}`;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(s));storageOK=true;}catch(e){storageOK=false;}if($('storageStatus'))$('storageStatus').textContent=storageOK?'Progreso guardado en este navegador.':'El navegador no permite guardar: descarga el informe antes de cerrar.';}
+function completed(i){return s.records[i].some(r=>r.variant==='A')&&s.records[i].some(r=>r.variant==='B');}
+function doneCount(){return laws.filter((_,i)=>completed(i)).length;}
+function log(i,variant,detail){if(s.submitted)return;s.records[i].push({variant,detail,activeSeconds:s.seconds});save();refreshChrome();const m=$('metrics'+i);if(m)m.innerHTML=metricHTML(i);}
+function metricHTML(i){return s.records[i].length?s.records[i].slice(-4).map(r=>`<div><b>${esc(r.variant)}</b> · ${esc(r.detail)}</div>`).join(''):'Todavía no hay pruebas registradas.';}
+function refreshChrome(){if($('stationCount')&&/^s[0-5]$/.test(s.page))$('stationCount').textContent=stations[Number(s.page[1])].ids.filter(completed).length+'/2 experiencias comparadas';const tabs=[['home','Inicio'],...stations.map((x,i)=>['s'+i,(i+1)+'. '+x.title]),['map','Conecta'],['quiz','Test'],['report','Informe']];$('nav').innerHTML=tabs.map(([id,title])=>`<button onclick="navigate('${id}')" ${s.page===id?'class="active" aria-current="page"':''}>${esc(title)}</button>`).join('');$('bar').style.width=doneCount()/12*100+'%';$('progress').setAttribute('aria-valuenow',doneCount());$('clock').textContent=fmt(s.seconds);$('pause').disabled=!s.started||s.submitted;$('pause').textContent=s.paused?'Continuar':'Pausar';}
+function navigate(page){Object.values(volatile).forEach(v=>{if(v.timer)clearTimeout(v.timer);});volatile={};s.page=page;save();render();$('main').focus();window.scrollTo({top:0,behavior:'instant'});}
+function flash(msg){$('notice').textContent=msg;}
+function render(){refreshChrome();$('notice').textContent=s.submitted?'Sesión finalizada. Tus resultados están guardados; puedes consultar y descargar el informe.':s.paused?'Cronómetro en pausa. Puedes seguir explorando; pulsa Continuar para medir el tiempo.':'';if(s.page==='home')home();else if(/^s[0-5]$/.test(s.page))station(Number(s.page[1]));else if(s.page==='map')mapPage();else if(s.page==='quiz')quiz();else if(s.page==='report')report();else guide();save();}
+function togglePause(){s.paused=!s.paused;lastTick=Date.now();save();refreshChrome();flash(s.paused?'Cronómetro en pausa. Puedes seguir explorando.':'Cronómetro en marcha.');}
+setInterval(()=>{const now=Date.now();if(s.started&&!s.paused&&!s.submitted&&!document.hidden){s.seconds+=(now-lastTick)/1000;$('clock').textContent=fmt(s.seconds);save();}lastTick=now;},1000);
+document.addEventListener('visibilitychange',()=>{lastTick=Date.now();});
+function home(){$('main').innerHTML=`<section class="hero"><div><p class="eyebrow">14+ años · 30 minutos · laboratorio de diseño</p><h1>¿Por qué unas apps<br>se sienten más fáciles?</h1><p class="lead">Hoy tú eres quien investiga. Pon a prueba 12 ideas de UX, juega con lo que ves y diseña una mejora para tu instituto.</p><div class="row"><span class="tag lime">12 experiencias</span><span class="tag">6 estaciones</span><span class="tag">1 informe personal</span></div></div><div class="art" aria-hidden="true"><svg viewBox="0 0 300 215"><g fill="none" stroke="#d7f279" stroke-width="3"><rect x="12" y="15" width="125" height="85" rx="15"/><circle cx="45" cy="57" r="14"/><circle cx="101" cy="57" r="14"/><path d="M162 57h102m-20-17 20 17-20 17"/><rect x="164" y="130" width="113" height="59" rx="29"/></g><g fill="#d7f279"><circle cx="32" cy="147" r="12"/><circle cx="70" cy="147" r="12"/><circle cx="108" cy="147" r="12"/><circle cx="32" cy="185" r="12"/><circle cx="70" cy="185" r="12"/><rect x="96" y="173" width="24" height="24" rx="3"/></g><text x="183" y="167" fill="#fff" font-family="system-ui" font-size="18">¡Ajá!</text></svg></div></section><div class="three spaced"><div class="card"><span class="number">01 / OBSERVA</span><h3>Prueba A y B</h3><p>Compara dos versiones. No hay que ser rápido: buscamos pistas sobre el diseño.</p></div><div class="card"><span class="number">02 / CONECTA</span><h3>Pon nombre a lo que pasa</h3><p>UX estudia la experiencia; Gestalt, cómo organizamos lo que vemos; Nielsen propone criterios para revisar interfaces.</p></div><div class="card"><span class="number">03 / EXPLICA</span><h3>Usa tus evidencias</h3><p>Completa el test y entrega un informe con resultados reales de tu sesión.</p></div></div><div class="grid spaced"><section class="card"><h3>Tu cuaderno de laboratorio</h3><p class="tiny">Usa un alias o código de clase; no necesitas escribir tu nombre completo.</p><label for="alias">Alias o código</label><input id="alias" type="text" maxlength="40" placeholder="Ej.: Equipo-07" value="${esc(s.alias)}" oninput="s.alias=this.value;save()" ${s.submitted?'disabled':''}><label for="group">Grupo (opcional)</label><input id="group" type="text" maxlength="40" placeholder="Ej.: 3.º B" value="${esc(s.group)}" oninput="s.group=this.value;save()" ${s.submitted?'disabled':''}><button class="primary spaced" onclick="start()">${s.started?'Volver a las estaciones':'Comenzar laboratorio'} →</button></section><section class="card"><h3>La ruta de 30 minutos</h3><p><b>2 min</b> · Preparación<br><b>18 min</b> · Seis estaciones de 3 min<br><b>3 min</b> · Conectar ideas y rediseñar<br><b>5 min</b> · Test de 12 preguntas<br><b>2 min</b> · Revisar y descargar el informe</p><p class="tiny">Haz una primera prueba de cada versión y dedica el resto a comparar. Por parejas, alternad quién maneja el dispositivo. Ratón, tacto y teclado son válidos; los tiempos no son comparables entre dispositivos.</p></section></div><p class="note spaced">Las llamadas «leyes de UX» reúnen principios y efectos de distintos tipos. No son promesas de que todas las personas actuarán igual. Aquí usamos una selección de 12 del catálogo, que contiene más conceptos.</p>`;}
+function start(){if(!s.alias.trim()){flash('Escribe un alias o código para identificar tu informe.');$('alias').focus();return;}s.started=true;lastTick=Date.now();navigate('s0');}
+function station(n){const st=stations[n];$('main').innerHTML=`<div class="section-head"><div><p class="eyebrow">Estación ${n+1} de 6 · 3 minutos</p><h2>${st.title}</h2><p class="muted">${st.sub}</p></div><span class="tag" id="stationCount">${st.ids.filter(completed).length}/2 experiencias comparadas</span></div><p class="tiny">1. Prueba A y B · 2. Lee las conexiones · 3. Anota una conclusión. Repetir ayuda a observar; no demuestra una ley.</p><div class="grid">${st.ids.map(i=>`<article class="card"><span class="number">${String(i+1).padStart(2,'0')} / ${laws[i].name}</span><h3 class="spaced">${titles[i]}</h3><p>${instructions[i]}</p><div id="exp${i}"></div><div class="metrics" id="metrics${i}" aria-live="polite">${metricHTML(i)}</div><details class="linkbox"><summary>¿Qué tiene que ver con UX?</summary><p class="spaced"><b>${laws[i].name}:</b> ${laws[i].def}</p><p><b>Gestalt:</b> ${laws[i].gest}</p><p><b>Nielsen:</b> ${laws[i].h}</p></details></article>`).join('')}</div><section class="card spaced"><label for="note">Tu conclusión de esta estación</label><p>${st.prompt}</p><textarea id="note" maxlength="1200" placeholder="Observé… Esto sugiere… Cambiaría…" oninput="s.notes[${n}]=this.value;save()" ${s.submitted?'disabled':''}>${esc(s.notes[n])}</textarea><div class="split spaced"><button onclick="navigate('${n?'s'+(n-1):'home'}')">← Anterior</button><button class="primary" onclick="navigate('${n<5?'s'+(n+1):'map'}')">${n<5?'Siguiente estación':'Conectar ideas'} →</button></div></section>`;st.ids.forEach(i=>drawExperiment(i));if(s.submitted)document.querySelectorAll('[id^="exp"] button,[id^="exp"] input,[id^="exp"] select').forEach(el=>el.disabled=true);}
+const titles=['Apunta y pulsa','¿Dónde están tus compras?','Elige un taller','Recuerda el código','Una fecha, dos maneras','Calcula la excursión','El poder del espacio','¿Quién va con quién?','Misma pinta, ¿misma función?','Formas dentro de formas','El elemento diferente','La primera impresión'];
+const instructions=[
+ 'En cada versión pulsa «Salida» y después el círculo «●». Haz tres recorridos. A usa un objetivo pequeño y B uno grande; la distancia es la misma.',
+ 'Busca tus compras en dos menús. Prueba símbolos poco familiares y después convenciones con texto. Se registran intentos, no tu habilidad.',
+ 'Elige un taller que sea creativo Y de interior. Prueba un catálogo corto y uno largo. Puede haber más de una elección válida.',
+ 'Mira cada código durante el tiempo que necesites (intenta unos 5 s), ocúltalo y escríbelo. A está seguido y B está agrupado. Los códigos son diferentes.',
+ 'Introduce la fecha del ejemplo: 9/10/2026. Compara un formulario rígido con uno flexible. Aquí el orden es siempre día/mes/año.',
+ 'Tres entradas cuestan 8 € cada una y tienen un descuento total de 6 €. En A calcula tú el total; en B pide a la app que lo calcule.',
+ 'Mueve el separador entre las dos parejas. Mira los extremos y registra A y B. ¿Ves cuatro elementos o dos grupos?',
+ 'Observa las cuatro figuras. En A no hay bordes; en B aparecen dos regiones. ¿Qué elementos parecen pertenecer juntos?',
+ 'Compara una barra donde todas las acciones parecen iguales con otra que distingue «Borrar». El significado permanece escrito.',
+ 'Observa dos figuras superpuestas, primero completas y después con segmentos ocultos. Decide qué formas sencillas reconoces.',
+ 'Mira las seis palabras de cada versión, ocúltalas y escribe la primera que recuerdes. En B una tiene una apariencia diferente.',
+ 'Valora la facilidad que esperas antes de probar. Después intenta reservar en las dos versiones. Tienen el mismo comportamiento.'
+];
+function variants(i,labels=['Probar A','Probar B']){return `<div class="row"><button onclick="begin(${i},'A')">${labels[0]}</button><button onclick="begin(${i},'B')">${labels[1]}</button></div><div class="sandbox" id="box${i}"><p class="muted">Elige una versión para experimentar.</p></div>`;}
+function drawExperiment(i){$('exp'+i).innerHTML=variants(i);}
+function begin(i,v){if(s.submitted)return;volatile[i]={v,t:performance.now(),errors:0,count:0};const box=$('box'+i);const r=volatile[i];
+ if(i===0){box.innerHTML=`<b>Versión ${v} · recorrido <span id="fittsCount">1</span>/3</b><div class="targetarea"><button class="start" onclick="fittsStart()">Salida</button><button class="target" aria-label="Objetivo circular" style="width:${v==='A'?26:64}px;height:${v==='A'?26:64}px;top:${v==='A'?81:62}px;right:calc(6% + ${v==='A'?19:0}px)" onclick="fittsHit(event)" disabled>●</button></div><p id="fittsMsg" role="status">Pulsa Salida para empezar cada recorrido.</p>`;r.total=0;r.misses=0;box.querySelector('.targetarea').onclick=e=>{if(r.running&&!e.target.closest('button')){r.misses++;$('fittsMsg').textContent='Fuera del objetivo. Sigue intentándolo.';}};}
+ if(i===1){let opts=v==='A'?['◈','⊞','⌁','◉']:['Inicio','Buscar','Cesta · compras','Ayuda'];box.innerHTML=`<b>Versión ${v}</b><p>Abre tus compras.</p><div class="row">${opts.map((o,j)=>`<button onclick="menuPick(${j})">${o}</button>`).join('')}</div><p id="menuMsg" role="status"></p>`;}
+ if(i===2){const items=v==='A'?[['Robótica','técnico','interior'],['Dibujo','creativo','interior'],['Fútbol','deporte','exterior'],['Huerto','naturaleza','exterior']]:[['Ajedrez','estrategia','interior'],['Fútbol','deporte','exterior'],['Huerto','naturaleza','exterior'],['Baile','movimiento','interior'],['Teatro','creativo','interior'],['Radio','comunicación','interior'],['Atletismo','deporte','exterior'],['Robótica','técnico','interior'],['Senderismo','naturaleza','exterior'],['Debate','comunicación','interior'],['Baloncesto','deporte','exterior'],['Cerámica','creativo','interior'],['Patinaje','deporte','exterior'],['Programación','técnico','interior'],['Tenis','deporte','exterior'],['Jardinería','naturaleza','exterior']];box.innerHTML=`<b>${items.length} talleres · busca creativo + interior</b><div class="list spaced">${items.map(([name,type,place])=>`<button onclick="hickPick(${type==='creativo'&&place==='interior'},'${name}')">${name}<br><small>${type} · ${place}</small></button>`).join('')}</div><p id="hickMsg" role="status"></p>`;}
+ if(i===3){r.code=v==='A'?'583914267':'726495138';box.innerHTML=`<b>Versión ${v}</b><div class="digits" id="digits">${v==='A'?r.code:r.code.match(/.{3}/g).join(' ')}</div><button onclick="hideMemory()">Ocultar y responder</button>`;}
+ if(i===4){box.innerHTML=`<b>Formulario ${v==='A'?'rígido':'flexible'}</b><label for="dateInput">Fecha de visita (día/mes/año)</label><input id="dateInput" type="text" placeholder="${v==='A'?'DD/MM/AAAA':'D/M/AAAA o DD/MM/AAAA'}" value="9/10/2026"><button onclick="dateTry()">Validar fecha</button><p id="dateMsg" role="status"></p>`;}
+ if(i===5){box.innerHTML=v==='A'?`<p><b>3 × 8 € − 6 € de descuento</b></p><label for="total">Total en euros</label><input id="total" type="number" step="0.01"><button onclick="teslerManual()">Comprobar total</button><p id="totalMsg" role="status"></p>`:`<p>3 entradas × 8 € · descuento total: 6 €</p><button onclick="teslerAuto()">Calcular y ver desglose</button><div id="autoMsg" role="status"></div>`;}
+ if(i===6){box.innerHTML=`<b>Versión ${v}: ${v==='A'?'distancias iguales':'parejas separadas'}</b><div class="dots" style="flex-wrap:nowrap;gap:0"><div class="group"><span class="dot"></span><span class="dot"></span></div><div id="gap" style="width:${v==='A'?8:65}px"></div><div class="group"><span class="dot"></span><span class="dot"></span></div></div><label for="gapRange">Separación entre parejas</label><input id="gapRange" type="range" min="8" max="65" value="${v==='A'?8:65}" oninput="$('gap').style.width=this.value+'px'"><label for="groups${i}">¿Cómo lo percibes ahora?</label><select id="groups${i}"><option value="">Elige…</option><option>Un grupo de cuatro</option><option>Dos parejas</option><option>Otra organización</option></select><button onclick="recordVisual(6)">Registrar percepción</button>`;}
+ if(i===7){box.innerHTML=`<b>Versión ${v}</b><div class="dots"><div class="group ${v==='B'?'region':''}" style="gap:30px"><span>A ●</span><span>B ■</span></div><div class="group ${v==='B'?'region':''}" style="gap:30px"><span>C ●</span><span>D ■</span></div></div><label for="groups${i}">¿Qué agrupación domina para ti?</label><select id="groups${i}"><option value="">Elige…</option><option>A–B y C–D</option><option>A–C y B–D</option><option>Las cuatro juntas</option><option>Otra organización</option></select><button onclick="recordVisual(7)">Registrar percepción</button>`;}
+ if(i===8){box.innerHTML=`<b>Versión ${v}</b><div class="row spaced"><span class="chip">Guardar</span><span class="chip">Duplicar</span><span class="chip" style="${v==='B'?'border:2px dashed #a33d14;background:#fff0e5;color:#852d0d':''}">${v==='B'?'⚠ ':''}Borrar</span></div><label for="groups${i}">¿Qué te sugiere esta apariencia?</label><select id="groups${i}"><option value="">Elige…</option><option>Las tres acciones parecen de la misma categoría</option><option>Borrar parece una acción diferente</option><option>No veo una diferencia útil</option></select><button onclick="recordVisual(8)">Registrar percepción</button>`;}
+ if(i===9){box.innerHTML=`<b>Versión ${v}</b><svg viewBox="0 0 280 140" role="img" aria-label="Un círculo y un cuadrado superpuestos${v==='B'?', con contornos parcialmente ocultos':''}" style="max-width:300px;display:block;margin:auto"><circle cx="108" cy="69" r="45" fill="none" stroke="#006a60" stroke-width="4"/><rect x="125" y="28" width="85" height="85" fill="none" stroke="#182c31" stroke-width="4"/>${v==='B'?'<path d="M75 25l30 25M139 91l30 30M180 14v28" stroke="#f1f4ef" stroke-width="18"/>':''}</svg><label for="groups${i}">¿Qué reconoces?</label><select id="groups${i}"><option value="">Elige…</option><option>Un círculo y un cuadrado</option><option>Fragmentos sin relación</option><option>Otra figura</option></select><button onclick="recordVisual(9)">Registrar percepción</button><p class="tiny">En B también interviene el cierre: completas bordes ausentes. Buena forma y cierre pueden colaborar, pero no son sinónimos.</p>`;}
+ if(i===10){r.words=v==='A'?['LUNA','BICI','NUBE','GATO','RÍO','MESA']:['PAN','TREN','SOL','FLOR','MAR','LIBRO'];box.innerHTML=`<b>Versión ${v}</b><div class="chips spaced">${r.words.map((w,j)=>`<span class="chip" style="${v==='B'&&j===3?'background:#d7f279;border:3px solid #182c31;font-weight:850':''}">${w}</span>`).join('')}</div><button class="spaced" onclick="hideWords()">Ocultar y recordar</button>`;}
+ if(i===11){box.innerHTML=`<div class="aesthetic ${v==='A'?'plain':'pretty'}"><span>ESCAPADA · MUSEO</span><h3 class="spaced">Tu próxima aventura</h3><p class="cost">18 €</p><p>3 entradas · descuento incluido</p><label for="rating">Antes de probar: facilidad esperada</label><select id="rating"><option value="">Elige…</option>${[1,2,3,4,5].map(x=>`<option value="${x}">${x} / 5 ${x===1?'· muy difícil':x===5?'· muy fácil':''}</option>`).join('')}</select><button class="spaced" onclick="beautyTry()">Reservar</button><p id="beautyMsg" role="status"></p></div>`;}
+}
+function lockBox(i){$('box'+i).querySelectorAll('button,input,select').forEach(el=>el.disabled=true);}
+function fittsStart(){const r=volatile[0];if(!r||r.count>=3)return;r.t=performance.now();r.running=true;$('box0').querySelector('.target').disabled=false;$('box0').querySelector('.start').disabled=true;$('fittsMsg').textContent='Ahora pulsa el círculo.';}
+function fittsHit(e){const r=volatile[0];if(!r.running)return;r.total+=performance.now()-r.t;r.running=false;r.count++;$('box0').querySelector('.target').disabled=true;if(r.count===3){const method=e.detail===0?'teclado/activación asistida':'puntero';log(0,r.v,`3 recorridos: ${(r.total/1000).toFixed(2)} s; fallos fuera: ${r.misses}; ${method}.`);$('fittsMsg').textContent='Tres recorridos registrados. Compara con la otra versión.';lockBox(0);}else{$('fittsCount').textContent=r.count+1;$('box0').querySelector('.start').disabled=false;$('fittsMsg').textContent='Vuelve a Salida para el siguiente recorrido.';}}
+function menuPick(j){const r=volatile[1];r.errors++;if(j===2){log(1,r.v,`${r.errors} intento(s); ${((performance.now()-r.t)/1000).toFixed(1)} s para abrir compras.`);$('menuMsg').textContent='Compras abiertas. El menú A era deliberadamente poco familiar; no era un fallo tuyo.';lockBox(1);}else $('menuMsg').textContent='Ese botón no abre las compras. Prueba otro.';}
+function hickPick(ok,name){const r=volatile[2];if(ok){log(2,r.v,`${name}: decisión en ${((performance.now()-r.t)/1000).toFixed(1)} s; elecciones no válidas: ${r.errors}.`);$('hickMsg').textContent='Cumple las dos condiciones. El tiempo incluye leer y buscar, no solo decidir.';lockBox(2);}else{r.errors++;$('hickMsg').textContent='Busca las dos etiquetas: creativo e interior.';}}
+function hideMemory(){const r=volatile[3];r.exposure=((performance.now()-r.t)/1000).toFixed(1);$('box3').innerHTML='<label for="recall">Escribe los nueve dígitos que recuerdes</label><input id="recall" type="text" inputmode="numeric" maxlength="20" autocomplete="off"><button onclick="checkMemory()">Comparar</button><p id="recallMsg" role="status"></p>';$('recall').focus();}
+function checkMemory(){const r=volatile[3],val=$('recall').value.replace(/\s/g,'');let hits=0;for(let j=0;j<9;j++)if(val[j]===r.code[j])hits++;log(3,r.v,`${hits}/9 posiciones correctas; exposición ${r.exposure} s; respuesta: ${val||'(vacía)'}.`);$('recallMsg').textContent=`Código: ${r.code}. Coinciden ${hits} de 9 posiciones. Agrupar no garantiza el mismo resultado para todos.`;lockBox(3);}
+function dateTry(){const r=volatile[4],v=$('dateInput').value.trim(),m=v.match(r.v==='A'?/^(\d{2})\/(\d{2})\/(\d{4})$/:/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);let ok=false;if(m){const d=new Date(+m[3],+m[2]-1,+m[1]);ok=+m[3]>=1900&&d.getFullYear()===+m[3]&&d.getMonth()===+m[2]-1&&d.getDate()===+m[1];}log(4,r.v,`Entrada «${v}»: ${ok?'aceptada':'rechazada'}.`);$('dateMsg').textContent=ok?`Fecha válida: ${m[1].padStart(2,'0')}/${m[2].padStart(2,'0')}/${m[3]}.`:`No se ha guardado. ${r.v==='A'?'Usa dos dígitos para día y mes, por ejemplo 09/10/2026.':'Escribe una fecha real en día/mes/año, por ejemplo 9/10/2026.'}`;}
+function teslerManual(){const r=volatile[5],v=$('total').value;if(v===''){$('totalMsg').textContent='Escribe un total para comprobarlo.';return;}const ok=Number(v)===18;log(5,'A',`Total propuesto ${v} €: ${ok?'correcto':'incorrecto'}; ${((performance.now()-r.t)/1000).toFixed(1)} s.`);$('totalMsg').textContent=ok?'Correcto: 24 € − 6 € = 18 €.':'Revisa: las tres entradas suman 24 €; resta 6 €.';if(ok)lockBox(5);}
+function teslerAuto(){log(5,'B','El sistema calculó 3 × 8 € = 24 €; 24 € − 6 € = 18 €.');$('autoMsg').innerHTML='<p><b>Total: 18 €.</b><br>Entradas: 24 € · Descuento: −6 €.<br>El cálculo sigue existiendo, pero lo hace el sistema.</p>';lockBox(5);}
+function recordVisual(i){const val=$('groups'+i).value;if(!val){flash('Elige lo que percibes antes de registrar.');return;}log(i,volatile[i].v,val+(i===6?`; separación elegida: ${$('gapRange').value} px.`:'.'));flash('Percepción registrada. Compárala con la otra versión.');lockBox(i);}
+function hideWords(){const r=volatile[10];r.exposure=((performance.now()-r.t)/1000).toFixed(1);$('box10').innerHTML='<label for="word">Primera palabra que recuerdas</label><input id="word" type="text" maxlength="40" autocomplete="off"><button onclick="wordRecord()">Registrar recuerdo</button><p id="wordMsg" role="status"></p>';$('word').focus();}
+function wordRecord(){const r=volatile[10],v=$('word').value.trim();if(!v){$('wordMsg').textContent='Escribe una palabra o «no recuerdo».';return;}log(10,r.v,`Primera palabra: ${v}; exposición ${r.exposure} s${r.v==='B'?'; elemento destacado: FLOR':''}.`);$('wordMsg').textContent='Registrado. En B destacaba FLOR. Si no la recordaste primero, tu observación también es válida.';lockBox(10);}
+function beautyTry(){const r=volatile[11],v=$('rating').value;if(!v){$('beautyMsg').textContent='Valora primero tu expectativa del 1 al 5.';return;}log(11,r.v,`Facilidad esperada: ${v}/5. Reserva: no completada por error simulado.`);$('beautyMsg').textContent='No se pudo reservar: fallo simulado del servicio. No se ha cobrado nada. Ambas versiones tienen este mismo fallo.';lockBox(11);}
+function mapPage(){const prompts=['Una barra indica «Guardando…».','El botón «Deshacer» recupera un dibujo borrado.','Una ayuda junto a un campo explica qué escribir.'];const options=heuristics.map((h,i)=>`<option value="${i+1}">H${i+1} · ${h[0]}</option>`).join('');$('main').innerHTML=`<div class="section-head"><div><p class="eyebrow">Conecta · 3 minutos</p><h2>Tres miradas al mismo diseño</h2><p class="lead">UX describe lo que ocurre; Gestalt ayuda a explicar lo que percibimos; las heurísticas orientan qué mejorar.</p></div></div><div class="three"><div class="card"><span class="tag">UX</span><h3 class="spaced">Experiencia</h3><p>¿Pude completar mi tarea? ¿Cuánto esfuerzo me costó?</p></div><div class="card"><span class="tag">Gestalt</span><h3 class="spaced">Percepción</h3><p>¿Qué veo como un grupo? ¿Qué forma destaca?</p></div><div class="card"><span class="tag">Nielsen</span><h3 class="spaced">Revisión</h3><p>¿Qué criterio me ayuda a detectar y corregir el problema?</p></div></div><section class="card spaced"><h3>Conecta una mejora con su heurística</h3><p>Estas tres conexiones son de práctica: se corrigen aquí y no suman puntos al test.</p>${prompts.map((p,i)=>`<label for="map${i}">${p}</label><select id="map${i}" onchange="s.map[${i}]=this.value;save()" ${s.submitted?'disabled':''}><option value="">Selecciona una heurística…</option>${options}</select>`).join('')}<button class="spaced" onclick="checkMap()">Comprobar conexiones</button><div id="mapFeedback" role="status"></div></section><section class="card spaced"><label for="redesign">Tu propuesta para la app del instituto</label><p>Elige un problema. Propón un cambio y justifícalo con una ley UX, un principio Gestalt cuando proceda y una heurística. No fuerces una relación si no la hay.</p><textarea id="redesign" maxlength="1800" oninput="s.redesign=this.value;save()" ${s.submitted?'disabled':''} placeholder="Problema… Cambio… Ley UX… Gestalt (o por qué no aplica)… Heurística…">${esc(s.redesign)}</textarea><p class="tiny">La revisará tu docente: claridad del problema, relación correcta y evidencia de tus pruebas. No se califica automáticamente.</p><button class="primary" onclick="navigate('quiz')">Ir al test final →</button></section>`;s.map.forEach((v,i)=>$('map'+i).value=v);}
+function checkMap(){const key=['1','3','10'];$('mapFeedback').innerHTML='<div class="feedback">'+s.map.map((v,i)=>`${i+1}. ${v===key[i]?'✓ Correcto':'Revisa'}: H${key[i]} · ${heuristics[Number(key[i])-1][0]}.`).join('<br>')+'</div>';}
+function quiz(){if(s.submitted){$('main').innerHTML='<section class="card spaced"><h2>Test finalizado</h2><p>Las respuestas de este intento ya están registradas. Encontrarás la corrección razonada en el informe.</p><button class="primary" onclick="navigate(\'report\')">Ver informe</button></section>';return;}$('main').innerHTML=`<div class="section-head"><div><p class="eyebrow">Test final · 5 minutos</p><h2>Ahora diseñas tú.</h2><p>12 situaciones · una respuesta por pregunta · 1 punto por acierto, sin penalización.</p></div><span class="tag">${doneCount()}/12 experiencias realizadas</span></div>${doneCount()<12?'<p class="note">Puedes hacer el test, pero el informe señalará las experiencias pendientes.</p>':''}<form id="quizForm" onsubmit="event.preventDefault();submitQuiz()"><div class="card">${questions.map((q,i)=>`<fieldset id="q${i}"><legend>${i+1}. ${q[0]}</legend>${q[1].map((a,j)=>`<label class="option"><input type="radio" name="q${i}" value="${j}" ${s.answers[i]===j?'checked':''} onchange="s.answers[${i}]=${j};save()"><span>${a}</span></label>`).join('')}</fieldset>`).join('')}<p>Al entregar se guarda y cierra este intento. Después podrás consultar las soluciones.</p><button class="primary" type="submit">Entregar test y generar informe</button><div id="quizWarning" role="alert"></div></div></form>`;}
+function submitQuiz(){const first=s.answers.findIndex(a=>a===null);if(first!==-1){$('quizWarning').textContent=`Falta responder la pregunta ${first+1}.`;$('q'+first).scrollIntoView({behavior:'smooth',block:'center'});$('q'+first).querySelector('input').focus();return;}s.submitted=true;s.finishedAt=new Date().toISOString();s.paused=true;save();navigate('report');}
+function score(){return s.answers.reduce((n,a,i)=>n+(a===questions[i][2]?1:0),0);}
+function reportData(){return {schema:'ux-lab-report-v1',generatedAt:new Date().toISOString(),alias:s.alias||'Sin alias',group:s.group,submitted:s.submitted,finishedAt:s.finishedAt,activeSeconds:Math.round(s.seconds),score:s.submitted?score():null,maxScore:12,completedExperiments:doneCount(),experiments:laws.map((l,i)=>({law:l.name,completed:completed(i),trials:s.records[i]})),reflections:stations.map((x,i)=>({station:x.title,text:s.notes[i]})),connections:s.map.map((v,i)=>({selected:v||null,expected:['1','3','10'][i]})),redesign:s.redesign,test:questions.map((q,i)=>({law:laws[i].name,question:q[0],selected:s.answers[i]===null?null:q[1][s.answers[i]],correctAnswer:s.submitted?q[1][q[2]]:null,correct:s.submitted?s.answers[i]===q[2]:null,explanation:s.submitted?q[3]:null}))};}
+function reportHTML(){const d=reportData(),pending=laws.filter((_,i)=>!completed(i)).map(l=>l.name);return `<article class="report"><p class="eyebrow">UX / LAB · Informe ${s.submitted?'final':'provisional'}</p><h2>Lo que has descubierto</h2><p><b>${esc(d.alias)}</b>${d.group?' · '+esc(d.group):''} · Generado: ${new Date().toLocaleString('es-ES')}</p><div class="three"><div class="card"><div class="stat">${s.submitted?score()+'/12':'—'}</div><span>Aciertos del test${s.submitted?' · '+Math.round(score()/12*100)+' %':' · pendiente'}</span></div><div class="card"><div class="stat">${doneCount()}/12</div><span>Experiencias con A y B</span></div><div class="card"><div class="stat">${fmt(s.seconds)}</div><span>Tiempo activo de sesión</span></div></div><p class="tiny spaced">El test es una comprobación orientativa. Las reflexiones y el rediseño requieren revisión docente. El tiempo excluye pausas y pestaña oculta; no mide capacidad.</p>${pending.length?`<p class="note"><b>Experiencias pendientes de comparar:</b> ${pending.map(esc).join(', ')}.</p>`:'<p class="feedback">Has registrado las dos versiones de las 12 experiencias.</p>'}<h3 class="spaced">1. Tu evidencia</h3><div class="table-scroll"><table><thead><tr><th>Concepto</th><th>Estado</th><th>Pruebas registradas</th></tr></thead><tbody>${laws.map((l,i)=>`<tr><td>${l.name}</td><td>${completed(i)?'A y B completas':'Pendiente'}</td><td>${s.records[i].length?s.records[i].map(r=>`<div><b>${esc(r.variant)}</b> · ${esc(r.detail)}</div>`).join(''):'Sin registro'}</td></tr>`).join('')}</tbody></table></div><p class="tiny">Demostraciones exploratorias: el orden, la práctica, el dispositivo y las diferencias entre estímulos pueden influir. No son experimentos controlados ni una prueba científica de las leyes.</p><h3>2. Tus conclusiones</h3>${stations.map((x,i)=>`<div class="result-item"><b>${i+1}. ${x.title}</b><p>${esc(s.notes[i]||'Sin reflexión registrada.')}</p></div>`).join('')}<h3 class="spaced">3. Conexiones y rediseño</h3><p>${s.map.map((v,i)=>`Conexión ${i+1}: ${v?'H'+esc(v):'sin respuesta'} · esperada H${['1','3','10'][i]}`).join('<br>')}</p><p>${esc(s.redesign||'Sin propuesta registrada.')}</p><p class="tiny">Criterios para el docente (0–2 cada uno, evaluación manual): problema concreto; uso correcto de conceptos; evidencia de la sesión; viabilidad de la mejora. No se suman automáticamente al test.</p><h3 class="spaced">4. ${s.submitted?'Test y corrección':'Test pendiente de entrega'}</h3>${s.submitted?questions.map((q,i)=>`<div class="result-item"><b>${i+1}. ${esc(q[0])}</b><p class="${s.answers[i]===q[2]?'correct':'incorrect'}">${s.answers[i]===q[2]?'✓ Acierto':'✗ Para revisar'} · Tu respuesta: ${esc(q[1][s.answers[i]])}</p><p><b>Respuesta correcta:</b> ${esc(q[1][q[2]])}</p><p>${q[3]}</p></div>`).join(''):'<p>Las soluciones se muestran después de entregar las 12 respuestas.</p>'}<h3 class="spaced">5. Próximo paso</h3><p>${s.submitted?(score()===12?'Aplica lo aprendido: dibuja una pantalla mejorada y pruébala con otra persona.':'Revisa estas ideas y vuelve a sus experiencias: '+questions.filter((q,i)=>s.answers[i]!==q[2]).map(q=>laws[questions.indexOf(q)].name).join(', ')+'.'):'Completa el test para obtener una corrección personalizada.'}</p><p class="tiny">Material didáctico original basado en <a href="https://lawsofux.com/es/">Laws of UX</a>, <a href="https://anasaci.com/blog/disenadores/diseno_grafico/las-leyes-de-la-gestalt.html">Gestalt (Anasaci)</a> y <a href="https://www.nngroup.com/articles/ten-usability-heuristics/">las heurísticas de Jakob Nielsen (NN/g)</a>.</p></article>`;}
+function report(){$('main').innerHTML=`<div class="row spaced no-print"><button class="primary" onclick="downloadReport()">Descargar informe HTML</button><button onclick="window.print()">Imprimir / Guardar PDF</button><button onclick="downloadJSON()">Descargar datos JSON</button>${!s.submitted?'<button onclick="navigate(\'quiz\')">Completar test</button>':''}</div><p class="tiny no-print">Entrega el archivo HTML o PDF a tu docente. Se abre sin el laboratorio. JSON conserva los datos estructurados.</p>${reportHTML()}`;}
+function download(content,type,name){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);}
+function filename(){return (s.alias||'sin-alias').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,40);}
+function downloadReport(){const css=document.querySelector('style').textContent;download('<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Informe UX · '+esc(s.alias)+'</title><style>'+css+'</style></head><body><main class="wrap" style="padding-top:30px;padding-bottom:40px">'+reportHTML()+'</main></body></html>','text/html;charset=utf-8','informe-ux-'+filename()+'.html');flash('Informe preparado para descargar. Comprueba la carpeta de descargas de tu navegador.');}
+function downloadJSON(){download(JSON.stringify(reportData(),null,2),'application/json;charset=utf-8','datos-ux-'+filename()+'.json');}
+function resetSession(){s=blank();volatile={};lastTick=Date.now();$('resetDialog').close();save();render();}
+function guide(){$('main').innerHTML=`<div class="section-head"><div><p class="eyebrow">Guía de consulta · alumnado y docente</p><h2>Un mapa para investigar</h2></div></div><section class="card"><h3>Cómo usarlo en clase</h3><p>Abre este archivo en un navegador actual. Funciona sin internet; solo los enlaces a las fuentes requieren conexión. Cada alumno o pareja usa una sesión, introduce un alias y recorre las pestañas de izquierda a derecha.</p><p><b>Guion:</b> 2 min de introducción + 6 × 3 min de estaciones + 3 min para conectar y proponer + 5 min de test + 2 min de informe = 30 min. En cada estación: 90 s de pruebas, 45 s de conexiones y 45 s de reflexión. El cronómetro no bloquea la actividad al llegar a 30 minutos.</p><p><b>Entrega:</b> descargar informe HTML o imprimir como PDF. El docente recoge los archivos por su canal habitual. El laboratorio no recoge resultados de otros dispositivos ni envía datos a un servidor.</p><p><b>Accesibilidad:</b> puedes usar Tab y Enter. No se puntúa la rapidez. Las demostraciones visuales tienen descripciones y textos; si la percepción visual no resulta accesible, realiza una descripción guiada con otra persona. Marca esa adaptación en la reflexión y no compares sus tiempos con los de ratón o tacto.</p><p><b>Continuidad:</b> si el navegador permite almacenamiento local, el progreso vuelve al reabrir en el mismo navegador y ubicación. En modo privado o con restricciones puede perderse. Descarga siempre el informe. «Nueva sesión» borra el intento local con confirmación.</p><p><b>Evaluación:</b> test 0–12 (un punto por acierto). Las 6 reflexiones, conexiones y rediseño aparecen aparte. Rúbrica manual del rediseño: problema, conceptos, evidencia y viabilidad, 0–2 por criterio. Sin respuestas de alumnado no se inventan resultados.</p></section><section class="card spaced"><h3>Las 10 heurísticas de Jakob Nielsen</h3><div class="help-grid">${heuristics.map((h,i)=>`<p><b>H${i+1} · ${h[0]}</b><br>${h[1]}</p>`).join('')}</div><p class="tiny spaced">Observa también el propio laboratorio: progreso y avisos (H1), palabras cotidianas (H2), navegación y cancelación (H3), controles coherentes (H4), aviso de respuestas incompletas (H5), guía visible (H6), varias formas de entrada (H7), foco en la actividad (H8), mensajes de corrección (H9) y esta guía (H10).</p></section><section class="card spaced"><h3>Gestalt: percibir una organización</h3><p><b>Proximidad:</b> cercanía. <b>Semejanza:</b> rasgos compartidos. <b>Cierre:</b> completar contornos. <b>Continuidad:</b> seguir una trayectoria. <b>Figura–fondo:</b> distinguir objeto y entorno. <b>Simetría:</b> orden equilibrado. <b>Destino común:</b> movimiento compartido. <b>Simplicidad:</b> organización sencilla. La experiencia previa también influye en interpretar imágenes.</p><p>En este laboratorio se manipulan proximidad, región común, semejanza y formas simples con cierre. Continuidad, simetría y destino común se presentan como ampliación; no tienen una prueba independiente.</p><p>Los tres marcos se complementan: no existe una correspondencia oficial de una ley con una heurística. Las conexiones propuestas aquí son una síntesis didáctica. La ley de Jakob y las heurísticas de Jakob Nielsen tampoco son la misma lista.</p></section><section class="card spaced"><h3>Las 12 ideas seleccionadas</h3><div class="table-scroll"><table style="width:100%"><thead><tr><th style="text-align:left">Concepto</th><th style="text-align:left">Idea clave</th></tr></thead><tbody>${laws.map(l=>`<tr><td style="padding:8px"><a href="https://lawsofux.com/${l.slug}/" target="_blank" rel="noopener">${l.name}</a></td><td>${l.def}</td></tr>`).join('')}</tbody></table></div><p class="note spaced">Miller: «7 ± 2» es una referencia histórica, no una cantidad obligatoria de opciones o botones. La capacidad depende del material y del contexto. Aquí exploramos agrupación, no medimos inteligencia ni capacidad individual.</p></section><section class="card spaced"><h3>Fuentes y alcance</h3><ul><li><a href="https://lawsofux.com/es/" target="_blank" rel="noopener">Laws of UX · catálogo en español, Jon Yablonski</a>. La selección de 12 es de este laboratorio.</li><li><a href="https://anasaci.com/blog/disenadores/diseno_grafico/las-leyes-de-la-gestalt.html" target="_blank" rel="noopener">Anasaci · Las leyes de la Gestalt</a>. Referencia visual aportada para clase.</li><li><a href="https://www.nngroup.com/articles/ten-usability-heuristics/" target="_blank" rel="noopener">Jakob Nielsen · 10 Usability Heuristics, Nielsen Norman Group</a>. Fuente primaria de las heurísticas.</li><li><a href="https://lawsofux.com/millers-law/" target="_blank" rel="noopener">Miller: agrupación y límites de la regla numérica</a>.</li><li><a href="https://lawsofux.com/aesthetic-usability-effect/" target="_blank" rel="noopener">Estética–usabilidad: percepción frente a funcionamiento</a>.</li></ul><p class="tiny">Fuentes consultadas el 9 de octubre de 2026. Textos, interfaces y ejercicios adaptados y creados para esta actividad; no se reproducen imágenes de las fuentes.</p></section>`;}
+render();
 </script>
 </body>
 </html>
