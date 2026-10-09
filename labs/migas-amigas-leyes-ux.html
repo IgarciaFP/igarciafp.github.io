@@ -1,659 +1,105 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Doce casos de Migas Amigas para aplicar las leyes UX del tema: compara maquetas, defiende decisiones y descarga un informe.">
-  <title>Migas Amigas · Laboratorio de leyes UX</title>
-  <style>
-    :root { color-scheme: light; --ink:#252b2b; --sub:#505b59; --paper:#fffefa; --sand:#f4f0e8; --line:#d8d2c6; --forest:#164d4b; --forest-dark:#103b3a; --clay:#9c421e; --mint:#e4f2ec; --amber:#fff3dc; }
-    * { box-sizing:border-box; }
-    html { scroll-behavior:smooth; }
-    body { margin:0; background:var(--sand); color:var(--ink); font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; }
-    button,input,select,textarea { font:inherit; }
-    button { cursor:pointer; }
-    :focus-visible { outline:3px solid #1165ae; outline-offset:3px; }
-    [hidden] { display:none !important; }
-    a { color:var(--forest); }
-    h1,h2,h3,p { margin-top:0; }
-    .wrap { max-width:1390px; margin:auto; padding:0 22px; }
-    .masthead { background:#183b3a; color:#fff; padding:28px 0 31px; }
-    .masthead .wrap { display:flex; justify-content:space-between; gap:24px; align-items:center; }
-    .kicker { margin:0 0 7px; color:#c7decf; font-weight:800; font-size:.83rem; letter-spacing:.1em; text-transform:uppercase; }
-    h1 { font-size:clamp(2rem,4vw,3.2rem); line-height:1.08; margin-bottom:9px; }
-    .masthead p:last-child { margin-bottom:0; max-width:75ch; color:#e9f0eb; }
-    .stamp { flex:none; border:1px solid #8cbbb0; padding:13px 19px; border-radius:12px; font-weight:800; text-align:center; line-height:1.25; }
-    main { padding-top:22px !important; padding-bottom:52px !important; }
-    .card { background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:0 9px 25px rgba(47,37,24,.055); }
-    .intro { display:grid; grid-template-columns:1.45fr 1fr; gap:18px; margin-bottom:18px; }
-    .intro .card { padding:21px 24px; }
-    .intro h2 { font-size:1.15rem; margin-bottom:7px; }
-    .intro ol { margin:6px 0 0; padding-left:23px; }
-    .intro li+li { margin-top:5px; }
-    .small { color:var(--sub); font-size:.9rem; }
-    .name-label { display:block; font-weight:750; margin:10px 0 6px; }
-    input[type="text"],input[type="search"],input[type="email"],select,textarea { width:100%; border:1px solid #a7aea8; border-radius:8px; background:#fff; color:var(--ink); padding:10px 11px; }
-    textarea { min-height:94px; resize:vertical; }
-    .layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(440px,.95fr); gap:19px; align-items:start; }
-    .panel-head { padding:15px 20px; background:#e7e3d8; border-bottom:1px solid var(--line); display:flex; gap:12px; justify-content:space-between; align-items:center; }
-    .panel-head h2 { margin:0; font-size:1.08rem; }
-    .panel-head small { color:#56605b; }
-    .site-panel,.audit-panel { overflow:hidden; }
-    .site-note { padding:12px 17px; margin:0; background:#fdf8ea; border-bottom:1px solid var(--line); font-size:.88rem; }
-    .site { margin:15px; border:1px solid #c8b49e; background:#fffdf8; border-radius:11px; overflow:hidden; }
-    .site-header { background:#693c27; padding:15px; color:#fff; }
-    .brand { font-family:Georgia,serif; font-weight:700; font-size:1.5rem; }
-    .site-header nav,.site-footer { display:flex; flex-wrap:wrap; gap:8px; }
-    .site-header nav button,.site-footer button { background:transparent; border:0; color:inherit; text-decoration:underline; padding:5px; }
-    .site-body { padding:15px; }
-    .promo { padding:16px; border:1px solid #e7bc80; border-radius:10px; background:#ffe9b8; }
-    .promo h3 { font:700 1.5rem Georgia,serif; margin-bottom:5px; }
-    .promo p { margin-bottom:8px; }
-    .badges { display:flex; flex-wrap:wrap; gap:5px; margin:8px 0 13px; }
-    .badges b { display:block; padding:3px 6px; font-size:.7rem; background:#bf4830; color:#fff; transform:rotate(-2deg); }
-    .badges b:nth-child(2n) { background:#713d83; transform:rotate(2deg); }
-    .site button.action { background:#8b351b; border:0; border-radius:5px; color:#fff; padding:7px 11px; font-weight:700; }
-    .site h4 { margin:17px 0 7px; }
-    .search-row { display:flex; gap:6px; }
-    .search-row input { flex:1; min-width:0; }
-    .search-row button,.category-list button { border:1px solid #c9a886; background:#fff3df; border-radius:5px; padding:6px 8px; }
-    .category-list { display:flex; flex-wrap:wrap; gap:5px; }
-    .category-list button { font-size:.78rem; }
-    .category-list button[aria-pressed="true"] { background:#d5efe5; border-color:#43997b; }
-    .results-label { margin:10px 0; font-size:.83rem; color:var(--sub); }
-    .products { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
-    .product { border:1px solid #ded0bd; background:#fff; border-radius:9px; padding:10px; }
-    .product .icon { display:block; font-size:1.6rem; background:#f7ead1; border-radius:6px; text-align:center; padding:5px; }
-    .product strong,.product small { display:block; margin-top:5px; }
-    .product small { color:#6f5341; }
-    .product button { border:0; border-radius:5px; background:#70412f; color:#fff; margin-top:8px; padding:6px 9px; }
-    .cart { background:#fff7e9; border:1px solid #e1c9a5; border-radius:9px; padding:12px; margin-top:16px; }
-    .cart h4 { margin:0 0 5px; }
-    .cart ul { list-style:none; padding:0; margin:0; }
-    .cart li { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:5px 0; border-bottom:1px solid #e8d4ba; }
-    .cart li button { background:#fff; border:1px solid #aa7965; border-radius:5px; padding:3px 7px; }
-    .checkout label { display:block; margin:9px 0 5px; font-weight:700; font-size:.85rem; }
-    .checkout button { margin-top:12px; }
-    .store-error { color:#9d3526; min-height:1.5em; margin:9px 0 0; font-weight:700; }
-    .site-footer { background:#693c27; color:#fff; padding:13px; font-size:.82rem; }
-    .hidden-help { margin:12px 16px 0; font-size:.82rem; }
-    .site-bottom { padding:0 17px 17px; }
-    .button { display:inline-flex; justify-content:center; align-items:center; border-radius:8px; padding:10px 14px; font-weight:800; text-decoration:none; border:2px solid transparent; }
-    .button.primary { color:white; background:var(--forest); border-color:var(--forest); }
-    .button.primary:hover { background:var(--forest-dark); }
-    .button.secondary { color:var(--forest); background:white; border-color:#7a9a91; }
-    .button.secondary:hover { background:#e9f4ee; }
-    .button:disabled { opacity:.55; cursor:not-allowed; }
-    .site [data-zone].focus-zone { outline:3px solid #c87410; outline-offset:3px; border-radius:5px; }
-    .audit-inner { padding:19px; }
-    .progress-label { display:flex; justify-content:space-between; font-weight:750; gap:12px; }
-    progress { width:100%; height:13px; accent-color:var(--forest); margin:8px 0 13px; }
-    .case-nav { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:15px; }
-    .case-nav button { min-width:38px; height:38px; border:1px solid #a8b4ad; border-radius:7px; background:#fff; font-weight:800; }
-    .case-nav button[aria-current="step"] { background:var(--forest); color:#fff; }
-    .case-nav button.complete:not([aria-current="step"]) { background:var(--mint); color:var(--forest); }
-    .case-eyebrow { font-weight:800; font-size:.8rem; letter-spacing:.08em; color:var(--clay); text-transform:uppercase; margin:0 0 5px; }
-    #case-title { line-height:1.17; font-size:1.55rem; margin-bottom:11px; }
-    .brief { padding:13px 15px; border-radius:9px; border:1px solid #c8d6d0; background:#f0f8f4; margin-bottom:13px; }
-    .brief p { margin:0 0 8px; }
-    .brief p:last-child { margin-bottom:0; }
-    .brief strong { color:#174b43; }
-    .zone-actions { display:flex; gap:8px; margin:12px 0; flex-wrap:wrap; }
-    .field { margin:14px 0; }
-    .field label,.field legend { display:block; font-weight:760; margin-bottom:6px; }
-    .field .prompt { margin:0 0 6px; color:var(--sub); font-size:.87rem; }
-    .field small { display:block; color:var(--sub); }
-    .select-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
-    fieldset.field { border:0; padding:0; }
-    .proposal { display:block; padding:11px 12px; margin:7px 0; border:1px solid #b8c3bc; border-radius:9px; cursor:pointer; background:#fff; }
-    .proposal:hover,.proposal:has(input:checked) { border-color:var(--forest); background:#f1f8f4; }
-    .proposal input { margin-right:7px; accent-color:var(--forest); }
-    .proposal small { padding-left:25px; margin-top:3px; }
-    .status { min-height:1.4em; font-weight:700; margin:10px 0; }
-    .status.error { color:#a12e1d; }
-    .status.success { color:#165e40; }
-    .debrief { margin-top:13px; padding:15px; border-radius:9px; background:var(--amber); border-left:5px solid #b6791e; }
-    .debrief h3 { font-size:1rem; margin-bottom:8px; }
-    .debrief p { margin-bottom:7px; }
-    .next-row { display:flex; justify-content:flex-end; margin:13px 0; }
-    .deliverable { margin-top:19px; padding:22px; }
-    .deliverable h2 { margin-bottom:6px; }
-    .synthesis { max-width:890px; }
-    .report-preview { white-space:pre-wrap; max-height:280px; overflow:auto; padding:13px; border:1px solid var(--line); border-radius:8px; background:#fff; font: .81rem/1.45 ui-monospace,SFMono-Regular,Consolas,monospace; }
-    .footer { padding:0 0 30px; color:var(--sub); font-size:.87rem; }
-    @media(max-width:1050px) { .layout { grid-template-columns:1fr; } }
-    @media(max-width:720px) { .intro { grid-template-columns:1fr; } .masthead .wrap { display:block; } .stamp { display:inline-block; margin-top:18px; } .wrap { padding:0 12px; } .intro .card,.audit-inner,.deliverable { padding:16px; } .select-grid { grid-template-columns:1fr; } }
-    @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
-  
-    .demo-nav,.demo-tags { display:flex; flex-wrap:wrap; gap:12px; margin:12px 0; }
-    .demo-tags span { border:1px solid #9eaca7; padding:8px; border-radius:6px; }
-    .demo-tags.loud span { background:#9c421e; color:white; font-weight:800; }
-    .fake { display:inline-block; padding:14px 20px; border-radius:8px; background:#164d4b; color:white; font-weight:700; }
-    .fake.tiny { font-size:11px; padding:0 3px; }
-    .polished { padding:22px; background:#e4f2ec; border:1px solid #8ab9a4; border-radius:14px; }
-    #demo { margin:14px 0; min-height:250px; overflow-wrap:anywhere; }
-    [aria-pressed="true"].button { background:#164d4b; color:white; }
-    .layout > * { min-width:0; }
-    #phone-check { margin-top:12px; }
-    #case-title:focus { outline-offset:4px; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Doce retos visuales breves para aplicar las leyes UX al diseño de una panadería. Observa, decide y compara.">
+<title>Migas Amigas · Un taller visual de UX</title>
+<style>
+:root{--ink:#243b32;--muted:#52655c;--paper:#fbfaf6;--line:#d9ded5;--green:#294d3e;--orange:#a44525;--soft:#e9eee5;--white:#fffefa;--radius:22px}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer}a{color:inherit}button,a,input,select{touch-action:manipulation}button{color:inherit}button:disabled{cursor:default;opacity:.45}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[tabindex="-1"]:focus-visible{outline:3px solid #ad4825;outline-offset:4px}[hidden]{display:none!important}h1,h2,h3,p{margin:0}button svg{pointer-events:none}button{border:0}.wrap{max-width:1440px;margin:auto;padding:0 40px}.top{border-bottom:1px solid var(--line)}.top-inner{min-height:78px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;font:700 24px Georgia,serif;letter-spacing:-.7px}.brand-mark{display:grid;place-items:center;width:34px;height:38px;border-radius:18px 18px 8px 8px;background:var(--green);color:#fff4dd;font:22px Georgia,serif;letter-spacing:-6px;padding-right:5px}.top-links{display:flex;align-items:center;gap:25px;font-size:13px;font-weight:600}.top-links a{text-decoration:none}.top-links a:hover{text-decoration:underline}.pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:99px;padding:7px 12px;font-size:11px;font-weight:700;letter-spacing:.05em}.pill:before{content:"";width:6px;height:6px;border-radius:50%;background:#678463}.intro{display:flex;align-items:end;justify-content:space-between;gap:30px;padding:35px 0 29px}.eyebrow{font-size:11px;font-weight:750;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);margin-bottom:9px}h1{font:400 clamp(32px,3.5vw,47px)/1.1 Georgia,serif;letter-spacing:-1.5px}h1 em{font-weight:400;color:var(--orange)}.intro p{max-width:380px;font-size:14px;line-height:1.7;color:var(--muted)}.workbench{display:grid;grid-template-columns:340px minmax(0,1fr);gap:25px;align-items:start}.lesson{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:24px}.lesson-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.step{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.step-nav{display:flex;gap:5px}.icon-btn{display:grid;place-items:center;width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:transparent;font-size:18px}.icon-btn:hover:not(:disabled){background:var(--soft)}.lesson h2{font:400 28px/1.12 Georgia,serif;letter-spacing:-.6px;margin:20px 0 12px}.brief{font-size:14px;color:var(--muted);line-height:1.65}.question{font-size:14px;font-weight:750;margin:23px 0 12px}.choices{display:grid;gap:8px}.choice{display:flex;gap:10px;align-items:center;text-align:left;padding:12px;border:1px solid var(--line);background:transparent;border-radius:12px;font-size:13px;line-height:1.4;min-height:58px}.letter{display:grid;place-items:center;width:25px;height:25px;border-radius:7px;background:#eff1eb;flex:none;font-size:11px;font-weight:800}.choice:hover{border-color:#7f9587;background:#f3f5ee}.choice[aria-pressed=true]{border-color:var(--green);background:#edf3e9}.choice[aria-pressed=true] .letter{background:var(--green);color:white}.feedback{margin-top:16px;border-radius:12px;background:var(--soft);padding:15px;font-size:13px}.feedback strong{display:block;margin-bottom:5px}.feedback p{color:#3f5749}.feedback.tip{background:#fff1df}.next{width:100%;margin-top:14px;padding:12px 15px;border-radius:10px;background:var(--green);color:white;text-align:center;font-size:13px;font-weight:750}.next:hover{background:#1b3c2e}.lesson-foot{border-top:1px solid var(--line);margin-top:21px;padding-top:16px}.lesson-foot label{display:block;font-size:11px;font-weight:700;margin-bottom:6px;color:var(--muted)}select{width:100%;padding:9px 28px 9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--white);color:var(--ink);font-size:12px}.prototype{min-width:0}.preview-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:1px 0 12px;padding:0 3px}.preview-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:750;color:var(--muted)}.segmented{display:flex;padding:4px;border:1px solid var(--line);border-radius:99px;gap:2px;background:#ecefe8}.segmented button{padding:7px 15px;background:transparent;border-radius:99px;font-size:12px;font-weight:650}.segmented button[aria-pressed=true]{background:var(--white);box-shadow:0 1px 5px #23382b12}.shop{overflow:hidden;border:1px solid #d0d8cd;border-radius:20px;background:#fffdf7;box-shadow:0 15px 45px #243b3209}.browser-line{display:flex;align-items:center;gap:5px;padding:11px 17px;background:#f1f0e9;border-bottom:1px solid #e3e3d9}.browser-line i{width:7px;height:7px;border-radius:50%;background:#c6c9bf}.browser-line small{margin-left:12px;color:#667367;font-size:10px;letter-spacing:.02em}.shop-head{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:21px 26px;border-bottom:1px solid #e9e6dc}.shop-brand{font:700 23px/1 Georgia,serif;letter-spacing:-1px}.shop-brand small{display:block;font:9px/1.2 system-ui;letter-spacing:.18em;margin-top:7px;text-transform:uppercase;color:#657563}.shop-nav{display:flex;gap:18px;align-items:center}.shop-nav button{background:transparent;padding:8px 0;font-size:11px}.shop-nav .cart-link{padding:9px 12px;border:1px solid #d6ddcf;border-radius:8px}.shop-body{padding:26px;min-height:390px}.shop-body h3{font:400 33px/1.08 Georgia,serif;letter-spacing:-.7px}.shop-body p{font-size:12px;line-height:1.65;color:#596758}.shop-kicker{font-size:9px;text-transform:uppercase;letter-spacing:.13em;font-weight:800;color:#93603a;margin-bottom:8px}.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:20px;align-items:center;background:#eaf0e1;border-radius:13px;padding:22px}.hero h3{font-size:37px}.hero p{margin:12px 0 17px;max-width:220px}.shop-action{background:var(--green);color:#fffdf2;border:1px solid var(--green);border-radius:7px;padding:11px 17px;font-size:11px;font-weight:750;min-height:40px}.shop-action:hover{background:#163728}.shop-action.light{background:transparent;color:var(--green);border-color:#bccbb8}.bread-art{width:100%;height:auto;display:block;filter:drop-shadow(0 10px 10px #66370919)}.shelf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:20px}.product{min-width:0}.product-art{background:#f2eadc;border-radius:10px;padding:7px 15px;position:relative}.product:nth-child(2) .product-art{background:#e8ecdf}.product:nth-child(3) .product-art{background:#f3e4d8}.product h4{font:400 16px Georgia,serif;margin:10px 0 4px}.product-meta{display:flex;justify-content:space-between;gap:7px;align-items:center;font-size:11px;color:#61705d}.mini-add{display:grid;place-items:center;background:transparent;border:1px solid #c4cebe;border-radius:50%;width:29px;height:29px;font-size:18px}.shop-footer{padding:13px 26px;border-top:1px solid #e8e6dc;display:flex;justify-content:space-between;gap:10px;font-size:9px;letter-spacing:.03em;color:#657260}.shop-footer span:before{content:"·";margin-right:5px;color:#658557}.preview-note{font-size:11px;line-height:1.6;color:var(--muted);margin:12px 4px 0;min-height:36px}.annotation{margin-top:13px;padding:12px 14px;border-radius:10px;border:1px dashed #b9c7b0;background:#f4f7ef;font-size:12px;color:#465e41}.section-heading{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.section-heading h3{font-size:29px}.quiet{font-size:10px;color:#5d7158}.tags{display:flex;gap:7px;flex-wrap:wrap;margin:18px 0}.tag{padding:8px 11px;border-radius:99px;border:1px solid #d5dacb;background:transparent;font-size:10px}.tag.active{background:var(--green);border-color:var(--green);color:white}.receipt{border:1px solid #e2e4d7;padding:20px;border-radius:12px;background:#fffef8}.receipt-row{display:flex;justify-content:space-between;gap:20px;padding:10px 0;border-bottom:1px solid #e8eadf;font-size:12px}.receipt-row:last-child{border:0}.receipt-row.total{font-weight:800;font-size:16px}.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}.summary-box{padding:17px;background:#f1f3e9;border-radius:10px}.summary-box h4{margin:0 0 7px;font-size:10px;text-transform:uppercase;letter-spacing:.09em}.summary-box p{font-size:12px}.shop-field{display:block;width:100%;border:1px solid #b9c6b0;background:#fffefb;border-radius:7px;padding:12px;color:var(--ink);font-size:13px;margin:7px 0 13px}.field-label{display:block;font-size:12px;font-weight:650;margin-top:20px}.status{font-size:12px;color:#3c5940;min-height:22px;margin-top:13px!important}.feature-card{display:grid;grid-template-columns:1fr 1.1fr;gap:23px;align-items:center}.feature-card .product-art{padding:20px}.feature-card h3{font-size:32px}.feature-card p{margin:12px 0}.price{font-size:21px;font-family:Georgia,serif;display:block;margin:14px 0}.far-action{text-align:right;padding-top:82px}.far-action .tiny-target{padding:0;width:19px;height:19px;min-height:19px;border-radius:3px;font-size:11px}.step-line{display:flex;gap:8px;margin:18px 0}.step-line span{flex:1;border-top:3px solid #d7dfcf;padding-top:8px;font-size:10px;color:#627359}.step-line span.done{border-color:#486c43}.step-line span.current{border-color:#ba7146;color:#78441d}.plain-version{border-radius:0;background:#fff;border-color:#858585;box-shadow:none}.plain-version h3{font-family:system-ui;font-size:24px;letter-spacing:0}.success-symbol{width:45px;height:45px;background:#e1ebd7;border-radius:50%;display:grid;place-items:center;font-size:23px;margin-bottom:16px}.promo-row{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0}.promo-row span{font-size:10px;padding:7px 10px;border-radius:5px;background:#f1ddaa;color:#603f12}.promo-row.loud span:nth-child(2){background:#dce6cd;color:#334a25}.promo-row.loud span:nth-child(3){background:#f1d7c6;color:#703b1b}.promo-row.loud span{font-weight:800;border:1px solid #ad875e}.progress-strip{margin:26px 0 0;padding:18px 0 20px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:25px}.progress-copy{font-size:12px;color:var(--muted)}.progress-copy strong{color:var(--ink)}.dots{display:flex;gap:5px;margin-top:9px}.dot{height:4px;width:20px;border-radius:3px;background:#dce2d6}.dot.done{background:#54734c}.utility{display:flex;gap:18px;align-items:center}.text-button{background:transparent;text-decoration:underline;text-underline-offset:3px;padding:6px 0;font-size:12px;color:var(--muted)}.export{padding:10px 15px;border:1px solid #b9c6b0;border-radius:8px;background:transparent;font-size:12px;font-weight:650}.end-note{font-size:11px;color:var(--muted);padding-bottom:23px}.end-note a{margin-left:9px}.complete{margin-top:15px;padding:18px;border:1px solid #b9c6b0;border-radius:12px;background:#edf3e7;font-size:13px}.complete h3{font:24px Georgia,serif;margin-bottom:6px}.toast{font-size:11px;color:#49643f;text-align:right;min-height:18px;padding-bottom:6px}
+@media(min-width:1150px){.lesson{position:sticky;top:20px}.shop-body{min-height:417px}}
+@media(max-width:1100px){.wrap{padding:0 24px}.workbench{grid-template-columns:305px minmax(0,1fr);gap:17px}.lesson{padding:20px}.shop-head{padding:18px}.shop-nav{gap:10px}.shop-body{padding:20px}.hero{gap:8px;padding:17px}.hero h3{font-size:30px}.hero .bread-art{min-width:0}.feature-card{gap:14px}.shop-brand{font-size:20px}.shop-nav button{font-size:10px}}
+@media(max-width:820px){.workbench{grid-template-columns:1fr}.lesson{display:contents}.lesson-top{order:0}.lesson h2{margin:0}.lesson .brief{margin-top:-13px}.prototype{order:1}.question{order:2;margin:0}.choices{order:3;grid-template-columns:repeat(3,minmax(0,1fr))}.feedback{order:4;margin:0}.next{order:5;margin:0}.lesson-foot{order:6;margin:0;padding:0;border:0}.lesson-foot select{max-width:350px}.intro{align-items:start;gap:20px}.intro p{max-width:280px}.shop-body{min-height:0}.complete{order:7}.shop-head{padding:20px 24px}.shop-body{padding:24px}.hero{padding:23px}.hero h3{font-size:38px}.top-links{gap:14px}.preview-bar{margin-top:2px}.workbench{gap:17px}}
+@media(max-width:520px){.wrap{padding:0 17px}.top-inner{min-height:65px}.brand{font-size:21px}.top-links .pill{display:none}.top-links{font-size:11px}.intro{display:block;padding:26px 0 23px}.intro p{max-width:none;margin-top:13px;font-size:13px}.intro h1{font-size:35px}.lesson h2{font-size:27px}.choices{grid-template-columns:1fr}.choice{min-height:49px}.shop-head{padding:16px 15px;gap:10px}.shop-brand{font-size:20px}.shop-nav{gap:7px}.shop-nav button{font-size:9px}.shop-nav .cart-link{padding:8px}.shop-body{padding:16px}.hero{padding:17px;gap:4px;grid-template-columns:1.15fr 1fr}.hero h3{font-size:29px}.hero p{font-size:10px;margin:9px 0 12px}.hero .shop-action{padding:9px 11px;font-size:10px}.shop-kicker{font-size:8px}.shelf{gap:9px;margin-top:15px}.product-art{padding:4px 6px}.product h4{font-size:13px}.product-meta{font-size:10px}.mini-add{width:25px;height:25px}.shop-footer{padding:12px 15px;font-size:8px}.preview-label{font-size:9px}.segmented button{font-size:11px;padding:6px 12px}.progress-strip{align-items:start;gap:14px}.utility{gap:10px;flex-direction:column;align-items:end}.dot{width:14px}.feature-card h3{font-size:25px}.feature-card .product-art{padding:6px}.section-heading h3{font-size:25px}.summary-box{padding:12px}.shop-body h3{overflow-wrap:break-word}.far-action{padding-top:60px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+/* Keep the comparison compact: product artwork supports the task. */
+.hero .bread-art{max-height:185px}.product-art .bread-art{max-height:112px}.feature-card .bread-art{max-height:225px}
+.hero{min-height:235px}.hero h3{font-size:33px}.shelf{margin-top:16px}.shop-body{min-height:370px}.status:empty{min-height:0;margin-top:0!important}
+.brand{white-space:nowrap}
+@media(max-width:820px){.top-links .pill{display:none}.brand>span:last-child{display:none}.intro{display:block;padding:25px 0}.intro p{max-width:550px;margin-top:12px}.intro h1 br{display:none}.intro h1{font-size:35px}.hero{min-height:205px}.hero .bread-art{max-height:150px}.hero h3{font-size:30px}.product-art .bread-art{max-height:95px}.shop-body{min-height:0}}
+@media(max-width:520px){.hero{min-height:190px}.hero .bread-art{max-height:135px}.hero h3{font-size:28px}.product-art .bread-art{max-height:80px}.intro h1{font-size:32px}.intro p{margin-top:10px}.top-links a{white-space:nowrap}.summary-grid{gap:8px}}
+</style>
 </head>
 <body>
-  <header class="masthead">
-    <div class="wrap">
-      <div><p class="kicker">Taller de diseño web · Grado superior</p><h1>Migas Amigas: leyes UX</h1><p>Doce casos para aplicar las leyes UX del tema. Compara versiones de una panadería ficticia, defiende un rediseño y plantea cómo validar sus efectos.</p></div>
-      <div class="stamp">12 leyes UX<br>12 casos argumentados</div>
-    </div>
-  </header>
-  <main class="wrap">
-    <section class="intro" aria-label="Instrucciones del laboratorio">
-      <div class="card">
-        <h2>Encargo del equipo de diseño</h2>
-        <ol>
-          <li>Alterna entre la maqueta inicial y una alternativa. Anota diferencias observables; las hipótesis de cada caso son <strong>ficticias, no resultados medidos</strong>.</li>
-          <li>Valora la gravedad e identifica la ley o efecto UX que explica el caso. Compara tres soluciones, argumenta sus costes y evita aplicar los principios como reglas absolutas.</li>
-          <li>Justifica qué ganas y a qué renuncias; plantea una prueba y un criterio medible. Tras los doce casos, prioriza y descarga tu informe TXT.</li>
-        </ol>
-      </div>
-      <div class="card">
-        <h2>Cómo se evalúa</h2>
-        <p class="small">La herramienta comprueba que hayas rellenado los apartados; <strong>no califica la calidad</strong> de tus argumentos. Compara cada entrega con una guía de contraste y discútela con tu docente.</p>
-        <p class="small">Material de consulta: <a href="../ciclos/diw/u01_es.html#sec4_2">las doce leyes UX del tema</a> y <a href="https://lawsofux.com/es/" target="_blank" rel="noopener noreferrer">Laws of UX</a>. Las leyes orientan hipótesis que deben comprobarse con personas.</p>
-        <label class="name-label" for="student-name">Nombre o identificador para el informe</label>
-        <input id="student-name" type="text" maxlength="60" autocomplete="off" placeholder="Ej.: Equipo 2">
-        <p class="small">El cuaderno se guarda en este navegador, separado del laboratorio anterior. Las maquetas son educativas; no se realizan pedidos.</p>
-        <a href="migas-amigas-superior.html" class="small">Abrir la auditoría avanzada anterior (conservada)</a> · <a href="migas-amigas.html" class="small">Versión introductoria</a>
-      </div>
-    </section>
-
-    <div class="layout">
-      <section class="card site-panel" aria-labelledby="site-title">
-        <div class="panel-head"><h2 id="site-title">Migas Amigas · Maqueta del caso</h2></div>
-        <p class="site-note">Comparación didáctica, no tienda real. La alternativa ilustra una posibilidad; no es una solución universal. Solo los casos de teléfono y espera incluyen una prueba funcional.</p>
-        <div class="audit-inner"><div class="zone-actions" role="group" aria-label="Versión de la maqueta"><button type="button" class="button secondary" id="demo-before" aria-pressed="true">Situación inicial</button><button type="button" class="button secondary" id="demo-after" aria-pressed="false">Una alternativa</button></div>
-        <div id="demo" class="site" tabindex="-1" aria-label="Maqueta del caso actual"></div>
-        <p id="demo-caption" class="small"></p>
-        <button type="button" id="back-to-case" class="button secondary">Volver al caso</button></div>
-      </section>
-
-      <section class="card audit-panel" aria-labelledby="audit-title">
-        <div class="panel-head"><h2 id="audit-title">Cuaderno de auditoría</h2><small id="progress-short">0 de 12</small></div>
-        <div class="audit-inner"><div class="progress-label"><span>Casos documentados</span><span id="progress-text">0/12</span></div><progress id="progress" max="12" value="0" aria-label="Casos documentados"></progress><nav class="case-nav" id="case-nav" aria-label="Elegir caso"></nav><div id="case-content"></div></div>
-      </section>
-    </div>
-
-    <section class="card deliverable" id="deliverable" hidden aria-labelledby="deliverable-title">
-      <h2 id="deliverable-title">Síntesis y entrega</h2><p>Ya has documentado los doce casos. Elige qué atenderías primero y explica los límites de la evidencia antes de descargar el informe.</p>
-      <div class="synthesis"><div class="field"><label for="priorities">Tres prioridades, ordenadas y justificadas</label><p class="prompt">Cita los números de caso, el efecto esperado y una dependencia o coste (mínimo 100 caracteres).</p><textarea id="priorities" maxlength="1100"></textarea></div><div class="field"><label for="limitations">Límites y siguiente paso de investigación</label><p class="prompt">¿Qué no puedes concluir con la maqueta y los datos simulados? ¿A quién observarías? (mínimo 50 caracteres).</p><textarea id="limitations" maxlength="700"></textarea></div><button type="button" class="button primary" id="download">Descargar informe TXT</button><button type="button" class="button secondary" id="reset">Borrar esta sesión</button><p id="report-status" class="status" role="status" aria-live="polite"></p><h3>Vista previa</h3><pre id="report-preview" class="report-preview"></pre></div>
-    </section>
-  </main>
-  <footer class="wrap footer">Caso didáctico. Ningún pedido es real; la evaluación argumentada corresponde al alumnado y al docente.</footer>
-  <script>
-  (() => {
-    'use strict';
-    const lawNames = ["Ley de Jakob","Ley de Fitts","Ley de Hick","Ley de Miller","Efecto de Estética-Usabilidad","Ley de Postel","Ley de Tesler","Umbral de Doherty","Efecto Von Restorff","Regla del Pico-Final","Efecto Zeigarnik","Ley de Parkinson"];
-    const cases = [
-  {
-    "title": "Un carrito que parece otra cosa",
-    "law": "Ley de Jakob",
-    "task": "Busca dónde revisarías tu pedido y compara ambas cabeceras.",
-    "data": "En una prueba ficticia, varias personas buscan «Carrito» antes de probar «Mi horno».",
-    "constraint": "La marca quiere conservar su personalidad sin dificultar una primera compra.",
-    "question": "¿Cómo combinarías identidad y convenciones?",
-    "options": [
-      {
-        "name": "Mantener etiquetas habituales",
-        "detail": "Usar Inicio, Productos y Carrito, reservando la metáfora para textos secundarios.",
-        "gain": "Facilita transferir aprendizajes.",
-        "cost": "Reduce la singularidad de la navegación."
-      },
-      {
-        "name": "Combinar metáfora y etiqueta",
-        "detail": "Mostrar «Mi horno · Carrito» durante la transición.",
-        "gain": "Conserva parte de la marca.",
-        "cost": "Alarga las etiquetas y requiere comprobar su comprensión."
-      },
-      {
-        "name": "Introducir la metáfora con ayuda",
-        "detail": "Mantener «Mi horno» y explicar su función en la primera visita.",
-        "gain": "Permite una voz distintiva.",
-        "cost": "Depende de que la ayuda se lea y recuerde."
-      }
-    ],
-    "guide": "Jakob orienta hacia convenciones conocidas por tu público; comprueba su familiaridad real, no copies patrones solo por ser populares."
-  },
-  {
-    "title": "Añadir pan con una sola mano",
-    "law": "Ley de Fitts",
-    "task": "Compara el tamaño y la distancia del objetivo respecto al producto; considera el uso con el pulgar.",
-    "data": "Hipótesis: el control pequeño y separado provoca más intentos fallidos en móvil.",
-    "constraint": "Debes mantener visibles el precio y la cantidad.",
-    "question": "¿Qué variable cambiarías primero?",
-    "options": [
-      {
-        "name": "Ampliar el objetivo",
-        "detail": "Aumentar el área pulsable manteniendo su posición.",
-        "gain": "Puede reducir errores de selección.",
-        "cost": "Consume espacio alrededor del control."
-      },
-      {
-        "name": "Acercar la acción",
-        "detail": "Situar Añadir junto al precio y la cantidad.",
-        "gain": "Reduce el recorrido hasta la acción.",
-        "cost": "Puede exigir reorganizar la tarjeta."
-      },
-      {
-        "name": "Barra de acción persistente",
-        "detail": "Mantener la acción visible al pie de la ficha móvil.",
-        "gain": "Facilita el acceso durante el desplazamiento.",
-        "cost": "Puede ocultar contenido y necesita adaptación a teclado y zoom."
-      }
-    ],
-    "guide": "Fitts relaciona tamaño y distancia con la adquisición del objetivo. Mide errores y tiempo; un tamaño aislado no demuestra una mejora."
-  },
-  {
-    "title": "Doce categorías compiten",
-    "law": "Ley de Hick",
-    "task": "Encuentra una hogaza integral en la lista plana y en la organización por familias.",
-    "data": "Hipótesis: las categorías solapadas aumentan el tiempo de elección.",
-    "constraint": "No se pueden eliminar productos del catálogo.",
-    "question": "¿Cómo reducirías la dificultad de decidir?",
-    "options": [
-      {
-        "name": "Agrupar por familias",
-        "detail": "Organizar Panes, Dulces y Especialidades con filtros posteriores.",
-        "gain": "Reduce decisiones iniciales.",
-        "cost": "Añade una interacción y exige categorías comprensibles."
-      },
-      {
-        "name": "Priorizar búsqueda",
-        "detail": "Ofrecer búsqueda y sugerencias con las categorías completas debajo.",
-        "gain": "Ayuda a quien conoce el producto.",
-        "cost": "Depende de vocabulario y calidad de los resultados."
-      },
-      {
-        "name": "Destacar compras frecuentes",
-        "detail": "Mostrar accesos frecuentes y un enlace a todo el catálogo.",
-        "gain": "Acelera tareas habituales.",
-        "cost": "Puede sesgar el descubrimiento de otros productos."
-      }
-    ],
-    "guide": "Hick trata la dificultad de elegir entre alternativas. Agrupar puede ayudar, pero añadir pasos innecesarios puede empeorar la tarea."
-  },
-  {
-    "title": "Un pedido que exige memorizar",
-    "law": "Ley de Miller",
-    "task": "Compara una cadena de datos con un resumen organizado en bloques.",
-    "data": "Hipótesis: recordar cantidades, franja y productos entre pantallas genera omisiones.",
-    "constraint": "El resumen debe seguir disponible al modificar el pedido.",
-    "question": "¿Cómo reducirías la carga de memoria?",
-    "options": [
-      {
-        "name": "Agrupar el resumen",
-        "detail": "Separar productos, recogida y pago mediante títulos claros.",
-        "gain": "Permite revisar por bloques.",
-        "cost": "Ocupa más altura en móvil."
-      },
-      {
-        "name": "Resumen persistente",
-        "detail": "Mantener una síntesis visible durante la confirmación.",
-        "gain": "Evita tener que recordar pantallas previas.",
-        "cost": "Compite por espacio con el formulario."
-      },
-      {
-        "name": "Revisión final editable",
-        "detail": "Mostrar todo el pedido antes de enviarlo con accesos de edición.",
-        "gain": "Permite detectar errores en contexto.",
-        "cost": "Añade un paso de revisión."
-      }
-    ],
-    "guide": "Miller inspira el agrupamiento y el apoyo a la memoria. No conviertas 7 ± 2 en un máximo universal de opciones."
-  },
-  {
-    "title": "Bonito no equivale a fácil",
-    "law": "Efecto de Estética-Usabilidad",
-    "task": "Compara dos presentaciones del mismo pedido: ambas siguen sin aclarar dónde se recoge.",
-    "data": "Hipótesis: la versión cuidada obtiene mejor valoración visual aunque la tarea siga incompleta.",
-    "constraint": "No confundir satisfacción declarada con éxito en la tarea.",
-    "question": "¿Qué comprobarías antes de aceptar el rediseño?",
-    "options": [
-      {
-        "name": "Medir percepción y eficacia",
-        "detail": "Comparar atractivo, éxito, errores y tiempo de tarea por separado.",
-        "gain": "Distingue valoración estética de rendimiento.",
-        "cost": "Requiere más medidas y una prueba controlada."
-      },
-      {
-        "name": "Corregir primero el contenido",
-        "detail": "Añadir el lugar de recogida antes de pulir la presentación.",
-        "gain": "Resuelve una carencia funcional concreta.",
-        "cost": "No permite aislar el efecto estético si se cambia todo a la vez."
-      },
-      {
-        "name": "Probar dos estilos equivalentes",
-        "detail": "Mantener contenido y flujo constantes al comparar estilos.",
-        "gain": "Aísla mejor el efecto visual.",
-        "cost": "No resuelve por sí solo los problemas del flujo."
-      }
-    ],
-    "guide": "La estética puede mejorar la usabilidad percibida; no demuestra que la tarea sea eficaz ni sustituye legibilidad y accesibilidad."
-  },
-  {
-    "title": "Un teléfono con espacios",
-    "law": "Ley de Postel",
-    "task": "Introduce 612 345 678 en la demo. Prueba también letras y comprueba qué se acepta.",
-    "data": "Hipótesis: rechazar formatos legibles de un dato válido provoca correcciones innecesarias.",
-    "constraint": "La demo solo acepta nueve cifras españolas; no deduce prefijos ni corrige datos ambiguos.",
-    "question": "¿Cómo aceptarías variaciones sin inventar datos?",
-    "options": [
-      {
-        "name": "Normalizar separadores",
-        "detail": "Aceptar espacios y guiones, comprobar nueve cifras y mostrar el valor interpretado.",
-        "gain": "Tolera variaciones sin cambiar los dígitos.",
-        "cost": "La regla debe explicarse y limitarse al formato admitido."
-      },
-      {
-        "name": "Ayuda previa de formato",
-        "detail": "Mostrar un ejemplo junto al campo y mensajes concretos de error.",
-        "gain": "Hace previsible la entrada.",
-        "cost": "Sigue trasladando trabajo a la persona."
-      },
-      {
-        "name": "Confirmar ambigüedades",
-        "detail": "Solicitar país o aclaración cuando no se pueda interpretar el número.",
-        "gain": "Evita suposiciones peligrosas.",
-        "cost": "Introduce una pregunta adicional."
-      }
-    ],
-    "guide": "Postel permite tolerar variaciones válidas. Normaliza con transparencia y pide aclaración para datos inválidos o ambiguos."
-  },
-  {
-    "title": "¿Quién calcula el pedido?",
-    "law": "Ley de Tesler",
-    "task": "Calcula dos hogazas a 4,80 € más 1,50 € de reparto y contrasta el total mostrado.",
-    "data": "Hipótesis: exigir el cálculo manual aumenta errores; automatizarlo no elimina las reglas de negocio.",
-    "constraint": "El coste debe ser transparente y recalcularse al cambiar cantidades.",
-    "question": "¿Dónde situarías la complejidad?",
-    "options": [
-      {
-        "name": "Calcular con desglose",
-        "detail": "Mostrar subtotales, reparto y total calculados por el sistema.",
-        "gain": "Reduce operaciones manuales manteniendo trazabilidad.",
-        "cost": "Exige reglas correctas y pruebas de cálculo."
-      },
-      {
-        "name": "Asistente por pasos",
-        "detail": "Preguntar productos y entrega antes de presentar un resumen calculado.",
-        "gain": "Distribuye las decisiones.",
-        "cost": "Alarga recorridos sencillos."
-      },
-      {
-        "name": "Presets editables",
-        "detail": "Proponer un pedido habitual con cantidades y costes revisables.",
-        "gain": "Acelera pedidos repetidos.",
-        "cost": "Exige confirmar disponibilidad y evitar compras accidentales."
-      }
-    ],
-    "guide": "Tesler recuerda que la complejidad necesaria no desaparece: se redistribuye. Explica qué asume el sistema y cómo se verifica."
-  },
-  {
-    "title": "Dos segundos sin respuesta",
-    "law": "Umbral de Doherty",
-    "task": "Pulsa Comprobar disponibilidad en ambas versiones y observa cuándo recibes la primera respuesta.",
-    "data": "La demo simula dos segundos en ambos modos; solo cambia la respuesta inicial.",
-    "constraint": "El indicador no puede prometer un éxito que aún no se conoce.",
-    "question": "¿Qué intervención priorizarías?",
-    "options": [
-      {
-        "name": "Respuesta inmediata y estado",
-        "detail": "Confirmar el clic y mostrar que la consulta continúa hasta tener resultado.",
-        "gain": "Reduce incertidumbre.",
-        "cost": "No reduce la duración real de la consulta."
-      },
-      {
-        "name": "Optimizar la consulta",
-        "detail": "Reducir trabajo y medir la latencia real además de dar feedback.",
-        "gain": "Puede reducir la espera efectiva.",
-        "cost": "Requiere cambios técnicos y medición."
-      },
-      {
-        "name": "Caché con actualización",
-        "detail": "Mostrar disponibilidad reciente indicando su antigüedad mientras se verifica.",
-        "gain": "Ofrece información útil pronto.",
-        "cost": "Puede mostrar datos obsoletos; la reserva exige confirmación."
-      }
-    ],
-    "guide": "Doherty invita a responder con rapidez. Los 400 ms son una referencia orientativa, no una garantía universal; distingue feedback de finalización real."
-  },
-  {
-    "title": "Todo intenta destacar",
-    "law": "Efecto Von Restorff",
-    "task": "Identifica la acción principal cuando todos los elementos tienen énfasis y cuando solo uno destaca.",
-    "data": "Hipótesis: cinco mensajes destacados compiten y diluyen el recuerdo de la acción principal.",
-    "constraint": "No ocultar precios ni condiciones para dirigir la elección.",
-    "question": "¿Cómo usarías el contraste?",
-    "options": [
-      {
-        "name": "Un énfasis principal",
-        "detail": "Destacar Ver panes y reducir el peso de mensajes secundarios.",
-        "gain": "Crea una diferencia perceptible.",
-        "cost": "Puede reducir la atención a promociones."
-      },
-      {
-        "name": "Agrupar promociones",
-        "detail": "Reservar una zona secundaria para ofertas y otra para la tarea principal.",
-        "gain": "Aclara la jerarquía.",
-        "cost": "Puede requerir más espacio."
-      },
-      {
-        "name": "Énfasis según la tarea",
-        "detail": "Cambiar el foco entre explorar, revisar y confirmar según el paso.",
-        "gain": "Alinea la jerarquía con el objetivo.",
-        "cost": "Exige consistencia para no desorientar."
-      }
-    ],
-    "guide": "Von Restorff se refiere a la saliencia y al recuerdo de lo diferente. Destacar una opción no prueba que sea la mejor elección."
-  },
-  {
-    "title": "El recuerdo de la recogida",
-    "law": "Regla del Pico-Final",
-    "task": "Compara dos desenlaces después de un retraso en el pedido.",
-    "data": "Recorrido ficticio: elección fácil, retraso frustrante y cierre ambiguo; no son datos medidos.",
-    "constraint": "Un buen final no compensa necesariamente un fallo grave durante la compra.",
-    "question": "¿Qué rediseño defenderías?",
-    "options": [
-      {
-        "name": "Cierre claro y útil",
-        "detail": "Confirmar productos, lugar y hora con un acceso a ayuda.",
-        "gain": "Reduce incertidumbre al terminar.",
-        "cost": "No soluciona el retraso previo."
-      },
-      {
-        "name": "Recuperar el momento crítico",
-        "detail": "Explicar el retraso y ofrecer alternativas reales antes de cerrar.",
-        "gain": "Atiende el punto más frustrante.",
-        "cost": "Necesita capacidad operativa para cumplir alternativas."
-      },
-      {
-        "name": "Mejorar todo el recorrido",
-        "detail": "Eliminar causas del retraso y añadir una confirmación completa.",
-        "gain": "Aborda pico y final conjuntamente.",
-        "cost": "Tiene mayor coste y dificulta aislar el efecto de cada cambio."
-      }
-    ],
-    "guide": "Pico-Final orienta a estudiar momentos intensos y el cierre. Valida recuerdo y satisfacción sin ignorar problemas del resto del recorrido."
-  },
-  {
-    "title": "Retomar sin volver a empezar",
-    "law": "Efecto Zeigarnik",
-    "task": "Identifica qué queda pendiente y cómo retomarías el pedido interrumpido.",
-    "data": "Hipótesis: una tarea pendiente visible ayuda a retomarla, sin garantizar su finalización.",
-    "constraint": "Guardar el borrador no debe enviar el pedido ni presionar al usuario.",
-    "question": "¿Cómo facilitarías la continuidad?",
-    "options": [
-      {
-        "name": "Borrador con resumen",
-        "detail": "Guardar productos y mostrar qué falta para confirmar.",
-        "gain": "Permite retomar con contexto.",
-        "cost": "Requiere caducidad y controles sobre datos guardados."
-      },
-      {
-        "name": "Pasos pendientes visibles",
-        "detail": "Mostrar Productos, Recogida y Revisión con estado real.",
-        "gain": "Aclara el trabajo restante.",
-        "cost": "Un indicador impreciso puede frustrar."
-      },
-      {
-        "name": "Salida y reanudación explícitas",
-        "detail": "Ofrecer Guardar y salir con un enlace de vuelta.",
-        "gain": "Da control sobre la interrupción.",
-        "cost": "Exige gestionar recuperación y disponibilidad cambiante."
-      }
-    ],
-    "guide": "Zeigarnik relaciona tareas pendientes con su recuerdo. El progreso puede apoyar la reanudación; no garantiza conversión ni justifica presión."
-  },
-  {
-    "title": "Un encargo sin límites claros",
-    "law": "Ley de Parkinson",
-    "task": "Compara un encargo abierto con otro que delimita alcance y esfuerzo estimado.",
-    "data": "Hipótesis: tres decisiones concretas ayudan a planificar mejor que «configura todo».",
-    "constraint": "No hay escasez real ni motivo para imponer una cuenta atrás de compra.",
-    "question": "¿Cómo delimitarías la tarea sin presionar?",
-    "options": [
-      {
-        "name": "Alcance explícito",
-        "detail": "Pedir tres decisiones: producto, cantidad y recogida; estimar el esfuerzo.",
-        "gain": "Hace planificable la tarea.",
-        "cost": "La estimación debe contrastarse con distintos usuarios."
-      },
-      {
-        "name": "Opciones avanzadas separadas",
-        "detail": "Resolver primero lo imprescindible y ofrecer personalización opcional.",
-        "gain": "Acota la tarea básica.",
-        "cost": "Puede hacer menos visibles funciones útiles."
-      },
-      {
-        "name": "Sesión de trabajo acordada",
-        "detail": "En el taller, acordar diez minutos para un primer borrador y revisarlo después.",
-        "gain": "Limita el esfuerzo de una actividad formativa.",
-        "cost": "El límite no debe convertirse en una barrera de compra."
-      }
-    ],
-    "guide": "Parkinson se aplica aquí a acotar alcance y esfuerzo. No afirma que temporizadores artificiales mejoren la experiencia o la conversión."
-  }
+<header class="top"><div class="wrap top-inner"><a class="brand" href="../ciclos/diw/u01_es.html#sec4_2"><span class="brand-mark" aria-hidden="true">///</span>Migas Amigas<span style="font:11px system-ui;letter-spacing:0;color:#697563">/ taller UX</span></a><nav class="top-links" aria-label="Recursos del taller"><span class="pill">DISEÑO DE INTERFACES</span><a href="../ciclos/diw/u01_es.html#sec4_2">Volver al tema ↗</a></nav></div></header>
+<main class="wrap">
+<section class="intro" aria-label="Presentación"><div><p class="eyebrow">Aprender diseño, diseñando</p><h1>Buen pan.<br> Una experiencia <em>mejor.</em></h1></div><p>Observa la tienda, elige un cambio y compara el resultado. Doce retos breves. Una decisión cada vez.</p></section>
+<div class="workbench">
+<section class="lesson" aria-labelledby="challenge-title">
+<div class="lesson-top"><span class="step" id="step">RETO 01 / 12</span><div class="step-nav"><button class="icon-btn" id="prev" aria-label="Reto anterior">←</button><button class="icon-btn" id="forward" aria-label="Reto siguiente">→</button></div></div>
+<h2 id="challenge-title" tabindex="-1"></h2><p class="brief" id="brief"></p><p class="question" id="question"></p><div class="choices" id="choices" role="group" aria-labelledby="question"></div>
+<div class="feedback" id="feedback" role="status" aria-live="polite" hidden></div><button class="next" id="next" hidden>Siguiente reto →</button>
+<div class="lesson-foot"><label for="jump">Explorar las leyes UX</label><select id="jump"></select></div>
+<div class="complete" id="complete" hidden><h3>Ya has recorrido las 12 leyes.</h3><p>Para cerrar: elige un cambio y explica en voz alta qué mejora y cómo lo comprobarías con usuarios.</p></div>
+</section>
+<section class="prototype" aria-label="Maqueta de la panadería"><div class="preview-bar"><span class="preview-label">La tienda · Maqueta interactiva</span><div class="segmented" role="group" aria-label="Comparar versiones"><button id="before" aria-pressed="true">Antes</button><button id="after" aria-pressed="false">Después</button></div></div><div class="shop"><div class="browser-line" aria-hidden="true"><i></i><i></i><i></i><small>migasamigas.example · tienda de prueba</small></div><div id="shop-content"></div></div><p class="preview-note" id="preview-note"></p></section>
+</div>
+<section class="progress-strip" aria-label="Tu recorrido"><div><p class="progress-copy"><strong id="progress-count">0 de 12</strong> retos explorados</p><div class="dots" id="dots" aria-hidden="true"></div></div><div class="utility"><button class="text-button" id="reset">Empezar de nuevo</button><button class="export" id="download">↓ Guardar mi recorrido</button></div></section><p class="toast" id="save-status" role="status"></p>
+<footer class="end-note">Se guarda en este navegador. Sin pedidos reales ni calificación automática de competencias.<a href="migas-amigas-superior.html">Laboratorio anterior</a> · <a href="https://lawsofux.com/es/" target="_blank" rel="noopener noreferrer">Consultar las leyes UX ↗</a></footer>
+</main>
+<script>
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s);
+const challenges=[
+ {law:'Ley de Jakob',title:'Que se entienda a la primera.',brief:'Quieres revisar tu pedido. La tienda llama «Mi horno» al carrito.',question:'¿Qué cambiarías en la navegación?',options:['Añadir una animación al menú.','Usar la etiqueta «Carrito».','Ocultar el carrito hasta el final.'],correct:1,why:'Una etiqueta conocida permite aprovechar lo aprendido en otras tiendas. La personalidad de la marca puede vivir en las imágenes y el tono.',hint:'El problema es reconocer el destino. Busca una etiqueta familiar, sin añadir pasos.',before:'Fíjate en «Mi horno»: una metáfora que puede hacer dudar.',after:'La misma tienda y la misma posición; ahora el destino se llama «Carrito».'},
+ {law:'Ley de Fitts',title:'Un botón al alcance.',brief:'Vas a añadir una hogaza desde el móvil. El control es pequeño y está separado del producto.',question:'¿Qué facilita alcanzar la acción?',options:['Un botón grande junto al precio.','Un icono más decorativo.','Moverlo a una esquina lejana.'],correct:0,why:'Un objetivo mayor y cercano requiere menos precisión y recorrido. Comprueba el efecto con uso táctil y errores de pulsación.',hint:'Observa el tamaño y la distancia del objetivo, no su decoración.',before:'Prueba el pequeño «+» separado de la ficha.',after:'La acción gana superficie y queda al lado de la información que necesitas.'},
+ {law:'Ley de Hick',title:'Elegir sin perderse.',brief:'Buscas pan. Doce categorías mezclan familias, ingredientes y tipos de producto.',question:'¿Qué orden inicial ayuda más?',options:['Añadir más categorías al mismo nivel.','Dejar solo los productos caros.','Agrupar en Panes, Dulces y Especiales.'],correct:2,why:'Agrupar opciones por una intención comprensible simplifica la primera decisión. No elimina productos ni garantiza que cualquier menú corto sea mejor.',hint:'Reduce la dificultad de elegir sin quitar productos del catálogo.',before:'Muchos criterios al mismo nivel compiten por tu atención.',after:'Tres familias organizan el catálogo; dentro de Panes puedes afinar la búsqueda.'},
+ {law:'Ley de Miller',title:'No me lo hagas memorizar.',brief:'El pedido aparece como una cadena de datos. Debes revisar productos y recogida.',question:'¿Cómo facilitarías esa revisión?',options:['Agrupar los datos en bloques claros.','Reducir el tamaño de la letra.','Mostrar los datos en otra pantalla.'],correct:0,why:'Agrupar y mantener un resumen visible reduce la carga de memoria. El 7 ± 2 no es un límite universal para los menús.',hint:'Haz visibles las relaciones entre los datos; no obligues a recordarlos.',before:'Los datos están presentes, pero no organizados para revisarlos.',after:'Productos, recogida y contacto forman bloques que puedes comprobar por separado.'},
+ {law:'Estética-Usabilidad',title:'Parece fácil. ¿Lo es?',brief:'El pedido se ve más cuidado en «Después». Pero en ambas versiones falta el lugar de recogida.',question:'¿Qué puedes concluir del nuevo aspecto?',options:['Que ya no hace falta probar la tarea.','Que toda la compra será más rápida.','Que puede mejorar la percepción, no la eficacia por sí sola.'],correct:2,why:'Una estética cuidada puede mejorar la usabilidad percibida. Una tarea sigue fallando si falta información; mide también éxito y errores.',hint:'Distingue cómo se percibe la interfaz de lo que permite hacer.',before:'Una confirmación sobria con información incompleta.',after:'Mejora la presentación. El lugar de recogida sigue faltando: el aspecto no resuelve ese problema.'},
+ {law:'Ley de Postel',title:'Con espacios también vale.',brief:'Escribe «612 345 678» en el teléfono de prueba. El formato inicial solo acepta cifras seguidas.',question:'¿Cómo evitarías una corrección innecesaria?',options:['Rechazar siempre los espacios.','Aceptar separadores y mostrar el número interpretado.','Completar los dígitos que falten.'],correct:1,why:'Tolera variaciones válidas sin inventar datos. Acepta espacios y guiones; si el número es ambiguo o inválido, pide una corrección.',hint:'Puedes normalizar la presentación, pero no adivinar los datos.',before:'Prueba un número de nueve cifras separado por espacios.',after:'Se aceptan espacios y guiones. Las letras o los dígitos que faltan siguen siendo un error.'},
+ {law:'Ley de Tesler',title:'El cálculo, para la tienda.',brief:'Compras dos hogazas. La web te pide calcular el total con el reparto.',question:'¿Quién debería resolver esa complejidad?',options:['La tienda, mostrando un desglose.','El cliente, con una calculadora.','Nadie: basta con ocultar el reparto.'],correct:0,why:'La complejidad del cálculo no desaparece: la asume el sistema. El desglose permite comprender y revisar el resultado.',hint:'Simplifica la tarea del cliente sin esconder costes.',before:'2 × 4,80 € + 1,50 €: el cálculo queda a tu cargo.',after:'El sistema calcula 11,10 € y explica de dónde sale.'},
+ {law:'Umbral de Doherty',title:'¿Ha recibido mi clic?',brief:'Consulta si quedan hogazas. La respuesta tarda dos segundos en ambas versiones.',question:'¿Qué harías mientras llega el resultado?',options:['Mostrar éxito aunque no lo sepas.','Dejar la pantalla sin responder.','Reconocer el clic y mostrar el estado de espera.'],correct:2,why:'Una respuesta inicial rápida reduce incertidumbre. El indicador no acelera la consulta; también conviene medir y reducir la latencia real.',hint:'Reconoce la acción sin prometer un resultado que todavía no conoces.',before:'Pulsa el botón: hasta el final no hay ninguna señal de respuesta.',after:'Pulsa el botón: el estado aparece al momento; el resultado sigue tardando dos segundos.'},
+ {law:'Efecto Von Restorff',title:'Si todo destaca…',brief:'Ofertas, novedades y la acción principal compiten por llamar la atención.',question:'¿Qué jerarquía propondrías?',options:['Dar un color fuerte a cada mensaje.','Reservar el énfasis para «Ver panes».','Eliminar toda diferencia visual.'],correct:1,why:'Lo que se diferencia del conjunto llama más la atención. Reservar el contraste ayuda a identificar la acción principal; no demuestra que sea la opción adecuada para todos.',hint:'Para destacar, un elemento necesita un contexto que no compita con él.',before:'Varios reclamos tienen un peso visual parecido.',after:'La acción principal concentra el contraste; las promociones pasan a segundo plano.'},
+ {law:'Regla del Pico-Final',title:'Un buen cierre importa.',brief:'Tras una espera frustrante, el pedido termina con un «Hecho» que no aclara nada.',question:'¿Qué cierre deja una experiencia más clara?',options:['Confirmar pedido, hora y lugar; ofrecer ayuda.','Añadir confeti sin información.','Volver directamente a la portada.'],correct:0,why:'El final y los momentos intensos pueden influir en el recuerdo. Un cierre útil ayuda, pero no sustituye resolver el retraso que originó la frustración.',hint:'Al terminar, la persona necesita saber qué ha ocurrido y qué hacer después.',before:'La compra termina, pero faltan los siguientes pasos.',after:'El cierre confirma lo acordado y ofrece una vía de ayuda.'},
+ {law:'Efecto Zeigarnik',title:'Lo dejo. Luego vuelvo.',brief:'Tienes que interrumpir el pedido. Quieres saber qué está hecho y qué queda.',question:'¿Qué facilita retomarlo?',options:['Empezar de cero en cada visita.','Avisar de que se perderá todo en un minuto.','Guardar el borrador y mostrar lo pendiente.'],correct:2,why:'Hacer visible una tarea pendiente ayuda a recordarla y retomarla. No garantiza que se complete ni justifica presionar a la persona.',hint:'Conserva el contexto y deja visible el siguiente paso.',before:'No hay ninguna pista sobre lo que falta ni sobre el guardado.',after:'El borrador conserva el pedido y señala la recogida como siguiente paso.'},
+ {law:'Ley de Parkinson',title:'Una tarea con límites claros.',brief:'«Configura tu pedido» parece una tarea abierta. Quieres hacer visible su alcance.',question:'¿Qué propuesta ayuda a planificarla?',options:['Una cuenta atrás de escasez inventada.','Tres decisiones claras y posibilidad de pausar.','Más opciones obligatorias.'],correct:1,why:'Acotar el alcance ayuda a organizar el esfuerzo. Aquí se aplica a la planificación de la tarea; no es una razón para usar temporizadores de compra ficticios.',hint:'Delimita qué hay que hacer, sin imponer una urgencia artificial.',before:'El encargo no explica cuánto trabajo implica.',after:'Producto, cantidad y recogida: el alcance queda claro, sin cuenta atrás.'}
 ];
-    const $ = selector => document.querySelector(selector);
-    const storeKey = 'migas-amigas-leyes-ux-v1';
-    const blank = () => ({observation:'',severity:'',law:'',option:'',reason:'',test:'',submitted:false});
-    let state = {name:'',current:0,entries:cases.map(blank),priorities:'',limitations:''};
-    try {
-      const saved = JSON.parse(localStorage.getItem(storeKey));
-      if (saved && Array.isArray(saved.entries) && saved.entries.length === cases.length) {
-        state = { ...state, ...saved, entries:saved.entries.map(item => ({...blank(), ...item})), current:Math.max(0,Math.min(cases.length-1,Number(saved.current)||0)) };
-      }
-    } catch (_) { /* La actividad sigue funcionando si el almacenamiento está bloqueado. */ }
-    const save = () => { try { localStorage.setItem(storeKey, JSON.stringify(state)); } catch (_) { /* Informe descargable aunque no se pueda guardar. */ } };
-    const esc = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-
-    const demos = [["<div class='demo-nav'><span>El obrador</span><span>La hornada</span><span>Mi horno (2)</span></div><p>¿Dónde revisarías el pedido?</p>","<div class='demo-nav'><span>Inicio</span><span>Productos</span><strong>Carrito (2)</strong></div><p>Pan de barrio, recogida y reparto.</p>"],["<p>Hogaza de masa madre · 4,80 €</p><div style='height:130px'></div><div style='text-align:right'><span class='fake tiny'>+</span></div>","<p>Hogaza de masa madre · 4,80 €</p><span class='fake'>Añadir hogaza al pedido</span>"],["<div class='demo-tags'><span>Barras</span><span>Integrales</span><span>Masa madre</span><span>Hogazas</span><span>Bollos</span><span>Desayunos</span><span>Magdalenas</span><span>Rosquillas</span><span>Sin gluten</span><span>Especiales</span><span>Empanadas</span><span>Otros</span></div>","<div class='demo-tags'><span>Panes</span><span>Dulces</span><span>Especialidades</span></div><p>Dentro de Panes: filtrar por tipo de harina y elaboración.</p>"],["<p>HG-05 × 2 · BA-01 × 1 · 612345678 · 17–19 · mostrador · 10,80 €</p><p>Continúa al siguiente paso y recuerda los datos.</p>","<h3>Productos</h3><p>2 hogazas + 1 barra · 10,80 €</p><h3>Recogida</h3><p>Hoy, de 17:00 a 19:00 · Mostrador</p><h3>Contacto</h3><p>612 345 678</p>"],["<div style='border:1px solid #777;padding:12px'><p>PEDIDO 28</p><p>2 hogazas · 9,60 €</p><p>Estado: preparado</p></div><p>¿Dónde se recoge?</p>","<div class='polished'><small>Migas Amigas · Pedido 28</small><h3>Tu pan está preparado</h3><p>2 hogazas · 9,60 €</p></div><p>¿Dónde se recoge? La información sigue faltando.</p>"],["",""],["<p>2 hogazas × 4,80 € + 1,50 € de reparto</p><p>Calcula el importe e indícalo al confirmar.</p>","<h3>Resumen calculado</h3><p>2 hogazas: 9,60 €</p><p>Reparto: 1,50 €</p><strong>Total: 11,10 €</strong><p>El sistema mantiene el cálculo y muestra el desglose.</p>"],["",""],["<div class='demo-tags loud'><span>¡OFERTA!</span><span>NUEVO</span><span>VER PANES</span><span>2 × 1</span><span>DESTACADO</span></div>","<p>Pan recién hecho cada mañana.</p><span class='fake'>Ver panes</span><p>Ofertas y novedades en una zona secundaria.</p>"],["<p>Elegir → Esperar sin explicación → Pedido terminado</p><h3>Hecho.</h3><p>Sin más información sobre la recogida.</p>","<p>Elegir → Recibir explicación del retraso → Revisar alternativas</p><h3>Pedido confirmado · #28</h3><p>2 hogazas · Recogida hoy a las 18:00 en la panadería de Plaza Mayor, 4 (dirección ficticia).</p><p>Si necesitas cambiar la recogida, contacta con la tienda.</p>"],["<h3>Tu pedido</h3><p>Continúa cuando puedas.</p><p>No se indica qué falta ni qué se conservará al salir.</p>","<h3>Borrador guardado · Paso 2 de 3</h3><ol><li>Productos: completado</li><li>Recogida: pendiente</li><li>Revisión: pendiente</li></ol><p>Al volver podrás elegir la recogida. El pedido aún no se ha enviado.</p>"],["<h3>Personaliza tu compra</h3><p>Explora todas las opciones y configura tu pedido completo.</p>","<h3>Tres decisiones para tu pedido</h3><p>Elige producto, cantidad y recogida.</p><p>Tiempo orientativo: 2–3 minutos, pendiente de validar.</p><p>Puedes guardar y continuar después. Sin cuenta atrás.</p>"]];
-    let demoAfter=false, demoTimer=null;
-    function renderDemo() {
-      clearTimeout(demoTimer);
-      const i=state.current;
-      $('#demo-before').setAttribute('aria-pressed',String(!demoAfter));
-      $('#demo-after').setAttribute('aria-pressed',String(demoAfter));
-      $('#demo').innerHTML='<header class="site-header"><div class="brand">Migas Amigas</div><small>Maqueta educativa · Caso '+(i+1)+'</small></header><div class="site-body">'+demos[i][demoAfter?1:0]+'</div>';
-      $('#demo-caption').textContent=demoAfter?'Una alternativa para discutir: identifica qué mejora, qué cuesta y qué falta validar.':'Situación inicial: describe lo que puedes observar sin confundirlo con resultados de usuarios.';
-      const body=$('#demo .site-body');
-      if(i===5) {
-        body.innerHTML='<label for="demo-phone">Teléfono español de 9 cifras (dato ficticio)</label><input id="demo-phone" type="text" inputmode="tel" value="612 345 678" autocomplete="off"><button type="button" id="phone-check" class="button primary">Comprobar formato</button><p id="demo-status" role="status"></p>';
-        $('#phone-check').addEventListener('click',()=>{
-          const raw=$('#demo-phone').value.trim();
-          const normalized=demoAfter?raw.replace(/[\s-]/g,''):raw;
-          $('#demo-status').textContent=/^[0-9]{9}$/.test(normalized)?'Formato aceptado: '+normalized+'. Solo se comprueba el formato, no si el número existe.':(demoAfter?'No se puede interpretar: introduce nueve cifras; puedes separarlas con espacios o guiones.':'Formato rechazado: escribe exactamente nueve cifras sin espacios ni guiones.');
-        });
-      }
-      if(i===7) {
-        body.innerHTML='<p>Consulta simulada: 2 segundos en ambas versiones.</p><button type="button" id="availability" class="button primary">Comprobar disponibilidad</button><p id="demo-status" role="status"></p>';
-        $('#availability').addEventListener('click',()=>{
-          clearTimeout(demoTimer);
-          $('#demo-status').textContent=demoAfter?'Consultando disponibilidad…':'';
-          demoTimer=setTimeout(()=>{ $('#demo-status').textContent='Consulta terminada: hay hogazas disponibles (simulación).'; },2000);
-        });
-      }
-    }
-    $('#demo-before').addEventListener('click',()=>{demoAfter=false;renderDemo();});
-    $('#demo-after').addEventListener('click',()=>{demoAfter=true;renderDemo();});
-    $('#back-to-case').addEventListener('click',()=>{ $('#case-title').scrollIntoView({behavior:'smooth',block:'start'}); $('#case-title').focus({preventScroll:true}); });
-
-    function selectOptions(items,selected,placeholder) { return `<option value="">${placeholder}</option>`+items.map((item,index)=>`<option value="${index}" ${selected===String(index)?'selected':''}>${esc(item)}</option>`).join(''); }
-    function renderNav() {
-      const nav=$('#case-nav'); nav.replaceChildren();
-      cases.forEach((item,index) => { const b=document.createElement('button'); b.type='button'; b.textContent=state.entries[index].submitted?'✓':String(index+1); b.title=`Caso ${index+1}: ${item.title}${state.entries[index].submitted?' (documentado)':''}`; b.setAttribute('aria-label',b.title); if(index===state.current)b.setAttribute('aria-current','step'); if(state.entries[index].submitted)b.classList.add('complete'); b.addEventListener('click',()=>{ state.current=index; save(); renderNav(); renderCase(); $('#audit-title').scrollIntoView({behavior:'smooth',block:'start'}); }); nav.append(b); });
-      const done=state.entries.filter(entry=>entry.submitted).length;
-      $('#progress').value=done; $('#progress-short').textContent=`${done} de 12`; $('#progress-text').textContent=`${done}/12`;
-      $('#deliverable').hidden=done!==cases.length;
-      if(done===cases.length) renderPreview();
-    }
-    function renderCase() {
-      const item=cases[state.current]; const entry=state.entries[state.current];
-      demoAfter=false; renderDemo();
-      const proposals=item.options.map((option,index)=>`<label class="proposal"><input type="radio" name="option" value="${index}" ${entry.option===String(index)?'checked':''}><strong>${String.fromCharCode(65+index)} · ${esc(option.name)}</strong><small>${esc(option.detail)}</small></label>`).join('');
-      $('#case-content').innerHTML=`<p class="case-eyebrow">Caso ${state.current+1} de 12 · Diagnóstico abierto</p><h2 id="case-title" tabindex="-1">${esc(item.title)}</h2>
-        <div class="brief"><p><strong>Observación en la maqueta:</strong> ${esc(item.task)}</p><p><strong>Hipótesis o situación ficticia:</strong> ${esc(item.data)}</p><p><strong>Restricción:</strong> ${esc(item.constraint)}</p></div>
-        <div class="zone-actions"><button type="button" id="locate" class="button secondary">Localizar el punto en la web</button><a class="button secondary" href="https://lawsofux.com/es/" target="_blank" rel="noopener noreferrer">Consultar leyes UX ↗</a></div>
-        <form id="audit-form" novalidate><div class="field"><label for="observation">1 · Evidencia de tu prueba</label><p class="prompt">Describe la acción y el resultado exacto que has comprobado; no copies solo el indicio anterior.</p><textarea id="observation" name="observation" minlength="35" maxlength="600" placeholder="Al hacer ..., la interfaz muestra ...">${esc(entry.observation)}</textarea><small>Mínimo 35 caracteres.</small></div>
-        <div class="select-grid"><div class="field"><label for="severity">2 · Gravedad</label><select id="severity" name="severity"><option value="">Elige una</option><option value="0" ${entry.severity==='0'?'selected':''}>0 · No hay problema</option><option value="1" ${entry.severity==='1'?'selected':''}>1 · Cosmético</option><option value="2" ${entry.severity==='2'?'selected':''}>2 · Menor</option><option value="3" ${entry.severity==='3'?'selected':''}>3 · Grave</option><option value="4" ${entry.severity==='4'?'selected':''}>4 · Crítico</option></select></div></div>
-        <div class="field"><label for="law">Ley UX que ayuda a explicar el caso</label><select id="law" name="law">${selectOptions(lawNames,entry.law,'Elige una')}</select><small>Identifica el principio principal y explica sus límites en tu defensa. Puedes argumentar relaciones con otras leyes del tema.</small></div>
-        <fieldset class="field"><legend>3 · Decisión de diseño: ${esc(item.question)}</legend><p class="prompt">Las tres opciones tienen ventajas y costes. Puedes defender otra solución en tu justificación.</p>${proposals}</fieldset>
-        <div class="field"><label for="reason">4 · Defensa y compensación</label><p class="prompt">Razona con tus observaciones, explica qué sacrificas y en qué condiciones cambiarías tu decisión.</p><textarea id="reason" name="reason" minlength="65" maxlength="1100" placeholder="Elijo ... porque ...; el coste sería ...">${esc(entry.reason)}</textarea><small>Mínimo 65 caracteres.</small></div>
-        <div class="field"><label for="test">5 · Prueba y criterio de éxito</label><p class="prompt">Indica a quién observarías, qué tarea haría y qué medida mostraría una mejora.</p><textarea id="test" name="test" minlength="40" maxlength="800" placeholder="Probaría con ...; mediría ...; esperaría ...">${esc(entry.test)}</textarea><small>Mínimo 40 caracteres.</small></div>
-        <button type="submit" class="button primary">Guardar análisis del caso</button><p id="form-status" class="status" role="status" aria-live="polite"></p></form>
-        <aside id="debrief" class="debrief" ${entry.submitted?'':'hidden'}><h3>Guía de contraste para revisar tu argumento</h3><p><strong>Ley o efecto especialmente pertinente:</strong> ${esc(item.law)}.</p><p>${esc(item.guide)}</p><p id="option-tradeoff"></p><p class="small">La guía orienta la revisión; no corrige automáticamente la calidad de tu respuesta.</p></aside>
-        <div class="next-row"><button type="button" id="next-case" class="button secondary">${state.current===cases.length-1?'Ir a la síntesis':'Siguiente caso →'}</button></div>`;
-      $('#locate').addEventListener('click', () => (()=>{ $('#demo').scrollIntoView({behavior:'smooth',block:'center'}); $('#demo').focus({preventScroll:true}); })());
-      $('#next-case').addEventListener('click', () => { if(state.current===cases.length-1) { if(!$('#deliverable').hidden) $('#deliverable').scrollIntoView({behavior:'smooth'}); else { $('#form-status').textContent='Completa los doce casos antes de la síntesis.'; $('#form-status').className='status error'; } } else {state.current+=1; save(); renderNav(); renderCase(); $('#audit-title').scrollIntoView({behavior:'smooth',block:'start'});} });
-      const form=$('#audit-form'); const sync=event => { const field=event.target; if(!field.name)return; entry[field.name]=field.value; if(entry.submitted) {entry.submitted=false; $('#debrief').hidden=true; $('#form-status').textContent='Cambios pendientes: guarda de nuevo este caso.'; $('#form-status').className='status'; renderNav();} save(); };
-      form.addEventListener('input',sync); form.addEventListener('change',sync);
-      form.addEventListener('submit',event => {
-        event.preventDefault();
-        const message=$('#form-status');
-        for(const [field,min,label] of [['observation',35,'evidencia'],['reason',65,'defensa'],['test',40,'prueba de validación']]) {
-          if(entry[field].trim().length<min) { message.textContent=`Amplía ${label}: mínimo ${min} caracteres con información concreta.`; message.className='status error'; $(`#${field}`).focus(); return; }
-        }
-        for(const [field,label] of [['severity','gravedad'],['law','ley UX'],['option','propuesta']]) {
-          if(entry[field]==='') {message.textContent=`Selecciona ${label} antes de guardar.`; message.className='status error'; $(`#${field==='option'?'audit-form':field}`).focus(); return;}
-        }
-        entry.submitted=true; save(); renderNav(); renderDebrief(item,entry);
-        message.textContent='Análisis guardado. Contrasta tu elección con la guía; puedes editarla.'; message.className='status success';
-      });
-      if(entry.submitted) renderDebrief(item,entry);
-    }
-    function renderDebrief(item,entry) {
-      $('#debrief').hidden=false; const choice=item.options[Number(entry.option)];
-      $('#option-tradeoff').textContent=`Tu propuesta, «${choice.name}»: ${choice.gain} Riesgo: ${choice.cost}`;
-    }
-    function reportText() {
-      const clean=value=>String(value||'').replace(/[\r\n\t]+/g,' ').trim();
-      const lines=['MIGAS AMIGAS · INFORME DEL LABORATORIO DE LEYES UX','======================================================',`Autoría: ${clean(state.name)||'Sin indicar'}`,`Fecha: ${new Date().toLocaleDateString('es-ES')}`,`Casos documentados: ${state.entries.filter(e=>e.submitted).length}/12`,'Datos de usuarios: simulados; el alumnado debe validar las hipótesis.','','CRITERIO DE REVISIÓN','-------------------','Valorar cada caso según evidencia reproducible, fundamento en las leyes UX del tema,','compensaciones expresas, y plan de validación con personas y medidas.','La aplicación comprueba campos, no asigna calificación a las respuestas.'];
-      cases.forEach((item,index) => {const entry=state.entries[index];const choice=item.options[Number(entry.option)];lines.push('',`CASO ${index+1} · ${item.title.toUpperCase()}`,'-'.repeat(13+item.title.length),`Situación: ${item.data}`,`Restricción: ${item.constraint}`,`Evidencia propia: ${clean(entry.observation)}`,`Gravedad declarada: ${entry.severity}/4`,`Ley UX elegida: ${lawNames[Number(entry.law)]}`,`Propuesta: ${choice.name}`,`Descripción: ${choice.detail}`,`Justificación y coste: ${clean(entry.reason)}`,`Validación: ${clean(entry.test)}`,`Guía de contraste: ${item.law}. ${item.guide}`,`Ventaja posible: ${choice.gain}`,`Riesgo posible: ${choice.cost}`);});
-      lines.push('','SÍNTESIS FINAL','--------------',`Prioridades: ${clean(state.priorities)}`,`Límites y siguiente investigación: ${clean(state.limitations)}`,'','Informe educativo basado en una maqueta y datos ficticios.'); return lines.join('\n')+'\n';
-    }
-    function renderPreview() { $('#report-preview').textContent=reportText(); }
-    $('#student-name').value=state.name;
-    $('#student-name').addEventListener('input',event=>{state.name=event.target.value;save();if(!$('#deliverable').hidden)renderPreview();});
-    $('#priorities').value=state.priorities; $('#limitations').value=state.limitations;
-    ['priorities','limitations'].forEach(id=>$('#'+id).addEventListener('input',event=>{state[id]=event.target.value; save(); renderPreview();}));
-    $('#download').addEventListener('click',()=>{
-      const status=$('#report-status');
-      if(state.priorities.trim().length<100 || state.limitations.trim().length<50) { status.textContent='Completa la síntesis: 100 caracteres en prioridades y 50 en límites.'; status.className='status error'; (state.priorities.trim().length<100?$('#priorities'):$('#limitations')).focus(); return; }
-      const text=reportText(); const filename=(state.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,35)||'equipo');
-      const url=URL.createObjectURL(new Blob(['\ufeff',text],{type:'text/plain;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download=`migas-amigas-leyes-ux-${filename}.txt`;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
-      status.textContent='Informe descargado. Comprueba el archivo en tu dispositivo.';status.className='status success';
-    });
-    $('#reset').addEventListener('click',()=>{if(!confirm('¿Borrar tus doce análisis y la síntesis de este navegador?'))return;try{localStorage.removeItem(storeKey);}catch(_){}location.reload();});
-    renderNav();renderCase();
-  })();
-  </script>
+const key='migas-amigas-visual-v2';
+let state={current:0,choices:Array(12).fill(null),viewed:Array(12).fill(false)};
+try{const p=JSON.parse(localStorage.getItem(key));if(p&&Array.isArray(p.choices)&&p.choices.length===12){state.current=Number.isInteger(p.current)&&p.current>=0&&p.current<12?p.current:0;state.choices=p.choices.map(x=>Number.isInteger(x)&&x>=0&&x<=2?x:null);state.viewed=Array.isArray(p.viewed)&&p.viewed.length===12?p.viewed.map(Boolean):Array(12).fill(false);}}catch{}
+let after=false,timer=null,svgCount=0;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function save(){try{localStorage.setItem(key,JSON.stringify(state));}catch{$('#save-status').textContent='El navegador no permite guardar. Puedes descargar tu recorrido.';}}
+function bread(type=0){const id='bread'+(++svgCount);const path=type===1?'M35 152C31 112 45 56 109 39C160 27 213 61 225 113C244 166 208 190 136 193C78 200 42 188 35 152Z':'M28 143C18 112 42 79 76 61C119 37 185 50 224 92C254 124 238 162 208 174C159 193 58 188 28 143Z';return `<svg class="bread-art" viewBox="0 0 270 220" role="img" aria-label="${type===1?'Hogaza de masa madre':type===2?'Pan de semillas':'Pan artesano'}"><defs><linearGradient id="${id}" x1="0" y1="0" x2=".6" y2="1"><stop stop-color="#edc07d"/><stop offset=".55" stop-color="#bf783d"/><stop offset="1" stop-color="#8b4a23"/></linearGradient></defs><ellipse cx="139" cy="181" rx="104" ry="15" fill="#603417" opacity=".10"/><path d="${path}" fill="url(#${id})"/><path d="M43 119C64 71 153 49 210 97" stroke="#f5d49b" stroke-width="4" fill="none" opacity=".4"/>${type===1?'<path d="M85 61Q146 109 187 160M63 89Q139 119 210 119" stroke="#814d2b" stroke-width="13" stroke-linecap="round" fill="none"/><path d="M85 58Q145 103 187 156M63 84Q139 114 210 115" stroke="#f5d7a0" stroke-width="9" stroke-linecap="round" fill="none"/>':'<path d="M78 83Q69 111 94 147M121 66Q110 105 141 159M166 71Q154 111 184 157" stroke="#7d4928" stroke-width="14" stroke-linecap="round" fill="none"/><path d="M75 78Q68 109 91 144M118 62Q109 102 138 155M163 68Q153 108 181 152" stroke="#f5d7a0" stroke-width="10" stroke-linecap="round" fill="none"/>'}${type===2?'<g fill="#eddaa8"><ellipse cx="54" cy="125" rx="3" ry="6" transform="rotate(25 54 125)"/><ellipse cx="108" cy="117" rx="3" ry="6"/><ellipse cx="157" cy="142" rx="3" ry="6" transform="rotate(-30 157 142)"/><ellipse cx="201" cy="102" rx="3" ry="6"/><ellipse cx="117" cy="174" rx="3" ry="6"/><ellipse cx="217" cy="145" rx="3" ry="6"/></g>':''}<g fill="#ffe5b4" opacity=".4"><circle cx="59" cy="146" r="1.6"/><circle cx="108" cy="84" r="1.8"/><circle cx="183" cy="88" r="1.5"/><circle cx="158" cy="175" r="1.4"/><circle cx="200" cy="156" r="1.6"/><circle cx="72" cy="159" r="1.6"/><circle cx="207" cy="134" r="1.3"/></g></svg>`;}
+function action(text,act='generic',cls=''){return `<button class="shop-action ${cls}" data-act="${act}">${text}</button>`;}
+function shelf(){return `<div class="shelf">${['La clásica','Masa madre','De semillas'].map((name,i)=>`<article class="product"><div class="product-art">${bread(i)}</div><h4>${name}</h4><div class="product-meta"><span>${['3,20','4,80','3,90'][i]} €</span><button class="mini-add" data-act="add" aria-label="Añadir ${name}">+</button></div></article>`).join('')}</div>`;}
+function hero(extra=''){return `<div class="hero"><div><div class="shop-kicker">Harina, agua y tiempo.</div><h3>Lo bueno<br>se hace<br>sin prisa.</h3><p>Pan de masa madre, horneado cada mañana en tu barrio.</p>${extra||action('Ver panes','catalog')}</div><div>${bread(1)}</div></div>`;}
+function receipt(){return '<div class="receipt"><div class="receipt-row"><span>2 × Hogaza de masa madre</span><span>9,60 €</span></div><div class="receipt-row"><span>Reparto</span><span>1,50 €</span></div><div class="receipt-row total"><span>Total</span><span>11,10 €</span></div></div>';}
+function content(i){
+ switch(i){
+ case 0:return hero()+shelf();
+ case 1:return `<div class="feature-card"><div class="product-art">${bread(1)}</div><div><div class="shop-kicker">Fermentación lenta · 24 h</div><h3>Hogaza de<br>masa madre.</h3><p>Corteza crujiente. Miga suave.<br>Harina de trigo y mucho tiempo.</p><span class="price">4,80 € <small style="font:11px system-ui;color:#64765b">/ 700 g</small></span>${after?action('Añadir al pedido','add'):''}</div></div>${after?'':`<div class="far-action">${action('+','add','tiny-target')}</div>`}`;
+ case 2:return `<div class="section-heading"><h3>Cada día, recién hecho.</h3><span class="quiet">Nuestro obrador</span></div><p>Encuentra tu pan para hoy.</p><div class="tags">${(after?['Panes','Dulces','Especiales']:['Barras','Integrales','Masa madre','Hogazas','Bollos','Desayunos','Magdalenas','Rosquillas','Sin gluten','Especiales','Empanadas','Otros']).map((s,j)=>`<button class="tag ${j===0?'active':''}" data-category="${s}">${s}</button>`).join('')}</div>${after?'<p id="category-help">Dentro de Panes: filtra por harina y elaboración.</p>':'<p id="category-help">Categorías del catálogo.</p>'}${shelf()}`;
+ case 3:return `<div class="shop-kicker">Antes de confirmar</div><h3>Revisa tu pedido.</h3>${after?'<div class="summary-grid"><div class="summary-box"><h4>Productos</h4><p>2 hogazas + 1 barra<br><strong>10,80 €</strong></p></div><div class="summary-box"><h4>Recogida</h4><p>Hoy, 17:00–19:00<br>En el mostrador</p></div><div class="summary-box"><h4>Contacto</h4><p>612 345 678</p></div></div>':'<div class="receipt" style="margin:25px 0"><p>HG-05 × 2 · BA-01 × 1 · 612345678 · 17–19 · mostrador · 10,80 €</p></div>'}${action('Revisado','review')}`;
+ case 4:return `<div class="receipt ${after?'':'plain-version'}" style="margin:20px auto;max-width:440px;padding:28px">${after?'<div class="success-symbol" aria-hidden="true">✓</div>':''}<div class="shop-kicker">Pedido 28</div><h3>${after?'Tu pan está listo.':'Pedido preparado'}</h3><p style="margin:15px 0">2 hogazas de masa madre · 9,60 €</p><p>Estado: preparado para recoger.</p></div>`;
+ case 5:return `<div class="feature-card"><div><div class="shop-kicker">Ya casi está</div><h3>Tu contacto.</h3><p>Por si necesitamos avisarte sobre la recogida.</p></div><div class="product-art">${bread(0)}</div></div><form id="phone-form"><label class="field-label" for="phone">Teléfono de prueba · 9 cifras españolas</label><input class="shop-field" id="phone" inputmode="tel" type="text" value="612 345 678" autocomplete="off" aria-describedby="phone-help"><p id="phone-help" style="margin-bottom:12px">Usa un número ficticio. Solo comprobamos el formato.</p><button class="shop-action" type="submit">Continuar</button></form>`;
+ case 6:return `<div class="shop-kicker">Tu cesta</div><h3>Un pedido para compartir.</h3><div style="margin:23px 0">${after?receipt():'<div class="receipt"><div class="receipt-row"><span>2 hogazas</span><span>4,80 € / unidad</span></div><div class="receipt-row"><span>Reparto</span><span>1,50 €</span></div><label class="field-label" for="manual-total">Calcula e indica el total</label><input class="shop-field" id="manual-total" inputmode="decimal" placeholder="Tu cálculo, en euros"></div>'}</div>${action('Revisar importe','total')}`;
+ case 7:return `<div class="feature-card"><div class="product-art">${bread(1)}</div><div><div class="shop-kicker">La favorita del barrio</div><h3>¿Quedan<br>hogazas?</h3><p>Consulta la disponibilidad de la hornada de hoy.</p>${action('Consultar disponibilidad','wait')}</div></div>`;
+ case 8:return hero(after?action('Ver panes','catalog'):'<div class="promo-row loud"><span>2 × 1</span><span>NOVEDAD</span><span>FAVORITOS</span></div>'+action('Ver panes','catalog','light'))+(after?'<p style="margin-top:14px">También en el obrador: ofertas, novedades y favoritos.</p>':'')+shelf();
+ case 9:return `<div class="receipt" style="max-width:500px;margin:8px auto;padding:25px"><div class="success-symbol" aria-hidden="true">✓</div><div class="shop-kicker">Pedido 28</div><h3>${after?'Nos vemos a las 18:00.':'Hecho.'}</h3>${after?'<p style="margin:15px 0">2 hogazas de masa madre · 9,60 €<br>Recogida hoy a las 18:00.<br>Panadería de Plaza Mayor, 4.</p><p class="quiet">Dirección ficticia para esta actividad.</p><div style="margin-top:18px">'+action('Necesito ayuda','help','light')+'</div>':'<p style="margin-top:15px">Tu pedido se ha completado.</p>'}</div>`;
+ case 10:return `<div class="shop-kicker">A tu ritmo</div><h3>${after?'Lo dejamos aquí.':'Tu pedido.'}</h3>${after?'<div class="step-line"><span class="done">1. Productos ✓</span><span class="current">2. Recogida</span><span>3. Revisión</span></div><div class="summary-box" style="margin:20px 0"><h4>Borrador guardado</h4><p>2 hogazas de masa madre.<br>Falta elegir cuándo recogerlas.<br>El pedido aún no se ha enviado.</p></div>'+action('Elegir recogida','resume'):'<p style="margin:20px 0">Continúa con la configuración de tu pedido.</p>'+action('Continuar','resume')}`;
+ case 11:return `<div class="feature-card"><div><div class="shop-kicker">Pan para tu semana</div><h3>${after?'Tres decisiones.<br>Y listo.':'A tu gusto.'}</h3><p>${after?'Elige el producto, la cantidad y cuándo recogerlo.':'Explora las opciones y configura tu pedido completo.'}</p></div><div class="product-art">${bread(2)}</div></div>${after?'<div class="step-line"><span class="current">1. Producto</span><span>2. Cantidad</span><span>3. Recogida</span></div><p style="margin:15px 0">Puedes guardar y continuar después. Sin prisas.</p>':'<div style="height:30px"></div>'}${action('Empezar','start')}`;
+ }
+}
+function renderShop(){clearTimeout(timer);$('#before').setAttribute('aria-pressed',String(!after));$('#after').setAttribute('aria-pressed',String(after));const i=state.current;
+ $('#shop-content').innerHTML=`<header class="shop-head"><div class="shop-brand">migas amigas<small>Pan de barrio · desde 1986</small></div><nav class="shop-nav" aria-label="Navegación de la tienda de prueba"><button data-act="home">Inicio</button><button data-act="catalog">Panes</button><button class="cart-link" data-act="cart">${i===0&&!after?'Mi horno':'Carrito'} <span aria-hidden="true">(2)</span></button></nav></header><div class="shop-body">${content(i)}<p class="status" id="shop-status" role="status" aria-live="polite"></p></div><footer class="shop-footer"><span>Hecho a mano, cada mañana.</span><span>Recogida en el barrio</span></footer>`;
+ $('#preview-note').textContent=(after?'DESPUÉS · ':'ANTES · ')+challenges[i][after?'after':'before'];
+ $('#shop-content').querySelectorAll('[data-act]').forEach(b=>b.addEventListener('click',()=>{const status=$('#shop-status');const act=b.dataset.act;if(act==='wait'){clearTimeout(timer);status.textContent=after?'Consultando la hornada…':'';timer=setTimeout(()=>{status.textContent='Sí, quedan hogazas disponibles. Resultado simulado.';},2000);return;}status.textContent=({add:'Añadido al pedido de prueba. No se realiza ninguna compra.',cart:'Carrito de prueba: 2 hogazas de masa madre · 9,60 €.',catalog:'Catálogo de prueba: La clásica, Masa madre y De semillas.',home:'Estás en la tienda de prueba de Migas Amigas.',help:'Ayuda de prueba: podrías consultar o cambiar tu recogida.',review:'Revisión de prueba completada. El pedido no se envía.',resume:after?'Retomas el borrador en la selección de recogida.':'Continúas, pero la maqueta no indica qué faltaba.',start:after?'Primer paso: elige el producto. Después, cantidad y recogida.':'Empieza la configuración: el alcance no se detalla.',total:after?'Total revisado: 9,60 € + 1,50 € = 11,10 €.':'Has tenido que resolver el cálculo que podría hacer el sistema.'})[act]||'Interacción de prueba.';}));
+ $('#shop-content').querySelectorAll('[data-category]').forEach(b=>b.addEventListener('click',()=>{$('#shop-content').querySelectorAll('[data-category]').forEach(x=>x.classList.toggle('active',x===b));$('#category-help').textContent='Has elegido «'+b.dataset.category+'». Esta maqueta muestra la organización, no un catálogo completo.';}));
+ const form=$('#phone-form');if(form)form.addEventListener('submit',e=>{e.preventDefault();const raw=$('#phone').value.trim();const v=after?raw.replace(/[\s-]/g,''):raw;$('#shop-status').textContent=/^[0-9]{9}$/.test(v)?'Formato aceptado: '+v+'. No se comprueba si el número existe.':after?'Revisa el número: nueve cifras; se permiten espacios y guiones.':'Formato rechazado: solo se admiten nueve cifras seguidas, sin espacios.';});
+}
+function feedback(){const c=challenges[state.current],choice=state.choices[state.current],box=$('#feedback');box.hidden=choice===null;$('#next').hidden=choice===null;if(choice!==null){const ok=choice===c.correct;box.className='feedback'+(ok?'':' tip');box.innerHTML='<strong>'+esc(ok?c.law:'Prueba otra decisión')+'</strong><p>'+esc(ok?c.why:c.hint)+'</p>';$('#next').textContent=state.current===11?'Volver al primer reto ↺':'Siguiente reto →';}}
+function progress(){const n=state.viewed.filter(Boolean).length;$('#progress-count').textContent=n+' de 12';$('#dots').innerHTML=state.viewed.map(v=>'<span class="dot'+(v?' done':'')+'"></span>').join('');$('#complete').hidden=n!==12;}
+function render(){const c=challenges[state.current];$('#step').textContent='RETO '+String(state.current+1).padStart(2,'0')+' / 12';$('#challenge-title').textContent=c.title;$('#brief').textContent=c.brief;$('#question').textContent=c.question;$('#prev').disabled=state.current===0;$('#forward').disabled=state.current===11;$('#jump').value=String(state.current);$('#choices').replaceChildren();c.options.forEach((s,j)=>{const b=document.createElement('button');b.className='choice';b.type='button';b.setAttribute('aria-pressed',String(state.choices[state.current]===j));b.innerHTML='<span class="letter" aria-hidden="true">'+String.fromCharCode(65+j)+'</span><span>'+esc(s)+'</span>';b.addEventListener('click',()=>{state.choices[state.current]=j;state.viewed[state.current]=true;save();$('#choices').querySelectorAll('button').forEach((x,k)=>x.setAttribute('aria-pressed',String(k===j)));if(j===c.correct){after=true;renderShop();}feedback();progress();});$('#choices').append(b);});feedback();progress();renderShop();}
+function go(i){state.current=i;after=false;save();render();$('#challenge-title').focus({preventScroll:true});if(innerWidth<821)$('#step').scrollIntoView({block:'start'});}
+$('#jump').innerHTML=challenges.map((c,i)=>'<option value="'+i+'">'+String(i+1).padStart(2,'0')+' · '+esc(c.law)+'</option>').join('');$('#jump').addEventListener('change',e=>go(Number(e.target.value)));$('#prev').addEventListener('click',()=>go(Math.max(0,state.current-1)));$('#forward').addEventListener('click',()=>go(Math.min(11,state.current+1)));$('#next').addEventListener('click',()=>go((state.current+1)%12));$('#before').addEventListener('click',()=>{after=false;renderShop();});$('#after').addEventListener('click',()=>{after=true;renderShop();});
+$('#download').addEventListener('click',()=>{const lines=['MIGAS AMIGAS · MI RECORRIDO VISUAL UX',new Date().toLocaleDateString('es-ES'),''];challenges.forEach((c,i)=>{const choice=state.choices[i];lines.push((i+1)+'. '+c.law+' — '+c.title,'Mi última decisión: '+(choice===null?'Pendiente':c.options[choice]),'Criterio de diseño: '+c.why,'');});lines.push('Para debatir: ¿qué cambio mejora más la tienda y cómo lo comprobarías?','Actividad didáctica. Este recorrido no certifica una competencia ni recoge datos de usuarios reales.');const url=URL.createObjectURL(new Blob(['\ufeff'+lines.join('\n')],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='migas-amigas-recorrido-ux.txt';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);$('#save-status').textContent='Recorrido descargado. Puedes seguir explorando.';});
+$('#reset').addEventListener('click',()=>{if(!confirm('¿Reiniciar únicamente el recorrido de este taller visual?'))return;state={current:0,choices:Array(12).fill(null),viewed:Array(12).fill(false)};after=false;save();render();$('#save-status').textContent='Recorrido reiniciado.';});
+render();
+})();
+</script>
 </body>
 </html>
