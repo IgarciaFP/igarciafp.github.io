@@ -1698,18 +1698,6 @@ de los que sí.</p>
             <p>El núcleo de un sistema de diseño son los <strong>Design Tokens</strong>: variables que almacenan valores visuales fundamentales (colores, fuentes, espaciados) reutilizables en CSS/Sass (ej. <code>--color-primary: #1e3a8a;</code>, <code>--spacing-md: 16px;</code>).</p>
         </div>
 
-        <div class="didactic-note activity-callout">
-            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 5: Bootstrap y Atomic Design (Apartado 4.4)</h5>
-            <p><strong>Inventario de componentes de Bootstrap:</strong> Consulta la sección <strong>Components</strong> de la documentación de Bootstrap y elabora un listado de sus componentes: botones, grupos de botones, tarjetas, barras de navegación, acordeones, alertas y ventanas modales.</p>
-            <p>Organiza el listado en una tabla con estas columnas: <strong>componente de Bootstrap, función, nivel de Atomic Design con el que lo relacionas y justificación</strong>. Analiza la composición de cada componente y relaciónalo con átomos, moléculas u organismos. Explica cómo combinarías esos componentes en una plantilla y cómo se convertiría en una página al incorporar contenido concreto. Justifica la clasificación según su composición y uso: no existe una equivalencia única y obligatoria para cada componente.</p>
-            <div class="flex-wrap-group">
-                <a href="https://getbootstrap.com/docs/5.3/getting-started/introduction/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Documentación de Bootstrap</a>
-                <a href="https://getbootstrap.com/docs/5.3/components/accordion/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Componentes de Bootstrap</a>
-            </div>
-        
-            <div class="delivery-tip"><a class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
-</div>
-
         <!-- SUBAPARTADO NUEVO: DESIGN TOKENS (NUEVO PUNTO INTEGRADO) -->
         <h4 id="sec4_4_1">4.4.1. Design Tokens: La base del desarrollo ágil e interoperable</h4>
         <p>Los <strong>Design Tokens</strong> (tokens de diseño) son variables agnósticas a la plataforma que almacenan los valores visuales fundamentales de un sistema de diseño —tales como códigos cromáticos en hexadecimal, tamaños tipográficos en rem, espaciados en píxeles, radios de borde y duraciones de animación. Actúan como la <strong>fuente única de verdad</strong> (<em>Single Source of Truth</em>) que conecta el diseño visual creado en herramientas como Figma con la implementación en código frontend (CSS, Sass, React, iOS, Android).</p>
@@ -1769,9 +1757,21 @@ de los que sí.</p>
             <li><strong>Tokens Semánticos:</strong> Asignan un propósito al valor. Bootstrap utiliza <code>--bs-primary</code> para el color principal y <code>--bs-danger</code> para situaciones de peligro o error; en el tema predeterminado valen <code>#0d6efd</code> y <code>#dc3545</code>, respectivamente.</li>
             <li><strong>Tokens de Componente:</strong> Controlan propiedades de un componente concreto. En los botones de Bootstrap, <code>--bs-btn-bg</code> define el fondo, <code>--bs-btn-color</code> el texto y <code>--bs-btn-hover-bg</code> el fondo al pasar el puntero.</li>
         </ul>
-        <p>Esta clasificación permite interpretar las variables de Bootstrap como tokens. Su CSS compilado no enlaza necesariamente todos los valores mediante <code>var()</code>: cambiar <code>--bs-primary</code> no actualiza por sí solo todas las variantes de botones. Consulta las <a href="https://getbootstrap.com/docs/5.3/customize/css-variables/" target="_blank" rel="noopener noreferrer">variables CSS de Bootstrap</a> y las <a href="https://getbootstrap.com/docs/5.3/components/buttons/#css" target="_blank" rel="noopener noreferrer">variables de los botones</a>.</p>
+        <p>Esta clasificación permite interpretar las variables de Bootstrap como tokens. Su CSS compilado no enlaza necesariamente todos los valores mediante <code>var()</code>: cambiar <code>--bs-primary</code> no actualiza por sí solo todas las variantes de botones.</p>
 
         <p>Centralizar los valores facilita mantener un diseño coherente. En Bootstrap, personaliza las variables del componente o recompila las variables Sass del tema según el alcance del cambio; revisa también los estados de interacción y sus contrastes.</p>
+
+        <div class="resource-card expansion-card">
+            <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-solid fa-code" aria-hidden="true"></i> Variables CSS y botones de Bootstrap</span>
+                <span class="resource-badge badge-reading">Lectura de ampliación</span>
+            </div>
+            <div class="resource-description">Consulta la documentación de Bootstrap sobre sus variables CSS y las variables específicas de los botones.</div>
+            <div class="flex-wrap-group">
+                <a href="https://getbootstrap.com/docs/5.3/customize/css-variables/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Variables CSS de Bootstrap</a>
+                <a href="https://getbootstrap.com/docs/5.3/components/buttons/#css" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Variables de los botones</a>
+            </div>
+        </div>
 
         <!-- Recurso Enlace Design Tokens (NUEVO) -->
         <div class="resource-card expansion-card">
@@ -1809,6 +1809,18 @@ de los que sí.</p>
   Aceptar
 &lt;/button&gt;</code></pre>
         <p>En este ejemplo, <code>bg-blue-500</code> establece el fondo azul; <code>text-white</code>, el texto blanco; <code>px-4</code> y <code>py-2</code>, el espaciado interior horizontal y vertical; y <code>rounded</code>, las esquinas redondeadas. La comparación ilustra dos formas de expresar el mismo tipo de diseño: los valores exactos dependen de la versión y del tema configurado en Tailwind. Para que las utilidades funcionen, el proyecto debe incluir el CSS generado por Tailwind.</p>
+
+        <div class="didactic-note activity-callout">
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 5: Bootstrap y Atomic Design (Apartado 4.4)</h5>
+            <p><strong>Inventario de componentes de Bootstrap:</strong> Consulta la sección <strong>Components</strong> de la documentación de Bootstrap y elabora un listado de sus componentes: botones, grupos de botones, tarjetas, barras de navegación, acordeones, alertas y ventanas modales.</p>
+            <p>Organiza el listado en una tabla con estas columnas: <strong>componente de Bootstrap, función, nivel de Atomic Design con el que lo relacionas y justificación</strong>. Analiza la composición de cada componente y relaciónalo con átomos, moléculas u organismos. Explica cómo combinarías esos componentes en una plantilla y cómo se convertiría en una página al incorporar contenido concreto. Justifica la clasificación según su composición y uso: no existe una equivalencia única y obligatoria para cada componente.</p>
+            <div class="flex-wrap-group">
+                <a href="https://getbootstrap.com/docs/5.3/getting-started/introduction/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Documentación de Bootstrap</a>
+                <a href="https://getbootstrap.com/docs/5.3/components/accordion/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Componentes de Bootstrap</a>
+            </div>
+        
+            <div class="delivery-tip"><a class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
+</div>
 
         <h3 id="sec4_6">4.6. Composición, estados UI, Mobile-First y rendimiento</h3>
         
