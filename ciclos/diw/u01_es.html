@@ -96,9 +96,10 @@
         <li><a href="#sec4_4" class="subsection-link">4.4. Atomic Design</a></li>
         <li><a href="#sec4_4_1" class="subsection-link">4.4.1. Design Tokens</a></li>
         <li><a href="#sec4_4_2" class="subsection-link">4.4.2. CSS tradicional y Tailwind CSS</a></li>
-        <li><a href="#sec4_5" class="subsection-link">4.5. Identidad Visual</a></li>
         <li><a href="#sec4_6" class="subsection-link">4.6. Composición, Estados & Mobile-First</a></li>
         <li><a href="#sec4_7" class="subsection-link">4.7. Componentes & Formularios Web</a></li>
+        <li><a href="#sec4_7_1" class="subsection-link">4.7.1. Categorización de marcas visuales</a></li>
+        <li><a href="#sec4_7_2" class="subsection-link">4.7.2. Iconografía e independencia de resolución</a></li>
         <li><a href="#sec5">5. Guía de estilo web</a></li>
         <li><a href="#sec5_1" class="subsection-link">5.1. Finalidad y contenidos</a></li>
         <li><a href="#sec5_2" class="subsection-link">5.2. Proceso de creación</a></li>
@@ -1664,11 +1665,11 @@ de los que sí.</p>
 
         <div class="didactic-note activity-callout">
             <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 5: Bootstrap y Atomic Design (Apartado 4.4)</h5>
-            <p><strong>Inventario de elementos de diseño:</strong> Consulta la documentación y los ejemplos de Bootstrap y elabora un listado de sus elementos: botones, campos de formulario, grupos de entrada, tarjetas, barras de navegación, ventanas modales y estructuras de página.</p>
-            <p>Organiza el listado en una tabla con estas columnas: <strong>elemento de Bootstrap, función, nivel de Atomic Design con el que lo relacionas y justificación</strong>. Relaciona los elementos simples y sus combinaciones con átomos, moléculas y organismos; utiliza un ejemplo completo para distinguir la plantilla de la página con contenido concreto. Justifica la clasificación según su composición y uso: no existe una equivalencia única y obligatoria para cada componente.</p>
+            <p><strong>Inventario de componentes de Bootstrap:</strong> Consulta la sección <strong>Components</strong> de la documentación de Bootstrap y elabora un listado de sus componentes: botones, grupos de botones, tarjetas, barras de navegación, acordeones, alertas y ventanas modales.</p>
+            <p>Organiza el listado en una tabla con estas columnas: <strong>componente de Bootstrap, función, nivel de Atomic Design con el que lo relacionas y justificación</strong>. Analiza la composición de cada componente y relaciónalo con átomos, moléculas u organismos. Explica cómo combinarías esos componentes en una plantilla y cómo se convertiría en una página al incorporar contenido concreto. Justifica la clasificación según su composición y uso: no existe una equivalencia única y obligatoria para cada componente.</p>
             <div class="flex-wrap-group">
                 <a href="https://getbootstrap.com/docs/5.3/getting-started/introduction/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Documentación de Bootstrap</a>
-                <a href="https://getbootstrap.com/docs/5.3/examples/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Ejemplos de Bootstrap</a>
+                <a href="https://getbootstrap.com/docs/5.3/components/accordion/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Componentes de Bootstrap</a>
             </div>
         
             <div class="delivery-tip"><a class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -1729,12 +1730,13 @@ de los que sí.</p>
 
         <p>Los tokens se organizan habitualmente en tres niveles de abstracción:</p>
         <ul>
-            <li><strong>Tokens Globales (o primitivos):</strong> Almacenan valores directos de diseño sin un contexto de uso específico (ej. <code>color-blue-900: #1e3a8a</code>, <code>size-16: 16px</code>).</li>
-            <li><strong>Tokens Semánticos:</strong> Asignan una función clara o intención al token según el contexto (ej. <code>--color-primary-brand: var(--color-blue-900)</code> o <code>--color-feedback-error: #b91c1c</code>).</li>
-            <li><strong>Tokens de Componente:</strong> Definen las propiedades específicas de un elemento de interfaz (ej. <code>--button-primary-bg-hover</code>).</li>
+            <li><strong>Tokens Globales (o primitivos):</strong> Valores de base. En Bootstrap 5.3, <code>--bs-blue: #0d6efd</code> y <code>--bs-red: #dc3545</code> representan colores de la paleta.</li>
+            <li><strong>Tokens Semánticos:</strong> Asignan un propósito al valor. Bootstrap utiliza <code>--bs-primary</code> para el color principal y <code>--bs-danger</code> para situaciones de peligro o error; en el tema predeterminado valen <code>#0d6efd</code> y <code>#dc3545</code>, respectivamente.</li>
+            <li><strong>Tokens de Componente:</strong> Controlan propiedades de un componente concreto. En los botones de Bootstrap, <code>--bs-btn-bg</code> define el fondo, <code>--bs-btn-color</code> el texto y <code>--bs-btn-hover-bg</code> el fondo al pasar el puntero.</li>
         </ul>
+        <p>Esta clasificación permite interpretar las variables de Bootstrap como tokens. Su CSS compilado no enlaza necesariamente todos los valores mediante <code>var()</code>: cambiar <code>--bs-primary</code> no actualiza por sí solo todas las variantes de botones. Consulta las <a href="https://getbootstrap.com/docs/5.3/customize/css-variables/" target="_blank" rel="noopener noreferrer">variables CSS de Bootstrap</a> y las <a href="https://getbootstrap.com/docs/5.3/components/buttons/#css" target="_blank" rel="noopener noreferrer">variables de los botones</a>.</p>
 
-        <p>Gracias a este desacoplamiento, si la empresa decide actualizar el color corporativo o la escala de bordes redondeados, únicamente se modifica el valor central del token; automáticamente, todas las aplicaciones web, Android e iOS sincronizan la nueva apariencia sin necesidad de refactorizar manualmente cada hoja de estilos.</p>
+        <p>Centralizar los valores facilita mantener un diseño coherente. En Bootstrap, personaliza las variables del componente o recompila las variables Sass del tema según el alcance del cambio; revisa también los estados de interacción y sus contrastes.</p>
 
         <!-- Recurso Enlace Design Tokens (NUEVO) -->
         <div class="resource-card expansion-card">
@@ -1772,68 +1774,6 @@ de los que sí.</p>
   Aceptar
 &lt;/button&gt;</code></pre>
         <p>En este ejemplo, <code>bg-blue-500</code> establece el fondo azul; <code>text-white</code>, el texto blanco; <code>px-4</code> y <code>py-2</code>, el espaciado interior horizontal y vertical; y <code>rounded</code>, las esquinas redondeadas. La comparación ilustra dos formas de expresar el mismo tipo de diseño: los valores exactos dependen de la versión y del tema configurado en Tailwind. Para que las utilidades funcionen, el proyecto debe incluir el CSS generado por Tailwind.</p>
-
-        <h3 id="sec4_5">4.5. Identidad visual y su integración en Atomic Design</h3>
-        
-        <h4>4.5.1. Categorización de marcas visuales</h4>
-        <p>En el desarrollo de interfaces web es fundamental clasificar técnicamente la marca corporativa:</p>
-
-        <!-- Figura 1.4: Tipos de Marcas Visuales -->
-        <div class="image-container">
-            <svg viewBox="0 0 760 200" width="100%" height="200" xmlns="http://www.w3.org/2000/svg">
-                <rect x="0" y="0" width="760" height="200" rx="8" fill="#fafafa"/>
-                <g transform="translate(20, 25)">
-                    <rect x="0" y="0" width="160" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
-                    <text x="80" y="70" fill="#1e3a8a" font-family="Merriweather, serif" font-size="22" font-weight="bold" text-anchor="middle">Google</text>
-                    <text x="80" y="115" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">LOGOTIPO</text>
-                    <text x="80" y="132" fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">(Solo texto / tipografía)</text>
-                </g>
-                <g transform="translate(205, 25)">
-                    <rect x="0" y="0" width="160" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
-                    <circle cx="80" cy="60" r="24" fill="#0f766e"/>
-                    <path d="M 68 60 L 92 60" stroke="#ffffff" stroke-width="4"/>
-                    <text x="80" y="115" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">ISOTIPO</text>
-                    <text x="80" y="132" fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">(Símbolo solo)</text>
-                </g>
-                <g transform="translate(390, 25)">
-                    <rect x="0" y="0" width="160" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
-                    <circle cx="80" cy="45" r="16" fill="#d97706"/>
-                    <text x="80" y="82" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Marca</text>
-                    <text x="80" y="115" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">IMAGOTIPO</text>
-                    <text x="80" y="132" fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">(Icono + Texto separados)</text>
-                </g>
-                <g transform="translate(575, 25)">
-                    <rect x="0" y="0" width="160" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
-                    <rect x="35" y="35" width="90" height="50" rx="25" fill="#b91c1c"/>
-                    <text x="80" y="66" fill="#ffffff" font-family="Inter, sans-serif" font-size="13" font-weight="bold" text-anchor="middle">BURGER</text>
-                    <text x="80" y="115" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">ISOLOGOTIPO</text>
-                    <text x="80" y="132" fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">(Icono y Texto indivisibles)</text>
-                </g>
-            </svg>
-            <div class="image-caption">Figura 1.4: Clasificación técnica de marcas visuales para diseño de identidades digitales.</div>
-        </div>
-
-        <ul>
-            <li><strong>Logotipo:</strong> Representación basada únicamente en texto/tipografía (ej. Google).</li>
-            <li><strong>Isotipo:</strong> Símbolo gráfico independiente sin texto (ej. la manzana de Apple).</li>
-            <li><strong>Imagotipo:</strong> Unión de icono y texto que pueden funcionar de forma independiente.</li>
-            <li><strong>Isologotipo:</strong> Integración indivisible de texto y símbolo gráfico dentro de una figura unificada.</li>
-        </ul>
-
-        <h4>4.5.2. Iconografía e independencia de resolución</h4>
-        <p>Los gráficos vectoriales (<strong>SVG</strong>) garantizan escalabilidad infinita en pantallas móviles y monitores 4K. La iconografía debe inclinarse por convenciones conocidas (lupa para buscar, carrito para compra) combinada con etiquetas de texto en operaciones clave.</p>
-
-        <div class="didactic-note curiosity-card">
-            <h5><i class="fa-solid fa-link"></i> Relación entre identidad visual y Atomic Design</h5>
-            <p>La identidad se traduce al sistema descrito en el apartado 4.4 mediante <strong>Design Tokens</strong> —color, tipografía, espaciado y forma— y mediante átomos como logotipo, iconos y botones. Así, la marca se mantiene coherente en todas las moléculas, organismos, plantillas y páginas.</p>
-        </div>
-
-        <div class="didactic-note activity-callout">
-            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 6: Ejercicio breve de repaso (Apartado 4.5)</h5>
-            <p><strong>Clasificación de Marcas de Identidad Digital:</strong> Busca en internet e identifica un ejemplo real para cada una de las 4 categorías de identidad visual estudiadas: 1) <strong>Logotipo</strong> (solo texto), 2) <strong>Isotipo</strong> (solo gráfico), 3) <strong>Imagotipo</strong> (símbolo y texto independientes) y 4) <strong>Isologotipo</strong> (texto y gráficos indivisibles). Justifica por escrito por qué cada marca pertenece a su categoría correspondiente.</p>
-        
-            <div class="delivery-tip"><a class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
-</div>
 
         <h3 id="sec4_6">4.6. Composición, estados UI, Mobile-First y rendimiento</h3>
         
@@ -1931,38 +1871,6 @@ de los que sí.</p>
             <p class="target-size-sources">Referencia: <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum" target="_blank" rel="noopener noreferrer">WCAG 2.5.8 (AA)</a> · <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced" target="_blank" rel="noopener noreferrer">WCAG 2.5.5 (AAA)</a>.</p>
         </figure>
 
-        <h4>4.6.4. Métricas de rendimiento visual (Core Web Vitals &amp; Layout Shift)</h4>
-        <p>La experiencia de usuario también depende de que el contenido aparezca pronto, la interfaz responda con rapidez y los elementos no cambien de sitio inesperadamente. Las <strong>Core Web Vitals</strong> de Google miden estas tres dimensiones:</p>
-        <ul>
-            <li><strong>LCP (Largest Contentful Paint):</strong> mide cuánto tarda en mostrarse el mayor bloque de texto o imagen visible. Un valor bueno es ≤ 2,5 segundos.</li>
-            <li><strong>INP (Interaction to Next Paint):</strong> mide la respuesta a las interacciones hasta que se muestra la siguiente actualización visual. Un valor bueno es ≤ 200 milisegundos.</li>
-            <li><strong>CLS (Cumulative Layout Shift):</strong> mide los desplazamientos inesperados del contenido. Un valor bueno es ≤ 0,1; es una puntuación, no un tiempo. Reservar espacio para las imágenes ayuda a evitar estos saltos.</li>
-        </ul>
-        <p>Estos umbrales se evalúan en el percentil 75 de las visitas, separando móvil y escritorio. <a href="https://web.dev/articles/vitals" target="_blank" rel="noopener noreferrer">Referencia: Core Web Vitals</a>.</p>
-
-        <div class="didactic-note activity-callout vitals-activity">
-            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip" aria-hidden="true"></i> Actividad 7: ¿Carga lenta, respuesta lenta o salto visual?</h5>
-            <p>Lee los tres casos. En cada uno, indica <strong>qué métrica está relacionada (LCP, INP o CLS)</strong>, qué molestia causa y qué cambio propondrías.</p>
-            <ol type="A">
-                <li>Abres una tienda. El menú aparece enseguida, pero la gran imagen principal tarda varios segundos en mostrarse.</li>
-                <li>Pulsas «Añadir al carrito». La página ya está cargada, pero tarda en mostrar una respuesta a tu pulsación.</li>
-                <li>Vas a pulsar «Ver producto» y aparece un anuncio encima: el botón se desplaza y acabas pulsando otro enlace.</li>
-            </ol>
-            <p><strong>Comprueba los datos:</strong> una página registra LCP = 3,2 s, INP = 150 ms y CLS = 0,25 en el percentil 75. ¿Qué métricas están dentro del rango bueno? ¿Cuáles necesitan mejorar?</p>
-            <p><strong>Entrega:</strong> tres respuestas breves y la interpretación de los datos. Termina explicando por qué una página que carga rápido puede seguir resultando incómoda.</p>
-            <details>
-                <summary>Consultar una solución orientativa después de responder</summary>
-                <ul>
-                    <li><strong>A · LCP:</strong> el contenido principal tarda en aparecer. Optimizar la imagen y priorizar su carga puede reducir la espera.</li>
-                    <li><strong>B · INP:</strong> la interacción tarda en producir una actualización visual. Reducir el trabajo de JavaScript que bloquea la interfaz puede mejorar la respuesta.</li>
-                    <li><strong>C · CLS:</strong> un bloque nuevo desplaza el contenido. Reservar de antemano el espacio del anuncio evita ese salto.</li>
-                </ul>
-                <p>INP (150 ms) está en el rango bueno. LCP (3,2 s) y CLS (0,25) necesitan mejorar. Cargar pronto no garantiza una respuesta rápida ni una composición estable.</p>
-            </details>
-        
-            <div class="delivery-tip"><a class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
-</div>
-
         <h3 id="sec4_7">4.7. Componentes y formularios web</h3>
         <p>Las páginas web estructuran sus componentes en módulos estandarizados: <strong>Cabecera (Header)</strong>, <strong>Sistemas de Navegación</strong> (menú hamburguesa, pestañas, migas de pan), <strong>Cuerpo (Body)</strong>, <strong>Pie de página (Footer)</strong> y <strong>Espacios en blanco</strong>.</p>
 
@@ -1989,6 +1897,66 @@ de los que sí.</p>
         <div class="didactic-note activity-callout">
             <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 8: Ejercicio breve de repaso (Apartado 4.7)</h5>
             <p><strong>Auditoría de Usabilidad en Formularios Reales:</strong> Accede al formulario de contacto o registro de la plataforma de aprendizaje de la UNED (<code>https://www.uned.es</code>) o de Renfe (<code>https://www.renfe.com</code>). Inspecciona el código con las DevTools (F12) e identifica: 1) Si cada campo `&lt;input&gt;` cuenta con su etiqueta `&lt;label&gt;` explícita vinculada mediante `for="id"`, 2) Si se ha utilizado erróneamente el atributo `placeholder` como única etiqueta visual, y 3) Si los campos muestran feedback de error inline al perder el foco.</p>
+        
+            <div class="delivery-tip"><a class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
+</div>
+
+        <h4 id="sec4_7_1">4.7.1. Categorización de marcas visuales</h4>
+        <p>En el desarrollo de interfaces web es fundamental clasificar técnicamente la marca corporativa:</p>
+
+        <!-- Figura 1.4: Tipos de Marcas Visuales -->
+        <div class="image-container">
+            <svg viewBox="0 0 760 200" width="100%" height="200" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="200" rx="8" fill="#fafafa"/>
+                <g transform="translate(20, 25)">
+                    <rect x="0" y="0" width="160" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <text x="80" y="70" fill="#1e3a8a" font-family="Merriweather, serif" font-size="22" font-weight="bold" text-anchor="middle">Google</text>
+                    <text x="80" y="115" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">LOGOTIPO</text>
+                    <text x="80" y="132" fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">(Solo texto / tipografía)</text>
+                </g>
+                <g transform="translate(205, 25)">
+                    <rect x="0" y="0" width="160" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <circle cx="80" cy="60" r="24" fill="#0f766e"/>
+                    <path d="M 68 60 L 92 60" stroke="#ffffff" stroke-width="4"/>
+                    <text x="80" y="115" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">ISOTIPO</text>
+                    <text x="80" y="132" fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">(Símbolo solo)</text>
+                </g>
+                <g transform="translate(390, 25)">
+                    <rect x="0" y="0" width="160" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <circle cx="80" cy="45" r="16" fill="#d97706"/>
+                    <text x="80" y="82" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Marca</text>
+                    <text x="80" y="115" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">IMAGOTIPO</text>
+                    <text x="80" y="132" fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">(Icono + Texto separados)</text>
+                </g>
+                <g transform="translate(575, 25)">
+                    <rect x="0" y="0" width="160" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="35" y="35" width="90" height="50" rx="25" fill="#b91c1c"/>
+                    <text x="80" y="66" fill="#ffffff" font-family="Inter, sans-serif" font-size="13" font-weight="bold" text-anchor="middle">BURGER</text>
+                    <text x="80" y="115" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">ISOLOGOTIPO</text>
+                    <text x="80" y="132" fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">(Icono y Texto indivisibles)</text>
+                </g>
+            </svg>
+            <div class="image-caption">Figura 1.4: Clasificación técnica de marcas visuales para diseño de identidades digitales.</div>
+        </div>
+
+        <ul>
+            <li><strong>Logotipo:</strong> Representación basada únicamente en texto/tipografía (ej. Google).</li>
+            <li><strong>Isotipo:</strong> Símbolo gráfico independiente sin texto (ej. la manzana de Apple).</li>
+            <li><strong>Imagotipo:</strong> Unión de icono y texto que pueden funcionar de forma independiente.</li>
+            <li><strong>Isologotipo:</strong> Integración indivisible de texto y símbolo gráfico dentro de una figura unificada.</li>
+        </ul>
+
+        <h4 id="sec4_7_2">4.7.2. Iconografía e independencia de resolución</h4>
+        <p>Los gráficos vectoriales (<strong>SVG</strong>) garantizan escalabilidad infinita en pantallas móviles y monitores 4K. La iconografía debe inclinarse por convenciones conocidas (lupa para buscar, carrito para compra) combinada con etiquetas de texto en operaciones clave.</p>
+
+        <div class="didactic-note curiosity-card">
+            <h5><i class="fa-solid fa-link"></i> Relación entre identidad visual y Atomic Design</h5>
+            <p>La identidad se traduce al sistema descrito en el apartado 4.4 mediante <strong>Design Tokens</strong> —color, tipografía, espaciado y forma— y mediante átomos como logotipo, iconos y botones. Así, la marca se mantiene coherente en todas las moléculas, organismos, plantillas y páginas.</p>
+        </div>
+
+        <div class="didactic-note activity-callout">
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 6: Ejercicio breve de repaso (Apartado 4.7)</h5>
+            <p><strong>Clasificación de Marcas de Identidad Digital:</strong> Busca en internet e identifica un ejemplo real para cada una de las 4 categorías de identidad visual estudiadas: 1) <strong>Logotipo</strong> (solo texto), 2) <strong>Isotipo</strong> (solo gráfico), 3) <strong>Imagotipo</strong> (símbolo y texto independientes) y 4) <strong>Isologotipo</strong> (texto y gráficos indivisibles). Justifica por escrito por qué cada marca pertenece a su categoría correspondiente.</p>
         
             <div class="delivery-tip"><a class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
 </div>
