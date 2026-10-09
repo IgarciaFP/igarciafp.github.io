@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratorio de guía de estilo: identidad, paleta de color, imágenes, tipografía, componentes y tokens CSS.">
+  <title>Guía de estilo · Laboratorio de diseño visual</title>
+  <style>
+    :root { color-scheme: light; --ink:#252b2b; --sub:#505b59; --paper:#fffefa; --sand:#f4f0e8; --line:#d8d2c6; --forest:#164d4b; --forest-dark:#103b3a; --clay:#9c421e; --mint:#e4f2ec; --amber:#fff3dc; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--sand); color:var(--ink); font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; }
+    button,input,select,textarea { font:inherit; }
+    button { cursor:pointer; }
+    :focus-visible { outline:3px solid #1165ae; outline-offset:3px; }
+    [hidden] { display:none !important; }
+    a { color:var(--forest); }
+    h1,h2,h3,p { margin-top:0; }
+    .wrap { max-width:1390px; margin:auto; padding:0 22px; }
+    .masthead { background:#183b3a; color:#fff; padding:28px 0 31px; }
+    .masthead .wrap { display:flex; justify-content:space-between; gap:24px; align-items:center; }
+    .kicker { margin:0 0 7px; color:#c7decf; font-weight:800; font-size:.83rem; letter-spacing:.1em; text-transform:uppercase; }
+    h1 { font-size:clamp(2rem,4vw,3.2rem); line-height:1.08; margin-bottom:9px; }
+    .masthead p:last-child { margin-bottom:0; max-width:75ch; color:#e9f0eb; }
+    .stamp { flex:none; border:1px solid #8cbbb0; padding:13px 19px; border-radius:12px; font-weight:800; text-align:center; line-height:1.25; }
+    main { padding-top:22px !important; padding-bottom:52px !important; }
+    .card { background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:0 9px 25px rgba(47,37,24,.055); }
+    .intro { display:grid; grid-template-columns:1.45fr 1fr; gap:18px; margin-bottom:18px; }
+    .intro .card { padding:21px 24px; }
+    .intro h2 { font-size:1.15rem; margin-bottom:7px; }
+    .intro ol { margin:6px 0 0; padding-left:23px; }
+    .intro li+li { margin-top:5px; }
+    .small { color:var(--sub); font-size:.9rem; }
+    .name-label { display:block; font-weight:750; margin:10px 0 6px; }
+    input[type="text"],input[type="search"],input[type="email"],select,textarea { width:100%; border:1px solid #a7aea8; border-radius:8px; background:#fff; color:var(--ink); padding:10px 11px; }
+    textarea { min-height:94px; resize:vertical; }
+    .layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(440px,.95fr); gap:19px; align-items:start; }
+    .panel-head { padding:15px 20px; background:#e7e3d8; border-bottom:1px solid var(--line); display:flex; gap:12px; justify-content:space-between; align-items:center; }
+    .panel-head h2 { margin:0; font-size:1.08rem; }
+    .panel-head small { color:#56605b; }
+    .site-panel,.audit-panel { overflow:hidden; }
+    .site-note { padding:12px 17px; margin:0; background:#fdf8ea; border-bottom:1px solid var(--line); font-size:.88rem; }
+    .site { margin:15px; border:1px solid #c8b49e; background:#fffdf8; border-radius:11px; overflow:hidden; }
+    .site-header { background:#693c27; padding:15px; color:#fff; }
+    .brand { font-family:Georgia,serif; font-weight:700; font-size:1.5rem; }
+    .site-header nav,.site-footer { display:flex; flex-wrap:wrap; gap:8px; }
+    .site-header nav button,.site-footer button { background:transparent; border:0; color:inherit; text-decoration:underline; padding:5px; }
+    .site-body { padding:15px; }
+    .promo { padding:16px; border:1px solid #e7bc80; border-radius:10px; background:#ffe9b8; }
+    .promo h3 { font:700 1.5rem Georgia,serif; margin-bottom:5px; }
+    .promo p { margin-bottom:8px; }
+    .badges { display:flex; flex-wrap:wrap; gap:5px; margin:8px 0 13px; }
+    .badges b { display:block; padding:3px 6px; font-size:.7rem; background:#bf4830; color:#fff; transform:rotate(-2deg); }
+    .badges b:nth-child(2n) { background:#713d83; transform:rotate(2deg); }
+    .site button.action { background:#8b351b; border:0; border-radius:5px; color:#fff; padding:7px 11px; font-weight:700; }
+    .site h4 { margin:17px 0 7px; }
+    .search-row { display:flex; gap:6px; }
+    .search-row input { flex:1; min-width:0; }
+    .search-row button,.category-list button { border:1px solid #c9a886; background:#fff3df; border-radius:5px; padding:6px 8px; }
+    .category-list { display:flex; flex-wrap:wrap; gap:5px; }
+    .category-list button { font-size:.78rem; }
+    .category-list button[aria-pressed="true"] { background:#d5efe5; border-color:#43997b; }
+    .results-label { margin:10px 0; font-size:.83rem; color:var(--sub); }
+    .products { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .product { border:1px solid #ded0bd; background:#fff; border-radius:9px; padding:10px; }
+    .product .icon { display:block; font-size:1.6rem; background:#f7ead1; border-radius:6px; text-align:center; padding:5px; }
+    .product strong,.product small { display:block; margin-top:5px; }
+    .product small { color:#6f5341; }
+    .product button { border:0; border-radius:5px; background:#70412f; color:#fff; margin-top:8px; padding:6px 9px; }
+    .cart { background:#fff7e9; border:1px solid #e1c9a5; border-radius:9px; padding:12px; margin-top:16px; }
+    .cart h4 { margin:0 0 5px; }
+    .cart ul { list-style:none; padding:0; margin:0; }
+    .cart li { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:5px 0; border-bottom:1px solid #e8d4ba; }
+    .cart li button { background:#fff; border:1px solid #aa7965; border-radius:5px; padding:3px 7px; }
+    .checkout label { display:block; margin:9px 0 5px; font-weight:700; font-size:.85rem; }
+    .checkout button { margin-top:12px; }
+    .store-error { color:#9d3526; min-height:1.5em; margin:9px 0 0; font-weight:700; }
+    .site-footer { background:#693c27; color:#fff; padding:13px; font-size:.82rem; }
+    .hidden-help { margin:12px 16px 0; font-size:.82rem; }
+    .site-bottom { padding:0 17px 17px; }
+    .button { display:inline-flex; justify-content:center; align-items:center; border-radius:8px; padding:10px 14px; font-weight:800; text-decoration:none; border:2px solid transparent; }
+    .button.primary { color:white; background:var(--forest); border-color:var(--forest); }
+    .button.primary:hover { background:var(--forest-dark); }
+    .button.secondary { color:var(--forest); background:white; border-color:#7a9a91; }
+    .button.secondary:hover { background:#e9f4ee; }
+    .button:disabled { opacity:.55; cursor:not-allowed; }
+    .site [data-zone].focus-zone { outline:3px solid #c87410; outline-offset:3px; border-radius:5px; }
+    .audit-inner { padding:19px; }
+    .progress-label { display:flex; justify-content:space-between; font-weight:750; gap:12px; }
+    progress { width:100%; height:13px; accent-color:var(--forest); margin:8px 0 13px; }
+    .case-nav { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:15px; }
+    .case-nav button { min-width:38px; height:38px; border:1px solid #a8b4ad; border-radius:7px; background:#fff; font-weight:800; }
+    .case-nav button[aria-current="step"] { background:var(--forest); color:#fff; }
+    .case-nav button.complete:not([aria-current="step"]) { background:var(--mint); color:var(--forest); }
+    .case-eyebrow { font-weight:800; font-size:.8rem; letter-spacing:.08em; color:var(--clay); text-transform:uppercase; margin:0 0 5px; }
+    #case-title { line-height:1.17; font-size:1.55rem; margin-bottom:11px; }
+    .brief { padding:13px 15px; border-radius:9px; border:1px solid #c8d6d0; background:#f0f8f4; margin-bottom:13px; }
+    .brief p { margin:0 0 8px; }
+    .brief p:last-child { margin-bottom:0; }
+    .brief strong { color:#174b43; }
+    .zone-actions { display:flex; gap:8px; margin:12px 0; flex-wrap:wrap; }
+    .field { margin:14px 0; }
+    .field label,.field legend { display:block; font-weight:760; margin-bottom:6px; }
+    .field .prompt { margin:0 0 6px; color:var(--sub); font-size:.87rem; }
+    .field small { display:block; color:var(--sub); }
+    .select-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+    fieldset.field { border:0; padding:0; }
+    .proposal { display:block; padding:11px 12px; margin:7px 0; border:1px solid #b8c3bc; border-radius:9px; cursor:pointer; background:#fff; }
+    .proposal:hover,.proposal:has(input:checked) { border-color:var(--forest); background:#f1f8f4; }
+    .proposal input { margin-right:7px; accent-color:var(--forest); }
+    .proposal small { padding-left:25px; margin-top:3px; }
+    .status { min-height:1.4em; font-weight:700; margin:10px 0; }
+    .status.error { color:#a12e1d; }
+    .status.success { color:#165e40; }
+    .debrief { margin-top:13px; padding:15px; border-radius:9px; background:var(--amber); border-left:5px solid #b6791e; }
+    .debrief h3 { font-size:1rem; margin-bottom:8px; }
+    .debrief p { margin-bottom:7px; }
+    .next-row { display:flex; justify-content:flex-end; margin:13px 0; }
+    .deliverable { margin-top:19px; padding:22px; }
+    .deliverable h2 { margin-bottom:6px; }
+    .synthesis { max-width:890px; }
+    .report-preview { white-space:pre-wrap; max-height:280px; overflow:auto; padding:13px; border:1px solid var(--line); border-radius:8px; background:#fff; font: .81rem/1.45 ui-monospace,SFMono-Regular,Consolas,monospace; }
+    .footer { padding:0 0 30px; color:var(--sub); font-size:.87rem; }
+    @media(max-width:1050px) { .layout { grid-template-columns:1fr; } }
+    @media(max-width:720px) { .intro { grid-template-columns:1fr; } .masthead .wrap { display:block; } .stamp { display:inline-block; margin-top:18px; } .wrap { padding:0 12px; } .intro .card,.audit-inner,.deliverable { padding:16px; } .select-grid { grid-template-columns:1fr; } }
+    @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+
+    /* Paleta del laboratorio: fondos claros y acentos primarios. */
+    :root { --ink:#172b4d; --sub:#465a78; --paper:#ffffff; --sand:#f4f8ff; --line:#cbdcf5; --forest:#1454d8; --forest-dark:#103fa6; --clay:#c52232; --mint:#e6efff; --amber:#fff7cc; }
+    .masthead { background:#eaf3ff; color:#123c91; border-bottom:5px solid #ffd43b; }
+    .kicker { color:#c52232; }
+    .masthead p:last-child { color:#344e75; }
+    .stamp { background:#fff4b8; color:#123c91; border-color:#d6ad00; }
+    .card { box-shadow:0 9px 25px rgba(20,84,216,.055); }
+    .intro .card:first-child { border-top:4px solid #1454d8; }
+    .intro .card:last-child { border-top:4px solid #e53645; }
+    .panel-head { background:#eaf3ff; }
+    .panel-head small { color:#465a78; }
+    .site-note { background:#fff9db; }
+    .button.secondary { border-color:#1454d8; }
+    .button.secondary:hover { background:#eaf3ff; }
+    .case-nav button { border-color:#8ba8d3; }
+    .brief { border-color:#bfd6fa; background:#f0f6ff; }
+    .brief strong { color:#123c91; }
+    .proposal { border-color:#8ba8d3; }
+    .proposal:hover,.proposal:has(input:checked) { background:#eaf3ff; }
+    .status.error { color:#c52232; }
+    .status.success { color:#1249b7; }
+    .debrief { border-left-color:#e4b500; }
+    #visual-work { border-top:5px solid #ffd43b; }
+    #deliverable { border-top:5px solid #1454d8; }
+    input[type="text"]:not(.site *),select:not(.site *),textarea:not(.site *) { border-color:#8199bb; }
+    /* La maqueta conserva su paleta e incluye sus colores heredados. */
+    .site { --ink:#252b2b; --sub:#505b59; --paper:#fffefa; --sand:#f4f0e8; --line:#d8d2c6; --forest:#164d4b; --forest-dark:#103b3a; --clay:#9c421e; --mint:#e4f2ec; --amber:#fff3dc; color:var(--ink); }
+  </style>
+</head>
+<body>
+<header class="masthead"><div class="wrap"><div><p class="kicker">Diseño de interfaces web · Grado superior</p><h1>Guía de estilo: Migas Amigas</h1><p>De la identidad de marca a una interfaz coherente: elige, compara, justifica y valida tus decisiones visuales.</p></div><div class="stamp">6 apartados<br>Una guía propia</div></div></header>
+<main class="wrap">
+<section class="intro" aria-label="Instrucciones"><div class="card"><h2>Tu encargo</h2><ol><li>Define la marca y su sistema visual con los contenidos del Tema 1.</li><li>Documenta decisiones, alternativas y evidencias en los seis apartados.</li><li>Guarda la guía y descarga el TXT; entrega también los archivos gráficos referenciados.</li></ol></div><div class="card"><h2>Tu trabajo</h2><label class="name-label" for="student-name">Nombre o identificador</label><input id="student-name" type="text" maxlength="60" autocomplete="off"><p class="small">El borrador se guarda en este navegador. Este laboratorio tiene su propio informe y no requiere completar la auditoría UX.</p><button id="import-old" class="button secondary" type="button">Recuperar respuestas del antiguo bloque B</button><p id="import-status" role="status" class="small"></p></div></section>
+    <section class="card deliverable" id="visual-work" aria-labelledby="visual-title">
+      <p class="case-eyebrow">Laboratorio · Diseño de interfaces web</p>
+      <h2 id="visual-title">Identidad visual y guía de estilo</h2>
+      <p>Diseña una propuesta propia para Migas Amigas y fundamenta las decisiones con el <a href="https://igarciafp.github.io/ciclos/diw/u01_es.html" target="_blank" rel="noopener noreferrer">Tema 1: Planificación y Diseño de Interfaces Web</a>. Completa los seis apartados y descarga tu guía de estilo.</p>
+      <p class="small">Encargo: crea la identidad visual de Migas Amigas, una panadería artesanal con recogida y reparto. Documenta la propuesta aquí y en tus archivos de diseño. Se valoran coherencia, alternativas razonadas, evidencias técnicas y validación; rellenar campos no garantiza una solución correcta.</p>
+      <details class="brief"><summary><strong>Banco de pruebas de contraste</strong></summary>
+        <p>Ensaya parejas de colores opacos sRGB y copia los resultados relevantes a tu paleta. El cálculo solo evalúa esta pareja; no certifica la accesibilidad de la página.</p>
+        <div class="select-grid"><div class="field"><label for="contrast-ink">Primer plano · HEX</label><input type="text" id="contrast-ink" value="#451a03" maxlength="7" spellcheck="false"></div><div class="field"><label for="contrast-bg">Fondo · HEX</label><input type="text" id="contrast-bg" value="#fffbeb" maxlength="7" spellcheck="false"></div></div>
+        <p id="contrast-sample" style="padding:16px;border-radius:8px">Migas Amigas · Pan recién hecho</p>
+        <p id="contrast-result" role="status" aria-live="polite"></p>
+        <p class="small">Referencia AA: texto normal ≥ 4,5:1; texto grande ≥ 3:1 (24 px, o aproximadamente 18,67 px en negrita). Para información visual necesaria de controles y gráficos, comprueba ≥ 3:1 frente a los colores adyacentes. No comuniques estados solo con color.</p>
+      </details>
+      <form id="visual-form" novalidate><div id="visual-fields"></div><button type="submit" class="button primary">Guardar guía de estilo</button><p id="visual-status" class="status" role="status" aria-live="polite"></p></form>
+      <details class="brief"><summary><strong>Criterios de revisión con el docente</strong></summary><ul>
+        <li>Marca: propuesta reconocible, variantes utilizables y reglas de aplicación verificables.</li><li>Color: funciones claras, armonía justificada y contrastes medidos, sin depender solo del color.</li><li>Imágenes: formato elegido por el contenido, comparación real de peso/calidad, accesibilidad y licencia documentadas.</li><li>Sistema: tipografía, iconos, componentes y tokens coherentes, con estados y adaptación móvil.</li><li>Argumentación: alternativas, costes, evidencias y pruebas; identifica lo pendiente sin inventar resultados.</li>
+      </ul></details>
+    </section>
+
+<section class="card deliverable" id="deliverable" aria-labelledby="delivery-title"><h2 id="delivery-title">Entrega de la guía de estilo</h2><p>Guarda los seis apartados antes de descargar. El informe contiene tus respuestas; los SVG, imágenes y prototipos se entregan por separado.</p><div class="zone-actions"><button id="download" type="button" class="button primary">Descargar guía TXT</button><button id="reset" type="button" class="button secondary">Reiniciar este laboratorio</button></div><p id="report-status" class="status" role="status"></p><details><summary>Vista previa del informe</summary><pre id="report-preview" class="report-preview"></pre></details></section>
+</main><footer class="footer wrap">Actividad educativa · Tema 1: Planificación y Diseño de Interfaces Web</footer>
+<script>(()=>{'use strict';
+    const visualSections = [{"id": "identity", "title": "1 · Identidad y logotipo", "ref": "Tema 4.5 y 5.1", "prompt": "Define público, tres atributos de marca y la idea que debe transmitir Migas Amigas. Compara dos propuestas y elige logotipo, isotipo, imagotipo o isologotipo, justificando la categoría. Referencia tu boceto y archivo maestro SVG; concreta variantes clara, oscura y monocroma, área de protección, tamaño mínimo y dos usos incorrectos. Explica cómo comprobarás su legibilidad en móvil y su nombre accesible.", "min": 120}, {"id": "palette", "title": "2 · Paleta y armonía cromática", "ref": "Tema 4.3.1 y 5.3", "prompt": "Propón colores primario, secundario, acento, fondo, superficie, texto y estados (éxito, aviso, error e información). Anota token, HEX, RGB/HSL y uso. Justifica una armonía (análoga, complementaria, triádica o monocromática), compara una alternativa y explica la distribución visual; 60–30–10 es orientativa. Registra al menos tres parejas texto/fondo con ratio y decisión. Los estados deben incluir texto o iconos, además del color. Las asociaciones emocionales son hipótesis que validarás con tu público.", "min": 160}, {"id": "images", "title": "3 · Imágenes: formato, calidad y rendimiento", "ref": "Tema 4.3.2 y 5.5", "prompt": "Prepara un inventario para marca, fotografía de producto, imagen de portada e iconos. En cada recurso indica vector/mapa de bits, formato, dimensiones, proporción, transparencia, peso objetivo, alternativa textual y procedencia/licencia. Compara dos exportaciones de una misma foto a igual resolución: formato, calidad de exportación, bytes y defectos visibles. Justifica SVG, JPEG, PNG, WebP o AVIF según el uso; WebP/AVIF admiten compresión con o sin pérdida. Distingue resolución y profundidad de color, RGB para pantalla y canal alfa. Explica width/height, srcset/sizes y carga diferida de imágenes fuera de la vista inicial.", "min": 180}, {"id": "type", "title": "4 · Tipografía e iconografía", "ref": "Tema 5.4 y 5.5", "prompt": "Elige una o dos familias con fuentes de reserva y licencia. Define tamaños en rem, pesos e interlineado para títulos, cuerpo, etiquetas y ayudas, con un ejemplo de jerarquía. Justifica legibilidad y carga de fuentes. Para los iconos especifica estilo, rejilla y grosor; diferencia decorativos, informativos y accionables, y cómo se etiquetan las acciones. Comprueba zoom y anchura móvil.", "min": 100}, {"id": "components", "title": "5 · Componentes, composición y microcopy", "ref": "Tema 4.4, 4.6 y 5", "prompt": "Aplica tus decisiones a una tarjeta de producto y un botón de encargo en móvil y escritorio. Describe jerarquía, proximidad, espacios y tamaño de los controles. Documenta reposo, hover, focus, active, disabled y loading; conserva un foco visible y explica cómo se comunica la espera. Clasifica los componentes por su composición en Atomic Design. Redacta un estado vacío y un error con recuperación comprensible. Referencia un boceto o prototipo y sus variantes.", "min": 140}, {"id": "tokens", "title": "6 · Guía de estilo y validación", "ref": "Tema 4.4.1, 5.2 y 5.7", "prompt": "Escribe un bloque :root con variables CSS de color, tipografía, espaciado y borde coherentes con tu propuesta. Añade un ejemplo de componente que las utilice. Identifica versión, autoría, fecha y procedimiento de revisión. Referencia los archivos entregados (marca SVG, comparación de imágenes y prototipo); el TXT registra las referencias, no adjunta los archivos. Plantea una prueba con usuarios y criterios medibles para comprobar reconocimiento de marca, legibilidad y localización de la acción principal.", "min": 140}];
+    const blankVisual = () => Object.fromEntries(visualSections.map(item => [item.id, ""]));
+
+const $=s=>document.querySelector(s);
+const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const storeKey='migas-amigas-guiaestilo-v1';
+const initial=()=>({name:'',visual:blankVisual(),visualSubmitted:false,contrastInk:'#451a03',contrastBg:'#fffbeb'});
+let state=initial();
+try {const saved=JSON.parse(localStorage.getItem(storeKey));if(saved)state={...state,...saved,visual:{...blankVisual(),...saved.visual}};}catch(_){}
+const save=()=>{try{localStorage.setItem(storeKey,JSON.stringify(state));}catch(_){}};
+function reportText(){return ['MIGAS AMIGAS · GUÍA DE ESTILO',`Autoría: ${state.name||'Sin indicar'}`,`Fecha: ${new Date().toLocaleDateString('es-ES')}`,`Estado: ${state.visualSubmitted?'Guardada':'Borrador'}`,'',...visualSections.flatMap(item=>[item.title,item.ref,state.visual[item.id],'']),'Los recursos gráficos se entregan por separado.'].join('\n');}
+function renderPreview(){$('#report-preview').textContent=reportText();}
+$('#student-name').value=state.name;
+$('#student-name').addEventListener('input',e=>{state.name=e.target.value;save();renderPreview();});
+$('#download').addEventListener('click',()=>{
+ const missing=visualSections.find(item=>state.visual[item.id].trim().length<item.min);
+ if(missing||!state.visualSubmitted){$('#report-status').textContent='Completa los seis apartados y pulsa «Guardar guía de estilo» antes de descargar.';$('#visual-'+(missing?missing.id:'identity')).focus();return;}
+ const blob=new Blob(['\ufeff',reportText()],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='migas-amigas-guia-estilo.txt';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);$('#report-status').textContent='Guía descargada.';
+});
+$('#reset').addEventListener('click',()=>{if(!confirm('¿Borrar solo las respuestas de este laboratorio de guía de estilo?'))return;state=initial();save();location.reload();});
+$('#import-old').addEventListener('click',()=>{
+ let old;try{old=JSON.parse(localStorage.getItem('migas-amigas-superior-v1'));}catch(_){}
+ if(!old||!old.visual){$('#import-status').textContent='No hay respuestas anteriores en este navegador.';return;}
+ if(visualSections.some(item=>state.visual[item.id].trim())&&!confirm('¿Sustituir la guía actual por las respuestas del antiguo bloque B?'))return;
+ visualSections.forEach(item=>{state.visual[item.id]=typeof old.visual[item.id]==='string'?old.visual[item.id]:'';});state.name=state.name||old.name||'';state.visualSubmitted=false;save();$('#student-name').value=state.name;renderVisual();renderPreview();$('#import-status').textContent='Respuestas recuperadas. Revísalas y guarda la guía.';
+});
+    function renderVisual() {
+      $('#visual-fields').innerHTML=visualSections.map(item=>`<div class="field"><label for="visual-${item.id}">${esc(item.title)}</label><p class="small">${esc(item.ref)}</p><p class="prompt" id="prompt-${item.id}">${esc(item.prompt)}</p><textarea id="visual-${item.id}" name="${item.id}" rows="6" maxlength="8000" aria-describedby="prompt-${item.id} min-${item.id}">${esc(state.visual[item.id])}</textarea><small id="min-${item.id}">Mínimo ${item.min} caracteres; aporta valores y evidencias concretas.</small></div>`).join('');
+      $('#visual-status').textContent=state.visualSubmitted?'Guía guardada. Puedes revisarla antes de entregar.':'';
+    }
+    $('#visual-form').addEventListener('input',event=>{
+      if(!visualSections.some(item=>item.id===event.target.name))return;
+      state.visual[event.target.name]=event.target.value; state.visualSubmitted=false; save();
+      $('#visual-status').textContent='Borrador conservado. Guarda la guía cuando completes los apartados.';
+      $('#visual-status').className='status'; if(!$('#deliverable').hidden)renderPreview();
+    });
+    $('#visual-form').addEventListener('submit',event=>{
+      event.preventDefault(); const message=$('#visual-status');
+      const missing=visualSections.find(item=>state.visual[item.id].trim().length<item.min);
+      if(missing){message.textContent=`Amplía «${missing.title}»: mínimo ${missing.min} caracteres.`;message.className='status error';$('#visual-'+missing.id).focus();return;}
+      state.visualSubmitted=true;save();message.textContent='Guía guardada. Revisa la calidad con los criterios del docente y entrega también los archivos referenciados.';message.className='status success';if(!$('#deliverable').hidden)renderPreview();
+    });
+    function contrastRatio(a,b) {
+      const luminance=hex=>{const c=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(v=>v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4);return c[0]*0.2126+c[1]*0.7152+c[2]*0.0722;};
+      const x=luminance(a),y=luminance(b);return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05);
+    }
+    function renderContrast(){
+      const ink=$('#contrast-ink').value.trim(),bg=$('#contrast-bg').value.trim();
+      if(!/^#[0-9a-f]{6}$/i.test(ink)||!/^#[0-9a-f]{6}$/i.test(bg)){$('#contrast-result').textContent='Introduce dos colores HEX de seis cifras, por ejemplo #451a03.';return;}
+      const ratio=contrastRatio(ink,bg);$('#contrast-sample').style.color=ink;$('#contrast-sample').style.backgroundColor=bg;
+      $('#contrast-result').textContent=`${ink} sobre ${bg}: ${ratio.toFixed(2)}:1. Texto normal: ${ratio>=4.5?'cumple AA':'no cumple AA'}. Texto grande: ${ratio>=3?'cumple AA':'no cumple AA'}. Umbral no textual de 3:1: ${ratio>=3?'alcanzado':'no alcanzado'} (verifica los colores adyacentes reales).`;
+    }
+    $('#contrast-ink').value=state.contrastInk;$('#contrast-bg').value=state.contrastBg;
+    ['contrast-ink','contrast-bg'].forEach(id=>$('#'+id).addEventListener('input',()=>{state.contrastInk=$('#contrast-ink').value;state.contrastBg=$('#contrast-bg').value;save();renderContrast();}));
+    renderVisual();renderContrast();
+
+renderPreview();})();</script></body></html>
