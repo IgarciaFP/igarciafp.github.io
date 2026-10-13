@@ -29,7 +29,7 @@
         code, pre, kbd, samp { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
         /* Se reutiliza la plantilla de DWEC U01; estos ajustes son propios de U02. */
         .sidebar-toc { overflow: visible; }
-        .sidebar-toc::after { content: "\f0c9"; }
+        .sidebar-toc::after { content: "\f0c9"; width: auto; right: auto; left: 100%; padding: 0 14px; }
         .sidebar-toc ul { max-height: calc(100vh - 130px); overflow-y: auto; }
         .sidebar-toc:focus-within { transform: translateX(0); }
         .operators-table table { min-width: 0; }
@@ -328,7 +328,7 @@
 <p>In DevTools will be used mainly <strong>Console (Console)</strong>, to execute instructions and consult messages; <strong>Sources (Sources)</strong>, to examine and debug the code; and <strong>Network (Network)</strong>, to check the load of the files.</p>
 <div class="resource-card expansion-card expansion-purple" id="ampliacion-emmet">
 <div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-wand-magic-sparkles"></i> Emmet: writing HTML and CSS with abbreviations</span><span class="resource-badge badge-reading">Enlargement</span></div>
-<p>In class it will be necessary to use <strong>Emmet</strong>, first called <strong>Zen Coding</strong>, when working with VS Code. Allows to expand abbreviations to write HTML and CSS quickly; it is integrated into the editor and does not require to install an extension.</p>
+<p>In class it will be necessary to use <strong>Emmet</strong>, first called <strong>Zen Coding</strong>, when working with VS Code. Allows to expand abbreviations to write HTML and CSS quickly; it is integrated into the editor and does not require installing an extension.</p>
 <p>For example, <code>ul&gt;li*3</code> generates a list with three elements. Write the abbreviation in an HTML file and accept Emmet's suggestion.</p>
 <div class="resource-links"><a class="resource-link-btn" href="https://docs.emmet.io/cheat-sheet/" rel="noopener noreferrer" target="_blank">Emmet · Reference sheet</a>
 <a class="resource-link-btn" href="https://code.visualstudio.com/docs/languages/emmet" rel="noopener noreferrer" target="_blank">Emmet in VS Code</a></div>
@@ -688,6 +688,14 @@ console.log(usuario.nombre); // Luis</code></pre>
 <li><strong><code>undefined</code>:</strong> is the value of a declared variable with <code>let</code> to which no other value has yet been assigned.</li>
 <li><strong><code>null</code>:</strong> is used to explicitly represent the absence of a value.</li>
 </ul>
+<div class="didactic-note curiosity-card" id="curiosidad-valores-number">
+<p><strong>Curiosity: special numbers</strong></p>
+<p><code>NaN</code>, <code>Infinity</code> y <code>-Infinity</code> are values of the type <code>number</code>, not different types of data.</p>
+<ul>
+<li><strong><code>NaN</code>:</strong> special value of type <code>number</code> which represents an invalid numerical result, such as <code>0 / 0</code> o <code>Number("hola")</code>. Checked with <code>Number.isNaN()</code>.</li>
+<li><strong><code>Infinity</code> y <code>-Infinity</code>:</strong> Special type values <code>number</code> which represent infinite positive and negative. <code>1 / 0</code> produces <code>Infinity</code> y <code>-1 / 0</code> produces <code>-Infinity</code>. They are not independent types of data.</li>
+</ul>
+</div>
 <pre><code>const edad = 18;
 const nombre = "Ana";
 const matriculaActiva = true;
@@ -755,7 +763,26 @@ const curso = "DWEC";
 
 console.log("Hola, " + nombre + ". Bienvenida a " + curso + ".");
 console.log(`Hola, ${nombre}. Bienvenida a ${curso}.`);</code></pre>
-<p>Both instructions show the same message. Interpolation makes it easy to read texts that combine several variables. Single and double quotes do not interpret <code>${...}</code>.</p>
+<p>Both instructions show the same message. Interpolation makes it easy to read texts that combine several variables. Single and double quotes do not interpret <code><p>Ambas instrucciones muestran el mismo mensaje. La interpolación facilita leer textos que combinan varias variables. Las comillas simples y dobles no interpretan <code>${...}</code>.</p>#123;...}</code>.</p>
+<div class="activity-card activity-callout" id="actividad-extra-comillas">
+<p><strong>Extra activity. Three ways to write a string</strong></p>
+<p>Create an HTML and external JavaScript linked with <code>defer</code>. Write <code>"use strict";</code> at the beginning of the script and test this example:</p>
+<pre><code>const nombre = "Lucía";
+const simples = 'Hola, ${nombre}';
+const dobles = "Hola, ${nombre}";
+const invertidas = `Hola, <p>Ambas instrucciones muestran el mismo mensaje. La interpolación facilita leer textos que combinan varias variables. Las comillas simples y dobles no interpretan <code>${...}</code>.</p>#123;nombre}`;
+
+console.log(simples);
+console.log(dobles);
+console.log(invertidas);</code></pre>
+<ol>
+<li>Before executing, write in comments which message you expect in each case. Check the three outputs and explain what type of quotes allows interpolate the variable.</li>
+<li>Modify strings with single and double quotes so that they also display the name using concatenation with <code>+</code>.</li>
+<li>Write the message <code>Lucía dice: "Hola"</code> using simple quotes as delimiters, and the message <code>It's JavaScript</code> Explains why the quotes inside don't close those chains.</li>
+<li>Change the name and run the file again. Keep the predictions and add your conclusions in comments, with appropriate indentation and syntax.</li>
+</ol>
+<div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
+</div>
 <h3 id="sec4_7">4.7. Vectors and arrangements (arrays)</h3>
 <p>A <strong>fix</strong> o <strong>array</strong> allows you to save several values sorted under the same name. An arrangement of a dimension is usually called <strong>vector</strong>. The type is used in JavaScript <code>Array</code>: we access each element through its index.</p>
 <h4>Create a vector and access its elements</h4>
@@ -792,7 +819,17 @@ console.log(colores);  // ["verde", "azul"]</code></pre>
 console.log(typeof datos);         // "object"
 console.log(Array.isArray(datos)); // true
 console.log(Array.isArray("Ana")); // false</code></pre>
-<div class="didactic-note"><p><strong>Practice on the console.</strong> Create a vector with three prices, check the first and last, modify the second and add a fourth with <code>push()</code>. Check its length and remove the last with <code>pop()</code>. Later we will use loops to travel all the elements.</p></div>
+<div class="activity-card activity-callout" id="actividad-extra-vectores">
+<p><strong>Extra activity. Modify a vector: Let or Const?</strong></p>
+<p>Creates a vector called <code>precios</code> before you program, decide if you would declare it with <code>let</code> or with <code>const</code> and justify your choice in a comment.</p>
+<ol>
+<li>Check the first and last element, modify the second and add a fourth with <code>push()</code>. Displays the vector and its length after each change.</li>
+<li>Removes the last item with <code>pop()</code>. Displays the deleted value, the resulting vector and its length.</li>
+<li>Test previous operations by declaring <code>precios</code> with <code>const</code>. Predicts whether to modify, add or delete items will cause an error and check.</li>
+</ol>
+<p>Perform tests on an external JavaScript linked from an HTML with <code>defer</code>, use <code>"use strict";</code> and displays the results in console. Later we will use loops to cover all the elements.</p>
+<div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
+</div>
 <h3 id="sec4_8">4.8. Block scope</h3>
 <p>The <strong>scope</strong> determines from where a variable can be used. A declared variable with <code>let</code> o <code>const</code> inside a block is available in that block and in those containing it, but not outside it.</p>
 <pre><code>const centro = "IES Ejemplo";
@@ -1027,6 +1064,53 @@ console.log(Boolean("false")); // true</code></pre>
 <li><code>String()</code> gets a textual representation.</li>
 <li><code>Boolean()</code> gets a logical value. A string does not even empty <code>"false"</code> o <code>"0"</code>, it becomes <code>true</code>.</li>
 </ul>
+<h4>Reading numbers at the beginning of a text</h4>
+<p><code>Number()</code> Try to convert the entire chain. <code>parseInt()</code> y <code>parseFloat()</code> read their initial numerical part and stop when they find a character they cannot interpret. They ignore the initial spaces; if they cannot start reading a number, they return <code>NaN</code>.</p>
+<aside aria-label="Function tab: parseInt(text, base)" class="function-card" id="ficha-conversion-parseint">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>parseInt(texto, base)</code></p>
+<p>Read an integer at the beginning of the text. Do not round: on base 10 stops at the decimal point.</p>
+<p><strong>Parameters:</strong> <code>texto</code>: value that is interpreted as a string; <code>base</code>: numbering system, between 2 and 36. <code>10</code> for decimal numbers.</p>
+<p><strong>Returns:</strong> A type value <code>number</code>, or <code>NaN</code> if you can't read an entire.</p>
+</aside>
+<aside aria-label="Function tab: parseFloat(text)" class="function-card" id="ficha-conversion-parsefloat">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
+<p class="function-signature"><code>parseFloat(texto)</code></p>
+<p>Reads a decimal number at the beginning of the text; supports decimal point and exponential notation.</p>
+<p><strong>Parameters:</strong> <code>texto</code>: value that is interpreted as a string. It does not receive a base.</p>
+<p><strong>Returns:</strong> A type value <code>number</code>, or <code>NaN</code> if you can't read a number.</p>
+</aside>
+<pre><code>console.log(Number("12.75"));        // 12.75
+console.log(Number("12.75 euros"));  // NaN
+console.log(parseInt("12.75", 10));   // 12
+console.log(parseFloat("12.75 euros")); // 12.75
+console.log(parseInt("101", 2));     // 5
+console.log(parseFloat("1.5e2"));    // 150
+console.log(parseFloat("euros 12")); // NaN</code></pre>
+<p><strong>Attention to decimal separator:</strong> Use the point. <code>parseFloat("12,75")</code> returns <code>12</code>, because it stops in the comma. Accepting part of the text does not mean that the entire entry is valid.</p>
+<pre><code>console.log(Number(""));          // 0
+console.log(parseInt("", 10));    // NaN
+console.log(parseFloat(""));      // NaN
+
+const importe = parseFloat("sin precio");
+console.log(Number.isNaN(importe)); // true</code></pre>
+<p>Use <code>Number.isNaN()</code> to check if the result is <code>NaN</code>; do not compare it to <code>=== NaN</code>. There are also <code>Number.parseInt()</code> y <code>Number.parseFloat()</code>, which are the same functions as <code>parseInt()</code> y <code>parseFloat()</code>.</p>
+<p>References: <a href="https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/parseInt" rel="noopener noreferrer" target="_blank">MDN · parseInt()</a> y <a href="https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/parseFloat" rel="noopener noreferrer" target="_blank">MDN · parseFloat()</a>.</p>
+<div class="didactic-note" id="recordatorio-conversion-operadores">
+<p><strong>Remember: you can also convert using operators</strong></p>
+<ul>
+<li><code>+valor</code>: the <strong>more unary</strong> converts to number. For example, <code>+"6.5"</code> produces <code>6.5</code>. For the basic values of these examples is equivalent to <code>Number(valor)</code>.</li>
+<li><code>!!valor</code>: Double denial converts boolean, just like <code>Boolean(valor)</code>. First <code>!</code> denies its logical value and the second invests it again.</li>
+<li><code>"" + valor</code>: concatenating with an empty string converts the numbers and booleans of these examples into text. For example, <code>"" + 24</code> produces <code>"24"</code>. <code>String(valor)</code> expresses that intention more clearly.</li>
+</ul>
+<pre><code>console.log(+"4" + +"7"); // 11: convierte cada texto antes de sumar
+console.log("4" + "7");   // "47": concatena dos textos
+console.log(!!0);         // false
+console.log(!!"");        // false
+console.log(!!"false");   // true: es una cadena no vacía
+console.log("" + true);   // "true"</code></pre>
+<p><strong>Do not confuse the two uses of <code>+</code>:</strong> in <code>+texto</code> acts on a single operand; in <code>a + b</code> sum or concaten. <code>+""</code> y <code>+null</code> produce <code>0</code>, while <code>+"hola"</code> produces <code>NaN</code>. Converting an entry does not replace checking that it contains the expected data.</p>
+</div>
 <div class="activity-card activity-callout" id="actividad-jsinfo-suma">
 <p><strong>2.12. Correcting a sum of texts</strong></p>
 <p>This program matches the entries. Correct it with explicit conversion to get a numerical sum. Try the initial values and other different ones.</p><pre><code>const primero = prompt("Primer número", "4");
@@ -1070,45 +1154,18 @@ false + true + false
 " -7 " - 3
 null + 2
 undefined + 2
-" \t \n" - 1</code></pre><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
+" \t \n" - 1
+1 / 0</code></pre><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
 <div class="activity-card activity-callout" id="actividad-repaso-global-1-5">
-<p><strong>Review of points 1 to 5. Prepare an order for computer equipment</strong></p>
-<p>You work in a store and you must prepare a budget for a repair shop. The customer needs USB cables, adapters and USB drives. Your program will collect the amounts, calculate the amount and show a summary of the order.</p>
-<p>Use what has been studied so far and show the results on the console and with <code>alert()</code>. Access the three positions of the vectors directly; you do not need loops, own functions or DOM. For entries, assume that the user accepts the dialogues and introduces non-negative integers.</p>
-<h4>1. Prepares the project and data</h4>
-<p>Create <code>pedido.html</code> y <code>pedido.js</code>. Link the JavaScript file with <code>defer</code>, active <code>"use strict";</code> and uses descriptive names, comments and <code>const</code> o <code>let</code> as appropriate.</p>
-<p>Save in two vectors of integers the prices in cents <code>[350, 500, 800]</code> and stocks <code>[30, 20, 15]</code>In both, the order is: cables, adapters and USB drives.</p>
-<h4>2. Collect the order and practice the quotation marks</h4>
-<p>Ask with <code>prompt()</code> the name of the customer and the quantity of each product. <code>Number()</code>. Question with <code>confirm()</code> if you will pick up the order in store.</p>
-<ul>
-<li>Write with simple quotation marks a text containing <code>Pedido "Taller de reparación"</code>.</li>
-<li>Write with double quotes the name <code>Friends' Repair Club</code>.</li>
-<li>Use severe accents and interpolation to include the client's name in a message. Also write that message by concatenation.</li>
-</ul>
-<h4>3. Organizes and modifies quantities</h4>
-<p>Create a vector with the first two quantities and add the third with <code>push()</code>. The customer then requests <strong>two more adapters</strong>: update that position with <code>+=</code>. Displays the vector, its length and its last element.</p>
-<p>In a separate test, add a fourth amount by mistake and remove it with <code>pop()</code>Check that the order again has three products before calculating it.</p>
-<h4>4. Calculates the budget</h4>
+<p><strong>Review of points 1 to 5. A simple order</strong></p>
+<p>A USB stick costs <strong>EUR 8</strong>. Create a program that asks for how many units the customer wants and shows the order amount.</p>
 <ol>
-<li>Multiply each quantity for its price and add up the three amounts to obtain the subtotal.</li>
-<li>Apply a 10% discount if the subtotal reaches 10000 cents. Use a comparison and the ternary operator; in other cases, the discount is zero.</li>
-<li>Add 600 cents if the order is sent or zero if collected in store. Calculate the discount first and then the transport.</li>
-<li>Checks whether all three quantities fit in stocks and combines the results with <code>&amp;&amp;</code> to obtain <code>hayStock</code>.</li>
-<li>It shows with a chain template the customer, the final quantities, the subtotal, the discount, the transport, the total in euros and the value of <code>hayStock</code>Use <code>\n</code> to separate the lines.</li>
+<li>Create <code>pedido.html</code> y <code>pedido.js</code>. Link external JavaScript with <code>defer</code> and starts the script with <code>"use strict";</code>.</li>
+<li>Keep the price in a constant. Order with <code>prompt()</code> client name and number of memories; converts the quantity with <code>Number()</code>. Suppose the user accepts and introduces a positive integer.</li>
+<li>Calculates the total by multiplying the price by the quantity. Displays a message with name, units and total in console, using a string template.</li>
+<li>Try with 3 units and then with 5: totals should be 24 and 40 euros. Add brief comments explaining the conversion and calculation.</li>
 </ol>
-<p>This is a budget: it shows availability, but do not change stocks.</p>
-<h4>5. Check and explain</h4>
-<p><strong>Main test:</strong> enter 12 cables, 8 adapters and 5 memories. After modification, the vector must be <code>[12, 10, 5]</code>. The subtotal will be 132 euros, the discount 13.20 euros and the total 118.80 euros with collection or 124.80 euros with shipment. <code>hayStock</code> must be <code>true</code>. It is not mandatory to format the output with two decimals.</p>
-<p>Repeat with a small order without discount and another one that exceeds the stock. Remember that in each execution two adapters are added.</p>
-<p>In <code>pedido.txt</code>notes the entries and the results of the three tests and answers briefly:</p>
-<ul>
-<li>What does the browser run and what relationship exists between JavaScript and ECMASScript? What have you used it for? <code>defer</code>?</li>
-<li>What types have the answers to <code>prompt()</code>the quantities converted and the result of <code>confirm()</code>Check it out <code>typeof</code> and use <code>Array.isArray()</code> to identify the vector.</li>
-<li>Why? <code>"12" + "8"</code> does not give the same result as the sum of the converted numbers? Compare also <code>"12" == 12</code> y <code>"12" === 12</code>.</li>
-<li>Why can you change a position of a declared vector with <code>const</code>? Also create a variable inside a block and check, in a separate test, what happens when you try to use it outside.</li>
-<li>What's wrong with <code>Number("")</code>, <code>Number(null)</code> y <code>Number("doce")</code>Explains which entries should be controlled in a later version.</li>
-</ul>
-<p>Place a break point before the subtotal and check the amounts. Correct the errors you find and deliver <code>pedido.html</code>, <code>pedido.js</code> y <code>pedido.txt</code>.</p>
+<p>It uses descriptive names and proper indentation. <code>pedido.html</code> y <code>pedido.js</code>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 </section>
@@ -1232,9 +1289,9 @@ mensaje.outerHTML = '&lt;div id="mensaje" class="aviso"&gt;Nuevo elemento&lt;/di
 <ul><li><code>textContent</code>: reads or replaces the text; does not interpret labels.</li><li><code>innerHTML</code>: reads or replaces the inside HTML; retains the container element.</li><li><code>outerHTML</code>: read or replace the entire item, with its label and content.</li></ul>
 <p>After assigning <code>outerHTML</code>, the variable <code>mensaje</code> keep pointing to the old item, already separated from the document. If you need to work with the new one, re-select it. Use so much <code>innerHTML</code> as <code>outerHTML</code> only with controlled HTML; for user data use <code>textContent</code>.</p>
 <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Element/outerHTML" rel="noopener noreferrer" target="_blank">MDN · yourHTML</a>
-<div class="activity-card activity-callout" id="relacion-ejercicio-5"><p><strong>2.17. An apple shop</strong></p><p>A store sells apples and allows buying whole units or fractions. Calculate a discount purchase.</p><ol><li>Create a basic HTML with the <code>body</code> empty and a JavaScript file that runs after creating the document body.</li><li>Declares <code>precioManzana</code> with the text <code>"0.5"</code>Turn it to number and save the result in <code>precioConvertido</code>.</li><li>Declares <code>cantidadManzanas</code> with the number <code>4</code>. Multiply both quantities and save the result in <code>costoTotal</code>.</li><li>Declares <code>descuento</code> with the value <code>0.10</code>. Subtracts to <code>costoTotal</code> the total product for the discount and saves the result in <code>costoConDescuento</code>.</li><li>Use <code>innerHTML</code> to show in the document: «The cost of [quantityManzanas] apples is [costConDiscount] dollars with the discount applied».</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-9"><p><strong>2.18. Input, output and calculation review</strong></p><ol><li>Ask for a name and an email. <code>innerHTML</code> to create a fixed presentation structure and type the data entered by the user with <code>textContent</code> in its elements.</li><li>Ask for two numbers to represent the sides of a rectangle and show its perimeter.</li><li>It also calculates the sum, product, division, and exposure of those two numbers.</li><li>Order the price of an item and the quantity purchased. Show the total amount including 21 % VAT.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
+<div class="activity-card activity-callout" id="relacion-ejercicio-5"><p><strong>2.16. An apple shop</strong></p><p>A store sells apples and allows buying whole units or fractions. Calculate a discount purchase.</p><ol><li>Create a basic HTML with the <code>body</code> empty and a JavaScript file that runs after creating the document body.</li><li>Declares <code>precioManzana</code> with the text <code>"0.5"</code>Turn it to number and save the result in <code>precioConvertido</code>.</li><li>Declares <code>cantidadManzanas</code> with the number <code>4</code>. Multiply both quantities and save the result in <code>costoTotal</code>.</li><li>Declares <code>descuento</code> with the value <code>0.10</code>. Subtracts to <code>costoTotal</code> the total product for the discount and saves the result in <code>costoConDescuento</code>.</li><li>Use <code>innerHTML</code> to show in the document: «The cost of [quantityManzanas] apples is [costConDiscount] dollars with the discount applied».</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-9"><p><strong>2.17. Input, output and calculation review</strong></p><ol><li>Ask for a name and an email. <code>innerHTML</code> to create a fixed presentation structure and type the data entered by the user with <code>textContent</code> in its elements.</li><li>Ask for two numbers to represent the sides of a rectangle and show its perimeter.</li><li>It also calculates the sum, product, division, and exposure of those two numbers.</li><li>Order the price of an item and the quantity purchased. Show the total amount including 21 % VAT.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
 <div class="activity-card activity-callout" id="actividad-complementaria-6-3">
-<p><strong>Supplementary activity 6.3. Text literal vs. marking</strong></p>
+<p><strong>2.18. Text literal vs. marking</strong></p>
 <p>Prepares two paragraphs. Assigns the controlled chain <code>&lt;strong&gt;Importante&lt;/strong&gt;</code> to one through <code>textContent</code> and to the other through <code>innerHTML</code>. Examine its contents and its <code>outerHTML</code>Then ask for a message with <code>prompt()</code> and show it exclusively as text.</p>
 <p><strong>Check:</strong> It explains why only one of the first paragraphs shows boldness and what happens when you cancel the dialog.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
@@ -1254,10 +1311,14 @@ resultado.textContent = `El doble es ${unidades * 2}`;</code></pre>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-6-4">
-<p><strong>Supplementary activity 6.4.</strong></p>
+<p><strong>2.20. Budget when charging</strong></p>
 <p>Creates fields for price and quantity, with initial values of 12.5 and 4, and an output paragraph. Read <code>value</code>, converts the data and displays the product when loading. Change the initial values and reload; also test an empty field before converting.</p>
 <p><strong>Check:</strong> Distinguish an empty input of zero. Don't add events yet.</p>
-<p class="resource-description">Simplified adaptation for this sub-paragraph. <a href="https://javascript.info/task/deposit-calculator" rel="noopener noreferrer" target="_blank">JavaScript.info · Deposit calculator</a>.</p>
+<div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
+</div>
+<div class="activity-card activity-callout" id="extra-eniun-viaje">
+<p><strong>2.21. Travel budget</strong></p>
+<p>Prepares three fields with accommodation, food and leisure expenses. When loading, converts its values and shows the sum by <code>textContent</code>. Test 60, 25 and 15: total 100.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec6_5">6.5. CSS Styles and Classes</h3>
@@ -1306,15 +1367,14 @@ mensaje.classList.remove("destacado");
 mensaje.classList.toggle("destacado"); // La añade de nuevo.</code></pre>
 <p><code>add()</code> adds a class, <code>remove()</code> eliminates it, <code>contains()</code> checks for existence and <code>toggle()</code> The name of the class is written without the selector point.</p>
 <div class="activity-card activity-callout" id="actividad-jsinfo-notificacion">
-<p><strong>2.20. Style a notification</strong></p>
+<p><strong>2.22. Style a notification</strong></p>
 <p>Create a <code>div</code> With an identifier and a message. Defines a CSS class to be displayed as a notice in the top right corner. From JavaScript, add that class and modify its background color. Check the calculated color and compare it with the CSS. This version does not require timers or create nodes.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-6-5">
-<p><strong>Supplementary activity 6.5. Two ways to highlight a notice</strong></p>
+<p><strong>2.23 Two Ways of Highlighting a Warning</strong></p>
 <p>Prepare a paragraph with a base class. Apply color and fill with <code>style</code>; then reproduces the appearance by using a CSS class. Add and remove that class with <code>classList</code> without deleting the base class. <code>style.color</code> y <code>getComputedStyle(...).color</code>.</p>
 <p><strong>Check:</strong> The final appearance must match in both versions and the base class must be preserved.</p>
-<p class="resource-description">Adaptation without timers for this sub-paragraph. <a href="https://javascript.info/styles-and-classes" rel="noopener noreferrer" target="_blank">JavaScript.info · Create a notification</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec6_6">6.6. Check that an item exists</h3>
@@ -1335,15 +1395,14 @@ if (mensaje !== null) {
 <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Element/classList" rel="noopener noreferrer" target="_blank">MDN · classList</a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-jsinfo-busqueda-vacia">
-<p><strong>2.21. Check a search without results</strong></p>
+<p><strong>2.24. Check a search without results</strong></p>
 <p>In the form of the previous activity, search for a non-existent identifier. Shows the search result and avoids accessing <code>textContent</code> if there is no element. Repeat with a valid identifier and check that the text is then updated.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-6-6">
-<p><strong>Follow-up activity 6.6. Detect a script executed too soon</strong></p>
+<p><strong>2.25. Detect a script executed too soon</strong></p>
 <p>On a test page, place on the <code>head</code> an external script without <code>defer</code> search for a paragraph of the <code>body</code>. Record the search without accessing its properties if it returns <code>null</code>Add <code>defer</code> And repeat.</p>
 <p><strong>Check:</strong> Distinguish an incorrect identifier for an item that has not yet been read.</p>
-<p class="resource-description">Own proposal for this subsection, based on: <a href="https://javascript.info/dom-navigation" rel="noopener noreferrer" target="_blank">JavaScript.info · Access to nodes during loading</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 </section>
@@ -1359,17 +1418,10 @@ if (mensaje !== null) {
 </ul>
 <p>When a particular data is checked, an explicit condition usually better expresses the intention: <code>cantidad === 0</code> checks a zero, while <code>!cantidad</code> accepts any value <em>falsy</em>.</p>
 <div class="activity-card activity-callout" id="actividad-jsinfo-truthy">
-<p><strong>2.22. Predict a condition with text</strong></p>
+<p><strong>2.26. Predict a condition with text</strong></p>
 <p>Predicts if the message appears. Repeat by changing the condition by <code>0</code>, <code>""</code> y <code>"false"</code>. Check and explain each result.</p><pre><code>if ("0") {
     console.log("La condición se cumple");
 }</code></pre>
-<div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
-</div>
-<div class="activity-card activity-callout" id="actividad-complementaria-7-1">
-<p><strong>Follow-up activity 7.1. Machine on?</strong></p>
-<p>Use a variable <code>maquinaActiva</code> as a condition to choose between two messages. <code>false</code>, <code>true</code>, <code>0</code>, <code>1</code>, <code>""</code> y <code>"false"</code>. Predicts the branches before executing and compares the direct condition with <code>maquinaActiva === true</code>.</p>
-<p><strong>Check:</strong> It explains why the two checks are not equivalent for all values.</p>
-<p class="resource-description">Adaptation for this sub-paragraph. <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Test_your_skills/Conditionals" rel="noopener noreferrer" target="_blank">MDN · Conditions 2</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec7_2">7.2. if, else if and else</h3>
@@ -1394,15 +1446,14 @@ if (temperatura &lt; 15) {
 <p>When the second case comes, it is already known that the temperature is not lower than <code>15</code>. Order matters: placing an overly general condition first may prevent the following from being achieved.</p>
 <div class="didactic-note"><p><strong>The writing of the conditions.</strong> Use keys even if the block contains a single instruction. Don't write <code>;</code> between the condition and the opening key. To compare uses <code>===</code>, not the allocation <code>=</code>.</p></div>
 <div class="activity-card activity-callout" id="actividad-jsinfo-signo">
-<p><strong>2.23. Distinguish positive, negative and zero</strong></p>
+<p><strong>2.27. Distinguish positive, negative and zero</strong></p>
 <p>Ask for a number and sample <code>1</code> if positive, <code>-1</code> if it is negative and <code>0</code> if it's worth zero. <code>if</code>, <code>else if</code> y <code>else</code>. For this activity suppose a valid numerical entry.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-7-2">
-<p><strong>Additional activity 7.2. Sorting a score</strong></p>
+<p><strong>2.28. Sorting a score</strong></p>
 <p>With a numerical score, it shows ‘Review’ if it is outside 0–100, ‘Initial’ between 0 and 49, ‘Intermediate’ between 50 and 79 and ‘Advanced’ between 80 and 100. <code>if</code>, <code>else if</code> y <code>else</code>.</p>
 <p><strong>Check:</strong> Check -1, 0, 49, 50, 79, 80, 100 and 101; each case must generate a single message.</p>
-<p class="resource-description">Adaptation for this sub-paragraph. <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Test_your_skills/Conditionals" rel="noopener noreferrer" target="_blank">MDN · Conditions 2</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec7_3">7.3. Merge conditions and validate data</h3>
@@ -1433,15 +1484,14 @@ if (texto.trim() === "") {
 }</code></pre>
 <p>The example presupposes that <code>texto</code> if it comes from <code>prompt()</code>, check first if it is <code>null</code>, because cancelling the dialog does not return text and does not allow calling <code>trim()</code>.</p>
 <div class="activity-card activity-callout" id="actividad-jsinfo-intervalos">
-<p><strong>2.24. Check an interval</strong></p>
+<p><strong>2.29. Check an interval</strong></p>
 <ol><li>Check if an age is between 14 and 90, including both limits.</li><li>He writes two conditions for detecting ages outside the interval: one with denial and one without denial.</li><li>Try 13, 14, 50, 90 and 91. Write down what you expected and what you got.</li></ol>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-7-3">
-<p><strong>Supplementary activity 7.3 Access to a practice session</strong></p>
+<p><strong>2.30 Access to a practice session</strong></p>
 <p>Ask for a name with <code>prompt()</code>: cancel or enter only spaces ends with a notice. If the name is <code>alumno</code>, request the test key <code>dwec</code>; any other combination shows ‘Access denied’. It combines conditions and checks <code>null</code> before use <code>trim()</code>.</p>
 <p><strong>Check:</strong> Test cancellation, empty, unknown name and correct and incorrect key. It is a didactic simulation, not a real authentication system.</p>
-<p class="resource-description">Adaptation for this sub-paragraph. <a href="https://javascript.info/logical-operators" rel="noopener noreferrer" target="_blank">JavaScript.info · Check the login</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec7_4">7.4. switch: alternatives by value</h3>
@@ -1479,12 +1529,16 @@ switch (dia) {
     default:
         console.log("Día no reconocido");
 }</code></pre><p>By Matching <code>"sábado"</code>, execution reaches the same block as <code>"domingo"</code>. There are no instructions between the two labels. <code>break</code> common avoids continuing for the next group.</p><div class="resource-card expansion-card expansion-purple"><div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Case grouping</span><span class="resource-badge badge-reading">Enlargement</span></div><p class="resource-description">Expand the concepts of this section with the explanation and examples of JavaScript.info.</p><div class="resource-links"><a class="resource-link-btn" href="https://es.javascript.info/switch" rel="noopener noreferrer" target="_blank">Access content <i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i></a></div></div>
-<div class="activity-card activity-callout" id="relacion-ejercicio-13"><p><strong>2.25. Calculation of the letter of the ID</strong></p><ol><li>Ask for the numeric part of a ID, without a letter.</li><li>Calculates the rest of dividing the number by 23.</li><li>Use <code>switch</code> to assign the corresponding letter and displays the complete ID.</li></ol><div aria-label="Correspondence between rest and letter of ID" class="table-scroll" role="region" tabindex="0"><table><thead><tr><th scope="col">Rest</th><th scope="col">Letter</th></tr></thead><tbody><tr><td>0</td><td>T</td></tr><tr><td>1</td><td>R</td></tr><tr><td>2</td><td>W</td></tr><tr><td>3</td><td>A</td></tr><tr><td>4</td><td>G</td></tr><tr><td>5</td><td>M</td></tr><tr><td>6</td><td>Y</td></tr><tr><td>7</td><td>F</td></tr><tr><td>8</td><td>P</td></tr><tr><td>9</td><td>D</td></tr><tr><td>10</td><td>X</td></tr><tr><td>11</td><td>B</td></tr><tr><td>12</td><td>N</td></tr><tr><td>13</td><td>J</td></tr><tr><td>14</td><td>Z</td></tr><tr><td>15</td><td>S</td></tr><tr><td>16</td><td>Q</td></tr><tr><td>17</td><td>V</td></tr><tr><td>18</td><td>H</td></tr><tr><td>19</td><td>L</td></tr><tr><td>20</td><td>C</td></tr><tr><td>21</td><td>K</td></tr><tr><td>22</td><td>E</td></tr></tbody></table></div><p>The table has been corrected according to the <a href="https://www.interior.gob.es/opencms/es/servicios-al-ciudadano/tramites-y-gestiones/dni/calculo-del-digito-de-control-del-nif-nie/" rel="noopener noreferrer" target="_blank">Ministry of the Interior</a>. Each rest has a different letter; in this table there are no cases that group the same letter.</p><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
+<div class="activity-card activity-callout" id="relacion-ejercicio-13"><p><strong>2.31. Calculation of the letter of the ID</strong></p><ol><li>Ask for the numeric part of a ID, without a letter.</li><li>Calculates the rest of dividing the number by 23.</li><li>Use <code>switch</code> to assign the corresponding letter and displays the complete ID.</li></ol><div aria-label="Correspondence between rest and letter of ID" class="table-scroll" role="region" tabindex="0"><table><thead><tr><th scope="col">Rest</th><th scope="col">Letter</th></tr></thead><tbody><tr><td>0</td><td>T</td></tr><tr><td>1</td><td>R</td></tr><tr><td>2</td><td>W</td></tr><tr><td>3</td><td>A</td></tr><tr><td>4</td><td>G</td></tr><tr><td>5</td><td>M</td></tr><tr><td>6</td><td>Y</td></tr><tr><td>7</td><td>F</td></tr><tr><td>8</td><td>P</td></tr><tr><td>9</td><td>D</td></tr><tr><td>10</td><td>X</td></tr><tr><td>11</td><td>B</td></tr><tr><td>12</td><td>N</td></tr><tr><td>13</td><td>J</td></tr><tr><td>14</td><td>Z</td></tr><tr><td>15</td><td>S</td></tr><tr><td>16</td><td>Q</td></tr><tr><td>17</td><td>V</td></tr><tr><td>18</td><td>H</td></tr><tr><td>19</td><td>L</td></tr><tr><td>20</td><td>C</td></tr><tr><td>21</td><td>K</td></tr><tr><td>22</td><td>E</td></tr></tbody></table></div><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
 <div class="activity-card activity-callout" id="actividad-complementaria-7-4">
-<p><strong>Follow-up activity 7.4. Support menu with switch</strong></p>
+<p><strong>2.32. Help menu with switch</strong></p>
 <p>Ask for a textual option: <code>inicio</code>, <code>ayuda</code>, <code>soporte</code> o <code>salir</code>Use <code>switch</code>: help and support share message; others have their own response. <code>default</code>. Rewrite the selection with <code>if...else</code>.</p>
 <p><strong>Check:</strong> Both versions must produce the same for all four options and for an unknown one.</p>
-<p class="resource-description">Adaptation for this sub-paragraph. <a href="https://javascript.info/switch" rel="noopener noreferrer" target="_blank">JavaScript.info · Switch and if rewrite</a>.</p>
+<div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
+</div>
+<div class="activity-card activity-callout" id="extra-eniun-temperatura">
+<p><strong>2.33. Temperature converter</strong></p>
+<p>Ask for temperature and a sense of conversion. <code>switch</code>: Celsius to Fahrenheit (<code>C * 9 / 5 + 32</code>) or to the contrary (<code>(F - 32) * 5 / 9</code>). Behold an unknown option. Check that 0 °C equals 32 °F.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec7_5">7.5. ternary operator</h3>
@@ -1493,12 +1547,11 @@ switch (dia) {
 const mensaje = conectado ? "En línea" : "Sin conexión";
 console.log(mensaje); // En línea</code></pre>
 <p>It is an expression: it produces a value that can be assigned to a variable. Use it for simple choices; if each alternative requires multiple instructions, use <code>if...else</code>. Avoid nesting ternaries that make reading difficult.</p>
-<div class="activity-card activity-callout" id="relacion-ejercicio-7"><p><strong>2.26. Miscellaneous operators</strong></p><ol><li>Part of <code>a = 10</code> y <code>b = 5</code>Use <code>+=</code> to add 5 to <code>a</code>, <code>*=</code> to multiply <code>b</code> by 3 and <code>/=</code> to divide <code>a</code> 2. Displays each result.</li><li>Assign the strings now <code>"10"</code> y <code>"5"</code> a <code>a</code> y <code>b</code>. Shows its sum, multiplication, subtraction and division.</li><li>Use a ternary to assign to <code>resultado</code> ‘A is greater’ if <code>a &gt; b</code>, or "B is greater or equal" in another case. It shows the result and explains what is compared when both operands are strings.</li><li>Use <code>typeof</code> to show the type of <code>a</code>.</li><li>Use one example of multiplication by 2 with left shift and another of division by 2 with right shift. Use small positive integers and an even number for division. See the explanation of <a href="#operadores-bits">bit-to-bit operators</a>.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
+<div class="activity-card activity-callout" id="relacion-ejercicio-7"><p><strong>2.34. Miscellaneous operators</strong></p><ol><li>Part of <code>a = 10</code> y <code>b = 5</code>Use <code>+=</code> to add 5 to <code>a</code>, <code>*=</code> to multiply <code>b</code> by 3 and <code>/=</code> to divide <code>a</code> 2. Displays each result.</li><li>Assign the strings now <code>"10"</code> y <code>"5"</code> a <code>a</code> y <code>b</code>. Shows its sum, multiplication, subtraction and division.</li><li>Use a ternary to assign to <code>resultado</code> ‘A is greater’ if <code>a &gt; b</code>, or "B is greater or equal" in another case. It shows the result and explains what is compared when both operands are strings.</li><li>Use <code>typeof</code> to show the type of <code>a</code>.</li><li>Use one example of multiplication by 2 with left shift and another of division by 2 with right shift. Use small positive integers and an even number for division. See the explanation of <a href="#operadores-bits">bit-to-bit operators</a>.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
 <div class="activity-card activity-callout" id="actividad-complementaria-7-5">
-<p><strong>Additional activity 7.5. Choosing a fare</strong></p>
+<p><strong>2.35. Choose a rate</strong></p>
 <p>Assign with <code>if...else</code> a fee of 3 euros to children under 12 and 6 to the rest. Rewrite only the allowance with the ternary operator and keep the same exit.</p>
 <p><strong>Check:</strong> Test 11, 12 and 13. Explains what expression the condition constitutes and what the two results are.</p>
-<p class="resource-description">Adaptation for this sub-paragraph. <a href="https://javascript.info/ifelse" rel="noopener noreferrer" target="_blank">JavaScript.info · Rewrite if into ?</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec7_6">7.6 Repeats with for, while and do...while</h3>
@@ -1539,12 +1592,16 @@ for (let fila = 1; fila &lt;= 2; fila++) {
     }
 }
 // 1 1, 1 2, 1 3, 2 1</code></pre><p>Use them when clearing an output of nested loops. Later, a function with <code>return</code> can offer another organization.</p></div><div class="resource-card expansion-card expansion-purple"><div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Buckles</span><span class="resource-badge badge-reading">Enlargement</span></div><p class="resource-description">Expand the concepts of this section with the explanation and examples of JavaScript.info.</p><div class="resource-links"><a class="resource-link-btn" href="https://es.javascript.info/while-for" rel="noopener noreferrer" target="_blank">Access content <i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i></a></div></div>
-<div class="activity-card activity-callout" id="relacion-ejercicio-10"><p><strong>2.27. Par, odd and prime</strong></p><ol><li>Ask for an integer and indicate if it is even or odd.</li><li>If it is odd, also check if it is prime. A prime is an integer greater than 1 divisible by 1 and by itself. Use a loop to check dividers.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-11"><p><strong>2.28. Divination game</strong></p><p>Generates a random integer between 1 and 100. To get an integer between <code>min</code> y <code>max</code>both included, you can use:</p><pre><code>Math.floor(Math.random() * (max - min + 1)) + min;</code></pre><p><code>Math.random()</code> returns a number from 0 included to 1 excluded; <code>Math.floor()</code> round down.</p><ol><li>Ask the user to guess the number and allow a maximum of 10 attempts.</li><li>After each bug, it indicates whether the secret number is greater or less than the one entered.</li><li>If you hit it, congratulate it and finish the game. If you exhaust the attempts, show the correct number.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-12"><p><strong>2.29. Simple calculator with repeat</strong></p><ol><li>Ask for two numbers and the operation you want to perform: addition, subtraction, multiplication, division, power or module.</li><li>It performs the operation and displays the result. It manages an unknown operation and the zero splitter in division and module.</li><li>Ask if you want to perform another operation with new numbers or leave. Repeat the process as long as you decide to continue.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-14"><p><strong>2.30. Sort triangles</strong></p><ol><li>Read the three sides of each of three triangles.</li><li>For each triangle, indicate whether it is equilateral (three equal sides), isosceles (exactly two equal sides) or scalen (all distinct).</li><li>Count how many triangles there are of each type.</li><li>Indicates the type with the least amount; if there is a tie, it shows all the tied rates.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-15"><p><strong>2.31. Prime numbers and execution time</strong></p><p>A cousin is a natural number greater than 1 with only two dividers: 1 and himself.</p><ol><li>Declares the constant <code>MAX = 3560</code> and calculates all prime numbers up to that value. In the first version, check the possible dividers of each <code>num</code> from 2 to <code>num - 1</code>.</li><li>Timer loop: saves <code>performance.now()</code> before and after running it and subtracts the initial time at the end. The result is a duration in milliseconds.</li><li>Optimizes the check by testing only smaller or equal dividers than <code>Math.sqrt(num)</code>. Find an explanation of this property and add it, with its source, to the comments.</li><li>Check that both versions get the same cousins and compare their times. Measure in the same conditions and show the results outside the timed stage.</li></ol><p><code>Math.sqrt(numero)</code> returns the square root. <code>performance.now()</code> provides a time mark in milliseconds to measure intervals.</p><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
+<div class="activity-card activity-callout" id="relacion-ejercicio-10"><p><strong>2.36. Par, odd and prime</strong></p><ol><li>Ask for an integer and indicate if it is even or odd.</li><li>If it is odd, also check if it is prime. A prime is an integer greater than 1 divisible by 1 and by itself. Use a loop to check dividers.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-11"><p><strong>2.37. Divination game</strong></p><p>Generates a random integer between 1 and 100. To get an integer between <code>min</code> y <code>max</code>both included, you can use:</p><pre><code>Math.floor(Math.random() * (max - min + 1)) + min;</code></pre><p><code>Math.random()</code> returns a number from 0 included to 1 excluded; <code>Math.floor()</code> round down.</p><ol><li>Ask the user to guess the number and allow a maximum of 10 attempts.</li><li>After each bug, it indicates whether the secret number is greater or less than the one entered.</li><li>If you hit it, congratulate it and finish the game. If you exhaust the attempts, show the correct number.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-12"><p><strong>2.38. Simple calculator with repeat</strong></p><ol><li>Ask for two numbers and the operation you want to perform: addition, subtraction, multiplication, division, power or module.</li><li>It performs the operation and displays the result. It manages an unknown operation and the zero splitter in division and module.</li><li>Ask if you want to perform another operation with new numbers or leave. Repeat the process as long as you decide to continue.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-14"><p><strong>2.39. Sort triangles</strong></p><ol><li>Read the three sides of each of three triangles.</li><li>For each triangle, indicate whether it is equilateral (three equal sides), isosceles (exactly two equal sides) or scalen (all distinct).</li><li>Count how many triangles there are of each type.</li><li>Indicates the type with the least amount; if there is a tie, it shows all the tied rates.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-15"><p><strong>2.40. Prime numbers and execution time</strong></p><p>A cousin is a natural number greater than 1 with only two dividers: 1 and himself.</p><ol><li>Declares the constant <code>MAX = 3560</code> and calculates all prime numbers up to that value. In the first version, check the possible dividers of each <code>num</code> from 2 to <code>num - 1</code>.</li><li>Timer loop: saves <code>performance.now()</code> before and after running it and subtracts the initial time at the end. The result is a duration in milliseconds.</li><li>Optimizes the check by testing only smaller or equal dividers than <code>Math.sqrt(num)</code>. Find an explanation of this property and add it, with its source, to the comments.</li><li>Check that both versions get the same cousins and compare their times. Measure in the same conditions and show the results outside the timed stage.</li></ol><p><code>Math.sqrt(numero)</code> returns the square root. <code>performance.now()</code> provides a time mark in milliseconds to measure intervals.</p><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
 <div class="activity-card activity-callout" id="actividad-complementaria-7-6">
-<p><strong>Supplementary activity 7.6 Three loops, one countdown</strong></p>
+<p><strong>2.41. Three loops, one countdown</strong></p>
 <p>Displays the 5 to 1 integers and the "End" message. <code>for</code>, <code>while</code> y <code>do...while</code>. It then changes the initial value to zero and compares how many times each version enters the body.</p>
 <p><strong>Check:</strong> Explains the difference of the <code>do...while</code> and prevents any version from being repeated indefinitely.</p>
-<p class="resource-description">Adaptation for this sub-paragraph. <a href="https://javascript.info/while-for" rel="noopener noreferrer" target="_blank">JavaScript.info · Replace for with while</a>.</p>
+<div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
+</div>
+<div class="activity-card activity-callout" id="extra-eniun-factorial">
+<p><strong>2.42. Calculate a factorial</strong></p>
+<p>Calculate with <code>for</code> Product of the integers from 1 to a given number. Initializes the accumulator in 1. Test 0, 1 and 5: results 1, 1 and 120.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec7_7">7.7. Tour DOM elements with for...of</h3>
@@ -1564,15 +1621,14 @@ for (const parrafo of parrafos) {
 <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Loops_and_iteration" rel="noopener noreferrer" target="_blank">MDN · Loop and iteration</a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-jsinfo-recorrer">
-<p><strong>2.32. Tour and mark items</strong></p>
+<p><strong>2.43. Tour and mark items</strong></p>
 <p>Creates a table of three rows and three columns. <code>diagonal</code> to the three cells of its main diagonal. Select them with <code>querySelectorAll()</code> and use <code>for...of</code> to change your background and display your text in console. Check that the other six do not change.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-7-7">
-<p><strong>Supplementary activity 7.7. Inventory from DOM</strong></p>
+<p><strong>2.44. Inventory from DOM</strong></p>
 <p>Enter an HTML list with five materials. Select your items with <code>querySelectorAll()</code> and cross them with <code>for...of</code>Build a summary of your texts separated by commas and show it in an existing paragraph.</p>
 <p><strong>Check:</strong> Adds a sixth material to HTML and reloads: the abstract must include it without changing JavaScript.</p>
-<p class="resource-description">Adaptation with existing elements for this sub-paragraph. <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Test_your_skills/Loops" rel="noopener noreferrer" target="_blank">MDN · Loops 1</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 </section>
@@ -1605,15 +1661,14 @@ for (const parrafo of parrafos) {
 &lt;/html&gt;</code></pre>
 <p><code>type="button"</code> identifies an action button and <code>type="submit"</code> One shipment. <code>aria-live="polite"</code> allows assistive technologies to announce updates to the message.</p>
 <div class="activity-card activity-callout" id="actividad-jsinfo-evento-objetivo">
-<p><strong>2.33. Planning an interaction</strong></p>
+<p><strong>2.45. Planning an interaction</strong></p>
 <p>Create a button and a paragraph. Before programming, identify the item that receives the event, the event name, and the handler action to hide the paragraph. Explain when the change should occur.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-8-1">
-<p><strong>Additional activity 8.1. A switch with two states</strong></p>
+<p><strong>2.46. A two-state switch</strong></p>
 <p>Prepare a button with the "Enlighten" text. Before programming, describe the event, the handler and the visible change. Have each click alter the text between "Enlighten" and "Delete", using a Boolean variable as status.</p>
 <p><strong>Check:</strong> After four clicks you must return to the initial state.</p>
-<p class="resource-description">Adaptation for this sub-paragraph. <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Test_your_skills/Events" rel="noopener noreferrer" target="_blank">MDN · Events 1</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec8_2">8.2. Register handlers with addEventListener()</h3>
@@ -1631,15 +1686,14 @@ boton.addEventListener("click", mostrarSaludo);</code></pre>
 <div class="didactic-note"><p><strong>Pass the function, not run it.</strong> Write <code>mostrarSaludo</code> as a second argument. If you write <code>mostrarSaludo()</code>, the function is executed during the log and its result is passed instead of the handler.</p></div>
 <p>Record handlers when items already exist, as is the case when using <code>defer</code>. <code>addEventListener()</code> allows you to associate several functions to the same event and maintains the behavior in the JavaScript file.</p>
 <div class="activity-card activity-callout" id="actividad-jsinfo-ocultar">
-<p><strong>2.34. Hide an item when pressing</strong></p>
+<p><strong>2.47. Hide an item when pressing</strong></p>
 <p>Complete the previous activity with <code>addEventListener()</code>. When pressing the button, apply <code>display: none</code> to the paragraph from JavaScript. Check that it does not go away when loading the page.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-8-2">
-<p><strong>Additional activity 8.2. Two handlers on the same button</strong></p>
+<p><strong>2.48. Two handlers on the same button</strong></p>
 <p>Register with <code>addEventListener()</code> two handlers for one button: one increases one counter and the other displays a warning in one paragraph. Register them once, outside the handlers.</p>
 <p><strong>Check:</strong> Each click should increase the counter exactly in one and run both effects. Explain what would change when assigning twice <code>onclick</code>.</p>
-<p class="resource-description">Adaptation for this sub-paragraph. <a href="https://javascript.info/introduction-browser-events" rel="noopener noreferrer" target="_blank">JavaScript.info · Which handlers run?</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec8_3">8.3. Basic events: click, input, change and submit</h3>
@@ -1666,15 +1720,14 @@ campo.addEventListener("input", mostrarNombre);
 campo.addEventListener("change", confirmarCambio);</code></pre>
 <p>Assign a value from JavaScript by <code>campo.value = "Ana"</code> does not automatically trigger these events. If the program modifies the data, you must also update the presentation when applicable.</p>
 <div class="activity-card activity-callout" id="actividad-jsinfo-deposito-eventos">
-<p><strong>2.35. Update a calculation when editing</strong></p>
+<p><strong>2.49. Update a calculation when editing</strong></p>
 <p>Retakes the calculation of capital, percentage and years in section 6.4. Updates the result by <code>input</code> every time you change a field. Also check the text paste. <code>change</code> to compare when it is fired; do not show a calculation if a data is missing.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-8-3">
-<p><strong>Additional activity 8.3. Live registration form</strong></p>
+<p><strong>2.50. Live registration sheet</strong></p>
 <p>Create a name form, a turn selector and a shipping button. <code>input</code> to update a greeting, <code>change</code> to show the turn and <code>submit</code> to present the summary without reloading. <code>preventDefault()</code> when sending.</p>
 <p><strong>Check:</strong> Try writing, pasting, shift change, click sending and shipping with Enter.</p>
-<p class="resource-description">Adaptation without a modal window for this sub-paragraph. Reference: <a href="https://javascript.info/forms-submit" rel="noopener noreferrer" target="_blank">JavaScript.info · Modal form</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec8_4">8.4. The object of the event and currentTarget</h3>
@@ -1697,15 +1750,14 @@ campo.addEventListener("input", mostrarEntrada);</code></pre>
 </ul>
 <p>Use <code>currentTarget</code> it facilitates sharing the same handler between several elements. In these examples you consult during the execution of the handler; the spread of events will be studied later.</p>
 <div class="activity-card activity-callout" id="actividad-jsinfo-ocultarse">
-<p><strong>2.36. Hide the pressed button</strong></p>
+<p><strong>2.51. Hide the pressed button</strong></p>
 <p>Create two buttons and record the same handler in both. When you press any, hide only that button by means of <code>event.currentTarget.style.display</code>Check that the other one is still working.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-8-4">
-<p><strong>Follow-up activity 8.4. A palette with shared handler</strong></p>
+<p><strong>2.52. A pallet with shared handler</strong></p>
 <p>Creates three buttons whose text is <code>red</code>, <code>green</code> y <code>blue</code>with a <code>span</code> It records the same function in all three. <code>event.currentTarget.textContent.trim()</code> to change the background of a panel.</p>
 <p><strong>Check:</strong> The color must be correct both when pressing the button and its inside text; compare <code>target</code> y <code>currentTarget</code> on console.</p>
-<p class="resource-description">Adjustment without delegation for this sub-paragraph. <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Test_your_skills/Events" rel="noopener noreferrer" target="_blank">MDN · Events 3</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec8_5">8.5. Default behavior and preventDefault()</h3>
@@ -1736,15 +1788,14 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
 <p>The page shows the greeting without performing the conventional shipment. <code>required</code> makes the browser check the field: if it is empty, native validation prevents sending and does not occur <code>submit</code>. Checking <code>trim()</code> It also rejects an entrance formed only by spaces.</p>
 <div class="didactic-note"><p><strong>Cancelling the action does not stop the program.</strong> <code>preventDefault()</code> does not finish the handler or stop the spread of the event. The instructions below continue to be executed.</p></div>
 <div class="activity-card activity-callout" id="actividad-jsinfo-enlace">
-<p><strong>2.37. Confirm before browsing</strong></p>
+<p><strong>2.53. Confirm before browsing</strong></p>
 <p>Create a link to an external page of your choice. Register your event <code>click</code> and ask with <code>confirm()</code> if you want to open the destination. If cancelled, use <code>preventDefault()</code>; if accepted, let the browser act. Try both answers.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-8-5">
-<p><strong>Supplementary activity 8.5. Is return false enough?</strong></p>
+<p><strong>2.54. Is Return False Enough?</strong></p>
 <p>Create a form with a field and a shipping button. Register a handler with <code>addEventListener()</code> write on console and return <code>false</code>. Checks if the shipment is avoided. Replaces that return with <code>event.preventDefault()</code>.</p>
 <p><strong>Check:</strong> Try with click and enter and explain why the second version remains on the page.</p>
-<p class="resource-description">Adaptation for this sub-paragraph. <a href="https://javascript.info/default-browser-action" rel="noopener noreferrer" target="_blank">JavaScript.info · Why return false does not work</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec8_6">8.6. Organize interaction</h3>
@@ -1760,15 +1811,14 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
 <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault" rel="noopener noreferrer" target="_blank">MDN · preventDefault()</a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-jsinfo-menu">
-<p><strong>2.38. Show and hide a menu</strong></p>
+<p><strong>2.55. Show and hide a menu</strong></p>
 <p>Creates a button and a list of links initially hidden using CSS. Change your visibility with <code>classList.toggle()</code> when pressing the button. Keep the event log out of the handler and try several openings and closures in a row.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-8-6">
-<p><strong>Supplementary activity 8.6. Restarting position counter</strong></p>
+<p><strong>256. Restart seat counter</strong></p>
 <p>Create "Reserve" and "Restart" buttons and a paragraph for reserved positions. Keep a counter from 0 to 5. The first button adds if there are any seats; the second one returns to zero. Centralizes the update of text and status classes.</p>
 <p><strong>Check:</strong> Try six reservations, restart and another reservation. Avoid registering new handlers during each click.</p>
-<p class="resource-description">Educational extension for this sub-paragraph. <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Test_your_skills/Events" rel="noopener noreferrer" target="_blank">MDN · Events 1</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 </section>
@@ -1787,12 +1837,11 @@ mostrarInicio();
 mostrarInicio();</code></pre>
 <p>Define the function does not execute your body. <strong>call on her</strong> your name is written followed by parentheses. The example shows the message twice because there are two calls.</p>
 <p><code>mostrarInicio</code> reference to function; <code>mostrarInicio()</code> This difference explains why in <code>addEventListener()</code> the name of the handler is passed without the call brackets.</p>
-<div class="activity-card activity-callout" id="relacion-ejercicio-2"><p><strong>2.39. Greeting with an external function and JavaScript</strong></p><ol><li>Adds a field to HTML <code>&lt;input type="text" id="nombre"&gt;</code> with your label and a greeting button. Creates a function that reads the name by the property <code>value</code> of the field and store it in a variable.</li><li>Declares a constant with value <code>"¡Bienvenido!"</code> and combine the greeting with the name on an alert, for example, "Welcome, Anna!"</li><li>Save all JavaScript to an external file and upload it via <code>&lt;script src="..." defer&gt;&lt;/script&gt;</code>. Record the function with <code>addEventListener()</code> to run when you press the button and read the current value of the field.</li><li>Modifies the function so that, instead of an alert, you enter the greeting into <code>&lt;div id="saludo"&gt;&lt;/div&gt;</code> by <code>textContent</code>.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
+<div class="activity-card activity-callout" id="relacion-ejercicio-2"><p><strong>2.57. Greeting with an external function and JavaScript</strong></p><ol><li>Adds a field to HTML <code>&lt;input type="text" id="nombre"&gt;</code> with your label and a greeting button. Creates a function that reads the name by the property <code>value</code> of the field and store it in a variable.</li><li>Declares a constant with value <code>"¡Bienvenido!"</code> and combine the greeting with the name on an alert, for example, "Welcome, Anna!"</li><li>Save all JavaScript to an external file and upload it via <code>&lt;script src="..." defer&gt;&lt;/script&gt;</code>. Record the function with <code>addEventListener()</code> to run when you press the button and read the current value of the field.</li><li>Modifies the function so that, instead of an alert, you enter the greeting into <code>&lt;div id="saludo"&gt;&lt;/div&gt;</code> by <code>textContent</code>.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
 <div class="activity-card activity-callout" id="actividad-complementaria-9-1">
-<p><strong>Supplementary activity 9.1. Summoning a presentation function</strong></p>
+<p><strong>2.58. Invoking a presentation function</strong></p>
 <p>Define <code>mostrarTurnos()</code> to write three turns from a list in an existing paragraph. Separate the definition of the call. Run once, delete the call and reload; then call twice.</p>
 <p><strong>Check:</strong> It explains why defining a function does not execute your body and distinguishes replacing the text from accumulating it.</p>
-<p class="resource-description">Non-alloy adaptation for this sub-paragraph. <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Test_your_skills/Functions" rel="noopener noreferrer" target="_blank">MDN · Functions 1</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec9_2">9.2. Default parameters, arguments and values</h3>
@@ -1807,15 +1856,14 @@ saludar("Luis", "Buenos días"); // Buenos días, Luis</code></pre>
 <p><code>nombre</code> y <code>saludo</code> in the second call, the arguments are <code>"Luis"</code> y <code>"Buenos días"</code>, which are assigned by position.</p>
 <p>The default value is used if the argument is omitted or passed <code>undefined</code>. Does not replace values such as <code>null</code>, <code>0</code> o <code>""</code>. A parameter without argument or default value receives <code>undefined</code>.</p>
 <div class="activity-card activity-callout" id="actividad-jsinfo-parametros">
-<p><strong>2.40. Prove default arguments and values</strong></p>
+<p><strong>2.59. Prove default arguments and values</strong></p>
 <p>Defines a function that receives a default name and message and displays them in console. Invoke it with both arguments, only with the name, with <code>undefined</code> and with <code>""</code> as a second argument. Explains when the default value is applied.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-9-2">
-<p><strong>Supplementary activity 9.2. Configurable box</strong></p>
+<p><strong>2.60. Configurable Box</strong></p>
 <p>Write <code>configurarRecuadro(ancho, alto = 60, color = "blue")</code> to apply dimensions in pixels and color to an existing div. Use the parameters, without asking for data within the function.</p>
 <p><strong>Check:</strong> Try one full call, one wide and one passing <code>undefined</code> as high.</p>
-<p class="resource-description">Adaptation to the DOM, without canvas for this sub-paragraph. <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Test_your_skills/Functions" rel="noopener noreferrer" target="_blank">MDN · Functions 2</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec9_3">9.3 Return results with return</h3>
@@ -1839,15 +1887,19 @@ console.log(resultado);          // undefined</code></pre>
 <p>If you reach the end without running a <code>return</code> with value, the function returns <code>undefined</code>. Can also be written <code>return;</code> to finish it without providing another result.</p>
 <div class="didactic-note"><p><strong>The return ends the call.</strong> The instructions after the <code>return</code> executed are not reached. Write the expression returned in the same line as <code>return</code>; a line jump right after can get it back <code>undefined</code>.</p></div>
 <div class="activity-card activity-callout" id="actividad-jsinfo-retorno">
-<p><strong>2.41. Return the smallest and calculate a power</strong></p>
+<p><strong>2.61. Return the smallest and calculate a power</strong></p>
 <ol><li>Creates a function that returns less than two numbers. Checks a growing case, a decreasing case, and two equal values.</li><li>Create another one that calculates a power by repeated multiplications. Supports whole exponents from 1. The function returns the result; the reading and presentation are left out.</li><li>Try a negative base and even and odd exponents. Write down expected and real results.</li></ol>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-9-3">
-<p><strong>Supplementary activity 9.3.</strong></p>
+<p><strong>2.62. Counting a character</strong></p>
 <p>Create <code>contarCaracter(texto, caracter)</code> that runs a string and returns how many times the indicated character appears. Suppose a simple character and distinguishes capital letters from lowercases; shows the result outside the function.</p>
 <p><strong>Check:</strong> Try an empty string, no matches and multiple matches. Avoid <code>prompt()</code> and DOM changes within the function.</p>
-<p class="resource-description">Adaptation for this sub-paragraph. <a href="https://eloquentjavascript.net/03_functions.html" rel="noopener noreferrer" target="_blank">Elocent JavaScript · Bean counting</a>.</p>
+<div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
+</div>
+<div class="activity-card activity-callout" id="extra-eniun-descuento">
+<p><strong>2.63. Discounted price</strong></p>
+<p>Write <code>precioFinal(precio, porcentaje)</code>: returns the discounted price. Keep the entry and exit out of the function. Check 80 euros with discounts of 0%, 25% and 100%.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec9_4">9.4. Local scope and external variables</h3>
@@ -1865,7 +1917,7 @@ console.log(crearPresentacion("Ana"));
 <p><code>centro</code> is available within the function, but <code>texto</code> is not available outside. The returned value can be used in the call. In addition, <code>let</code> y <code>const</code> continue to respect the interior blocks, such as those of a <code>if</code>.</p>
 <p>For a function to be easy to reuse, it is advisable to receive the data you need by parameters and avoid modifying external variables without need.</p>
 <div class="activity-card activity-callout" id="actividad-jsinfo-variables-locales">
-<p><strong>2.42. Distinguish local and external changes</strong></p>
+<p><strong>2.64. Distinguish local and external changes</strong></p>
 <p>Predicts the two outputs. Check them and repeat by deleting only <code>let</code> Explains which variable is modified in each version.</p><pre><code>let estado = "Pendiente";
 function revisar() {
     let estado = "Revisado";
@@ -1876,10 +1928,9 @@ console.log(estado);</code></pre>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-9-4">
-<p><strong>Supplementary activity 9.4. A parameter that does not change the external data</strong></p>
+<p><strong>2.65. A parameter that does not change the external data</strong></p>
 <p>Declares <code>let cantidad = 12</code> outside a function <code>reducir(cantidad)</code>. Inside, subtract 2 from the parameter and return the result. Shows the return and the external variable. Repeat using a different name for the parameter.</p>
 <p><strong>Check:</strong> Justify which variable changes and verify that two calls with the same argument give the same result.</p>
-<p class="resource-description">Own proposal for this subsection, based on: <a href="https://eloquentjavascript.net/03_functions.html" rel="noopener noreferrer" target="_blank">Elocent JavaScript · Bindings and scopes</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec9_5">9.5. Functions as function values and expressions</h3>
@@ -1907,15 +1958,14 @@ console.log(aplicarTransformacion(5, function (valor) {
 <h4>Creation and scope</h4><p>In strict mode, a function statement within a block is available only in that block. To choose a function conditionally and use it later, declare a variable with <code>let</code> in the external sphere and assign an expression of function to each branch.</p>
 <div class="resource-card expansion-card expansion-purple"><div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Function Expressions</span><span class="resource-badge badge-reading">Enlargement</span></div><p class="resource-description">Functions such as values, callbacks and differences from statements.</p><a class="resource-link-btn" href="https://es.javascript.info/function-expressions" rel="noopener noreferrer" target="_blank">JavaScript.info · Function Expressions</a></div>
 <div class="activity-card activity-callout" id="actividad-jsinfo-callbacks">
-<p><strong>2.43. Choose and execute a callback</strong></p>
+<p><strong>2.66. Choose and execute a callback</strong></p>
 <p>Write a function that receives a question and two callbacks. <code>confirm()</code>, you must run one or the other. Try first with functions saved in variables and then with function expressions passed directly as arguments. Check that only the chosen action is executed.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-9-5">
-<p><strong>Supplementary activity 9.5. Choosing a function not yet executed</strong></p>
+<p><strong>2.67. Choose a function without running it yet</strong></p>
 <p>Declares <code>let transformar</code> and assign a function expression that doubles or triples a number according to a configuration variable. Invoke it after the selection. Also saves your reference in <code>otraTransformacion</code>.</p>
 <p><strong>Check:</strong> Check both options and explain the difference between save <code>transformar</code> and save <code>transformar(4)</code>.</p>
-<p class="resource-description">Own proposal for this subsection, based on: <a href="https://javascript.info/function-expressions" rel="noopener noreferrer" target="_blank">JavaScript.info · Functions as values</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec9_6">9.6. Arrow Functions</h3>
@@ -1935,14 +1985,46 @@ console.log(obtenerDoble(7)); // 14
 console.log(sumar(3, 5));    // 8
 console.log(crearAviso());   // Operación completada</code></pre>
 <p>Without Parameters is typed <code>()</code>. With a single simple parameter, the parentheses are optional; in this unit they will be maintained by consistency. With several parameters are necessary.</p>
+<figure id="diagrama-simplificacion-flecha" style="margin:24px 0;">
+<svg aria-labelledby="flecha-pasos-titulo flecha-pasos-desc" role="img" style="display:block;width:100%;height:auto;max-width:620px;margin:0 auto;" viewbox="0 0 620 830" xmlns="http://www.w3.org/2000/svg">
+<title id="flecha-pasos-titulo">From a traditional function to an arrow function</title>
+<desc id="flecha-pasos-desc">Five double(number) versions, which returns number by two: declaration, function expression, return arrow, implicit return and parenthesis omission. In each version, double(7) returns 14. They are alternatives, not statements to run together.</desc>
+<rect fill="#eff6ff" height="130" rx="12" stroke="#2563eb" stroke-width="2" width="596" x="12" y="12"></rect>
+<text fill="#2563eb" font-family="Arial, sans-serif" font-size="19" font-weight="700" x="30" y="41">1. Declaration of function</text>
+<text fill="#0f172a" font-family="monospace" font-size="18" x="30" xml:space="preserve" y="71">double function(number) {</text>
+<text fill="#0f172a" font-family="monospace" font-size="18" x="30" xml:space="preserve" y="96">    return number * 2;</text>
+<text fill="#0f172a" font-family="monospace" font-size="18" x="30" xml:space="preserve" y="121">}</text>
+<path d="M310 147 v15 m-6 -6 l6 6 6 -6" fill="none" stroke="#64748b" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<rect fill="#f5f3ff" height="130" rx="12" stroke="#7c3aed" stroke-width="2" width="596" x="12" y="170"></rect>
+<text fill="#7c3aed" font-family="Arial, sans-serif" font-size="19" font-weight="700" x="30" y="199">2. Function expression</text>
+<text fill="#0f172a" font-family="monospace" font-size="18" x="30" xml:space="preserve" y="229">double const = function (number) {</text>
+<text fill="#0f172a" font-family="monospace" font-size="18" x="30" xml:space="preserve" y="254">    return number * 2;</text>
+<text fill="#0f172a" font-family="monospace" font-size="18" x="30" xml:space="preserve" y="279">};</text>
+<path d="M310 305 v15 m-6 -6 l6 6 6 -6" fill="none" stroke="#64748b" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<rect fill="#ecfeff" height="130" rx="12" stroke="#0e7490" stroke-width="2" width="596" x="12" y="328"></rect>
+<text fill="#0e7490" font-family="Arial, sans-serif" font-size="19" font-weight="700" x="30" y="357">3. We substitute function for an arrow</text>
+<text fill="#0f172a" font-family="monospace" font-size="18" x="30" xml:space="preserve" y="387">double const = (number)</text>
+<text fill="#0f172a" font-family="monospace" font-size="18" x="30" xml:space="preserve" y="412">    return number * 2;</text>
+<text fill="#0f172a" font-family="monospace" font-size="18" x="30" xml:space="preserve" y="437">};</text>
+<path d="M310 463 v15 m-6 -6 l6 6 6 -6" fill="none" stroke="#64748b" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<rect fill="#ecfdf5" height="130" rx="12" stroke="#047857" stroke-width="2" width="596" x="12" y="486"></rect>
+<text fill="#047857" font-family="Arial, sans-serif" font-size="19" font-weight="700" x="30" y="515">4. An expression: implicit return</text>
+<text fill="#0f172a" font-family="monospace" font-size="18" x="30" xml:space="preserve" y="545">double const = (number) • number * 2;</text>
+<path d="M310 621 v15 m-6 -6 l6 6 6 -6" fill="none" stroke="#64748b" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<rect fill="#fffbeb" height="130" rx="12" stroke="#b45309" stroke-width="2" width="596" x="12" y="644"></rect>
+<text fill="#b45309" font-family="Arial, sans-serif" font-size="19" font-weight="700" x="30" y="673">5. A simple parameter: no parentheses</text>
+<text fill="#0f172a" font-family="monospace" font-size="18" x="30" xml:space="preserve" y="703">double const = number *2;</text>
+<text fill="#334155" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" x="310" y="813">In all versions: double(7) returns 14.</text>
+</svg>
+<figcaption>Read each version separately. Implicit return requires a single expression; parentheses can only be omitted with a single simple parameter. This example retains the result, but forms differ in aspects such as <code>this</code> and the time at which they can be used.</figcaption>
+</figure>
 <div class="didactic-note"><p><strong>Keys and return.</strong> <code>(numero) =&gt; numero * 2</code> returns the result, but <code>(numero) =&gt; { numero * 2; }</code> returns <code>undefined</code>. With a body between keys you must write <code>return</code> if you want to return a value.</p></div>
 <p>The arrow functions are not interchangeable with <code>function</code> in all cases: they do not have their own <code>this</code> and are not used as constructors. These concepts will be studied with objects. In the handlers of this unit will be used <code>event.currentTarget</code> to access the element.</p>
-<div class="didactic-note" id="ayuda-cadenas-arrays"><h4>Support: Chains and arrays for games</h4><p>An array saves a sequence of values, for example <code>const colores = ["rojo", "azul"];</code>. Indexes start at zero: <code>colores[0]</code> you can modify a position with <code>colores[0] = "verde";</code> and consult the number of items with <code>colores.length</code>. Run the indexes with a <code>for</code>.</p><p><code>texto.split("")</code> converts a simple word into an array of characters; <code>letras.join("")</code> He gathers them in a chain. <code>texto.includes(fragmento)</code> indicates if it contains it and <code>letras.indexOf(valor)</code> returns the index of the first match, or <code>-1</code> If it does not exist. To discover all the appearances of a letter, it runs through the word. The strings do not allow changing a position directly; an array does. For this exercise, use words without emojis or combined characters.</p></div><div class="activity-card activity-callout" id="relacion-ejercicio-16"><p><strong>2.44. Hanged with arrow functions</strong></p><p>Implement a hanger using only arrow functions for all the functions you define. You don't need graphics; it shows the hidden word and the remaining attempts.</p><ol><li><code>elegirPalabra</code>: requests and keeps the secret word. Creates a representation with a script under each letter; for example, "house" is represented as "______".</li><li><code>adivinarLetra</code>: asks for a letter. If it appears in the word, discover all its positions; if not, there is an attempt.</li><li><code>juegoTerminado</code>: indicates whether the whole word has been guessed or attempts have been exhausted.</li><li><code>mostrarEstado</code>: shows the discovered letters, the bass scripts and the remaining attempts.</li><li><code>jugar</code>: call to <code>elegirPalabra</code>, repeat the letter requests and the state presentation as long as the game is not over, and announces whether to win or lose.</li></ol><p>Set a maximum of 5 or 6 attempts. You can use <code>split("")</code>, <code>join("")</code>, <code>includes()</code> o <code>indexOf()</code>, explained in the previous aid.</p><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
+<div class="didactic-note" id="ayuda-cadenas-arrays"><h4>Support: Chains and arrays for games</h4><p>An array saves a sequence of values, for example <code>const colores = ["rojo", "azul"];</code>. Indexes start at zero: <code>colores[0]</code> you can modify a position with <code>colores[0] = "verde";</code> and consult the number of items with <code>colores.length</code>. Run the indexes with a <code>for</code>.</p><p><code>texto.split("")</code> converts a simple word into an array of characters; <code>letras.join("")</code> He gathers them in a chain. <code>texto.includes(fragmento)</code> indicates if it contains it and <code>letras.indexOf(valor)</code> returns the index of the first match, or <code>-1</code> If it does not exist. To discover all the appearances of a letter, it runs through the word. The strings do not allow changing a position directly; an array does. For this exercise, use words without emojis or combined characters.</p></div><div class="activity-card activity-callout" id="relacion-ejercicio-16"><p><strong>2.68. Hanged with arrow functions</strong></p><p>Implement a hanger using only arrow functions for all the functions you define. You don't need graphics; it shows the hidden word and the remaining attempts.</p><ol><li><code>elegirPalabra</code>: requests and keeps the secret word. Creates a representation with a script under each letter; for example, "house" is represented as "______".</li><li><code>adivinarLetra</code>: asks for a letter. If it appears in the word, discover all its positions; if not, there is an attempt.</li><li><code>juegoTerminado</code>: indicates whether the whole word has been guessed or attempts have been exhausted.</li><li><code>mostrarEstado</code>: shows the discovered letters, the bass scripts and the remaining attempts.</li><li><code>jugar</code>: call to <code>elegirPalabra</code>, repeat the letter requests and the state presentation as long as the game is not over, and announces whether to win or lose.</li></ol><p>Set a maximum of 5 or 6 attempts. You can use <code>split("")</code>, <code>join("")</code>, <code>includes()</code> o <code>indexOf()</code>, explained in the previous aid.</p><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
 <div class="activity-card activity-callout" id="actividad-complementaria-9-6">
-<p><strong>Supplementary activity 9.6. Transform callbacks into arrows</strong></p>
+<p><strong>2.69. Transform callbacks into arrows</strong></p>
 <p>Define <code>ejecutarSegun(decision, si, no)</code> to invoke one of two callbacks according to a boolean. Pass function expressions that return "Continue" or "Cancel". Rewrite them as arrows; compare expression bodies and bodies with keys and <code>return</code>.</p>
 <p><strong>Check:</strong> All three versions must return the same messages for <code>true</code> y <code>false</code>.</p>
-<p class="resource-description">Adaptation for this sub-paragraph. <a href="https://javascript.info/arrow-functions-basics" rel="noopener noreferrer" target="_blank">JavaScript.info · Rewrite with arrow functions</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec9_7">9.7. Small functions and connection to events</h3>
@@ -1973,12 +2055,16 @@ boton.addEventListener("click", () =&gt; {
 <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions" rel="noopener noreferrer" target="_blank">MDN · Function guide</a>
 <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions" rel="noopener noreferrer" target="_blank">MDN · Arrow functions</a></div>
 </div>
-<div class="activity-card activity-callout" id="relacion-ejercicio-17"><p><strong>2.45. Game of dice against the computer</strong></p><p>Schedules a game in which the user and computer launch three dice each. Represents their values with characters, for example asterisks, and updates the screen with <code>getElementById()</code>.</p><ol><li>Designs an HTML interface with identified elements to display the dice and the winner.</li><li>Creates a function that returns the result of throwing a dice, an integer between 1 and 6. <code>Math.random()</code> y <code>Math.floor()</code>.</li><li>Create a feature that classifies the three results as threesome, couple or no combination.</li><li>Create a feature that determines the winner: a trio outnumbers a couple and a couple outnumbers any combination. If both have a pair or both have trio, win the combination of higher value. If none have a combination, win the larger sum. If the applicable criterion gives the same value, declare a tie.</li><li>Implement the releases and display the results and the winner in the DOM. You can save the three values of each player in an array.</li><li>Optional: adds styles and improves the interface.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
+<div class="activity-card activity-callout" id="relacion-ejercicio-17"><p><strong>2.70. Game of dice against the computer</strong></p><p>Schedules a game in which the user and computer launch three dice each. Represents their values with characters, for example asterisks, and updates the screen with <code>getElementById()</code>.</p><ol><li>Designs an HTML interface with identified elements to display the dice and the winner.</li><li>Creates a function that returns the result of throwing a dice, an integer between 1 and 6. <code>Math.random()</code> y <code>Math.floor()</code>.</li><li>Create a feature that classifies the three results as threesome, couple or no combination.</li><li>Create a feature that determines the winner: a trio outnumbers a couple and a couple outnumbers any combination. If both have a pair or both have trio, win the combination of higher value. If none have a combination, win the larger sum. If the applicable criterion gives the same value, declare a tie.</li><li>Implement the releases and display the results and the winner in the DOM. You can save the three values of each player in an array.</li><li>Optional: adds styles and improves the interface.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
 <div class="activity-card activity-callout" id="actividad-complementaria-9-7">
-<p><strong>Supplementary activity 9.7. From calculation to a button</strong></p>
+<p><strong>2.71. From calculation to a button</strong></p>
 <p>Create <code>calcularArea(base, altura)</code> to return the area of a rectangle without accessing the DOM. Connect two fields and a button using a handler that reads, validates, converts and displays the result.</p>
 <p><strong>Check:</strong> First test the function in console and then the interface with 4 and 3, with zero and with an empty field.</p>
-<p class="resource-description">Adjustment of the separation between calculation and presentation for this sub-paragraph. <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Test_your_skills/Functions" rel="noopener noreferrer" target="_blank">MDN · Functions 3</a>.</p>
+<div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
+</div>
+<div class="activity-card activity-callout" id="extra-eniun-frases">
+<p><strong>2.72. Random phrases</strong></p>
+<p>Saves four sentences in an array. A button will show a random one. Separates selection and presentation into functions. To obtain the index use <code>Math.floor(Math.random() * frases.length)</code>. Repetitions are valid.</p><p><strong>Help:</strong> <code>Math.random()</code> produces a number from 0 to less than 1; <code>Math.floor()</code> round down.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 </section>
@@ -2009,10 +2095,9 @@ boton.addEventListener("click", () =&gt; {
 <li><code>#mensaje</code>: informational text; available CSS classes <code>error</code> y <code>exito</code>.</li>
 </ul>
 <div class="activity-card activity-callout" id="actividad-complementaria-10-1">
-<p><strong>Additional activity 10.1. Auditing the material before programming</strong></p>
+<p><strong>2.73. Audit the material before programming</strong></p>
 <p>Open the calculator files. Prepare a table with each control, its identifier, the JavaScript selector you will use and its purpose. Run selectors on console and review the script and CSS paths.</p>
 <p><strong>Check:</strong> All controls described in this section should be located only once.</p>
-<p class="resource-description">Adjustment to the calculator for this sub-paragraph. <a href="https://javascript.info/searching-elements-dom" rel="noopener noreferrer" target="_blank">JavaScript.info · Search for elements</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec10_2">10.2. Behaviour required</h3>
@@ -2027,10 +2112,9 @@ boton.addEventListener("click", () =&gt; {
 <div class="didactic-note"><p><strong>Validation from JavaScript.</strong> The form uses <code>novalidate</code> to schedule the checks. <code>number</code> continues to condition entry: the browser may prevent writing letters or representing an invalid entry as an empty string. Do not confuse an empty field with the zero number.</p></div>
 <p>When displaying an error, add <code>error</code> a <code>#mensaje</code> and withdraws <code>exito</code>; by showing a success, it does the opposite. It retains the base class <code>mensaje</code>.</p>
 <div class="activity-card activity-callout" id="actividad-complementaria-10-2">
-<p><strong>Additional activity 10.2. Contract for a shipment</strong></p>
+<p><strong>2.74. Contract for a shipment</strong></p>
 <p>Before implementing the calculator, describe step by step a valid shipment and another one with a second empty operating. It indicates where you stop the shipment, when you convert and how it turns out, message and classes.</p>
 <p><strong>Check:</strong> Then contrast those two sequences with the actual application, sending with button and with Enter.</p>
-<p class="resource-description">Own proposal for this subsection, based on: <a href="https://javascript.info/forms-submit" rel="noopener noreferrer" target="_blank">JavaScript.info · Submission of forms</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec10_3">10.3. Phased development</h3>
@@ -2066,10 +2150,9 @@ boton.addEventListener("click", () =&gt; {
 <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/reset" rel="noopener noreferrer" target="_blank">MDN · reset()</a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-10-3">
-<p><strong>10.3. Build from a demonstrable function</strong></p>
+<p><strong>2.75. Build from a verifiable function</strong></p>
 <p>Implement first <code>calcular(numero1, numero2, operacion)</code> and check it from the console. Connect after field reading and presentation. Define how it communicates zero division and unknown operation.</p>
 <p><strong>Check:</strong> The calculation must be able to be proven without opening the form and errors must reach the visible message.</p>
-<p class="resource-description">Manual adaptation, without Mocha for this sub-paragraph. <a href="https://javascript.info/testing-mocha" rel="noopener noreferrer" target="_blank">JavaScript.info · Specification and testing</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec10_4">10.4. Performance tests</h3>
@@ -2095,10 +2178,9 @@ boton.addEventListener("click", () =&gt; {
 <p>To check non-finite results you can test, if the browser supports this notation in the fields, <code>1e308 × 10</code>. Also directly checks the calculation function with an unknown operation.</p>
 <div class="didactic-note"><p><strong>Decimal.</strong> Some calculations, such as <code>0.1 + 0.2</code>, they can show a small difference by the binary representation of numbers. In this practice the numerical result of JavaScript is accepted; it is not mandatory to implement rounding.</p></div>
 <div class="activity-card activity-callout" id="actividad-complementaria-10-4">
-<p><strong>Additional activity 10.4. A test, an identifiable result</strong></p>
+<p><strong>2.76. A test, an identifiable result</strong></p>
 <p>Turn the test table in this section into independent cases with name, entries, expected result and observed result. Run each from a known state. Separately record the success sequence → error → success.</p>
 <p><strong>Check:</strong> A failure should indicate exactly which case failed; do not stop the record after the first.</p>
-<p class="resource-description">Manual adaptation, without libraries for this sub-paragraph. <a href="https://javascript.info/testing-mocha" rel="noopener noreferrer" target="_blank">JavaScript.info · What is wrong in the test?</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec10_5">10.5. Delivery and review criteria</h3>
@@ -2111,12 +2193,11 @@ boton.addEventListener("click", () =&gt; {
 </ul>
 <p>Do not convert strings into executable code or use libraries to solve operations. Logic must be developed with the operators and structures studied.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
-<div class="activity-card activity-callout" id="relacion-ejercicio-21"><p><strong>2.46. Resource Calculator — for the next item</strong></p><p><strong>Activity postponed to the next item.</strong> It then works on the code of the calculator provided in the corresponding resource folder.</p><ol><li>Separate HTML, CSS and JavaScript into three files.</li><li>Use the debugger to locate what's missing in <code>solve()</code> and correct the error.</li><li>In the keyboard direct input, you distinguish the keys and call the appropriate function in each case.</li><li>Implement <code>oneOnly()</code> to avoid errors with symbols like <code>, . + -</code>.</li><li>Complete the missing keys and add additional features.</li><li>Comment the code appropriately.</li><li>Improves HTML SEO.</li><li>Improves CSS and visual presentation.</li></ol><p>The last two sections are scored in the Web Design module. This activity will be carried out with the resources of the next topic; the practice of two operands of this section remains valid.</p></div>
+<div class="activity-card activity-callout" id="relacion-ejercicio-21"><p><strong>2.77. Resource Calculator — for the next item</strong></p><p><strong>Activity postponed to the next item.</strong> It then works on the code of the calculator provided in the corresponding resource folder.</p><ol><li>Separate HTML, CSS and JavaScript into three files.</li><li>Use the debugger to locate what's missing in <code>solve()</code> and correct the error.</li><li>In the keyboard direct input, you distinguish the keys and call the appropriate function in each case.</li><li>Implement <code>oneOnly()</code> to avoid errors with symbols like <code>, . + -</code>.</li><li>Complete the missing keys and add additional features.</li><li>Comment the code appropriately.</li><li>Improves HTML SEO.</li><li>Improves CSS and visual presentation.</li></ol><p>The last two sections are scored in the Web Design module. This activity will be carried out with the resources of the next topic; the practice of two operands of this section remains valid.</p></div>
 <div class="activity-card activity-callout" id="actividad-complementaria-10-5">
-<p><strong>Additional activity 10.5. Reproducible review of delivery</strong></p>
+<p><strong>2.78. Reproducible review of delivery</strong></p>
 <p>Choose a correct calculation and an error from your calculator. Document the exact steps to play them from when HTML, data and expected outputs are opened. Repeat by following only those instructions and record any discrepancies.</p>
 <p><strong>Check:</strong> Includes registration in <code>ej24-calculadora.txt</code> and relates each case to a review criterion.</p>
-<p class="resource-description">Own proposal for this subsection, based on: <a href="https://javascript.info/testing-mocha" rel="noopener noreferrer" target="_blank">JavaScript.info · Independent evidence cases</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 </section>
