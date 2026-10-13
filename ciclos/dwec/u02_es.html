@@ -1180,6 +1180,23 @@ console.log(Number.isNaN(importe)); // true</code></pre>
                 <p>Usa <code>Number.isNaN()</code> para comprobar si el resultado es <code>NaN</code>; no lo compares con <code>=== NaN</code>. También existen <code>Number.parseInt()</code> y <code>Number.parseFloat()</code>, que son las mismas funciones que <code>parseInt()</code> y <code>parseFloat()</code>.</p>
                 <p>Referencias: <a href="https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/parseInt" target="_blank" rel="noopener noreferrer">MDN · parseInt()</a> y <a href="https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/parseFloat" target="_blank" rel="noopener noreferrer">MDN · parseFloat()</a>.</p>
 
+
+                <div class="didactic-note" id="recordatorio-conversion-operadores">
+                    <p><strong>Recuerda: también puedes convertir mediante operadores</strong></p>
+                    <ul>
+                        <li><code>+valor</code>: el <strong>más unario</strong> convierte a número. Por ejemplo, <code>+"6.5"</code> produce <code>6.5</code>. Para los valores básicos de estos ejemplos equivale a <code>Number(valor)</code>.</li>
+                        <li><code>!!valor</code>: la doble negación convierte a booleano, igual que <code>Boolean(valor)</code>. El primer <code>!</code> niega su valor lógico y el segundo lo invierte de nuevo.</li>
+                        <li><code>"" + valor</code>: concatenar con una cadena vacía convierte los números y booleanos de estos ejemplos en texto. Por ejemplo, <code>"" + 24</code> produce <code>"24"</code>. <code>String(valor)</code> expresa esa intención de forma más clara.</li>
+                    </ul>
+                    <pre><code>console.log(+"4" + +"7"); // 11: convierte cada texto antes de sumar
+console.log("4" + "7");   // "47": concatena dos textos
+console.log(!!0);         // false
+console.log(!!"");        // false
+console.log(!!"false");   // true: es una cadena no vacía
+console.log("" + true);   // "true"</code></pre>
+                    <p><strong>No confundas los dos usos de <code>+</code>:</strong> en <code>+texto</code> actúa sobre un solo operando; en <code>a + b</code> suma o concatena. Además, <code>+""</code> y <code>+null</code> producen <code>0</code>, mientras que <code>+"hola"</code> produce <code>NaN</code>. Convertir una entrada no sustituye comprobar que contiene el dato esperado.</p>
+                </div>
+
                 <div class="activity-card activity-callout" id="actividad-jsinfo-suma">
                     <p><strong>2.12. Corregir una suma de textos</strong></p>
                     <p>Este programa concatena las entradas. Corrígelo con conversión explícita para obtener una suma numérica. Prueba con los valores iniciales y otros distintos.</p><pre><code>const primero = prompt("Primer número", "4");
