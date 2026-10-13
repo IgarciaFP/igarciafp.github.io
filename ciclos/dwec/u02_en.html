@@ -1057,21 +1057,7 @@ console.log(Number.isNaN(cantidad)); // true</code></pre>
 <a class="resource-link-btn" href="https://es.javascript.info/operators" rel="noopener noreferrer" target="_blank">JavaScript.info · Basic Operators</a>
 <a class="resource-link-btn" href="https://es.javascript.info/type-conversions" rel="noopener noreferrer" target="_blank">JavaScript.info · Type conversions</a></div>
 </div>
-<div class="activity-card activity-callout" id="relacion-ejercicio-4">
-<p><strong>2.13. Text Calculator and Expression Evaluation</strong></p>
-<h4>A. Create a calculator in text mode</h4>
-<p>Creates a program that requests three data through three consecutive calls to <code>prompt()</code>in this order: <strong>first operating</strong>, <strong>operation</strong> y <strong>second operating</strong>.</p>
-<ol>
-<li>Save the answers to the variables <code>operando1</code>, <code>operacion</code> y <code>operando2</code>.</li>
-<li>According to the entered symbol (<code>+</code>, <code>-</code>, <code>*</code> o <code>/</code>), apply the operator corresponding to the two operands. You can select the operation with <code>if...else</code> o <code>switch</code>, which will develop later. Do not use <code>eval()</code> or convert the entered text into executable code.</li>
-<li>Works directly with the answers from <code>prompt()</code>, <strong>without checking their types or explicitly converting them</strong> with <code>Number()</code>, <code>parseInt()</code> o <code>parseFloat()</code>. The aim is to observe the implicit conversions of JavaScript.</li>
-<li>Displays the operation and its result with <code>alert()</code> o <code>console.log()</code>. Calculate the result first and then prepare the output message.</li>
-</ol>
-<p>Evidence, among other cases, <code>5</code>, <code>+</code>, <code>3</code>; <code>5</code>, <code>-</code>, <code>3</code>; <code>3</code>, <code>*</code>, <code>4</code>; <code>9</code>, <code>/</code>, <code>3</code>. Enter the operands without quotation marks. Write down what you expected and what you get, and explain why the sum behaves differently.</p>
-<h4>B. Test expressions and compare results</h4>
-<p>Then mentally evaluate each of the following expressions and write down the expected result. Execute them in JavaScript as written, compare output with your prediction and add a comment with both results and an explanation of differences.</p>
-<p>Also play in the calculator the operations of two operands that you can enter directly and compare their results. For the expressions chained, look at the result of each step in the console.</p>
-<div class="didactic-note"><p><strong>Text entered and JavaScript values.</strong> <code>prompt()</code> returns a string when accepting and <code>null</code> when canceling. <code>false</code>, <code>true</code>, <code>null</code> o <code>undefined</code> in the box produces text, not those values. <code>\t</code> o <code>\n</code> enter a tab or line break. So, test the original expressions directly in JavaScript to keep their types and characters; do not expect to play them all with the three calculator entries.</p></div><pre><code>"a" + 2 + 3
+<div class="activity-card activity-callout" id="relacion-ejercicio-4"><p><strong>2.13. Evaluate expressions and conversions</strong></p><p>mentally evaluate each expression and write down the expected result. Then run it in JavaScript and compare the output with your prediction. Add a comment with both results to each expression and explain the differences.</p><pre><code>"a" + 2 + 3
 "5" - 3 + 2
 false + true + false
 9 / "3"
@@ -1085,6 +1071,58 @@ false + true + false
 null + 2
 undefined + 2
 " \t \n" - 1</code></pre><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
+<div class="activity-card activity-callout" id="actividad-repaso-global-1-5">
+<p><strong>Global review of points 1 to 5. Prepare an order for a repair shop</strong></p>
+<p><strong>Status:</strong> You work in a computer store. An association organizes a repair shop and requests USB cables, adapters and memory. You need a small program that prepares the budget, checks the stock and generates a summary for the person in charge. The order can change while preparing.</p>
+<p><strong>Scope:</strong> solves the work with what has been studied up to here: declarations, expressions, blocks, vectors, operators and dialogues. It shows the information in the console and with <code>alert()</code>. You do not need DOM, events, features or loops. For all three products you can directly access the indexes <code>0</code>, <code>1</code> y <code>2</code>. Simple decisions shall be expressed as Booleans or with the ternary operator.</p>
+<h4>1. Preparing and explaining the environment</h4>
+<p>Create <code>repaso-pedido.html</code>, <code>repaso-pedido.js</code> y <code>repaso-pedido.txt</code>. Link external JavaScript from the <code>head</code> with <code>defer</code> and places <code>"use strict";</code> at the beginning of the JS file. Check the console that runs only once.</p>
+<p>In the text file, briefly explain what the browser runs, what relationship JavaScript and ECMASScript have and what ES2015 contributed to the declarations, string templates and scope. It situates the birth of JavaScript and its subsequent standardization. It justifies the external file and compares its load with a script without attributes and with <code>async</code>. Identify in your program an example of dynamic typing and a distinction between upper and lower case.</p>
+<h4>2. Define data and types</h4>
+<p>Use these fictitious data. Prices are saved in <strong>Whole cents</strong> to make the calculations of this order.</p>
+<div aria-label="Details of the review order" class="table-scroll" role="region" tabindex="0">
+<table>
+<thead><tr><th scope="col">Contents</th><th scope="col">Output</th><th scope="col">Price in cents</th><th scope="col">Stocks</th><th scope="col">Initial amount of proof</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>USB cable</td><td>350</td><td>30</td><td>12</td></tr>
+<tr><td>1</td><td>Adapter</td><td>500</td><td>20</td><td>8</td></tr>
+<tr><td>2</td><td>USB Memory</td><td>800</td><td>15</td><td>5</td></tr>
+</tbody>
+</table>
+</div>
+<p>Declares vectors for prices and stocks, a customer name of type <code>string</code>, a Boolean collection indicator and a variable of observations initially <code>undefined</code>. Save the external identifier <code>9007199254740993n</code> as <code>BigInt</code>: used only as an identifier, not mixed with type amounts <code>Number</code>. Choose descriptive names and justify when you use <code>const</code> and when <code>let</code>.</p>
+<h4>3. Collect the order and work with quotation marks</h4>
+<p>Ask for <code>prompt()</code> the name of the customer and the three quantities; <code>confirm()</code> if you will pick up the order in store. For the main execution suppose that you accept the dialogues and enter non-negative integers. Keep the original quantities as text and explicitly convert them with <code>Number()</code>.</p>
+<p>Prepares a string with simple quotes that includes the text <code>Pedido "Taller de reparación"</code>, another with double quotation marks including the name <code>Associació d'Amics</code> and a message with severe accents and interpolation of name and quantities. Rewrite one of the messages using concatenation. Includes a line jump with <code>\n</code> and a quote quote; explain when you need the escape and when you can change the delimiter.</p>
+<h4>4. Update vectors and distinguish reassignment from modification</h4>
+<p>Create <code>cantidades</code> with the first two quantities and add the third by <code>push()</code>. In the draft, a fourth line of 2 units is recorded by mistake: add it and remove it with <code>pop()</code>The client asks after <strong>two more adapters</strong>: updates the corresponding position with <code>+=</code>.</p>
+<p>Displays the first element, the last and <code>length</code>Use <code>Array.isArray()</code> y <code>typeof</code> to describe the data. Explain why you can modify this declared vector with <code>const</code>In a separate test, consult a non-existent position and identify the result.</p>
+<h4>5. Calculate budget and packaging</h4>
+<ol>
+<li>Calculates the three line amounts, the subtotal and the total units from the updated vectors.</li>
+<li>It applies a 10% discount when the subtotal is at least 10000 cents; otherwise, the discount is zero. It uses a comparison and the ternary operator.</li>
+<li>Pick-up in store costs zero; shipping costs 600 cents. Add this cost after discount. Use parentheses to make clear the order of calculation and show the total in euros.</li>
+<li>The units are grouped in boxes of six. Calculate the rest with <code>%</code>complete boxes with <code>(unidades - resto) / 6</code> and the necessary boxes counting an additional one if there is rest.</li>
+<li>Each box has a square label of 8 cm side: calculates its surface with <code>**</code>. For this exercise, all products fit in the package described.</li>
+</ol>
+<h4>6. Check the order using expressions</h4>
+<p>Get a boolean for each stock check and combine them with <code>&amp;&amp;</code> in <code>hayStock</code>Use <code>||</code> to indicate if any product is sold out exactly and <code>!</code> to express that the order cannot be prepared. Do not discount stocks or confirm a real sale: you only prepare a report. Compare a textual amount with its numerical version using <code>==</code> y <code>===</code> and justifies the result.</p>
+<p>For observations, compare <code>observaciones ?? "Sin observaciones"</code> with <code>observaciones || "Sin observaciones"</code>, testing <code>undefined</code>, <code>null</code> y <code>""</code>. Repeat with a collection cost equal to zero and explain why it should not be replaced by 600. In independent test variables, apply <code>??=</code> to a missing observation, <code>||=</code> under an empty title and <code>&amp;&amp;=</code> to an existing textual state. <code>Boolean("0")</code> y <code>!!"0"</code> with the conversion of the number zero.</p>
+<h4>7. Scope, syntax and diagnosis</h4>
+<p>Calculates within a block a local variable <code>ahorroCentimos</code> and show it from that block. Check separately what happens when you try to read it out. Keep the line causing the error in the final version commented. It includes a line comment and a block comment explaining program decisions; it points to an expression and an instruction.</p>
+<p>In isolated tests, it causes and corrects a name with incorrect capital letters, an unclosed string, an assignment to an undeclared variable in strict mode and a reassignment of <code>const</code>. Record the message and correction. Place a break point before the subtotal, inspect the vectors and advance step by step. Compare the value observed before and after the adapter update.</p>
+<p>Use a test variable <code>bultos</code> to compare <code>bultos++</code> y <code>++bultos</code>, restarting it before each case; repeats with decrement. Also check the value returned by an assignment, the numerical negation and the unary operator <code>+</code>. Explains why the final code uses clear instructions and semicolon instead of relying on its automatic insertion.</p>
+<h4>8. Research problem entries and conversions</h4>
+<p>On the console, compare <code>Number("12")</code>, <code>Number("")</code>, <code>Number(null)</code>, <code>Number("12 unidades")</code>, <code>parseInt("12 unidades", 10)</code> y <code>parseFloat("3.50 euros")</code>. Identify <code>NaN</code> with <code>Number.isNaN()</code> and explains why partially accepting a text can hide an error. <code>"12" + "8"</code> with the sum of the converted quantities and with a multiplication of numerical chains.</p>
+<p>Record what returns <code>prompt()</code> when cancelling and accepting an empty field. <code>typeof null</code>, <code>typeof NaN</code>, <code>String(identificador)</code>, <code>null == undefined</code> y <code>null === undefined</code>. Contrasts the comparison of chains <code>"12"</code> y <code>"8"</code> with that of their numerical values. These tests are documented separately; the complete validation will be developed with control structures.</p>
+<h4>9. Technical verification of the post network</h4>
+<p>The preparation team has the IP <code>192.168.10.37</code> and mask <code>255.255.255.0</code>. As a review of bit-to-bit operators, it calculates the network address by octets with <code>&amp;</code> and the host part using the limited mask plugin with <code>&amp; 255</code>. Displays an octet in binary with <code>toString(2)</code> and get it back with <code>parseInt(texto, 2)</code>Compare <code>6 &lt;&lt; 1</code> y <code>6 &gt;&gt; 1</code> with multiplying and dividing between two; explains the 32-bit limitation.</p>
+<h4>10. Report, evidence and delivery</h4>
+<p>It generates with a string template a summary of several lines: identifier, client, final quantities, amounts, discount, transport, total, boxes and availability. It shows the summary in console and in an alert. The result must come from variables, not from numbers written directly in the message.</p>
+<p><strong>Reference case:</strong> with initial quantities 12, 8 and 5, after correction remain <code>[12, 10, 5]</code>: 27 units, subtotal 13200 cents and discount 1320 cents. The total is 118.80 euros with pick-up or 124.80 euros with shipping. It takes 4 complete boxes and an additional one for 3 units; the label occupies 64 cm2. There are stocks of the three products. The network of the post is <code>192.168.10.0</code> and the host part is <code>0.0.0.37</code>. The output is not required to use decimal comma or two fixed decimals.</p>
+<p>It also tests a subtotal below the discount threshold and an amount exceeding stocks, applying in each execution the correction of two adapters. <code>repaso-pedido.txt</code>, delivers conceptual responses, investigated errors and a table with entries, expected result and obtained result. Also deliver HTML and JavaScript, legible and without execution errors in the main case.</p>
+<div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
+</div>
 </section>
 <section aria-labelledby="sec6">
 <h2 id="sec6"><i aria-hidden="true" class="fa-solid fa-sitemap"></i> 6. The DOM: access and modify the page</h2>
@@ -1116,13 +1154,6 @@ undefined + 2
     &lt;li&gt;Ana&lt;/li&gt;
     &lt;li&gt;Luis&lt;/li&gt;
 &lt;/ul&gt;</code></pre>
-<div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
-</div>
-<div class="activity-card activity-callout" id="actividad-complementaria-6-1">
-<p><strong>Supplementary activity 6.1. Rebuild a nested lista</strong></p>
-<p>Create a list of two modules and, within the second, another list of two units. Draw the element tree and identify direct children and descendants of each list. Contrast the drawing with the inspector and explain where text nodes appear through HTML spaces.</p>
-<p><strong>Check:</strong> The drawing must distinguish the inner list from the brother elements of the exterior.</p>
-<p class="resource-description">Adaptation for this sub-paragraph. <a href="https://javascript.info/dom-navigation" rel="noopener noreferrer" target="_blank">JavaScript.info · DOM children</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec6_2">6.2. Selection of elements</h3>
@@ -1183,13 +1214,6 @@ console.log(parrafos.length); // 2</code></pre>
 &lt;/form&gt;</code></pre>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
-<div class="activity-card activity-callout" id="actividad-complementaria-6-2">
-<p><strong>Follow-up activity 6.2. Selectors with different scope</strong></p>
-<p>Creates two lists with three items each; assigns <code>id="recursos"</code> to the first and class <code>pendiente</code> select that list, its first element and all its earrings, not including the second list. <code>querySelector()</code> y <code>querySelectorAll()</code>.</p>
-<p><strong>Check:</strong> Check the lengths and texts selected from the console.</p>
-<p class="resource-description">Adaptation for this sub-paragraph. <a href="https://javascript.info/searching-elements-dom" rel="noopener noreferrer" target="_blank">JavaScript.info · Search for elements</a>.</p>
-<div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
-</div>
 <h3 id="sec6_3">6.3. Reading and modifying content</h3>
 <p>The property <code>textContent</code> allows reading or replacing the text of an element:</p>
 <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
@@ -1200,6 +1224,16 @@ mensaje.textContent = "El contenido ha cambiado";</code></pre>
 <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
 mensaje.innerHTML = "&lt;strong&gt;Aviso:&lt;/strong&gt; sesión iniciada";</code></pre>
 <div class="didactic-note"><p><strong>Text or HTML.</strong> Use <code>textContent</code> to display text and data entered by the user. <code>innerHTML</code> for controlled HTML: inserting unreliable content can allow malicious code to run. Changes to the DOM do not modify the HTML file saved to disk.</p></div>
+<p><strong>Another example with <code>textContent</code>.</strong> On the test page, run this fragment separately after reloading. First read the text of a paragraph with an inner label and then replace its content with literal text:</p>
+<pre data-example="dom-textcontent-literal"><code>const avisoTexto = document.querySelector("#mensaje");
+
+// HTML fijo y controlado para preparar el ejemplo.
+avisoTexto.innerHTML = "&lt;strong&gt;Aviso:&lt;/strong&gt; sesión iniciada";
+console.log(avisoTexto.textContent); // Aviso: sesión iniciada
+
+avisoTexto.textContent = "&lt;strong&gt;Sesión cerrada&lt;/strong&gt;";
+console.log(avisoTexto.textContent); // &lt;strong&gt;Sesión cerrada&lt;/strong&gt;</code></pre>
+<p>Reading <code>textContent</code> We get the text, without the tags. When you assign it, the element disappears. <code>strong</code> previous: page shows literally <code>&lt;strong&gt;Sesión cerrada&lt;/strong&gt;</code>The paragraph retains its label, identifier and class.</p>
 <p><code>outerHTML</code> also includes the tag of the element itself. On the test page, run this fragment after reloading:</p>
 <pre data-example="dom-outer"><code>const mensaje = document.querySelector("#mensaje");
 console.log(mensaje.innerHTML); // Texto inicial
@@ -1210,12 +1244,11 @@ mensaje.outerHTML = '&lt;div id="mensaje" class="aviso"&gt;Nuevo elemento&lt;/di
 <ul><li><code>textContent</code>: reads or replaces the text; does not interpret labels.</li><li><code>innerHTML</code>: reads or replaces the inside HTML; retains the container element.</li><li><code>outerHTML</code>: read or replace the entire item, with its label and content.</li></ul>
 <p>After assigning <code>outerHTML</code>, the variable <code>mensaje</code> keep pointing to the old item, already separated from the document. If you need to work with the new one, re-select it. Use so much <code>innerHTML</code> as <code>outerHTML</code> only with controlled HTML; for user data use <code>textContent</code>.</p>
 <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Element/outerHTML" rel="noopener noreferrer" target="_blank">MDN · yourHTML</a>
-<div class="activity-card activity-callout" id="relacion-ejercicio-3"><p><strong>2.16. Add two numbers (optional)</strong></p><ol><li>Ask for two numbers with <code>prompt()</code>Turn them into numbers and show their sum on an alert.</li><li>Also try what happens when you add two strings without converting them, for example <code>"250" + "6"</code>. Explains the difference in comments.</li><li>Modify the program to show the result in <code>&lt;div id="solucion"&gt;&lt;/div&gt;</code>.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-5"><p><strong>2.17. An apple shop</strong></p><p>A store sells apples and allows buying whole units or fractions. Calculate a discount purchase.</p><ol><li>Create a basic HTML with the <code>body</code> empty and a JavaScript file that runs after creating the document body.</li><li>Declares <code>precioManzana</code> with the text <code>"0.5"</code>Turn it to number and save the result in <code>precioConvertido</code>.</li><li>Declares <code>cantidadManzanas</code> with the number <code>4</code>. Multiply both quantities and save the result in <code>costoTotal</code>.</li><li>Declares <code>descuento</code> with the value <code>0.10</code>. Subtracts to <code>costoTotal</code> the total product for the discount and saves the result in <code>costoConDescuento</code>.</li><li>Use <code>innerHTML</code> to show in the document: «The cost of [quantityManzanas] apples is [costConDiscount] dollars with the discount applied».</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-9"><p><strong>2.18. Input, output and calculation review</strong></p><ol><li>Ask for a name and an email. <code>innerHTML</code> to create a fixed presentation structure and type the data entered by the user with <code>textContent</code> in its elements.</li><li>Ask for two numbers to represent the sides of a rectangle and show its perimeter.</li><li>It also calculates the sum, product, division, and exposure of those two numbers.</li><li>Order the price of an item and the quantity purchased. Show the total amount including 21 % VAT.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
+<div class="activity-card activity-callout" id="relacion-ejercicio-5"><p><strong>2.17. An apple shop</strong></p><p>A store sells apples and allows buying whole units or fractions. Calculate a discount purchase.</p><ol><li>Create a basic HTML with the <code>body</code> empty and a JavaScript file that runs after creating the document body.</li><li>Declares <code>precioManzana</code> with the text <code>"0.5"</code>Turn it to number and save the result in <code>precioConvertido</code>.</li><li>Declares <code>cantidadManzanas</code> with the number <code>4</code>. Multiply both quantities and save the result in <code>costoTotal</code>.</li><li>Declares <code>descuento</code> with the value <code>0.10</code>. Subtracts to <code>costoTotal</code> the total product for the discount and saves the result in <code>costoConDescuento</code>.</li><li>Use <code>innerHTML</code> to show in the document: «The cost of [quantityManzanas] apples is [costConDiscount] dollars with the discount applied».</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-9"><p><strong>2.18. Input, output and calculation review</strong></p><ol><li>Ask for a name and an email. <code>innerHTML</code> to create a fixed presentation structure and type the data entered by the user with <code>textContent</code> in its elements.</li><li>Ask for two numbers to represent the sides of a rectangle and show its perimeter.</li><li>It also calculates the sum, product, division, and exposure of those two numbers.</li><li>Order the price of an item and the quantity purchased. Show the total amount including 21 % VAT.</li></ol><div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
 <div class="activity-card activity-callout" id="actividad-complementaria-6-3">
 <p><strong>Supplementary activity 6.3. Text literal vs. marking</strong></p>
 <p>Prepares two paragraphs. Assigns the controlled chain <code>&lt;strong&gt;Importante&lt;/strong&gt;</code> to one through <code>textContent</code> and to the other through <code>innerHTML</code>. Examine its contents and its <code>outerHTML</code>Then ask for a message with <code>prompt()</code> and show it exclusively as text.</p>
 <p><strong>Check:</strong> It explains why only one of the first paragraphs shows boldness and what happens when you cancel the dialog.</p>
-<p class="resource-description">Own proposal for this subsection, based on: <a href="https://javascript.info/basic-dom-node-properties" rel="noopener noreferrer" target="_blank">JavaScript.info · Properties and content of nodes</a>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec6_4">6.4. Read fields and convert your data</h3>
