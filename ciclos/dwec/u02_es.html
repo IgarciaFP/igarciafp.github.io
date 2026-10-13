@@ -1146,6 +1146,40 @@ console.log(Boolean("false")); // true</code></pre>
                     <li><code>Boolean()</code> obtiene un valor lógico. Una cadena no vacía, incluso <code>"false"</code> o <code>"0"</code>, se convierte en <code>true</code>.</li>
                 </ul>
 
+
+                <h4>Leer números al principio de un texto</h4>
+                <p><code>Number()</code> intenta convertir la cadena completa. <code>parseInt()</code> y <code>parseFloat()</code> leen su parte numérica inicial y se detienen cuando encuentran un carácter que no pueden interpretar. Ignoran los espacios iniciales; si no pueden empezar a leer un número, devuelven <code>NaN</code>.</p>
+                <aside class="function-card" id="ficha-conversion-parseint" aria-label="Ficha de función: parseInt(texto, base)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>parseInt(texto, base)</code></p>
+                    <p>Lee un entero al principio del texto. No redondea: en base 10 se detiene ante el punto decimal.</p>
+                    <p><strong>Parámetros:</strong> <code>texto</code>: valor que se interpreta como cadena; <code>base</code>: sistema de numeración, entre 2 y 36. Indica <code>10</code> para números decimales.</p>
+                    <p><strong>Devuelve:</strong> Un valor de tipo <code>number</code>, o <code>NaN</code> si no puede leer un entero.</p>
+                </aside>
+                <aside class="function-card" id="ficha-conversion-parsefloat" aria-label="Ficha de función: parseFloat(texto)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
+                    <p class="function-signature"><code>parseFloat(texto)</code></p>
+                    <p>Lee un número decimal al principio del texto; admite punto decimal y notación exponencial.</p>
+                    <p><strong>Parámetros:</strong> <code>texto</code>: valor que se interpreta como cadena. No recibe una base.</p>
+                    <p><strong>Devuelve:</strong> Un valor de tipo <code>number</code>, o <code>NaN</code> si no puede leer un número.</p>
+                </aside>
+                <pre><code>console.log(Number("12.75"));        // 12.75
+console.log(Number("12.75 euros"));  // NaN
+console.log(parseInt("12.75", 10));   // 12
+console.log(parseFloat("12.75 euros")); // 12.75
+console.log(parseInt("101", 2));     // 5
+console.log(parseFloat("1.5e2"));    // 150
+console.log(parseFloat("euros 12")); // NaN</code></pre>
+                <p><strong>Atención al separador decimal:</strong> utiliza el punto. <code>parseFloat("12,75")</code> devuelve <code>12</code>, porque se detiene en la coma. Aceptar una parte del texto no significa que toda la entrada sea válida.</p>
+                <pre><code>console.log(Number(""));          // 0
+console.log(parseInt("", 10));    // NaN
+console.log(parseFloat(""));      // NaN
+
+const importe = parseFloat("sin precio");
+console.log(Number.isNaN(importe)); // true</code></pre>
+                <p>Usa <code>Number.isNaN()</code> para comprobar si el resultado es <code>NaN</code>; no lo compares con <code>=== NaN</code>. También existen <code>Number.parseInt()</code> y <code>Number.parseFloat()</code>, que son las mismas funciones que <code>parseInt()</code> y <code>parseFloat()</code>.</p>
+                <p>Referencias: <a href="https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/parseInt" target="_blank" rel="noopener noreferrer">MDN · parseInt()</a> y <a href="https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/parseFloat" target="_blank" rel="noopener noreferrer">MDN · parseFloat()</a>.</p>
+
                 <div class="activity-card activity-callout" id="actividad-jsinfo-suma">
                     <p><strong>2.12. Corregir una suma de textos</strong></p>
                     <p>Este programa concatena las entradas. Corrígelo con conversión explícita para obtener una suma numérica. Prueba con los valores iniciales y otros distintos.</p><pre><code>const primero = prompt("Primer número", "4");
