@@ -88,6 +88,9 @@
         <li><a href="#sec3_2" class="subsection-link">3.2. Elementos visuales</a></li>
         <li><a href="#sec3_3" class="subsection-link">3.3. Elementos de relación</a></li>
         <li><a href="#sec3_4" class="subsection-link">3.4. Elementos prácticos</a></li>
+        <li><a href="#sec4_4" class="subsection-link">3.5. Atomic Design</a></li>
+        <li><a href="#sec4_4_1" class="subsection-link">3.5.1. Design Tokens</a></li>
+        <li><a href="#sec4_4_2" class="subsection-link">3.5.2. CSS tradicional y Tailwind CSS</a></li>
         <li><a href="#sec4">4. Percepción Visual</a></li>
         <li><a href="#sec4_1" class="subsection-link">4.1. Psicología de la Gestalt</a></li>
         <li><a href="#sec4_2" class="subsection-link">4.2. Leyes Fundamentales de UX</a></li>
@@ -101,9 +104,6 @@
         <li><a href="#sec4_7_2" class="subsection-link">4.5.2. Logotipo</a></li>
         <li><a href="#sec4_7_3" class="subsection-link">4.5.3. Iconografía</a></li>
         <li><a href="#sec4_7_4" class="subsection-link">4.5.4. Mapa de navegación, sitemap.xml y robots.txt</a></li>
-        <li><a href="#sec4_4" class="subsection-link">4.6. Atomic Design</a></li>
-        <li><a href="#sec4_4_1" class="subsection-link">4.6.1. Design Tokens</a></li>
-        <li><a href="#sec4_4_2" class="subsection-link">4.6.2. CSS tradicional y Tailwind CSS</a></li>
         <li><a href="#sec6_2">5. Prototipado web</a></li>
         <li><a href="#prototipado-1" class="subsection-link">5.1. Boceto en papel o sketch</a></li>
         <li><a href="#prototipado-2" class="subsection-link">5.2. Wireframe</a></li>
@@ -1170,6 +1170,204 @@
             <div class="delivery-tip"><a class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
 </div>
 
+        <h3 id="sec4_4">3.5. Sistemas de diseño y metodología Atomic Design</h3>
+        <p>En el desarrollo frontend moderno no se construyen páginas aisladas, sino <strong>Sistemas de Diseño</strong> (<em>Design Systems</em>) escalables basados en la metodología <strong>Atomic Design</strong> (Brad Frost). Esta metodología divide la UI en 5 niveles jerárquicos:</p>
+
+        <!-- Figura 1.5: Atomic Design SVG -->
+        <div class="image-container">
+            <svg viewBox="0 0 760 210" width="100%" height="210" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="210" rx="8" fill="#f8fafc"/>
+                <g transform="translate(20, 30)">
+                    <rect x="0" y="0" width="125" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <circle cx="40" cy="40" r="14" fill="#3b82f6"/>
+                    <rect x="65" y="32" width="45" height="16" rx="3" fill="#93c5fd"/>
+                    <text x="62" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">ÁTOMOS</text>
+                    <text x="62" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Botón, Input, Icono</text>
+                </g>
+                <g transform="translate(165, 30)">
+                    <rect x="0" y="0" width="135" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="15" y="30" width="70" height="20" rx="3" fill="#f1f5f9" stroke="#94a3b8"/>
+                    <rect x="90" y="30" width="30" height="20" rx="3" fill="#3b82f6"/>
+                    <text x="67" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">MOLÉCULAS</text>
+                    <text x="67" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Campo Búsqueda</text>
+                </g>
+                <g transform="translate(320, 30)">
+                    <rect x="0" y="0" width="135" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="10" y="15" width="115" height="50" rx="4" fill="#eff6ff" stroke="#3b82f6"/>
+                    <text x="67" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">ORGANISMOS</text>
+                    <text x="67" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Header Completo</text>
+                </g>
+                <g transform="translate(475, 30)">
+                    <rect x="0" y="0" width="125" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="10" y="15" width="105" height="15" fill="#e2e8f0"/>
+                    <rect x="10" y="35" width="30" height="40" fill="#cbd5e1"/>
+                    <rect x="45" y="35" width="70" height="40" fill="#94a3b8"/>
+                    <text x="62" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">PLANTILLAS</text>
+                    <text x="62" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Wireframe Layout</text>
+                </g>
+                <g transform="translate(620, 30)">
+                    <rect x="0" y="0" width="120" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+                    <rect x="10" y="15" width="100" height="15" fill="#1e3a8a"/>
+                    <rect x="10" y="35" width="30" height="40" fill="#0f766e"/>
+                    <rect x="45" y="35" width="65" height="40" fill="#d97706"/>
+                    <text x="60" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">PÁGINAS</text>
+                    <text x="60" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">UI Final con Datos</text>
+                </g>
+            </svg>
+            <div class="image-caption">Figura 1.5: Niveles metodológicos de Atomic Design (Brad Frost).</div>
+        </div>
+
+        <ul>
+            <li><strong>Átomos:</strong> Elementos UI indivisibles (botones, inputs, etiquetas, iconos).</li>
+            <li><strong>Moléculas:</strong> Grupos de átomos unidos que ejecutan una función básica (ej. un input + un botón = formulario de búsqueda).</li>
+            <li><strong>Organismos:</strong> Conjuntos de moléculas que forman una sección completa (ej. la cabecera completa o una tarjeta de producto).</li>
+            <li><strong>Plantillas (Templates):</strong> Maquetación estructural (layout) sin datos reales.</li>
+            <li><strong>Páginas:</strong> Instancia final del sistema rellena con contenido real para producción.</li>
+        </ul>
+
+        <div class="didactic-note curiosity-card">
+            <h5><i class="fa-solid fa-link"></i> Relación entre identidad visual y Atomic Design</h5>
+            <p>La identidad se traduce al sistema descrito en el apartado 3.5 mediante <strong>Design Tokens</strong> —color, tipografía, espaciado y forma— y mediante átomos como logotipo, iconos y botones. Así, la marca se mantiene coherente en todas las moléculas, organismos, plantillas y páginas.</p>
+        </div>
+
+        <div class="didactic-note curiosity-card">
+            <h5><i class="fa-solid fa-code"></i> Design Tokens en CSS</h5>
+            <p>El núcleo de un sistema de diseño son los <strong>Design Tokens</strong>: variables que almacenan valores visuales fundamentales (colores, fuentes, espaciados) reutilizables en CSS/Sass (ej. <code>--color-primary: #1e3a8a;</code>, <code>--spacing-md: 16px;</code>).</p>
+        </div>
+
+        <div class="resource-card expansion-card">
+            <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-brands fa-youtube" aria-hidden="true"></i> Vídeo de ampliación</span>
+                <span class="resource-badge badge-video">Vídeo</span>
+            </div>
+            <div class="resource-description">Recurso audiovisual complementario para ampliar este apartado.</div>
+            <a href="https://youtu.be/-tlf-p1uhCQ" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Ver el vídeo</a>
+        </div>
+
+        <!-- SUBAPARTADO NUEVO: DESIGN TOKENS (NUEVO PUNTO INTEGRADO) -->
+        <h4 id="sec4_4_1">3.5.1. Design Tokens: La base del desarrollo ágil e interoperable</h4>
+        <p>Los <strong>Design Tokens</strong> (tokens de diseño) son variables agnósticas a la plataforma que almacenan los valores visuales fundamentales de un sistema de diseño —tales como códigos cromáticos en hexadecimal, tamaños tipográficos en rem, espaciados en píxeles, radios de borde y duraciones de animación. Actúan como la <strong>fuente única de verdad</strong> (<em>Single Source of Truth</em>) que conecta el diseño visual creado en herramientas como Figma con la implementación en código frontend (CSS, Sass, React, iOS, Android).</p>
+
+        <!-- Figura 1.5.1: Diagrama SVG de Design Tokens (NUEVO) -->
+        <div class="image-container">
+            <svg viewBox="0 0 760 230" width="100%" height="230" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="230" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="380" y="28" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Arquitectura y Traducción de Design Tokens (De Figma al Código Multi-Plataforma)</text>
+
+                <!-- Nivel 1: Tokens Globales / Base -->
+                <g transform="translate(30, 48)">
+                    <rect x="0" y="0" width="200" height="150" rx="6" fill="#ffffff" stroke="#3b82f6" stroke-width="2"/>
+                    <rect x="0" y="0" width="200" height="26" rx="6" fill="#eff6ff"/>
+                    <text x="100" y="18" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle">1. Tokens Globales (Valores puros)</text>
+                    <text x="12" y="45" fill="#115e59" font-family="Fira Code, monospace" font-size="9.5">COLOR_BLUE_900 = #1e3a8a;</text>
+                    <text x="12" y="65" fill="#115e59" font-family="Fira Code, monospace" font-size="9.5">SPACE_16 = 16px;</text>
+                    <text x="12" y="85" fill="#115e59" font-family="Fira Code, monospace" font-size="9.5">FONT_SIZE_BASE = 1rem;</text>
+                    <text x="12" y="105" fill="#115e59" font-family="Fira Code, monospace" font-size="9.5">RADIUS_MD = 8px;</text>
+                    <text x="12" y="130" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5" font-style="italic">Valores genéricos sin contexto</text>
+                </g>
+
+                <path d="M 240 120 L 265 120" stroke="#3b82f6" stroke-width="2.5"/>
+
+                <!-- Nivel 2: Tokens Semánticos -->
+                <g transform="translate(275, 48)">
+                    <rect x="0" y="0" width="210" height="150" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+                    <rect x="0" y="0" width="210" height="26" rx="6" fill="#f0fdf4"/>
+                    <text x="105" y="18" fill="#0f766e" font-family="Inter, sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle">2. Tokens Semánticos (Intención)</text>
+                    <text x="12" y="45" fill="#115e59" font-family="Fira Code, monospace" font-size="9">--color-primary = COLOR_BLUE_900;</text>
+                    <text x="12" y="65" fill="#115e59" font-family="Fira Code, monospace" font-size="9">--spacing-body = SPACE_16;</text>
+                    <text x="12" y="85" fill="#115e59" font-family="Fira Code, monospace" font-size="9">--color-error = COLOR_RED_700;</text>
+                    <text x="12" y="105" fill="#115e59" font-family="Fira Code, monospace" font-size="9">--target-size = 48px;</text>
+                    <text x="12" y="130" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5" font-style="italic">Dan significado según su función</text>
+                </g>
+
+                <path d="M 495 120 L 520 120" stroke="#0f766e" stroke-width="2.5"/>
+
+                <!-- Nivel 3: Tokens de Componente / Multi-Output -->
+                <g transform="translate(530, 48)">
+                    <rect x="0" y="0" width="200" height="150" rx="6" fill="#ffffff" stroke="#6d28d9" stroke-width="2"/>
+                    <rect x="0" y="0" width="200" height="26" rx="6" fill="#f5f3ff"/>
+                    <text x="100" y="18" fill="#6d28d9" font-family="Inter, sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle">3. Componentes / Salida Código</text>
+                    <text x="12" y="45" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• CSS: var(--color-primary)</text>
+                    <text x="12" y="65" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• Android: R.color.primary</text>
+                    <text x="12" y="85" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• iOS: Color.primary</text>
+                    <text x="12" y="105" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• JSON exportable desde Figma</text>
+                    <text x="12" y="130" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5" font-style="italic">Consistencia multiplataforma</text>
+                </g>
+            </svg>
+            <div class="image-caption">Figura 1.5.1: Estructura por capas de los Design Tokens: de valores globales puros a tokens semánticos e integración en código.</div>
+        </div>
+
+        <p>Los tokens se organizan habitualmente en tres niveles de abstracción:</p>
+        <ul>
+            <li><strong>Tokens Globales (o primitivos):</strong> Valores de base. En Bootstrap 5.3, <code>--bs-blue: #0d6efd</code> y <code>--bs-red: #dc3545</code> representan colores de la paleta.</li>
+            <li><strong>Tokens Semánticos:</strong> Asignan un propósito al valor. Bootstrap utiliza <code>--bs-primary</code> para el color principal y <code>--bs-danger</code> para situaciones de peligro o error; en el tema predeterminado valen <code>#0d6efd</code> y <code>#dc3545</code>, respectivamente.</li>
+            <li><strong>Tokens de Componente:</strong> Controlan propiedades de un componente concreto. En los botones de Bootstrap, <code>--bs-btn-bg</code> define el fondo, <code>--bs-btn-color</code> el texto y <code>--bs-btn-hover-bg</code> el fondo al pasar el puntero.</li>
+        </ul>
+        <p>Esta clasificación permite interpretar las variables de Bootstrap como tokens. Su CSS compilado no enlaza necesariamente todos los valores mediante <code>var()</code>: cambiar <code>--bs-primary</code> no actualiza por sí solo todas las variantes de botones.</p>
+
+        <p>Centralizar los valores facilita mantener un diseño coherente. En Bootstrap, personaliza las variables del componente o recompila las variables Sass del tema según el alcance del cambio; revisa también los estados de interacción y sus contrastes.</p>
+
+        <div class="resource-card expansion-card">
+            <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-solid fa-code" aria-hidden="true"></i> Variables CSS y botones de Bootstrap</span>
+                <span class="resource-badge badge-reading">Lectura de ampliación</span>
+            </div>
+            <div class="resource-description">Consulta la documentación de Bootstrap sobre sus variables CSS y las variables específicas de los botones.</div>
+            <div class="flex-wrap-group">
+                <a href="https://getbootstrap.com/docs/5.3/customize/css-variables/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Variables CSS de Bootstrap</a>
+                <a href="https://getbootstrap.com/docs/5.3/components/buttons/#css" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Variables de los botones</a>
+            </div>
+        </div>
+
+        <!-- Recurso Enlace Design Tokens (NUEVO) -->
+        <div class="resource-card expansion-card">
+            <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-solid fa-code"></i> Design Tokens: Agiliza el diseño y desarrollo de interfaces</span>
+                <span class="resource-badge badge-reading">Lectura de Ampliación</span>
+            </div>
+            <div class="resource-description">Artículo técnico en OpenWebinars donde se aborda cómo los Design Tokens permiten crear puentes eficientes entre equipos de diseño y desarrolladores frontend.</div>
+            <a href="https://openwebinars.net/blog/design-tokens-agiliza-el-diseno-y-desarrollo-de-interfaces/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Leer artículo en OpenWebinars</a>
+        </div>
+
+        <h4 id="sec4_4_2">3.5.2. Ejemplo: CSS tradicional y Tailwind CSS</h4>
+        <p>A diferencia de frameworks como <strong>Bootstrap</strong> o <strong>Bulma</strong>, que ofrecen componentes prediseñados —por ejemplo, <code>.btn</code> y <code>.card</code> en Bootstrap, o <code>.button</code> y <code>.card</code> en Bulma—, <strong>Tailwind CSS</strong> proporciona <strong>clases utilitarias de bajo nivel</strong>, también llamadas clases atómicas. Clases como <code>bg-blue-500</code>, <code>pt-4</code> o <code>text-center</code> permiten aplicar estilos de propósito concreto combinándolas directamente en el HTML.</p>
+
+        <div class="didactic-note curiosity-card">
+            <h5><i class="fa-solid fa-lightbulb"></i> Relación con Atomic Design</h5>
+            <p><strong>Atomic Design</strong> organiza componentes de interfaz en átomos, moléculas, organismos, plantillas y páginas. El enfoque de clases utilitarias de <strong>Tailwind</strong> determina cómo se escriben sus estilos. Son conceptos distintos y compatibles: un botón es un átomo de la interfaz, mientras que <code>bg-blue-500</code> es una utilidad para darle color de fondo. Podemos construir ese mismo átomo con CSS propio o con Tailwind y reutilizarlo dentro de una molécula, como un formulario de búsqueda.</p>
+        </div>
+
+        <h5>¿Cómo funciona la diferencia?</h5>
+        <p><strong>CSS tradicional:</strong> escribes una clase en HTML y defines sus reglas en un archivo de estilos aparte.</p>
+        <p><strong>HTML</strong></p>
+        <pre><code class="language-html">&lt;button class="mi-boton"&gt;Aceptar&lt;/button&gt;</code></pre>
+        <p><strong>CSS</strong></p>
+        <pre><code class="language-css">.mi-boton {
+  background-color: #3b82f6;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+}</code></pre>
+
+        <p><strong>Tailwind CSS:</strong> combinas clases predefinidas directamente sobre el elemento HTML.</p>
+        <p><strong>HTML</strong></p>
+        <pre><code class="language-html">&lt;button class="bg-blue-500 text-white px-4 py-2 rounded"&gt;
+  Aceptar
+&lt;/button&gt;</code></pre>
+        <p>En este ejemplo, <code>bg-blue-500</code> establece el fondo azul; <code>text-white</code>, el texto blanco; <code>px-4</code> y <code>py-2</code>, el espaciado interior horizontal y vertical; y <code>rounded</code>, las esquinas redondeadas. La comparación ilustra dos formas de expresar el mismo tipo de diseño: los valores exactos dependen de la versión y del tema configurado en Tailwind. Para que las utilidades funcionen, el proyecto debe incluir el CSS generado por Tailwind.</p>
+
+        <div class="didactic-note activity-callout">
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 5: Bootstrap y Atomic Design (Apartado 3.5)</h5>
+            <p><strong>Inventario de componentes de Bootstrap:</strong> Consulta la sección <strong>Components</strong> de la documentación de Bootstrap y elabora un listado de sus componentes: botones, grupos de botones, tarjetas, barras de navegación, acordeones, alertas y ventanas modales.</p>
+            <p>Indica para cada componente si lo relacionas con un <strong>átomo, una molécula o un organismo</strong> de Atomic Design. Además, localiza en la documentación de Bootstrap los <strong>design tokens utilizados</strong> —sus variables CSS de colores, tipografía, espaciado o componentes— y anota algunos ejemplos con su nombre y valor.</p>
+            <div class="flex-wrap-group">
+                <a href="https://getbootstrap.com/docs/5.3/getting-started/introduction/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Documentación de Bootstrap</a>
+                <a href="https://getbootstrap.com/docs/5.3/components/accordion/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Componentes de Bootstrap</a>
+            </div>
+        
+            <div class="delivery-tip"><a class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
+</div>
+
         <h2 id="sec4"><i class="fa-solid fa-eye"></i> 4. Percepción Visual</h2>
 
         <h3 id="sec4_1">4.1. Psicología de la Gestalt</h3>
@@ -2014,204 +2212,6 @@ de los que sí.</p>
             <a href="https://blog.hubspot.es/website/mapa-navegacion-web" target="_blank" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Leer artículo en HubSpot</a>
         </div>
 
-        <h3 id="sec4_4">4.6. Sistemas de diseño y metodología Atomic Design</h3>
-        <p>En el desarrollo frontend moderno no se construyen páginas aisladas, sino <strong>Sistemas de Diseño</strong> (<em>Design Systems</em>) escalables basados en la metodología <strong>Atomic Design</strong> (Brad Frost). Esta metodología divide la UI en 5 niveles jerárquicos:</p>
-
-        <!-- Figura 1.5: Atomic Design SVG -->
-        <div class="image-container">
-            <svg viewBox="0 0 760 210" width="100%" height="210" xmlns="http://www.w3.org/2000/svg">
-                <rect x="0" y="0" width="760" height="210" rx="8" fill="#f8fafc"/>
-                <g transform="translate(20, 30)">
-                    <rect x="0" y="0" width="125" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
-                    <circle cx="40" cy="40" r="14" fill="#3b82f6"/>
-                    <rect x="65" y="32" width="45" height="16" rx="3" fill="#93c5fd"/>
-                    <text x="62" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">ÁTOMOS</text>
-                    <text x="62" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Botón, Input, Icono</text>
-                </g>
-                <g transform="translate(165, 30)">
-                    <rect x="0" y="0" width="135" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
-                    <rect x="15" y="30" width="70" height="20" rx="3" fill="#f1f5f9" stroke="#94a3b8"/>
-                    <rect x="90" y="30" width="30" height="20" rx="3" fill="#3b82f6"/>
-                    <text x="67" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">MOLÉCULAS</text>
-                    <text x="67" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Campo Búsqueda</text>
-                </g>
-                <g transform="translate(320, 30)">
-                    <rect x="0" y="0" width="135" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
-                    <rect x="10" y="15" width="115" height="50" rx="4" fill="#eff6ff" stroke="#3b82f6"/>
-                    <text x="67" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">ORGANISMOS</text>
-                    <text x="67" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Header Completo</text>
-                </g>
-                <g transform="translate(475, 30)">
-                    <rect x="0" y="0" width="125" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
-                    <rect x="10" y="15" width="105" height="15" fill="#e2e8f0"/>
-                    <rect x="10" y="35" width="30" height="40" fill="#cbd5e1"/>
-                    <rect x="45" y="35" width="70" height="40" fill="#94a3b8"/>
-                    <text x="62" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">PLANTILLAS</text>
-                    <text x="62" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">Wireframe Layout</text>
-                </g>
-                <g transform="translate(620, 30)">
-                    <rect x="0" y="0" width="120" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
-                    <rect x="10" y="15" width="100" height="15" fill="#1e3a8a"/>
-                    <rect x="10" y="35" width="30" height="40" fill="#0f766e"/>
-                    <rect x="45" y="35" width="65" height="40" fill="#d97706"/>
-                    <text x="60" y="95" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">PÁGINAS</text>
-                    <text x="60" y="115" fill="#64748b" font-family="Inter, sans-serif" font-size="9" text-anchor="middle">UI Final con Datos</text>
-                </g>
-            </svg>
-            <div class="image-caption">Figura 1.5: Niveles metodológicos de Atomic Design (Brad Frost).</div>
-        </div>
-
-        <ul>
-            <li><strong>Átomos:</strong> Elementos UI indivisibles (botones, inputs, etiquetas, iconos).</li>
-            <li><strong>Moléculas:</strong> Grupos de átomos unidos que ejecutan una función básica (ej. un input + un botón = formulario de búsqueda).</li>
-            <li><strong>Organismos:</strong> Conjuntos de moléculas que forman una sección completa (ej. la cabecera completa o una tarjeta de producto).</li>
-            <li><strong>Plantillas (Templates):</strong> Maquetación estructural (layout) sin datos reales.</li>
-            <li><strong>Páginas:</strong> Instancia final del sistema rellena con contenido real para producción.</li>
-        </ul>
-
-        <div class="didactic-note curiosity-card">
-            <h5><i class="fa-solid fa-link"></i> Relación entre identidad visual y Atomic Design</h5>
-            <p>La identidad se traduce al sistema descrito en el apartado 4.6 mediante <strong>Design Tokens</strong> —color, tipografía, espaciado y forma— y mediante átomos como logotipo, iconos y botones. Así, la marca se mantiene coherente en todas las moléculas, organismos, plantillas y páginas.</p>
-        </div>
-
-        <div class="didactic-note curiosity-card">
-            <h5><i class="fa-solid fa-code"></i> Design Tokens en CSS</h5>
-            <p>El núcleo de un sistema de diseño son los <strong>Design Tokens</strong>: variables que almacenan valores visuales fundamentales (colores, fuentes, espaciados) reutilizables en CSS/Sass (ej. <code>--color-primary: #1e3a8a;</code>, <code>--spacing-md: 16px;</code>).</p>
-        </div>
-
-        <div class="resource-card expansion-card">
-            <div class="resource-card-header">
-                <span class="resource-title"><i class="fa-brands fa-youtube" aria-hidden="true"></i> Vídeo de ampliación</span>
-                <span class="resource-badge badge-video">Vídeo</span>
-            </div>
-            <div class="resource-description">Recurso audiovisual complementario para ampliar este apartado.</div>
-            <a href="https://youtu.be/-tlf-p1uhCQ" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Ver el vídeo</a>
-        </div>
-
-        <!-- SUBAPARTADO NUEVO: DESIGN TOKENS (NUEVO PUNTO INTEGRADO) -->
-        <h4 id="sec4_4_1">4.6.1. Design Tokens: La base del desarrollo ágil e interoperable</h4>
-        <p>Los <strong>Design Tokens</strong> (tokens de diseño) son variables agnósticas a la plataforma que almacenan los valores visuales fundamentales de un sistema de diseño —tales como códigos cromáticos en hexadecimal, tamaños tipográficos en rem, espaciados en píxeles, radios de borde y duraciones de animación. Actúan como la <strong>fuente única de verdad</strong> (<em>Single Source of Truth</em>) que conecta el diseño visual creado en herramientas como Figma con la implementación en código frontend (CSS, Sass, React, iOS, Android).</p>
-
-        <!-- Figura 1.5.1: Diagrama SVG de Design Tokens (NUEVO) -->
-        <div class="image-container">
-            <svg viewBox="0 0 760 230" width="100%" height="230" xmlns="http://www.w3.org/2000/svg">
-                <rect x="0" y="0" width="760" height="230" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
-                <text x="380" y="28" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Arquitectura y Traducción de Design Tokens (De Figma al Código Multi-Plataforma)</text>
-
-                <!-- Nivel 1: Tokens Globales / Base -->
-                <g transform="translate(30, 48)">
-                    <rect x="0" y="0" width="200" height="150" rx="6" fill="#ffffff" stroke="#3b82f6" stroke-width="2"/>
-                    <rect x="0" y="0" width="200" height="26" rx="6" fill="#eff6ff"/>
-                    <text x="100" y="18" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle">1. Tokens Globales (Valores puros)</text>
-                    <text x="12" y="45" fill="#115e59" font-family="Fira Code, monospace" font-size="9.5">COLOR_BLUE_900 = #1e3a8a;</text>
-                    <text x="12" y="65" fill="#115e59" font-family="Fira Code, monospace" font-size="9.5">SPACE_16 = 16px;</text>
-                    <text x="12" y="85" fill="#115e59" font-family="Fira Code, monospace" font-size="9.5">FONT_SIZE_BASE = 1rem;</text>
-                    <text x="12" y="105" fill="#115e59" font-family="Fira Code, monospace" font-size="9.5">RADIUS_MD = 8px;</text>
-                    <text x="12" y="130" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5" font-style="italic">Valores genéricos sin contexto</text>
-                </g>
-
-                <path d="M 240 120 L 265 120" stroke="#3b82f6" stroke-width="2.5"/>
-
-                <!-- Nivel 2: Tokens Semánticos -->
-                <g transform="translate(275, 48)">
-                    <rect x="0" y="0" width="210" height="150" rx="6" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
-                    <rect x="0" y="0" width="210" height="26" rx="6" fill="#f0fdf4"/>
-                    <text x="105" y="18" fill="#0f766e" font-family="Inter, sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle">2. Tokens Semánticos (Intención)</text>
-                    <text x="12" y="45" fill="#115e59" font-family="Fira Code, monospace" font-size="9">--color-primary = COLOR_BLUE_900;</text>
-                    <text x="12" y="65" fill="#115e59" font-family="Fira Code, monospace" font-size="9">--spacing-body = SPACE_16;</text>
-                    <text x="12" y="85" fill="#115e59" font-family="Fira Code, monospace" font-size="9">--color-error = COLOR_RED_700;</text>
-                    <text x="12" y="105" fill="#115e59" font-family="Fira Code, monospace" font-size="9">--target-size = 48px;</text>
-                    <text x="12" y="130" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5" font-style="italic">Dan significado según su función</text>
-                </g>
-
-                <path d="M 495 120 L 520 120" stroke="#0f766e" stroke-width="2.5"/>
-
-                <!-- Nivel 3: Tokens de Componente / Multi-Output -->
-                <g transform="translate(530, 48)">
-                    <rect x="0" y="0" width="200" height="150" rx="6" fill="#ffffff" stroke="#6d28d9" stroke-width="2"/>
-                    <rect x="0" y="0" width="200" height="26" rx="6" fill="#f5f3ff"/>
-                    <text x="100" y="18" fill="#6d28d9" font-family="Inter, sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle">3. Componentes / Salida Código</text>
-                    <text x="12" y="45" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• CSS: var(--color-primary)</text>
-                    <text x="12" y="65" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• Android: R.color.primary</text>
-                    <text x="12" y="85" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• iOS: Color.primary</text>
-                    <text x="12" y="105" fill="#475569" font-family="Inter, sans-serif" font-size="9.5">• JSON exportable desde Figma</text>
-                    <text x="12" y="130" fill="#64748b" font-family="Inter, sans-serif" font-size="8.5" font-style="italic">Consistencia multiplataforma</text>
-                </g>
-            </svg>
-            <div class="image-caption">Figura 1.5.1: Estructura por capas de los Design Tokens: de valores globales puros a tokens semánticos e integración en código.</div>
-        </div>
-
-        <p>Los tokens se organizan habitualmente en tres niveles de abstracción:</p>
-        <ul>
-            <li><strong>Tokens Globales (o primitivos):</strong> Valores de base. En Bootstrap 5.3, <code>--bs-blue: #0d6efd</code> y <code>--bs-red: #dc3545</code> representan colores de la paleta.</li>
-            <li><strong>Tokens Semánticos:</strong> Asignan un propósito al valor. Bootstrap utiliza <code>--bs-primary</code> para el color principal y <code>--bs-danger</code> para situaciones de peligro o error; en el tema predeterminado valen <code>#0d6efd</code> y <code>#dc3545</code>, respectivamente.</li>
-            <li><strong>Tokens de Componente:</strong> Controlan propiedades de un componente concreto. En los botones de Bootstrap, <code>--bs-btn-bg</code> define el fondo, <code>--bs-btn-color</code> el texto y <code>--bs-btn-hover-bg</code> el fondo al pasar el puntero.</li>
-        </ul>
-        <p>Esta clasificación permite interpretar las variables de Bootstrap como tokens. Su CSS compilado no enlaza necesariamente todos los valores mediante <code>var()</code>: cambiar <code>--bs-primary</code> no actualiza por sí solo todas las variantes de botones.</p>
-
-        <p>Centralizar los valores facilita mantener un diseño coherente. En Bootstrap, personaliza las variables del componente o recompila las variables Sass del tema según el alcance del cambio; revisa también los estados de interacción y sus contrastes.</p>
-
-        <div class="resource-card expansion-card">
-            <div class="resource-card-header">
-                <span class="resource-title"><i class="fa-solid fa-code" aria-hidden="true"></i> Variables CSS y botones de Bootstrap</span>
-                <span class="resource-badge badge-reading">Lectura de ampliación</span>
-            </div>
-            <div class="resource-description">Consulta la documentación de Bootstrap sobre sus variables CSS y las variables específicas de los botones.</div>
-            <div class="flex-wrap-group">
-                <a href="https://getbootstrap.com/docs/5.3/customize/css-variables/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Variables CSS de Bootstrap</a>
-                <a href="https://getbootstrap.com/docs/5.3/components/buttons/#css" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Variables de los botones</a>
-            </div>
-        </div>
-
-        <!-- Recurso Enlace Design Tokens (NUEVO) -->
-        <div class="resource-card expansion-card">
-            <div class="resource-card-header">
-                <span class="resource-title"><i class="fa-solid fa-code"></i> Design Tokens: Agiliza el diseño y desarrollo de interfaces</span>
-                <span class="resource-badge badge-reading">Lectura de Ampliación</span>
-            </div>
-            <div class="resource-description">Artículo técnico en OpenWebinars donde se aborda cómo los Design Tokens permiten crear puentes eficientes entre equipos de diseño y desarrolladores frontend.</div>
-            <a href="https://openwebinars.net/blog/design-tokens-agiliza-el-diseno-y-desarrollo-de-interfaces/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Leer artículo en OpenWebinars</a>
-        </div>
-
-        <h4 id="sec4_4_2">4.6.2. Ejemplo: CSS tradicional y Tailwind CSS</h4>
-        <p>A diferencia de frameworks como <strong>Bootstrap</strong> o <strong>Bulma</strong>, que ofrecen componentes prediseñados —por ejemplo, <code>.btn</code> y <code>.card</code> en Bootstrap, o <code>.button</code> y <code>.card</code> en Bulma—, <strong>Tailwind CSS</strong> proporciona <strong>clases utilitarias de bajo nivel</strong>, también llamadas clases atómicas. Clases como <code>bg-blue-500</code>, <code>pt-4</code> o <code>text-center</code> permiten aplicar estilos de propósito concreto combinándolas directamente en el HTML.</p>
-
-        <div class="didactic-note curiosity-card">
-            <h5><i class="fa-solid fa-lightbulb"></i> Relación con Atomic Design</h5>
-            <p><strong>Atomic Design</strong> organiza componentes de interfaz en átomos, moléculas, organismos, plantillas y páginas. El enfoque de clases utilitarias de <strong>Tailwind</strong> determina cómo se escriben sus estilos. Son conceptos distintos y compatibles: un botón es un átomo de la interfaz, mientras que <code>bg-blue-500</code> es una utilidad para darle color de fondo. Podemos construir ese mismo átomo con CSS propio o con Tailwind y reutilizarlo dentro de una molécula, como un formulario de búsqueda.</p>
-        </div>
-
-        <h5>¿Cómo funciona la diferencia?</h5>
-        <p><strong>CSS tradicional:</strong> escribes una clase en HTML y defines sus reglas en un archivo de estilos aparte.</p>
-        <p><strong>HTML</strong></p>
-        <pre><code class="language-html">&lt;button class="mi-boton"&gt;Aceptar&lt;/button&gt;</code></pre>
-        <p><strong>CSS</strong></p>
-        <pre><code class="language-css">.mi-boton {
-  background-color: #3b82f6;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 4px;
-}</code></pre>
-
-        <p><strong>Tailwind CSS:</strong> combinas clases predefinidas directamente sobre el elemento HTML.</p>
-        <p><strong>HTML</strong></p>
-        <pre><code class="language-html">&lt;button class="bg-blue-500 text-white px-4 py-2 rounded"&gt;
-  Aceptar
-&lt;/button&gt;</code></pre>
-        <p>En este ejemplo, <code>bg-blue-500</code> establece el fondo azul; <code>text-white</code>, el texto blanco; <code>px-4</code> y <code>py-2</code>, el espaciado interior horizontal y vertical; y <code>rounded</code>, las esquinas redondeadas. La comparación ilustra dos formas de expresar el mismo tipo de diseño: los valores exactos dependen de la versión y del tema configurado en Tailwind. Para que las utilidades funcionen, el proyecto debe incluir el CSS generado por Tailwind.</p>
-
-        <div class="didactic-note activity-callout">
-            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 5: Bootstrap y Atomic Design (Apartado 4.6)</h5>
-            <p><strong>Inventario de componentes de Bootstrap:</strong> Consulta la sección <strong>Components</strong> de la documentación de Bootstrap y elabora un listado de sus componentes: botones, grupos de botones, tarjetas, barras de navegación, acordeones, alertas y ventanas modales.</p>
-            <p>Indica para cada componente si lo relacionas con un <strong>átomo, una molécula o un organismo</strong> de Atomic Design. Además, localiza en la documentación de Bootstrap los <strong>design tokens utilizados</strong> —sus variables CSS de colores, tipografía, espaciado o componentes— y anota algunos ejemplos con su nombre y valor.</p>
-            <div class="flex-wrap-group">
-                <a href="https://getbootstrap.com/docs/5.3/getting-started/introduction/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Documentación de Bootstrap</a>
-                <a href="https://getbootstrap.com/docs/5.3/components/accordion/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Componentes de Bootstrap</a>
-            </div>
-        
-            <div class="delivery-tip"><a class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
-</div>
-
         <!-- 5. METODOLOGIA DESIGN THINKING -->
         <h2 id="sec6_2"><i class="fa-solid fa-pen-ruler" aria-hidden="true"></i> 5. Prototipado web</h2>
         <div class="resource-card expansion-card">
@@ -2761,7 +2761,7 @@ de los que sí.</p>
 
         <!-- 7. SISTEMAS DE DISEÑO -->
         <h2 id="sec7"><i class="fa-solid fa-layer-group" aria-hidden="true"></i> 8. Sistemas de diseño</h2>
-        <p>El apartado <a href="#sec4_4">4.6</a> presenta Atomic Design y los tokens; el <a href="#sec5">6</a>, la guía de estilo. Aquí conectamos estas piezas con su uso y mantenimiento en un proyecto.</p>
+        <p>El apartado <a href="#sec4_4">3.5</a> presenta Atomic Design y los tokens; el <a href="#sec5">6</a>, la guía de estilo. Aquí conectamos estas piezas con su uso y mantenimiento en un proyecto.</p>
 
         <h3 id="sec7_1">8.1. De la guía al sistema de diseño</h3>
         <p>Un <strong>sistema de diseño</strong> reúne reglas, tokens, componentes reutilizables en diseño y código, patrones de interacción y documentación. Incluye responsables y procesos para mantenerlos coordinados.</p>
