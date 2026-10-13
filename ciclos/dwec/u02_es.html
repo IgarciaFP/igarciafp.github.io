@@ -857,6 +857,11 @@ console.log(invertidas);</code></pre>
                 <p>Un <strong>arreglo</strong> o <strong>array</strong> permite guardar varios valores ordenados bajo un mismo nombre. Un arreglo de una dimensión suele llamarse <strong>vector</strong>. En JavaScript se utiliza el tipo <code>Array</code>: accedemos a cada elemento mediante su índice.</p>
                 <h4>Crear un vector y acceder a sus elementos</h4>
                 <p>Escribimos los elementos entre corchetes, separados por comas. Los índices empiezan en <strong>cero</strong>. También podemos crear un array vacío con <code>[]</code>.</p>
+                <aside class="function-card" id="ficha-array-length" aria-label="Ficha de propiedad: array.length">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de propiedad</p>
+                    <p class="function-signature"><code>array.length</code></p>
+                    <p>Indica la longitud del array. En un vector sin posiciones vacías, coincide con el número de elementos.</p><p><strong>Uso:</strong> se consulta sin paréntesis: <code>notas.length</code>, no <code>notas.length()</code>. Leerla no modifica el array.</p><p><strong>Valor:</strong> un entero no negativo; en <code>[]</code> vale <code>0</code>. El último índice de un vector no vacío es <code>length - 1</code>.</p>
+                </aside>
                 <pre><code>const notas = [7, 5, 9];
 const nombres = ["Ana", "Luis", "Marta"];
 const pendientes = [];
@@ -869,6 +874,16 @@ console.log(notas[notas.length - 1]); // 9: último elemento.</code></pre>
                 <div class="didactic-note"><p><strong>Longitud e índice no son lo mismo.</strong> En este vector hay tres elementos, con índices <code>0</code>, <code>1</code> y <code>2</code>. Leer <code>notas[3]</code> devuelve <code>undefined</code>, porque esa posición no existe. En los arrays de estos ejemplos, sin posiciones vacías, <code>length</code> coincide con el número de elementos.</p></div>
                 <h4>Modificar, añadir y quitar elementos</h4>
                 <p>Podemos asignar un nuevo valor a una posición existente. El método <code>push()</code> añade elementos al final y devuelve la nueva longitud. El método <code>pop()</code> elimina el último elemento y lo devuelve; si el array está vacío, devuelve <code>undefined</code>.</p>
+                <aside class="function-card" id="ficha-array-push" aria-label="Ficha de método: array.push(elemento1, elemento2, ...)">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de método</p>
+                    <p class="function-signature"><code>array.push(elemento1, elemento2, ...)</code></p>
+                    <p>Añade uno o varios elementos al final y modifica el array original.</p><p><strong>Parámetros:</strong> los valores que se quieren añadir, separados por comas.</p><p><strong>Devuelve:</strong> la nueva longitud, no el array. Por ejemplo, si <code>colores</code> contiene dos elementos, <code>colores.push("amarillo")</code> devuelve <code>3</code>.</p>
+                </aside>
+                <aside class="function-card" id="ficha-array-pop" aria-label="Ficha de método: array.pop()">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de método</p>
+                    <p class="function-signature"><code>array.pop()</code></p>
+                    <p>Elimina el último elemento y modifica el array original.</p><p><strong>Parámetros:</strong> no recibe argumentos.</p><p><strong>Devuelve:</strong> el elemento eliminado; si el array está vacío, devuelve <code>undefined</code>. Por ejemplo, <code>const ultimo = colores.pop();</code> guarda el valor retirado.</p>
+                </aside>
                 <pre><code>const colores = ["rojo", "azul"];
 
 colores[0] = "verde";
