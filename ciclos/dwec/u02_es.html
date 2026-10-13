@@ -1163,6 +1163,70 @@ null + 2
 undefined + 2
 " \t \n" - 1</code></pre><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
+
+                <div class="activity-card activity-callout" id="actividad-repaso-global-1-5">
+                    <p><strong>Repaso global de los puntos 1 a 5. Preparar un pedido para un taller de reparación</strong></p>
+                    <p><strong>Situación:</strong> trabajas en una tienda de material informático. Una asociación organiza un taller de reparación y solicita cables, adaptadores y memorias USB. Necesitas un pequeño programa que prepare el presupuesto, compruebe las existencias y genere un resumen para la persona encargada. El pedido puede cambiar mientras se prepara.</p>
+                    <p><strong>Alcance:</strong> resuelve el trabajo con lo estudiado hasta aquí: declaraciones, expresiones, bloques, vectores, operadores y diálogos. Muestra la información en la consola y con <code>alert()</code>. No necesitas DOM, eventos, funciones propias ni bucles. Para los tres productos puedes acceder directamente a los índices <code>0</code>, <code>1</code> y <code>2</code>. Las decisiones sencillas se expresarán como booleanos o con el operador ternario.</p>
+
+                    <h4>1. Preparar y explicar el entorno</h4>
+                    <p>Crea <code>repaso-pedido.html</code>, <code>repaso-pedido.js</code> y <code>repaso-pedido.txt</code>. Enlaza el JavaScript externo desde el <code>head</code> con <code>defer</code> y coloca <code>"use strict";</code> al principio del archivo JS. Comprueba en la consola que se ejecuta una sola vez.</p>
+                    <p>En el archivo de texto, explica brevemente qué ejecuta el navegador, qué relación tienen JavaScript y ECMAScript y qué aportó ES2015 a las declaraciones, las plantillas de cadena y el ámbito. Sitúa el nacimiento de JavaScript y su posterior estandarización. Justifica el archivo externo y compara su carga con un script sin atributos y con <code>async</code>. Identifica en tu programa un ejemplo de tipado dinámico y otro de distinción entre mayúsculas y minúsculas.</p>
+
+                    <h4>2. Definir los datos y los tipos</h4>
+                    <p>Utiliza estos datos ficticios. Los precios se guardan en <strong>céntimos enteros</strong> para hacer los cálculos de este pedido.</p>
+                    <div class="table-scroll" role="region" aria-label="Datos del pedido de repaso" tabindex="0">
+                        <table>
+                            <thead><tr><th scope="col">Índice</th><th scope="col">Producto</th><th scope="col">Precio en céntimos</th><th scope="col">Existencias</th><th scope="col">Cantidad inicial de prueba</th></tr></thead>
+                            <tbody>
+                                <tr><td>0</td><td>Cable USB</td><td>350</td><td>30</td><td>12</td></tr>
+                                <tr><td>1</td><td>Adaptador</td><td>500</td><td>20</td><td>8</td></tr>
+                                <tr><td>2</td><td>Memoria USB</td><td>800</td><td>15</td><td>5</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>Declara vectores para los precios y las existencias, un nombre de cliente de tipo <code>string</code>, un indicador booleano de recogida y una variable de observaciones inicialmente <code>undefined</code>. Guarda el identificador externo <code>9007199254740993n</code> como <code>BigInt</code>: se usará solo como identificador, sin mezclarlo con los importes de tipo <code>Number</code>. Elige nombres descriptivos y justifica cuándo usas <code>const</code> y cuándo <code>let</code>.</p>
+
+                    <h4>3. Recoger el pedido y trabajar con comillas</h4>
+                    <p>Pide mediante <code>prompt()</code> el nombre del cliente y las tres cantidades; consulta con <code>confirm()</code> si recogerá el pedido en tienda. Para la ejecución principal presupón que acepta los diálogos e introduce enteros no negativos. Conserva las cantidades originales como texto y conviértelas explícitamente con <code>Number()</code>.</p>
+                    <p>Prepara una cadena con comillas simples que incluya el texto <code>Pedido "Taller de reparación"</code>, otra con comillas dobles que incluya el nombre <code>Associació d'Amics</code> y un mensaje con acentos graves e interpolación de nombre y cantidades. Reescribe uno de los mensajes usando concatenación. Incluye un salto de línea con <code>\n</code> y una comilla escapada; explica cuándo necesitas el escape y cuándo puedes cambiar el delimitador.</p>
+
+                    <h4>4. Actualizar los vectores y distinguir reasignación de modificación</h4>
+                    <p>Crea <code>cantidades</code> con las dos primeras cantidades y añade la tercera mediante <code>push()</code>. En el borrador se registra por error una cuarta línea de 2 unidades: añádela y retírala con <code>pop()</code>, guardando el valor retirado. El cliente pide después <strong>dos adaptadores más</strong>: actualiza la posición correspondiente con <code>+=</code>.</p>
+                    <p>Muestra el primer elemento, el último y <code>length</code>. Usa <code>Array.isArray()</code> y <code>typeof</code> para describir los datos. Explica por qué puedes modificar este vector declarado con <code>const</code>, pero no asignarle otro vector. En una prueba separada, consulta una posición inexistente e identifica el resultado.</p>
+
+                    <h4>5. Calcular el presupuesto y el embalaje</h4>
+                    <ol>
+                        <li>Calcula los tres importes de línea, el subtotal y el total de unidades a partir de los vectores actualizados.</li>
+                        <li>Aplica un descuento del 10 % cuando el subtotal sea al menos 10000 céntimos; en caso contrario, el descuento es cero. Utiliza una comparación y el operador ternario.</li>
+                        <li>La recogida en tienda cuesta cero; el envío cuesta 600 céntimos. Añade este coste después del descuento. Usa paréntesis para dejar claro el orden de cálculo y muestra el total en euros.</li>
+                        <li>Las unidades se agrupan en cajas de seis. Calcula el resto con <code>%</code>, las cajas completas con <code>(unidades - resto) / 6</code> y las cajas necesarias contando una adicional si queda resto.</li>
+                        <li>Cada caja lleva una etiqueta cuadrada de 8 cm de lado: calcula su superficie con <code>**</code>. Para este ejercicio, todos los productos caben en el embalaje descrito.</li>
+                    </ol>
+
+                    <h4>6. Comprobar el pedido mediante expresiones</h4>
+                    <p>Obtén un booleano para cada comprobación de existencias y combínalos con <code>&amp;&amp;</code> en <code>hayStock</code>. Usa <code>||</code> para indicar si algún producto se agota exactamente y <code>!</code> para expresar que el pedido no se puede preparar. No descuentas existencias ni confirmas una venta real: solo preparas un informe. Compara una cantidad textual con su versión numérica usando <code>==</code> y <code>===</code> y justifica el resultado.</p>
+                    <p>Para las observaciones, compara <code>observaciones ?? "Sin observaciones"</code> con <code>observaciones || "Sin observaciones"</code>, probando <code>undefined</code>, <code>null</code> y <code>""</code>. Repite con un coste de recogida igual a cero y explica por qué no debe sustituirse por 600. En variables de prueba independientes, aplica <code>??=</code> a una observación ausente, <code>||=</code> a un título vacío y <code>&amp;&amp;=</code> a un estado textual existente. Contrasta <code>Boolean("0")</code> y <code>!!"0"</code> con la conversión del número cero.</p>
+
+                    <h4>7. Ámbito, sintaxis y diagnóstico</h4>
+                    <p>Calcula dentro de un bloque una variable local <code>ahorroCentimos</code> y muéstrala desde ese bloque. Comprueba por separado qué ocurre al intentar leerla fuera. Mantén comentada la línea que provoca el error en la versión final. Incluye un comentario de línea y otro de bloque que expliquen decisiones del programa; señala una expresión y una instrucción.</p>
+                    <p>En pruebas aisladas, provoca y corrige un nombre con mayúsculas incorrectas, una cadena sin cerrar, una asignación a una variable no declarada en modo estricto y una reasignación de <code>const</code>. Registra el mensaje y la corrección. Coloca un punto de interrupción antes del subtotal, inspecciona los vectores y avanza paso a paso. Compara el valor observado antes y después de la actualización de adaptadores.</p>
+                    <p>Usa una variable de prueba <code>bultos</code> para comparar <code>bultos++</code> y <code>++bultos</code>, reiniciándola antes de cada caso; repite con decremento. Comprueba también el valor devuelto por una asignación, la negación numérica y el operador unario <code>+</code>. Explica por qué el código final usa instrucciones claras y punto y coma en lugar de depender de su inserción automática.</p>
+
+                    <h4>8. Investigar entradas problemáticas y conversiones</h4>
+                    <p>En la consola, compara <code>Number("12")</code>, <code>Number("")</code>, <code>Number(null)</code>, <code>Number("12 unidades")</code>, <code>parseInt("12 unidades", 10)</code> y <code>parseFloat("3.50 euros")</code>. Identifica <code>NaN</code> con <code>Number.isNaN()</code> y explica por qué aceptar parcialmente un texto puede ocultar un error. Compara <code>"12" + "8"</code> con la suma de las cantidades convertidas y con una multiplicación de cadenas numéricas.</p>
+                    <p>Registra qué devuelve <code>prompt()</code> al cancelar y al aceptar un campo vacío. Examina también <code>typeof null</code>, <code>typeof NaN</code>, <code>String(identificador)</code>, <code>null == undefined</code> y <code>null === undefined</code>. Contrasta la comparación de las cadenas <code>"12"</code> y <code>"8"</code> con la de sus valores numéricos. Estas pruebas se documentan aparte; la validación completa se desarrollará con las estructuras de control.</p>
+
+                    <h4>9. Comprobación técnica de la red del puesto</h4>
+                    <p>El equipo de preparación tiene la IP <code>192.168.10.37</code> y máscara <code>255.255.255.0</code>. Como repaso de los operadores bit a bit, calcula por octetos la dirección de red con <code>&amp;</code> y la parte de host usando el complemento de la máscara limitado con <code>&amp; 255</code>. Muestra un octeto en binario con <code>toString(2)</code> y recupéralo con <code>parseInt(texto, 2)</code>. Compara <code>6 &lt;&lt; 1</code> y <code>6 &gt;&gt; 1</code> con multiplicar y dividir entre dos; explica la limitación de 32 bits.</p>
+
+                    <h4>10. Informe, pruebas y entrega</h4>
+                    <p>Genera con una plantilla de cadena un resumen de varias líneas: identificador, cliente, cantidades finales, importes, descuento, transporte, total, cajas y disponibilidad. Muestra el resumen en consola y en una alerta. El resultado debe proceder de las variables, no de números escritos directamente en el mensaje.</p>
+                    <p><strong>Caso de referencia:</strong> con cantidades iniciales 12, 8 y 5, tras la corrección quedan <code>[12, 10, 5]</code>: 27 unidades, subtotal 13200 céntimos y descuento 1320 céntimos. El total es 118,80 euros con recogida o 124,80 euros con envío. Se necesitan 4 cajas completas y una adicional para 3 unidades; la etiqueta ocupa 64 cm². Hay existencias de los tres productos. La red del puesto es <code>192.168.10.0</code> y la parte de host es <code>0.0.0.37</code>. No se exige que la salida use coma decimal ni dos decimales fijos.</p>
+                    <p>Prueba además un subtotal inferior al umbral del descuento y una cantidad que supere las existencias, aplicando en cada ejecución la corrección de dos adaptadores. En <code>repaso-pedido.txt</code>, entrega las respuestas conceptuales, los errores investigados y una tabla con entradas, resultado esperado y resultado obtenido. Entrega también el HTML y el JavaScript, legibles y sin errores de ejecución en el caso principal.</p>
+                    <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
+                </div>
+
             </section>
 
             <section aria-labelledby="sec6">
@@ -1304,7 +1368,6 @@ mensaje.outerHTML = '&lt;div id="mensaje" class="aviso"&gt;Nuevo elemento&lt;/di
                     <p><strong>Actividad complementaria 6.3. Texto literal frente a marcado</strong></p>
                     <p>Prepara dos párrafos. Asigna la cadena controlada <code>&lt;strong&gt;Importante&lt;/strong&gt;</code> a uno mediante <code>textContent</code> y al otro mediante <code>innerHTML</code>. Examina sus contenidos y su <code>outerHTML</code>. Después pide un mensaje con <code>prompt()</code> y muéstralo exclusivamente como texto.</p>
                     <p><strong>Comprobación:</strong> Explica por qué solo uno de los primeros párrafos muestra negrita y qué ocurre al cancelar el diálogo.</p>
-                    <p class="resource-description">Propuesta propia para este subapartado, basada en: <a href="https://javascript.info/basic-dom-node-properties" target="_blank" rel="noopener noreferrer">JavaScript.info · Propiedades y contenido de nodos</a>.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
