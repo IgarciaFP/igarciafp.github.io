@@ -1247,48 +1247,15 @@ undefined + 2
 
 
                 <div class="activity-card activity-callout" id="actividad-repaso-global-1-5">
-                    <p><strong>Repaso de los puntos 1 a 5. Preparar un pedido de material informático</strong></p>
-                    <p>Trabajas en una tienda y debes preparar un presupuesto para un taller de reparación. El cliente necesita cables USB, adaptadores y memorias USB. Tu programa recogerá las cantidades, calculará el importe y mostrará un resumen del pedido.</p>
-                    <p>Utiliza lo estudiado hasta ahora y muestra los resultados en la consola y con <code>alert()</code>. Accede directamente a las tres posiciones de los vectores; no necesitas bucles, funciones propias ni DOM. Para las entradas, presupón que el usuario acepta los diálogos e introduce enteros no negativos.</p>
-
-                    <h4>1. Prepara el proyecto y los datos</h4>
-                    <p>Crea <code>pedido.html</code> y <code>pedido.js</code>. Enlaza el archivo JavaScript con <code>defer</code>, activa <code>"use strict";</code> y utiliza nombres descriptivos, comentarios y <code>const</code> o <code>let</code> según corresponda.</p>
-                    <p>Guarda en dos vectores de enteros los precios en céntimos <code>[350, 500, 800]</code> y las existencias <code>[30, 20, 15]</code>. En ambos, el orden es: cables, adaptadores y memorias USB.</p>
-
-                    <h4>2. Recoge el pedido y practica las comillas</h4>
-                    <p>Pide con <code>prompt()</code> el nombre del cliente y la cantidad de cada producto. Convierte las cantidades con <code>Number()</code>. Pregunta con <code>confirm()</code> si recogerá el pedido en tienda.</p>
-                    <ul>
-                        <li>Escribe con comillas simples un texto que contenga <code>Pedido "Taller de reparación"</code>.</li>
-                        <li>Escribe con comillas dobles el nombre <code>Friends' Repair Club</code>.</li>
-                        <li>Usa acentos graves e interpolación para incluir el nombre del cliente en un mensaje. Escribe también ese mensaje mediante concatenación.</li>
-                    </ul>
-
-                    <h4>3. Organiza y modifica las cantidades</h4>
-                    <p>Crea un vector con las dos primeras cantidades y añade la tercera con <code>push()</code>. El cliente solicita después <strong>dos adaptadores más</strong>: actualiza esa posición con <code>+=</code>. Muestra el vector, su longitud y su último elemento.</p>
-                    <p>En una prueba aparte, añade una cuarta cantidad por error y retírala con <code>pop()</code>. Comprueba que el pedido vuelve a tener tres productos antes de calcularlo.</p>
-
-                    <h4>4. Calcula el presupuesto</h4>
+                    <p><strong>Repaso de los puntos 1 a 5. Un pedido sencillo</strong></p>
+                    <p>Una memoria USB cuesta <strong>8 euros</strong>. Crea un programa que pida cuántas unidades quiere el cliente y muestre el importe del pedido.</p>
                     <ol>
-                        <li>Multiplica cada cantidad por su precio y suma los tres importes para obtener el subtotal.</li>
-                        <li>Aplica un descuento del 10 % si el subtotal alcanza 10000 céntimos. Usa una comparación y el operador ternario; en los demás casos, el descuento es cero.</li>
-                        <li>Añade 600 céntimos si se envía el pedido o cero si se recoge en tienda. Calcula primero el descuento y después el transporte.</li>
-                        <li>Comprueba si las tres cantidades caben en las existencias y combina los resultados con <code>&amp;&amp;</code> para obtener <code>hayStock</code>.</li>
-                        <li>Muestra con una plantilla de cadena el cliente, las cantidades finales, el subtotal, el descuento, el transporte, el total en euros y el valor de <code>hayStock</code>. Usa <code>\n</code> para separar las líneas.</li>
+                        <li>Crea <code>pedido.html</code> y <code>pedido.js</code>. Enlaza el JavaScript externo con <code>defer</code> y comienza el script con <code>"use strict";</code>.</li>
+                        <li>Guarda el precio en una constante. Pide con <code>prompt()</code> el nombre del cliente y la cantidad de memorias; convierte la cantidad con <code>Number()</code>. Supón que el usuario acepta e introduce un entero positivo.</li>
+                        <li>Calcula el total multiplicando el precio por la cantidad. Muestra en consola un mensaje con el nombre, las unidades y el total, usando una plantilla de cadena.</li>
+                        <li>Prueba con 3 unidades y después con 5: los totales deben ser 24 y 40 euros. Añade comentarios breves que expliquen la conversión y el cálculo.</li>
                     </ol>
-                    <p>Se trata de un presupuesto: muestra la disponibilidad, pero no modifiques las existencias.</p>
-
-                    <h4>5. Comprueba y explica</h4>
-                    <p><strong>Prueba principal:</strong> introduce 12 cables, 8 adaptadores y 5 memorias. Después de la modificación, el vector debe ser <code>[12, 10, 5]</code>. El subtotal será 132 euros, el descuento 13,20 euros y el total 118,80 euros con recogida o 124,80 euros con envío. <code>hayStock</code> debe ser <code>true</code>. No es obligatorio formatear la salida con dos decimales.</p>
-                    <p>Repite con un pedido pequeño sin descuento y otro que supere las existencias. Recuerda que en cada ejecución se añaden dos adaptadores.</p>
-                    <p>En <code>pedido.txt</code>, anota las entradas y los resultados de las tres pruebas y responde brevemente:</p>
-                    <ul>
-                        <li>¿Qué ejecuta el navegador y qué relación existe entre JavaScript y ECMAScript? ¿Para qué has usado <code>defer</code>?</li>
-                        <li>¿Qué tipos tienen las respuestas de <code>prompt()</code>, las cantidades convertidas y el resultado de <code>confirm()</code>? Compruébalo con <code>typeof</code> y usa <code>Array.isArray()</code> para identificar el vector.</li>
-                        <li>¿Por qué <code>"12" + "8"</code> no da el mismo resultado que la suma de los números convertidos? Compara también <code>"12" == 12</code> y <code>"12" === 12</code>.</li>
-                        <li>¿Por qué puedes cambiar una posición de un vector declarado con <code>const</code>? Crea además una variable dentro de un bloque y comprueba, en una prueba separada, qué sucede al intentar usarla fuera.</li>
-                        <li>¿Qué ocurre con <code>Number("")</code>, <code>Number(null)</code> y <code>Number("doce")</code>? Explica qué entradas habría que controlar en una versión posterior.</li>
-                    </ul>
-                    <p>Coloca un punto de interrupción antes del subtotal y revisa las cantidades. Corrige los errores que encuentres y entrega <code>pedido.html</code>, <code>pedido.js</code> y <code>pedido.txt</code>.</p>
+                    <p>Utiliza nombres descriptivos e indentación adecuada. Entrega <code>pedido.html</code> y <code>pedido.js</code>.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
