@@ -107,7 +107,8 @@
             <li><a href="#sec4_4" class="subsection-link">4.4. Tipos de datos</a></li>
             <li><a href="#sec4_5" class="subsection-link">4.5. Tipado dinámico y typeof</a></li>
             <li><a href="#sec4_6" class="subsection-link">4.6. Cadenas e interpolación</a></li>
-            <li><a href="#sec4_7" class="subsection-link">4.7. Ámbito de bloque</a></li>
+            <li><a href="#sec4_7" class="subsection-link">4.7. Vectores y arreglos (arrays)</a></li>
+            <li><a href="#sec4_8" class="subsection-link">4.8. Ámbito de bloque</a></li>
             <li><a href="#sec5">5. Operadores, expresiones y conversiones</a></li>
             <li><a href="#sec5_1" class="subsection-link">5.1. Operadores aritméticos y de asignación</a></li>
             <li><a href="#sec5_2" class="subsection-link">5.2. Comparaciones e igualdad estricta</a></li>
@@ -725,7 +726,7 @@ despedir();</code></pre>
 usuario.nombre = "Luis";
 console.log(usuario.nombre); // Luis</code></pre>
                     <p>La ventaja de <code>const</code> frente a <code>let</code> es que deja clara la intención de no reasignar el nombre y permite detectar una reasignación accidental, porque produce un error. Utiliza <code>const</code> cuando no necesites sustituir el valor y <code>let</code> cuando deba cambiar; la elección ayuda a entender y mantener el código.</p>
-                    <p>Los objetos y arrays se estudiarán más adelante. Para constantes de configuración puede emplearse <code>MAYUSCULAS_CON_GUIONES_BAJOS</code>, como <code>MAX_INTENTOS</code>; declarar con <code>const</code> no obliga a escribir todos los nombres en mayúsculas.</p>
+                    <p>Los arrays se introducen en el <a href="#sec4_7">apartado 4.7</a>; los objetos se estudiarán más adelante. Para constantes de configuración puede emplearse <code>MAYUSCULAS_CON_GUIONES_BAJOS</code>, como <code>MAX_INTENTOS</code>; declarar con <code>const</code> no obliga a escribir todos los nombres en mayúsculas.</p>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · const y sus usos</a>
                 </div>
                 
@@ -825,7 +826,45 @@ console.log(&#96;Hola, $&#123;nombre&#125;. Bienvenida a $&#123;curso&#125;.&#96
 
                 
 
-                <h3 id="sec4_7">4.7. Ámbito de bloque</h3>
+                <h3 id="sec4_7">4.7. Vectores y arreglos (arrays)</h3>
+                <p>Un <strong>arreglo</strong> o <strong>array</strong> permite guardar varios valores ordenados bajo un mismo nombre. Un arreglo de una dimensión suele llamarse <strong>vector</strong>. En JavaScript se utiliza el tipo <code>Array</code>: accedemos a cada elemento mediante su índice.</p>
+                <h4>Crear un vector y acceder a sus elementos</h4>
+                <p>Escribimos los elementos entre corchetes, separados por comas. Los índices empiezan en <strong>cero</strong>. También podemos crear un array vacío con <code>[]</code>.</p>
+                <pre><code>const notas = [7, 5, 9];
+const nombres = ["Ana", "Luis", "Marta"];
+const pendientes = [];
+
+console.log(notas[0]);     // 7: primer elemento.
+console.log(notas[1]);     // 5: segundo elemento.
+console.log(notas[2]);     // 9: tercer elemento.
+console.log(notas.length); // 3: longitud del array.
+console.log(notas[notas.length - 1]); // 9: último elemento.</code></pre>
+                <div class="didactic-note"><p><strong>Longitud e índice no son lo mismo.</strong> En este vector hay tres elementos, con índices <code>0</code>, <code>1</code> y <code>2</code>. Leer <code>notas[3]</code> devuelve <code>undefined</code>, porque esa posición no existe. En los arrays de estos ejemplos, sin posiciones vacías, <code>length</code> coincide con el número de elementos.</p></div>
+                <h4>Modificar, añadir y quitar elementos</h4>
+                <p>Podemos asignar un nuevo valor a una posición existente. El método <code>push()</code> añade elementos al final y devuelve la nueva longitud. El método <code>pop()</code> elimina el último elemento y lo devuelve; si el array está vacío, devuelve <code>undefined</code>.</p>
+                <pre><code>const colores = ["rojo", "azul"];
+
+colores[0] = "verde";
+console.log(colores); // ["verde", "azul"]
+
+const longitud = colores.push("amarillo");
+console.log(longitud); // 3
+console.log(colores);  // ["verde", "azul", "amarillo"]
+
+const ultimo = colores.pop();
+console.log(ultimo);   // "amarillo"
+console.log(colores);  // ["verde", "azul"]</code></pre>
+                <p><code>const</code> impide reasignar la variable, pero permite modificar el contenido del array. Por tanto, <code>colores[0] = "negro"</code> es válido; en cambio, <code>colores = ["blanco"]</code> provoca un error. Para añadir al final, utiliza <code>push()</code>: asignar a un índice muy alejado puede dejar posiciones vacías.</p>
+                <h4>Arrays y tipos de datos</h4>
+                <p>Los arrays de JavaScript pueden cambiar de tamaño y contener valores de distintos tipos, aunque agrupar datos del mismo tipo suele facilitar su tratamiento. Son objetos: <code>typeof</code> devuelve <code>"object"</code>. Para comprobar específicamente si un valor es un array se utiliza <code>Array.isArray()</code>.</p>
+                <pre><code>const datos = ["Ana", 20, true];
+
+console.log(typeof datos);         // "object"
+console.log(Array.isArray(datos)); // true
+console.log(Array.isArray("Ana")); // false</code></pre>
+                <div class="didactic-note"><p><strong>Practica en la consola.</strong> Crea un vector con tres precios, consulta el primero y el último, modifica el segundo y añade un cuarto con <code>push()</code>. Comprueba su longitud y elimina el último con <code>pop()</code>. Más adelante utilizaremos bucles para recorrer todos los elementos.</p></div>
+
+                <h3 id="sec4_8">4.8. Ámbito de bloque</h3>
                 <p>El <strong>ámbito</strong> determina desde dónde se puede utilizar una variable. Una variable declarada con <code>let</code> o <code>const</code> dentro de un bloque está disponible en ese bloque y en los que contiene, pero no fuera de él.</p>
                 <pre><code>const centro = "IES Ejemplo";
 
