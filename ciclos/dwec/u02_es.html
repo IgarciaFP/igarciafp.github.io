@@ -119,11 +119,10 @@
             <li><a href="#sec6">6. Estructuras de control</a></li>
             <li><a href="#sec6_1" class="subsection-link">6.1. Condiciones y valores truthy y falsy</a></li>
             <li><a href="#sec6_2" class="subsection-link">6.2. if, else if y else</a></li>
-            <li><a href="#sec6_3" class="subsection-link">6.3. Combinar condiciones y validar datos</a></li>
-            <li><a href="#sec6_4" class="subsection-link">6.4. switch: alternativas según un valor</a></li>
-            <li><a href="#sec6_5" class="subsection-link">6.5. Operador ternario</a></li>
-            <li><a href="#sec6_6" class="subsection-link">6.6. Repeticiones con for, while y do...while</a></li>
-            <li><a href="#sec6_7" class="subsection-link">6.7. Recorrer elementos del DOM con for...of</a></li>
+            <li><a href="#sec6_3" class="subsection-link">6.3. switch: alternativas según un valor</a></li>
+            <li><a href="#sec6_4" class="subsection-link">6.4. Operador ternario</a></li>
+            <li><a href="#sec6_5" class="subsection-link">6.5. Repeticiones con for, while y do...while</a></li>
+            <li><a href="#sec6_6" class="subsection-link">6.6. Recorrer elementos del DOM con for...of</a></li>
             <li><a href="#sec7">7. Funciones: organizar y reutilizar código</a></li>
             <li><a href="#sec7_1" class="subsection-link">7.1. Definición e invocación</a></li>
             <li><a href="#sec7_2" class="subsection-link">7.2. Parámetros, argumentos y valores predeterminados</a></li>
@@ -983,7 +982,7 @@ console.log(mensaje);</code></pre>
                             <tr><td><code>x = y</code></td><td>Binario</td><td>Asignación</td><td><code>let x; x = 4; → x vale 4</code></td></tr>
                             <tr><td><code>[operador]=</code></td><td>Binario</td><td>Asignación compuesta: combina una operación con la asignación de su resultado, por ejemplo <code>+=</code>, <code>-=</code> o <code>*=</code>. Los corchetes indican un marcador, no se escriben en el código.</td><td><code>let x = 9; x += 4;</code> → <code>x</code> vale <code>13</code>; equivale a <code>x = x + 4</code>.</td></tr>
                             <tr><td><code>x, y</code></td><td>Binario</td><td>Evalúa ambos operandos y devuelve el segundo</td><td><code>(3 + 2, 4 * 2) → 8</code></td></tr>
-                            <tr><td><code>condición ? valorSiVerdadera : valorSiFalsa</code></td><td>Ternario</td><td>Devuelve uno de dos valores según la condición. Solo evalúa la alternativa elegida. Se desarrolla en el <a href="#sec6_5">apartado 6.5</a>.</td><td><code>const edad = 20;</code><br><code>edad &gt;= 18 ? "Mayor de edad" : "Menor de edad"</code> → <code>"Mayor de edad"</code></td></tr>
+                            <tr><td><code>condición ? valorSiVerdadera : valorSiFalsa</code></td><td>Ternario</td><td>Devuelve uno de dos valores según la condición. Solo evalúa la alternativa elegida. Se desarrolla en el <a href="#sec6_4">apartado 6.4</a>.</td><td><code>const edad = 20;</code><br><code>edad &gt;= 18 ? "Mayor de edad" : "Menor de edad"</code> → <code>"Mayor de edad"</code></td></tr>
                             <tr><td><code>~x</code></td><td>Unario</td><td>NOT bit a bit: invierte todos los bits.</td><td><code>~5 → -6</code></td></tr>
                             <tr><td><code>x &amp; y</code></td><td>Binario</td><td>AND bit a bit: cada bit vale 1 si ambos bits son 1.</td><td><code>6 &amp; 3 → 2</code></td></tr>
                             <tr><td><code>x | y</code></td><td>Binario</td><td>OR bit a bit: cada bit vale 1 si al menos uno de los bits es 1.</td><td><code>6 | 3 → 7</code></td></tr>
@@ -1281,14 +1280,7 @@ undefined + 2
                 </ul>
                 <p>Cuando se comprueba un dato concreto, una condición explícita suele expresar mejor la intención: <code>cantidad === 0</code> comprueba un cero, mientras que <code>!cantidad</code> acepta cualquier valor <em>falsy</em>.</p>
 
-                <div class="activity-card activity-callout" id="actividad-jsinfo-truthy">
-                    <p><strong>2.17. Predecir una condición con texto</strong></p>
-                    <p>Predice si aparece el mensaje. Repite cambiando la condición por <code>0</code>, <code>""</code> y <code>"false"</code>. Comprueba y explica cada resultado.</p><pre><code>if ("0") {
-    console.log("La condición se cumple");
-}</code></pre>
-                    
-                    <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
-                </div>
+                
 
 
                 <h3 id="sec6_2">6.2. if, else if y else</h3>
@@ -1324,63 +1316,26 @@ if (temperatura &lt; 15) {
                 
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-signo">
-                    <p><strong>2.18. Distinguir positivo, negativo y cero</strong></p>
-                    <p>Pide un número y muestra <code>1</code> si es positivo, <code>-1</code> si es negativo y <code>0</code> si vale cero. Usa <code>if</code>, <code>else if</code> y <code>else</code>. Para esta actividad presupón una entrada numérica válida.</p>
-                    
+                    <p><strong>2.17. Clasificar un número: tipo, signo y paridad</strong></p>
+                    <p>Pide un número con <code>prompt()</code>, conviértelo con <code>Number()</code> y muestra su clasificación mediante <code>if</code>, <code>else if</code> y <code>else</code>. Para esta actividad presupón que el usuario introduce un número finito válido y acepta el diálogo.</p>
+                    <ol>
+                        <li><strong>Tipo:</strong> indica si es entero o real no entero (con parte decimal). Puedes comprobar si el resto de dividirlo entre 1 es cero. Esta clasificación es matemática: ambos se representan con el tipo <code>number</code> de JavaScript.</li>
+                        <li><strong>Signo:</strong> indica si es positivo, negativo o cero. El cero no es positivo ni negativo.</li>
+                        <li><strong>Paridad:</strong> solo si es entero, indica si es par o impar mediante el resto de dividirlo entre 2. Para un real no entero, muestra «No procede». El cero es par.</li>
+                    </ol>
+                    <p>Muestra los tres resultados en un único mensaje. Por ejemplo: <code>-8: entero, negativo y par</code> o <code>3.5: real no entero, positivo; paridad: no procede</code>.</p>
+                    <p><strong>Comprobación:</strong> prueba con <code>8</code>, <code>-7</code>, <code>0</code>, <code>3.5</code> y <code>-2.5</code>. Para detectar impares negativos, recuerda que el resto puede ser negativo: comprueba si es distinto de cero, no si es igual a 1.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-7-2">
-                    <p><strong>2.19. Clasificar una puntuación</strong></p>
+                    <p><strong>2.18. Clasificar una puntuación</strong></p>
                     <p>Con una puntuación numérica, muestra «Revisar» si queda fuera de 0–100, «Inicial» entre 0 y 49, «Intermedio» entre 50 y 79 y «Avanzado» entre 80 y 100. Resuélvelo con <code>if</code>, <code>else if</code> y <code>else</code>.</p>
                     <p><strong>Comprobación:</strong> Comprueba -1, 0, 49, 50, 79, 80, 100 y 101; cada caso debe generar un único mensaje.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec6_3">6.3. Combinar condiciones y validar datos</h3>
-                <p>Los operadores <code>&amp;&amp;</code>, <code>||</code> y <code>!</code> permiten combinar comprobaciones sin encadenar muchos bloques:</p>
-                <pre><code>const tieneEntrada = true;
-const salaAbierta = true;
-
-if (tieneEntrada &amp;&amp; salaAbierta) {
-    console.log("Puedes acceder");
-} else {
-    console.log("No se cumplen las condiciones de acceso");
-}</code></pre>
-                <aside class="function-card" id="ficha-funcion-23" aria-label="Ficha de función: texto.trim()">
-                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
-                    <p class="function-signature"><code>texto.trim()</code></p>
-                    <p>Elimina los espacios en blanco de los extremos de una cadena.</p><p><strong>Parámetros:</strong> No recibe parámetros. Se invoca sobre la cadena que se quiere tratar.</p><p><strong>Devuelve:</strong> Una nueva cadena; no modifica la original ni elimina los espacios interiores.</p>
-                </aside>
-                                <p>Para procesar una entrada textual, comprueba primero si está vacía y después si la conversión es válida. <code>trim()</code> devuelve una cadena sin espacios en blanco al principio ni al final:</p>
-                <pre><code>const texto = " 6 ";
-const cantidad = Number(texto);
-
-if (texto.trim() === "") {
-    console.log("Introduce una cantidad");
-} else if (Number.isNaN(cantidad) || cantidad &lt; 0) {
-    console.log("Introduce un número igual o mayor que cero");
-} else {
-    console.log(`Cantidad aceptada: ${cantidad}`);
-}</code></pre>
-                <p>El ejemplo presupone que <code>texto</code> es una cadena. Si procede de <code>prompt()</code>, comprueba antes si es <code>null</code>, porque cancelar el diálogo no devuelve texto y no permite llamar a <code>trim()</code>.</p>
-                
-
-                <div class="activity-card activity-callout" id="actividad-jsinfo-intervalos">
-                    <p><strong>2.20. Comprobar un intervalo</strong></p>
-                    <ol><li>Comprueba si una edad está entre 14 y 90, incluidos ambos límites.</li><li>Escribe dos condiciones para detectar edades fuera del intervalo: una con negación y otra sin ella.</li><li>Prueba con 13, 14, 50, 90 y 91. Anota lo esperado y lo obtenido.</li></ol>
-                    
-                    <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
-                </div>
-
-                <div class="activity-card activity-callout" id="actividad-complementaria-7-3">
-                    <p><strong>2.21. Acceso a una sesión de práctica</strong></p>
-                    <p>Pide un nombre con <code>prompt()</code>: cancelar o introducir solo espacios termina con un aviso. Si el nombre es <code>alumno</code>, solicita la clave de prueba <code>dwec</code>; cualquier otra combinación muestra «Acceso denegado». Combina condiciones y comprueba <code>null</code> antes de usar <code>trim()</code>.</p>
-                    <p><strong>Comprobación:</strong> Prueba cancelación, vacío, nombre desconocido y clave correcta e incorrecta. Es una simulación didáctica, no un sistema real de autenticación.</p>
-                    <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
-                </div>
-
-                <h3 id="sec6_4">6.4. switch: alternativas según un valor</h3>
+                <h3 id="sec6_3">6.3. switch: alternativas según un valor</h3>
                 <aside class="function-card" id="ficha-control-switch" aria-label="Ficha de estructura de control: Selección entre casos">
                     <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de estructura de control</p>
                     <p class="function-signature"><code>switch (valor) { case opcion: ...; break; default: ...; }</code></p>
@@ -1425,22 +1380,22 @@ switch (dia) {
     default:
         console.log("Día no reconocido");
 }</code></pre><p>Al coincidir con <code>"sábado"</code>, la ejecución alcanza el mismo bloque que <code>"domingo"</code>. No hay instrucciones entre ambas etiquetas. El <code>break</code> común evita continuar por el siguiente grupo.</p><div class="resource-card expansion-card expansion-purple"><div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Agrupación de case</span><span class="resource-badge badge-reading">Ampliación</span></div><p class="resource-description">Amplía los conceptos de este apartado con la explicación y los ejemplos de JavaScript.info.</p><div class="resource-links"><a href="https://es.javascript.info/switch" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Acceder al contenido <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></div></div>
-                <div class="activity-card activity-callout" id="relacion-ejercicio-13"><p><strong>2.22. Cálculo de la letra del DNI</strong></p><ol><li>Pide la parte numérica de un DNI, sin letra.</li><li>Calcula el resto de dividir el número entre 23.</li><li>Utiliza <code>switch</code> para asignar la letra correspondiente y muestra el DNI completo.</li></ol><div class="table-scroll" role="region" aria-label="Correspondencia entre resto y letra del DNI" tabindex="0"><table><thead><tr><th scope="col">Resto</th><th scope="col">Letra</th></tr></thead><tbody><tr><td>0</td><td>T</td></tr><tr><td>1</td><td>R</td></tr><tr><td>2</td><td>W</td></tr><tr><td>3</td><td>A</td></tr><tr><td>4</td><td>G</td></tr><tr><td>5</td><td>M</td></tr><tr><td>6</td><td>Y</td></tr><tr><td>7</td><td>F</td></tr><tr><td>8</td><td>P</td></tr><tr><td>9</td><td>D</td></tr><tr><td>10</td><td>X</td></tr><tr><td>11</td><td>B</td></tr><tr><td>12</td><td>N</td></tr><tr><td>13</td><td>J</td></tr><tr><td>14</td><td>Z</td></tr><tr><td>15</td><td>S</td></tr><tr><td>16</td><td>Q</td></tr><tr><td>17</td><td>V</td></tr><tr><td>18</td><td>H</td></tr><tr><td>19</td><td>L</td></tr><tr><td>20</td><td>C</td></tr><tr><td>21</td><td>K</td></tr><tr><td>22</td><td>E</td></tr></tbody></table></div><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
+                <div class="activity-card activity-callout" id="relacion-ejercicio-13"><p><strong>2.19. Cálculo de la letra del DNI</strong></p><ol><li>Pide la parte numérica de un DNI, sin letra.</li><li>Calcula el resto de dividir el número entre 23.</li><li>Utiliza <code>switch</code> para asignar la letra correspondiente y muestra el DNI completo.</li></ol><div class="table-scroll" role="region" aria-label="Correspondencia entre resto y letra del DNI" tabindex="0"><table><thead><tr><th scope="col">Resto</th><th scope="col">Letra</th></tr></thead><tbody><tr><td>0</td><td>T</td></tr><tr><td>1</td><td>R</td></tr><tr><td>2</td><td>W</td></tr><tr><td>3</td><td>A</td></tr><tr><td>4</td><td>G</td></tr><tr><td>5</td><td>M</td></tr><tr><td>6</td><td>Y</td></tr><tr><td>7</td><td>F</td></tr><tr><td>8</td><td>P</td></tr><tr><td>9</td><td>D</td></tr><tr><td>10</td><td>X</td></tr><tr><td>11</td><td>B</td></tr><tr><td>12</td><td>N</td></tr><tr><td>13</td><td>J</td></tr><tr><td>14</td><td>Z</td></tr><tr><td>15</td><td>S</td></tr><tr><td>16</td><td>Q</td></tr><tr><td>17</td><td>V</td></tr><tr><td>18</td><td>H</td></tr><tr><td>19</td><td>L</td></tr><tr><td>20</td><td>C</td></tr><tr><td>21</td><td>K</td></tr><tr><td>22</td><td>E</td></tr></tbody></table></div><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-7-4">
-                    <p><strong>2.23. Menú de ayuda con switch</strong></p>
+                    <p><strong>2.20. Menú de ayuda con switch</strong></p>
                     <p>Pide una opción textual: <code>inicio</code>, <code>ayuda</code>, <code>soporte</code> o <code>salir</code>. Usa <code>switch</code>: ayuda y soporte comparten mensaje; las demás tienen respuesta propia. Añade <code>default</code>. Reescribe después la selección con <code>if...else</code>.</p>
                     <p><strong>Comprobación:</strong> Ambas versiones deben producir lo mismo para las cuatro opciones y para una desconocida.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="extra-eniun-temperatura">
-                    <p><strong>2.24. Conversor de temperatura</strong></p>
+                    <p><strong>2.21. Conversor de temperatura</strong></p>
                     <p>Pide temperatura y sentido de conversión. Usa <code>switch</code>: Celsius a Fahrenheit (<code>C * 9 / 5 + 32</code>) o al contrario (<code>(F - 32) * 5 / 9</code>). Contempla una opción desconocida. Comprueba que 0 °C equivale a 32 °F.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec6_5">6.5. Operador ternario</h3>
+                <h3 id="sec6_4">6.4. Operador ternario</h3>
                 <aside class="function-card" id="ficha-control-ternario" aria-label="Ficha de operador: Operador condicional">
                     <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de operador</p>
                     <p class="function-signature"><code>condicion ? expresionSiVerdadera : expresionSiFalsa</code></p>
@@ -1457,16 +1412,16 @@ console.log(mensaje); // En línea</code></pre>
                 <p>Es una expresión: produce un valor que puede asignarse a una variable. Úsalo para elecciones sencillas; si cada alternativa requiere varias instrucciones, emplea <code>if...else</code>. Evita anidar ternarios que dificulten la lectura.</p>
                 
 
-                <div class="activity-card activity-callout" id="relacion-ejercicio-7"><p><strong>2.25. Operadores varios</strong></p><ol><li>Parte de <code>a = 10</code> y <code>b = 5</code>. Usa <code>+=</code> para sumar 5 a <code>a</code>, <code>*=</code> para multiplicar <code>b</code> por 3 y <code>/=</code> para dividir <code>a</code> entre 2. Muestra cada resultado.</li><li>Asigna ahora las cadenas <code>"10"</code> y <code>"5"</code> a <code>a</code> y <code>b</code>. Muestra su suma, multiplicación, resta y división.</li><li>Utiliza un ternario para asignar a <code>resultado</code> «A es mayor» si <code>a &gt; b</code>, o «B es mayor o igual» en otro caso. Muestra el resultado y explica qué se compara cuando ambos operandos son cadenas.</li><li>Usa <code>typeof</code> para mostrar el tipo de <code>a</code>.</li><li>Pon un ejemplo de multiplicación por 2 con desplazamiento a la izquierda y otro de división por 2 con desplazamiento a la derecha. Utiliza enteros positivos pequeños y un número par para la división. Consulta la explicación de <a href="#operadores-bits">operadores bit a bit</a>.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
+                <div class="activity-card activity-callout" id="relacion-ejercicio-7"><p><strong>2.22. Operadores varios</strong></p><ol><li>Parte de <code>a = 10</code> y <code>b = 5</code>. Usa <code>+=</code> para sumar 5 a <code>a</code>, <code>*=</code> para multiplicar <code>b</code> por 3 y <code>/=</code> para dividir <code>a</code> entre 2. Muestra cada resultado.</li><li>Asigna ahora las cadenas <code>"10"</code> y <code>"5"</code> a <code>a</code> y <code>b</code>. Muestra su suma, multiplicación, resta y división.</li><li>Utiliza un ternario para asignar a <code>resultado</code> «A es mayor» si <code>a &gt; b</code>, o «B es mayor o igual» en otro caso. Muestra el resultado y explica qué se compara cuando ambos operandos son cadenas.</li><li>Usa <code>typeof</code> para mostrar el tipo de <code>a</code>.</li><li>Pon un ejemplo de multiplicación por 2 con desplazamiento a la izquierda y otro de división por 2 con desplazamiento a la derecha. Utiliza enteros positivos pequeños y un número par para la división. Consulta la explicación de <a href="#operadores-bits">operadores bit a bit</a>.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-7-5">
-                    <p><strong>2.26. Elegir una tarifa</strong></p>
+                    <p><strong>2.23. Elegir una tarifa</strong></p>
                     <p>Asigna con <code>if...else</code> una tarifa de 3 euros a menores de 12 años y de 6 al resto. Reescribe únicamente la asignación con el operador ternario y conserva la misma salida.</p>
                     <p><strong>Comprobación:</strong> Prueba 11, 12 y 13. Explica qué expresión constituye la condición y cuáles son los dos resultados.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec6_6">6.6. Repeticiones con for, while y do...while</h3>
+                <h3 id="sec6_5">6.5. Repeticiones con for, while y do...while</h3>
                 <aside class="function-card" id="ficha-control-for" aria-label="Ficha de estructura de control: Bucle con contador">
                     <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de estructura de control</p>
                     <p class="function-signature"><code>for (inicializacion; condicion; actualizacion) { ... }</code></p>
@@ -1551,22 +1506,22 @@ for (let fila = 1; fila &lt;= 2; fila++) {
     }
 }
 // 1 1, 1 2, 1 3, 2 1</code></pre><p>Utilízalas cuando aclaren una salida de bucles anidados. Más adelante, una función con <code>return</code> puede ofrecer otra organización.</p></div><div class="resource-card expansion-card expansion-purple"><div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Bucles</span><span class="resource-badge badge-reading">Ampliación</span></div><p class="resource-description">Amplía los conceptos de este apartado con la explicación y los ejemplos de JavaScript.info.</p><div class="resource-links"><a href="https://es.javascript.info/while-for" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Acceder al contenido <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></div></div>
-                <div class="activity-card activity-callout" id="relacion-ejercicio-10"><p><strong>2.27. Par, impar y primo</strong></p><ol><li>Pide un número entero e indica si es par o impar.</li><li>Si es impar, comprueba además si es primo. Un primo es un entero mayor que 1 divisible únicamente por 1 y por sí mismo. Usa un bucle para comprobar divisores.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-11"><p><strong>2.28. Juego de adivinanza</strong></p><p>Genera un número entero aleatorio entre 1 y 100. Para obtener un entero entre <code>min</code> y <code>max</code>, ambos incluidos, puedes usar:</p><pre><code>Math.floor(Math.random() * (max - min + 1)) + min;</code></pre><p><code>Math.random()</code> devuelve un número desde 0 incluido hasta 1 excluido; <code>Math.floor()</code> redondea hacia abajo.</p><ol><li>Pide al usuario que adivine el número y permite un máximo de 10 intentos.</li><li>Después de cada fallo, indica si el número secreto es mayor o menor que el introducido.</li><li>Si acierta, felicítalo y termina el juego. Si agota los intentos, muestra el número correcto.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-12"><p><strong>2.29. Calculadora simple con repetición</strong></p><ol><li>Pide dos números y la operación que se desea realizar: suma, resta, multiplicación, división, potencia o módulo.</li><li>Realiza la operación y muestra el resultado. Gestiona una operación desconocida y el divisor cero en división y módulo.</li><li>Pregunta si desea realizar otra operación con nuevos números o salir. Repite el proceso mientras decida continuar.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-14"><p><strong>2.30. Clasificar triángulos</strong></p><ol><li>Lee los tres lados de cada uno de tres triángulos.</li><li>Para cada triángulo, indica si es equilátero (tres lados iguales), isósceles (exactamente dos lados iguales) o escaleno (todos distintos).</li><li>Cuenta cuántos triángulos hay de cada tipo.</li><li>Indica el tipo con menor cantidad; si hay empate, muestra todos los tipos empatados.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-15"><p><strong>2.31. Números primos y tiempo de ejecución</strong></p><p>Un primo es un número natural mayor que 1 con solo dos divisores: 1 y él mismo.</p><ol><li>Declara la constante <code>MAX = 3560</code> y calcula todos los números primos hasta ese valor. En la primera versión, comprueba los posibles divisores de cada <code>num</code> desde 2 hasta <code>num - 1</code>.</li><li>Cronometra el bucle: guarda <code>performance.now()</code> antes y después de ejecutarlo y resta el tiempo inicial al final. El resultado es una duración en milisegundos.</li><li>Optimiza la comprobación probando únicamente divisores menores o iguales que <code>Math.sqrt(num)</code>. Busca una explicación de esta propiedad y añádela, con su fuente, a los comentarios.</li><li>Comprueba que ambas versiones obtienen los mismos primos y compara sus tiempos. Mide en las mismas condiciones y muestra los resultados fuera del tramo cronometrado.</li></ol><p><code>Math.sqrt(numero)</code> devuelve la raíz cuadrada. <code>performance.now()</code> proporciona una marca temporal en milisegundos para medir intervalos.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
+                <div class="activity-card activity-callout" id="relacion-ejercicio-10"><p><strong>2.24. Par, impar y primo</strong></p><ol><li>Pide un número entero e indica si es par o impar.</li><li>Si es impar, comprueba además si es primo. Un primo es un entero mayor que 1 divisible únicamente por 1 y por sí mismo. Usa un bucle para comprobar divisores.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-11"><p><strong>2.25. Juego de adivinanza</strong></p><p>Genera un número entero aleatorio entre 1 y 100. Para obtener un entero entre <code>min</code> y <code>max</code>, ambos incluidos, puedes usar:</p><pre><code>Math.floor(Math.random() * (max - min + 1)) + min;</code></pre><p><code>Math.random()</code> devuelve un número desde 0 incluido hasta 1 excluido; <code>Math.floor()</code> redondea hacia abajo.</p><ol><li>Pide al usuario que adivine el número y permite un máximo de 10 intentos.</li><li>Después de cada fallo, indica si el número secreto es mayor o menor que el introducido.</li><li>Si acierta, felicítalo y termina el juego. Si agota los intentos, muestra el número correcto.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-12"><p><strong>2.26. Calculadora simple con repetición</strong></p><ol><li>Pide dos números y la operación que se desea realizar: suma, resta, multiplicación, división, potencia o módulo.</li><li>Realiza la operación y muestra el resultado. Gestiona una operación desconocida y el divisor cero en división y módulo.</li><li>Pregunta si desea realizar otra operación con nuevos números o salir. Repite el proceso mientras decida continuar.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-14"><p><strong>2.27. Clasificar triángulos</strong></p><ol><li>Lee los tres lados de cada uno de tres triángulos.</li><li>Para cada triángulo, indica si es equilátero (tres lados iguales), isósceles (exactamente dos lados iguales) o escaleno (todos distintos).</li><li>Cuenta cuántos triángulos hay de cada tipo.</li><li>Indica el tipo con menor cantidad; si hay empate, muestra todos los tipos empatados.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-15"><p><strong>2.28. Números primos y tiempo de ejecución</strong></p><p>Un primo es un número natural mayor que 1 con solo dos divisores: 1 y él mismo.</p><ol><li>Declara la constante <code>MAX = 3560</code> y calcula todos los números primos hasta ese valor. En la primera versión, comprueba los posibles divisores de cada <code>num</code> desde 2 hasta <code>num - 1</code>.</li><li>Cronometra el bucle: guarda <code>performance.now()</code> antes y después de ejecutarlo y resta el tiempo inicial al final. El resultado es una duración en milisegundos.</li><li>Optimiza la comprobación probando únicamente divisores menores o iguales que <code>Math.sqrt(num)</code>. Busca una explicación de esta propiedad y añádela, con su fuente, a los comentarios.</li><li>Comprueba que ambas versiones obtienen los mismos primos y compara sus tiempos. Mide en las mismas condiciones y muestra los resultados fuera del tramo cronometrado.</li></ol><p><code>Math.sqrt(numero)</code> devuelve la raíz cuadrada. <code>performance.now()</code> proporciona una marca temporal en milisegundos para medir intervalos.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-7-6">
-                    <p><strong>2.32. Tres bucles, una cuenta atrás</strong></p>
+                    <p><strong>2.29. Tres bucles, una cuenta atrás</strong></p>
                     <p>Muestra los enteros de 5 a 1 y el mensaje «Fin». Escribe versiones con <code>for</code>, <code>while</code> y <code>do...while</code>. Cambia después el valor inicial a cero y compara cuántas veces entra cada versión en el cuerpo.</p>
                     <p><strong>Comprobación:</strong> Explica la diferencia del <code>do...while</code> y evita que alguna versión se repita indefinidamente.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="extra-eniun-factorial">
-                    <p><strong>2.33. Calcular un factorial</strong></p>
+                    <p><strong>2.30. Calcular un factorial</strong></p>
                     <p>Calcula con <code>for</code> el producto de los enteros desde 1 hasta un número dado. Inicializa el acumulador en 1. Prueba 0, 1 y 5: resultados 1, 1 y 120.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec6_7">6.7. Recorrer elementos del DOM con for...of</h3>
+                <h3 id="sec6_6">6.6. Recorrer elementos del DOM con for...of</h3>
                 <aside class="function-card" id="ficha-control-for-of" aria-label="Ficha de estructura de control: Recorrido de valores">
                     <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de estructura de control</p>
                     <p class="function-signature"><code>for (const elemento of iterable) { ... }</code></p>
@@ -1592,14 +1547,14 @@ for (const parrafo of parrafos) {
                     <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Loops_and_iteration" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Bucles e iteración</a></div>
                 </div>
                 <div class="activity-card activity-callout" id="actividad-jsinfo-recorrer">
-                    <p><strong>2.34. Recorrer y marcar elementos</strong></p>
+                    <p><strong>2.31. Recorrer y marcar elementos</strong></p>
                     <p>Crea una tabla de tres filas y tres columnas. Asigna la clase <code>diagonal</code> a las tres celdas de su diagonal principal. Selecciónalas con <code>querySelectorAll()</code> y usa <code>for...of</code> para cambiar su fondo y mostrar su texto en consola. Comprueba que las otras seis no cambian.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-7-7">
-                    <p><strong>2.35. Inventario a partir del DOM</strong></p>
+                    <p><strong>2.32. Inventario a partir del DOM</strong></p>
                     <p>Escribe una lista HTML con cinco materiales. Selecciona sus elementos con <code>querySelectorAll()</code> y recórrelos con <code>for...of</code>. Construye un resumen de sus textos separado por comas y muéstralo en un párrafo existente.</p>
                     <p><strong>Comprobación:</strong> Añade un sexto material al HTML y recarga: el resumen debe incluirlo sin cambiar el JavaScript.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -1625,10 +1580,10 @@ mostrarInicio();</code></pre>
                 <p>Definir la función no ejecuta su cuerpo. Para <strong>invocarla</strong> se escribe su nombre seguido de paréntesis. En el ejemplo se muestra el mensaje dos veces porque hay dos llamadas.</p>
                 <p><code>mostrarInicio</code> referencia la función; <code>mostrarInicio()</code> la ejecuta. Esta diferencia explica por qué en <code>addEventListener()</code> se pasa el nombre del manejador sin los paréntesis de llamada.</p>
 
-                <div class="activity-card activity-callout" id="relacion-ejercicio-2"><p><strong>2.36. Saludo con una función y JavaScript externo</strong></p><ol><li>Añade al HTML un campo <code>&lt;input type="text" id="nombre"&gt;</code> con su etiqueta y un botón para saludar. Crea una función que lea el nombre mediante la propiedad <code>value</code> del campo y lo almacene en una variable.</li><li>Declara una constante con el valor <code>"¡Bienvenido!"</code> y combina el saludo con el nombre en una alerta, por ejemplo «¡Bienvenido, Ana!».</li><li>Guarda todo el JavaScript en un archivo externo y cárgalo mediante <code>&lt;script src="..." defer&gt;&lt;/script&gt;</code>. Registra la función con <code>addEventListener()</code> para que se ejecute al pulsar el botón y lea el valor actual del campo.</li><li>Modifica la función para que, en lugar de una alerta, introduzca el saludo en <code>&lt;div id="saludo"&gt;&lt;/div&gt;</code> mediante <code>textContent</code>.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
+                <div class="activity-card activity-callout" id="relacion-ejercicio-2"><p><strong>2.33. Saludo con una función y JavaScript externo</strong></p><ol><li>Añade al HTML un campo <code>&lt;input type="text" id="nombre"&gt;</code> con su etiqueta y un botón para saludar. Crea una función que lea el nombre mediante la propiedad <code>value</code> del campo y lo almacene en una variable.</li><li>Declara una constante con el valor <code>"¡Bienvenido!"</code> y combina el saludo con el nombre en una alerta, por ejemplo «¡Bienvenido, Ana!».</li><li>Guarda todo el JavaScript en un archivo externo y cárgalo mediante <code>&lt;script src="..." defer&gt;&lt;/script&gt;</code>. Registra la función con <code>addEventListener()</code> para que se ejecute al pulsar el botón y lea el valor actual del campo.</li><li>Modifica la función para que, en lugar de una alerta, introduzca el saludo en <code>&lt;div id="saludo"&gt;&lt;/div&gt;</code> mediante <code>textContent</code>.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-9-1">
-                    <p><strong>2.37. Invocar una función de presentación</strong></p>
+                    <p><strong>2.34. Invocar una función de presentación</strong></p>
                     <p>Define <code>mostrarTurnos()</code> para escribir tres turnos de una lista en un párrafo existente. Separa la definición de la llamada. Ejecuta una vez, elimina la llamada y recarga; después llama dos veces.</p>
                     <p><strong>Comprobación:</strong> Explica por qué definir una función no ejecuta su cuerpo y distingue sustituir el texto de acumularlo.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -1648,14 +1603,14 @@ saludar("Luis", "Buenos días"); // Buenos días, Luis</code></pre>
                 
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-parametros">
-                    <p><strong>2.38. Probar argumentos y valores predeterminados</strong></p>
+                    <p><strong>2.35. Probar argumentos y valores predeterminados</strong></p>
                     <p>Define una función que reciba un nombre y un mensaje predeterminado y los muestre en consola. Invócala con ambos argumentos, solo con el nombre, con <code>undefined</code> y con <code>""</code> como segundo argumento. Explica cuándo se aplica el valor predeterminado.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-9-2">
-                    <p><strong>2.39. Recuadro configurable</strong></p>
+                    <p><strong>2.36. Recuadro configurable</strong></p>
                     <p>Escribe <code>configurarRecuadro(ancho, alto = 60, color = &quot;blue&quot;)</code> para aplicar dimensiones en píxeles y color a un div existente. Usa los parámetros, sin pedir datos dentro de la función.</p>
                     <p><strong>Comprobación:</strong> Prueba una llamada completa, otra solo con ancho y otra pasando <code>undefined</code> como alto.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -1684,21 +1639,21 @@ console.log(resultado);          // undefined</code></pre>
                 
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-retorno">
-                    <p><strong>2.40. Devolver el menor y calcular una potencia</strong></p>
+                    <p><strong>2.37. Devolver el menor y calcular una potencia</strong></p>
                     <ol><li>Crea una función que devuelva el menor de dos números. Comprueba un caso creciente, otro decreciente y dos valores iguales.</li><li>Crea otra que calcule una potencia mediante multiplicaciones repetidas. Admite exponentes enteros desde 1. La función devuelve el resultado; la lectura y la presentación quedan fuera.</li><li>Prueba una base negativa y exponentes pares e impares. Anota resultados esperados y reales.</li></ol>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-9-3">
-                    <p><strong>2.41. Contar un carácter</strong></p>
+                    <p><strong>2.38. Contar un carácter</strong></p>
                     <p>Crea <code>contarCaracter(texto, caracter)</code> que recorra una cadena y devuelva cuántas veces aparece el carácter indicado. Supón un carácter sencillo y distingue mayúsculas de minúsculas; muestra el resultado fuera de la función.</p>
                     <p><strong>Comprobación:</strong> Prueba una cadena vacía, ninguna coincidencia y varias coincidencias. Evita <code>prompt()</code> y cambios del DOM dentro de la función.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="extra-eniun-descuento">
-                    <p><strong>2.42. Precio con descuento</strong></p>
+                    <p><strong>2.39. Precio con descuento</strong></p>
                     <p>Escribe <code>precioFinal(precio, porcentaje)</code>: devuelve el precio rebajado. Mantén la entrada y la salida fuera de la función. Comprueba 80 euros con descuentos del 0 %, 25 % y 100 %.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
@@ -1719,7 +1674,7 @@ console.log(crearPresentacion("Ana"));
                 <p>Para que una función sea fácil de reutilizar, conviene recibir mediante parámetros los datos que necesita y evitar modificar variables externas sin necesidad.</p>
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-variables-locales">
-                    <p><strong>2.43. Distinguir cambios locales y externos</strong></p>
+                    <p><strong>2.40. Distinguir cambios locales y externos</strong></p>
                     <p>Predice las dos salidas. Compruébalas y repite eliminando únicamente <code>let</code> dentro de la función. Explica qué variable se modifica en cada versión.</p><pre><code>let estado = "Pendiente";
 function revisar() {
     let estado = "Revisado";
@@ -1732,7 +1687,7 @@ console.log(estado);</code></pre>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-9-4">
-                    <p><strong>2.44. Un parámetro que no cambia el dato exterior</strong></p>
+                    <p><strong>2.41. Un parámetro que no cambia el dato exterior</strong></p>
                     <p>Declara <code>let cantidad = 12</code> fuera de una función <code>reducir(cantidad)</code>. Dentro, resta 2 al parámetro y devuelve el resultado. Muestra el retorno y la variable exterior. Repite usando un nombre distinto para el parámetro.</p>
                     <p><strong>Comprobación:</strong> Justifica qué variable cambia y verifica que dos llamadas con el mismo argumento dan el mismo resultado.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -1765,14 +1720,14 @@ console.log(aplicarTransformacion(5, function (valor) {
 <div class="resource-card expansion-card expansion-purple"><div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Expresiones de función</span><span class="resource-badge badge-reading">Ampliación</span></div><p class="resource-description">Funciones como valores, callbacks y diferencias respecto a las declaraciones.</p><a href="https://es.javascript.info/function-expressions" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Expresiones de función</a></div>
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-callbacks">
-                    <p><strong>2.45. Elegir y ejecutar una callback</strong></p>
+                    <p><strong>2.42. Elegir y ejecutar una callback</strong></p>
                     <p>Escribe una función que reciba una pregunta y dos callbacks. Según la respuesta de <code>confirm()</code>, debe ejecutar una u otra. Prueba primero con funciones guardadas en variables y después con expresiones de función pasadas directamente como argumentos. Comprueba que solo se ejecuta la acción elegida.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-9-5">
-                    <p><strong>2.46. Elegir una función sin ejecutarla todavía</strong></p>
+                    <p><strong>2.43. Elegir una función sin ejecutarla todavía</strong></p>
                     <p>Declara <code>let transformar</code> y asígnale una expresión de función que duplique o triplique un número según una variable de configuración. Invócala después de la selección. Guarda también su referencia en <code>otraTransformacion</code>.</p>
                     <p><strong>Comprobación:</strong> Comprueba ambas opciones y explica la diferencia entre guardar <code>transformar</code> y guardar <code>transformar(4)</code>.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -1832,10 +1787,10 @@ console.log(crearAviso());   // Operación completada</code></pre>
                 <p>Las funciones flecha no son intercambiables con <code>function</code> en todos los casos: no tienen su propio <code>this</code> y no se utilizan como constructores. Estos conceptos se estudiarán con los objetos. En los manejadores de esta unidad se utilizará <code>event.currentTarget</code> para acceder al elemento.</p>
                 
 
-                <div class="didactic-note" id="ayuda-cadenas-arrays"><h4>Apoyo: cadenas y arrays para los juegos</h4><p>Un array guarda una secuencia de valores, por ejemplo <code>const colores = ["rojo", "azul"];</code>. Los índices empiezan en cero: <code>colores[0]</code> obtiene el primero. Puedes modificar una posición con <code>colores[0] = "verde";</code> y consultar el número de elementos con <code>colores.length</code>. Recorre los índices con un <code>for</code>.</p><p><code>texto.split("")</code> convierte una palabra sencilla en un array de caracteres; <code>letras.join("")</code> los reúne en una cadena. <code>texto.includes(fragmento)</code> indica si lo contiene y <code>letras.indexOf(valor)</code> devuelve el índice de la primera coincidencia, o <code>-1</code> si no existe. Para descubrir todas las apariciones de una letra, recorre la palabra. Las cadenas no permiten cambiar una posición directamente; un array sí. Para este ejercicio, utiliza palabras sin emojis ni caracteres combinados.</p></div><div class="activity-card activity-callout" id="relacion-ejercicio-16"><p><strong>2.47. Ahorcado con funciones flecha</strong></p><p>Implementa un ahorcado usando exclusivamente funciones flecha para todas las funciones que definas. No necesitas gráficos; muestra la palabra oculta y los intentos restantes.</p><ol><li><code>elegirPalabra</code>: solicita y guarda la palabra secreta. Crea una representación con un guion bajo por letra; por ejemplo, «casa» se representa como «____».</li><li><code>adivinarLetra</code>: pide una letra. Si aparece en la palabra, descubre todas sus posiciones; si no, resta un intento.</li><li><code>juegoTerminado</code>: indica si se ha adivinado toda la palabra o se han agotado los intentos.</li><li><code>mostrarEstado</code>: muestra las letras descubiertas, los guiones bajos y los intentos restantes.</li><li><code>jugar</code>: llama a <code>elegirPalabra</code>, repite las peticiones de letras y la presentación del estado mientras no termine el juego, y anuncia si se gana o se pierde.</li></ol><p>Establece un máximo de 5 o 6 intentos. Puedes usar <code>split("")</code>, <code>join("")</code>, <code>includes()</code> o <code>indexOf()</code>, explicados en la ayuda anterior.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
+                <div class="didactic-note" id="ayuda-cadenas-arrays"><h4>Apoyo: cadenas y arrays para los juegos</h4><p>Un array guarda una secuencia de valores, por ejemplo <code>const colores = ["rojo", "azul"];</code>. Los índices empiezan en cero: <code>colores[0]</code> obtiene el primero. Puedes modificar una posición con <code>colores[0] = "verde";</code> y consultar el número de elementos con <code>colores.length</code>. Recorre los índices con un <code>for</code>.</p><p><code>texto.split("")</code> convierte una palabra sencilla en un array de caracteres; <code>letras.join("")</code> los reúne en una cadena. <code>texto.includes(fragmento)</code> indica si lo contiene y <code>letras.indexOf(valor)</code> devuelve el índice de la primera coincidencia, o <code>-1</code> si no existe. Para descubrir todas las apariciones de una letra, recorre la palabra. Las cadenas no permiten cambiar una posición directamente; un array sí. Para este ejercicio, utiliza palabras sin emojis ni caracteres combinados.</p></div><div class="activity-card activity-callout" id="relacion-ejercicio-16"><p><strong>2.44. Ahorcado con funciones flecha</strong></p><p>Implementa un ahorcado usando exclusivamente funciones flecha para todas las funciones que definas. No necesitas gráficos; muestra la palabra oculta y los intentos restantes.</p><ol><li><code>elegirPalabra</code>: solicita y guarda la palabra secreta. Crea una representación con un guion bajo por letra; por ejemplo, «casa» se representa como «____».</li><li><code>adivinarLetra</code>: pide una letra. Si aparece en la palabra, descubre todas sus posiciones; si no, resta un intento.</li><li><code>juegoTerminado</code>: indica si se ha adivinado toda la palabra o se han agotado los intentos.</li><li><code>mostrarEstado</code>: muestra las letras descubiertas, los guiones bajos y los intentos restantes.</li><li><code>jugar</code>: llama a <code>elegirPalabra</code>, repite las peticiones de letras y la presentación del estado mientras no termine el juego, y anuncia si se gana o se pierde.</li></ol><p>Establece un máximo de 5 o 6 intentos. Puedes usar <code>split("")</code>, <code>join("")</code>, <code>includes()</code> o <code>indexOf()</code>, explicados en la ayuda anterior.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-9-6">
-                    <p><strong>2.48. Transformar callbacks en flechas</strong></p>
+                    <p><strong>2.45. Transformar callbacks en flechas</strong></p>
                     <p>Define <code>ejecutarSegun(decision, si, no)</code> para invocar una de dos callbacks según un booleano. Pásale expresiones de función que devuelvan «Continuar» o «Cancelar». Reescríbelas como flechas; compara cuerpos de expresión y cuerpos con llaves y <code>return</code>.</p>
                     <p><strong>Comprobación:</strong> Las tres versiones deben devolver los mismos mensajes para <code>true</code> y <code>false</code>.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -1870,17 +1825,17 @@ boton.addEventListener("click", () =&gt; {
                     <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Guía de funciones</a>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · Funciones flecha</a></div>
                 </div>
-                <div class="activity-card activity-callout" id="relacion-ejercicio-17"><p><strong>2.49. Juego de dados contra el ordenador</strong></p><p>Programa una partida en la que el usuario y el ordenador lancen tres dados cada uno. Representa sus valores con caracteres, por ejemplo asteriscos, y actualiza la pantalla con <code>getElementById()</code>.</p><ol><li>Diseña una interfaz HTML con elementos identificados para mostrar los dados y el ganador.</li><li>Crea una función que devuelva el resultado de lanzar un dado, un entero entre 1 y 6. Usa <code>Math.random()</code> y <code>Math.floor()</code>.</li><li>Crea una función que clasifique los tres resultados como trío, pareja o ninguna combinación.</li><li>Crea una función que determine el ganador: un trío supera a una pareja y una pareja supera a ninguna combinación. Si ambos tienen pareja o ambos tienen trío, gana la combinación de mayor valor. Si ninguno tiene combinación, gana la suma mayor. Si el criterio aplicable da el mismo valor, declara empate.</li><li>Implementa los lanzamientos y muestra los resultados y el ganador en el DOM. Puedes guardar los tres valores de cada jugador en un array.</li><li>Opcional: añade estilos y mejora la interfaz.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
+                <div class="activity-card activity-callout" id="relacion-ejercicio-17"><p><strong>2.46. Juego de dados contra el ordenador</strong></p><p>Programa una partida en la que el usuario y el ordenador lancen tres dados cada uno. Representa sus valores con caracteres, por ejemplo asteriscos, y actualiza la pantalla con <code>getElementById()</code>.</p><ol><li>Diseña una interfaz HTML con elementos identificados para mostrar los dados y el ganador.</li><li>Crea una función que devuelva el resultado de lanzar un dado, un entero entre 1 y 6. Usa <code>Math.random()</code> y <code>Math.floor()</code>.</li><li>Crea una función que clasifique los tres resultados como trío, pareja o ninguna combinación.</li><li>Crea una función que determine el ganador: un trío supera a una pareja y una pareja supera a ninguna combinación. Si ambos tienen pareja o ambos tienen trío, gana la combinación de mayor valor. Si ninguno tiene combinación, gana la suma mayor. Si el criterio aplicable da el mismo valor, declara empate.</li><li>Implementa los lanzamientos y muestra los resultados y el ganador en el DOM. Puedes guardar los tres valores de cada jugador en un array.</li><li>Opcional: añade estilos y mejora la interfaz.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-9-7">
-                    <p><strong>2.50. Del cálculo a un botón</strong></p>
+                    <p><strong>2.47. Del cálculo a un botón</strong></p>
                     <p>Crea <code>calcularArea(base, altura)</code> que devuelva el área de un rectángulo sin acceder al DOM. Conecta dos campos y un botón mediante un manejador que lea, valide, convierta y muestre el resultado.</p>
                     <p><strong>Comprobación:</strong> Prueba primero la función en consola y luego la interfaz con 4 y 3, con cero y con un campo vacío.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
             <div class="activity-card activity-callout" id="extra-eniun-frases">
-                    <p><strong>2.51. Frases al azar</strong></p>
+                    <p><strong>2.48. Frases al azar</strong></p>
                     <p>Guarda cuatro frases en un array. Un botón mostrará una al azar. Separa selección y presentación en funciones. Para obtener el índice usa <code>Math.floor(Math.random() * frases.length)</code>. Las repeticiones son válidas.</p><p><strong>Ayuda:</strong> <code>Math.random()</code> produce un número desde 0 hasta menos de 1; <code>Math.floor()</code> redondea hacia abajo.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
@@ -1913,7 +1868,7 @@ boton.addEventListener("click", () =&gt; {
                 <p>La estructura principal es <code>document → html → head / body</code>. Dentro de <code>body</code> se encuentran el título, los párrafos y los controles. <code>defer</code> permite ejecutar <code>ej10-seleccionarElementos.js</code> cuando estos elementos ya existen.</p>
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-arbol">
-                    <p><strong>2.52. Reconocer el árbol del documento</strong></p>
+                    <p><strong>2.49. Reconocer el árbol del documento</strong></p>
                     <p>Crea un documento con este contenido en el cuerpo. Dibuja su árbol de elementos e identifica el padre y los hermanos del segundo elemento de la lista. Localiza esos elementos en el inspector del navegador.</p><pre><code>&lt;div&gt;Participantes&lt;/div&gt;
 &lt;ul&gt;
     &lt;li&gt;Ana&lt;/li&gt;
@@ -1975,7 +1930,7 @@ console.log(parrafos.length); // 2</code></pre>
                 <p>Prueba cada fragmento por separado en la página del apartado 8.1. Guarda las referencias que vayas a reutilizar y comprueba que un elemento existe antes de acceder a sus propiedades.</p>
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-seleccion">
-                    <p><strong>2.53. Localizar elementos de un formulario</strong></p>
+                    <p><strong>2.50. Localizar elementos de un formulario</strong></p>
                     <p>Prepara este HTML y escribe una selección para obtener: el formulario por su identificador, todas sus etiquetas <code>label</code>, su primer <code>input</code> y el campo de correo. Comprueba en consola qué devuelve cada búsqueda.</p><pre><code>&lt;form id="busqueda"&gt;
     &lt;label for="nombre-busqueda"&gt;Nombre&lt;/label&gt;
     &lt;input id="nombre-busqueda" type="text"&gt;
@@ -2020,10 +1975,10 @@ mensaje.outerHTML = '&lt;div id="mensaje" class="aviso"&gt;Nuevo elemento&lt;/di
                 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/outerHTML" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · outerHTML</a>
                 
 
-                <div class="activity-card activity-callout" id="relacion-ejercicio-5"><p><strong>2.54. Una tienda de manzanas</strong></p><p>Una tienda vende manzanas y permite comprar unidades enteras o fracciones. Calcula una compra con descuento.</p><ol><li>Crea un HTML básico con el <code>body</code> vacío y un archivo JavaScript que se ejecute después de crear el cuerpo del documento.</li><li>Declara <code>precioManzana</code> con el texto <code>"0.5"</code>. Conviértelo a número y guarda el resultado en <code>precioConvertido</code>.</li><li>Declara <code>cantidadManzanas</code> con el número <code>4</code>. Multiplica ambas cantidades y guarda el resultado en <code>costoTotal</code>.</li><li>Declara <code>descuento</code> con el valor <code>0.10</code>. Resta a <code>costoTotal</code> el producto del total por el descuento y guarda el resultado en <code>costoConDescuento</code>.</li><li>Utiliza <code>innerHTML</code> para mostrar en el documento: «El costo de [cantidadManzanas] manzanas es de [costoConDescuento] dólares con el descuento aplicado».</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-9"><p><strong>2.55. Repaso de entrada, salida y cálculos</strong></p><ol><li>Pide un nombre y un correo electrónico. Usa <code>innerHTML</code> para crear una estructura fija de presentación y escribe los datos introducidos por el usuario con <code>textContent</code> en sus elementos.</li><li>Pide dos números que representen los lados de un rectángulo y muestra su perímetro.</li><li>Calcula también la suma, el producto, la división y la exponenciación de esos dos números.</li><li>Pide el precio de un artículo y la cantidad comprada. Muestra el importe total incluyendo un 21 % de IVA.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
+                <div class="activity-card activity-callout" id="relacion-ejercicio-5"><p><strong>2.51. Una tienda de manzanas</strong></p><p>Una tienda vende manzanas y permite comprar unidades enteras o fracciones. Calcula una compra con descuento.</p><ol><li>Crea un HTML básico con el <code>body</code> vacío y un archivo JavaScript que se ejecute después de crear el cuerpo del documento.</li><li>Declara <code>precioManzana</code> con el texto <code>"0.5"</code>. Conviértelo a número y guarda el resultado en <code>precioConvertido</code>.</li><li>Declara <code>cantidadManzanas</code> con el número <code>4</code>. Multiplica ambas cantidades y guarda el resultado en <code>costoTotal</code>.</li><li>Declara <code>descuento</code> con el valor <code>0.10</code>. Resta a <code>costoTotal</code> el producto del total por el descuento y guarda el resultado en <code>costoConDescuento</code>.</li><li>Utiliza <code>innerHTML</code> para mostrar en el documento: «El costo de [cantidadManzanas] manzanas es de [costoConDescuento] dólares con el descuento aplicado».</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div><div class="activity-card activity-callout" id="relacion-ejercicio-9"><p><strong>2.52. Repaso de entrada, salida y cálculos</strong></p><ol><li>Pide un nombre y un correo electrónico. Usa <code>innerHTML</code> para crear una estructura fija de presentación y escribe los datos introducidos por el usuario con <code>textContent</code> en sus elementos.</li><li>Pide dos números que representen los lados de un rectángulo y muestra su perímetro.</li><li>Calcula también la suma, el producto, la división y la exponenciación de esos dos números.</li><li>Pide el precio de un artículo y la cantidad comprada. Muestra el importe total incluyendo un 21 % de IVA.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-6-3">
-                    <p><strong>2.56. Texto literal frente a marcado</strong></p>
+                    <p><strong>2.53. Texto literal frente a marcado</strong></p>
                     <p>Prepara dos párrafos. Asigna la cadena controlada <code>&lt;strong&gt;Importante&lt;/strong&gt;</code> a uno mediante <code>textContent</code> y al otro mediante <code>innerHTML</code>. Examina sus contenidos y su <code>outerHTML</code>. Después pide un mensaje con <code>prompt()</code> y muéstralo exclusivamente como texto.</p>
                     <p><strong>Comprobación:</strong> Explica por qué solo uno de los primeros párrafos muestra negrita y qué ocurre al cancelar el diálogo.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -2040,21 +1995,21 @@ resultado.textContent = `El doble es ${unidades * 2}`;</code></pre>
                 <p>Para probar otro valor por ahora, modifica <code>value="3"</code> en el HTML y recarga. Recuerda comprobar las entradas vacías antes de convertirlas: <code>Number("")</code> produce <code>0</code>. En campos numéricos también existe <code>valueAsNumber</code>, que devuelve un número o <code>NaN</code> si no puede obtenerlo.</p>
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-deposito-datos">
-                    <p><strong>2.57. Calcular a partir de campos</strong></p>
+                    <p><strong>2.54. Calcular a partir de campos</strong></p>
                     <p>Crea campos numéricos para capital, porcentaje anual y años, con valores iniciales, y un párrafo para el resultado. Lee sus valores y conviértelos. Calcula <code>capital * (1 + porcentaje / 100) ** anios</code> y muestra el resultado al cargar. La actualización al editar se trabajará con los eventos.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-6-4">
-                    <p><strong>2.58. Presupuesto al cargar</strong></p>
+                    <p><strong>2.55. Presupuesto al cargar</strong></p>
                     <p>Crea campos para precio y cantidad, con valores iniciales de 12.5 y 4, y un párrafo de salida. Lee <code>value</code>, convierte los datos y muestra el producto al cargar. Cambia los valores iniciales y recarga; prueba también un campo vacío antes de convertir.</p>
                     <p><strong>Comprobación:</strong> Distingue una entrada vacía de cero. Todavía no añadas eventos.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="extra-eniun-viaje">
-                    <p><strong>2.59. Presupuesto de viaje</strong></p>
+                    <p><strong>2.56. Presupuesto de viaje</strong></p>
                     <p>Prepara tres campos con gastos de alojamiento, comida y ocio. Al cargar, convierte sus valores y muestra la suma mediante <code>textContent</code>. Prueba 60, 25 y 15: total 100.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
@@ -2107,14 +2062,14 @@ mensaje.classList.toggle("destacado"); // La añade de nuevo.</code></pre>
                 
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-notificacion">
-                    <p><strong>2.60. Dar estilo a una notificación</strong></p>
+                    <p><strong>2.57. Dar estilo a una notificación</strong></p>
                     <p>Crea un <code>div</code> con un identificador y un mensaje. Define una clase CSS para presentarlo como aviso en la esquina superior derecha. Desde JavaScript, añade esa clase y modifica su color de fondo. Consulta el color calculado y compáralo con el CSS. En esta versión no hacen falta temporizadores ni crear nodos.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-6-5">
-                    <p><strong>2.61. Dos formas de destacar un aviso</strong></p>
+                    <p><strong>2.58. Dos formas de destacar un aviso</strong></p>
                     <p>Prepara un párrafo con una clase base. Aplica color y relleno con <code>style</code>; después reproduce el aspecto mediante una clase CSS. Añade y retira esa clase con <code>classList</code> sin borrar la clase base. Compara <code>style.color</code> y <code>getComputedStyle(...).color</code>.</p>
                     <p><strong>Comprobación:</strong> El aspecto final debe coincidir en ambas versiones y la clase base debe conservarse.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -2139,14 +2094,14 @@ if (mensaje !== null) {
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/classList" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · classList</a></div>
                 </div>
                 <div class="activity-card activity-callout" id="actividad-jsinfo-busqueda-vacia">
-                    <p><strong>2.62. Comprobar una búsqueda sin resultados</strong></p>
+                    <p><strong>2.59. Comprobar una búsqueda sin resultados</strong></p>
                     <p>En la página de prueba del apartado 8.1, busca un identificador inexistente. Muestra el resultado de la búsqueda y evita acceder a <code>textContent</code> si no hay elemento. Repite con un identificador válido y comprueba que en ese caso sí se actualiza el texto.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-6-6">
-                    <p><strong>2.63. Detectar un script ejecutado demasiado pronto</strong></p>
+                    <p><strong>2.60. Detectar un script ejecutado demasiado pronto</strong></p>
                     <p>En una página de prueba, coloca en el <code>head</code> un script externo sin <code>defer</code> que busque un párrafo del <code>body</code>. Registra la búsqueda sin acceder a sus propiedades si devuelve <code>null</code>. Añade <code>defer</code> y repite.</p>
                     <p><strong>Comprobación:</strong> Distingue un identificador incorrecto de un elemento que todavía no se ha leído.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -2185,14 +2140,14 @@ if (mensaje !== null) {
                 <p><code>type="button"</code> identifica un botón de acción y <code>type="submit"</code> uno de envío. <code>aria-live="polite"</code> permite que las tecnologías de asistencia anuncien las actualizaciones del mensaje.</p>
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-evento-objetivo">
-                    <p><strong>2.64. Planificar una interacción</strong></p>
+                    <p><strong>2.61. Planificar una interacción</strong></p>
                     <p>Crea un botón y un párrafo. Antes de programar, identifica el elemento que recibe el evento, el nombre del evento y la acción del manejador para ocultar el párrafo. Explica cuándo debe producirse el cambio.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-8-1">
-                    <p><strong>2.65. Un interruptor con dos estados</strong></p>
+                    <p><strong>2.62. Un interruptor con dos estados</strong></p>
                     <p>Prepara un botón con el texto «Encender». Antes de programar, describe el evento, el manejador y el cambio visible. Haz que cada clic alterne el texto entre «Encender» y «Apagar», usando una variable booleana como estado.</p>
                     <p><strong>Comprobación:</strong> Tras cuatro clics debe volver al estado inicial.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -2215,14 +2170,14 @@ boton.addEventListener("click", mostrarSaludo);</code></pre>
                 
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-ocultar">
-                    <p><strong>2.66. Ocultar un elemento al pulsar</strong></p>
-                    <p>Completa la actividad 2.64 («Planificar una interacción») con <code>addEventListener()</code>. Al pulsar el botón, aplica <code>display: none</code> al párrafo desde JavaScript. Comprueba que no desaparece al cargar la página.</p>
+                    <p><strong>2.63. Ocultar un elemento al pulsar</strong></p>
+                    <p>Completa la actividad 2.61 («Planificar una interacción») con <code>addEventListener()</code>. Al pulsar el botón, aplica <code>display: none</code> al párrafo desde JavaScript. Comprueba que no desaparece al cargar la página.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-8-2">
-                    <p><strong>2.67. Dos manejadores en el mismo botón</strong></p>
+                    <p><strong>2.64. Dos manejadores en el mismo botón</strong></p>
                     <p>Registra con <code>addEventListener()</code> dos manejadores para un botón: uno incrementa un contador y otro muestra un aviso en un párrafo. Regístralos una sola vez, fuera de los manejadores.</p>
                     <p><strong>Comprobación:</strong> Cada clic debe aumentar el contador exactamente en uno y ejecutar ambos efectos. Explica qué cambiaría al asignar dos veces <code>onclick</code>.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -2254,14 +2209,14 @@ campo.addEventListener("change", confirmarCambio);</code></pre>
                 
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-deposito-eventos">
-                    <p><strong>2.68. Actualizar un cálculo al editar</strong></p>
+                    <p><strong>2.65. Actualizar un cálculo al editar</strong></p>
                     <p>Retoma el cálculo de capital, porcentaje y años del apartado 8.4. Actualiza el resultado mediante <code>input</code> cada vez que cambie un campo. Comprueba también el pegado de texto. Registra <code>change</code> para comparar cuándo se dispara; no muestres un cálculo si falta un dato.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-8-3">
-                    <p><strong>2.69. Ficha de inscripción en vivo</strong></p>
+                    <p><strong>2.66. Ficha de inscripción en vivo</strong></p>
                     <p>Crea un formulario con nombre, un selector de turno y un botón de envío. Usa <code>input</code> para actualizar un saludo, <code>change</code> para mostrar el turno y <code>submit</code> para presentar el resumen sin recargar. Usa <code>preventDefault()</code> al enviar.</p>
                     <p><strong>Comprobación:</strong> Prueba escritura, pegado, cambio de turno, clic en enviar y envío con Intro.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -2288,14 +2243,14 @@ campo.addEventListener("input", mostrarEntrada);</code></pre>
                 <p>Utilizar <code>currentTarget</code> facilita compartir un mismo manejador entre varios elementos. En estos ejemplos se consulta durante la ejecución del manejador; la propagación de eventos se estudiará más adelante.</p>
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-ocultarse">
-                    <p><strong>2.70. Ocultar el botón pulsado</strong></p>
+                    <p><strong>2.67. Ocultar el botón pulsado</strong></p>
                     <p>Crea dos botones y registra en ambos el mismo manejador. Al pulsar cualquiera, oculta únicamente ese botón mediante <code>event.currentTarget.style.display</code>. Comprueba que el otro sigue funcionando.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-8-4">
-                    <p><strong>2.71. Una paleta con manejador compartido</strong></p>
+                    <p><strong>2.68. Una paleta con manejador compartido</strong></p>
                     <p>Crea tres botones cuyo texto sea <code>red</code>, <code>green</code> y <code>blue</code>, con un <code>span</code> interior. Registra la misma función en los tres. Usa <code>event.currentTarget.textContent.trim()</code> para cambiar el fondo de un panel.</p>
                     <p><strong>Comprobación:</strong> El color debe ser correcto tanto al pulsar el botón como su texto interior; compara <code>target</code> y <code>currentTarget</code> en consola.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -2331,14 +2286,14 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
                 
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-enlace">
-                    <p><strong>2.72. Confirmar antes de navegar</strong></p>
+                    <p><strong>2.69. Confirmar antes de navegar</strong></p>
                     <p>Crea un enlace a una página externa de tu elección. Registra su evento <code>click</code> y pregunta con <code>confirm()</code> si se desea abrir el destino. Si se cancela, utiliza <code>preventDefault()</code>; si se acepta, deja actuar al navegador. Prueba ambas respuestas.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-8-5">
-                    <p><strong>2.73. ¿Basta con return false?</strong></p>
+                    <p><strong>2.70. ¿Basta con return false?</strong></p>
                     <p>Crea un formulario con un campo y un botón de envío. Registra un manejador con <code>addEventListener()</code> que escriba en consola y devuelva <code>false</code>. Comprueba si se evita el envío. Sustituye ese retorno por <code>event.preventDefault()</code>.</p>
                     <p><strong>Comprobación:</strong> Prueba con clic y con Intro y explica por qué la segunda versión permanece en la página.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -2357,14 +2312,14 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · preventDefault()</a></div>
                 </div>
                 <div class="activity-card activity-callout" id="actividad-jsinfo-menu">
-                    <p><strong>2.74. Mostrar y ocultar un menú</strong></p>
+                    <p><strong>2.71. Mostrar y ocultar un menú</strong></p>
                     <p>Crea un botón y una lista de enlaces inicialmente oculta mediante CSS. Alterna su visibilidad con <code>classList.toggle()</code> al pulsar el botón. Mantén el registro del evento fuera del manejador y prueba varias aperturas y cierres seguidos.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-8-6">
-                    <p><strong>2.75. Contador de plazas con reinicio</strong></p>
+                    <p><strong>2.72. Contador de plazas con reinicio</strong></p>
                     <p>Crea botones «Reservar» y «Reiniciar» y un párrafo para las plazas reservadas. Mantén un contador de 0 a 5. El primer botón suma si quedan plazas; el segundo vuelve a cero. Centraliza la actualización del texto y de las clases de estado.</p>
                     <p><strong>Comprobación:</strong> Prueba seis reservas, reinicio y otra reserva. Evita registrar manejadores nuevos durante cada clic.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -2403,7 +2358,7 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
                 </ul>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-10-1">
-                    <p><strong>2.76. Auditar el material antes de programar</strong></p>
+                    <p><strong>2.73. Auditar el material antes de programar</strong></p>
                     <p>Abre los archivos de la calculadora. Prepara una tabla con cada control, su identificador, el selector JavaScript que utilizarás y su finalidad. Ejecuta los selectores en consola y revisa las rutas del script y del CSS.</p>
                     <p><strong>Comprobación:</strong> Todos los controles descritos en este apartado deben localizarse una sola vez.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -2422,7 +2377,7 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
                 <p>Al mostrar un error, añade <code>error</code> a <code>#mensaje</code> y retira <code>exito</code>; al mostrar un éxito, realiza lo contrario. Conserva la clase base <code>mensaje</code>.</p>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-10-2">
-                    <p><strong>2.77. Contrato de un envío</strong></p>
+                    <p><strong>2.74. Contrato de un envío</strong></p>
                     <p>Antes de implementar la calculadora, describe paso a paso un envío válido y otro con segundo operando vacío. Indica dónde detienes el envío, cuándo conviertes y cómo quedan resultado, mensaje y clases.</p>
                     <p><strong>Comprobación:</strong> Contrasta después esas dos secuencias con la aplicación real, enviando con botón y con Intro.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -2462,7 +2417,7 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-10-3">
-                    <p><strong>2.78. Construir desde una función comprobable</strong></p>
+                    <p><strong>2.75. Construir desde una función comprobable</strong></p>
                     <p>Implementa primero <code>calcular(numero1, numero2, operacion)</code> y compruébala desde la consola. Conecta después lectura de campos y presentación. Define cómo comunica división por cero y operación desconocida.</p>
                     <p><strong>Comprobación:</strong> El cálculo debe poder probarse sin abrir el formulario y los errores deben llegar al mensaje visible.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -2492,7 +2447,7 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
                 <div class="didactic-note"><p><strong>Decimales.</strong> Algunos cálculos, como <code>0.1 + 0.2</code>, pueden mostrar una pequeña diferencia por la representación binaria de los números. En esta práctica se acepta el resultado numérico de JavaScript; no es obligatorio implementar redondeo.</p></div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-10-4">
-                    <p><strong>2.79. Una prueba, un resultado identificable</strong></p>
+                    <p><strong>2.76. Una prueba, un resultado identificable</strong></p>
                     <p>Convierte la tabla de pruebas de este apartado en casos independientes con nombre, entradas, resultado esperado y resultado observado. Ejecuta cada uno desde un estado conocido. Registra aparte la secuencia éxito → error → éxito.</p>
                     <p><strong>Comprobación:</strong> Un fallo debe indicar exactamente qué caso falló; no detengas el registro tras el primero.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -2508,10 +2463,10 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
                 </ul>
                 <p>No conviertas cadenas en código ejecutable ni utilices bibliotecas para resolver las operaciones. La lógica debe desarrollarse con los operadores y las estructuras estudiadas.</p>
             <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
-                <div class="activity-card activity-callout" id="relacion-ejercicio-21"><p><strong>2.80. Calculadora de recursos — para el siguiente tema</strong></p><p><strong>Actividad aplazada al siguiente tema.</strong> Trabaja entonces sobre el código de la calculadora facilitado en la carpeta de recursos correspondiente.</p><ol><li>Separa el HTML, el CSS y el JavaScript en tres archivos.</li><li>Utiliza el depurador para localizar qué falta en <code>solve()</code> y corregir el error.</li><li>En la entrada directa por teclado, distingue las teclas y llama a la función apropiada en cada caso.</li><li>Implementa <code>oneOnly()</code> para evitar errores con símbolos como <code>, . + -</code>.</li><li>Completa las llaves que faltan y añade funcionalidades adicionales.</li><li>Comenta el código de forma apropiada.</li><li>Mejora el SEO del HTML.</li><li>Mejora el CSS y la presentación visual.</li></ol><p>Los dos últimos apartados se puntúan en el módulo de Diseño Web. Esta actividad se realizará con los recursos del siguiente tema; la práctica de dos operandos de este apartado sigue vigente.</p></div>
+                <div class="activity-card activity-callout" id="relacion-ejercicio-21"><p><strong>2.77. Calculadora de recursos — para el siguiente tema</strong></p><p><strong>Actividad aplazada al siguiente tema.</strong> Trabaja entonces sobre el código de la calculadora facilitado en la carpeta de recursos correspondiente.</p><ol><li>Separa el HTML, el CSS y el JavaScript en tres archivos.</li><li>Utiliza el depurador para localizar qué falta en <code>solve()</code> y corregir el error.</li><li>En la entrada directa por teclado, distingue las teclas y llama a la función apropiada en cada caso.</li><li>Implementa <code>oneOnly()</code> para evitar errores con símbolos como <code>, . + -</code>.</li><li>Completa las llaves que faltan y añade funcionalidades adicionales.</li><li>Comenta el código de forma apropiada.</li><li>Mejora el SEO del HTML.</li><li>Mejora el CSS y la presentación visual.</li></ol><p>Los dos últimos apartados se puntúan en el módulo de Diseño Web. Esta actividad se realizará con los recursos del siguiente tema; la práctica de dos operandos de este apartado sigue vigente.</p></div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-10-5">
-                    <p><strong>2.81. Revisión reproducible de la entrega</strong></p>
+                    <p><strong>2.78. Revisión reproducible de la entrega</strong></p>
                     <p>Elige un cálculo correcto y un error de tu calculadora. Documenta los pasos exactos para reproducirlos desde que se abre el HTML, los datos y las salidas esperadas. Repite siguiendo solo esas instrucciones y registra cualquier discrepancia.</p>
                     <p><strong>Comprobación:</strong> Incluye el registro en <code>ej24-calculadora.txt</code> y relaciona cada caso con un criterio de revisión.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
