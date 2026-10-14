@@ -1087,29 +1087,6 @@ console.log(false ?? true);          // false
 console.log("" ?? "Sin texto");      // ""
 console.log(0 || 10);                // 10: || también sustituye los valores falsy.</code></pre>
                 <p><strong><code>??</code> y <code>||</code> no son equivalentes.</strong> Si cero significa «ninguna unidad», <code>unidades ?? 1</code> conserva ese cero; <code>unidades || 1</code> lo sustituye por uno. Elige según qué valores consideres ausentes.</p>
-                <h4>Asignación lógica: <code>??=</code>, <code>||=</code> y <code>&amp;&amp;=</code></h4>
-                <p>Estos operadores solo asignan el valor de la derecha cuando se cumple su condición. Si no se cumple, conservan el valor actual y no evalúan la expresión de la derecha:</p>
-                <ul>
-                    <li><code>dato ??= alternativa</code>: asigna si <code>dato</code> es <code>null</code> o <code>undefined</code>.</li>
-                    <li><code>dato ||= alternativa</code>: asigna si <code>dato</code> es falsy, incluido <code>0</code>, <code>false</code> o <code>""</code>.</li>
-                    <li><code>dato &amp;&amp;= nuevoValor</code>: asigna si <code>dato</code> es truthy.</li>
-                </ul>
-                <pre><code>let alias;
-alias ??= "Invitado";
-console.log(alias); // "Invitado"
-
-let unidades = 0;
-unidades ??= 1;
-console.log(unidades); // 0: no es null ni undefined.
-
-let titulo = "";
-titulo ||= "Sin título";
-console.log(titulo); // "Sin título"
-
-let aviso = "Pendiente";
-aviso &amp;&amp;= "Revisado";
-console.log(aviso); // "Revisado"</code></pre>
-
                 <div class="didactic-note" id="operadores-bits"><h4>Apoyo: operadores bit a bit</h4><p>Con valores <code>Number</code>, estos operadores trabajan sobre enteros de 32 bits. <code>&amp;</code> combina los bits mediante AND y <code>~</code> invierte los bits; son distintos de los operadores lógicos <code>&amp;&amp;</code> y <code>!</code>. Para conservar únicamente los ocho bits de un octeto usa <code>valor &amp; 255</code>.</p><p><code>numero &lt;&lt; 1</code> desplaza un bit a la izquierda; <code>numero &gt;&gt; 1</code>, a la derecha conservando el signo. En enteros positivos pequeños sirven para multiplicar por 2 o dividir entre 2 descartando la parte fraccionaria. No equivalen en general a la aritmética habitual: convierten a enteros de 32 bits y pueden desbordar.</p><p><code>numero.toString(2)</code> devuelve una cadena binaria y <code>parseInt(texto, 2)</code> convierte una cadena binaria a número. Puedes completar los ceros iniciales hasta tener ocho bits por octeto.</p></div><h4>Doble negación: convertir a booleano</h4><p><code>!!valor</code> aplica dos veces la negación: convierte a booleano, invierte el resultado y lo vuelve a invertir. Equivale a <code>Boolean(valor)</code>; esta última forma expresa mejor la intención.</p><pre><code>console.log(!!"texto"); // true
 console.log(!!"0"); // true: cadena no vacía.
 console.log(!!0); // false
