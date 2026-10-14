@@ -26,7 +26,7 @@
     const warning = $('guard-warning'), confirmBox = $('guard-confirm');
     let initialized = false, fatal = false, busy = false, restoring = false;
     let problem = '', problemText = '', lastRaw = null, timer = null;
-    let confirmation = null, lastClipboardAt = 0, lastClipboardKind = '';
+    let confirmation = null;
     const supported = typeof root.requestFullscreen === 'function'
       && document.fullscreenEnabled === true && typeof document.hasFocus === 'function'
       && 'visibilityState' in document && typeof warning.showModal === 'function'
@@ -147,7 +147,6 @@
       $('guard-state').textContent = names[state.phase];
       $('guard-count').textContent = `${state.count} de ${CONFIG.limit}`;
       $('guard-conditions').textContent = `Pantalla completa: ${s.fullscreen ? 'sí' : 'no'} · Foco: ${s.focused ? 'sí' : 'no'} · Visible: ${s.visible ? 'sí' : 'no'}`;
-      $('guard-clipboard-count').textContent = `Acciones de portapapeles bloqueadas: ${state.clipboardBlocked}`;
       $('guard-start-box').hidden = state.phase === 'active';
       $('guard-consent').disabled = !supported || !!problem;
       $('guard-start').disabled = !supported || !!problem || busy || !!state.pending || !$('guard-consent').checked;
@@ -158,10 +157,7 @@
       $('saveStatus').textContent = problem ? 'Guardado bloqueado. Revisa el aviso superior.'
         : state.savedAt ? 'Respuestas guardadas: ' + new Date(state.savedAt).toLocaleTimeString('es-ES') : 'Guardado local preparado.';
       const canExport = !problem && state.phase === 'submitted';
-      $('report').disabled = !canExport;
-      $('report-box').hidden = state.phase !== 'submitted';
-      $('copy').hidden = state.phase !== 'submitted';
-      $('copy').disabled = !canExport || !$('report').value;
+      $('report').disabled = true;
       $('download').disabled = !canExport || !$('report').value;
       $('download').hidden = state.phase !== 'submitted';
       $('guard-finish').disabled = !enabled;
@@ -272,23 +268,16 @@
       } finally { busy = false; render(); }
     }
 
-    // 6. PORTAPAPELES. Cancelar cada evento; agrupar únicamente su registro.
+    // 6. ENTRADA. Cancelar acciones sin registrarlas ni añadir incidencias.
     // No se leen contenidos ni se solicitan permisos de lectura del sistema.
     // El informe se exporta como TXT únicamente después de finalizar.
     function canDownloadReport() {
       return !problem && !fatal && state.phase === 'submitted' && !!$('report').value;
     }
-    function denyClipboard(e, kind = e.type) {
+    // Bloqueo silencioso: no registra teclas, avisos ni intentos de copia.
+    function blockAction(e) {
       if (e.cancelable) e.preventDefault();
       e.stopImmediatePropagation();
-      $('clipboardStatus').textContent = 'Copia, corte, pegado y arrastre bloqueados. Escribe directamente. El informe se descarga en TXT al finalizar.';
-      const now = Date.now();
-      if (state.phase === 'active' && !problem && (kind !== lastClipboardKind || now - lastClipboardAt > 300)) {
-        state.clipboardBlocked = Math.min(1000000, state.clipboardBlocked + 1);
-        log(`Portapapeles bloqueado: ${kind}.`);
-        lastClipboardAt = now; lastClipboardKind = kind;
-        persist(); render();
-      }
     }
     const forbiddenInput = type => ['insertFromPaste','insertFromPasteAsQuotation','insertFromDrop','deleteByCut','deleteByDrag'].includes(type);
     function saveEdit() {
@@ -304,14 +293,13 @@
         if (e.cancelable) e.preventDefault();
         e.stopImmediatePropagation();
         if (e.type !== 'beforeinput') adapter.restoreValue(e.target, state.data);
-        if (CONFIG.blockClipboard && forbiddenInput(e.inputType)) denyClipboard(e, 'entrada de portapapeles');
+        if (CONFIG.blockClipboard && forbiddenInput(e.inputType)) blockAction(e);
       }
     }
 
     // 7. FINALIZAR Y BORRAR. La finalización descarga un TXT sin enviar datos.
     function metadata() {
       return [`Intento: ${state.attempt}`, `Incidencias de entorno: ${state.count}/${CONFIG.limit}`,
-        `Acciones de portapapeles bloqueadas: ${state.clipboardBlocked}`,
         'Registro local orientativo; no acredita copia ni identidad.',
         ...state.events.map(e => `${new Date(e.at).toISOString()} · ${e.text}`)].join('\n');
     }
@@ -388,19 +376,25 @@
       } catch { problem = 'io'; problemText = 'No se puede leer el guardado.'; render(); }
     });
     for (const type of ['beforeinput','input','change']) $('lab').addEventListener(type, inputGuard, true);
+    // Control y botón derecho: durante toda la página, incluso tras finalizar.
+    // Solo se pueden cancelar los eventos que el navegador entrega al documento.
+    for (const type of ['keydown','keypress','keyup']) document.addEventListener(type, e => {
+      const k = e.key.toLowerCase();
+      const previousShortcut = CONFIG.blockClipboard && (
+        (e.metaKey && ['c','x','v'].includes(k))
+        || (e.shiftKey && ['insert','delete'].includes(k)));
+      if (e.ctrlKey || k === 'control' || previousShortcut) blockAction(e);
+    }, true);
+    document.addEventListener('contextmenu', blockAction, true);
+    for (const type of ['pointerdown','pointerup','mousedown','mouseup','click','auxclick','dblclick']) {
+      document.addEventListener(type, e => {
+        if (e.button === 2 || e.ctrlKey) blockAction(e);
+      }, true);
+    }
     if (CONFIG.blockClipboard) {
-      for (const type of ['copy','cut','paste','dragstart','drop']) document.addEventListener(type, e => {
-        if(type==='copy'&&e.target===$('report')&&canDownloadReport())return;
-        denyClipboard(e);
-      }, true);
-      document.addEventListener('dragover', e => e.preventDefault(), true);
-      document.addEventListener('keydown', e => {
-        const k = e.key.toLowerCase(), mod = e.ctrlKey || e.metaKey;
-        const blocked = (mod && ['c','x','v'].includes(k)) || (e.ctrlKey && k === 'insert')
-          || (e.shiftKey && ['insert','delete'].includes(k));
-        const copy=(mod&&k==='c')||(e.ctrlKey&&k==='insert');
-        if (blocked && !(copy&&e.target===$('report')&&canDownloadReport())) denyClipboard(e, 'atajo');
-      }, true);
+      for (const type of ['copy','cut','paste','dragstart','drop','dragover']) {
+        document.addEventListener(type, blockAction, true);
+      }
     }
     $('guard-consent').addEventListener('change', render);
     $('guard-start').addEventListener('click', () => startOrResume(false));

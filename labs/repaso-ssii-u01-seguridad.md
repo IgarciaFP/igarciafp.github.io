@@ -43,13 +43,15 @@ El seguimiento sigue activo mientras se solicita finalizar y mientras se calcula
 
 ## Bloqueo de portapapeles y entrada
 
-Se cancelan `copy`, `cut`, `paste`, `dragstart` y `drop`, además de los atajos Ctrl/Cmd+C, X, V; Ctrl+Insert; Shift+Insert y Shift+Delete. El informe final se exporta en Base64 mediante descarga TXT o «Copiar entrega». Solo se permite copiar desde el campo del informe cuando el intento está finalizado; cortar y pegar siguen bloqueados. Si el navegador deniega la escritura en el portapapeles, el botón selecciona el bloque para copiarlo con Ctrl+C/Cmd+C.
+Se cancelan `copy`, `cut`, `paste`, `dragstart`, `drop` y `dragover` en todas las fases, también después de finalizar. No hay botón de copia ni campo visible de informe. La entrega se obtiene exclusivamente como TXT Base64 desde «Finalizar y descargar TXT», con confirmación; «Volver a descargar TXT» recupera el mismo fichero.
 
-La validación en captura de `beforeinput`, `input` y `change` impide que los manejadores del corrector guarden una edición rechazada. Si un pegado no pudo cancelarse antes de modificar un campo, `input` restaura su último valor aceptado. Se distinguen los tipos de entrada: no se interpreta automáticamente un texto largo como pegado. Tab, escritura normal, selección, composición y deshacer no se prohíben en bloque.
+Se interceptan en captura `keydown`, `keypress` y `keyup` cuando `ctrlKey` está activo o la tecla es Control. Esto incluye seleccionar todo, deshacer, rehacer, imprimir y cualquier otra combinación con Control que llegue al documento. Se mantienen los bloqueos previos de Cmd+C/X/V y Shift+Insert/Delete. También se cancela `contextmenu` y los eventos de puntero/ratón con botón derecho o Control.
 
-Los intentos de portapapeles tienen un contador informativo independiente. **No consumen los tres avisos de salida.** Se agrupan avisos iguales durante 300 ms para reducir duplicados, pero se cancela cada evento. Si utilizar controles del navegador causa una pérdida real de foco, esa pérdida se trata por la política de entorno, no como una sanción por portapapeles.
+Los bloqueos son silenciosos: no muestran avisos, no registran pulsaciones, no incrementan contadores ni generan eventos de supuesto intento de copia. El campo antiguo `clipboardBlocked` se conserva únicamente por compatibilidad del guardado y no se muestra ni se incluye en informes nuevos. Las pérdidas reales de foco, visibilidad o pantalla completa mantienen su política independiente.
 
-No se lee, vacía ni deshabilita el portapapeles del sistema. La inserción programática, herramientas de desarrollo, extensiones, capturas o un segundo dispositivo quedan fuera de esta barrera. Para adaptaciones de accesibilidad, revisar `CONFIG.blockClipboard`, las normas visibles y las pruebas; no retirar avisos de forma oculta.
+La validación en captura de `beforeinput`, `input` y `change` impide guardar pegados o ediciones rechazadas. Si un pegado no pudo cancelarse antes de modificar un campo, se restaura su último valor aceptado. La escritura ordinaria y la navegación sin Control permanecen disponibles. AltGr puede producir `ctrlKey` en algunos sistemas y quedar bloqueado por esta política.
+
+El bloqueo se limita a eventos que el navegador entrega a la página y permite cancelar; no controla atajos reservados del navegador o del sistema ni desactiva extensiones. No se lee, vacía ni deshabilita el portapapeles del sistema. Para adaptaciones de accesibilidad, revisar los manejadores de Control y menú contextual, `CONFIG.blockClipboard`, las normas visibles y las pruebas.
 
 ## Arranque cerrado y fallos
 
@@ -61,11 +63,11 @@ Sin JavaScript no hay una práctica utilizable, pero **esto no oculta el código
 
 ## Persistencia y migración
 
-Se usa `localStorage`, con JSON y clave **`ssii-repaso-ud01-seguridad-v1`**. Se conserva versión de esquema, fase, número de intento, incidencias, aviso pendiente, registro limitado a 80 eventos, bloqueos de portapapeles, respuestas, comprobaciones, pistas, reloj e informe. Se aceptan copias de revisión antiguas por compatibilidad, pero ya no se crean ni se muestran. Los datos se validan por estructura, tipo y longitud; se representan con `textContent` o `value`, nunca con HTML procedente del guardado.
+Se usa `localStorage`, con JSON y clave **`ssii-repaso-ud01-seguridad-v1`**. Se conserva versión de esquema, fase, número de intento, incidencias, aviso pendiente, registro limitado a 80 eventos, el campo legado de portapapeles (sin nuevos recuentos), respuestas, comprobaciones, pistas, reloj e informe. Se aceptan copias de revisión antiguas por compatibilidad, pero ya no se crean ni se muestran. Los datos se validan por estructura, tipo y longitud; se representan con `textContent` o `value`, nunca con HTML procedente del guardado.
 
 Al no existir la clave nueva, se importa el borrador previo **`ssii-repaso-ud01-v1`**, conservando campos, comprobaciones, pistas y tiempo. No se inventan incidencias para trabajo anterior a la política. El original no se borra durante la migración. Si el JSON actual o el anterior está dañado, se bloquea el inicio y no se sobrescribe automáticamente.
 
-Cada edición aceptada y cada transición guarda una instantánea. El reloj arranca automáticamente al comenzar. Se persiste una marca de inicio (`started`) y el tiempo previo (`elapsed`), sin acumular dos veces los intervalos al guardar. Sigue contando durante avisos, confirmaciones, bloqueos, recargas y con el navegador cerrado. Solo se detiene al finalizar o al invalidarse el intento por la tercera incidencia. Un intento antiguo sin marca de inicio conserva el tiempo acumulado y comienza a contar de forma continua al cargar esta versión. Si se cancela la confirmación, falta el nombre o falla el informe, el reloj continúa. El informe y el reloj final usan el mismo instante de confirmación aceptada; un fallo o una incidencia durante el hash cancela la finalización.
+Cada edición aceptada y cada transición guarda una instantánea. El reloj arranca automáticamente al comenzar. Se persiste una marca de inicio (`started`) y el tiempo previo (`elapsed`), sin acumular dos veces los intervalos al guardar. Sigue contando durante avisos, confirmaciones, bloqueos, recargas y con el navegador cerrado. Solo se detiene al finalizar o al invalidarse el intento por la tercera incidencia. Un intento antiguo sin marca de inicio conserva el tiempo acumulado y comienza a contar de forma continua al cargar esta versión. Si se cancela la confirmación, falta un correo válido o falla el informe, el reloj continúa. El informe y el reloj final usan el mismo instante de confirmación aceptada; un fallo o una incidencia durante el hash cancela la finalización.
 
 Al reabrir un intento activo, se conservan respuestas y contador y se exige reanudar en pantalla completa. El nuevo arranque **no inventa una incidencia** por no estar todavía en pantalla completa. Cerrar o recargar puede haber registrado la salida anterior si el navegador emitió el evento; ningún evento de cierre está garantizado frente a terminación forzosa, fallos o apagado.
 
@@ -103,9 +105,9 @@ El informe conserva el SHA-256 original. Es un checksum público **sin clave ni 
 
 ## Formato de entrega Base64
 
-El informe completo (incluidos tiempo total, URL actual y checksum SHA-256) se convierte de UTF-8 a Base64 estándar. El bloque visible, el portapapeles y el TXT contienen exactamente la misma cadena, sin cabecera ni BOM. La codificación conserva tildes, eñes, símbolos y emoji. No se añade una fase de borrador ni revisión.
+El informe completo (incluidos tiempo total, URL actual y checksum SHA-256) se convierte de UTF-8 a Base64 estándar. El TXT contiene la cadena Base64, sin cabecera ni BOM; no se ofrece copia ni previsualización en pantalla. La codificación conserva tildes, eñes, símbolos y emoji. No se añade una fase de borrador ni revisión.
 
-Base64 es una codificación reversible, **no cifrado** ni una garantía de autenticidad. Las respuestas siguen disponibles en el navegador del alumno. La última línea del cuerpo registra `window.location.href` al generar el informe, incluyendo parámetros y fragmento. El checksum se calcula sobre ese cuerpo, incluida la URL, y se añade después; finalmente se codifica todo en Base64. Volver a copiar o descargar conserva la URL original. Los informes ya finalizados no se regeneran.
+Base64 es una codificación reversible, **no cifrado** ni una garantía de autenticidad. Las respuestas siguen disponibles en el navegador del alumno. La última línea del cuerpo registra `window.location.href` al generar el informe, incluyendo parámetros y fragmento. El checksum se calcula sobre ese cuerpo, incluida la URL, y se añade después; finalmente se codifica todo en Base64. Volver a descargar conserva la URL original. Los informes ya finalizados no se regeneran.
 
 El guardado identifica los informes mediante `reportEncoding: "base64"`. Los informes anteriores en texto se convierten al cargar, una sola vez. Reabrir y volver a descargar no regenera ni vuelve a codificar el informe.
 
@@ -119,3 +121,7 @@ encoded = Path("repaso-ssii-u01.txt").read_text(encoding="utf-8-sig").strip()
 report = base64.b64decode(encoded, validate=True).decode("utf-8")
 Path("informe-decodificado.txt").write_text(report, encoding="utf-8")
 ```
+
+## Identificación por correo
+
+El campo de identidad solicita un correo electrónico obligatorio (máximo 254 caracteres) en lugar del nombre. La finalización comprueba que haya una parte local, una arroba y un dominio con punto, sin espacios; si falla, el intento sigue activo y el reloj continúa. Esta validación comprueba formato, no titularidad del correo. El informe lo identifica como «Correo electrónico». Los nombres guardados en intentos activos antiguos deben sustituirse por un correo válido antes de finalizar. Los informes ya finalizados se conservan.

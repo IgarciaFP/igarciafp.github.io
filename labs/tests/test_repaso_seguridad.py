@@ -165,12 +165,12 @@ def test_clipboard_dom_events_cancelled(make_page,event):
     accepted=p.evaluate("type=>document.querySelector('#t1').dispatchEvent(new Event(type,{bubbles:true,cancelable:true}))",event)
     assert accepted is False
     assert state(p)['count']==0
-    assert state(p)['clipboardBlocked']==1
+    assert state(p)['clipboardBlocked']==0
     assert p.locator('#t1').input_value()=='120'
 
 def test_clipboard_keyboard_cancelled(make_page):
     p=make_page();begin(p);p.locator('#t1').fill('120');p.locator('#t1').press('Control+v')
-    assert state(p)['clipboardBlocked']==1 and state(p)['count']==0
+    assert state(p)['clipboardBlocked']==0 and state(p)['count']==0
 
 def test_uncancelable_paste_input_restores(make_page):
     p=make_page();begin(p);p.locator('#t1').fill('120')
@@ -215,8 +215,8 @@ def test_stale_storage_blocks_without_overwrite(make_page):
     assert p.evaluate(f"localStorage.getItem('{KEY}')")=='OTRA VERSION'
 
 def test_confirm_finish_downloads_txt(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('Alumno');p.locator('#t1').fill('120')
-    assert p.locator('#generate').count()==0 and p.locator('#copy').is_hidden()
+    p=make_page();begin(p);p.locator('#student').fill('alumno@example.com');p.locator('#t1').fill('120')
+    assert p.locator('#generate').count()==0 and p.locator('#copy').count()==0
     p.locator('#guard-finish').click();p.locator('#guard-confirm-cancel').click()
     assert state(p)['phase']=='active' and p.locator('#t1').is_enabled()
     with p.expect_download() as download:
@@ -249,7 +249,7 @@ def test_clock_continues_during_warning_reload_and_cancel(make_page):
     resume(q)
     q.locator('#guard-finish').click();q.locator('#guard-confirm-cancel').click()
     assert state(q)['data']['started']==started
-    q.locator('#student').fill('Alumno');finish(q)
+    q.locator('#student').fill('alumno@example.com');finish(q)
     elapsed=state(q)['data']['elapsed']
     assert state(q)['data']['started'] is None
     q.evaluate("Date.now=()=>9999999999999")
@@ -258,22 +258,22 @@ def test_clock_continues_during_warning_reload_and_cancel(make_page):
     assert not q.errors
 
 def test_leave_after_finish_not_counted(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('Alumno');finish(p);blur_return(p)
+    p=make_page();begin(p);p.locator('#student').fill('alumno@example.com');finish(p);blur_return(p)
     assert state(p)['count']==0
 
-def test_finish_without_name_does_not_finalize(make_page):
+def test_finish_without_email_does_not_finalize(make_page):
     p=make_page();begin(p);p.locator('#guard-finish').click();p.locator('#guard-confirm-ok').click()
     assert state(p)['phase']=='active'
     assert p.locator('#download').is_disabled()
 
 def test_new_attempt_empty_after_finish(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('Alumno');p.locator('#t1').fill('120');finish(p)
+    p=make_page();begin(p);p.locator('#student').fill('alumno@example.com');p.locator('#t1').fill('120');finish(p)
     p.locator('#guard-start').click();p.wait_for_function("document.querySelector('#guard-state').textContent==='En curso'")
     assert state(p)['attempt']==2 and state(p)['count']==0
     assert p.locator('#t1').input_value()==''
 
 def test_erase_only_this_lab(make_page):
-    p=make_page({'otro-laboratorio':'NO BORRAR'});begin(p);p.locator('#student').fill('Alumno');finish(p)
+    p=make_page({'otro-laboratorio':'NO BORRAR'});begin(p);p.locator('#student').fill('alumno@example.com');finish(p)
     p.locator('#reset').click();p.locator('#guard-confirm-ok').click()
     assert p.evaluate(f"localStorage.getItem('{KEY}')") is None
     assert p.evaluate("localStorage.getItem('otro-laboratorio')")=='NO BORRAR'
@@ -299,13 +299,13 @@ def test_pagehide_and_visibility_share_episode(make_page):
     assert 'pagehide' in state(p)['episode']['reasons']
 
 def test_restore_submitted_keeps_export_only(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('Alumno');finish(p)
+    p=make_page();begin(p);p.locator('#student').fill('alumno@example.com');finish(p)
     q=make_page(p.evaluate('window.testStore'))
     assert q.locator('#t1').is_disabled() and q.locator('#download').is_enabled()
     assert state(q)['phase']=='submitted'
 
 def test_third_incident_during_hash_cannot_revive(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('Alumno');p.locator('#t1').fill('120')
+    p=make_page();begin(p);p.locator('#student').fill('alumno@example.com');p.locator('#t1').fill('120')
     blur_return(p);resume(p);blur_return(p);resume(p)
     p.evaluate('window.testDigestDelay=700')
     p.locator('#guard-finish').click();p.locator('#guard-confirm-ok').click()
@@ -315,7 +315,7 @@ def test_third_incident_during_hash_cannot_revive(make_page):
     assert not p.errors
 
 def test_hash_failure_keeps_clock_running(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('Alumno')
+    p=make_page();begin(p);p.locator('#student').fill('alumno@example.com')
     started=state(p)['data']['started']
     p.evaluate("crypto.subtle.digest=()=>Promise.reject(new Error('fallo'))")
     p.locator('#guard-finish').click();p.locator('#guard-confirm-ok').click()
@@ -324,32 +324,30 @@ def test_hash_failure_keeps_clock_running(make_page):
     assert p.locator('#t1').is_enabled()
     assert not p.errors
 
-def test_base64_unicode_copy_and_reload(make_page):
+def test_base64_unicode_download_only_and_reload(make_page):
     p=make_page();begin(p)
-    p.locator('#student').fill('María Muñoz')
+    p.locator('#student').fill('maria.munoz@example.com')
     p.locator('#reflection').fill('Revisión: ñ, á, € y 🧪')
     finish(p)
     encoded=p.locator('#report').input_value()
     decoded=base64.b64decode(encoded,validate=True).decode('utf-8')
-    assert 'María Muñoz' in decoded and 'Revisión: ñ, á, € y 🧪' in decoded
+    assert 'Correo electrónico: maria.munoz@example.com' in decoded and 'Revisión: ñ, á, € y 🧪' in decoded
     body,checksum=decoded.rsplit('\nCódigo de comprobación: SSII1-',1)
     # La suite usa un doble SHA-256; se conserva su código dentro de Base64.
     assert checksum=='00'*32
     assert state(p)['data']['reportEncoding']=='base64'
-    assert p.locator('#copy').is_enabled()
-    assert p.evaluate("document.querySelector('#report').dispatchEvent(new Event('copy',{bubbles:true,cancelable:true}))")
+    assert p.locator('#copy').count()==0
+    assert p.locator('#report').is_hidden()
+    assert not p.evaluate("document.querySelector('#report').dispatchEvent(new Event('copy',{bubbles:true,cancelable:true}))")
     assert not p.evaluate("document.querySelector('#report').dispatchEvent(new Event('cut',{bubbles:true,cancelable:true}))")
-    p.evaluate("Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async text=>{window.copiedReport=text;}}})")
-    p.locator('#copy').click()
-    p.wait_for_function('window.copiedReport!==undefined')
-    assert p.evaluate('window.copiedReport')==encoded
     q=make_page(p.evaluate('window.testStore'))
     assert q.locator('#report').input_value()==encoded
-    assert q.locator('#copy').is_enabled()
+    assert q.locator('#copy').count()==0
+    assert q.locator('#report').is_hidden()
     assert not p.errors and not q.errors
 
 def test_plaintext_saved_report_migrates_once(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('María');finish(p)
+    p=make_page();begin(p);p.locator('#student').fill('maria@example.com');finish(p)
     saved=state(p)
     encoded=saved['data']['report']
     saved['data']['report']=base64.b64decode(encoded).decode('utf-8')
@@ -361,16 +359,8 @@ def test_plaintext_saved_report_migrates_once(make_page):
     assert r.locator('#report').input_value()==encoded
     assert not q.errors and not r.errors
 
-def test_copy_fallback_selects_base64(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('Alumno');finish(p)
-    p.evaluate("Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw new Error('denegado');}}})")
-    p.locator('#copy').click()
-    p.wait_for_function("document.querySelector('#reportStatus').textContent.includes('Ctrl+C')")
-    assert p.locator('#report').evaluate('(el)=>el.selectionStart===0&&el.selectionEnd===el.value.length')
-    assert not p.errors
-
 def test_report_records_current_url_before_base64(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('Alumno')
+    p=make_page();begin(p);p.locator('#student').fill('alumno@example.com')
     p.evaluate("window.location.hash='entrega'")
     expected_url=p.evaluate('window.location.href')
     finish(p)
@@ -386,3 +376,69 @@ def test_report_records_current_url_before_base64(make_page):
         p.locator('#download').click()
     assert Path(download.value.path()).read_text(encoding='utf-8')==encoded
     assert not p.errors
+
+@pytest.mark.parametrize('phase', ['ready','active','submitted'])
+def test_silent_control_right_click_and_clipboard_blocking(make_page,phase):
+    p=make_page()
+    if phase!='ready':
+        begin(p)
+    if phase=='submitted':
+        p.locator('#student').fill('alumno@example.com');finish(p)
+    before=state(p)
+    result=p.evaluate("""() => {
+      const target=document.querySelector('#t1');
+      const send=e=>target.dispatchEvent(e);
+      const blocked=[];
+      for(const type of ['keydown','keypress','keyup']){
+        for(const key of ['Control','a','z','p','s','u','c','v','ArrowLeft','F5']){
+          blocked.push(send(new KeyboardEvent(type,{key,ctrlKey:true,bubbles:true,cancelable:true})));
+        }
+      }
+      for(const type of ['pointerdown','pointerup','mousedown','mouseup','click','auxclick','dblclick']){
+        blocked.push(send(new MouseEvent(type,{button:2,bubbles:true,cancelable:true})));
+        blocked.push(send(new MouseEvent(type,{button:0,ctrlKey:true,bubbles:true,cancelable:true})));
+      }
+      for(const type of ['contextmenu','copy','cut','paste','dragstart','drop','dragover']){
+        blocked.push(send(new Event(type,{bubbles:true,cancelable:true})));
+      }
+      return blocked;
+    }""")
+    assert all(accepted is False for accepted in result)
+    assert state(p)==before
+    assert p.locator('#clipboardStatus').count()==0
+    assert p.locator('#guard-clipboard-count').count()==0
+    assert p.locator('#guard-warning').is_hidden()
+    assert not p.errors
+
+def test_plain_typing_and_left_click_remain_available(make_page):
+    p=make_page();begin(p)
+    p.locator('#student').fill('alumno@example.com')
+    p.locator('#t2').press_sequentially('120 segundos')
+    assert p.locator('#t2').input_value()=='120 segundos'
+    assert state(p)['count']==0
+    p.locator('#guard-finish').click()
+    assert p.locator('#guard-confirm').is_visible()
+    p.locator('#guard-confirm-cancel').click()
+    assert p.locator('#t2').is_enabled()
+    assert not p.errors
+
+@pytest.mark.parametrize('email', ['', 'Alumno', 'alumno@', 'alumno example.com', 'alumno@example'])
+def test_email_required_before_final_download(make_page,email):
+    p=make_page();begin(p);p.locator('#student').fill(email)
+    started=state(p)['data']['started']
+    p.locator('#guard-finish').click();p.locator('#guard-confirm-ok').click()
+    p.wait_for_function("document.querySelector('#reportStatus').textContent.includes('correo electrónico válido')")
+    assert state(p)['phase']=='active'
+    assert state(p)['data']['started']==started
+    assert p.locator('#download').is_disabled()
+    assert p.locator('#report').input_value()==''
+    assert not p.errors
+
+def test_email_is_in_decoded_report(make_page):
+    p=make_page();begin(p);p.locator('#student').fill('alumno+ssii@example.com')
+    assert p.locator('#student').get_attribute('type')=='email'
+    assert p.locator('#student').get_attribute('required') is not None
+    finish(p)
+    decoded=base64.b64decode(p.locator('#report').input_value()).decode('utf-8')
+    assert 'Correo electrónico: alumno+ssii@example.com' in decoded
+    assert 'Alumno/a:' not in decoded

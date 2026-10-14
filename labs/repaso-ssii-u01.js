@@ -83,12 +83,12 @@ function setReport(text) {
   $('reportStatus').textContent='Práctica finalizada. Entrega el TXT descargado al profesor.';
 }
 async function makeReport(metadata,final,finishedAt=Date.now()) {
-  if(final&&!$('student').value.trim()) {
-    $('reportStatus').textContent='Indica tu nombre antes de finalizar.';return null;
+  if(final&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($('student').value.trim())) {
+    $('reportStatus').textContent='Indica un correo electrónico válido antes de finalizar.';return null;
   }
  const answered=fields.filter(hasAnswer).length,closed=fields.filter(f=>f.kind!=='open'),hits=closed.filter(correct).length;
  const allDone=fields.every(f=>f.kind==='open'?hasAnswer(f):correct(f));
- const lines=['MISIÓN REPASO · SSII UD01',allDone?'DATOS COMPLETOS · explicaciones pendientes de revisión':'INCOMPLETO · quedan pasos pendientes o resultados por corregir',`Alumno/a: ${$('student').value.trim()}`,`Grupo: ${$('group').value.trim()||'No indicado'}`,`Fecha: ${new Date().toLocaleString('es-ES')}`,`Tiempo total empleado: ${Math.floor(timeSpent(finishedAt)/60000)} min ${Math.floor(timeSpent(finishedAt)/1000)%60} s`, `Campos respondidos: ${answered}/${fields.length}`,`Resultados cerrados correctos: ${hits}/${closed.length}`,`Pistas consultadas: ${Object.keys(hints).filter(k=>hints[k]).length}`, 'La comprobación automática no evalúa la validez de operaciones ni explicaciones.',''];
+ const lines=['MISIÓN REPASO · SSII UD01',allDone?'DATOS COMPLETOS · explicaciones pendientes de revisión':'INCOMPLETO · quedan pasos pendientes o resultados por corregir',`Correo electrónico: ${$('student').value.trim()}`,`Grupo: ${$('group').value.trim()||'No indicado'}`,`Fecha: ${new Date().toLocaleString('es-ES')}`,`Tiempo total empleado: ${Math.floor(timeSpent(finishedAt)/60000)} min ${Math.floor(timeSpent(finishedAt)/1000)%60} s`, `Campos respondidos: ${answered}/${fields.length}`,`Resultados cerrados correctos: ${hits}/${closed.length}`,`Pistas consultadas: ${Object.keys(hints).filter(k=>hints[k]).length}`, 'La comprobación automática no evalúa la validez de operaciones ni explicaciones.',''];
  for(const s of sections){lines.push(s.title.toUpperCase(),`Tiempo orientativo: ${s.time} minutos`);let lastExercise=null;for(const f of fields.filter(f=>f.section===s.id)){const exercise=$(f.id).closest('.exercise');if(exercise!==lastExercise){lines.push(exercise.querySelector('h3').textContent);const prompt=exercise.querySelector(':scope > p');if(prompt)lines.push(prompt.textContent);lastExercise=exercise;}const label=$(f.id).labels[0].textContent;const status=!hasAnswer(f)?'PENDIENTE':f.kind==='open'?'REVISIÓN DEL PROFESOR':correct(f)?'CORRECTO':'REVISAR';lines.push(label,$(f.id).value.trim()||'[Sin responder]',`Estado: ${status}`,'');}}
  lines.push('REFLEXIÓN FINAL',$('reflection').value.trim()||'Sin reflexión opcional.');
  lines.push('', 'SEGUIMIENTO DEL INTENTO', metadata);
@@ -132,18 +132,6 @@ function downloadReport() {
   } finally {if(url)setTimeout(()=>URL.revokeObjectURL(url),60000);}
 }
 $('download').addEventListener('click',downloadReport);
-$('copy').addEventListener('click',async()=>{
-  if(!guard.canDownloadReport())return;
-  const report=$('report').value;
-  try {
-    await navigator.clipboard.writeText(report);
-    $('reportStatus').textContent='Entrega copiada. Pega el bloque completo en el destino indicado por el profesor.';
-  } catch {
-    if(!guard.canDownloadReport()||$('report').value!==report)return;
-    $('report').focus();$('report').select();
-    $('reportStatus').textContent='Seleccionado el bloque de entrega. Pulsa Ctrl+C o Cmd+C para copiarlo.';
-  }
-});
 // Retirar hidden/inert es responsabilidad EXCLUSIVA del arranque del controlador.
 // Si falta este archivo o el controlador, el HTML conserva el bloqueo inicial.
 guard=window.createPracticeGuard({ empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,
