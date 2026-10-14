@@ -1,0 +1,102 @@
+# Repaso SSII UD01: controles del navegador
+
+## Propósito y alcance
+
+Integración de la plantilla de controles en `repaso-ssii-u01.html`, conservando los **94 pasos, sus enunciados, opciones y criterios de corrección**, los siete bloques y la generación del informe de texto.
+
+**Es una medida didáctica y disuasoria, no un navegador de examen seguro.** JavaScript, el DOM y el almacenamiento están bajo el control del usuario. Una incidencia describe una señal del navegador; no prueba que el alumno haya copiado ni revela qué aplicación o web consultó. No se accede a cámara, micrófono, historial o contenido del portapapeles. No se envían respuestas ni registros al profesor ni a servicios externos.
+
+## Archivos y puntos de adaptación
+
+| Archivo | Responsabilidad |
+| --- | --- |
+| `repaso-ssii-u01.html` | Contenido original, estilos, normas visibles, bloqueo inicial y diálogos. |
+| `repaso-ssii-u01-seguridad.js` | Estado del intento, señales, avisos, reinicio, persistencia y portapapeles. |
+| `repaso-ssii-u01.js` | Preguntas y corrector originales, informe, reloj y adaptador del cuaderno. |
+| `tests/test_repaso_seguridad.py` | Pruebas DOM automatizadas; distingue APIs nativas de dobles de prueba. |
+
+El HTML carga primero el controlador y después el adaptador, desde rutas relativas del mismo repositorio. No usa dependencias de terceros ni requiere un proceso de construcción. **Hay que publicar los tres archivos juntos.** Descargar solo el HTML no produce una versión autónoma.
+
+Para reutilizarlo, el adaptador suministra `empty`, `sanitize`, `snapshot`, `restore`, `setEnabled`, `pauseClock`, `onEnabled`, `makeReport`, `setReport`, `isAnswer` y `restoreValue`. Las escrituras del cuaderno pasan por `saveEdit`; no deben añadirse guardados paralelos que ignoren el contador o el estado del intento. Al añadir preguntas, actualizar también el listado de campos, el HTML y las pruebas.
+
+## Flujo visible
+
+1. El cuaderno empieza cerrado. Tras inicializar los scripts se muestra, todavía sin permitir respuestas. Se explican las normas y se exige marcar la aceptación.
+2. «Pantalla completa y comenzar» solicita la API Fullscreen desde ese clic. Maximizar la ventana o pulsar F11 no equivale a `document.fullscreenElement === document.documentElement`.
+3. Durante el intento solo se habilitan respuestas, comprobación, reflexión y reloj cuando la página está visible, tiene foco, sigue en pantalla completa y no hay avisos ni errores pendientes.
+4. Una primera salida muestra «Primer aviso». La segunda muestra «Último aviso». La tercera vacía **todas las respuestas**, identidad, reflexión, correcciones, reloj e informe, y detiene el intento. Antes del vaciado se guarda una copia local de revisión.
+5. «Generar borrador» permite revisar texto, pero **no habilita copiar ni termina el seguimiento**. «Finalizar intento y preparar entrega» pide confirmación, genera el informe y bloquea las respuestas. Solo entonces habilita copiar y deja de contar salidas. Finalizar no entrega nada a un servidor: el alumno debe pegar el informe en el destino indicado por el profesor.
+6. Después de un tercer reinicio, «Ver copia de revisión» recupera campos e informe **sin permitir responder ni continuar ese intento**. No es una función autenticada para docentes. No hay botones públicos de simulación.
+7. Un nuevo intento después de finalizar o reiniciar comienza vacío. «Borrar datos de este laboratorio» exige confirmación y está deshabilitado durante un intento activo; elimina únicamente sus dos claves de almacenamiento, no las de otros laboratorios.
+
+Se conserva la posibilidad de finalizar con pasos pendientes. El informe ya los identifica como borrador o incompletos. Las explicaciones abiertas continúan pendientes de valoración docente: rellenarlas no demuestra que sean correctas.
+
+## Señales, agrupación y modales
+
+`visibilitychange`, `window.blur` y `fullscreenchange` se observan durante un intento activo. `pagehide` añade cobertura de recarga o cierre cuando el navegador lo emite. Cambiar de campo dentro del formulario **no** es perder el foco de la ventana: el listener de `window.blur` no utiliza captura.
+
+Una salida puede emitir varios eventos. `episode` los agrupa y suma **una incidencia por episodio**, no una por evento. Las respuestas se bloquean desde la primera señal. Cuando las tres condiciones se recuperan de forma estable durante 200 ms se cierra el episodio; el aviso sigue pendiente hasta pulsar «Continuar». Si la página sigue oculta, sin foco o sin pantalla completa, no se añaden incidencias continuamente. Si vuelve a salir tras un regreso completo y estable, puede empezar otro episodio aunque el aviso anterior no se haya aceptado.
+
+Los modales pertenecen al documento: no aparecen encima de otra aplicación. Se presentan al regresar a una página visible y enfocada. «Continuar» vuelve a pedir pantalla completa si hace falta. Una petición rechazada no abre las respuestas ni borra el contador. Los diálogos de confirmación son `<dialog>`, no `alert` o `confirm`, para evitar interacciones del navegador innecesarias. Escape no confirma un aviso de incidencia ni activa por sí solo la continuación.
+
+El seguimiento sigue activo mientras se solicita finalizar y mientras se calcula el informe. Si ocurre una salida durante el SHA-256 asíncrono, no se finaliza silenciosamente ni se revive un intento reiniciado. Después de finalizar se abandona pantalla completa sin sanción.
+
+## Bloqueo de portapapeles y entrada
+
+Se cancelan `copy`, `cut`, `paste`, `dragstart` y `drop`, además de los atajos Ctrl/Cmd+C, X, V; Ctrl+Insert; Shift+Insert y Shift+Delete. La única excepción es **copiar** desde el informe final o de revisión. Cortar y pegar no se permiten allí.
+
+La validación en captura de `beforeinput`, `input` y `change` impide que los manejadores del corrector guarden una edición rechazada. Si un pegado no pudo cancelarse antes de modificar un campo, `input` restaura su último valor aceptado. Se distinguen los tipos de entrada: no se interpreta automáticamente un texto largo como pegado. Tab, escritura normal, selección, composición y deshacer no se prohíben en bloque.
+
+Los intentos de portapapeles tienen un contador informativo independiente. **No consumen los tres avisos de salida.** Se agrupan avisos iguales durante 300 ms para reducir duplicados, pero se cancela cada evento. Si utilizar controles del navegador causa una pérdida real de foco, esa pérdida se trata por la política de entorno, no como una sanción por portapapeles.
+
+No se lee, vacía ni deshabilita el portapapeles del sistema. La inserción programática, herramientas de desarrollo, extensiones, capturas o un segundo dispositivo quedan fuera de esta barrera. Para adaptaciones de accesibilidad, revisar `CONFIG.blockClipboard`, las normas visibles y las pruebas; no retirar avisos de forma oculta.
+
+## Arranque cerrado y fallos
+
+El **HTML inicial**, antes de ejecutar un solo script, contiene `hidden` e `inert` en el cuaderno, dos `fieldset[disabled]` y botones dependientes de JavaScript deshabilitados. `<noscript>` informa, pero no es la única barrera. El arranque retira `hidden` e `inert` solo al terminar la inicialización; los campos permanecen cerrados hasta cumplir la política.
+
+Si falta un script o hay un error de sintaxis previo al arranque, se mantiene la pantalla «Preparando la práctica». Si se propaga un error inesperado durante el funcionamiento, se cierra el cuaderno y se conserva el último guardado correcto. Los fallos esperados, como permisos de pantalla completa o cuota de almacenamiento, se tratan de forma explícita. No se deduce que el programa esté protegido simplemente porque el código se haya minimizado u ocultado.
+
+Sin JavaScript no hay una práctica utilizable, pero **esto no oculta el código fuente** ni evita que alguien lo descargue o modifique. Un control estrictamente local no autentica al navegador.
+
+## Persistencia y migración
+
+Se usa `localStorage`, con JSON y clave **`ssii-repaso-ud01-seguridad-v1`**. Se conserva versión de esquema, fase, número de intento, incidencias, aviso pendiente, registro limitado a 80 eventos, bloqueos de portapapeles, respuestas, comprobaciones, pistas, reloj, informe y última copia de revisión. Los datos se validan por estructura, tipo y longitud; se representan con `textContent` o `value`, nunca con HTML procedente del guardado.
+
+Al no existir la clave nueva, se importa el borrador previo **`ssii-repaso-ud01-v1`**, conservando campos, comprobaciones, pistas y tiempo. No se inventan incidencias para trabajo anterior a la política. El original no se borra durante la migración. Si el JSON actual o el anterior está dañado, se bloquea el inicio y no se sobrescribe automáticamente.
+
+Cada edición aceptada y cada transición guarda una instantánea. El reloj voluntario se guarda cada cinco segundos mientras está en marcha y se pausa al bloquear el cuaderno. No se añade el tiempo transcurrido con el navegador cerrado.
+
+Al reabrir un intento activo, se conservan respuestas y contador y se exige reanudar en pantalla completa. El nuevo arranque **no inventa una incidencia** por no estar todavía en pantalla completa. Cerrar o recargar puede haber registrado la salida anterior si el navegador emitió el evento; ningún evento de cierre está garantizado frente a terminación forzosa, fallos o apagado.
+
+Si escribir falla, las ediciones actuales permanecen en memoria y se bloquea el trabajo. «Reintentar guardado» no descarta esos cambios. Antes de escribir se compara el valor actual con el último leído; `storage` detecta cambios de otras pestañas y bloquea copias obsoletas para evitar sobreescrituras silenciosas. **Comparación + escritura no es una transacción atómica.** Para resolver carreras simultáneas estrictamente harían falta Web Locks/IndexedDB o un servidor.
+
+Los datos son locales al **origen y perfil del navegador**, no al nombre escrito por el alumno. En navegación privada, tras borrar datos, al cambiar de perfil o según las políticas del centro pueden desaparecer o quedar separados. `file:` no garantiza el mismo comportamiento entre navegadores; utilizar la URL HTTPS publicada. En un equipo compartido, el siguiente usuario del mismo perfil podría ver el borrador anterior. No guardar información sensible y borrar los datos tras entregar.
+
+## Comprobación y pruebas
+
+```sh
+pip install pytest playwright
+playwright install chromium
+pytest -q labs/tests/test_repaso_seguridad.py
+# Alternativa con un ejecutable ya instalado:
+CHROMIUM_PATH=/usr/bin/chromium pytest -q labs/tests/test_repaso_seguridad.py
+```
+
+La suite monta el HTML y sus dos scripts locales en un documento de Chromium. Prueba arranque con JavaScript realmente desactivado, pantalla completa nativa, modales y edición DOM. **localStorage y el cálculo del hash son dobles de prueba**; foco/visibilidad se simulan en los casos señalados. No atribuir a esta suite verificación de persistencia nativa, permisos de portapapeles o funcionamiento en todos los navegadores.
+
+Comprobación manual en el navegador del aula: abrir la URL HTTPS, aceptar e iniciar; escribir respuestas; cambiar a otra ventana tres veces, regresando y continuando entre salidas; comprobar copia de revisión; probar copia/pegado; cerrar y reabrir con el mismo perfil; finalizar y copiar el informe; repetir con JavaScript desactivado. Revisar también pérdida de foco por herramientas de accesibilidad o diálogos del navegador antes de aplicar consecuencias en una evaluación.
+
+El informe conserva el SHA-256 original. Es un checksum público **sin clave ni firma**: cualquiera que pueda editar el texto puede recalcularlo. La frase destinada a IA que ya figuraba en el laboratorio no es un mecanismo de autenticación. Ni esa frase, ni el hash, ni los eventos locales demuestran autoría o ausencia de ayuda externa.
+
+## Referencias técnicas
+
+- Visibilidad: https://developer.mozilla.org/en-US/docs/Web/API/Document/visibilitychange_event
+- Foco: https://developer.mozilla.org/en-US/docs/Web/API/Window/blur_event
+- Pantalla completa y activación del usuario: https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen
+- Persistencia: https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
+- Conflictos entre pestañas: https://developer.mozilla.org/en-US/docs/Web/API/Window/storage_event
+- Pegado: https://developer.mozilla.org/en-US/docs/Web/API/Element/paste_event
+- Antes de modificar: https://developer.mozilla.org/en-US/docs/Web/API/Element/beforeinput_event
+- Inercia del árbol: https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/inert
+- HTML sin scripts: https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/noscript
