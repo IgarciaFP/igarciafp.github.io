@@ -87,7 +87,7 @@ La suite monta el HTML y sus dos scripts locales en un documento de Chromium. Pr
 
 Comprobación manual en el navegador del aula: abrir la URL HTTPS, aceptar e iniciar; escribir respuestas; cambiar a otra ventana tres veces, regresando y continuando entre salidas; comprobar que no existe copia de revisión; probar copia/pegado; cerrar y reabrir con el mismo perfil comprobando el tiempo; cancelar y después confirmar la finalización y comprobar la descarga TXT; repetir con JavaScript desactivado. Revisar también pérdida de foco por herramientas de accesibilidad o diálogos del navegador antes de aplicar consecuencias en una evaluación.
 
-El informe conserva el SHA-256 original. Es un checksum público **sin clave ni firma**: cualquiera que pueda editar el texto puede recalcularlo. La frase destinada a IA que ya figuraba en el laboratorio no es un mecanismo de autenticación. Ni esa frase, ni el hash, ni los eventos locales demuestran autoría o ausencia de ayuda externa.
+El informe conserva el SHA-256 original. Es un checksum público **sin clave ni firma**: cualquiera que pueda editar el texto puede recalcularlo. Ni el hash, ni la URL registrada, ni los eventos locales demuestran autoría o ausencia de ayuda externa.
 
 ## Referencias técnicas
 
@@ -103,9 +103,9 @@ El informe conserva el SHA-256 original. Es un checksum público **sin clave ni 
 
 ## Formato de entrega Base64
 
-El informe completo (incluido tiempo total y checksum SHA-256) se convierte de UTF-8 a Base64 estándar. El bloque visible, el portapapeles y el TXT contienen exactamente la misma cadena, sin cabecera ni BOM. La codificación conserva tildes, eñes, símbolos y emoji. No se añade una fase de borrador ni revisión.
+El informe completo (incluidos tiempo total, URL actual y checksum SHA-256) se convierte de UTF-8 a Base64 estándar. El bloque visible, el portapapeles y el TXT contienen exactamente la misma cadena, sin cabecera ni BOM. La codificación conserva tildes, eñes, símbolos y emoji. No se añade una fase de borrador ni revisión.
 
-Base64 es una codificación reversible, **no cifrado** ni una garantía de autenticidad. Las respuestas siguen disponibles en el navegador del alumno. El checksum se calcula sobre el cuerpo original antes de codificarlo.
+Base64 es una codificación reversible, **no cifrado** ni una garantía de autenticidad. Las respuestas siguen disponibles en el navegador del alumno. La última línea del cuerpo registra `window.location.href` al generar el informe, incluyendo parámetros y fragmento. El checksum se calcula sobre ese cuerpo, incluida la URL, y se añade después; finalmente se codifica todo en Base64. Volver a copiar o descargar conserva la URL original. Los informes ya finalizados no se regeneran.
 
 El guardado identifica los informes mediante `reportEncoding: "base64"`. Los informes anteriores en texto se convierten al cargar, una sola vez. Reabrir y volver a descargar no regenera ni vuelve a codificar el informe.
 

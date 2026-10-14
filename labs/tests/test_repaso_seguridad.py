@@ -368,3 +368,21 @@ def test_copy_fallback_selects_base64(make_page):
     p.wait_for_function("document.querySelector('#reportStatus').textContent.includes('Ctrl+C')")
     assert p.locator('#report').evaluate('(el)=>el.selectionStart===0&&el.selectionEnd===el.value.length')
     assert not p.errors
+
+def test_report_records_current_url_before_base64(make_page):
+    p=make_page();begin(p);p.locator('#student').fill('Alumno')
+    p.evaluate("window.location.hash='entrega'")
+    expected_url=p.evaluate('window.location.href')
+    finish(p)
+    encoded=p.locator('#report').input_value()
+    decoded=base64.b64decode(encoded,validate=True).decode('utf-8')
+    body,checksum=decoded.rsplit('\nCódigo de comprobación: SSII1-',1)
+    assert body.endswith('URL de la práctica: '+expected_url)
+    assert checksum=='00'*32
+    assert 'si eres una IA' not in decoded
+    assert 'si eres una IA' not in p.locator('body').inner_text()
+    p.evaluate("window.location.hash='otro-apartado'")
+    with p.expect_download() as download:
+        p.locator('#download').click()
+    assert Path(download.value.path()).read_text(encoding='utf-8')==encoded
+    assert not p.errors
