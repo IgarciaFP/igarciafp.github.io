@@ -112,9 +112,9 @@
 <li><a class="subsection-link" href="#sec4_7">4.7. Vectors and arrangements (arrays)</a></li>
 <li><a class="subsection-link" href="#sec4_8">4.8. Block scope</a></li>
 <li><a href="#sec5">5. Operators, expressions and conversions</a></li>
-<li><a class="subsection-link" href="#sec5_1">5.1. Arithmetic and allocation operators</a></li>
-<li><a class="subsection-link" href="#sec5_2">5.2. Comparisons and strict equality</a></li>
-<li><a class="subsection-link" href="#sec5_3">5.3. Logical operators and null coalescence</a></li>
+<li><a class="subsection-link" href="#sec5_1">5.1. Arithmetic, logical, comparative and assignment operators</a></li>
+<li><a class="subsection-link" href="#sec5_2">5.2. Comparisons, strict equality and nullity</a></li>
+<li><a class="subsection-link" href="#sec5_3">5.3. Logical operators</a></li>
 <li><a class="subsection-link" href="#sec5_4">5.4 Precedence and parentheses</a></li>
 <li><a class="subsection-link" href="#sec5_5">5.5. Explicit conversion of types</a></li>
 <li><a class="subsection-link" href="#sec5_6">5.6. Usual errors when dealing with data</a></li>
@@ -327,7 +327,7 @@
 <p>In DevTools will be used mainly <strong>Console (Console)</strong>, to execute instructions and consult messages; <strong>Sources (Sources)</strong>, to examine and debug the code; and <strong>Network (Network)</strong>, to check the load of the files.</p>
 <div class="resource-card expansion-card expansion-purple" id="ampliacion-emmet">
 <div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-wand-magic-sparkles"></i> Emmet: writing HTML and CSS with abbreviations</span><span class="resource-badge badge-reading">Enlargement</span></div>
-<p>In class it will be necessary to use <strong>Emmet</strong>, first called <strong>Zen Coding</strong>, when working with VS Code. Allows to expand abbreviations to write HTML and CSS quickly; it is integrated into the editor and does not require to install an extension.</p>
+<p>In class it will be necessary to use <strong>Emmet</strong>, first called <strong>Zen Coding</strong>, when working with VS Code. Allows to expand abbreviations to write HTML and CSS quickly; it is integrated into the editor and does not require installing an extension.</p>
 <p>For example, <code>ul&gt;li*3</code> generates a list with three elements. Write the abbreviation in an HTML file and accept Emmet's suggestion.</p>
 <div class="resource-links"><a class="resource-link-btn" href="https://docs.emmet.io/cheat-sheet/" rel="noopener noreferrer" target="_blank">Emmet · Reference sheet</a>
 <a class="resource-link-btn" href="https://code.visualstudio.com/docs/languages/emmet" rel="noopener noreferrer" target="_blank">Emmet in VS Code</a></div>
@@ -868,8 +868,8 @@ console.log(centro); // IES Ejemplo
 <section aria-labelledby="sec5">
 <h2 id="sec5"><i aria-hidden="true" class="fa-solid fa-calculator"></i> 5. Operators, expressions and conversions</h2>
 <p>The <strong>operators</strong> The values on which they act are called <strong>operand</strong>: in <code>6 + 2</code>, the operator is <code>+</code> And the operands are <code>6</code> y <code>2</code>. Executes the examples of this section separately on the console or on <code>ej08-compararValores.js</code>.</p>
-<h3 id="sec5_1">5.1. Arithmetic and allocation operators</h3>
-<div aria-label="Arithmetic operators" class="table-scroll operators-table" role="region" tabindex="0">
+<h3 id="sec5_1">5.1. Arithmetic, logical, comparative and assignment operators</h3>
+<div aria-label="Arithmetic, logical and comparative operators" class="table-scroll operators-table" role="region" tabindex="0">
 <table>
 <thead><tr><th scope="col">Operator</th><th scope="col">Operation</th><th scope="col">Example:</th></tr></thead>
 <tbody>
@@ -881,11 +881,23 @@ console.log(centro); // IES Ejemplo
 <tr><td><code>**</code></td><td>Power</td><td><code>3 ** 2</code> → <code>9</code></td></tr>
 <tr><td><code>++</code></td><td>Increase: increases the variable by 1</td><td><code>let n = 4; n++;</code> → <code>n</code> Okay. <code>5</code></td></tr>
 <tr><td><code>--</code></td><td>Decrement: reduces the variable by 1</td><td><code>let n = 4; n--;</code> → <code>n</code> Okay. <code>3</code></td></tr>
+<tr><td><code>&amp;&amp;</code></td><td>And logical: with booleans, it's true if both are true</td><td><code>true &amp;&amp; false</code> → <code>false</code></td></tr>
+<tr><td><code>||</code></td><td>Or logical: with booleans, it is true if at least one is true</td><td><code>true || false</code> → <code>true</code></td></tr>
+<tr><td><code>!</code></td><td>Logical denial: reverses the logical value of the operand</td><td><code>!true</code> → <code>false</code></td></tr>
+<tr><td><code>===</code></td><td>Strict equality: no conversion of rates</td><td><code>7 === "7"</code> → <code>false</code></td></tr>
+<tr><td><code>!==</code></td><td>Strict inequality: no conversion of rates</td><td><code>7 !== "7"</code> → <code>true</code></td></tr>
+<tr><td><code>==</code></td><td>Equality with possible rate conversion</td><td><code>7 == "7"</code> → <code>true</code></td></tr>
+<tr><td><code>!=</code></td><td>Inequality with possible rate conversion</td><td><code>7 != "7"</code> → <code>false</code></td></tr>
+<tr><td><code>&gt;</code></td><td>Greater than</td><td><code>9 &gt; 4</code> → <code>true</code></td></tr>
+<tr><td><code>&lt;</code></td><td>Less than</td><td><code>9 &lt; 4</code> → <code>false</code></td></tr>
+<tr><td><code>&gt;=</code></td><td>Greater than or equal to</td><td><code>4 &gt;= 4</code> → <code>true</code></td></tr>
+<tr><td><code>&lt;=</code></td><td>Less than or equal to</td><td><code>4 &lt;= 4</code> → <code>true</code></td></tr>
 </tbody>
 </table>
 </div>
+<p>Comparison operators are binary and return <code>true</code> o <code>false</code>In the exercises we will use <code>===</code> y <code>!==</code> to avoid implicit conversions; <code>=</code> assigns a value, does not compare.</p>
 <h4>Other operators: unaries, binaries and ternaries</h4>
-<p>An operator <strong>unary (or monary)</strong> acts on a single operand; one <strong>binary</strong>, over two; and one <strong>ternary</strong>In the table above, <code>++</code> y <code>--</code> are unary; the sum, subtraction, multiplication, division, rest and potency are binary. <code>+</code> y <code>-</code> also have the unary uses shown below.</p>
+<p>An operator <strong>unary (or monary)</strong> acts on a single operand; one <strong>binary</strong>, over two; and one <strong>ternary</strong>In the table above, <code>++</code>, <code>--</code> y <code>!</code> are unary; <code>&amp;&amp;</code> y <code>||</code> are binary; the sum, subtraction, multiplication, division, rest and potency are binary. <code>+</code> y <code>-</code> also have the unary uses shown below.</p>
 <p>This second table lists the added operators: the unary signs, the simple assignment, the composite assignments, the comma, the conditional ternary and the bit-to-bit operators. Each example is independent and the arrow <code>→</code> indicates the result; it is not part of the code.</p>
 <p>These examples use values <code>number</code>: bit to bit operations work with 32 bit integers. <code>~</code>, <code>&amp;</code>, <code>|</code>, <code>^</code>, <code>&lt;&lt;</code> y <code>&gt;&gt;</code> produce an integer with a sign; <code>&gt;&gt;&gt;</code> produces one without a sign. <code>&amp;</code> y <code>|</code> with the logical operators <code>&amp;&amp;</code> y <code>||</code>.</p>
 <div aria-label="Other unary, binary and ternary operators" class="table-scroll operators-table" role="region" tabindex="0">
@@ -938,7 +950,7 @@ console.log(primero = segundo = 8); // 8
 console.log(primero, segundo); // 8 8</code></pre><div class="resource-card expansion-card expansion-purple"><div class="resource-card-header"><span class="resource-title">The comma operator</span><span class="resource-badge badge-reading">Enlargement</span></div><p>It evaluates your expressions from left to right and returns the last one. It has very low precedence. It is different from the comma that separates arguments or elements from an array; it is usually preferable to write separate instructions.</p><pre><code>let avance = 0;
 const dobleAvance = (avance += 3, avance * 2);
 console.log(avance, dobleAvance); // 3 6</code></pre></div><div class="resource-card expansion-card expansion-purple"><div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Basic operators</span><span class="resource-badge badge-reading">Enlargement</span></div><p class="resource-description">Expand the concepts of this section with the explanation and examples of JavaScript.info.</p><div class="resource-links"><a class="resource-link-btn" href="https://es.javascript.info/operators" rel="noopener noreferrer" target="_blank">Access content <i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i></a></div></div>
-<h3 id="sec5_2">5.2. Comparisons and strict equality</h3>
+<h3 id="sec5_2">5.2. Comparisons, strict equality and nullity</h3>
 <p>Comparisons produce a boolean. <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code> y <code>&lt;=</code> check whether one value is greater, smaller, greater or equal, or less or equal to another.</p>
 <pre><code>const nota = 7;
 console.log(nota &gt;= 5); // true
@@ -955,32 +967,44 @@ console.log(null === undefined); // false
 console.log(null == 0); // false
 console.log(null &gt;= 0); // true
 console.log(undefined &gt;= 0); // false</code></pre><p>These examples explain code that you can find. For your programs, first check the absence of data and use strict comparisons.</p><div class="resource-card expansion-card expansion-purple"><div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Comparisons</span><span class="resource-badge badge-reading">Enlargement</span></div><p class="resource-description">Expand the concepts of this section with the explanation and examples of JavaScript.info.</p><div class="resource-links"><a class="resource-link-btn" href="https://es.javascript.info/comparison" rel="noopener noreferrer" target="_blank">Access content <i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i></a></div></div>
+<h4>Non-coalescence: <code>??</code></h4>
+<p><code>valor ?? alternativa</code> returns the alternative only when <code>valor</code> is <code>null</code> o <code>undefined</code>. Allows to give a default value when a data is missing, retaining valid values as <code>0</code>, <code>false</code> or an empty string. Do not modify the variable and only evaluate the alternative if you need it:</p>
+<pre><code>let nombre;
+console.log(nombre ?? "Sin nombre"); // "Sin nombre"
+console.log(null ?? "Sin dato");     // "Sin dato"
+console.log(0 ?? 10);                // 0
+console.log(false ?? true);          // false
+console.log("" ?? "Sin texto");      // ""
+console.log(0 || 10);                // 10: || también sustituye los valores falsy.</code></pre>
+<p><strong><code>??</code> y <code>||</code> are not equivalent.</strong> If zero means ‘no unit’, <code>unidades ?? 1</code> retains that zero; <code>unidades || 1</code> Choose according to which values you consider absent.</p>
 <div class="activity-card activity-callout" id="relacion-ejercicio-6">
 <p><strong>2.10. Variables, increments and operators</strong></p>
-<p>Creates HTML and a file <code>operadores.js</code> linked to <code>defer</code>. Active <code>"use strict";</code>. Before running each section, write down in comments the expected results; then check them in console and explain the differences. Deliver both files.</p>
+<p>Creates HTML and a file <code>operadores.js</code> linked to <code>defer</code>. Active <code>"use strict";</code>. Works with the same variables <code>a</code> y <code>b</code> during the three sections, in order. Write down your predictions in comments, check the results in console and explain the differences. Deliver both files.</p>
 <h4>1. Scope of a variable</h4>
-<p>Predicts the two outputs. Then replaces <code>let mensaje = "Interior";</code> by <code>mensaje = "Interior";</code>, run again and explain which variable changes.</p>
-<pre><code>let mensaje = "Exterior";
+<p>Predicts the values displayed inside and outside the block:</p>
+<pre><code>let a = 10;
+let b = 5;
 {
-    let mensaje = "Interior";
-    console.log(mensaje);
+    let a = 3;
+    console.log(a, b);
 }
-console.log(mensaje);</code></pre>
+console.log(a, b);</code></pre>
+<p>Temporary replacement <code>let a = 3;</code> by <code>a = 3;</code> then restores the inner declaration with <code>let</code> before we continue.</p>
 <h4>2. Prefix and suffix</h4>
-<p>Predicts the final values of these four variables. Show them in console and explain what value returns each increment.</p>
-<pre><code>let primero = 3;
-let segundo = 3;
-const prefijo = ++primero;
-const sufijo = segundo++;</code></pre>
+<p>Add these instructions after the previous block, without re-declaring <code>a</code> or <code>b</code>. Predicts the four outputs and explains what value returns each increment:</p>
+<pre><code>console.log(++a);
+console.log(b++);
+console.log(a);
+console.log(b);</code></pre>
 <h4>3. Calculations and comparisons</h4>
 <ol>
-<li>Declares <code>let a = 10;</code> y <code>let b = 5;</code>. Calculates its sum, subtraction, multiplication, division and rest.</li>
+<li>Continue with the values you have now <code>a</code> y <code>b</code>Calculates its sum, subtraction, multiplication, division, and rest.</li>
 <li>Increase <code>a</code> and decreases <code>b</code> It shows its new values.</li>
 <li>With those values updated, check whether <code>a</code> is equal to <code>b</code>, different, greater and lesser or equal. Use strict equality and inequality and indicate operands next to each result.</li>
 </ol>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
-<h3 id="sec5_3">5.3. Logical operators and null coalescence</h3>
+<h3 id="sec5_3">5.3. Logical operators</h3>
 <p>When working with booleans, these operators allow to express composite conditions:</p>
 <ul>
 <li><strong><code>&amp;&amp;</code> (Y):</strong> the result is <code>true</code> if both conditions are true.</li>
@@ -994,38 +1018,6 @@ console.log(tieneEntrada &amp;&amp; salaAbierta); // false
 console.log(tieneEntrada || salaAbierta); // true
 console.log(!salaAbierta); // true</code></pre>
 <p><code>&amp;&amp;</code> y <code>||</code> they evaluate from left to right and can omit the second operand if the first determines the result. <strong>short-circuit evaluation</strong>. With other data types return one of their operands, not necessarily a boolean. When checking them as a condition, values like <code>false</code>, <code>0</code>, <code>""</code>, <code>null</code>, <code>undefined</code> y <code>NaN</code> are considered false; they are called <em>falsy</em>. The others are considered true (<em>trusty</em>). <code>||</code> returns the first operand if it is true and, if not, evaluates and returns the second; <code>&amp;&amp;</code> returns the first if it is falsey and, if not, evaluates and returns the second.</p>
-<h4>Non-coalescence: <code>??</code></h4>
-<p><code>valor ?? alternativa</code> returns the alternative only when <code>valor</code> is <code>null</code> o <code>undefined</code>. Allows to give a default value when a data is missing, retaining valid values as <code>0</code>, <code>false</code> or an empty string. Do not modify the variable and only evaluate the alternative if you need it:</p>
-<pre><code>let nombre;
-console.log(nombre ?? "Sin nombre"); // "Sin nombre"
-console.log(null ?? "Sin dato");     // "Sin dato"
-console.log(0 ?? 10);                // 0
-console.log(false ?? true);          // false
-console.log("" ?? "Sin texto");      // ""
-console.log(0 || 10);                // 10: || también sustituye los valores falsy.</code></pre>
-<p><strong><code>??</code> y <code>||</code> are not equivalent.</strong> If zero means ‘no unit’, <code>unidades ?? 1</code> retains that zero; <code>unidades || 1</code> Choose according to which values you consider absent.</p>
-<h4>Logical assignment: <code>??=</code>, <code>||=</code> y <code>&amp;&amp;=</code></h4>
-<p>These operators only assign the value on the right when their condition is met. If not met, they retain the current value and do not evaluate the expression on the right:</p>
-<ul>
-<li><code>dato ??= alternativa</code>: assigns if <code>dato</code> is <code>null</code> o <code>undefined</code>.</li>
-<li><code>dato ||= alternativa</code>: assigns if <code>dato</code> is falsy, including <code>0</code>, <code>false</code> o <code>""</code>.</li>
-<li><code>dato &amp;&amp;= nuevoValor</code>: assigns if <code>dato</code> It's trusty.</li>
-</ul>
-<pre><code>let alias;
-alias ??= "Invitado";
-console.log(alias); // "Invitado"
-
-let unidades = 0;
-unidades ??= 1;
-console.log(unidades); // 0: no es null ni undefined.
-
-let titulo = "";
-titulo ||= "Sin título";
-console.log(titulo); // "Sin título"
-
-let aviso = "Pendiente";
-aviso &amp;&amp;= "Revisado";
-console.log(aviso); // "Revisado"</code></pre>
 <div class="didactic-note" id="operadores-bits"><h4>Support: bit-to-bit operators</h4><p>With values <code>Number</code>These operators work on 32-bit integers. <code>&amp;</code> combines bits using AND and <code>~</code> inverts bits; they are different from logical operators <code>&amp;&amp;</code> y <code>!</code>. To save only the eight bits of an octet use <code>valor &amp; 255</code>.</p><p><code>numero &lt;&lt; 1</code> moves one bit to the left; <code>numero &gt;&gt; 1</code>, to the right keeping the sign. In small positive integers they serve to multiply by 2 or divide by 2 discarding the fractional part. They do not generally equal the usual arithmetic: they convert to 32-bit integers and can overflow.</p><p><code>numero.toString(2)</code> returns a binary string and <code>parseInt(texto, 2)</code> converts a binary string to number. You can complete the initial zeros until you have eight bits per octet.</p></div><h4>Double denial: convert to boolean</h4><p><code>!!valor</code> doubles the denial: converts boolean, reverses the result and reverses it. <code>Boolean(valor)</code>; this latter form expresses better the intention.</p><pre><code>console.log(!!"texto"); // true
 console.log(!!"0"); // true: cadena no vacía.
 console.log(!!0); // false
@@ -1117,9 +1109,15 @@ console.log("" + true);   // "true"</code></pre>
 </div>
 <div class="activity-card activity-callout" id="actividad-jsinfo-suma">
 <p><strong>2.12. Correcting a sum of texts</strong></p>
-<p>This program matches the entries. Correct it with explicit conversion to get a numerical sum. Try the initial values and other different ones.</p><pre><code>const primero = prompt("Primer número", "4");
+<p>Create an HTML and external JavaScript linked with <code>defer</code>. Active <code>"use strict";</code> and part of this program. Suppose the user accepts the dialogs and enters valid numbers.</p>
+<pre><code>const primero = prompt("Primer número", "4");
 const segundo = prompt("Segundo número", "7");
 console.log(primero + segundo);</code></pre>
+<h4>1. Correct the sum of integers</h4>
+<p>Predicts the result of the original code and execute it. Explain in a comment why it concatenates the entries. Convert both with <code>parseInt(texto, 10)</code> before adding them and shows the operands and the result. <code>4 + 7</code> y <code>-3 + 8</code>: must give <code>11</code> y <code>5</code>.</p>
+<h4>2. Allow the sum of real numbers</h4>
+<p>Adapts the program to accept numbers with decimals, including negatives. <code>parseFloat()</code> o <code>Number()</code> in place of <code>parseInt()</code> and asks to write the dot as a decimal separator. Check <code>2.5 + 3.75</code>, <code>-1.5 + 4</code> y <code>0 + 0.25</code>: must give <code>6.25</code>, <code>2.5</code> y <code>0.25</code>.</p>
+<p>Explains in comments why <code>parseInt()</code> does not retain the decimal part and which conversion you have chosen. Save the predictions and results of both tests in the same file. Delivers the HTML and JavaScript.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec5_6">5.6. Usual errors when dealing with data</h3>
