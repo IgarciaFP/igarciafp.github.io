@@ -2505,18 +2505,35 @@ binario.</p>
 <p>Una <strong>biblioteca</strong> contiene código reutilizable, por ejemplo funciones para generar documentos. Una <strong>API</strong> (interfaz de programación de aplicaciones) define cómo un programa puede utilizar funciones o servicios de otro componente: operaciones disponibles, datos que debe proporcionar y respuestas que puede recibir.</p>
 <p>Una API no es un editor: el editor sirve para escribir código; la API es la interfaz que ese código utiliza. Puede pertenecer a una biblioteca, al sistema operativo o a un servicio remoto. <strong>No todas las API son servicios de Internet.</strong></p>
 <div class="example-box"><h4>Ejemplo resuelto: consultar existencias</h4><p>La web de la tienda necesita saber si quedan cuadernos. Utiliza la API del sistema de inventario para solicitar las existencias de un producto. El sistema consulta sus datos y devuelve una respuesta, por ejemplo «quedan 8 unidades».</p><p>La documentación de la API especifica qué identificador enviar, cómo interpretar la respuesta y qué errores o permisos considerar. La web no necesita conocer todos los detalles internos del inventario.</p></div>
-<div class="activity-card activity-callout" id="actividad-api-publica"><h4>Actividad 16. Comunícate con una API pública mediante POST · 15 minutos</h4>
-<p>Utiliza <a href="https://httpbin.org/#/HTTP_Methods/post_post" target="_blank" rel="noopener noreferrer">httpbin: documentación de POST /post</a>, un servicio público de pruebas que devuelve información sobre la petición recibida. No necesita cuenta ni clave. Enviaremos únicamente los datos ficticios de este formulario; no se realiza ninguna compra.</p>
-<p><strong>URL y método son cosas distintas:</strong> escribir una URL en la barra del navegador realiza normalmente una petición GET. Para enviar POST a <code>https://httpbin.org/post?curso=ssii</code> utilizaremos un formulario. <code>curso=ssii</code> viaja en la URL; los campos del formulario viajan en el cuerpo de la petición.</p>
-<form class="api-demo" action="https://httpbin.org/post?curso=ssii" method="post">
+<div class="activity-card activity-callout" id="actividad-api-publica">
+<h4>Actividad 16. ¿Qué es una API? Dos programas que se comunican · 15 minutos</h4>
+<p><strong>Tu objetivo:</strong> explicar cómo una aplicación puede pedir algo a otro programa y utilizar su respuesta.</p>
+<h5>1. Entiende el recorrido · 3 minutos</h5>
+<p>Una <strong>API</strong> es una interfaz: un conjunto de reglas que indica qué puede solicitar un programa a otro, cómo debe pedirlo y qué respuesta puede recibir. Por ejemplo, una aplicación del tiempo puede pedir la previsión a un servicio meteorológico y mostrar los datos que recibe.</p>
+<p class="didactic-note"><strong>Aplicación → petición mediante la API → servicio → respuesta → aplicación</strong></p>
+<p>En esta prueba, <strong>esta página es la aplicación</strong> y <strong>httpbin es el servicio de pruebas</strong>. Su API permite enviar datos y recibirlos de vuelta, como un eco. El formulario te permite elegir los datos; el código de la página se encarga de enviarlos y mostrar la respuesta. La API no es el botón ni el formulario: son las reglas que permiten esa comunicación.</p>
+<h5>2. Haz dos pruebas · 5 minutos</h5>
+<p>Selecciona <strong>Cuaderno y 2 unidades</strong>. Antes de enviar, anota qué esperas que devuelva el servicio. Pulsa el botón y observa la respuesta. Después cambia <strong>solo la cantidad a 4</strong> y repite. Compara las dos pruebas.</p>
+<form class="api-demo" action="https://httpbin.org/post" method="post">
 <label for="api-producto">Producto ficticio</label><select id="api-producto" name="producto"><option value="cuaderno">Cuaderno</option><option value="lapiz">Lápiz</option></select>
 <label for="api-cantidad">Cantidad</label><select id="api-cantidad" name="cantidad"><option value="2">2</option><option value="4">4</option></select>
-<button type="submit">Enviar POST a httpbin</button>
+<button type="submit">Enviar datos al servicio</button>
 </form>
-<p id="api-status" role="status"></p><pre id="api-response" aria-label="Respuesta de httpbin" hidden></pre>
-<p>La respuesta aparecerá debajo del formulario. Cambia los valores para repetir el envío.</p>
-<ol><li>Consulta la documentación e identifica el método, la ruta y el tipo de respuesta.</li><li>Envía una petición con los valores iniciales. En la respuesta JSON (datos organizados como claves y valores), localiza <code>url</code>, <code>args</code> y <code>form</code>. Relaciona cada uno con lo que has enviado.</li><li>Cambia el producto y la cantidad y repite el envío. Describe qué partes cambian y cuáles permanecen.</li><li>Abre <a href="https://httpbin.org/post?curso=ssii" target="_blank" rel="noopener noreferrer">la misma URL como enlace</a>. Compara el resultado con el formulario y razona qué importancia tiene el método HTTP. Consulta la documentación si aparece un error.</li><li>Explica por qué recibir un eco de los datos no demuestra que se haya creado un pedido en una tienda.</li></ol>
-<p><strong>Entrega:</strong> URL, método, valores enviados y descripción de los resultados, únicamente en texto. Si el servicio no responde, registra el error y la fecha; no inventes la respuesta y vuelve a intentarlo más tarde.</p></div>
+<p>Solo se envían estos datos ficticios. El servicio los devuelve; no crea pedidos ni realiza compras.</p>
+<p id="api-status" role="status"></p>
+<div id="api-response" aria-label="Últimas dos pruebas" aria-live="polite" hidden></div>
+<details class="extension"><summary>Si el servicio no responde: ejemplo de respaldo</summary><p><strong>Ejemplo preparado, no respuesta en directo.</strong> Primera prueba: la página envía «cuaderno, 2» y el servicio devuelve «cuaderno, 2». Segunda prueba: envía «cuaderno, 4» y recibe «cuaderno, 4». Si utilizas este ejemplo para continuar, indícalo en tu entrega.</p></details>
+<h5>3. Explica lo que ha ocurrido · 4 minutos</h5>
+<ol>
+<li>¿Qué dos programas se han comunicado? Indica cuál envía la petición y cuál responde.</li>
+<li>Escribe los datos enviados y recibidos en cada prueba. ¿Qué cambió al modificar la cantidad?</li>
+<li>El servicio no conoce el aspecto de nuestro formulario. ¿Por qué puede recibir sus datos? Relaciona tu respuesta con las reglas de la API.</li>
+</ol>
+<h5>4. Aplica la idea a otro caso · 3 minutos</h5>
+<p>Imagina una aplicación del tiempo. Indica qué dato podría enviar al servicio meteorológico y qué información necesitaría recibir para mostrar la previsión. Termina la frase: <strong>«Una API permite que…»</strong>, usando tus propias palabras.</p>
+<p><strong>Entrega:</strong> las tres respuestas del paso 3 y el ejemplo y la definición del paso 4. Indica si realizaste las pruebas reales o utilizaste el ejemplo de respaldo.</p>
+<details class="extension"><summary>Para ampliar: cómo se envía esta petición</summary><p>La página envía una petición HTTP de tipo <strong>POST</strong> a <code>https://httpbin.org/post</code>, con los campos <code>producto</code> y <code>cantidad</code>. El servicio responde con datos en formato JSON, que el código de la página transforma en el resumen que ves. Esta es una API web; también existen API de bibliotecas y sistemas operativos.</p><a href="https://httpbin.org/#/HTTP_Methods/post_post" target="_blank" rel="noopener noreferrer">Consultar la documentación de httpbin</a></details>
+</div>
 <h3 id="software-empresa">6.4. Software de gestión empresarial</h3>
 <p>Existen distintos tipos de <strong>software de gestión empresarial</strong>, destinados a coordinar operaciones, relaciones con clientes, almacenes, documentos, procesos y análisis de datos. Pueden ser aplicaciones independientes conectadas entre sí o formar parte de una solución integrada que se comercializa como <strong>ERP</strong>, organizada en módulos que comparten información, como compras, ventas, contabilidad o producción. Algunos ERP incorporan también funciones de CRM, SGA, DMS, BPM y BI; por eso el nombre comercial puede abarcar varias categorías, aunque estas no sean sinónimos ni todos los ERP incluyan las mismas funciones.</p>
 <p><strong>CRM (Customer Relationship Management, gestión de las relaciones con clientes):</strong> es un sistema que organiza la información y las interacciones con clientes y posibles clientes. Permite registrar contactos, consultas, oportunidades de venta y acciones de seguimiento para que el equipo comercial y de atención al cliente comparta un historial.</p>
@@ -2641,34 +2658,50 @@ binario.</p>
         }
     });
     const apiForm = document.querySelector('.api-demo');
+    let apiAttempts = 0;
     if (apiForm) apiForm.addEventListener('submit', async event => {
         event.preventDefault();
         const button = apiForm.querySelector('button');
         const status = document.getElementById('api-status');
         const output = document.getElementById('api-response');
+        const fields = [...apiForm.querySelectorAll('select')];
+        const sent = new URLSearchParams(new FormData(apiForm));
+        const attempt = ++apiAttempts;
+        const card = document.createElement('div');
+        card.className = 'example-box';
+        const heading = document.createElement('h5');
+        heading.textContent = 'Prueba ' + attempt;
+        const request = document.createElement('p');
+        request.textContent = 'La página envió: producto = ' + sent.get('producto') + '; cantidad = ' + sent.get('cantidad') + '.';
+        const reply = document.createElement('p');
+        reply.textContent = 'Esperando la respuesta del servicio…';
+        card.append(heading, request, reply);
+        output.prepend(card);
+        while (output.children.length > 2) output.lastElementChild.remove();
+        output.hidden = false;
         button.disabled = true;
-        output.hidden = true;
-        output.textContent = '';
-        status.textContent = 'Enviando POST a httpbin…';
+        fields.forEach(field => { field.disabled = true; });
+        status.textContent = 'La página está enviando tu petición al servicio…';
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 15000);
+        const timeout = setTimeout(() => controller.abort(), 10000);
         try {
             const response = await fetch(apiForm.action, {
-                method: 'POST',
-                body: new URLSearchParams(new FormData(apiForm)),
-                credentials: 'omit',
-                signal: controller.signal
+                method: 'POST', body: sent, credentials: 'omit', signal: controller.signal
             });
             if (!response.ok) throw new Error('HTTP ' + response.status);
             const data = await response.json();
-            output.textContent = JSON.stringify({url: data.url, args: data.args, form: data.form}, null, 2);
-            output.hidden = false;
-            status.textContent = 'Respuesta recibida · HTTP ' + response.status + '. Se muestran los campos url, args y form.';
+            if (!data.form || typeof data.form.producto !== 'string' || typeof data.form.cantidad !== 'string') {
+                throw new Error('respuesta con un formato inesperado');
+            }
+            reply.textContent = 'El servicio devolvió: producto = ' + data.form.producto + '; cantidad = ' + data.form.cantidad + '.';
+            status.textContent = 'Respuesta real recibida. Compara lo enviado con lo devuelto por el servicio.';
         } catch (error) {
-            status.textContent = 'No se pudo obtener respuesta: ' + (error.name === 'AbortError' ? 'tiempo de espera agotado' : error.message) + '. Registra el error y vuelve a intentarlo más tarde.';
+            reply.textContent = 'No se ha recibido una respuesta válida en esta prueba.';
+            status.textContent = 'No se pudo completar la comunicación (' + (error.name === 'AbortError' ? 'tiempo de espera agotado' : error.message) + '). Puedes continuar con el ejemplo de respaldo.';
         } finally {
             clearTimeout(timeout);
             button.disabled = false;
+            fields.forEach(field => { field.disabled = false; });
         }
     });
     // Make answers and extensions available in the printed copy, then restore the reading state.
