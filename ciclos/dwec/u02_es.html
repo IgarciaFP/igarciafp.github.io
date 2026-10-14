@@ -1270,7 +1270,7 @@ undefined + 2
 
             <section aria-labelledby="sec6">
                 <h2 id="sec6"><i class="fa-solid fa-code-branch" aria-hidden="true"></i> 6. Estructuras de control</h2>
-                <p>Un programa ejecuta sus instrucciones en orden, pero puede necesitar elegir entre varias acciones o repetir una tarea. Las <strong>estructuras de control</strong> permiten tomar estas decisiones. Ejecuta cada ejemplo por separado en <code>ej13-tomarDecisiones.js</code> y modifica los datos para comprobar las distintas posibilidades.</p>
+                
 
                 <h3 id="sec6_1">6.1. Condiciones y valores truthy y falsy</h3>
                 <p>Una <strong>condición</strong> es una expresión cuyo valor se interpreta como verdadero o falso. Puede ser una comparación, como <code>edad &gt;= 18</code>, o una variable booleana, como <code>sesionActiva</code>.</p>
@@ -1292,6 +1292,15 @@ undefined + 2
 
 
                 <h3 id="sec6_2">6.2. if, else if y else</h3>
+                <aside class="function-card" id="ficha-control-if" aria-label="Ficha de estructura de control: Selección condicional">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de estructura de control</p>
+                    <p class="function-signature"><code>if (condicion) { ... } else if (otraCondicion) { ... } else { ... }</code></p>
+                    <p><strong>Finalidad:</strong> Selección condicional.</p>
+                    <p><strong>Componentes:</strong> Una o varias condiciones y los bloques que se ejecutarán.</p>
+                    <p><strong>Funcionamiento:</strong> Comprueba las condiciones en orden y ejecuta únicamente el primer bloque cuya condición sea truthy. Si ninguna se cumple, ejecuta else, cuando existe.</p>
+                    <p><strong>Recuerda:</strong> else if y else son opcionales. Es una estructura de control, no una función: no recibe argumentos ni devuelve un valor como una llamada.</p>
+                </aside>
+
                 <p><code>if</code> ejecuta un bloque cuando la condición se interpreta como verdadera. El bloque opcional <code>else</code> se ejecuta en caso contrario:</p>
                 <pre><code>const edad = 16;
 
@@ -1372,6 +1381,15 @@ if (texto.trim() === "") {
                 </div>
 
                 <h3 id="sec6_4">6.4. switch: alternativas según un valor</h3>
+                <aside class="function-card" id="ficha-control-switch" aria-label="Ficha de estructura de control: Selección entre casos">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de estructura de control</p>
+                    <p class="function-signature"><code>switch (valor) { case opcion: ...; break; default: ...; }</code></p>
+                    <p><strong>Finalidad:</strong> Selección entre casos.</p>
+                    <p><strong>Componentes:</strong> Un valor que comparar, las opciones de los case y un bloque default opcional.</p>
+                    <p><strong>Funcionamiento:</strong> Evalúa el valor una vez y busca un case mediante igualdad estricta. A partir de la coincidencia ejecuta las instrucciones hasta un break o el final. Si no coincide ningún case, comienza en default si existe.</p>
+                    <p><strong>Recuerda:</strong> Sin break, la ejecución continúa en los casos siguientes. No es una función ni una expresión que produzca un valor.</p>
+                </aside>
+
                 <p><code>switch</code> resulta útil cuando una expresión puede coincidir con varios valores concretos. Cada <code>case</code> representa una alternativa:</p>
                 <pre><code>const estado = "enviado";
 
@@ -1423,6 +1441,15 @@ switch (dia) {
                 </div>
 
                 <h3 id="sec6_5">6.5. Operador ternario</h3>
+                <aside class="function-card" id="ficha-control-ternario" aria-label="Ficha de operador: Operador condicional">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de operador</p>
+                    <p class="function-signature"><code>condicion ? expresionSiVerdadera : expresionSiFalsa</code></p>
+                    <p><strong>Finalidad:</strong> Operador condicional.</p>
+                    <p><strong>Componentes:</strong> Una condición y dos expresiones alternativas.</p>
+                    <p><strong>Funcionamiento:</strong> Evalúa la condición y después solo una de las dos expresiones: la primera si la condición es truthy o la segunda si es falsy.</p>
+                    <p><strong>Recuerda:</strong> Produce el valor de la expresión elegida. Es un operador, no una función; resulta útil para asignar un valor entre dos opciones.</p>
+                </aside>
+
                 <p>El operador condicional o <strong>ternario</strong> selecciona uno de dos valores. Su forma es <code>condicion ? valorSiVerdadera : valorSiFalsa</code>:</p>
                 <pre><code>const conectado = true;
 const mensaje = conectado ? "En línea" : "Sin conexión";
@@ -1440,12 +1467,30 @@ console.log(mensaje); // En línea</code></pre>
                 </div>
 
                 <h3 id="sec6_6">6.6. Repeticiones con for, while y do...while</h3>
+                <aside class="function-card" id="ficha-control-for" aria-label="Ficha de estructura de control: Bucle con contador">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de estructura de control</p>
+                    <p class="function-signature"><code>for (inicializacion; condicion; actualizacion) { ... }</code></p>
+                    <p><strong>Finalidad:</strong> Bucle con contador.</p>
+                    <p><strong>Componentes:</strong> Una inicialización, una condición de continuidad, una actualización y un bloque.</p>
+                    <p><strong>Funcionamiento:</strong> Ejecuta la inicialización una vez. Antes de cada iteración comprueba la condición; si se cumple, ejecuta el bloque y después la actualización.</p>
+                    <p><strong>Recuerda:</strong> Puede ejecutar cero iteraciones. Una variable declarada con let en la cabecera queda limitada al bucle.</p>
+                </aside>
+
                 <p>Un <strong>bucle</strong> repite un bloque de instrucciones. Cada ejecución del bloque es una <strong>iteración</strong>. <code>for</code> reúne la inicialización, la condición de continuidad y la actualización:</p>
                 <pre><code>for (let numero = 1; numero &lt;= 3; numero++) {
     console.log(numero);
 }
 // Muestra 1, 2 y 3.</code></pre>
                 <p>Primero se inicializa <code>numero</code>. Antes de cada iteración se comprueba <code>numero &lt;= 3</code>; si es verdadera, se ejecuta el bloque y después <code>numero++</code>. Al dejar de cumplirse la condición, el bucle termina. La variable declarada con <code>let</code> en la cabecera no está disponible fuera del bucle.</p>
+                
+                <aside class="function-card" id="ficha-control-while" aria-label="Ficha de estructura de control: Bucle con comprobación inicial">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de estructura de control</p>
+                    <p class="function-signature"><code>while (condicion) { ... }</code></p>
+                    <p><strong>Finalidad:</strong> Bucle con comprobación inicial.</p>
+                    <p><strong>Componentes:</strong> Una condición de continuidad y un bloque.</p>
+                    <p><strong>Funcionamiento:</strong> Comprueba la condición antes de cada iteración y repite el bloque mientras sea truthy.</p>
+                    <p><strong>Recuerda:</strong> Puede ejecutar cero iteraciones. El cuerpo debe hacer posible que la condición deje de cumplirse, o debe existir una salida explícita.</p>
+                </aside>
                 <p><code>while</code> comprueba la condición antes de ejecutar el bloque. Puede no ejecutarlo ninguna vez:</p>
                 <pre><code>let pendientes = 3;
 
@@ -1453,6 +1498,15 @@ while (pendientes &gt; 0) {
     console.log(`Quedan ${pendientes}`);
     pendientes--;
 }</code></pre>
+                
+                <aside class="function-card" id="ficha-control-do-while" aria-label="Ficha de estructura de control: Bucle con comprobación final">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de estructura de control</p>
+                    <p class="function-signature"><code>do { ... } while (condicion);</code></p>
+                    <p><strong>Finalidad:</strong> Bucle con comprobación final.</p>
+                    <p><strong>Componentes:</strong> Un bloque y una condición de continuidad.</p>
+                    <p><strong>Funcionamiento:</strong> Ejecuta el bloque y después comprueba la condición. Repite si es truthy.</p>
+                    <p><strong>Recuerda:</strong> Ejecuta el cuerpo al menos una vez. La sintaxis termina con punto y coma después de la condición.</p>
+                </aside>
                 <p><code>do...while</code> comprueba la condición al final, por lo que el bloque se ejecuta al menos una vez:</p>
                 <pre><code>let intentos = 0;
 
@@ -1461,6 +1515,24 @@ do {
     intentos++;
 } while (intentos &lt; 1);</code></pre>
                 <div class="didactic-note"><p><strong>El bucle debe poder terminar.</strong> Comprueba que la actualización acerca el programa al final de la repetición. Una condición que permanece verdadera puede bloquear la página. No uses un bucle para esperar a que el usuario pulse un botón: esa interacción se gestionará mediante eventos.</p></div>
+                
+                <aside class="function-card" id="ficha-control-break" aria-label="Ficha de estructura de control: Salida de un bucle o switch">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de estructura de control</p>
+                    <p class="function-signature"><code>break;</code></p>
+                    <p><strong>Finalidad:</strong> Salida de un bucle o switch.</p>
+                    <p><strong>Componentes:</strong> No necesita una condición propia: suele colocarse dentro de un if.</p>
+                    <p><strong>Funcionamiento:</strong> Termina el bucle o switch más cercano que lo contiene y continúa después de esa estructura.</p>
+                    <p><strong>Recuerda:</strong> No termina una función. La variante break etiqueta permite salir de la estructura etiquetada que lo contiene.</p>
+                </aside>
+                
+                <aside class="function-card" id="ficha-control-continue" aria-label="Ficha de estructura de control: Paso a la siguiente iteración">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de estructura de control</p>
+                    <p class="function-signature"><code>continue;</code></p>
+                    <p><strong>Finalidad:</strong> Paso a la siguiente iteración.</p>
+                    <p><strong>Componentes:</strong> Se utiliza dentro de un bucle, normalmente sujeto a una condición.</p>
+                    <p><strong>Funcionamiento:</strong> Omite las instrucciones restantes de la iteración. En for pasa a la actualización; en while y do...while pasa a comprobar la condición; en for...of continúa con el siguiente valor.</p>
+                    <p><strong>Recuerda:</strong> No termina el bucle. La variante continue etiqueta se dirige a un bucle exterior etiquetado; evita saltarte una actualización necesaria para terminar.</p>
+                </aside>
                 <p><code>break</code> termina el bucle más cercano; <code>continue</code> omite el resto de la iteración actual. En un <code>for</code>, después de <code>continue</code> se realiza la actualización y se vuelve a comprobar la condición. En estos primeros ejemplos basta con condiciones de finalización claras.</p>
                 
 
@@ -1495,6 +1567,15 @@ for (let fila = 1; fila &lt;= 2; fila++) {
                 </div>
 
                 <h3 id="sec6_7">6.7. Recorrer elementos del DOM con for...of</h3>
+                <aside class="function-card" id="ficha-control-for-of" aria-label="Ficha de estructura de control: Recorrido de valores">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de estructura de control</p>
+                    <p class="function-signature"><code>for (const elemento of iterable) { ... }</code></p>
+                    <p><strong>Finalidad:</strong> Recorrido de valores.</p>
+                    <p><strong>Componentes:</strong> Un iterable, como un array o una NodeList, y una variable para el valor actual.</p>
+                    <p><strong>Funcionamiento:</strong> Ejecuta el bloque una vez por cada valor del iterable. En una NodeList, cada valor es una referencia a un nodo.</p>
+                    <p><strong>Recuerda:</strong> Recorre valores, no índices. Con const, la variable no se reasigna dentro de esa iteración, pero puede utilizarse para modificar el elemento DOM referenciado.</p>
+                </aside>
+
                 <p><code>for...of</code> recorre los valores de una colección iterable. Se puede utilizar con el resultado de <code>querySelectorAll()</code> para actuar sobre varios elementos:</p>
                 <pre data-example="control-dom"><code>const parrafos = document.querySelectorAll("p");
 
