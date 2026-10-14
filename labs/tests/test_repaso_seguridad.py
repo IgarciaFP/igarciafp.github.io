@@ -11,6 +11,7 @@ Ejecutar: pip install pytest playwright; playwright install chromium
           pytest -q labs/tests/test_repaso_seguridad.py
 CHROMIUM_PATH permite usar un Chromium instalado en el sistema.
 """
+import base64
 import json
 import os
 from pathlib import Path
@@ -215,7 +216,7 @@ def test_stale_storage_blocks_without_overwrite(make_page):
 
 def test_confirm_finish_downloads_txt(make_page):
     p=make_page();begin(p);p.locator('#student').fill('Alumno');p.locator('#t1').fill('120')
-    assert p.locator('#generate').count()==0 and p.locator('#copy').count()==0
+    assert p.locator('#generate').count()==0 and p.locator('#copy').is_hidden()
     p.locator('#guard-finish').click();p.locator('#guard-confirm-cancel').click()
     assert state(p)['phase']=='active' and p.locator('#t1').is_enabled()
     with p.expect_download() as download:
@@ -223,8 +224,9 @@ def test_confirm_finish_downloads_txt(make_page):
     assert download.value.suggested_filename=='repaso-ssii-u01.txt'
     text=Path(download.value.path()).read_text(encoding='utf-8-sig')
     assert text==p.locator('#report').input_value()
-    assert 'Tiempo total empleado:' in text and 'BORRADOR' not in text
-    assert 'Incidencias de entorno:' in text and 'INTENTO FINALIZADO' in text
+    decoded=base64.b64decode(text,validate=True).decode('utf-8')
+    assert 'Tiempo total empleado:' in decoded and 'BORRADOR' not in decoded
+    assert 'Incidencias de entorno:' in decoded and 'INTENTO FINALIZADO' in decoded
     assert p.locator('#t1').is_disabled() and p.locator('#download').is_enabled()
     with p.expect_download() as again:
         p.locator('#download').click()
@@ -320,4 +322,49 @@ def test_hash_failure_keeps_clock_running(make_page):
     p.wait_for_function("document.querySelector('#reportStatus').textContent.includes('No se pudo')")
     assert state(p)['phase']=='active' and state(p)['data']['started']==started
     assert p.locator('#t1').is_enabled()
+    assert not p.errors
+
+def test_base64_unicode_copy_and_reload(make_page):
+    p=make_page();begin(p)
+    p.locator('#student').fill('María Muñoz')
+    p.locator('#reflection').fill('Revisión: ñ, á, € y 🧪')
+    finish(p)
+    encoded=p.locator('#report').input_value()
+    decoded=base64.b64decode(encoded,validate=True).decode('utf-8')
+    assert 'María Muñoz' in decoded and 'Revisión: ñ, á, € y 🧪' in decoded
+    body,checksum=decoded.rsplit('\nCódigo de comprobación: SSII1-',1)
+    # La suite usa un doble SHA-256; se conserva su código dentro de Base64.
+    assert checksum=='00'*32
+    assert state(p)['data']['reportEncoding']=='base64'
+    assert p.locator('#copy').is_enabled()
+    assert p.evaluate("document.querySelector('#report').dispatchEvent(new Event('copy',{bubbles:true,cancelable:true}))")
+    assert not p.evaluate("document.querySelector('#report').dispatchEvent(new Event('cut',{bubbles:true,cancelable:true}))")
+    p.evaluate("Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async text=>{window.copiedReport=text;}}})")
+    p.locator('#copy').click()
+    p.wait_for_function('window.copiedReport!==undefined')
+    assert p.evaluate('window.copiedReport')==encoded
+    q=make_page(p.evaluate('window.testStore'))
+    assert q.locator('#report').input_value()==encoded
+    assert q.locator('#copy').is_enabled()
+    assert not p.errors and not q.errors
+
+def test_plaintext_saved_report_migrates_once(make_page):
+    p=make_page();begin(p);p.locator('#student').fill('María');finish(p)
+    saved=state(p)
+    encoded=saved['data']['report']
+    saved['data']['report']=base64.b64decode(encoded).decode('utf-8')
+    del saved['data']['reportEncoding']
+    q=make_page({KEY:json.dumps(saved)})
+    assert q.locator('#report').input_value()==encoded
+    assert state(q)['data']['reportEncoding']=='base64'
+    r=make_page(q.evaluate('window.testStore'))
+    assert r.locator('#report').input_value()==encoded
+    assert not q.errors and not r.errors
+
+def test_copy_fallback_selects_base64(make_page):
+    p=make_page();begin(p);p.locator('#student').fill('Alumno');finish(p)
+    p.evaluate("Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw new Error('denegado');}}})")
+    p.locator('#copy').click()
+    p.wait_for_function("document.querySelector('#reportStatus').textContent.includes('Ctrl+C')")
+    assert p.locator('#report').evaluate('(el)=>el.selectionStart===0&&el.selectionEnd===el.value.length')
     assert not p.errors

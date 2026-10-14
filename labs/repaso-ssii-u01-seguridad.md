@@ -43,7 +43,7 @@ El seguimiento sigue activo mientras se solicita finalizar y mientras se calcula
 
 ## Bloqueo de portapapeles y entrada
 
-Se cancelan `copy`, `cut`, `paste`, `dragstart` y `drop`, además de los atajos Ctrl/Cmd+C, X, V; Ctrl+Insert; Shift+Insert y Shift+Delete. El informe final se exporta mediante descarga TXT; no necesita permisos del portapapeles.
+Se cancelan `copy`, `cut`, `paste`, `dragstart` y `drop`, además de los atajos Ctrl/Cmd+C, X, V; Ctrl+Insert; Shift+Insert y Shift+Delete. El informe final se exporta en Base64 mediante descarga TXT o «Copiar entrega». Solo se permite copiar desde el campo del informe cuando el intento está finalizado; cortar y pegar siguen bloqueados. Si el navegador deniega la escritura en el portapapeles, el botón selecciona el bloque para copiarlo con Ctrl+C/Cmd+C.
 
 La validación en captura de `beforeinput`, `input` y `change` impide que los manejadores del corrector guarden una edición rechazada. Si un pegado no pudo cancelarse antes de modificar un campo, `input` restaura su último valor aceptado. Se distinguen los tipos de entrada: no se interpreta automáticamente un texto largo como pegado. Tab, escritura normal, selección, composición y deshacer no se prohíben en bloque.
 
@@ -100,3 +100,22 @@ El informe conserva el SHA-256 original. Es un checksum público **sin clave ni 
 - Antes de modificar: https://developer.mozilla.org/en-US/docs/Web/API/Element/beforeinput_event
 - Inercia del árbol: https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/inert
 - HTML sin scripts: https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/noscript
+
+## Formato de entrega Base64
+
+El informe completo (incluido tiempo total y checksum SHA-256) se convierte de UTF-8 a Base64 estándar. El bloque visible, el portapapeles y el TXT contienen exactamente la misma cadena, sin cabecera ni BOM. La codificación conserva tildes, eñes, símbolos y emoji. No se añade una fase de borrador ni revisión.
+
+Base64 es una codificación reversible, **no cifrado** ni una garantía de autenticidad. Las respuestas siguen disponibles en el navegador del alumno. El checksum se calcula sobre el cuerpo original antes de codificarlo.
+
+El guardado identifica los informes mediante `reportEncoding: "base64"`. Los informes anteriores en texto se convierten al cargar, una sola vez. Reabrir y volver a descargar no regenera ni vuelve a codificar el informe.
+
+Para recuperar el informe con Python, sin enviar datos a servicios externos:
+
+```python
+import base64
+from pathlib import Path
+
+encoded = Path("repaso-ssii-u01.txt").read_text(encoding="utf-8-sig").strip()
+report = base64.b64decode(encoded, validate=True).decode("utf-8")
+Path("informe-decodificado.txt").write_text(report, encoding="utf-8")
+```

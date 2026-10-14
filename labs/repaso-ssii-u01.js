@@ -33,7 +33,14 @@ function check(id,focus=false){let ok=0,bad=0,missing=0,open=0;const list=fields
 
 // ADAPTADOR: solo esta sección conoce los campos del cuaderno. Para reutilizar
 // el controlador en otro laboratorio, adaptar estos métodos y los botones.
-function empty() { return { values: Object.fromEntries(ids.map(id=>[id,''])), checked:{}, hints:{}, elapsed:0, started:null, report:'' }; }
+// Base64 de los bytes UTF-8: conserva tildes, símbolos y emoji.
+// Codificación reversible, no cifrado.
+function encodeReport(text) {
+  let binary='';
+  for(const byte of new TextEncoder().encode(text)) binary+=String.fromCharCode(byte);
+  return btoa(binary);
+}
+function empty() { return { values: Object.fromEntries(ids.map(id=>[id,''])), checked:{}, hints:{}, elapsed:0, started:null, report:'', reportEncoding:'base64' }; }
 function sanitize(data) {
   if(!data || typeof data!=='object' || !data.values || typeof data.values!=='object' || Array.isArray(data.values)) throw new Error('Borrador inválido');
   const out=empty();
@@ -47,11 +54,15 @@ function sanitize(data) {
   hintNodes.forEach((_,i)=>{if(data.hints?.[i]===true)out.hints[i]=true;});
   out.elapsed=Number.isFinite(data.elapsed)&&data.elapsed>=0?Math.min(data.elapsed,31536000000):0;
   out.started=Number.isFinite(data.started)&&data.started>0&&data.started<=Date.now()?data.started:null;
-  out.report=typeof data.report==='string'?data.report.slice(0,350000):'';
+  const report=typeof data.report==='string'?data.report:'';
+  if(report.length>2000000)throw new Error('Informe demasiado largo');
+  if(data.reportEncoding!==undefined&&data.reportEncoding!=='base64')throw new Error('Formato de informe no válido');
+  // Los informes anteriores se convierten una sola vez al cargar el guardado.
+  out.report=data.reportEncoding==='base64'?report:encodeReport(report);
   return out;
 }
 function snapshot() {
-  return {values:Object.fromEntries(ids.map(id=>[id,$(id).value])),checked:{...checked},hints:{...hints},elapsed,started,report:$('report').value};
+  return {values:Object.fromEntries(ids.map(id=>[id,$(id).value])),checked:{...checked},hints:{...hints},elapsed,started,report:$('report').value,reportEncoding:'base64'};
 }
 
 function restore(data) {
@@ -85,7 +96,7 @@ async function makeReport(metadata,final,finishedAt=Date.now()) {
  const body=lines.join('\n');
  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(body));
  const code=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
- return body+'\nCódigo de comprobación: SSII1-'+code;
+ return encodeReport(body+'\nCódigo de comprobación: SSII1-'+code);
 }
 
 // EVENTOS DE LA ACTIVIDAD. No hay una segunda escritura directa a localStorage:
@@ -109,7 +120,7 @@ function downloadReport() {
   if(!guard.canDownloadReport())return;
   let url;
   try {
-    const blob=new Blob(['\uFEFF',$('report').value],{type:'text/plain;charset=utf-8'});
+    const blob=new Blob([$('report').value],{type:'text/plain;charset=utf-8'});
     url=URL.createObjectURL(blob);
     const link=document.createElement('a');
     link.href=url;link.download='repaso-ssii-u01.txt';
@@ -120,6 +131,18 @@ function downloadReport() {
   } finally {if(url)setTimeout(()=>URL.revokeObjectURL(url),60000);}
 }
 $('download').addEventListener('click',downloadReport);
+$('copy').addEventListener('click',async()=>{
+  if(!guard.canDownloadReport())return;
+  const report=$('report').value;
+  try {
+    await navigator.clipboard.writeText(report);
+    $('reportStatus').textContent='Entrega copiada. Pega el bloque completo en el destino indicado por el profesor.';
+  } catch {
+    if(!guard.canDownloadReport()||$('report').value!==report)return;
+    $('report').focus();$('report').select();
+    $('reportStatus').textContent='Seleccionado el bloque de entrega. Pulsa Ctrl+C o Cmd+C para copiarlo.';
+  }
+});
 // Retirar hidden/inert es responsabilidad EXCLUSIVA del arranque del controlador.
 // Si falta este archivo o el controlador, el HTML conserva el bloqueo inicial.
 guard=window.createPracticeGuard({ empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,

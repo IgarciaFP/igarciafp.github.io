@@ -159,6 +159,9 @@
         : state.savedAt ? 'Respuestas guardadas: ' + new Date(state.savedAt).toLocaleTimeString('es-ES') : 'Guardado local preparado.';
       const canExport = !problem && state.phase === 'submitted';
       $('report').disabled = !canExport;
+      $('report-box').hidden = state.phase !== 'submitted';
+      $('copy').hidden = state.phase !== 'submitted';
+      $('copy').disabled = !canExport || !$('report').value;
       $('download').disabled = !canExport || !$('report').value;
       $('download').hidden = state.phase !== 'submitted';
       $('guard-finish').disabled = !enabled;
@@ -387,6 +390,7 @@
     for (const type of ['beforeinput','input','change']) $('lab').addEventListener(type, inputGuard, true);
     if (CONFIG.blockClipboard) {
       for (const type of ['copy','cut','paste','dragstart','drop']) document.addEventListener(type, e => {
+        if(type==='copy'&&e.target===$('report')&&canDownloadReport())return;
         denyClipboard(e);
       }, true);
       document.addEventListener('dragover', e => e.preventDefault(), true);
@@ -394,7 +398,8 @@
         const k = e.key.toLowerCase(), mod = e.ctrlKey || e.metaKey;
         const blocked = (mod && ['c','x','v'].includes(k)) || (e.ctrlKey && k === 'insert')
           || (e.shiftKey && ['insert','delete'].includes(k));
-        if (blocked) denyClipboard(e, 'atajo');
+        const copy=(mod&&k==='c')||(e.ctrlKey&&k==='insert');
+        if (blocked && !(copy&&e.target===$('report')&&canDownloadReport())) denyClipboard(e, 'atajo');
       }, true);
     }
     $('guard-consent').addEventListener('change', render);
