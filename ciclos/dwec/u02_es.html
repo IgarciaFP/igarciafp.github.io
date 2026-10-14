@@ -111,8 +111,8 @@
             <li><a href="#sec4_8" class="subsection-link">4.8. Ámbito de bloque</a></li>
             <li><a href="#sec5">5. Operadores, expresiones y conversiones</a></li>
             <li><a href="#sec5_1" class="subsection-link">5.1. Operadores aritméticos y de asignación</a></li>
-            <li><a href="#sec5_2" class="subsection-link">5.2. Comparaciones e igualdad estricta</a></li>
-            <li><a href="#sec5_3" class="subsection-link">5.3. Operadores lógicos y coalescencia nula</a></li>
+            <li><a href="#sec5_2" class="subsection-link">5.2. Comparaciones, igualdad estricta y coalescencia nula</a></li>
+            <li><a href="#sec5_3" class="subsection-link">5.3. Operadores lógicos</a></li>
             <li><a href="#sec5_4" class="subsection-link">5.4. Precedencia y paréntesis</a></li>
             <li><a href="#sec5_5" class="subsection-link">5.5. Conversión explícita de tipos</a></li>
             <li><a href="#sec5_6" class="subsection-link">5.6. Errores habituales al operar con datos</a></li>
@@ -1016,7 +1016,7 @@ const dobleAvance = (avance += 3, avance * 2);
 console.log(avance, dobleAvance); // 3 6</code></pre></div><div class="resource-card expansion-card expansion-purple"><div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Operadores básicos</span><span class="resource-badge badge-reading">Ampliación</span></div><p class="resource-description">Amplía los conceptos de este apartado con la explicación y los ejemplos de JavaScript.info.</p><div class="resource-links"><a href="https://es.javascript.info/operators" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Acceder al contenido <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></div></div>
                 
 
-                <h3 id="sec5_2">5.2. Comparaciones e igualdad estricta</h3>
+                <h3 id="sec5_2">5.2. Comparaciones, igualdad estricta y coalescencia nula</h3>
                 <p>Las comparaciones producen un booleano. Los operadores <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code> y <code>&lt;=</code> comprueban si un valor es mayor, menor, mayor o igual, o menor o igual que otro.</p>
                 <pre><code>const nota = 7;
 console.log(nota &gt;= 5); // true
@@ -1034,6 +1034,16 @@ console.log(null === undefined); // false
 console.log(null == 0); // false
 console.log(null &gt;= 0); // true
 console.log(undefined &gt;= 0); // false</code></pre><p>Estos ejemplos explican código que puedes encontrar. Para tus programas, comprueba primero la ausencia de datos y utiliza comparaciones estrictas.</p><div class="resource-card expansion-card expansion-purple"><div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Comparaciones</span><span class="resource-badge badge-reading">Ampliación</span></div><p class="resource-description">Amplía los conceptos de este apartado con la explicación y los ejemplos de JavaScript.info.</p><div class="resource-links"><a href="https://es.javascript.info/comparison" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Acceder al contenido <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></div></div>
+                <h4>Coalescencia nula: <code>??</code></h4>
+                <p><code>valor ?? alternativa</code> devuelve la alternativa únicamente cuando <code>valor</code> es <code>null</code> o <code>undefined</code>. Permite dar un valor predeterminado cuando falta un dato, conservando valores válidos como <code>0</code>, <code>false</code> o una cadena vacía. No modifica la variable y solo evalúa la alternativa si la necesita:</p>
+                <pre><code>let nombre;
+console.log(nombre ?? "Sin nombre"); // "Sin nombre"
+console.log(null ?? "Sin dato");     // "Sin dato"
+console.log(0 ?? 10);                // 0
+console.log(false ?? true);          // false
+console.log("" ?? "Sin texto");      // ""
+console.log(0 || 10);                // 10: || también sustituye los valores falsy.</code></pre>
+                <p><strong><code>??</code> y <code>||</code> no son equivalentes.</strong> Si cero significa «ninguna unidad», <code>unidades ?? 1</code> conserva ese cero; <code>unidades || 1</code> lo sustituye por uno. Elige según qué valores consideres ausentes.</p>
                 <div class="activity-card activity-callout" id="relacion-ejercicio-6">
                     <p><strong>2.10. Variables, incrementos y operadores</strong></p>
                     <p>Crea un HTML y un archivo <code>operadores.js</code> enlazado con <code>defer</code>. Activa <code>"use strict";</code>. Trabaja con las mismas variables <code>a</code> y <code>b</code> durante los tres apartados, en orden. Anota tus predicciones en comentarios, comprueba los resultados en consola y explica las diferencias. Entrega ambos archivos.</p>
@@ -1062,7 +1072,7 @@ console.log(b);</code></pre>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec5_3">5.3. Operadores lógicos y coalescencia nula</h3>
+                <h3 id="sec5_3">5.3. Operadores lógicos</h3>
                 <p>Cuando se trabaja con booleanos, estos operadores permiten expresar condiciones compuestas:</p>
                 <ul>
                     <li><strong><code>&amp;&amp;</code> (Y):</strong> el resultado es <code>true</code> si ambas condiciones son verdaderas.</li>
@@ -1077,16 +1087,6 @@ console.log(tieneEntrada || salaAbierta); // true
 console.log(!salaAbierta); // true</code></pre>
                 <p><code>&amp;&amp;</code> y <code>||</code> evalúan de izquierda a derecha y pueden omitir el segundo operando si el primero determina el resultado. Es la <strong>evaluación en cortocircuito</strong>. Con otros tipos de datos devuelven uno de sus operandos, no necesariamente un booleano. Al comprobarlos como condición, valores como <code>false</code>, <code>0</code>, <code>""</code>, <code>null</code>, <code>undefined</code> y <code>NaN</code> se consideran falsos; se denominan <em>falsy</em>. Los demás se consideran verdaderos (<em>truthy</em>). <code>||</code> devuelve el primer operando si es truthy y, si no, evalúa y devuelve el segundo; <code>&amp;&amp;</code> devuelve el primero si es falsy y, si no, evalúa y devuelve el segundo.</p>
 
-                <h4>Coalescencia nula: <code>??</code></h4>
-                <p><code>valor ?? alternativa</code> devuelve la alternativa únicamente cuando <code>valor</code> es <code>null</code> o <code>undefined</code>. Permite dar un valor predeterminado cuando falta un dato, conservando valores válidos como <code>0</code>, <code>false</code> o una cadena vacía. No modifica la variable y solo evalúa la alternativa si la necesita:</p>
-                <pre><code>let nombre;
-console.log(nombre ?? "Sin nombre"); // "Sin nombre"
-console.log(null ?? "Sin dato");     // "Sin dato"
-console.log(0 ?? 10);                // 0
-console.log(false ?? true);          // false
-console.log("" ?? "Sin texto");      // ""
-console.log(0 || 10);                // 10: || también sustituye los valores falsy.</code></pre>
-                <p><strong><code>??</code> y <code>||</code> no son equivalentes.</strong> Si cero significa «ninguna unidad», <code>unidades ?? 1</code> conserva ese cero; <code>unidades || 1</code> lo sustituye por uno. Elige según qué valores consideres ausentes.</p>
                 <div class="didactic-note" id="operadores-bits"><h4>Apoyo: operadores bit a bit</h4><p>Con valores <code>Number</code>, estos operadores trabajan sobre enteros de 32 bits. <code>&amp;</code> combina los bits mediante AND y <code>~</code> invierte los bits; son distintos de los operadores lógicos <code>&amp;&amp;</code> y <code>!</code>. Para conservar únicamente los ocho bits de un octeto usa <code>valor &amp; 255</code>.</p><p><code>numero &lt;&lt; 1</code> desplaza un bit a la izquierda; <code>numero &gt;&gt; 1</code>, a la derecha conservando el signo. En enteros positivos pequeños sirven para multiplicar por 2 o dividir entre 2 descartando la parte fraccionaria. No equivalen en general a la aritmética habitual: convierten a enteros de 32 bits y pueden desbordar.</p><p><code>numero.toString(2)</code> devuelve una cadena binaria y <code>parseInt(texto, 2)</code> convierte una cadena binaria a número. Puedes completar los ceros iniciales hasta tener ocho bits por octeto.</p></div><h4>Doble negación: convertir a booleano</h4><p><code>!!valor</code> aplica dos veces la negación: convierte a booleano, invierte el resultado y lo vuelve a invertir. Equivale a <code>Boolean(valor)</code>; esta última forma expresa mejor la intención.</p><pre><code>console.log(!!"texto"); // true
 console.log(!!"0"); // true: cadena no vacía.
 console.log(!!0); // false
