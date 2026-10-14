@@ -17,19 +17,19 @@ Integración de la plantilla de controles en `repaso-ssii-u01.html`, conservando
 
 El HTML carga primero el controlador y después el adaptador, desde rutas relativas del mismo repositorio. No usa dependencias de terceros ni requiere un proceso de construcción. **Hay que publicar los tres archivos juntos.** Descargar solo el HTML no produce una versión autónoma.
 
-Para reutilizarlo, el adaptador suministra `empty`, `sanitize`, `snapshot`, `restore`, `setEnabled`, `pauseClock`, `onEnabled`, `makeReport`, `setReport`, `isAnswer` y `restoreValue`. Las escrituras del cuaderno pasan por `saveEdit`; no deben añadirse guardados paralelos que ignoren el contador o el estado del intento. Al añadir preguntas, actualizar también el listado de campos, el HTML y las pruebas.
+Para reutilizarlo, el adaptador suministra `empty`, `sanitize`, `snapshot`, `restore`, `setEnabled`, `startClock`, `stopClock`, `downloadReport`, `makeReport`, `setReport`, `isAnswer` y `restoreValue`. Las escrituras del cuaderno pasan por `saveEdit`; no deben añadirse guardados paralelos que ignoren el contador o el estado del intento. Al añadir preguntas, actualizar también el listado de campos, el HTML y las pruebas.
 
 ## Flujo visible
 
 1. El cuaderno empieza cerrado. Tras inicializar los scripts se muestra, todavía sin permitir respuestas. Se explican las normas y se exige marcar la aceptación.
 2. «Pantalla completa y comenzar» solicita la API Fullscreen desde ese clic. Maximizar la ventana o pulsar F11 no equivale a `document.fullscreenElement === document.documentElement`.
-3. Durante el intento solo se habilitan respuestas, comprobación, reflexión y reloj cuando la página está visible, tiene foco, sigue en pantalla completa y no hay avisos ni errores pendientes.
-4. Una primera salida muestra «Primer aviso». La segunda muestra «Último aviso». La tercera vacía **todas las respuestas**, identidad, reflexión, correcciones, reloj e informe, y detiene el intento. Antes del vaciado se guarda una copia local de revisión.
-5. «Generar borrador» permite revisar texto, pero **no habilita copiar ni termina el seguimiento**. «Finalizar intento y preparar entrega» pide confirmación, genera el informe y bloquea las respuestas. Solo entonces habilita copiar y deja de contar salidas. Finalizar no entrega nada a un servidor: el alumno debe pegar el informe en el destino indicado por el profesor.
-6. Después de un tercer reinicio, «Ver copia de revisión» recupera campos e informe **sin permitir responder ni continuar ese intento**. No es una función autenticada para docentes. No hay botones públicos de simulación.
+3. Durante el intento solo se habilitan respuestas, comprobación y reflexión cuando la página está visible, tiene foco, sigue en pantalla completa y no hay avisos ni errores pendientes.
+4. Una primera salida muestra «Primer aviso». La segunda muestra «Último aviso». La tercera vacía **todas las respuestas**, identidad, reflexión, correcciones, reloj e informe, y detiene el intento.
+5. «Finalizar y descargar TXT» pide confirmación, genera un único fichero TXT y bloquea las respuestas. No hay borrador de informe ni fase de revisión. El informe incluye el tiempo total empleado, en minutos y segundos. Finalizar no envía nada a un servidor: el alumno entrega el fichero descargado en el destino indicado por el profesor.
+6. «Volver a descargar TXT» permite recuperar exactamente el mismo informe final, también al reabrir el navegador. No vuelve a generar ni modificar el informe. Ya no hay un control para recuperar copias de revisión.
 7. Un nuevo intento después de finalizar o reiniciar comienza vacío. «Borrar datos de este laboratorio» exige confirmación y está deshabilitado durante un intento activo; elimina únicamente sus dos claves de almacenamiento, no las de otros laboratorios.
 
-Se conserva la posibilidad de finalizar con pasos pendientes. El informe ya los identifica como borrador o incompletos. Las explicaciones abiertas continúan pendientes de valoración docente: rellenarlas no demuestra que sean correctas.
+Se conserva la posibilidad de finalizar con pasos pendientes. El informe ya los identifica como incompletos. Las explicaciones abiertas continúan pendientes de valoración docente: rellenarlas no demuestra que sean correctas.
 
 ## Señales, agrupación y modales
 
@@ -43,7 +43,7 @@ El seguimiento sigue activo mientras se solicita finalizar y mientras se calcula
 
 ## Bloqueo de portapapeles y entrada
 
-Se cancelan `copy`, `cut`, `paste`, `dragstart` y `drop`, además de los atajos Ctrl/Cmd+C, X, V; Ctrl+Insert; Shift+Insert y Shift+Delete. La única excepción es **copiar** desde el informe final o de revisión. Cortar y pegar no se permiten allí.
+Se cancelan `copy`, `cut`, `paste`, `dragstart` y `drop`, además de los atajos Ctrl/Cmd+C, X, V; Ctrl+Insert; Shift+Insert y Shift+Delete. El informe final se exporta mediante descarga TXT; no necesita permisos del portapapeles.
 
 La validación en captura de `beforeinput`, `input` y `change` impide que los manejadores del corrector guarden una edición rechazada. Si un pegado no pudo cancelarse antes de modificar un campo, `input` restaura su último valor aceptado. Se distinguen los tipos de entrada: no se interpreta automáticamente un texto largo como pegado. Tab, escritura normal, selección, composición y deshacer no se prohíben en bloque.
 
@@ -61,11 +61,11 @@ Sin JavaScript no hay una práctica utilizable, pero **esto no oculta el código
 
 ## Persistencia y migración
 
-Se usa `localStorage`, con JSON y clave **`ssii-repaso-ud01-seguridad-v1`**. Se conserva versión de esquema, fase, número de intento, incidencias, aviso pendiente, registro limitado a 80 eventos, bloqueos de portapapeles, respuestas, comprobaciones, pistas, reloj, informe y última copia de revisión. Los datos se validan por estructura, tipo y longitud; se representan con `textContent` o `value`, nunca con HTML procedente del guardado.
+Se usa `localStorage`, con JSON y clave **`ssii-repaso-ud01-seguridad-v1`**. Se conserva versión de esquema, fase, número de intento, incidencias, aviso pendiente, registro limitado a 80 eventos, bloqueos de portapapeles, respuestas, comprobaciones, pistas, reloj e informe. Se aceptan copias de revisión antiguas por compatibilidad, pero ya no se crean ni se muestran. Los datos se validan por estructura, tipo y longitud; se representan con `textContent` o `value`, nunca con HTML procedente del guardado.
 
 Al no existir la clave nueva, se importa el borrador previo **`ssii-repaso-ud01-v1`**, conservando campos, comprobaciones, pistas y tiempo. No se inventan incidencias para trabajo anterior a la política. El original no se borra durante la migración. Si el JSON actual o el anterior está dañado, se bloquea el inicio y no se sobrescribe automáticamente.
 
-Cada edición aceptada y cada transición guarda una instantánea. El reloj voluntario se guarda cada cinco segundos mientras está en marcha y se pausa al bloquear el cuaderno. No se añade el tiempo transcurrido con el navegador cerrado.
+Cada edición aceptada y cada transición guarda una instantánea. El reloj arranca automáticamente al comenzar. Se persiste una marca de inicio (`started`) y el tiempo previo (`elapsed`), sin acumular dos veces los intervalos al guardar. Sigue contando durante avisos, confirmaciones, bloqueos, recargas y con el navegador cerrado. Solo se detiene al finalizar o al invalidarse el intento por la tercera incidencia. Un intento antiguo sin marca de inicio conserva el tiempo acumulado y comienza a contar de forma continua al cargar esta versión. Si se cancela la confirmación, falta el nombre o falla el informe, el reloj continúa. El informe y el reloj final usan el mismo instante de confirmación aceptada; un fallo o una incidencia durante el hash cancela la finalización.
 
 Al reabrir un intento activo, se conservan respuestas y contador y se exige reanudar en pantalla completa. El nuevo arranque **no inventa una incidencia** por no estar todavía en pantalla completa. Cerrar o recargar puede haber registrado la salida anterior si el navegador emitió el evento; ningún evento de cierre está garantizado frente a terminación forzosa, fallos o apagado.
 
@@ -85,7 +85,7 @@ CHROMIUM_PATH=/usr/bin/chromium pytest -q labs/tests/test_repaso_seguridad.py
 
 La suite monta el HTML y sus dos scripts locales en un documento de Chromium. Prueba arranque con JavaScript realmente desactivado, pantalla completa nativa, modales y edición DOM. **localStorage y el cálculo del hash son dobles de prueba**; foco/visibilidad se simulan en los casos señalados. No atribuir a esta suite verificación de persistencia nativa, permisos de portapapeles o funcionamiento en todos los navegadores.
 
-Comprobación manual en el navegador del aula: abrir la URL HTTPS, aceptar e iniciar; escribir respuestas; cambiar a otra ventana tres veces, regresando y continuando entre salidas; comprobar copia de revisión; probar copia/pegado; cerrar y reabrir con el mismo perfil; finalizar y copiar el informe; repetir con JavaScript desactivado. Revisar también pérdida de foco por herramientas de accesibilidad o diálogos del navegador antes de aplicar consecuencias en una evaluación.
+Comprobación manual en el navegador del aula: abrir la URL HTTPS, aceptar e iniciar; escribir respuestas; cambiar a otra ventana tres veces, regresando y continuando entre salidas; comprobar que no existe copia de revisión; probar copia/pegado; cerrar y reabrir con el mismo perfil comprobando el tiempo; cancelar y después confirmar la finalización y comprobar la descarga TXT; repetir con JavaScript desactivado. Revisar también pérdida de foco por herramientas de accesibilidad o diálogos del navegador antes de aplicar consecuencias en una evaluación.
 
 El informe conserva el SHA-256 original. Es un checksum público **sin clave ni firma**: cualquiera que pueda editar el texto puede recalcularlo. La frase destinada a IA que ya figuraba en el laboratorio no es un mecanismo de autenticación. Ni esa frase, ni el hash, ni los eventos locales demuestran autoría o ausencia de ayuda externa.
 

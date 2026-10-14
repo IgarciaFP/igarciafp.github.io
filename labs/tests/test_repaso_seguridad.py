@@ -142,7 +142,7 @@ def test_grouped_blur_hidden_fullscreen(make_page):
     assert state(p)['count']==1
     assert p.locator('#t1').is_disabled()
 
-def test_second_then_third_resets_and_reviews(make_page):
+def test_second_then_third_resets_without_review(make_page):
     p=make_page();begin(p)
     p.evaluate("""() => {for(const el of document.querySelectorAll('#answer-fields input,#answer-fields textarea,#answer-fields select,#reflection')){
       el.value=el.tagName==='SELECT'?el.options[1].value:'120';el.dispatchEvent(new Event('input',{bubbles:true}));}}""")
@@ -154,11 +154,8 @@ def test_second_then_third_resets_and_reviews(make_page):
     assert s['count']==3 and s['phase']=='reset'
     assert all(not v for v in s['data']['values'].values())
     assert s['data']['checked']=={} and s['data']['elapsed']==0 and s['data']['report']==''
-    assert s['backup']['data']['values']['t1']=='120'
-    p.locator('#guard-continue').click();p.locator('#guard-review').click()
-    p.wait_for_function("document.querySelector('#report').value.length>0")
-    assert p.locator('#t1').input_value()=='120'
-    assert p.locator('#t1').is_disabled() and p.locator('#copy').is_enabled()
+    assert p.locator('#guard-review').count()==0
+    assert p.locator('#t1').is_disabled()
     assert not p.errors
 
 @pytest.mark.parametrize('event', ['copy','cut','paste','drop','dragstart'])
@@ -216,16 +213,47 @@ def test_stale_storage_blocks_without_overwrite(make_page):
     assert p.locator('#t1').is_disabled()
     assert p.evaluate(f"localStorage.getItem('{KEY}')")=='OTRA VERSION'
 
-def test_copy_draft_denied_finish_export_allowed(make_page):
+def test_confirm_finish_downloads_txt(make_page):
     p=make_page();begin(p);p.locator('#student').fill('Alumno');p.locator('#t1').fill('120')
-    p.locator('#generate').click();p.wait_for_function("document.querySelector('#report').value.length>0")
-    assert p.locator('#copy').is_disabled()
-    assert not p.evaluate("document.querySelector('#report').dispatchEvent(new Event('copy',{bubbles:true,cancelable:true}))")
-    finish(p)
-    assert p.locator('#t1').is_disabled() and p.locator('#copy').is_enabled()
-    assert p.evaluate("document.querySelector('#report').dispatchEvent(new Event('copy',{bubbles:true,cancelable:true}))")
-    assert 'Incidencias de entorno:' in p.locator('#report').input_value()
+    assert p.locator('#generate').count()==0 and p.locator('#copy').count()==0
+    p.locator('#guard-finish').click();p.locator('#guard-confirm-cancel').click()
+    assert state(p)['phase']=='active' and p.locator('#t1').is_enabled()
+    with p.expect_download() as download:
+        finish(p)
+    assert download.value.suggested_filename=='repaso-ssii-u01.txt'
+    text=Path(download.value.path()).read_text(encoding='utf-8-sig')
+    assert text==p.locator('#report').input_value()
+    assert 'Tiempo total empleado:' in text and 'BORRADOR' not in text
+    assert 'Incidencias de entorno:' in text and 'INTENTO FINALIZADO' in text
+    assert p.locator('#t1').is_disabled() and p.locator('#download').is_enabled()
+    with p.expect_download() as again:
+        p.locator('#download').click()
+    assert Path(again.value.path()).read_text(encoding='utf-8-sig')==text
     assert not p.errors
+
+def test_clock_continues_during_warning_reload_and_cancel(make_page):
+    p=make_page();begin(p)
+    assert p.locator('#timer').count()==0
+    started=state(p)['data']['started']
+    assert started is not None
+    p.evaluate("window.originalNow=Date.now;Date.now=()=>window.originalNow()+65000")
+    blur_return(p)
+    p.wait_for_timeout(1100)
+    assert p.locator('#clock').inner_text()!='00:00'
+    assert state(p)['data']['started']==started
+    raw=p.evaluate('window.testStore')
+    q=make_page(raw)
+    assert state(q)['data']['started']==started
+    resume(q)
+    q.locator('#guard-finish').click();q.locator('#guard-confirm-cancel').click()
+    assert state(q)['data']['started']==started
+    q.locator('#student').fill('Alumno');finish(q)
+    elapsed=state(q)['data']['elapsed']
+    assert state(q)['data']['started'] is None
+    q.evaluate("Date.now=()=>9999999999999")
+    q.wait_for_timeout(1100)
+    assert state(q)['data']['elapsed']==elapsed
+    assert not q.errors
 
 def test_leave_after_finish_not_counted(make_page):
     p=make_page();begin(p);p.locator('#student').fill('Alumno');finish(p);blur_return(p)
@@ -234,7 +262,7 @@ def test_leave_after_finish_not_counted(make_page):
 def test_finish_without_name_does_not_finalize(make_page):
     p=make_page();begin(p);p.locator('#guard-finish').click();p.locator('#guard-confirm-ok').click()
     assert state(p)['phase']=='active'
-    assert p.locator('#copy').is_disabled()
+    assert p.locator('#download').is_disabled()
 
 def test_new_attempt_empty_after_finish(make_page):
     p=make_page();begin(p);p.locator('#student').fill('Alumno');p.locator('#t1').fill('120');finish(p)
@@ -271,7 +299,7 @@ def test_pagehide_and_visibility_share_episode(make_page):
 def test_restore_submitted_keeps_export_only(make_page):
     p=make_page();begin(p);p.locator('#student').fill('Alumno');finish(p)
     q=make_page(p.evaluate('window.testStore'))
-    assert q.locator('#t1').is_disabled() and q.locator('#copy').is_enabled()
+    assert q.locator('#t1').is_disabled() and q.locator('#download').is_enabled()
     assert state(q)['phase']=='submitted'
 
 def test_third_incident_during_hash_cannot_revive(make_page):
@@ -282,4 +310,14 @@ def test_third_incident_during_hash_cannot_revive(make_page):
     blur_return(p);p.wait_for_timeout(800)
     assert state(p)['phase']=='reset' and state(p)['count']==3
     assert p.locator('#t1').input_value()=='' and p.locator('#report').input_value()==''
+    assert not p.errors
+
+def test_hash_failure_keeps_clock_running(make_page):
+    p=make_page();begin(p);p.locator('#student').fill('Alumno')
+    started=state(p)['data']['started']
+    p.evaluate("crypto.subtle.digest=()=>Promise.reject(new Error('fallo'))")
+    p.locator('#guard-finish').click();p.locator('#guard-confirm-ok').click()
+    p.wait_for_function("document.querySelector('#reportStatus').textContent.includes('No se pudo')")
+    assert state(p)['phase']=='active' and state(p)['data']['started']==started
+    assert p.locator('#t1').is_enabled()
     assert not p.errors

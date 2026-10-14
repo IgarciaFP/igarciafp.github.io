@@ -27,15 +27,14 @@
     let initialized = false, fatal = false, busy = false, restoring = false;
     let problem = '', problemText = '', lastRaw = null, timer = null;
     let confirmation = null, lastClipboardAt = 0, lastClipboardKind = '';
-    let lastEnabled = false;
     const supported = typeof root.requestFullscreen === 'function'
       && document.fullscreenEnabled === true && typeof document.hasFocus === 'function'
       && 'visibilityState' in document && typeof warning.showModal === 'function'
       && 'inert' in HTMLElement.prototype && typeof structuredClone === 'function';
 
     // 2. MODELO. La interfaz se deriva de este estado, nunca al revés.
-    // active + pending/episode/restoring = intento pausado, con respuestas cerradas.
-    // submitted y review permiten únicamente consultar/copiar el informe.
+    // active + pending/episode/restoring bloquea respuestas; el reloj continúa.
+    // submitted permite descargar el informe final; review solo es un estado legado.
     function fresh() {
       return { version: 1, phase: 'ready', attempt: 0, count: 0, pending: null,
         episode: null, clipboardBlocked: 0, savedAt: null, events: [],
@@ -61,7 +60,7 @@
         pending: s.pending, clipboardBlocked: s.clipboardBlocked,
         savedAt: stamp(s.savedAt) ? s.savedAt : null,
         data: adapter.sanitize(s.data),
-        // Un arranque nuevo no añade tiempo cerrado ni una incidencia ficticia.
+        // Un arranque nuevo conserva la marca de inicio sin añadir incidencias.
         // El contador y el aviso anterior sí se conservan.
         episode: null,
         backup: s.backup ? { data: adapter.sanitize(s.backup.data),
@@ -142,10 +141,8 @@
       if (fatal) return;
       const enabled = canEdit(), s = signals();
       adapter.setEnabled(enabled);
-      if (enabled !== lastEnabled) {
-        adapter.onEnabled(enabled); lastEnabled = enabled;
-      }
-      const names = { ready: 'Pendiente de comenzar', active: enabled ? 'En curso' : 'En pausa',
+
+      const names = { ready: 'Pendiente de comenzar', active: enabled ? 'En curso' : 'Respuestas bloqueadas · reloj en marcha',
         submitted: 'Intento finalizado', reset: 'Reiniciado por tres incidencias', review: 'Copia recuperada: solo lectura' };
       $('guard-state').textContent = names[state.phase];
       $('guard-count').textContent = `${state.count} de ${CONFIG.limit}`;
@@ -159,14 +156,13 @@
       $('guard-problem-text').textContent = problemText || (!supported ? 'Este navegador no ofrece las funciones necesarias. Abre la página directamente en un navegador de escritorio compatible con pantalla completa.' : '');
       $('guard-retry').hidden = problem !== 'io';
       $('saveStatus').textContent = problem ? 'Guardado bloqueado. Revisa el aviso superior.'
-        : state.savedAt ? 'Borrador local guardado: ' + new Date(state.savedAt).toLocaleTimeString('es-ES') : 'Guardado local preparado.';
-      const canExport = !problem && ['submitted','review'].includes(state.phase);
+        : state.savedAt ? 'Respuestas guardadas: ' + new Date(state.savedAt).toLocaleTimeString('es-ES') : 'Guardado local preparado.';
+      const canExport = !problem && state.phase === 'submitted';
       $('report').disabled = !canExport;
-      $('copy').disabled = !canExport || !$('report').value;
+      $('download').disabled = !canExport || !$('report').value;
+      $('download').hidden = state.phase !== 'submitted';
       $('guard-finish').disabled = !enabled;
       $('reset').disabled = state.phase === 'active' || !!problem || busy;
-      $('guard-review').hidden = !state.backup || !['reset','review'].includes(state.phase);
-      $('guard-review').disabled = !!problem || busy || !!state.pending;
       // textContent: nunca insertar datos del alumno o del almacenamiento como HTML.
       $('guard-log').replaceChildren(...state.events.slice(-12).reverse().map(e => {
         const li = document.createElement('li');
@@ -185,8 +181,8 @@
       const texts = {
         first: ['Primer aviso', 'La práctica perdió visibilidad, foco o pantalla completa. Las respuestas se conservan. A la tercera incidencia se vaciarán.'],
         last: ['Último aviso', 'Segunda incidencia. La próxima vez se vaciarán las respuestas y se detendrá el intento.'],
-        reset: ['Intento reiniciado', 'Tercera incidencia: se han vaciado respuestas, comprobaciones e informe. Se conserva una copia local para revisión, no para continuar respondiendo.'],
-        resume: ['Reanudar el intento', 'Se ha recuperado el borrador y el contador. Debes recuperar pantalla completa y foco para seguir.']
+        reset: ['Intento reiniciado', 'Tercera incidencia: se han vaciado respuestas, comprobaciones e informe. Puedes comenzar un nuevo intento vacío.'],
+        resume: ['Reanudar el intento', 'Se han recuperado las respuestas y el contador. El reloj sigue contando. Debes recuperar pantalla completa y foco para seguir.']
       };
       const [title, text] = texts[state.pending];
       $('guard-warning-title').textContent = title;
@@ -205,16 +201,15 @@
       if (!initialized || fatal || problem || restoring || state.phase !== 'active') return;
       clearTimeout(timer);
       if (!state.episode) {
-        adapter.pauseClock();
         state.data = adapter.snapshot();
         state.episode = { at: Date.now(), reasons: [reason] };
         state.count++;
         log(`Incidencia ${state.count}/${CONFIG.limit}: ${WHY[reason]}.`);
         if (state.count >= CONFIG.limit) {
-          state.backup = { data: structuredClone(state.data), attempt: state.attempt, at: Date.now() };
+          adapter.stopClock();
           state.phase = 'reset'; state.pending = 'reset';
           state.data = adapter.empty(); adapter.restore(state.data);
-          log('Respuestas vaciadas; copia local conservada para revisión.');
+          log('Respuestas vaciadas; intento detenido.');
         } else state.pending = state.count === 1 ? 'first' : 'last';
       } else if (!state.episode.reasons.includes(reason)) {
         state.episode.reasons.push(reason);
@@ -266,6 +261,7 @@
         state.pending = null; state.episode = null; restoring = false;
         if (warning.open) warning.close();
         $('guard-action-status').textContent = '';
+        adapter.startClock(); state.data = adapter.snapshot();
         persist();
       } catch (e) {
         $('guard-action-status').textContent = e.message || 'No se pudo activar pantalla completa.';
@@ -275,14 +271,14 @@
 
     // 6. PORTAPAPELES. Cancelar cada evento; agrupar únicamente su registro.
     // No se leen contenidos ni se solicitan permisos de lectura del sistema.
-    // Copiar el informe está permitido SOLO tras finalizar o en revisión.
-    function canCopyReport() {
-      return !problem && !fatal && ['submitted','review'].includes(state.phase) && !!$('report').value;
+    // El informe se exporta como TXT únicamente después de finalizar.
+    function canDownloadReport() {
+      return !problem && !fatal && state.phase === 'submitted' && !!$('report').value;
     }
     function denyClipboard(e, kind = e.type) {
       if (e.cancelable) e.preventDefault();
       e.stopImmediatePropagation();
-      $('clipboardStatus').textContent = 'Copia, corte, pegado y arrastre bloqueados. Escribe directamente. El informe solo se puede copiar tras finalizar.';
+      $('clipboardStatus').textContent = 'Copia, corte, pegado y arrastre bloqueados. Escribe directamente. El informe se descarga en TXT al finalizar.';
       const now = Date.now();
       if (state.phase === 'active' && !problem && (kind !== lastClipboardKind || now - lastClipboardAt > 300)) {
         state.clipboardBlocked = Math.min(1000000, state.clipboardBlocked + 1);
@@ -309,9 +305,7 @@
       }
     }
 
-    // 7. FINALIZAR, REVISAR Y BORRAR. No hay contraseñas docentes falsas en JS.
-    // Los controles de revisión son públicos y de solo lectura. La finalización
-    // NO envía nada: produce texto para la entrega habitual del laboratorio.
+    // 7. FINALIZAR Y BORRAR. La finalización descarga un TXT sin enviar datos.
     function metadata() {
       return [`Intento: ${state.attempt}`, `Incidencias de entorno: ${state.count}/${CONFIG.limit}`,
         `Acciones de portapapeles bloqueadas: ${state.clipboardBlocked}`,
@@ -325,8 +319,8 @@
       confirmation = kind;
       $('guard-confirm-title').textContent = kind === 'finish' ? '¿Finalizar el intento?' : '¿Borrar los datos locales?';
       $('guard-confirm-text').textContent = kind === 'finish'
-        ? 'Se generará el informe final y las respuestas quedarán bloqueadas. Después podrás salir para copiar y entregar el texto. Para corregir, cancela ahora.'
-        : 'Se eliminarán de este navegador el borrador, el contador, el informe y la copia de revisión de este laboratorio. Conserva antes tu entrega. No se borrarán datos de otros laboratorios.';
+        ? 'Se descargará un fichero TXT con tus respuestas y el tiempo total empleado. La práctica quedará finalizada y no podrás modificar las respuestas, aunque haya pasos pendientes. Para seguir trabajando, cancela.'
+        : 'Se eliminarán de este navegador las respuestas, el contador, el informe y cualquier copia antigua de este laboratorio. Conserva antes tu entrega. No se borrarán datos de otros laboratorios.';
       confirmBox.showModal();
     }
     async function confirmAction() {
@@ -346,38 +340,28 @@
         return;
       }
       if (kind !== 'finish' || !canEdit()) return;
-      adapter.pauseClock(); state.data = adapter.snapshot();
+      const finishedAt = Date.now();
+      state.data = adapter.snapshot();
       const beforeCount = state.count;
       busy = true; render();
       try {
-        const report = await adapter.makeReport(metadata(), true);
+        const report = await adapter.makeReport(metadata(), true, finishedAt);
         // El cálculo SHA-256 es asíncrono. Una salida en mitad del cálculo
         // cancela la entrega: no permite saltarse un aviso o el tercer reinicio.
         if (!report || problem || fatal || state.phase !== 'active' || state.count !== beforeCount
           || state.pending || !safe(signals())) return;
+        adapter.stopClock(finishedAt);
         state.phase = 'submitted'; state.pending = null; state.episode = null;
         adapter.setReport(report);
         state.data = adapter.snapshot(); log('Intento finalizado. Exportación del informe habilitada.');
         if (!persist()) return;
+        adapter.downloadReport();
         if (document.fullscreenElement === root) {
           try { await document.exitFullscreen(); } catch { /* Ya está finalizado: no penalizar. */ }
         }
       } catch { $('reportStatus').textContent = 'No se pudo generar el informe. No se ha finalizado el intento; revisa los datos y vuelve a intentarlo.'; }
       finally { busy = false; render(); }
     }
-    async function review() {
-      if (!state.backup || !['reset','review'].includes(state.phase) || busy || problem) return;
-      state.phase = 'review'; state.pending = null; state.episode = null;
-      state.data = structuredClone(state.backup.data);
-      adapter.restore(state.data); busy = true; render();
-      try {
-        const report = await adapter.makeReport('COPIA DE REVISIÓN DEL INTENTO ' + state.backup.attempt + '\n' + metadata(), false);
-        if (report && !problem && !fatal) adapter.setReport(report);
-        state.data = adapter.snapshot(); log('Copia recuperada para revisión, sin habilitar respuestas.'); persist();
-      } catch { $('reportStatus').textContent = 'La copia está en los campos, bloqueada; no se pudo generar su informe.'; }
-      finally { busy = false; render(); }
-    }
-
     // 8. ARRANQUE CERRADO. El HTML original lleva hidden, inert y disabled.
     // Solo al terminar la carga, restauración y registro de eventos se revela.
     window.addEventListener('error', failClosed);
@@ -403,16 +387,14 @@
     for (const type of ['beforeinput','input','change']) $('lab').addEventListener(type, inputGuard, true);
     if (CONFIG.blockClipboard) {
       for (const type of ['copy','cut','paste','dragstart','drop']) document.addEventListener(type, e => {
-        if (type === 'copy' && e.target === $('report') && canCopyReport()) return;
         denyClipboard(e);
       }, true);
       document.addEventListener('dragover', e => e.preventDefault(), true);
       document.addEventListener('keydown', e => {
         const k = e.key.toLowerCase(), mod = e.ctrlKey || e.metaKey;
-        const copy = (mod && k === 'c') || (e.ctrlKey && k === 'insert');
         const blocked = (mod && ['c','x','v'].includes(k)) || (e.ctrlKey && k === 'insert')
           || (e.shiftKey && ['insert','delete'].includes(k));
-        if (blocked && !(copy && e.target === $('report') && canCopyReport())) denyClipboard(e, 'atajo');
+        if (blocked) denyClipboard(e, 'atajo');
       }, true);
     }
     $('guard-consent').addEventListener('change', render);
@@ -427,13 +409,16 @@
     $('guard-confirm-cancel').addEventListener('click', () => { confirmation = null; confirmBox.close(); });
     confirmBox.addEventListener('cancel', () => { confirmation = null; });
     $('guard-confirm-ok').addEventListener('click', confirmAction);
-    $('guard-review').addEventListener('click', review);
     $('guard-retry').addEventListener('click', () => {
       if (problem !== 'io') return;
       problem = ''; problemText = '';
       if (state.phase === 'active') { restoring = true; state.pending ||= 'resume'; }
       persist(); render();
     });
+    // Los intentos antiguos conservan el tiempo acumulado; los nuevos incluyen
+    // una marca de inicio que también cuenta el tiempo con la página cerrada.
+    if (state.phase === 'active' && state.data.started === null) state.data.started = Date.now();
+    if (state.phase !== 'active') state.data.started = null;
     adapter.restore(state.data);
     if (!problem) persist(); // Prueba escritura antes de habilitar Comenzar.
     initialized = true;
@@ -441,6 +426,6 @@
     $('guard-panel').hidden = false; $('guard-panel').inert = false;
     $('guard-boot').hidden = true;
     render();
-    return Object.freeze({ canEdit, canCopyReport, saveEdit, metadata, render });
+    return Object.freeze({ canEdit, canDownloadReport, saveEdit, metadata, render });
   };
 })();
