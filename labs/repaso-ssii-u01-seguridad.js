@@ -160,7 +160,7 @@
       $('report').disabled = true;
       $('download').disabled = !canExport || !$('report').value;
       $('download').hidden = state.phase !== 'submitted';
-      $('guard-finish').disabled = !enabled;
+      $('guard-finish').disabled = !enabled || !adapter.canFinish();
       $('reset').disabled = state.phase === 'active' || !!problem || busy;
       // textContent: nunca insertar datos del alumno o del almacenamiento como HTML.
       $('guard-log').replaceChildren(...state.events.slice(-12).reverse().map(e => {
@@ -305,7 +305,7 @@
     }
     function ask(kind) {
       if (problem || busy || fatal) return;
-      if (kind === 'finish' && !canEdit()) return;
+      if (kind === 'finish' && (!canEdit() || !adapter.canFinish())) return;
       if (kind === 'erase' && state.phase === 'active') return;
       confirmation = kind;
       $('guard-confirm-title').textContent = kind === 'finish' ? '¿Finalizar el intento?' : '¿Borrar los datos locales?';
@@ -330,7 +330,7 @@
         } catch { problem = 'io'; problemText = 'No se pudieron borrar los datos. Se conserva la página para revisión.'; render(); }
         return;
       }
-      if (kind !== 'finish' || !canEdit()) return;
+      if (kind !== 'finish' || !canEdit() || !adapter.canFinish()) return;
       const finishedAt = Date.now();
       state.data = adapter.snapshot();
       const beforeCount = state.count;

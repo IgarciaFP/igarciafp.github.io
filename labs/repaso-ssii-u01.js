@@ -82,8 +82,9 @@ function setReport(text) {
   $('report').value=text;
   $('reportStatus').textContent='Práctica finalizada. Entrega el TXT descargado al profesor.';
 }
+function canFinish(){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($('student').value.trim());}
 async function makeReport(metadata,final,finishedAt=Date.now()) {
-  if(final&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($('student').value.trim())) {
+  if(final&&!canFinish()) {
     $('reportStatus').textContent='Indica un correo electrónico válido antes de finalizar.';return null;
   }
  const answered=fields.filter(hasAnswer).length,closed=fields.filter(f=>f.kind!=='open'),hits=closed.filter(correct).length;
@@ -135,7 +136,7 @@ $('download').addEventListener('click',downloadReport);
 // Retirar hidden/inert es responsabilidad EXCLUSIVA del arranque del controlador.
 // Si falta este archivo o el controlador, el HTML conserva el bloqueo inicial.
 guard=window.createPracticeGuard({ empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,
-  makeReport,setReport,
+  canFinish,makeReport,setReport,
   isAnswer(el){return el instanceof HTMLElement&&ids.includes(el.id);},
   restoreValue(el,data){el.value=data.values[el.id]||'';}
 });

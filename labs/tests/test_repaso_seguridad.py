@@ -247,6 +247,7 @@ def test_clock_continues_during_warning_reload_and_cancel(make_page):
     q=make_page(raw)
     assert state(q)['data']['started']==started
     resume(q)
+    q.locator('#student').fill('alumno@example.com')
     q.locator('#guard-finish').click();q.locator('#guard-confirm-cancel').click()
     assert state(q)['data']['started']==started
     q.locator('#student').fill('alumno@example.com');finish(q)
@@ -262,7 +263,8 @@ def test_leave_after_finish_not_counted(make_page):
     assert state(p)['count']==0
 
 def test_finish_without_email_does_not_finalize(make_page):
-    p=make_page();begin(p);p.locator('#guard-finish').click();p.locator('#guard-confirm-ok').click()
+    p=make_page();begin(p)
+    assert p.locator('#guard-finish').is_disabled()
     assert state(p)['phase']=='active'
     assert p.locator('#download').is_disabled()
 
@@ -426,8 +428,7 @@ def test_plain_typing_and_left_click_remain_available(make_page):
 def test_email_required_before_final_download(make_page,email):
     p=make_page();begin(p);p.locator('#student').fill(email)
     started=state(p)['data']['started']
-    p.locator('#guard-finish').click();p.locator('#guard-confirm-ok').click()
-    p.wait_for_function("document.querySelector('#reportStatus').textContent.includes('correo electrónico válido')")
+    assert p.locator('#guard-finish').is_disabled()
     assert state(p)['phase']=='active'
     assert state(p)['data']['started']==started
     assert p.locator('#download').is_disabled()
@@ -442,3 +443,20 @@ def test_email_is_in_decoded_report(make_page):
     decoded=base64.b64decode(p.locator('#report').input_value()).decode('utf-8')
     assert 'Correo electrónico: alumno+ssii@example.com' in decoded
     assert 'Alumno/a:' not in decoded
+
+def test_finish_button_tracks_email_edits_and_restore(make_page):
+    p=make_page();begin(p)
+    assert p.locator('#guard-finish').is_disabled()
+    p.locator('#student').fill('alumno@example.com')
+    assert p.locator('#guard-finish').is_enabled()
+    p.locator('#student').fill('')
+    assert p.locator('#guard-finish').is_disabled()
+    p.locator('#student').fill('correo-incompleto@')
+    assert p.locator('#guard-finish').is_disabled()
+    p.locator('#student').fill('alumno+ssii@example.com')
+    assert p.locator('#guard-finish').is_enabled()
+    q=make_page(p.evaluate('window.testStore'))
+    assert q.locator('#guard-finish').is_disabled()
+    resume(q)
+    assert q.locator('#guard-finish').is_enabled()
+    assert not p.errors and not q.errors
