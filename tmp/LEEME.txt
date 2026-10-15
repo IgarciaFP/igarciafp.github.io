@@ -1,0 +1,119 @@
+EXAMEN UNIDAD 01 · versión 3 · cierre automático y registro de acciones
+
+PUBLICACIÓN
+Subir juntos index.html, seguridad.js y examen.js a una carpeta HTTPS de GitHub Pages.
+No requiere dependencias ni compilación. Para probar desde esta carpeta:
+python -m http.server 8080 --bind 127.0.0.1
+Abrir http://127.0.0.1:8080/. No usar file://.
+Este paquete no se ha publicado automáticamente en GitHub.
+
+FLUJO
+1. Línea superior y dos tarjetas: English / Español.
+2. Instrucciones y aceptación de términos; después, nombre y correo.
+3. Nombre obligatorio y correo válido del dominio exacto @g.educaand.es.
+4. Inicio en pantalla completa. Solo entonces se muestran el supuesto y las 14 preguntas.
+5. Generar entrega confirma, cierra la edición y comprime el informe con GZIP.
+6. Descarga automáticamente un comprobante TXT con el código, copia exactamente el mismo
+   código al portapapeles y abre Google Forms con los campos prellenados.
+7. Tras abrir el formulario, el examen vuelve al selector de idioma, vacío.
+El alumno debe pulsar Enviar en Google Forms. Abrirlo no registra una respuesta.
+El TXT es una copia de la entrega generada; no acredita su recepción por Google Forms.
+
+FORMULARIO
+https://docs.google.com/forms/d/e/1FAIpQLSe0iRrYhaOF0WL5lwjWeFheZbz1jKhz8vkG45E1i3psjfKK-w/viewform
+Nombre: entry.346661486
+Actividad: entry.1438887233
+Código: entry.1197951345
+El correo va incluido en el código. Si cambian los campos, revisar los IDs en examen.js.
+
+COMPROBANTE Y RECUPERACIÓN
+Nombre del archivo: comprobante-unidad-01-<identificador>.txt.
+Contiene únicamente el código, sin cabecera ni BOM, idéntico al del formulario.
+La descarga se solicita antes de usar el portapapeles y abrir el formulario, incluso si
+esas operaciones son denegadas. El navegador controla si guarda o bloquea el archivo.
+Puede volver a descargarse con el botón Descargar comprobante TXT en la pantalla de entrega
+ o en la recuperación de la última entrega, después de elegir idioma.
+Los reintentos de copia no descargan repetidamente el mismo archivo durante la sesión.
+La última entrega se guarda en sessionStorage para recuperación en esa pestaña;
+no es una confirmación de envío ni un archivo permanente.
+
+PERMISOS Y ENTREGAS LARGAS
+Se requiere un navegador con CompressionStream (GZIP), HTTPS o localhost.
+El botón de entrega escribe el portapapeles sin leer su contenido previo; no habilita
+copiar ni pegar respuestas durante el examen.
+Si se deniega el portapapeles o se bloquea la pestaña, conserva el informe y permite reintentar.
+Si el enlace, aun comprimido, supera 7000 caracteres, copia el código y muestra un aviso.
+El alumno pulsa Continuar al formulario y pega el código en el campo del contenido.
+Nombre y actividad siguen prellenados.
+
+CONTROLES
+Fullscreen, foco, visibilidad, agrupación de incidencias y dos avisos. A la tercera se bloquea
+la edición y se genera automáticamente una entrega con las respuestas actuales, sin borrarlas;
+bloqueo de edición, Control, menú contextual, portapapeles y arrastre; restauración de entradas
+rechazadas; arranque cerrado sin JavaScript; guardado validado y conflictos entre pestañas;
+reloj continuo; confirmación, URL, registro y SHA-256 en el código generado.
+Se bloquean F1–F24 en keydown, keypress y keyup, tanto por key como por code. Se registran
+las pulsaciones de función, Control y combinaciones bloqueadas, botón derecho, copiar, cortar,
+pegar y arrastrar/soltar. Los registros no suman incidencias de entorno. No se registra escritura
+normal ni contenido del portapapeles. Solo se registran durante el intento activo.
+Para teclado se cuenta keydown sin repetición; para eventos no de teclado se agrupan
+acciones iguales en 400 ms para evitar duplicados. Se conservan totales por acción y los
+últimos 1000 registros con fecha/hora, persistidos entre recargas e incluidos en el informe.
+La tercera incidencia detiene el reloj y conserva un estado de cierre pendiente antes de
+comprimir. Si falla o se recarga, el intento sigue bloqueado y la generación se recupera
+sin borrar respuestas. Se intenta descargar el TXT y abrir la entrega. Si el navegador deniega
+portapapeles o ventanas por falta de un clic, se muestra un botón para completar el paso.
+El proceso vuelve al selector solo después de pasar la entrega al formulario.
+Recargar conserva respuestas, tiempo y contador y exige reanudar en fullscreen.
+Las cuestiones de DevTools se responden por escrito; abrir herramientas puede causar incidencias.
+Clave del intento: examen-navegadores-web-seguridad-v2. Se conserva la compatibilidad con
+intentos en curso y entregas WEB2 anteriores, que no se regeneran.
+
+FORMATO Y LECTURA
+Código nuevo: WEB3G.<GZIP codificado en Base64URL, sin relleno>.
+El GZIP contiene JSON UTF-8 seguido de una línea:
+Código de comprobación: WEB3-<SHA-256 del JSON>
+El JSON incluye versión 3, idioma, nombre, correo, respuestas numeradas 1–14, observaciones,
+tiempo, fecha, incidencias y URL. Los enunciados están en QUESTION_BANK de examen.js.
+También incluye finishReason (voluntary o incident-limit), incidents, actionCounts y actions.
+Para descomprimir, comprobar el checksum y leer el contenido:
+python decodificar.py comprobante-unidad-01-xxxx.txt
+El lector también acepta las entregas WEB2 previas, sin compresión.
+
+PRUEBAS
+Edge: ambos idiomas, términos, dominio exacto, ocultación, fullscreen real, guardado y recarga,
+tres incidencias, pegado bloqueado, F1–F24 sintéticos y F5 real sin recarga, cancelación,
+portapapeles real, descarga real idéntica al formulario, re-descarga, GZIP y SHA-256 reales,
+Unicode, reinicio, permisos denegados, ventanas bloqueadas y entregas largas.
+Lector Python: compatibilidad WEB2 y rechazo de checksum incorrecto.
+Google Forms fue interceptado durante las pruebas; no se enviaron respuestas reales.
+
+LÍMITES
+Controles locales disuasorios. Comprimir y codificar no cifra; SHA-256 no firma ni autentica.
+El correo se valida por formato y dominio, no por titularidad.
+El usuario controla JavaScript, DOM y almacenamiento. AltGr puede verse afectado.
+No pueden garantizarse los bloqueos de teclas reservadas al navegador o al sistema operativo.
+Probar los permisos, el teclado y el acceso al formulario en los equipos del aula.
+
+LÍMITE DE CAMPOS
+Las 14 respuestas y las observaciones tienen un máximo de 2000 caracteres, aplicado en
+HTML, entrada, carga de borradores y generación del informe. Nombre y correo mantienen
+sus máximos menores (160 y 254). Los borradores anteriores que superen el nuevo límite
+se ajustan a 2000 al cargarlos; los informes ya generados se conservan sin modificarlos.
+
+PRUEBAS ADICIONALES
+Límite de 2000; registros de F1–F24, Control, botón derecho, portapapeles y arrastre;
+agrupación de eventos; terceros avisos conservando respuestas; fallo de compresión seguido
+de recarga y recuperación; motivo de cierre en el informe; comprobante idéntico; cierre voluntario.
+
+ORDEN ALEATORIO POR INTENTO
+Al comenzar un intento nuevo se barajan las 14 preguntas mediante Fisher–Yates y
+crypto.getRandomValues. La numeración visible y los enlaces laterales siguen el orden
+mostrado (1–14); cada respuesta mantiene su identificador original internamente.
+El orden se guarda con el intento y se conserva al recargar, reanudar o recuperar un cierre.
+Los intentos anteriores que no incluían orden guardado mantienen el orden original.
+La entrega siempre contiene answers ordenado por question del 1 al 14 original, tanto
+en finalización voluntaria como por tercer aviso. presentationOrder documenta qué
+preguntas originales se mostraron en cada posición al alumno.
+Se probaron: permutación completa, navegación, conservación tras recarga, nuevo sorteo
+al iniciar otro intento y correspondencia exacta de respuestas en el informe ordenado.
