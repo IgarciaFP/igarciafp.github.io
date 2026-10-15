@@ -8,6 +8,27 @@ const ids=[...fields.map(f=>f.id),'student','fullname','reflection'];
 const FORM='https://docs.google.com/forms/d/e/1FAIpQLSe0iRrYhaOF0WL5lwjWeFheZbz1jKhz8vkG45E1i3psjfKK-w/viewform';
 const RECOVERY='examen-web-ultima-entrega-v2';
 let language=null,guard=null,elapsed=0,started=null,phase='ready',delivering=false,lastDelivery=null,recoveryMode=false;
+let questionOrder=null;
+const canonicalOrder=()=>fields.map((_,i)=>i+1);
+function shuffledOrder(){
+ const order=canonicalOrder();
+ for(let i=order.length-1;i>0;i--){
+   const random=new Uint32Array(1),limit=Math.floor(4294967296/(i+1))*(i+1);
+   do{crypto.getRandomValues(random);}while(random[0]>=limit);
+   const j=random[0]%(i+1);[order[i],order[j]]=[order[j],order[i]];
+ }
+ return order;
+}
+function applyQuestionOrder(){
+ const nav=document.querySelector('.sidebar nav');
+ (questionOrder||canonicalOrder()).forEach((number,position)=>{
+   const section=$('question-'+number),link=$('nav-q'+number);
+   const label=document.createElement('span');label.dataset.text='question';label.textContent=tr('question');
+   section.querySelector('.eyebrow').replaceChildren(label,document.createTextNode(' '+String(position+1).padStart(2,'0')+' / 14'));
+   $('answer-fields').append(section);
+   link.textContent=String(position+1).padStart(2,'0');nav.append(link);
+ });
+}
 const texts={
 step:['Antes de empezar','Before you begin'],
 procedure:['Procedimiento del examen','Exam procedure'],
@@ -81,6 +102,7 @@ function setLanguage(lang){
  document.querySelectorAll('[data-text]').forEach(el=>el.textContent=tr(el.dataset.text));
  $('delivery-retry').textContent=tr('copyOpen');
  fields.forEach((f,i)=>$('label-'+f.id).textContent=QUESTION_BANK[lang||'es'][i]);
+ applyQuestionOrder();
  progress();
 }
 function validIdentity(){
@@ -90,7 +112,7 @@ function validIdentity(){
 function canStart(){return !!language&&$('guard-consent').checked&&validIdentity();}
 function timeSpent(at=Date.now()){return elapsed+(started===null?0:Math.max(0,at-started));}
 function clock(){const sec=Math.floor(timeSpent()/1000);$('clock').textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');}
-function startClock(){if(started===null)started=Date.now();clock();}
+function startClock(){if(questionOrder===null){questionOrder=shuffledOrder();applyQuestionOrder();}if(started===null)started=Date.now();clock();}
 function stopClock(at=Date.now()){elapsed=timeSpent(at);started=null;clock();}
 function progress(){
  const n=fields.filter(f=>$(f.id).value.trim()).length;
@@ -103,10 +125,15 @@ async function encodeReport(text){
  let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);
  return 'WEB3G.'+btoa(binary).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'');
 }
-function empty(){return {values:Object.fromEntries(ids.map(id=>[id,''])),language:null,elapsed:0,started:null,report:'',reportEncoding:'gzip-base64url'};}
+function empty(){return {values:Object.fromEntries(ids.map(id=>[id,''])),questionOrder:null,language:null,elapsed:0,started:null,report:'',reportEncoding:'gzip-base64url'};}
 function sanitize(data){
  if(!data||typeof data!=='object'||!data.values||typeof data.values!=='object'||Array.isArray(data.values))throw Error('Invalid state');
  const out=empty();
+ if(data.questionOrder===undefined)out.questionOrder=canonicalOrder();
+ else if(data.questionOrder!==null){
+   if(!Array.isArray(data.questionOrder)||data.questionOrder.length!==14||new Set(data.questionOrder).size!==14||!data.questionOrder.every(n=>Number.isInteger(n)&&n>=1&&n<=14))throw Error('Invalid question order');
+   out.questionOrder=[...data.questionOrder];
+ }
  for(const id of ids){const v=data.values[id];if(v!==undefined&&typeof v!=='string')throw Error('Invalid field');out.values[id]=(v||'').slice(0,$(id).maxLength);}
  if(data.language!==null&&data.language!==undefined&&!['en','es'].includes(data.language))throw Error('Invalid language');
  out.language=data.language||null;
@@ -116,11 +143,13 @@ function sanitize(data){
  if((data.report||'').length>2000000)throw Error('Report too long');
  out.report=data.report||'';out.reportEncoding=out.report&&!out.report.startsWith('WEB3G.')?'base64':'gzip-base64url';return out;
 }
-function snapshot(){return {values:Object.fromEntries(ids.map(id=>[id,$(id).value])),language,elapsed,started,report:$('report').value,reportEncoding:$('report').value&&!$('report').value.startsWith('WEB3G.')?'base64':'gzip-base64url'};}
+function snapshot(){return {values:Object.fromEntries(ids.map(id=>[id,$(id).value])),questionOrder:questionOrder?[...questionOrder]:null,language,elapsed,started,report:$('report').value,reportEncoding:$('report').value&&!$('report').value.startsWith('WEB3G.')?'base64':'gzip-base64url'};}
 function restore(data){
+ questionOrder=data.questionOrder?[...data.questionOrder]:null;
  for(const id of ids)$(id).value=data.values[id]||'';
  elapsed=data.elapsed;started=data.started??null;$('report').value=data.report||'';
  if(data.language)setLanguage(data.language);
+ applyQuestionOrder();
  clock();progress();
 }
 function setEnabled(enabled){$('answer-fields').disabled=!enabled;$('reflection-fields').disabled=!enabled;}
@@ -192,7 +221,7 @@ async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
  if(!validIdentity()){$('reportStatus').textContent=tr('identityError');return null;}
  // Compact, versioned report avoids repeating the public question text in a prefilled URL.
  if(typeof CompressionStream!=='function'){$('reportStatus').textContent=tr('compressionError');return null;}
- const data={exam:'WEB-01',version:3,language,name:$('fullname').value.trim(),email:$('student').value.trim().toLowerCase(),finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),answers:fields.map((f,i)=>({question:i+1,answer:$(f.id).value.trim().slice(0,2000)})),notes:$('reflection').value.trim().slice(0,2000),...context,audit:metadata,url:location.href};
+ const data={exam:'WEB-01',version:3,language,name:$('fullname').value.trim(),email:$('student').value.trim().toLowerCase(),finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:questionOrder?[...questionOrder]:canonicalOrder(),answers:fields.map((f,i)=>({question:i+1,answer:$(f.id).value.trim().slice(0,2000)})),notes:$('reflection').value.trim().slice(0,2000),...context,audit:metadata,url:location.href};
  const body=JSON.stringify(data);
  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(body))),b=>b.toString(16).padStart(2,'0')).join('');
  return encodeReport(body+'\nCódigo de comprobación: WEB3-'+hash);
