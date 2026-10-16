@@ -14,18 +14,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="u01_es.css">
     <style>
-        /* Índice con el mismo diseño y comportamiento que DWEC U02. */
-        .sidebar-toc { overflow: visible; }
-        .sidebar-toc::after { content: "\f0c9"; width: auto; right: auto; left: 100%; padding: 0 14px; }
-        .sidebar-toc ul { max-height: calc(100vh - 130px); overflow-y: auto; }
-        .sidebar-toc:focus-within { transform: translateX(0); }
+        /* Índice desplegable: mismo estilo que SSII U01. */
+        .toc-toggle { position: fixed; top: 20px; left: 12px; z-index: 10000; padding: 10px 16px; border: 1px solid #fff; border-radius: 7px; background: var(--primary-color); color: #fff; font: 600 0.9rem 'Inter', sans-serif; cursor: pointer; }
+        .sidebar-toc { position: fixed; top: 70px; left: 0; width: min(310px, 100%); max-height: calc(100vh - 90px); padding: 22px 20px; border: 1px solid var(--border-color); border-left: none; border-radius: 0 12px 12px 0; background: var(--bg-card); box-shadow: 6px 0 25px rgba(0,0,0,.15); overflow-y: auto; transform: translateX(-100%); visibility: hidden; z-index: 9999; }
+        .sidebar-toc::after { content: none; display: none; }
+        .sidebar-toc:hover, .sidebar-toc:focus-within { transform: translateX(-100%); }
+        .sidebar-toc.is-open { transform: translateX(0); visibility: visible; }
+        .sidebar-toc h4 { margin-top: 0; }
+        .sidebar-toc ul { max-height: none; overflow: visible; }
         .sidebar-toc a.subsection-link { padding-left: 20px; font-size: 0.82rem; }
-        .sidebar-toc a:focus-visible { outline: 3px solid var(--primary-border); outline-offset: 3px; }
+        .toc-toggle:focus-visible, .sidebar-toc a:focus-visible { outline: 3px solid #d97706; outline-offset: 3px; }
         @media (max-width: 700px) {
-            .sidebar-toc { position: static; width: 100%; max-height: none; transform: none; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 20px; box-shadow: none; }
-            .sidebar-toc::after { display: none; }
-            .sidebar-toc ul { max-height: none; overflow: visible; }
+            .toc-toggle { top: 0; left: 0; width: 100%; border-radius: 0; min-height: 48px; text-align: left; }
+            .sidebar-toc { top: 54px; max-height: calc(100vh - 66px); }
+            body { padding-top: 60px; }
+            main [id] { scroll-margin-top: 65px; }
         }
+        @media (prefers-reduced-motion: reduce) { .sidebar-toc { transition: none; } }
+        @media print { .toc-toggle, .sidebar-toc { display: none; } }
         /* Laboratorios: tarjeta y distintivo en azul claro. */
         .didactic-note.activity-callout.laboratory-card {
             background: #eff6ff !important;
@@ -76,11 +82,13 @@
 .guide-steps p { margin:.35rem 0 0; text-align:left; }
 @media(max-width:480px) { .guide-steps > li { grid-template-columns:32px minmax(0,1fr); gap:.65rem; padding:.8rem; } .guide-steps .guide-step-icon { width:32px; height:32px; } }
 </style>
+<noscript><style>.toc-toggle{display:none}.sidebar-toc{position:static;transform:none!important;visibility:visible;width:100%;max-height:none;margin-bottom:24px;border-radius:8px}</style></noscript>
 </head>
 <body>
+<button type="button" class="toc-toggle" aria-controls="unit-toc" aria-expanded="false">Índice</button>
 
 <!-- Navegación lateral deslizable actualizable -->
-<nav class="sidebar-toc" aria-label="Índice de contenidos">
+<nav id="unit-toc" class="sidebar-toc" aria-label="Índice de contenidos">
     <h4><i class="fa-solid fa-list-ol" aria-hidden="true"></i> Contenidos</h4>
     <ul>
         <li><a href="#sec1">1. Introducción al Diseño Web</a></li>
@@ -3376,5 +3384,34 @@ de los que sí.</p>
     </main>
 </div>
 <footer class="document-footer">DAW / DWEC · © Ignacio García</footer></main></div>
+<script>
+(() => {
+    const toggle = document.querySelector('.toc-toggle');
+    const toc = document.getElementById('unit-toc');
+    function setOpen(open) {
+        toc.classList.toggle('is-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.textContent = open ? 'Cerrar índice' : 'Índice';
+    }
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    toc.addEventListener('click', event => {
+        const link = event.target.closest('a');
+        if (!link) return;
+        setOpen(false);
+        const heading = document.getElementById(link.hash.slice(1));
+        if (heading) {
+            heading.setAttribute('tabindex', '-1');
+            heading.focus({ preventScroll: true });
+        }
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+            setOpen(false);
+            toggle.focus();
+        }
+    });
+
+})();
+</script>
 </body>
 </html>
