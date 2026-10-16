@@ -110,6 +110,7 @@
         <li><a href="#sec4_7" class="subsection-link">4.5. Tipografía, logotipo e iconografía</a></li>
         <li><a href="#sec4_7_1" class="subsection-link">4.5.1. Tipografía</a></li>
         <li><a href="#sec4_7_2" class="subsection-link">4.5.2. Logotipo</a></li>
+        <li><a href="#favicons" class="subsection-link">4.5.2.1. Icono de página o favicon</a></li>
         <li><a href="#sec4_7_3" class="subsection-link">4.5.3. Iconografía</a></li>
         <li><a href="#sec4_7_4" class="subsection-link">4.5.4. Mapa de navegación, sitemap.xml y robots.txt</a></li>
         <li><a href="#sec6_2">5. Prototipado web</a></li>
@@ -2115,6 +2116,42 @@ de los que sí.</p>
 
         <p>Al incorporarlo a una web, respeta sus proporciones, el área de protección y las versiones autorizadas para fondos claros y oscuros. Comprueba que se reconoce en tamaños pequeños; una versión reducida o un favicon requiere una adaptación prevista, no un recorte arbitrario.</p>
         <p>Conserva un original vectorial cuando corresponda. Si el logotipo enlaza al inicio, su nombre accesible debe comunicar ese destino, por ejemplo «Migas Amigas, inicio».</p>
+<h5 id="favicons">4.5.2.1. Icono de página o favicon</h5>
+        <p>El <strong>favicon</strong> es el pequeño icono que identifica una web en la pestaña del navegador y en los marcadores. Ayuda a reconocerla entre otras páginas abiertas. El nombre describe su función; <strong><code>.ico</code> es uno de los formatos</strong> que puede utilizar. También pueden emplearse imágenes PNG o SVG.</p>
+        <p><strong>Del logotipo al favicon:</strong> no reduzcas sin más todo el nombre de la panadería. En Migas Amigas puedes utilizar una espiga simplificada, la silueta de un pan o las iniciales «MA», manteniendo los colores y rasgos de la marca.</p>
+        <ol>
+            <li><strong>Selecciona lo esencial:</strong> parte del símbolo del imagotipo o crea una versión abreviada del logotipo. Elimina eslóganes, trazos finos y detalles que desaparezcan al reducirse.</li>
+            <li><strong>Prepara una composición cuadrada:</strong> centra el dibujo, deja margen alrededor y comprueba su contraste sobre fondos claros y oscuros. Conserva un original de buena calidad antes de generar las versiones pequeñas.</li>
+            <li><strong>Prueba el tamaño real:</strong> revisa el resultado a 16 × 16 y 32 × 32 píxeles, sin ampliar la vista. Si el símbolo no se reconoce, simplifícalo antes de exportarlo.</li>
+            <li><strong>Genera los archivos:</strong> exporta un PNG y utiliza un generador para preparar el archivo ICO y las variantes necesarias. Un ICO puede contener varias resoluciones. Cambiar la extensión de un PNG a <code>.ico</code> no convierte el formato.</li>
+        </ol>
+
+        <div class="resource-card expansion-card">
+            <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-solid fa-icons" aria-hidden="true"></i> Herramientas para crear el favicon</span>
+                <span class="resource-badge badge-tool">Herramientas online</span>
+            </div>
+            <p class="resource-description">Adapta el símbolo con Adobe Express y prepara una imagen cuadrada. Favicon.io permite generar iconos a partir de una imagen o texto; RealFaviconGenerator prepara variantes para distintos entornos y ofrece instrucciones de integración. Revisa siempre el resultado a tamaño real.</p>
+            <div class="flex-wrap-group">
+                <a href="https://www.adobe.com/es/express/create/logo" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Adobe Express · Diseñar</a>
+                <a href="https://favicon.io/" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Favicon.io · Generar iconos</a>
+                <a href="https://realfavicongenerator.net/" target="_blank" rel="noopener noreferrer" class="resource-link-btn">RealFaviconGenerator · Generar y comprobar</a>
+            </div>
+        </div>
+
+        <h6>Cómo integrarlo en tu web</h6>
+        <p>Guarda los archivos generados en una carpeta <code>icons</code> junto a <code>index.html</code>. Añade estas etiquetas dentro de <code>&lt;head&gt;</code>, ajustando los nombres a los archivos que hayas creado:</p>
+        <pre><code class="language-html">&lt;!-- Dentro de head en index.html --&gt;
+&lt;link rel="icon" href="icons/favicon.ico"
+      type="image/x-icon"&gt;
+&lt;link rel="icon" href="icons/favicon-32x32.png"
+      type="image/png" sizes="32x32"&gt;
+&lt;link rel="icon" href="icons/favicon-16x16.png"
+      type="image/png" sizes="16x16"&gt;</code></pre>
+        <p><code>rel="icon"</code> indica la función de la imagen; <code>href</code>, su ruta; <code>type</code>, el formato, y <code>sizes</code>, sus dimensiones. Si dispones de un SVG, puedes añadir <code>&lt;link rel="icon" href="icons/favicon.svg" type="image/svg+xml" sizes="any"&gt;</code>. Incluye únicamente referencias a archivos existentes. Consulta la <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel#icon" target="_blank" rel="noopener noreferrer">documentación de MDN sobre iconos de página</a>.</p>
+        <p><strong>Comprueba la integración:</strong> abre la web y revisa la pestaña del navegador. Verifica que las rutas cargan sin errores 404. Las rutas del ejemplo son relativas al documento: si otra página está en una subcarpeta, ajústalas (por ejemplo, <code>../icons/favicon.ico</code>). Si aparece el icono anterior, prueba a borrar la caché o cambia temporalmente el nombre del archivo y actualiza su enlace.</p>
+        <p><strong>Para Migas Amigas:</strong> guarda el favicon junto al logotipo en tu archivo de Figma y documenta sus tamaños y usos en la guía de estilo. Estas etiquetas se utilizarán cuando implementes las páginas en HTML.</p>
+
 
         <div class="resource-card expansion-card">
             <div class="resource-card-header">
