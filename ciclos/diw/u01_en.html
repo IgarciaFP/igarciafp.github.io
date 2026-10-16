@@ -15,18 +15,24 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
 <link href="u01_es.css" rel="stylesheet"/>
 <style>
-        /* Índice con el mismo diseño y comportamiento que DWEC U02. */
-        .sidebar-toc { overflow: visible; }
-        .sidebar-toc::after { content: "\f0c9"; width: auto; right: auto; left: 100%; padding: 0 14px; }
-        .sidebar-toc ul { max-height: calc(100vh - 130px); overflow-y: auto; }
-        .sidebar-toc:focus-within { transform: translateX(0); }
+        /* Índice desplegable: mismo estilo que SSII U01. */
+        .toc-toggle { position: fixed; top: 20px; left: 12px; z-index: 10000; padding: 10px 16px; border: 1px solid #fff; border-radius: 7px; background: var(--primary-color); color: #fff; font: 600 0.9rem 'Inter', sans-serif; cursor: pointer; }
+        .sidebar-toc { position: fixed; top: 70px; left: 0; width: min(310px, 100%); max-height: calc(100vh - 90px); padding: 22px 20px; border: 1px solid var(--border-color); border-left: none; border-radius: 0 12px 12px 0; background: var(--bg-card); box-shadow: 6px 0 25px rgba(0,0,0,.15); overflow-y: auto; transform: translateX(-100%); visibility: hidden; z-index: 9999; }
+        .sidebar-toc::after { content: none; display: none; }
+        .sidebar-toc:hover, .sidebar-toc:focus-within { transform: translateX(-100%); }
+        .sidebar-toc.is-open { transform: translateX(0); visibility: visible; }
+        .sidebar-toc h4 { margin-top: 0; }
+        .sidebar-toc ul { max-height: none; overflow: visible; }
         .sidebar-toc a.subsection-link { padding-left: 20px; font-size: 0.82rem; }
-        .sidebar-toc a:focus-visible { outline: 3px solid var(--primary-border); outline-offset: 3px; }
+        .toc-toggle:focus-visible, .sidebar-toc a:focus-visible { outline: 3px solid #d97706; outline-offset: 3px; }
         @media (max-width: 700px) {
-            .sidebar-toc { position: static; width: 100%; max-height: none; transform: none; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 20px; box-shadow: none; }
-            .sidebar-toc::after { display: none; }
-            .sidebar-toc ul { max-height: none; overflow: visible; }
+            .toc-toggle { top: 0; left: 0; width: 100%; border-radius: 0; min-height: 48px; text-align: left; }
+            .sidebar-toc { top: 54px; max-height: calc(100vh - 66px); }
+            body { padding-top: 60px; }
+            main [id] { scroll-margin-top: 65px; }
         }
+        @media (prefers-reduced-motion: reduce) { .sidebar-toc { transition: none; } }
+        @media print { .toc-toggle, .sidebar-toc { display: none; } }
         /* Laboratorios: tarjeta y distintivo en azul claro. */
         .didactic-note.activity-callout.laboratory-card {
             background: #eff6ff !important;
@@ -77,10 +83,12 @@
 .guide-steps p { margin:.35rem 0 0; text-align:left; }
 @media(max-width:480px) { .guide-steps > li { grid-template-columns:32px minmax(0,1fr); gap:.65rem; padding:.8rem; } .guide-steps .guide-step-icon { width:32px; height:32px; } }
 </style>
+<noscript><style>.toc-toggle{display:none}.sidebar-toc{position:static;transform:none!important;visibility:visible;width:100%;max-height:none;margin-bottom:24px;border-radius:8px}</style></noscript>
 </head>
 <body>
+<button aria-controls="unit-toc" aria-expanded="false" class="toc-toggle" type="button">Contents</button>
 <!-- Navegación lateral deslizable actualizable -->
-<nav aria-label="Contents Index" class="sidebar-toc">
+<nav aria-label="Contents Index" class="sidebar-toc" id="unit-toc">
 <h4><i aria-hidden="true" class="fa-solid fa-list-ol"></i> Contents</h4>
 <ul>
 <li><a href="#sec1">1. Introduction to Web Design</a></li>
@@ -109,6 +117,7 @@
 <li><a class="subsection-link" href="#sec4_7">4.5. Typography, logo and iconography</a></li>
 <li><a class="subsection-link" href="#sec4_7_1">4.5.1. Typography</a></li>
 <li><a class="subsection-link" href="#sec4_7_2">4.5.2. Logo</a></li>
+<li><a class="subsection-link" href="#favicons">4.5.2.1. Page icon or favicon</a></li>
 <li><a class="subsection-link" href="#sec4_7_3">4.5.3. Iconography</a></li>
 <li><a class="subsection-link" href="#sec4_7_4">4.5.4. Navigation map, sitemap.xml and robots.txt</a></li>
 <li><a href="#sec6_2">5. Web Prototyping</a></li>
@@ -121,12 +130,12 @@
 <li><a class="subsection-link" href="#sec5_1">7.1. Purpose and contents</a></li>
 <li><a class="subsection-link" href="#sec5_2">7.2. Creation process</a></li>
 <li><a href="#sec7">8. Design systems</a></li>
-<li><a class="subsection-link" href="#sec7_4">8.4. Guides and systems referents</a></li>
-<li><a href="#sec8">9. Practical examples</a></li>
-<li><a href="#sec9">10. Common Mistakes</a></li>
-<li><a href="#sec10">11. Final project: Migas Amigas</a></li>
-<li><a href="#sec11">12. Summary (key ideas)</a></li>
-<li><a href="#sec12">13. Activities</a></li>
+<li><a class="subsection-link" href="#sec7_4">8.3. Guides and systems referents</a></li>
+<li><a href="#sec9">9. Common Mistakes</a></li>
+<li><a href="#sec10">10. Final project: Migas Amigas</a></li>
+<li><a href="#sec11">11. Summary (key ideas)</a></li>
+<li><a href="#sec12">12. Activities</a></li>
+<li><a href="#planificacion-proyecto">13. Web project planning</a></li>
 <li><a href="#sec13">14. Web analysis</a></li>
 </ul>
 </nav>
@@ -761,7 +770,7 @@
 <tbody>
 <tr>
 <td><strong>1. Agile response</strong><br/><em>Two-second guidance rule</em></td>
-<td>Optimize the load and avoid unnecessary waits. If an operation cannot be completed immediately, confirm that the system is working.</td>
+<td>Optimize the load and avoid unnecessary waiting. If an operation cannot be completed immediately, confirm that the system is working.</td>
 <td>Show the main content quickly and then load the secondary items.</td>
 </tr>
 <tr>
@@ -1239,6 +1248,12 @@
 </div>
 <div class="resource-description">Technical article in OpenWebinars which addresses how Design Tokens allow efficient bridges between design teams and frontend developers.</div>
 <a class="resource-link-btn" href="https://openwebinars.net/blog/design-tokens-agiliza-el-diseno-y-desarrollo-de-interfaces/" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Read article on OpenWebinars</a>
+</div>
+<div class="example-box">
+<h3><i class="fa-solid fa-circle-check"></i> Example: Application of Atomic Design and Design Tokens</h3>
+<p><strong>Status:</strong> A company needs to unify the styles of 3 different web applications built by independent teams.</p>
+<p><strong>Reasoned development:</strong> A system of <strong>Design Tokens</strong> centralized in a CSS file with variables (<code>--color-primary: #1e3a8a</code>, <code>--btn-radius: 6px</code>). Following <strong>Atomic Design</strong>, the buttons are packed as <em>atoms</em> and search bars as <em>molecules</em> reusable.</p>
+<p><strong>Outcome:</strong> The equipment shares values and components, which makes it easier to maintain consistency. When modifying a token, they must review the affected screens and check the contrast and the states.</p>
 </div>
 <h4 id="sec4_4_2">3.5.2. Example: Traditional CSS and Tailwind CSS</h4>
 <p>Unlike frameworks like <strong>Bootstrap</strong> o <strong>Bulma</strong>, which offer pre-designed components — for example, <code>.btn</code> y <code>.card</code> in Bootstrap, or <code>.button</code> y <code>.card</code> in Bulma—, <strong>Tailwind CSS</strong> provides <strong>low-level utilitarian classes</strong>, also called atomic classes. <code>bg-blue-500</code>, <code>pt-4</code> o <code>text-center</code> allow you to apply specific purpose styles by combining them directly into HTML.</p>
@@ -1782,6 +1797,44 @@ of the same colour.</p>
 <figcaption class="image-caption">Figure 1.7: The pulsable area can be larger than the visible icon. Squares show the size of the target, not the size of the icon.</figcaption>
 <p class="target-size-sources">Reference: <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum" rel="noopener noreferrer" target="_blank">WCAG 2.5.8 (AA)</a> · <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced" rel="noopener noreferrer" target="_blank">WCAG 2.5.5 (AAA)</a>.</p>
 </figure>
+<!-- Figura 1.12: Comparativa Práctica de Rediseño de Interfaz UI/UX -->
+<div class="image-container">
+<svg height="210" viewbox="0 0 760 210" width="100%" xmlns="http://www.w3.org/2000/svg">
+<rect fill="#f8fafc" height="210" rx="8" stroke="#cbd5e1" stroke-width="1.5" width="760" x="0" y="0"></rect>
+<text fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" x="380" y="28">Practical Example: Transforming a Deficient to Accessible Form</text>
+<!-- Incorrecto -->
+<g transform="translate(30, 45)">
+<rect fill="#fef2f2" height="145" rx="6" stroke="#b91c1c" stroke-width="1.5" width="335" x="0" y="0"></rect>
+<text fill="#b91c1c" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" x="167" y="22">Incorrect Form (Low Usability/Accessibility)</text>
+<rect fill="#ffffff" height="28" rx="4" stroke="#cbd5e1" width="285" x="25" y="38"></rect>
+<text fill="#94a3b8" font-family="Inter, sans-serif" font-size="10" x="35" y="56">Name... (Placeholder as label)</text>
+<rect fill="#3b82f6" height="25" rx="3" width="120" x="25" y="75"></rect>
+<text fill="#ffffff" font-family="Inter, sans-serif" font-size="10" text-anchor="middle" x="85" y="91">Send</text>
+<text fill="#991b1b" font-family="Inter, sans-serif" font-size="9" x="25" y="122">• offline: none without focus  Small button (25px)  No feedback</text>
+</g>
+<!-- Flecha -->
+<path d="M 373 115 L 387 115" stroke="#0f766e" stroke-width="3"></path>
+<!-- Correcto -->
+<g transform="translate(395, 45)">
+<rect fill="#f0fdf4" height="145" rx="6" stroke="#0f766e" stroke-width="1.5" width="335" x="0" y="0"></rect>
+<text fill="#0f766e" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" x="167" y="22">• Optimized form (WCAG 2.2 + Target Size)</text>
+<text fill="#1e3a8a" font-family="Inter, sans-serif" font-size="10" font-weight="bold" x="25" y="42">Full name (*):</text>
+<rect fill="#ffffff" height="32" rx="4" stroke="#d97706" stroke-width="2.5" width="285" x="25" y="47"></rect>
+<text fill="#0f172a" font-family="Inter, sans-serif" font-size="10" x="35" y="67">Carmen García</text>
+<rect fill="#1e3a8a" height="44" rx="6" width="160" x="25" y="86"></rect>
+<text fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" x="105" y="112">Confirm Order</text>
+<text fill="#115e59" font-family="Inter, sans-serif" font-size="9" x="195" y="105">• Explicit label + for</text>
+<text fill="#115e59" font-family="Inter, sans-serif" font-size="9" x="195" y="118">• Target Size ≥ 44x44px</text>
+</g>
+</svg>
+<div class="image-caption">Figure 1.12: Practical application of usability and accessibility guidelines in a web form component.</div>
+</div>
+<div class="example-box">
+<h3><i class="fa-solid fa-circle-check"></i> Example: Application of Accessible Focus and Target Size</h3>
+<p><strong>Status:</strong> High error rate in mobile purchases and rejection in accessibility audits.</p>
+<p><strong>Reasoned development:</strong> Expands the touch area of the purchase button to 48x48 px recommended (<strong>Target Size</strong>) and a high contrast highlight border (3:1) is added in the state <code>:focus-visible</code> for keyboard users.</p>
+<p><strong>Outcome:</strong> The proposal makes it easy to hit the button and recognize the focus of the keyboard. It must be checked in the implemented interface and tested with users; the change alone does not guarantee to remove all errors.</p>
+</div>
 <h3 id="sec4_7">4.5. Typography, logo and iconography</h3>
 <p>The identity of an interface is built with three additional resources: <strong>font</strong> organizes and gives voice to the content, <strong>logo</strong> identifies the mark and the <strong>iconography</strong> helps to recognize actions and information. Your decisions should be reflected in the style guide.</p>
 <h4 id="sec4_7_1">4.5.1. Typography</h4>
@@ -1929,6 +1982,39 @@ of the same colour.</p>
 </ul>
 <p>By incorporating it into a web, it respects its proportions, the protection area and the versions authorized for clear and dark backgrounds. Check that it is recognized in small sizes; a reduced version or a favicon requires a planned adaptation, not an arbitrary cut.</p>
 <p>It retains an original vector when appropriate. If the logo links to the start, its accessible name must communicate that destination, e.g. "Migas Amigas, empuende".</p>
+<h5 id="favicons">4.5.2.1. Page icon or favicon</h5>
+<p>The <strong>favicon</strong> is the small icon that identifies a web in the browser tab and bookmarks. It helps to recognize it among other open pages. The name describes its function; <strong><code>.ico</code> is one of the</strong> PNG or SVG images can also be used.</p>
+<p><strong>From logo to favicon:</strong> Do not simply reduce the whole name of the bakery. In Migas Amigas you can use a simplified ear, the silhouette of a bread or the initials "MA", maintaining the colors and features of the brand.</p>
+<ol>
+<li><strong>Selects the essentials:</strong> part of the imagotype symbol or create an abbreviated version of the logo. Remove slogans, fine strokes and details that disappear when reduced.</li>
+<li><strong>Prepares a square composition:</strong> focuses the drawing, leaves margin around and checks its contrast over clear and dark backgrounds. It retains an original of good quality before generating small versions.</li>
+<li><strong>Test the actual size:</strong> check the result at 16 × 16 and 32 × 32 pixels, without expanding the view. If the symbol is not recognized, simplify it before exporting it.</li>
+<li><strong>Generates the files:</strong> export a PNG and use a generator to prepare the ICO file and the necessary variants. An ICO can contain several resolutions. Change the extension of a PNG to <code>.ico</code> does not convert the format.</li>
+</ol>
+<div class="resource-card expansion-card">
+<div class="resource-card-header">
+<span class="resource-title"><i aria-hidden="true" class="fa-solid fa-icons"></i> Tools for creating the favicon</span>
+<span class="resource-badge badge-tool">Online tools</span>
+</div>
+<p class="resource-description">Adapt the symbol with Adobe Express and prepare a square image. Favicon.io allows you to generate icons from an image or text; RealFaviconGenerator prepares variants for different environments and offers integration instructions. Always check the result in real size.</p>
+<div class="flex-wrap-group">
+<a class="resource-link-btn" href="https://www.adobe.com/es/express/create/logo" rel="noopener noreferrer" target="_blank">Adobe Express · Design</a>
+<a class="resource-link-btn" href="https://favicon.io/" rel="noopener noreferrer" target="_blank">Favicon.io · Generate icons</a>
+<a class="resource-link-btn" href="https://realfavicongenerator.net/" rel="noopener noreferrer" target="_blank">RealFaviconGenerator · Generate and check</a>
+</div>
+</div>
+<h6>How to integrate it into your website</h6>
+<p>Saves the generated files in a folder <code>icons</code> next to <code>index.html</code>. Add these tags within <code>&lt;head&gt;</code>, adjusting the names to the files you created:</p>
+<pre><code class="language-html">&lt;!-- Dentro de head en index.html --&gt;
+&lt;link rel="icon" href="icons/favicon.ico"
+      type="image/x-icon"&gt;
+&lt;link rel="icon" href="icons/favicon-32x32.png"
+      type="image/png" sizes="32x32"&gt;
+&lt;link rel="icon" href="icons/favicon-16x16.png"
+      type="image/png" sizes="16x16"&gt;</code></pre>
+<p><code>rel="icon"</code> indicates the function of the image; <code>href</code>its route; <code>type</code>formatting, and <code>sizes</code>If you have an SVG, you can add <code>&lt;link rel="icon" href="icons/favicon.svg" type="image/svg+xml" sizes="any"&gt;</code>. Includes only references to existing files. <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel#icon" rel="noopener noreferrer" target="_blank">MDN documentation on page icons</a>.</p>
+<p><strong>Check the integration:</strong> Opens the web and checks the browser tab. Checks that the paths load without errors 404. The paths in the example are related to the document: if another page is in a subfolder, adjust them (e.g. <code>../icons/favicon.ico</code>). If the above icon appears, try deleting the cache or temporarily changing the name of the file and updating its link.</p>
+<p><strong>For Migas Amigas:</strong> save the favicon next to the logo in your Figma file and document its sizes and uses in the style guide. These tags will be used when you implement HTML pages.</p>
 <div class="resource-card expansion-card">
 <div class="resource-card-header">
 <span class="resource-title"><i aria-hidden="true" class="fa-solid fa-pen-ruler"></i> Tools for designing and adapting visual brands</span>
@@ -1939,11 +2025,13 @@ of the same colour.</p>
 <li><strong>Method Draw:</strong> draws shapes, edits strokes and opens SVG files directly in the browser.</li>
 <li><strong>Boxy SVG:</strong> edits an SVG design and adjusts its forms, text, fillers and composition.</li>
 <li><strong>Penpot:</strong> prepares variants of the brand and checks its application in an interface.</li>
+<li><strong>Adobe Express:</strong> creates logo proposals and customizes the name, colors, typography and symbol to suit Migas Amigas.</li>
 </ul>
 <div class="flex-wrap-group">
 <a class="resource-link-btn" href="https://editor.method.ac/" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i> Method Draw</a>
 <a class="resource-link-btn" href="https://boxy-svg.com/app" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i> Boxy SVG</a>
 <a class="resource-link-btn" href="https://penpot.app/" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i> Penpot</a>
+<a class="resource-link-btn" href="https://www.adobe.com/es/express/create/logo" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i> Adobe Express · Create logo</a>
 </div>
 </div>
 <div class="didactic-note activity-callout">
@@ -1962,8 +2050,11 @@ of the same colour.</p>
 <li><strong>Logo:</strong> design the bakery identification with its legible name. You can accompany it with a symbol to form an imagotype.</li>
 <li><strong>Page icon (favicon):</strong> creates a simplified square version that allows you to recognize the web in the browser tab. You can start from the brand symbol or initials; you must maintain visual consistency with the logo.</li>
 </ul>
-<p>Use one of the Viewed Tools: <strong>Method Draw, Boxy SVG or Penpot</strong>. Works with vector forms and text and checks that the logo keeps its clarity when reducing it. Check the favicon a <strong>16 × 16 and 32 × 32 pixels</strong>: simplifies the details that are no longer recognised.</p>
-<p><strong>Save your job:</strong> export logo and icon in <strong>SVG format</strong>, adds PNG versions of the favicon to 16 × 16 and 32 × 32 pixels and retains editable files. It includes a brief justification of how both designs represent the same brand. You will use these resources later in the <strong>style guide and Migas Amigas project</strong>.</p>
+<p>Makes the logo and icon of the page with <strong>Adobe Express</strong>. Introduce the name Migas Amigas, explore the proposals and customize the font, colors and symbol to represent a nearby craft bakery. Prepare a simplified version for the favicon and check that the logo keeps its clarity when reducing it. Check the favicon a <strong>16 × 16 and 32 × 32 pixels</strong>: simplifies the details that are no longer recognised.</p>
+<div class="flex-wrap-group">
+<a class="resource-link-btn" href="https://www.adobe.com/es/express/create/logo" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i> Create the logo in Adobe Express</a>
+</div>
+<p><strong>Save your job:</strong> download the logo and icon in <strong>PNG format</strong> and keep editable projects in your Adobe Express account. Import the images into your Migas Amigas Figma file and prepare the favicon PNG versions at 16 × 16 and 32 × 32 pixels there. It includes a brief justification of how both designs represent the same brand. You will use these resources later on in the <strong>style guide and Migas Amigas project</strong>.</p>
 </div>
 <h4 id="sec4_7_3">4.5.3. Iconography</h4>
 <p>Icons represent actions, objects, or states. Choose recognizable symbols for your audience — like a searchable magnifying glass — and accompany them with text when their meaning may be ambiguous. An interface icon performs a function other than the symbol that identifies a brand.</p>
@@ -1990,7 +2081,8 @@ of the same colour.</p>
 <div class="didactic-note activity-callout">
 <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 8: Typography, logo and iconography (Section 4.5)</h5>
 <p>Prepares a visual sheet for the web of <strong>Migas Amigas</strong> with three proposals: <strong>typography, logo and icons</strong>. Choose typographical families and define the hierarchy of titles and texts; design a brand sign and class it; and select coherent style icons whose actions are understood.</p>
-<p>Show your proposals using sketches or visual examples and add a brief justification of the three decisions.</p>
+<p><strong>Select the font for each level you will use in Migas Amigas project:</strong> paragraphs (<code>p</code>), main title (<code>h1</code>), section titles (<code>h2</code>) and subtitles (<code>h3</code> And, if you need them, <code>h4</code>–<code>h6</code>) It is not necessary to use all levels or a different source for each one: you can create the hierarchy by combining sizes and weights from the same family.</p>
+<p>Includes in the tab a <strong>typographical style table</strong> with the level, its use, family, size, weight and interlined. Add a sample with Migas Amigas content for each style and specify the size settings for mobile and desktop when needed. Also define the styles of buttons, links and form tags you use. Show your logo proposals and icons using sketches or visual examples and add a brief justification of the three decisions.</p>
 <p><strong>Import the visual tab and the resources you created or selected to your Figma account.</strong> Organise them on a page called "Visual identity" inside the Migas Amigas file. If the tab is on paper, digitize it as an image; incorporate the logo and icons in SVG or images in PNG/JPG. Add typographical samples as editable text and note the font names. Also keep the original files: you will reuse this tab and its resources in the style guide and in the prototype of the website.</p>
 </div>
 <h4 id="sec4_7_4">4.5.4. Navigation map, sitemap.xml and robots.txt</h4>
@@ -2086,6 +2178,24 @@ of the same colour.</p>
 </div>
 <figcaption class="image-caption">Wireframe: fix the position and hierarchy of the elements before visual finishing.</figcaption>
 </figure>
+<div class="didactic-note activity-callout" id="actividad-wireframes-migas">
+<h5 class="exercise-title"><i aria-hidden="true" class="fa-solid fa-pen-ruler"></i> Activity: Test Wireframing Tools and Design Migas Amigas (Apartment 5.2)</h5>
+<p>Explore different tools to create wireframes and design the <strong>landing page and Migas Amigas contact page</strong>. Recover your sketches and navigation map to decide what content each screen needs.</p>
+<div class="flex-wrap-group">
+<a class="resource-link-btn" href="https://wireframe.cc/" rel="noopener noreferrer" target="_blank">Try Wireframe.cc</a>
+<a class="resource-link-btn" href="https://penpot.app/" rel="noopener noreferrer" target="_blank">Try Penpot</a>
+<a class="resource-link-btn" href="https://www.figma.com/wireframe-tool/" rel="noopener noreferrer" target="_blank">Try Figma</a>
+</div>
+<ol>
+<li><strong>Test and compare:</strong> choose at least two tools and play the same single block in both: header, title, space for an image and button. Save a few minutes each. Save one capture of each test and compare ease of use, alignment, available items, and save or export options. You can use captures if an export option requires a payment plan.</li>
+<li><strong>Choose a tool:</strong> justifies with two reasons which you will use to create the complete screens. It is not necessary to repeat all the work in each application.</li>
+<li><strong>Design the landing page:</strong> includes header with brand and navigation, a hero with title and call to action, a product carousel represented by cards with position image, name, price and purchase button, and a footer. Write down how the carousel will travel and where each action will take; you don't need to schedule it yet.</li>
+<li><strong>Designs the contact page:</strong> includes the same navigation, address, schedule, phone, location space and a form with visible tags, name fields, mail and message, and send button. Reserve space for error messages and confirmation.</li>
+<li><strong>Mobile first app:</strong> starts with a mobile column and then adapts the layout to desktop. <strong>four wireframes</strong>: Mobile home, desktop home, mobile contact and desktop contact. Use greys, boxes and simple texts; focus decisions on structure and hierarchy.</li>
+<li><strong>Check with a partner:</strong> Ask him to indicate how he would find a product, start a purchase and contact the bakery. Write down a difficulty and correct the design before moving on to mockup.</li>
+</ol>
+<p><strong>Outcome:</strong> Collect the screenshots of the two tests, a short comparison, the four wireframes and the improvement made. Keep the editable file and the working links. Organize a copy of the wireframes on the page "Wireframes" of your Migas Amigas Figma file: if you have worked on another tool, import the exported images or SVG as a reference. You will reuse these structures to create the mockups in the next section.</p>
+</div>
 <h3 id="prototipado-3">5.3. Mockup: Concretizing appearance</h3>
 <p>The <strong>mockup</strong> represents the visual aspect of the interface with greater fidelity: colors, fonts, images, icons, spacing and style of the components. It applies and helps to adjust the decisions of the style guide.</p>
 <ul>
@@ -2372,10 +2482,6 @@ of the same colour.</p>
 </svg>
 <div class="image-caption">Figure 1.9: Structure of contents and modular blocks of a Web Interface Style Guide.</div>
 </div>
-<div class="advanced-concept-box">
-<h4><i class="fa-solid fa-layer-group"></i> Style guide versus design system</h4>
-<p>The style guide describes and rules the visual rules: corporate identity, color palette, typography, photographic style, iconography, voice tone and interactive behavior. <strong>design system</strong> expands this technical documentation by integrating Design Tokens, reusable code components (React, Vue, Web Components), interaction patterns, accessibility tests and governance mechanisms. Therefore, the guide is the normative basis within the design system studied in section 4.4, but does not replace it.</p>
-</div>
 <h3 id="sec5_1">7.1. Purpose, scope and essential content</h3>
 <p>The guide must be sufficiently precise to produce results consistent with different devices and flexible enough to evolve with the product. Each rule must include its purpose, exact values, examples of correct use, uses to be avoided (<em>Do's and Don'ts</em>) and technical verification criteria.</p>
 <div aria-label="Essential content of a web style guide" class="table-scroll" role="region" tabindex="0">
@@ -2529,14 +2635,30 @@ of the same colour.</p>
 <div class="didactic-note activity-callout" id="practica-guia-estilo-migas">
 <h5 class="exercise-title"><i aria-hidden="true" class="fa-solid fa-pen-clip"></i> Practical activity: Migas Amigas style guide</h5>
 <p>Design the bakery style guide <strong>Migas Amigas</strong> from the interview with the client and the wireframes of the landing and the contact page, on mobile and desktop.</p>
-<p><strong>Phase 1 of the project:</strong> This laboratory develops the guide and two screens (start with integrated catalog and contact).In the final project of paragraph 11 you will complete catalog, product sheet, cart, collection, confirmation and we, and you will gather everything in a complete style guide and a navigational prototype in Figma.</p>
+<p><strong>Phase 1 of the project:</strong> This laboratory develops the guide and two screens (start with integrated catalog and contact).In the final project of paragraph 10 you will complete catalog, product sheet, cart, collection, confirmation and we, and you will gather everything in a complete style guide and a navigational prototype in Figma.</p>
 <p>Complete the seven steps of the laboratory: identity and imagotype, color palette, typography, images with their licenses, iconography, UX writing and UI components. Justify your decisions and check their application in the model.</p>
 <p><strong>Delivery:</strong> generate the complete guide and save it in PDF with your name or computer. It includes the four images and their credits, and delivers the PDF using the bottom button.</p>
 <a class="resource-link-btn" href="https://igarciafp.github.io/labs/guia.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i> Open Style Guide Practice</a>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
+<div class="didactic-note activity-callout">
+<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 11: Prototype of Migas Amigas in Figma (Part 7.2)</h5>
+<p><strong>Redesigns in Figma a navigable prototype of Migas Amigas</strong> based on the <a href="#practica-guia-estilo-migas">style guide you created in the laboratory</a> and in its wireframes. Apply your identity decisions, palette, typography, images, iconography, UX writing and UI components.</p>
+<ol>
+<li><strong>Designs first for mobile and adapts to desktop:</strong> creates the landing with hero, three-product carousel and shopping buttons, and the contact page. Delivery at least four screens: the two pages in both sizes.</li>
+<li><strong>Maintain consistency:</strong> reuse buttons, cards and fields; apply the images and texts of your guide and keep your credits. It represents visible tags and focus, error and confirmation states.</li>
+<li><strong>Connect the route:</strong> allows you to navigate between start and contact, reach the catalog from the main action and simulate the answer when adding a product to the basket. Add the necessary auxiliary states or screens.</li>
+<li><strong>Test and improvement:</strong> ask a partner to find a product, add it to the sample basket and locate the contact. Record an observed difficulty and improvement that you have applied.</li>
+</ol>
+<p><strong>Delivery:</strong> shares the link to the Figma prototype with visualisation permission, attach the style guide used and briefly explains three design decisions and the improvement made after the test.</p>
+<div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
+</div>
 <!-- 7. SISTEMAS DE DISEÑO -->
 <h2 id="sec7"><i aria-hidden="true" class="fa-solid fa-layer-group"></i> 8. Design systems</h2>
+<div class="advanced-concept-box">
+<h4><i class="fa-solid fa-layer-group"></i> Style guide versus design system</h4>
+<p>The style guide describes and rules the visual rules: corporate identity, color palette, typography, photographic style, iconography, voice tone and interactive behavior. <strong>design system</strong> expands this technical documentation by integrating Design Tokens, reusable code components (React, Vue, Web Components), interaction patterns, accessibility testing and governance mechanisms. Therefore, the guide constitutes the normative basis within the design system.</p>
+</div>
 <h3 id="sec7_1">8.1. From the Guide to the Design System</h3>
 <p>The <strong>style guide</strong> collects design decisions and explains how to apply them: what colors and typography to use, how to present the brand, and what the interface elements should look and behave. <strong>part of the design system</strong> and serves as a reference for building their resources.</p>
 <p>The <strong>design system</strong> expands that guide with tokens, reusable components in design tools and code, interaction patterns and usage documentation. It also sets up responsible and review processes to keep all those pieces coordinated. Thus, the guide rules become solutions that the team can use consistently on different screens.</p>
@@ -2563,18 +2685,12 @@ of the same colour.</p>
 <h5>A system remains a product</h5>
 <p>The reading of <a href="https://midrocket.com/guias/guia-estilos-vs-sistema-diseno/" rel="noopener noreferrer" target="_blank">Midrocket</a> highlights an investment difference: maintaining a system involves meeting new needs, dependencies and accessibility corrections. It is not enough to deliver a library once. The difficulty of incorporating new members and the repeated effort in regular interfaces are other signs to raise that evolution.</p>
 </div>
-<h3 id="sec7_3">8.3 Application to Migas Amigas</h3>
-<div class="example-box">
-<h4>From "Add to basket" to a shared component</h4>
-<p><strong>Guide:</strong> the student defines the color, label and state of the button. <strong>System:</strong> the landing, catalog and tab use the same purchase component, connected to the main action token.</p>
-<p>If you change the brand color, the computer checks the contrast and the states before publishing a new version. Document the change and check the three screens. Thus, the token update is accompanied by a check of the result.</p>
-</div>
 <div class="resource-card expansion-card">
 <div class="resource-card-header">
 <span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Styles vs. design system guide</span>
 <span class="resource-badge badge-reading">Extension Reading</span>
 </div>
-<p class="resource-description">Adapted synthesis of Midrocket, accompanied by a unique example for the project of the topic.</p>
+<p class="resource-description">Midrocket's reading about the differences between a style guide and a design system, when to use each and how to evolve gradually.</p>
 <a class="resource-link-btn" href="https://midrocket.com/guias/guia-estilos-vs-sistema-diseno/" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-arrow-up-right-from-square"></i> Read the article by Midrocket</a>
 </div>
 <h4>From document to verifiable decisions</h4>
@@ -2595,7 +2711,7 @@ of the same colour.</p>
 <li><strong>Share and update:</strong> agrees to the variant, updates the Figma component and records the change in the guide. On a implemented website, the same change should reach the code component and its tests.</li>
 </ol>
 <p><strong>For your project:</strong> You can prepare a component sheet with name, purpose, anatomy, variants, states, rules of use and an incorrect example. That sheet will facilitate further development work.</p>
-<h3 id="sec7_4">8.4. Guides and design systems referents</h3>
+<h3 id="sec7_4">8.3. Guides and design systems referents</h3>
 <p>The study of consolidated business manuals and design systems allows you to learn proven patterns in millions of users:</p>
 <div aria-label="Examples of style guides and design systems" class="table-scroll" role="region" tabindex="0">
 <table>
@@ -2607,90 +2723,26 @@ of the same colour.</p>
 </thead>
 <tbody>
 <tr>
-<td><strong>Google Material Design (M3)</strong></td>
+<td><a aria-label="Google Material Design 3 (opens in a new tab)" class="resource-link-btn" href="https://m3.material.io/" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-brands fa-google"></i> Google Material Design 3</a></td>
 <td>Dynamic color tokens, elevation (shadows and layers), Motion and multiplatform adaptive components.</td>
 </tr>
 <tr>
-<td><strong>Apple Human Interface Guidelines (HIG)</strong></td>
+<td><a aria-label="Apple Human Interface Guidelines (opens in new tab)" class="resource-link-btn" href="https://developer.apple.com/design/human-interface-guidelines/" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-brands fa-apple"></i> Apple Human Interface Guidelines</a></td>
 <td>Simplicity, typographic readability, fluid transitions and native adaptation to the iOS/macOS ecosystem.</td>
 </tr>
 <tr>
-<td><strong>YouTube Brand Resources</strong></td>
+<td><a aria-label="YouTube Brand Resources (opens in a new tab)" class="resource-link-btn" href="https://brand.youtube/" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-brands fa-youtube"></i> YouTube Brand Resources</a></td>
 <td>Correct use of isotype/logotype, protection area, official color palette and standards in third party applications.</td>
 </tr>
 <tr>
-<td><strong>Institutional Manual of the UPV</strong></td>
+<td><a aria-label="Visual identity of the UPV (opens in a new tab)" class="resource-link-btn" href="https://www.upv.es/comu/nueva-imagen/index.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-building-columns"></i> Visual identity of the UPV</a></td>
 <td>Standardization of brand, stationery, institutional web presence and coherence between faculties and departments.</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div aria-label="Official sites of referents" class="flex-wrap-group">
-<a aria-label="Google Material Design 3 (opens in a new tab)" class="resource-link-btn" href="https://m3.material.io/" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-brands fa-google"></i> Google Material Design 3</a>
-<a aria-label="Apple Human Interface Guidelines (opens in new tab)" class="resource-link-btn" href="https://developer.apple.com/design/human-interface-guidelines/" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-brands fa-apple"></i> Apple Human Interface Guidelines</a>
-<a aria-label="YouTube Brand Resources (opens in a new tab)" class="resource-link-btn" href="https://brand.youtube/" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-brands fa-youtube"></i> YouTube Brand Resources</a>
-<a aria-label="Visual identity of the UPV (opens in a new tab)" class="resource-link-btn" href="https://www.upv.es/comu/nueva-imagen/index.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-building-columns"></i> Visual identity of the UPV</a>
-</div>
-<!-- 8. EJEMPLOS PRÁCTICOS -->
-<h2 id="sec8"><i class="fa-solid fa-laptop-code"></i> 9. Practical examples</h2>
-<!-- Figura 1.12: Comparativa Práctica de Rediseño de Interfaz UI/UX -->
-<div class="image-container">
-<svg height="210" viewbox="0 0 760 210" width="100%" xmlns="http://www.w3.org/2000/svg">
-<rect fill="#f8fafc" height="210" rx="8" stroke="#cbd5e1" stroke-width="1.5" width="760" x="0" y="0"></rect>
-<text fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" x="380" y="28">Practical Example: Transforming a Deficient to Accessible Form</text>
-<!-- Incorrecto -->
-<g transform="translate(30, 45)">
-<rect fill="#fef2f2" height="145" rx="6" stroke="#b91c1c" stroke-width="1.5" width="335" x="0" y="0"></rect>
-<text fill="#b91c1c" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" x="167" y="22">Incorrect Form (Low Usability/Accessibility)</text>
-<rect fill="#ffffff" height="28" rx="4" stroke="#cbd5e1" width="285" x="25" y="38"></rect>
-<text fill="#94a3b8" font-family="Inter, sans-serif" font-size="10" x="35" y="56">Name... (Placeholder as label)</text>
-<rect fill="#3b82f6" height="25" rx="3" width="120" x="25" y="75"></rect>
-<text fill="#ffffff" font-family="Inter, sans-serif" font-size="10" text-anchor="middle" x="85" y="91">Send</text>
-<text fill="#991b1b" font-family="Inter, sans-serif" font-size="9" x="25" y="122">• offline: none without focus  Small button (25px)  No feedback</text>
-</g>
-<!-- Flecha -->
-<path d="M 373 115 L 387 115" stroke="#0f766e" stroke-width="3"></path>
-<!-- Correcto -->
-<g transform="translate(395, 45)">
-<rect fill="#f0fdf4" height="145" rx="6" stroke="#0f766e" stroke-width="1.5" width="335" x="0" y="0"></rect>
-<text fill="#0f766e" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" x="167" y="22">• Optimized form (WCAG 2.2 + Target Size)</text>
-<text fill="#1e3a8a" font-family="Inter, sans-serif" font-size="10" font-weight="bold" x="25" y="42">Full name (*):</text>
-<rect fill="#ffffff" height="32" rx="4" stroke="#d97706" stroke-width="2.5" width="285" x="25" y="47"></rect>
-<text fill="#0f172a" font-family="Inter, sans-serif" font-size="10" x="35" y="67">Carmen García</text>
-<rect fill="#1e3a8a" height="44" rx="6" width="160" x="25" y="86"></rect>
-<text fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" x="105" y="112">Confirm Order</text>
-<text fill="#115e59" font-family="Inter, sans-serif" font-size="9" x="195" y="105">• Explicit label + for</text>
-<text fill="#115e59" font-family="Inter, sans-serif" font-size="9" x="195" y="118">• Target Size ≥ 44x44px</text>
-</g>
-</svg>
-<div class="image-caption">Figure 1.12: Practical application of usability and accessibility guidelines in a web form component.</div>
-</div>
-<div class="example-box">
-<h3><i class="fa-solid fa-circle-check"></i> Example 1: Application of Atomic Design and Design Tokens</h3>
-<p><strong>Status:</strong> A company needs to unify the styles of 3 different web applications built by independent teams.</p>
-<p><strong>Reasoned development:</strong> A system of <strong>Design Tokens</strong> centralized in a CSS file with variables (<code>--color-primary: #1e3a8a</code>, <code>--btn-radius: 6px</code>). Following <strong>Atomic Design</strong>, the buttons are packed as <em>atoms</em> and search bars as <em>molecules</em> reusable.</p>
-<p><strong>Outcome:</strong> Absolute aesthetic coherence and instant brand update by modifying only the token variables.</p>
-</div>
-<div class="example-box">
-<h3><i class="fa-solid fa-circle-check"></i> Example 2: Application of Accessible Focus and Target Size</h3>
-<p><strong>Status:</strong> High error rate in mobile purchases and rejection in accessibility audits.</p>
-<p><strong>Reasoned development:</strong> Expands the touch area of the purchase button to 48x48 px recommended (<strong>Target Size</strong>) and a high contrast highlight border (3:1) is added in the state <code>:focus-visible</code> for keyboard users.</p>
-<p><strong>Outcome:</strong> Elimination of wrong clicks on mobile devices and strict compliance with the WCAG 2.4.7 criterion.</p>
-</div>
-<div class="didactic-note activity-callout">
-<h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Activity 11: Prototype of Migas Amigas in Figma (Part 9)</h5>
-<p><strong>Redesigns in Figma a navigable prototype of Migas Amigas</strong> based on the <a href="#practica-guia-estilo-migas">style guide you created in the laboratory</a> and in its wireframes. Apply your identity decisions, palette, typography, images, iconography, UX writing and UI components.</p>
-<ol>
-<li><strong>Designs first for mobile and adapts to desktop:</strong> creates the landing with hero, three-product carousel and shopping buttons, and the contact page. Delivery at least four screens: the two pages in both sizes.</li>
-<li><strong>Maintain consistency:</strong> reuse buttons, cards and fields; apply the images and texts of your guide and keep your credits. It represents visible tags and focus, error and confirmation states.</li>
-<li><strong>Connect the route:</strong> allows you to navigate between start and contact, reach the catalog from the main action and simulate the answer when adding a product to the basket. Add the necessary auxiliary states or screens.</li>
-<li><strong>Test and improvement:</strong> ask a partner to find a product, add it to the sample basket and locate the contact. Record an observed difficulty and improvement that you have applied.</li>
-</ol>
-<p><strong>Delivery:</strong> shares the link to the Figma prototype with visualisation permission, attach the style guide used and briefly explains three design decisions and the improvement made after the test.</p>
-<div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
-</div>
-<!-- 9. ERRORES FRECUENTES -->
-<h2 id="sec9"><i class="fa-solid fa-triangle-exclamation"></i> 10. Frequent errors</h2>
+<!-- Ejemplos distribuidos en los apartados correspondientes -->
+<h2 id="sec9"><i class="fa-solid fa-triangle-exclamation"></i> 9. Frequent errors</h2>
 <!-- Figura 1.13: Matriz de Errores Críticos y Soluciones de Diseño Web -->
 <div class="image-container">
 <svg height="210" viewbox="0 0 760 210" width="100%" xmlns="http://www.w3.org/2000/svg">
@@ -2740,7 +2792,7 @@ of the same colour.</p>
 </ul>
 </div>
 <!-- 10. CASO PRÁCTICO INTEGRADO COMPLETO -->
-<h2 id="sec10"><i aria-hidden="true" class="fa-solid fa-briefcase"></i> 11. Final project: style guide and prototype of Migas Amigas</h2>
+<h2 id="sec10"><i aria-hidden="true" class="fa-solid fa-briefcase"></i> 10. Final project: Migas Amigas style guide and prototype</h2>
 <div class="didactic-note curiosity-card">
 <h5>The laboratory is the starting point</h5>
 <p>It recovers the interview, requirements, Wireframes of start and contact, visual decisions and tests performed in the <a href="../../labs/guia.html">style guide laboratory</a>. Also check the first prototype of activity 11. Now you must complete the missing screens and convert that work into <strong>a complete style guide and a navigable prototype in Figma</strong>.</p>
@@ -2764,10 +2816,10 @@ of the same colour.</p>
 <figcaption class="image-caption">Figure 1.14: Project screens and purchase route. Start and contact are returned from the laboratory; the rest completes the experience.</figcaption>
 </figure>
 <div class="case-study-box">
-<h3 id="migas-partida">11.1. Recover and review laboratory decisions</h3>
+<h3 id="migas-partida">10.1. Recover and review laboratory decisions</h3>
 <p>Open your working copy, review the exported PDF and prepare an inventory of what you already have and what is missing. Link at least three interview needs to interface decisions. Incorporate the improvements detected during laboratory testing.</p>
 <p>Set the final identity: public, mission, values, personality and adapted imagotype. Check the source, image and icon licenses and keep their references. If you extend the order, identify the extension as a proposal of yours and explain its usefulness.</p>
-<h3 id="migas-pantallas">11.2. Complete the map and design missing screens</h3>
+<h3 id="migas-pantallas">10.2. Complete the map and design missing screens</h3>
 <p>It updates the navigation map and first draws the wireframes of the new screens. <strong>eight mobile and desktop base screens: at least sixteen designs</strong>, in addition to the necessary auxiliary states. A representative product sheet is sufficient.</p>
 <div aria-label="Screens and contents of the final project of Migas Amigas" class="table-scroll" role="region" tabindex="0">
 <table>
@@ -2784,7 +2836,7 @@ of the same colour.</p>
 </div>
 <p><strong>States required:</strong> empty cart with products; added product; change of quantity or elimination with update of the total; incomplete or erroneous data at the end of the order; correct confirmation. They can be represented by variants, overlays or additional screens.</p>
 <p>Design mobile first and then adapt the distribution to the desktop. Keep names, hierarchy, actions and content consistent. Use fictitious data; purchase and confirmation are prototype simulations.</p>
-<h3 id="migas-guia-final">11.3. Develop the full style guide document</h3>
+<h3 id="migas-guia-final">10.3. Develop the full style guide document</h3>
 <p>Use the laboratory PDF as <strong>initial draft</strong> and expand it with the project’s decisions and screens. Delivers a unique, orderly and up-to-date document: the rules should allow another person to continue the design in a coherent manner.</p>
 <ol>
 <li><strong>Cover and context:</strong> authorship, version, date, objective, public and requirements extracted from the interview.</li>
@@ -2798,7 +2850,7 @@ of the same colour.</p>
 <li><strong>Implementation and revision:</strong> navigation map, purchase route, examples on the final screens, tests performed, problems encountered, improvements and history of changes. Place the interview and the complete wireframes in annexes.</li>
 </ol>
 <p>It is not enough to show samples of colors or captures: explains <strong>what is used, where, why and how it is checked</strong>. All decisions in the document must match the Figma file.</p>
-<h3 id="migas-figma">11.4. Build the navigable prototype in Figma</h3>
+<h3 id="migas-figma">10.4. Build the navigable prototype in Figma</h3>
 <p>Organizes the file in identifiable blocks: visual guide, components, wireframes and final screens for mobile and desktop. Applys the defined colors and typographical styles and reuses components to avoid accidental differences between screens.</p>
 <ol>
 <li><strong>Connect the navigation:</strong> common menu and access to catalog, tab, cart, us and contact. Allows to go back and continue shopping.</li>
@@ -2807,7 +2859,7 @@ of the same colour.</p>
 <li><strong>Check the consistency:</strong> uses the same data, amounts, labels and states during the journey. Set a clear starting point for each version of the prototype.</li>
 </ol>
 <p>The design and simulation of the route is evaluated. You do not ask to program the store or connect real payments. It represents and documents accessibility requirements; a visual prototype does not in itself demonstrate the accessibility of a future website.</p>
-<h3 id="migas-pruebas">11.5. Test, fix and synchronize</h3>
+<h3 id="migas-pruebas">10.5. Test, fix and synchronize</h3>
 <p>Ask a partner to complete a sample purchase, modify the cart and find the schedule and contact, without telling you where to click. Record the task, result, observed difficulty and applied improvement. Repeat the affected tasks and write down the actual result.</p>
 <p>Check readability, contrast, labels, size of actions, visibility of the intended focus and clarity of errors. After correcting the prototype, also update the guide. Do not present test results that you have not performed.</p>
 <div class="didactic-note activity-callout" id="entrega-final-migas">
@@ -2822,7 +2874,7 @@ of the same colour.</p>
 </div>
 </div>
 <!-- 11. RESUMEN -->
-<h2 id="sec11"><i class="fa-solid fa-list-check"></i> 12. Summary</h2>
+<h2 id="sec11"><i class="fa-solid fa-list-check"></i> 11. Summary</h2>
 <!-- Figura 1.15: Síntesis de los Pilares del Tema 1 -->
 <div class="image-container">
 <svg height="210" viewbox="0 0 760 210" width="100%" xmlns="http://www.w3.org/2000/svg">
@@ -2895,7 +2947,7 @@ of the same colour.</p>
 </div>
 <!-- 12. ACTIVIDADES -->
 <div class="activities-section" id="sec12">
-<h2><i class="fa-solid fa-pen-to-square"></i> 13. Activities</h2>
+<h2><i class="fa-solid fa-pen-to-square"></i> 12. Activities</h2>
 <h3>Understanding activities</h3>
 <ol start="12">
 <li>It explains how CSS and JavaScript respectively modified the presentation and interaction of the first web pages.</li>
@@ -2929,6 +2981,42 @@ of the same colour.</p>
 <div class="delivery-tip"><a aria-label="Deliver activities (open the form in a new tab)" class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <!-- 13. ANÁLISIS DE LA WEB -->
+<h2 id="planificacion-proyecto"><i aria-hidden="true" class="fa-solid fa-calendar-days"></i> 13. Web project planning</h2>
+<p>Planning consists of agreeing <strong>what will be given, who will, with what resources and within what time frame</strong>. The <a href="https://www.aldelrio.com/proceso-planificacion-proyecto-web/" rel="noopener noreferrer" target="_blank">Alberto del Río</a> connects briefing, scope, estimation, design, testing and continuous communication. In Migas Amigas we already have interview, map, wireframes and visual decisions: turn them into verifiable tasks and deliverables.</p>
+<ul>
+<li><strong>Take the range:</strong> Complete style guide and prototype navigable in Figma, with mobile and desktop. Programming and actual payments are out of this delivery.</li>
+<li><strong>Breakdown and estimate:</strong> for each task notes responsible, effort in hours, dates and expected result. Two hours of work do not necessarily amount to two hours of schedule: count availability and waits.</li>
+<li><strong>Order and review:</strong> identifies dependencies and sets milestones, such as ‘revised wireframes’ or ‘tested prototype’. Reserves margin for corrections and communicates locks or changes in scope; reviews the plan with what has been learned in the tests.</li>
+</ul>
+<p>A <strong>Gantt diagram</strong> represents the tasks as bars on a calendar and displays durations, overlaps and dependencies. <strong>Kanban board</strong> allows you to follow their status: «Pending → In progress → In revision → Done», limiting the simultaneous work. You can combine both: Gantt to anticipate deadlines and Kanban to manage progress. Working in an agile way involves reviewing priorities and improving through small deliveries; it does not mean improvising or dispensing with planning.</p>
+<p><strong>Example:</strong> review the map → complete wireframes → apply the guide to the mockup → connect the prototype → test and correct. The documentation of the guide is updated in parallel to the design. A task will be completed when you meet your criteria: for example, "mobile contact and desktop, with tags and revised states".</p>
+<div class="didactic-note activity-callout" id="actividad-planificacion-migas">
+<h5 class="exercise-title"><i aria-hidden="true" class="fa-solid fa-pen-clip"></i> Activity: Plan the delivery of Migas Amigas</h5>
+<p>Create a <strong>Gantt of 6–8 tasks</strong> until the agreed delivery date. Mark what you have already completed; include guide, pending screens, prototyping, testing and corrections.</p>
+<ol>
+<li>Indicates responsible, estimated time, dates, dependencies and two milestones. Adds a completion criteria per task.</li>
+<li>It represents these tasks on a Kanban board and agrees on an ongoing work limit, for example, one task per person.</li>
+<li>It simulates a delay in the revision of the wireframes: it updates the plan, explains what tasks it affects and how you would maintain a viable delivery.</li>
+</ol>
+<p><strong>Delivery:</strong> capture or PDF of the Gantt and board, plus a brief explanation of the setting. You can use a spreadsheet and cards; you don't need to hire a tool.</p>
+</div>
+<div class="resource-card expansion-card">
+<div class="resource-card-header"><span class="resource-title">Work planning and monitoring</span><span class="resource-badge badge-reading">To enlarge</span></div>
+<p class="resource-description">Contrasts the phases of a digital project with the work done in the unit and discovers how to visualize tasks, limit the work in progress and detect blockages.</p>
+<div class="flex-wrap-group">
+<a class="resource-link-btn" href="https://www.aldelrio.com/proceso-planificacion-proyecto-web/" rel="noopener noreferrer" target="_blank">Alberto del Río · Project process</a>
+<a class="resource-link-btn" href="https://www.atlassian.com/es/agile/kanban" rel="noopener noreferrer" target="_blank">Atlassian · Introduction to Kanban</a>
+</div>
+</div>
+<div class="resource-card expansion-card">
+<div class="resource-card-header"><span class="resource-title">Tools for your planning</span><span class="resource-badge badge-tool">Tools</span></div>
+<p class="resource-description"><strong>GanttPRO:</strong> online planning with tasks and dependencies. <strong>GanttProject:</strong> free desktop application to create timelines. <strong>Trello:</strong> boards and cards to arrange tracking. Check the conditions and export options of the available plan.</p>
+<div class="flex-wrap-group">
+<a class="resource-link-btn" href="https://ganttpro.com/es/" rel="noopener noreferrer" target="_blank">GanttPRO</a>
+<a class="resource-link-btn" href="https://www.ganttproject.biz/" rel="noopener noreferrer" target="_blank">GanttProject</a>
+<a class="resource-link-btn" href="https://trello.com/es" rel="noopener noreferrer" target="_blank">Trello</a>
+</div>
+</div>
 <h2 id="sec13"><i class="fa-solid fa-magnifying-glass-chart"></i> 14. Web analysis</h2>
 <p>The technical review of a website should combine several perspectives: code validity, accessibility, security, behavior, performance and visibility in search engines. No automated tool alone guarantees quality or compliance; its results should be interpreted and supplemented by manual inspection and user testing.</p>
 <h3>14.1. Accessibility assessment</h3>
@@ -2989,5 +3077,34 @@ of the same colour.</p>
 </main>
 </div>
 <footer class="document-footer">DAW / DWEC · © Ignacio García</footer>
+<script>
+(() => {
+    const toggle = document.querySelector('.toc-toggle');
+    const toc = document.getElementById('unit-toc');
+    function setOpen(open) {
+        toc.classList.toggle('is-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.textContent = open ? 'Cerrar índice' : 'Índice';
+    }
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    toc.addEventListener('click', event => {
+        const link = event.target.closest('a');
+        if (!link) return;
+        setOpen(false);
+        const heading = document.getElementById(link.hash.slice(1));
+        if (heading) {
+            heading.setAttribute('tabindex', '-1');
+            heading.focus({ preventScroll: true });
+        }
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+            setOpen(false);
+            toggle.focus();
+        }
+    });
+
+})();
+</script>
 </body>
 </html>
