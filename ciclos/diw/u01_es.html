@@ -131,13 +131,12 @@
         <li><a href="#sec5_1" class="subsection-link">7.1. Finalidad y contenidos</a></li>
         <li><a href="#sec5_2" class="subsection-link">7.2. Proceso de creación</a></li>
         <li><a href="#sec7">8. Sistemas de diseño</a></li>
-        <li><a href="#sec7_4" class="subsection-link">8.4. Referentes de guías y sistemas</a></li>
-        <li><a href="#sec8">9. Ejemplos Prácticos</a></li>
-        <li><a href="#sec9">10. Errores Frecuentes</a></li>
-        <li><a href="#sec10">11. Proyecto final: Migas Amigas</a></li>
-        <li><a href="#sec11">12. Resumen (Ideas clave)</a></li>
-        <li><a href="#sec12">13. Actividades</a></li>
-        <li><a href="#sec13">14. Análisis de la web</a></li>
+        <li><a href="#sec7_4" class="subsection-link">8.3. Referentes de guías y sistemas</a></li>
+        <li><a href="#sec9">9. Errores Frecuentes</a></li>
+        <li><a href="#sec10">10. Proyecto final: Migas Amigas</a></li>
+        <li><a href="#sec11">11. Resumen (Ideas clave)</a></li>
+        <li><a href="#sec12">12. Actividades</a></li>
+        <li><a href="#sec13">13. Análisis de la web</a></li>
     </ul>
 </nav>
 
@@ -1346,7 +1345,14 @@
             <a href="https://openwebinars.net/blog/design-tokens-agiliza-el-diseno-y-desarrollo-de-interfaces/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Leer artículo en OpenWebinars</a>
         </div>
 
-        <h4 id="sec4_4_2">3.5.2. Ejemplo: CSS tradicional y Tailwind CSS</h4>
+                <div class="example-box">
+            <h3><i class="fa-solid fa-circle-check"></i> Ejemplo: Aplicación de Atomic Design y Design Tokens</h3>
+            <p><strong>Situación:</strong> Una empresa requiere unificar los estilos de 3 aplicaciones web distintas construidas por equipos independientes.</p>
+            <p><strong>Desarrollo razonado:</strong> Se crea un sistema de <strong>Design Tokens</strong> centralizado en un archivo CSS con variables (<code>--color-primary: #1e3a8a</code>, <code>--btn-radius: 6px</code>). Siguiendo <strong>Atomic Design</strong>, se empaquetan los botones como <em>átomos</em> y las barras de búsqueda como <em>moléculas</em> reutilizables.</p>
+            <p><strong>Resultado:</strong> Los equipos comparten valores y componentes, lo que facilita mantener la coherencia. Al modificar un token, deben revisar las pantallas afectadas y comprobar el contraste y los estados.</p>
+        </div>
+
+<h4 id="sec4_4_2">3.5.2. Ejemplo: CSS tradicional y Tailwind CSS</h4>
         <p>A diferencia de frameworks como <strong>Bootstrap</strong> o <strong>Bulma</strong>, que ofrecen componentes prediseñados —por ejemplo, <code>.btn</code> y <code>.card</code> en Bootstrap, o <code>.button</code> y <code>.card</code> en Bulma—, <strong>Tailwind CSS</strong> proporciona <strong>clases utilitarias de bajo nivel</strong>, también llamadas clases atómicas. Clases como <code>bg-blue-500</code>, <code>pt-4</code> o <code>text-center</code> permiten aplicar estilos de propósito concreto combinándolas directamente en el HTML.</p>
 
         <div class="didactic-note curiosity-card">
@@ -1961,7 +1967,50 @@ de los que sí.</p>
             <p class="target-size-sources">Referencia: <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum" target="_blank" rel="noopener noreferrer">WCAG 2.5.8 (AA)</a> · <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced" target="_blank" rel="noopener noreferrer">WCAG 2.5.5 (AAA)</a>.</p>
         </figure>
 
-        <h3 id="sec4_7">4.5. Tipografía, logotipo e iconografía</h3>
+                <!-- Figura 1.12: Comparativa Práctica de Rediseño de Interfaz UI/UX -->
+        <div class="image-container">
+            <svg viewBox="0 0 760 210" width="100%" height="210" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="760" height="210" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+                <text x="380" y="28" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Ejemplo Práctico: Transformación de un Formulario Deficiente a Accesible</text>
+
+                <!-- Incorrecto -->
+                <g transform="translate(30, 45)">
+                    <rect x="0" y="0" width="335" height="145" rx="6" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+                    <text x="167" y="22" fill="#b91c1c" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">❌ Formulario Incorrecto (Baja Usabilidad/Accesibilidad)</text>
+                    <rect x="25" y="38" width="285" height="28" rx="4" fill="#ffffff" stroke="#cbd5e1"/>
+                    <text x="35" y="56" fill="#94a3b8" font-family="Inter, sans-serif" font-size="10">Nombre... (Placeholder como label)</text>
+                    <rect x="25" y="75" width="120" height="25" rx="3" fill="#3b82f6"/>
+                    <text x="85" y="91" fill="#ffffff" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Enviar</text>
+                    <text x="25" y="122" fill="#991b1b" font-family="Inter, sans-serif" font-size="9">• outline: none sin foco | Botón pequeño (25px) | Sin feedback</text>
+                </g>
+
+                <!-- Flecha -->
+                <path d="M 373 115 L 387 115" stroke="#0f766e" stroke-width="3"/>
+
+                <!-- Correcto -->
+                <g transform="translate(395, 45)">
+                    <rect x="0" y="0" width="335" height="145" rx="6" fill="#f0fdf4" stroke="#0f766e" stroke-width="1.5"/>
+                    <text x="167" y="22" fill="#0f766e" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">✅ Formulario Optimizado (WCAG 2.2 + Target Size)</text>
+                    <text x="25" y="42" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="10" font-weight="bold">Nombre completo (*):</text>
+                    <rect x="25" y="47" width="285" height="32" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="2.5"/>
+                    <text x="35" y="67" fill="#0f172a" font-family="Inter, sans-serif" font-size="10">Carmen García</text>
+                    <rect x="25" y="86" width="160" height="44" rx="6" fill="#1e3a8a"/>
+                    <text x="105" y="112" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Confirmar Pedido</text>
+                    <text x="195" y="105" fill="#115e59" font-family="Inter, sans-serif" font-size="9">• Label explícito + for</text>
+                    <text x="195" y="118" fill="#115e59" font-family="Inter, sans-serif" font-size="9">• Target Size ≥ 44x44px</text>
+                </g>
+            </svg>
+            <div class="image-caption">Figura 1.12: Aplicación práctica de pautas de usabilidad y accesibilidad en un componente de formulario web.</div>
+        </div>
+
+        <div class="example-box">
+            <h3><i class="fa-solid fa-circle-check"></i> Ejemplo: Aplicación del Foco Accesible y Target Size</h3>
+            <p><strong>Situación:</strong> Alta tasa de error en compras móviles y rechazo en auditorías de accesibilidad.</p>
+            <p><strong>Desarrollo razonado:</strong> Se amplía el área táctil del botón de compra a 48x48 px recomendados (<strong>Target Size</strong>) y se añade un borde destacado de alto contraste (3:1) en el estado <code>:focus-visible</code> para usuarios de teclado.</p>
+            <p><strong>Resultado:</strong> La propuesta facilita acertar en el botón y reconocer el foco del teclado. Debe comprobarse en la interfaz implementada y probarse con usuarios; el cambio por sí solo no garantiza eliminar todos los errores.</p>
+        </div>
+
+<h3 id="sec4_7">4.5. Tipografía, logotipo e iconografía</h3>
         <p>La identidad de una interfaz se construye con tres recursos complementarios: la <strong>tipografía</strong> organiza y da voz al contenido, el <strong>logotipo</strong> identifica la marca y la <strong>iconografía</strong> ayuda a reconocer acciones e información. Sus decisiones deben quedar recogidas en la guía de estilo.</p>
 
         <h4 id="sec4_7_1">4.5.1. Tipografía</h4>
@@ -2866,7 +2915,7 @@ de los que sí.</p>
         <div class="didactic-note activity-callout" id="practica-guia-estilo-migas">
             <h5 class="exercise-title"><i class="fa-solid fa-pen-clip" aria-hidden="true"></i> Actividad práctica: Guía de estilo de Migas Amigas</h5>
             <p>Diseña la guía de estilo de la panadería <strong>Migas Amigas</strong> a partir de la entrevista con el cliente y los wireframes de la landing y la página de contacto, en móvil y escritorio.</p>
-            <p><strong>Primera fase del proyecto:</strong> este laboratorio desarrolla la guía y dos pantallas (inicio con catálogo integrado y contacto). En el proyecto final del apartado 11 completarás catálogo, ficha de producto, carrito, recogida, confirmación y nosotros, y reunirás todo en una guía de estilo completa y un prototipo navegable en Figma.</p>
+            <p><strong>Primera fase del proyecto:</strong> este laboratorio desarrolla la guía y dos pantallas (inicio con catálogo integrado y contacto). En el proyecto final del apartado 10 completarás catálogo, ficha de producto, carrito, recogida, confirmación y nosotros, y reunirás todo en una guía de estilo completa y un prototipo navegable en Figma.</p>
             <p>Completa los siete pasos del laboratorio: identidad e imagotipo, paleta cromática, tipografía, imágenes con sus licencias, iconografía, UX writing y componentes UI. Justifica tus decisiones y comprueba su aplicación en la maqueta.</p>
             <p><strong>Entrega:</strong> genera la guía completa y guárdala en PDF con tu nombre o equipo. Incluye las cuatro imágenes y sus créditos, y entrega el PDF mediante el botón inferior.</p>
             <a href="https://igarciafp.github.io/labs/guia.html" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Abrir la práctica de guía de estilo</a>
@@ -2874,7 +2923,21 @@ de los que sí.</p>
         </div>
 
 
-        <!-- 7. SISTEMAS DE DISEÑO -->
+                <div class="didactic-note activity-callout">
+            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 11: Prototipo de Migas Amigas en Figma (Apartado 7.2)</h5>
+            <p><strong>Rediseña en Figma un prototipo navegable de Migas Amigas</strong> basándote en la <a href="#practica-guia-estilo-migas">guía de estilo que has creado en el laboratorio</a> y en sus wireframes. Aplica tus decisiones de identidad, paleta, tipografía, imágenes, iconografía, UX writing y componentes UI.</p>
+            <ol>
+                <li><strong>Diseña primero para móvil y adapta a escritorio:</strong> crea la landing con hero, carrusel de tres productos y botones de compra, y la página de contacto. Entrega al menos cuatro pantallas: las dos páginas en ambos tamaños.</li>
+                <li><strong>Mantén la coherencia:</strong> reutiliza botones, tarjetas y campos; aplica las imágenes y los textos de tu guía y conserva sus créditos. Representa etiquetas visibles y estados de foco, error y confirmación.</li>
+                <li><strong>Conecta el recorrido:</strong> permite navegar entre inicio y contacto, llegar al catálogo desde la acción principal y simular la respuesta al añadir un producto a la cesta. Añade los estados o pantallas auxiliares necesarios.</li>
+                <li><strong>Prueba y mejora:</strong> pide a un compañero que encuentre un producto, lo añada a la cesta de muestra y localice el contacto. Registra una dificultad observada y la mejora que has aplicado.</li>
+            </ol>
+            <p><strong>Entrega:</strong> comparte el enlace al prototipo de Figma con permiso de visualización, adjunta la guía de estilo utilizada y explica brevemente tres decisiones de diseño y la mejora realizada tras la prueba.</p>
+        
+            <div class="delivery-tip"><a class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
+</div>
+
+<!-- 7. SISTEMAS DE DISEÑO -->
         <h2 id="sec7"><i class="fa-solid fa-layer-group" aria-hidden="true"></i> 8. Sistemas de diseño</h2>
         <div class="advanced-concept-box">
             <h4><i class="fa-solid fa-layer-group"></i> Guía de estilo frente a sistema de diseño</h4>
@@ -2912,18 +2975,14 @@ de los que sí.</p>
  <p>La lectura de <a href="https://midrocket.com/guias/guia-estilos-vs-sistema-diseno/" target="_blank" rel="noopener noreferrer">Midrocket</a> destaca una diferencia de inversión: mantener un sistema implica atender nuevas necesidades, dependencias y correcciones de accesibilidad. No basta con entregar una biblioteca una vez. La dificultad para incorporar nuevos miembros y el esfuerzo repetido en interfaces habituales son otras señales para plantear esa evolución.</p>
 </div>
 
-<h3 id="sec7_3">8.3. Aplicación a Migas Amigas</h3>
-        <div class="example-box">
-            <h4>De «Añadir a la cesta» a un componente compartido</h4>
-            <p><strong>Guía:</strong> el alumno define el color, la etiqueta y los estados del botón. <strong>Sistema:</strong> la landing, el catálogo y la ficha utilizan el mismo componente de compra, conectado al token de acción principal.</p>
-            <p>Si cambia el color de marca, el equipo revisa el contraste y los estados antes de publicar una nueva versión. Documenta el cambio y comprueba las tres pantallas. Así, la actualización del token se acompaña de una verificación del resultado.</p>
-        </div>
+
+        
         <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Guía de estilos vs. sistema de diseño</span>
                 <span class="resource-badge badge-reading">Lectura de ampliación</span>
             </div>
-            <p class="resource-description">Síntesis adaptada de Midrocket, acompañada de un ejemplo propio para el proyecto del tema.</p>
+            <p class="resource-description">Lectura de Midrocket sobre las diferencias entre una guía de estilo y un sistema de diseño, cuándo utilizar cada uno y cómo evolucionar de forma gradual.</p>
             <a href="https://midrocket.com/guias/guia-estilos-vs-sistema-diseno/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Leer el artículo de Midrocket</a>
         </div>
 
@@ -2946,7 +3005,7 @@ de los que sí.</p>
 </ol>
 <p><strong>Para tu proyecto:</strong> entrega la guía y el prototipo coherentes entre sí. Puedes preparar una ficha de componente con nombre, finalidad, anatomía, variantes, estados, reglas de uso y un ejemplo incorrecto. Esa ficha facilitará el trabajo posterior de desarrollo.</p>
 
-<h3 id="sec7_4">8.4. Referentes de guías y sistemas de diseño</h3>
+<h3 id="sec7_4">8.3. Referentes de guías y sistemas de diseño</h3>
         <p>El estudio de manuales y sistemas de diseño de empresas consolidadas permite aprender patrones probados en millones de usuarios:</p>
 
         <div class="table-scroll" role="region" aria-label="Ejemplos de guías de estilo y sistemas de diseño" tabindex="0">
@@ -2980,75 +3039,8 @@ de los que sí.</p>
 
                 
 
-        <!-- 8. EJEMPLOS PRÁCTICOS -->
-        <h2 id="sec8"><i class="fa-solid fa-laptop-code"></i> 9. Ejemplos prácticos</h2>
-
-        <!-- Figura 1.12: Comparativa Práctica de Rediseño de Interfaz UI/UX -->
-        <div class="image-container">
-            <svg viewBox="0 0 760 210" width="100%" height="210" xmlns="http://www.w3.org/2000/svg">
-                <rect x="0" y="0" width="760" height="210" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
-                <text x="380" y="28" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Ejemplo Práctico: Transformación de un Formulario Deficiente a Accesible</text>
-
-                <!-- Incorrecto -->
-                <g transform="translate(30, 45)">
-                    <rect x="0" y="0" width="335" height="145" rx="6" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
-                    <text x="167" y="22" fill="#b91c1c" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">❌ Formulario Incorrecto (Baja Usabilidad/Accesibilidad)</text>
-                    <rect x="25" y="38" width="285" height="28" rx="4" fill="#ffffff" stroke="#cbd5e1"/>
-                    <text x="35" y="56" fill="#94a3b8" font-family="Inter, sans-serif" font-size="10">Nombre... (Placeholder como label)</text>
-                    <rect x="25" y="75" width="120" height="25" rx="3" fill="#3b82f6"/>
-                    <text x="85" y="91" fill="#ffffff" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Enviar</text>
-                    <text x="25" y="122" fill="#991b1b" font-family="Inter, sans-serif" font-size="9">• outline: none sin foco | Botón pequeño (25px) | Sin feedback</text>
-                </g>
-
-                <!-- Flecha -->
-                <path d="M 373 115 L 387 115" stroke="#0f766e" stroke-width="3"/>
-
-                <!-- Correcto -->
-                <g transform="translate(395, 45)">
-                    <rect x="0" y="0" width="335" height="145" rx="6" fill="#f0fdf4" stroke="#0f766e" stroke-width="1.5"/>
-                    <text x="167" y="22" fill="#0f766e" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">✅ Formulario Optimizado (WCAG 2.2 + Target Size)</text>
-                    <text x="25" y="42" fill="#1e3a8a" font-family="Inter, sans-serif" font-size="10" font-weight="bold">Nombre completo (*):</text>
-                    <rect x="25" y="47" width="285" height="32" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="2.5"/>
-                    <text x="35" y="67" fill="#0f172a" font-family="Inter, sans-serif" font-size="10">Carmen García</text>
-                    <rect x="25" y="86" width="160" height="44" rx="6" fill="#1e3a8a"/>
-                    <text x="105" y="112" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Confirmar Pedido</text>
-                    <text x="195" y="105" fill="#115e59" font-family="Inter, sans-serif" font-size="9">• Label explícito + for</text>
-                    <text x="195" y="118" fill="#115e59" font-family="Inter, sans-serif" font-size="9">• Target Size ≥ 44x44px</text>
-                </g>
-            </svg>
-            <div class="image-caption">Figura 1.12: Aplicación práctica de pautas de usabilidad y accesibilidad en un componente de formulario web.</div>
-        </div>
-
-        <div class="example-box">
-            <h3><i class="fa-solid fa-circle-check"></i> Ejemplo 1: Aplicación de Atomic Design y Design Tokens</h3>
-            <p><strong>Situación:</strong> Una empresa requiere unificar los estilos de 3 aplicaciones web distintas construidas por equipos independientes.</p>
-            <p><strong>Desarrollo razonado:</strong> Se crea un sistema de <strong>Design Tokens</strong> centralizado en un archivo CSS con variables (<code>--color-primary: #1e3a8a</code>, <code>--btn-radius: 6px</code>). Siguiendo <strong>Atomic Design</strong>, se empaquetan los botones como <em>átomos</em> y las barras de búsqueda como <em>moléculas</em> reutilizables.</p>
-            <p><strong>Resultado:</strong> Coherencia estética absoluta y actualización instantánea de la marca modificando únicamente las variables de los tokens.</p>
-        </div>
-
-        <div class="example-box">
-            <h3><i class="fa-solid fa-circle-check"></i> Ejemplo 2: Aplicación del Foco Accesible y Target Size</h3>
-            <p><strong>Situación:</strong> Alta tasa de error en compras móviles y rechazo en auditorías de accesibilidad.</p>
-            <p><strong>Desarrollo razonado:</strong> Se amplia el área táctil del botón de compra a 48x48 px recomendados (<strong>Target Size</strong>) y se añade un borde destacado de alto contraste (3:1) en el estado <code>:focus-visible</code> para usuarios de teclado.</p>
-            <p><strong>Resultado:</strong> Eliminación de clics erróneos en dispositivos móviles y cumplimiento estricto del criterio WCAG 2.4.7.</p>
-        </div>
-
-        <div class="didactic-note activity-callout">
-            <h5 class="exercise-title"><i class="fa-solid fa-pen-clip"></i> Actividad 11: Prototipo de Migas Amigas en Figma (Apartado 9)</h5>
-            <p><strong>Rediseña en Figma un prototipo navegable de Migas Amigas</strong> basándote en la <a href="#practica-guia-estilo-migas">guía de estilo que has creado en el laboratorio</a> y en sus wireframes. Aplica tus decisiones de identidad, paleta, tipografía, imágenes, iconografía, UX writing y componentes UI.</p>
-            <ol>
-                <li><strong>Diseña primero para móvil y adapta a escritorio:</strong> crea la landing con hero, carrusel de tres productos y botones de compra, y la página de contacto. Entrega al menos cuatro pantallas: las dos páginas en ambos tamaños.</li>
-                <li><strong>Mantén la coherencia:</strong> reutiliza botones, tarjetas y campos; aplica las imágenes y los textos de tu guía y conserva sus créditos. Representa etiquetas visibles y estados de foco, error y confirmación.</li>
-                <li><strong>Conecta el recorrido:</strong> permite navegar entre inicio y contacto, llegar al catálogo desde la acción principal y simular la respuesta al añadir un producto a la cesta. Añade los estados o pantallas auxiliares necesarios.</li>
-                <li><strong>Prueba y mejora:</strong> pide a un compañero que encuentre un producto, lo añada a la cesta de muestra y localice el contacto. Registra una dificultad observada y la mejora que has aplicado.</li>
-            </ol>
-            <p><strong>Entrega:</strong> comparte el enlace al prototipo de Figma con permiso de visualización, adjunta la guía de estilo utilizada y explica brevemente tres decisiones de diseño y la mejora realizada tras la prueba.</p>
-        
-            <div class="delivery-tip"><a class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
-</div>
-
-        <!-- 9. ERRORES FRECUENTES -->
-        <h2 id="sec9"><i class="fa-solid fa-triangle-exclamation"></i> 10. Errores frecuentes</h2>
+        <!-- Ejemplos distribuidos en los apartados correspondientes -->
+        <h2 id="sec9"><i class="fa-solid fa-triangle-exclamation"></i> 9. Errores frecuentes</h2>
 
         <!-- Figura 1.13: Matriz de Errores Críticos y Soluciones de Diseño Web -->
         <div class="image-container">
@@ -3104,7 +3096,7 @@ de los que sí.</p>
         </div>
 
         <!-- 10. CASO PRÁCTICO INTEGRADO COMPLETO -->
-        <h2 id="sec10"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> 11. Proyecto final: guía de estilo y prototipo de Migas Amigas</h2>
+        <h2 id="sec10"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> 10. Proyecto final: guía de estilo y prototipo de Migas Amigas</h2>
         <div class="didactic-note curiosity-card">
             <h5>El laboratorio es el punto de partida</h5>
             <p>Recupera la entrevista, los requisitos, los wireframes de inicio y contacto, las decisiones visuales y las pruebas realizadas en el <a href="../../labs/guia.html">laboratorio de la guía de estilo</a>. Revisa también el primer prototipo de la actividad 11. Ahora debes completar las pantallas que faltan y convertir ese trabajo en <strong>una guía de estilo completa y un prototipo navegable en Figma</strong>.</p>
@@ -3130,11 +3122,11 @@ de los que sí.</p>
         </figure>
 
         <div class="case-study-box">
-            <h3 id="migas-partida">11.1. Recuperar y revisar las decisiones del laboratorio</h3>
+            <h3 id="migas-partida">10.1. Recuperar y revisar las decisiones del laboratorio</h3>
             <p>Abre tu copia de trabajo, revisa el PDF exportado y prepara un inventario de lo que ya tienes y de lo que falta. Relaciona al menos tres necesidades de la entrevista con decisiones de interfaz. Incorpora las mejoras detectadas durante las pruebas del laboratorio.</p>
             <p>Fija la identidad final: público, misión, valores, personalidad e imagotipo adaptado. Revisa las licencias de fuentes, imágenes e iconos y conserva sus referencias. Si amplías el encargo, identifica la ampliación como una propuesta tuya y explica su utilidad.</p>
 
-            <h3 id="migas-pantallas">11.2. Completar el mapa y diseñar las pantallas que faltan</h3>
+            <h3 id="migas-pantallas">10.2. Completar el mapa y diseñar las pantallas que faltan</h3>
             <p>Actualiza el mapa de navegación y dibuja primero los wireframes de las nuevas pantallas. Después diseña las <strong>ocho pantallas base en móvil y escritorio: al menos dieciséis diseños</strong>, además de los estados auxiliares necesarios. Una ficha representativa de producto es suficiente.</p>
             <div class="table-scroll" role="region" aria-label="Pantallas y contenidos del proyecto final de Migas Amigas" tabindex="0">
                 <table>
@@ -3152,7 +3144,7 @@ de los que sí.</p>
             <p><strong>Estados necesarios:</strong> carrito vacío y con productos; producto añadido; cambio de cantidad o eliminación con actualización del total; datos incompletos o erróneos al finalizar el pedido; confirmación correcta. Pueden representarse mediante variantes, superposiciones o pantallas adicionales.</p>
             <p>Diseña primero para móvil y adapta después la distribución al escritorio. Mantén nombres, jerarquía, acciones y contenido coherentes. Utiliza datos ficticios; la compra y la confirmación son simulaciones del prototipo.</p>
 
-            <h3 id="migas-guia-final">11.3. Elaborar el documento completo de guía de estilo</h3>
+            <h3 id="migas-guia-final">10.3. Elaborar el documento completo de guía de estilo</h3>
             <p>Usa el PDF del laboratorio como <strong>borrador inicial</strong> y amplíalo con las decisiones y pantallas del proyecto. Entrega un documento único, ordenado y actualizado: las reglas deben permitir que otra persona continúe el diseño de forma coherente.</p>
             <ol>
                 <li><strong>Portada y contexto:</strong> autoría, versión, fecha, objetivo, público y requisitos extraídos de la entrevista.</li>
@@ -3167,7 +3159,7 @@ de los que sí.</p>
             </ol>
             <p>No basta con mostrar muestras de colores o capturas: explica <strong>qué se utiliza, dónde, por qué y cómo se comprueba</strong>. Todas las decisiones del documento deben coincidir con el archivo de Figma.</p>
 
-            <h3 id="migas-figma">11.4. Construir el prototipo navegable en Figma</h3>
+            <h3 id="migas-figma">10.4. Construir el prototipo navegable en Figma</h3>
             <p>Organiza el archivo en bloques identificables: guía visual, componentes, wireframes y pantallas finales para móvil y escritorio. Aplica los colores y estilos tipográficos definidos y reutiliza componentes para evitar diferencias accidentales entre pantallas.</p>
             <ol>
                 <li><strong>Conecta la navegación:</strong> menú común y acceso al catálogo, la ficha, el carrito, nosotros y contacto. Permite volver atrás y seguir comprando.</li>
@@ -3177,7 +3169,7 @@ de los que sí.</p>
             </ol>
             <p>Se evalúa el diseño y la simulación del recorrido. No se pide programar la tienda ni conectar pagos reales. Representa y documenta los requisitos de accesibilidad; un prototipo visual no demuestra por sí solo la accesibilidad de una futura web.</p>
 
-            <h3 id="migas-pruebas">11.5. Probar, corregir y sincronizar</h3>
+            <h3 id="migas-pruebas">10.5. Probar, corregir y sincronizar</h3>
             <p>Pide a un compañero que complete una compra de muestra, modifique el carrito y encuentre el horario y el contacto, sin indicarle dónde pulsar. Registra la tarea, el resultado, la dificultad observada y la mejora aplicada. Repite las tareas afectadas y anota el resultado real.</p>
             <p>Revisa legibilidad, contraste, etiquetas, tamaño de las acciones, visibilidad del foco previsto y claridad de los errores. Tras corregir el prototipo, actualiza también la guía. No presentes resultados de pruebas que no hayas realizado.</p>
 
@@ -3194,7 +3186,7 @@ de los que sí.</p>
         </div>
 
       <!-- 11. RESUMEN -->
-        <h2 id="sec11"><i class="fa-solid fa-list-check"></i> 12. Resumen</h2>
+        <h2 id="sec11"><i class="fa-solid fa-list-check"></i> 11. Resumen</h2>
 
         <!-- Figura 1.15: Síntesis de los Pilares del Tema 1 -->
         <div class="image-container">
@@ -3275,7 +3267,7 @@ de los que sí.</p>
 
         <!-- 12. ACTIVIDADES -->
         <div class="activities-section" id="sec12">
-            <h2><i class="fa-solid fa-pen-to-square"></i> 13. Actividades</h2>
+            <h2><i class="fa-solid fa-pen-to-square"></i> 12. Actividades</h2>
 
             <h3>Actividades de comprensión</h3>
             <ol start="12">
@@ -3313,10 +3305,10 @@ de los que sí.</p>
         </div>
 
         <!-- 13. ANÁLISIS DE LA WEB -->
-        <h2 id="sec13"><i class="fa-solid fa-magnifying-glass-chart"></i> 14. Análisis de la web</h2>
+        <h2 id="sec13"><i class="fa-solid fa-magnifying-glass-chart"></i> 13. Análisis de la web</h2>
         <p>La revisión técnica de un sitio web debe combinar varias perspectivas: validez del código, accesibilidad, seguridad, comportamiento, rendimiento y visibilidad en buscadores. Ninguna herramienta automatizada garantiza por sí sola la calidad o el cumplimiento; sus resultados deben interpretarse y completarse con inspección manual y pruebas con usuarios.</p>
 
-        <h3>14.1. Evaluación de accesibilidad</h3>
+        <h3>13.1. Evaluación de accesibilidad</h3>
         <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-universal-access"></i> WAVE Web Accessibility Evaluation Tools</span>
@@ -3326,7 +3318,7 @@ de los que sí.</p>
             <a href="https://wave.webaim.org/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Analizar una página con WAVE</a>
         </div>
 
-        <h3>14.2. Validación de código HTML y CSS</h3>
+        <h3>13.2. Validación de código HTML y CSS</h3>
         <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-code"></i> Servicios de validación del W3C</span>
@@ -3339,7 +3331,7 @@ de los que sí.</p>
             </div>
         </div>
 
-        <h3>14.3. Análisis y seguridad del código</h3>
+        <h3>13.3. Análisis y seguridad del código</h3>
         <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-shield-halved"></i> Snyk Code Checker</span>
@@ -3349,7 +3341,7 @@ de los que sí.</p>
             <a href="https://snyk.io/es/code-checker/" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Analizar código con Snyk</a>
         </div>
 
-        <h3>14.4. Entornos de prueba en línea</h3>
+        <h3>13.4. Entornos de prueba en línea</h3>
         <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-flask-vial"></i> Laboratorios para HTML, CSS y JavaScript</span>
@@ -3362,7 +3354,7 @@ de los que sí.</p>
             </div>
         </div>
 
-        <h3>14.5. SEO, rendimiento y datos estructurados</h3>
+        <h3>13.5. SEO, rendimiento y datos estructurados</h3>
         <div class="resource-card expansion-card">
             <div class="resource-card-header">
                 <span class="resource-title"><i class="fa-solid fa-chart-line"></i> Inspección técnica y herramientas de Google</span>
