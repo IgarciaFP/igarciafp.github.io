@@ -174,3 +174,8 @@ El documento incluye explícitamente language además del idioma del estado. Rec
 La barra permanece oculta tanto al seleccionar idioma como al introducir nombre y correo. Se muestra al iniciar o recuperar la práctica y permanece disponible durante la pausa y la entrega. La pantalla de identificación incluye Recuperar práctica, habilitado con nombre y correo válidos, para conservar el acceso al archivo antes de entrar.
 
 Verificado con DOM simulado en español e inglés: barra oculta durante identificación, recuperación inicial habilitada con datos válidos, barra visible al iniciar y pausar. Suite Playwright actualizada; ejecución nativa pendiente por BitLocker.
+
+
+## Recuperación solo en el procedimiento
+
+El único botón Recuperar práctica se encuentra en Procedimiento del laboratorio. Se elimina de la barra superior y el selector de archivo se invoca directamente desde el procedimiento. Al pausar o volver a un intento que necesita recuperación, se muestra de nuevo ese panel. Los avisos del archivo y del correo aparecen también allí. Verificado con DOM simulado: botón único, identificación inicial y acceso tras pausa.
