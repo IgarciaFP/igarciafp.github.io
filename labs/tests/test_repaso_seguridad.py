@@ -22,7 +22,7 @@ from playwright.sync_api import sync_playwright
 LABS=Path(__file__).resolve().parents[1]
 KEY='ssii-repaso-ud01-seguridad-v1'
 LEGACY='ssii-repaso-ud01-v1'
-HTML=(LABS/'repaso-ssii-u01.html').read_text()
+HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-language','')
 for name in ('repaso-ssii-u01-variantes.js','repaso-ssii-u01-seguridad.js','repaso-ssii-u01.js'):
     HTML=HTML.replace(f'<script src="{name}"></script>',f'<script>{(LABS/name).read_text()}</script>')
 
@@ -585,3 +585,22 @@ def test_recovery_rejects_other_email_without_incident(make_page):
     q.wait_for_function("document.querySelector('#practice-file-status').textContent.includes('no coincide')")
     assert state(q)==before
     assert q.locator('#student').input_value()=='otro@g.educaand.es'
+
+
+@pytest.mark.parametrize('saved_language',['es','en'])
+def test_file_restores_saved_language_and_toolbar(make_page,saved_language):
+    p=make_page();begin(p,saved_language);save_practice(p)
+    saved=state(p)
+    q=make_page()
+    q.locator('[data-language='+('en' if saved_language=='es' else 'es')+']').click()
+    assert q.locator('#practice-toolbar').is_visible()
+    q.locator('#guard-consent').check()
+    q.locator('#student').fill(saved['data']['values']['student'])
+    payload=json.dumps({'format':'SSII-UD01-SAVE','version':1,'language':saved_language,'state':saved}).encode()
+    q.locator('#practice-file').set_input_files({'name':'practice.json','mimeType':'application/json','buffer':payload})
+    finish_file_recovery(q)
+    q.wait_for_function("!document.querySelector('#answer-fields').disabled")
+    assert state(q)['data']['language']==saved_language
+    assert q.locator('html').get_attribute('lang')==saved_language
+    assert q.locator('#practice-toolbar').is_visible()
+    assert q.locator('#practice-save').inner_text()==('Guardar y pausar' if saved_language=='es' else 'Save and pause')
