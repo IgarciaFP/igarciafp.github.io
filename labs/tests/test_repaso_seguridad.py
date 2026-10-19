@@ -78,11 +78,18 @@ def begin(p,lang='es'):
 def state(p):
     return p.evaluate(f"JSON.parse(localStorage.getItem('{KEY}'))")
 
-def resume(p):
-    if p.locator('#practice-recover').is_enabled():
-        p.locator('#practice-recover').click()
-    else:
+def recover_once(p):
+    saved=state(p)
+    if saved['phase']=='active':
         p.locator('#guard-continue').click()
+    else:
+        payload=json.dumps({'format':'SSII-UD01-SAVE','version':1,'state':saved})
+        p.locator('#practice-file').set_input_files({'name':'practica.json','mimeType':'application/json','buffer':payload.encode()})
+        p.wait_for_function("document.querySelector('#practice-recover').textContent.includes('Continu') ")
+        p.locator('#practice-recover').click()
+
+def resume(p):
+    recover_once(p)
     p.wait_for_function("!document.querySelector('#answer-fields').disabled")
 
 def blur_return(p):
@@ -324,7 +331,7 @@ def test_pause_recovery_preserves_parameters_and_counts(make_page):
     assert paused['count']==0
     q=make_page(p.evaluate('window.testStore'))
     assert q.locator('#cuaderno').is_hidden()
-    q.locator('#practice-recover').click()
+    recover_once(q)
     q.wait_for_function("!document.querySelector('#answer-fields').disabled")
     restored=state(q)
     assert restored['count']==1 and restored['recoveries']==1
@@ -338,7 +345,7 @@ def test_third_recovery_closes_with_current_answers(make_page):
     for i in range(3):
         p.locator('#practice-save').click()
         assert state(p)['phase']=='paused'
-        p.locator('#practice-recover').click()
+        recover_once(p)
         expected='submitted' if i==2 else 'active'
         p.wait_for_function(f"JSON.parse(localStorage.getItem('{KEY}')).phase==='{expected}'")
     report=decode(state(p)['data']['report'])
@@ -351,7 +358,7 @@ def test_reload_active_consumes_one_recovery(make_page):
     q=make_page(p.evaluate('window.testStore'))
     assert state(q)['count']==0
     assert q.locator('#guard-warning').is_hidden()
-    q.locator('#practice-recover').click()
+    recover_once(q)
     q.wait_for_function("!document.querySelector('#answer-fields').disabled")
     assert state(q)['count']==1
     assert state(q)['recoveries']==1
@@ -434,3 +441,31 @@ def test_penalty_has_own_bold_paragraph(make_page):
     p=make_page();p.locator('[data-language=es]').click()
     assert p.locator('p > strong[data-text=penalty]').inner_text()=='Cualquier intento de copia será penalizado con un cero en la actividad.'
     assert 'horas de clase de SSII' in p.locator('[data-text=rules]').inner_text()
+
+
+def test_downloaded_file_recovers_in_new_browser(make_page):
+    p=make_page();begin(p)
+    p.locator('#t1').fill('123')
+    with p.expect_download() as download:
+        p.locator('#practice-save').click()
+    payload=Path(download.value.path()).read_bytes()
+    saved=json.loads(payload)
+    assert saved['format']=='SSII-UD01-SAVE'
+    q=make_page()
+    q.locator('#practice-file').set_input_files({'name':'practica.json','mimeType':'application/json','buffer':payload})
+    q.wait_for_function("document.querySelector('#practice-recover').textContent.includes('Continu')")
+    q.locator('#practice-recover').click()
+    q.wait_for_function("!document.querySelector('#answer-fields').disabled")
+    assert state(q)['data']['values']['t1']=='123'
+    assert state(q)['data']['parameters']==saved['state']['data']['parameters']
+    assert state(q)['count']==1
+
+def test_toolbar_restart_requires_confirmation(make_page):
+    p=make_page();begin(p);p.locator('#t1').fill('123')
+    p.locator('#practice-reset').click()
+    p.locator('#guard-confirm-cancel').click()
+    assert p.locator('#t1').input_value()=='123'
+    p.locator('#practice-reset').click()
+    p.locator('#guard-confirm-ok').click()
+    assert p.locator('#t1').input_value()==''
+    assert p.locator('#language-stage').is_visible()
