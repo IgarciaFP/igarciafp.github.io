@@ -167,3 +167,10 @@ Verificado con DOM simulado: correo ausente, distinto y coincidente normalizado;
 La vista sincroniza la barra en cada render: oculta únicamente sin idioma y visible después de seleccionarlo, también en pausa y recuperación. Se versionan las referencias a los scripts para evitar mezclas de HTML nuevo con JavaScript anterior en caché.
 
 El documento incluye explícitamente language además del idioma del estado. Recuperar valida ambos y aplica el idioma del archivo, aunque en la pantalla inicial se haya elegido otro. Los documentos anteriores conservan compatibilidad mediante state.data.language. Verificado ES/EN con DOM simulado y añadida cobertura Playwright; sin ejecución nativa por BitLocker.
+
+
+## Barra solo dentro de la práctica
+
+La barra permanece oculta tanto al seleccionar idioma como al introducir nombre y correo. Se muestra al iniciar o recuperar la práctica y permanece disponible durante la pausa y la entrega. La pantalla de identificación incluye Recuperar práctica, habilitado con nombre y correo válidos, para conservar el acceso al archivo antes de entrar.
+
+Verificado con DOM simulado en español e inglés: barra oculta durante identificación, recuperación inicial habilitada con datos válidos, barra visible al iniciar y pausar. Suite Playwright actualizada; ejecución nativa pendiente por BitLocker.
