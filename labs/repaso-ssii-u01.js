@@ -259,7 +259,8 @@ function afterRender(state,ctx){
  $('language-stage').hidden=!!language||active||submitted;
  $('setup-stage').hidden=!language||submitted||recoveryMode;
  $('guard-panel').hidden=!language||submitted;$('guard-panel').inert=!language;
- document.querySelector('.setup-only').hidden=active||paused||phase==='reset';
+ document.querySelector('.setup-only').hidden=(active&&!ctx.restoring)||phase==='reset';
+ $('guard-start-box').hidden=active&&!ctx.restoring;
  $('active-status').hidden=!active&&!paused&&phase!=='reset';
  $('event-details').hidden=!active&&phase!=='reset';
  $('cuaderno').hidden=!active||needsRecovery;$('cuaderno').inert=!active||needsRecovery;
@@ -304,10 +305,8 @@ function afterRender(state,ctx){
  $('recovery-message').textContent=tr('recovery');
 
  $('practice-save').disabled=(!active&&!paused)||ctx.restoring||!!ctx.problem||ctx.busy||(active&&$('answer-fields').disabled);
- $('practice-recover').disabled=(active&&!ctx.restoring)||phase==='closing'||!!ctx.problem||ctx.busy||!ctx.supported;
  $('practice-finish').disabled=!guard?.canEdit();
  $('practice-reset').disabled=!!ctx.problem||ctx.busy||phase==='closing';
- $('practice-recover').textContent=tr('recoverPractice');
  $('toolbar-count').textContent=(language==='en'?'Incidents / recoveries: ':'Incidencias / recuperaciones: ')+state.count+'/3';
  // Toolbar guidance removed; save errors remain visible in the guard panel.
 
@@ -473,8 +472,7 @@ function recoveryEmailReady(){
  if(/^[^\s@]+@g\.educaand\.es$/i.test($('student').value.trim()))return true;
  fileStatus('recoveryEmailRequired');return false;
 }
-$('setup-recover').addEventListener('click',()=>$('practice-recover').click());
-$('practice-recover').addEventListener('click',()=>{
+$('setup-recover').addEventListener('click',()=>{
  if(!recoveryEmailReady())return;
  if(importedPractice){importedPractice=false;void guard.recoverPractice();return;}
  $('practice-file').value='';$('practice-file').click();
