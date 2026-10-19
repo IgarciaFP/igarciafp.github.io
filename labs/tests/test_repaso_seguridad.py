@@ -22,7 +22,7 @@ from playwright.sync_api import sync_playwright
 LABS=Path(__file__).resolve().parents[1]
 KEY='ssii-repaso-ud01-seguridad-v1'
 LEGACY='ssii-repaso-ud01-v1'
-HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-procedure-recovery','')
+HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-fullscreen-recovery','')
 for name in ('repaso-ssii-u01-variantes.js','repaso-ssii-u01-seguridad.js','repaso-ssii-u01.js'):
     HTML=HTML.replace(f'<script src="{name}"></script>',f'<script>{(LABS/name).read_text()}</script>')
 
@@ -84,6 +84,7 @@ def recover_once(p):
         p.locator('#guard-continue').click()
     else:
         payload=json.dumps({'format':'SSII-UD01-SAVE','version':1,'state':saved})
+        p.evaluate("document.documentElement.requestFullscreen()")
         p.locator('#practice-file').set_input_files({'name':'practica.json','mimeType':'application/json','buffer':payload.encode()})
         finish_file_recovery(p)
 
@@ -458,6 +459,7 @@ def test_downloaded_file_recovers_in_new_browser(make_page):
     q.locator('[data-language=es]').click()
     q.locator('#guard-consent').check()
     q.locator('#student').fill(doc['state']['data']['values']['student'] if 'doc' in locals() else saved['state']['data']['values']['student'])
+    q.evaluate("document.documentElement.requestFullscreen()")
     q.locator('#practice-file').set_input_files({'name':'practica.txt','mimeType':'text/plain','buffer':payload})
     finish_file_recovery(q)
     q.wait_for_function("!document.querySelector('#answer-fields').disabled")
@@ -530,6 +532,7 @@ def test_final_receipt_recovers_practice(make_page):
     q.locator('[data-language=es]').click()
     q.locator('#guard-consent').check()
     q.locator('#student').fill(doc['state']['data']['values']['student'] if 'doc' in locals() else saved['state']['data']['values']['student'])
+    q.evaluate("document.documentElement.requestFullscreen()")
     q.locator('#practice-file').set_input_files({'name':'comprobante.txt','mimeType':'text/plain','buffer':payload})
     finish_file_recovery(q)
     q.wait_for_function("!document.querySelector('#answer-fields').disabled")
@@ -581,6 +584,7 @@ def test_recovery_rejects_other_email_without_incident(make_page):
     q=make_page();q.locator('[data-language=es]').click();q.locator('#guard-consent').check()
     q.locator('#student').fill('otro@g.educaand.es')
     before=state(q)
+    q.evaluate("document.documentElement.requestFullscreen()")
     q.locator('#practice-file').set_input_files({'name':'practica.json','mimeType':'application/json','buffer':payload})
     q.wait_for_function("document.querySelector('#practice-file-status').textContent.includes('no coincide')")
     assert state(q)==before
@@ -597,6 +601,7 @@ def test_file_restores_saved_language_and_toolbar(make_page,saved_language):
     q.locator('#guard-consent').check()
     q.locator('#student').fill(saved['data']['values']['student'])
     payload=json.dumps({'format':'SSII-UD01-SAVE','version':1,'language':saved_language,'state':saved}).encode()
+    q.evaluate("document.documentElement.requestFullscreen()")
     q.locator('#practice-file').set_input_files({'name':'practice.json','mimeType':'application/json','buffer':payload})
     finish_file_recovery(q)
     q.wait_for_function("!document.querySelector('#answer-fields').disabled")
@@ -616,3 +621,12 @@ def test_toolbar_only_after_entering_practice(make_page,lang):
     assert p.locator('#practice-toolbar').is_visible()
     save_practice(p)
     assert p.locator('#practice-toolbar').is_visible()
+
+
+def test_recovery_click_enters_fullscreen_before_file_read(make_page):
+    p=make_page();setup_identity(p)
+    with p.expect_file_chooser() as chooser:
+        p.locator('#setup-recover').click()
+    assert p.evaluate("document.fullscreenElement===document.documentElement")
+    assert not p.locator('#practice-file-status').is_visible()
+    chooser.value.set_files([])
