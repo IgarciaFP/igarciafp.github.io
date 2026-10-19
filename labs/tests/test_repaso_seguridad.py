@@ -22,7 +22,7 @@ from playwright.sync_api import sync_playwright
 LABS=Path(__file__).resolve().parents[1]
 KEY='ssii-repaso-ud01-seguridad-v1'
 LEGACY='ssii-repaso-ud01-v1'
-HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-recovery-flow','')
+HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-toolbar-fullscreen','')
 for name in ('repaso-ssii-u01-variantes.js','repaso-ssii-u01-seguridad.js','repaso-ssii-u01.js'):
     HTML=HTML.replace(f'<script src="{name}"></script>',f'<script>{(LABS/name).read_text()}</script>')
 
@@ -620,7 +620,7 @@ def test_toolbar_only_after_entering_practice(make_page,lang):
     p.wait_for_function("!document.querySelector('#answer-fields').disabled")
     assert p.locator('#practice-toolbar').is_visible()
     save_practice(p)
-    assert p.locator('#practice-toolbar').is_visible()
+    assert not p.locator('#practice-toolbar').is_visible()
 
 
 def test_recovery_click_enters_fullscreen_before_file_read(make_page):
