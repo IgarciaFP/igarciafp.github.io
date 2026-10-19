@@ -124,3 +124,12 @@ Guardar y pausar descarga un JSON identificado como SSII-UD01-SAVE, con estado v
 La barra añade Entregar y Reiniciar. Entregar usa la confirmación y el informe final existentes: descarga TXT, copia el texto al portapapeles y abre el formulario autorizado. El campo de entrega se prerrellena mediante el enlace confirmado por el profesor; el alumno revisa y pulsa Enviar. Para enlaces de más de 8000 caracteres se muestra el aviso de pegado manual y se conserva el código completo en el portapapeles y TXT. Si el portapapeles está bloqueado, el prerrellenado normal sigue funcionando. Reiniciar pide confirmación, borra los datos locales del intento y vuelve al selector de idioma.
 
 Validación adicional ejecutada con DOM simulado: exportación/importación en navegador vacío, respuestas y cantidades conservadas, contador al reutilizar archivo, rechazo de archivo inválido y reinicio activo confirmado. Actualizada la suite Playwright para archivos; su ejecución real sigue pendiente por el bloqueo local descrito arriba.
+
+
+## Guardado comprimido y copia previa al reinicio
+
+El documento recuperable se serializa como JSON y se comprime con gzip, codificado en Base64URL con prefijo SSII3G., igual que la entrega. Se descarga como TXT. El contenido mantiene la marca SSII-UD01-SAVE para distinguirlo del informe final; no se permite reanudar una entrega final. La recuperación descomprime con límite de 3 MB de salida y valida el documento, conservando compatibilidad con JSON antiguos.
+
+Al confirmar Reiniciar, un intento activo se pausa y se descarga su documento antes de borrar el estado. Si falla la creación o descarga, no se borra. Un intento finalizado conserva su comprobante final mediante descarga; un estado inicial sin intento no necesita copia. El navegador puede solicitar o bloquear la descarga y no ofrece una confirmación de que el usuario haya conservado el archivo en disco. El botón de confirmación muestra Confirmar (Confirm en inglés).
+
+Verificación: sintaxis JavaScript y estados simulados de copia anterior al reinicio y fallo de generación sin pérdida de respuestas. Añadidas pruebas Playwright para compresión gzip/Base64URL, recuperación del TXT y reinicio. Chromium sigue sin ejecutarse en este entorno por BitLocker.
