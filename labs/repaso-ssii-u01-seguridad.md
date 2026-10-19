@@ -179,3 +179,10 @@ Verificado con DOM simulado en español e inglés: barra oculta durante identifi
 ## Recuperación solo en el procedimiento
 
 El único botón Recuperar práctica se encuentra en Procedimiento del laboratorio. Se elimina de la barra superior y el selector de archivo se invoca directamente desde el procedimiento. Al pausar o volver a un intento que necesita recuperación, se muestra de nuevo ese panel. Los avisos del archivo y del correo aparecen también allí. Verificado con DOM simulado: botón único, identificación inicial y acceso tras pausa.
+
+
+## Barra de práctica con reloj e incidencias
+
+El reloj se mueve a la barra fija, sin cambiar su cálculo. Incidencias: n/3 es el summary de un desplegable nativo con el registro del intento; su lista está limitada en altura y permite desplazamiento. El panel de estado anterior se oculta durante la práctica normal. Los problemas de guardado mantienen su aviso visible. Se elimina la sección Entrega del cuaderno y su enlace de navegación; Entregar en la barra conserva el diálogo y flujo final. Los errores de generación se muestran en la barra. La pantalla de resultado permanece para reintentar copia o descarga si falla el navegador.
+
+Verificado con DOM simulado: ubicación única del reloj y registro, ausencia de la sección de entrega y confirmación desde la barra. Prueba Playwright añadida; ejecución real pendiente por BitLocker.
