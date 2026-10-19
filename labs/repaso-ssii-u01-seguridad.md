@@ -104,7 +104,7 @@ En esta revisión se ejecutaron las comprobaciones numéricas de 1000 conjuntos,
 
 Destino: https://docs.google.com/forms/d/e/1FAIpQLSfwo1fdBwSlm-iWU00VAiTdAueuuNTYQOl0iibaCpF69O5ZWg/viewform?usp=publish-editor
 
-Se conserva la descarga TXT y la copia del código. El alumno pega el código, completa los campos y pulsa Enviar. Los campos de este formulario no pudieron inspeccionarse en esta sesión; por ello no se añaden parámetros de prerrellenado no verificados.
+Se conserva la descarga TXT y la copia del código. El alumno pega el código, completa los campos y pulsa Enviar. El profesor ha facilitado el enlace prerrellenado con el campo `entry.659443543`. Se utiliza para incluir el código completo, codificado con encodeURIComponent, en la URL de apertura.
 
 ## Horas por intento sin servicios de IP externos
 
@@ -121,6 +121,6 @@ Las pruebas comprueban inicio/fin, conservación tras recuperar, exportación y 
 
 Guardar y pausar descarga un JSON identificado como SSII-UD01-SAVE, con estado validado, respuestas, cantidades, reloj e incidencias. No es la entrega final comprimida SSII3G. Recuperar práctica lee el archivo elegido y exige pulsar Continuar para solicitar pantalla completa y cargar una incidencia. Se rechazan documentos ajenos, finalizados, demasiado grandes o inválidos. Reabrir una copia antigua no reduce el contador del mismo intento conservado en este navegador. Sin servidor no puede impedirse que un usuario manipule el archivo o lo reutilice desde un navegador vacío.
 
-La barra añade Entregar y Reiniciar. Entregar usa la confirmación y el informe final existentes: descarga TXT, copia el texto al portapapeles y abre el formulario autorizado. El alumno pega y envía; la política de mismo origen impide escribir directamente en Google Forms. Reiniciar pide confirmación, borra los datos locales del intento y vuelve al selector de idioma.
+La barra añade Entregar y Reiniciar. Entregar usa la confirmación y el informe final existentes: descarga TXT, copia el texto al portapapeles y abre el formulario autorizado. El campo de entrega se prerrellena mediante el enlace confirmado por el profesor; el alumno revisa y pulsa Enviar. Para enlaces de más de 8000 caracteres se muestra el aviso de pegado manual y se conserva el código completo en el portapapeles y TXT. Si el portapapeles está bloqueado, el prerrellenado normal sigue funcionando. Reiniciar pide confirmación, borra los datos locales del intento y vuelve al selector de idioma.
 
 Validación adicional ejecutada con DOM simulado: exportación/importación en navegador vacío, respuestas y cantidades conservadas, contador al reutilizar archivo, rechazo de archivo inválido y reinicio activo confirmado. Actualizada la suite Playwright para archivos; su ejecución real sigue pendiente por el bloqueo local descrito arriba.
