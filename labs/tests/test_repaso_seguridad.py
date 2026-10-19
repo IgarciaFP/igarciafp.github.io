@@ -449,10 +449,13 @@ def test_downloaded_file_recovers_in_new_browser(make_page):
     with p.expect_download() as download:
         p.locator('#practice-save').click()
     payload=Path(download.value.path()).read_bytes()
-    saved=json.loads(payload)
+    code=payload.decode('utf-8')
+    assert code.startswith('SSII3G.')
+    encoded=code.split('.',1)[1]
+    saved=json.loads(gzip.decompress(base64.urlsafe_b64decode(encoded+'='*(-len(encoded)%4))))
     assert saved['format']=='SSII-UD01-SAVE'
     q=make_page()
-    q.locator('#practice-file').set_input_files({'name':'practica.json','mimeType':'application/json','buffer':payload})
+    q.locator('#practice-file').set_input_files({'name':'practica.txt','mimeType':'text/plain','buffer':payload})
     q.wait_for_function("document.querySelector('#practice-recover').textContent.includes('Continu')")
     q.locator('#practice-recover').click()
     q.wait_for_function("!document.querySelector('#answer-fields').disabled")
@@ -469,3 +472,26 @@ def test_toolbar_restart_requires_confirmation(make_page):
     p.locator('#guard-confirm-ok').click()
     assert p.locator('#t1').input_value()==''
     assert p.locator('#language-stage').is_visible()
+
+
+def test_restart_downloads_compressed_backup_first(make_page):
+    p=make_page();begin(p);p.locator('#t1').fill('123')
+    p.locator('#practice-reset').click()
+    assert p.locator('#guard-confirm-ok').inner_text()=='Confirmar'
+    with p.expect_download() as download:
+        p.locator('#guard-confirm-ok').click()
+    code=Path(download.value.path()).read_text()
+    assert code.startswith('SSII3G.')
+    encoded=code.split('.',1)[1]
+    doc=json.loads(gzip.decompress(base64.urlsafe_b64decode(encoded+'='*(-len(encoded)%4))))
+    assert doc['state']['data']['values']['t1']=='123'
+    assert doc['state']['phase']=='paused'
+    assert p.locator('#language-stage').is_visible()
+
+def test_failed_compression_prevents_restart(make_page):
+    p=make_page();begin(p);p.locator('#t1').fill('123')
+    p.evaluate("window.CompressionStream=class {constructor(){throw Error('test compression failure')}}")
+    p.locator('#practice-reset').click()
+    p.locator('#guard-confirm-ok').click()
+    assert state(p)['phase']=='paused'
+    assert state(p)['data']['values']['t1']=='123'
