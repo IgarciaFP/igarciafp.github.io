@@ -105,5 +105,5 @@ function derive(data){
  prompts.cycle=[`Modelo simplificado: el PC vale ${x.pc} y allí está la instrucción «sumar ${x.add} al registro R». R contiene ${x.value}. La siguiente instrucción está en la dirección ${x.pc+1} y no hay saltos.`,`Simplified model: PC is ${x.pc} and that location holds “add ${x.add} to register R”. R contains ${x.value}. The next instruction is at address ${x.pc+1} and there are no jumps.`];
  return {answers,prompts,labels,firstDividend:p.bridge.n};
 }
-window.SSIIParameters=Object.freeze({groups,defaults,create,sanitize,derive});
+window.Lab.variants=Object.freeze({groups,defaults,create,sanitize,derive,render(derived,$){$('variant-dividend').textContent=derived.firstDividend+' ÷ 2';}});
 })();

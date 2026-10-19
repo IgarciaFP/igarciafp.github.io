@@ -1,5 +1,5 @@
 /**
- * CONTROLES DIDÁCTICOS DEL NAVEGADOR · SSII UD01
+ * CONTROLES DIDÁCTICOS DEL NAVEGADOR · MOTOR COMÚN
  * -------------------------------------------
  * Esta plantilla es disuasoria, NO un sistema de examen seguro. El usuario
  * controla JavaScript, el DOM y localStorage. No se identifican otras webs,
@@ -7,7 +7,7 @@
  *
  * Integración: createPracticeGuard(adapter) recibe las operaciones del
  * examen. El controlador no conoce las preguntas ni sus soluciones.
- * Véase repaso-ssii-u01-seguridad.md para estados, pruebas y limitaciones.
+ * Configuración y formato de guardado: adapter.config.
  */
 (() => {
   'use strict';
@@ -16,7 +16,7 @@
     // 1. POLÍTICA. Esta clave es exclusiva de este laboratorio. No usar clear():
     // borraría también borradores de otros laboratorios del mismo dominio.
     const CONFIG = Object.freeze({
-      key: 'ssii-repaso-ud01-seguridad-v1', legacyKey: 'ssii-repaso-ud01-v1',
+      key: adapter.config.storage.key, legacyKey: adapter.config.storage.legacyKey,
       limit: 3, maxEvents: 80, settleMs: 200, blockClipboard: true
     });
     const WHY = { hidden: 'página oculta', blur: 'pérdida de foco',
@@ -376,12 +376,12 @@
     }
     function exportPractice(){
       if(problem||fatal||!['paused','submitted'].includes(state.phase))throw Error('Attempt cannot be exported');
-      return JSON.stringify({format:'SSII-UD01-SAVE',version:1,language:state.data.language,state},null,2);
+      return JSON.stringify({format:adapter.config.format.save,version:1,language:state.data.language,state},null,2);
     }
     function importPractice(text){
       if(problem||fatal||busy||!(['ready','paused','submitted','reset'].includes(state.phase)||(state.phase==='active'&&(restoring||fileRecovery))))throw Error('Cannot import now');
       const doc=JSON.parse(text);
-      if(doc.format!=='SSII-UD01-SAVE'||doc.version!==1||!['paused','submitted'].includes(doc.state?.phase))throw Error('Invalid save file');
+      if(doc.format!==adapter.config.format.save||doc.version!==1||!['paused','submitted'].includes(doc.state?.phase))throw Error('Invalid save file');
       const next=validate(doc.state);
       if(doc.language!==undefined){
         if(!['es','en'].includes(doc.language)||next.data.language&&next.data.language!==doc.language)throw Error('Invalid document language');
@@ -389,9 +389,9 @@
       }
       // Older files use the language already stored inside state.data.
       next.data.language=next.data.language||adapter.snapshot().language||'es';
-      if(!next.attemptAudit.startedAt||!next.data.values.fullname?.trim()||!/^\S+@g\.educaand\.es$/i.test(next.data.values.student||''))throw Error('Invalid identity');
+      if(!next.attemptAudit.startedAt||!next.data.values.fullname?.trim()||!adapter.validEmail(next.data.values.student||''))throw Error('Invalid identity');
       const currentEmail=$('student').value.trim().toLowerCase();
-      if(!/^[^\s@]+@g\.educaand\.es$/.test(currentEmail))throw Object.assign(Error('Enter current email'),{code:'RECOVERY_EMAIL_REQUIRED'});
+      if(!adapter.validEmail(currentEmail))throw Object.assign(Error('Enter current email'),{code:'RECOVERY_EMAIL_REQUIRED'});
       if(currentEmail!==next.data.values.student.trim().toLowerCase())throw Object.assign(Error('Email mismatch'),{code:'RECOVERY_EMAIL_MISMATCH'});
       // Reopening an older copy must not reduce this browser's recorded count.
       if(next.attemptAudit.startedAt===state.attemptAudit.startedAt&&next.data.values.student===state.data.values.student){
