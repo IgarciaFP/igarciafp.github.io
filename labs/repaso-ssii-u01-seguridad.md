@@ -9,8 +9,8 @@ Se mantienen los 94 pasos, siete bloques, soluciones, pistas y comprobaciones de
 2. Aceptar las condiciones e introducir nombre y correo del dominio exacto `g.educaand.es`. Se valida el formato, no la titularidad.
 3. Iniciar mediante la API Fullscreen. Solo se permite editar con foco, visibilidad y pantalla completa, sin avisos o errores pendientes.
 4. Las dos primeras salidas muestran avisos. La tercera detiene el reloj y cierra el intento **conservando todas las respuestas**, genera una entrega y bloquea la edición. Si la generación falla, se mantiene el estado `closing` y se permite reintentar.
-5. La finalización voluntaria pide confirmación y permite respuestas pendientes. Se descarga un TXT, se copia el mismo código y se abre el mismo Google Forms que en la referencia, con el nombre de actividad «Repaso SSII · Unidad 01». **El alumno debe pulsar Enviar en Forms**; abrirlo no acredita recepción.
-6. Si se deniega el portapapeles o la ventana emergente, la entrega permanece guardada y puede reintentarse. Para enlaces de más de 7000 caracteres se copia el código y se pide pegarlo en Forms.
+5. La finalización voluntaria pide confirmación y permite respuestas pendientes. Se descarga un TXT, se copia el mismo código y se abre el formulario de entrega indicado para este laboratorio. **El alumno debe pulsar Enviar en Forms**; abrirlo no acredita recepción.
+6. Si se deniega el portapapeles o la ventana emergente, la entrega permanece guardada y puede reintentarse. El código se copia para pegarlo en el nuevo formulario; no se reutilizan los identificadores de preguntas del formulario anterior.
 7. Tras abrir el formulario se vuelve al selector. La última entrega se conserva en `sessionStorage` durante la sesión de esa pestaña y puede volver a copiarse o descargarse.
 
 ## Controles y persistencia
@@ -63,7 +63,7 @@ Antes de publicar, ejecutar la suite de Chromium y comprobar en el navegador del
 
 ## Barra fija, pausa y recuperación
 
-La barra permanece visible al desplazarse y adapta el espacio superior a su altura real, también en móvil. Muestra Guardar y pausar, Recuperar práctica, contador compartido y estado del guardado.
+La barra permanece visible al desplazarse y adapta el espacio superior a su altura real, también en móvil. Muestra Guardar y pausar, Recuperar práctica, contador compartido. El texto auxiliar bajo los botones se ha retirado.
 
 Guardar y pausar conserva respuestas, correcciones, pistas, idioma, cantidades, bloqueos de ejercicios, tiempo e incidencias en el mismo navegador y perfil. Detiene el reloj antes de salir de pantalla completa; cerrar después de pausar no añade una salida. No es una copia exportada ni sincronizada entre dispositivos.
 
@@ -99,3 +99,9 @@ node labs/tests/test_repaso_variantes.cjs
 ```
 
 En esta revisión se ejecutaron las comprobaciones numéricas de 1000 conjuntos, equivalencia de los valores originales, ancho de conversiones, decimales finitos y rechazo de datos inválidos. También se ejecutaron 18 comprobaciones de estado con DOM simulado para pausa, recuperación, límite compartido, regeneración selectiva y conservación de parámetros. Las pruebas reales de Chromium continúan pendientes por el bloqueo del lanzador local.
+
+## Formulario de entrega actual
+
+Destino: https://docs.google.com/forms/d/e/1FAIpQLSfwo1fdBwSlm-iWU00VAiTdAueuuNTYQOl0iibaCpF69O5ZWg/viewform?usp=publish-editor
+
+Se conserva la descarga TXT y la copia del código. El alumno pega el código, completa los campos y pulsa Enviar. Los campos de este formulario no pudieron inspeccionarse en esta sesión; por ello no se añaden parámetros de prerrellenado no verificados.
