@@ -22,7 +22,7 @@ from playwright.sync_api import sync_playwright
 LABS=Path(__file__).resolve().parents[1]
 KEY='ssii-repaso-ud01-seguridad-v1'
 LEGACY='ssii-repaso-ud01-v1'
-HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-language-entry','')
+HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-editable-identity','')
 for name in ('repaso-ssii-u01-variantes.js','repaso-ssii-u01-seguridad.js','repaso-ssii-u01.js'):
     HTML=HTML.replace(f'<script src="{name}"></script>',f'<script>{(LABS/name).read_text()}</script>')
 
@@ -670,3 +670,16 @@ def test_reload_starts_at_language_without_losing_saved_attempt(make_page):
     q.locator('[data-language=es]').click()
     assert q.locator('#setup-stage').is_visible()
     assert not q.locator('#language-stage').is_visible()
+
+
+def test_saved_identity_remains_editable(make_page):
+    p=make_page();begin(p);save_practice(p)
+    q=make_page(p.evaluate('window.testStore'))
+    q.locator('[data-language=es]').click()
+    q.locator('#guard-consent').check()
+    assert q.locator('#fullname').is_enabled()
+    assert q.locator('#student').is_enabled()
+    q.locator('#fullname').fill('Otro nombre')
+    q.locator('#student').fill('otro@g.educaand.es')
+    assert q.locator('#fullname').input_value()=='Otro nombre'
+    assert q.locator('#student').input_value()=='otro@g.educaand.es'
