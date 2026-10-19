@@ -233,6 +233,8 @@ function setEnabled(enabled) {
 }
 function setReport(report){$('report').value=report;}
 Object.assign(texts,{
+ saveWarning:['Se descargará un documento y se pausará la práctica. Al recuperarla se generará una incidencia de las 3 disponibles. Si es la tercera, se cerrará el intento. ¿Guardar y pausar?','A document will download and the practice will pause. Recovering it will consume one of the 3 available incidents. If it is the third, the attempt will close. Save and pause?'],
+ recoveryFullscreen:['El documento está cargado, pero el navegador requiere un clic para entrar en pantalla completa. Pulsa Recuperar práctica.','The document is loaded, but the browser requires a click to enter fullscreen. Click Recover practice.'],
  toolbarFinish:['Entregar','Submit'],toolbarReset:['Reiniciar','Restart'],
  continueImported:['Continuar práctica recuperada','Continue recovered practice'],
  fileSaved:['Archivo descargado. Consérvalo: Recuperar práctica lo leerá para continuar otro día.','File downloaded. Keep it: Recover practice will read it to continue another day.'],
@@ -296,7 +298,7 @@ function afterRender(state,ctx){
  $('practice-recover').disabled=(active&&!ctx.restoring)||phase==='closing'||!!ctx.problem||ctx.busy||!ctx.supported;
  $('practice-finish').disabled=!guard?.canEdit();
  $('practice-reset').disabled=!!ctx.problem||ctx.busy||phase==='closing';
- $('practice-recover').textContent=importedPractice?tr('continueImported'):tr('recoverPractice');
+ $('practice-recover').textContent=tr('recoverPractice');
  $('toolbar-count').textContent=(language==='en'?'Incidents / recoveries: ':'Incidencias / recuperaciones: ')+state.count+'/3';
  // Toolbar guidance removed; save errors remain visible in the guard panel.
 
@@ -317,7 +319,7 @@ const errorTranslations={
 'No se pudo generar el informe. No se ha finalizado el intento; revisa los datos y vuelve a intentarlo.':texts.genericError[1]
 };
 function translateErrors(){for(const id of ['guard-problem-text','guard-action-status','guard-warning-error','guard-boot-detail','reportStatus']){const el=$(id);if(errorTranslations[el.textContent])el.textContent=errorTranslations[el.textContent];}}
-function confirmText(kind){if(kind==='erase'){$('guard-confirm-title').textContent=tr('toolbarReset');$('guard-confirm-text').textContent=tr('restartWarning');}if(kind==='finish'){$('guard-confirm-title').textContent=tr('confirmTitle');$('guard-confirm-text').textContent=tr('confirmBody');}}
+function confirmText(kind){if(kind==='save'){$('guard-confirm-title').textContent=tr('savePractice');$('guard-confirm-text').textContent=tr('saveWarning');}if(kind==='erase'){$('guard-confirm-title').textContent=tr('toolbarReset');$('guard-confirm-text').textContent=tr('restartWarning');}if(kind==='finish'){$('guard-confirm-title').textContent=tr('confirmTitle');$('guard-confirm-text').textContent=tr('confirmBody');}}
 async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
  if(!validIdentity()){$('reportStatus').textContent=tr('identityError');return null;}
  // Compact, versioned report avoids repeating the public question text in a prefilled URL.
@@ -456,20 +458,31 @@ async function decodePracticeDocument(text){
  for(const chunk of chunks){result.set(chunk,offset);offset+=chunk.length;}
  return new TextDecoder('utf-8',{fatal:true}).decode(result);
 }
-$('practice-save').addEventListener('click',async()=>{
- if(await guard.pausePractice())await savePracticeDocument();
- guard.render();
-});
+$('practice-save').addEventListener('click',()=>guard.ask('save'));
 $('practice-recover').addEventListener('click',()=>{
  if(importedPractice){importedPractice=false;void guard.recoverPractice();return;}
  $('practice-file').value='';$('practice-file').click();
 });
 $('practice-file').addEventListener('change',async()=>{
  const file=$('practice-file').files[0];if(!file)return;
+ // Request fullscreen before asynchronous file reading consumes user activation.
+ const root=document.documentElement;
+ const fullscreenReady=(document.fullscreenElement===root?Promise.resolve():root.requestFullscreen()).then(()=>true,()=>false);
  try{
   if(file.size>3000000)throw Error('Too large');
-  guard.importPractice(await decodePracticeDocument(await file.text()));importedPractice=true;fileStatus('fileLoaded');guard.render();
- }catch{fileStatus('fileInvalid');}
+  guard.importPractice(await decodePracticeDocument(await file.text()));importedPractice=true;
+  if(await fullscreenReady){
+    importedPractice=false;$('practice-file-status').hidden=true;
+    await guard.recoverPractice();
+    importedPractice=phase==='paused';
+    if(importedPractice)fileStatus('recoveryFullscreen');
+  }else fileStatus('recoveryFullscreen');
+  guard.render();
+ }catch{
+  await fullscreenReady;
+  fileStatus('fileInvalid');
+  if(document.fullscreenElement===root&&!guard.canEdit())document.exitFullscreen().catch(()=>{});
+ }
 });
 $('practice-finish').addEventListener('click',()=>guard.ask('finish'));
 $('practice-reset').addEventListener('click',()=>guard.ask('erase'));
@@ -481,7 +494,7 @@ $('lab').addEventListener('submit',e=>e.preventDefault());
 setInterval(clock,1000);
 try{const item=JSON.parse(sessionStorage.getItem(RECOVERY));if(item&&typeof item.code==='string'&&item.code.length<2000000&&typeof item.name==='string'&&['es','en'].includes(item.language))lastDelivery=item;}catch{}
 setLanguage(null);
-guard=window.createPracticeGuard({refreshPendingParameters,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,
+guard=window.createPracticeGuard({savePracticeDocument,refreshPendingParameters,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,
 async saveBeforeReset(phase){
  if(phase==='paused')return savePracticeDocument();
  if(phase==='submitted')return downloadReceipt(rememberDelivery($('report').value));
