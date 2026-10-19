@@ -85,8 +85,7 @@ def recover_once(p):
     else:
         payload=json.dumps({'format':'SSII-UD01-SAVE','version':1,'state':saved})
         p.locator('#practice-file').set_input_files({'name':'practica.json','mimeType':'application/json','buffer':payload.encode()})
-        p.wait_for_function("document.querySelector('#practice-recover').textContent.includes('Continu') ")
-        p.locator('#practice-recover').click()
+        finish_file_recovery(p)
 
 def resume(p):
     recover_once(p)
@@ -326,7 +325,7 @@ def test_pause_recovery_preserves_parameters_and_counts(make_page):
     p=make_page();begin(p,'en')
     p.locator('#t1').fill('150')
     before=state(p)['data']['parameters']
-    p.locator('#practice-save').click()
+    save_practice(p)
     paused=state(p)
     assert paused['phase']=='paused' and paused['data']['started'] is None
     assert paused['count']==0
@@ -344,7 +343,7 @@ def test_pause_recovery_preserves_parameters_and_counts(make_page):
 def test_third_recovery_closes_with_current_answers(make_page):
     p=make_page();begin(p);p.locator('#t1').fill('150')
     for i in range(3):
-        p.locator('#practice-save').click()
+        save_practice(p)
         assert state(p)['phase']=='paused'
         recover_once(p)
         expected='submitted' if i==2 else 'active'
@@ -391,12 +390,12 @@ def test_random_answers_correct_in_both_languages(make_page):
     p.locator('[data-check=transmision]').click()
     for field in ['t1','t3','t5','t6','t7','t9','t10']:
         assert p.locator('#feedback-'+field).inner_text()=='✓ Correct.'
-    p.locator('#practice-save').click()
+    save_practice(p)
     q=make_page(p.evaluate('window.testStore'));resume(q)
     assert state(q)['data']['parameters']==parameters
 
 def test_parameter_corruption_does_not_overwrite(make_page):
-    p=make_page();begin(p);p.locator('#practice-save').click()
+    p=make_page();begin(p);save_practice(p)
     saved=state(p);saved['data']['parameters']['bridge']['n']=999
     raw=json.dumps(saved)
     q=make_page({KEY:raw})
@@ -404,7 +403,7 @@ def test_parameter_corruption_does_not_overwrite(make_page):
     assert q.locator('#practice-recover').is_disabled()
 
 def test_paused_clock_does_not_include_next_day(make_page):
-    p=make_page();begin(p);p.locator('#practice-save').click()
+    p=make_page();begin(p);save_practice(p)
     elapsed=state(p)['data']['elapsed']
     q=make_page(p.evaluate('window.testStore'),setup='window.realNow=Date.now;Date.now=()=>window.realNow()+86400000')
     assert state(q)['data']['elapsed']==elapsed
@@ -419,7 +418,7 @@ def test_attempt_times_and_ip_are_saved_and_exported(make_page):
     assert audit['startedAt'] is not None and audit['finishedAt'] is None
     assert audit['ipSamples'][0]['ip'] is None
     assert p.evaluate('window.testNetworkCalls')==0
-    p.locator('#practice-save').click()
+    save_practice(p)
     q=make_page(p.evaluate('window.testStore'));resume(q);finish(q)
     result=state(q)
     assert result['attemptAudit']['startedAt']==audit['startedAt']
@@ -448,7 +447,7 @@ def test_downloaded_file_recovers_in_new_browser(make_page):
     p=make_page();begin(p)
     p.locator('#t1').fill('123')
     with p.expect_download() as download:
-        p.locator('#practice-save').click()
+        save_practice(p)
     payload=Path(download.value.path()).read_bytes()
     code=payload.decode('utf-8')
     assert code.startswith('SSII3G.')
@@ -457,8 +456,7 @@ def test_downloaded_file_recovers_in_new_browser(make_page):
     assert saved['format']=='SSII-UD01-SAVE'
     q=make_page()
     q.locator('#practice-file').set_input_files({'name':'practica.txt','mimeType':'text/plain','buffer':payload})
-    q.wait_for_function("document.querySelector('#practice-recover').textContent.includes('Continu')")
-    q.locator('#practice-recover').click()
+    finish_file_recovery(q)
     q.wait_for_function("!document.querySelector('#answer-fields').disabled")
     assert state(q)['data']['values']['t1']=='123'
     assert state(q)['data']['parameters']==saved['state']['data']['parameters']
@@ -527,8 +525,7 @@ def test_final_receipt_recovers_practice(make_page):
     assert doc['state']['phase']=='submitted'
     q=make_page()
     q.locator('#practice-file').set_input_files({'name':'comprobante.txt','mimeType':'text/plain','buffer':payload})
-    q.wait_for_function("document.querySelector('#practice-recover').textContent.includes('Continu')")
-    q.locator('#practice-recover').click()
+    finish_file_recovery(q)
     q.wait_for_function("!document.querySelector('#answer-fields').disabled")
     recovered=state(q)
     assert recovered['data']['values']['t1']=='123'
@@ -536,3 +533,28 @@ def test_final_receipt_recovers_practice(make_page):
     assert recovered['count']==1 and recovered['recoveries']==1
     assert recovered['data']['report']==''
     assert recovered['attemptAudit']['finishedAt'] is None
+
+
+def save_practice(p):
+    p.locator('#practice-save').click()
+    p.locator('#guard-confirm-ok').click()
+
+def finish_file_recovery(p):
+    # set_input_files is programmatic and may lack fullscreen activation.
+    p.wait_for_function("""() => {
+      const state=JSON.parse(localStorage.getItem('ssii-repaso-ud01-seguridad-v1'));
+      const notice=document.querySelector('#practice-file-status').textContent;
+      return state.phase!=='paused'||notice.includes('un clic')||notice.includes('requires a click');
+    }""")
+    if state(p)['phase']=='paused':
+        p.locator('#practice-recover').click()
+
+def test_save_confirmation_and_group_hidden(make_page):
+    p=make_page();begin(p)
+    assert not p.locator('#group').is_visible()
+    p.locator('#practice-save').click()
+    assert state(p)['phase']=='active'
+    assert '3 disponibles' in p.locator('#guard-confirm-text').inner_text()
+    p.locator('#guard-confirm-cancel').click()
+    assert state(p)['phase']=='active'
+    assert not p.locator('#answer-fields').is_disabled()
