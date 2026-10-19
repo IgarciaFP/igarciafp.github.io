@@ -281,7 +281,7 @@ function afterRender(state,ctx){
  $('receipt-download').disabled=phase==='closing';
  $('download').hidden=true;
  document.querySelector('.identity').hidden=!$('guard-consent').checked;
- $('fullname').disabled=active||paused||submitted;$('student').disabled=active||paused||submitted;
+ $('fullname').disabled=false;$('student').disabled=false;
  $('guard-start').textContent=tr('start');
  $('setup-recover').disabled=!language||!validIdentity()||!!ctx.problem||ctx.busy||!ctx.supported||recoverySelecting||recoveryReading;
  $('guard-state').textContent=tr(active?($('answer-fields').disabled?'blocked':'active'):phase);
