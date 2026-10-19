@@ -26,6 +26,33 @@ function translateWorkbook(){
 }
 function encodeLegacyReport(text){let binary='';for(const b of new TextEncoder().encode(text))binary+=String.fromCharCode(b);return btoa(binary);}
 
+
+const variants=window.SSIIParameters;
+let parameters=variants.sanitize(variants.defaults),parameterLocks={},randomized=false;
+function applyParameters(){
+ const derived=variants.derive(parameters),idx=language==='en'?1:0;
+ for(const f of fields)if(Object.prototype.hasOwnProperty.call(derived.answers,f.id))f.answer=derived.answers[f.id];
+ for(const [key,strings]of Object.entries(derived.prompts))$('variant-'+key).textContent=strings[idx];
+ for(const [id,strings]of Object.entries(derived.labels))$('variant-label-'+id).textContent=strings[idx];
+ $('variant-dividend').textContent=derived.firstDividend+' ÷ 2';
+}
+function lockStartedParameters(values){
+ for(const [key,group]of Object.entries(variants.groups)){
+   if(group.some(id=>(values?values[id]:$(id).value)?.trim()))parameterLocks[key]=true;
+ }
+}
+function refreshPendingParameters(){
+ lockStartedParameters();
+ let changed=0;
+ for(const [key,group]of Object.entries(variants.groups)){
+   if(parameterLocks[key])continue;
+   parameters[key]=variants.create(key,parameters[key]);changed++;
+   for(const id of group){const f=fields.find(f=>f.id===id);clearFeedback(f);checked[f.section]=false;$('status-'+f.section).textContent='';}
+ }
+ randomized=true;applyParameters();progress();
+ return changed;
+}
+
 const texts={
 step:['Antes de empezar','Before you begin'],
 procedure:['Procedimiento del laboratorio','Exam procedure'],
@@ -105,6 +132,21 @@ Object.assign(texts,{
  pendingSteps:['pasos pendientes','missing steps'],explanations:['explicaciones para revisión','explanations for review']
 });
 
+
+Object.assign(texts,{
+ savePractice:['Guardar y pausar','Save and pause'],recoverPractice:['Recuperar práctica','Recover practice'],
+ paused:['Práctica guardada y pausada','Practice saved and paused'],
+ resume:['Recuperar práctica guardada','Recover saved practice'],
+ resumeText:['Recuperar añade una incidencia al mismo contador que las pérdidas de foco. La tercera incidencia cierra el intento conservando tus respuestas.','Recovery adds one incident to the same counter as focus losses. The third incident closes the attempt while retaining your answers.'],
+ resumeAction:['Recuperar (+1 incidencia)','Recover (+1 incident)'],
+ saveNote:['Se guarda en este navegador y perfil. Guardar pausa el reloj; recuperar consume un aviso. Al tercero se cierra el intento.','Saved in this browser and profile. Saving pauses the timer; recovery consumes one warning. The third closes the attempt.'],
+ pausedNote:['Guardado: puedes cerrar y continuar otro día en este navegador y perfil. Recuperar suma 1 incidencia; al llegar a 3 se genera la entrega.','Saved: you may close and continue another day in this browser and profile. Recovery adds 1 incident; reaching 3 generates the submission.'],
+ recoverFinal:['Recuperar (+1: finalizará)','Recover (+1: will finish)'],
+ restoreNote:['Intento guardado encontrado. Recuperar suma 1 incidencia y restaura exactamente los datos guardados.','Saved attempt found. Recovery adds 1 incident and restores the saved values exactly.']
+});
+texts.rules=texts.rules.map((s,i)=>s+(i?' Recovering a saved attempt also adds one incident.':' Recuperar un intento guardado también suma una incidencia.'));
+texts.instructions=texts.instructions.map((s,i)=>s+(i?' Only untouched numerical exercises change when focus returns. Started exercises and saved recoveries retain their values.':' Solo los ejercicios numéricos sin empezar cambian al recuperar el foco. Los empezados y las recuperaciones guardadas conservan sus datos.'));
+
 for(const [id,anchor]of [['receipt-download','delivery-retry'],['recovery-download','recover-delivery']]){
  const button=document.createElement('button');button.id=id;button.type='button';button.className='secondary';button.dataset.text='receipt';$(anchor).after(button);
  button.addEventListener('click',()=>downloadReceipt(guard.canDownloadReport()?rememberDelivery($('report').value):lastDelivery));
@@ -117,6 +159,7 @@ function setLanguage(lang){
  document.querySelectorAll('[data-text]').forEach(el=>el.textContent=tr(el.dataset.text));
  $('delivery-retry').textContent=tr('copyOpen');
  translateWorkbook();
+ applyParameters();
  progress();
 }
 function validIdentity(){
@@ -126,7 +169,7 @@ function validIdentity(){
 function canStart(){return !!language&&$('guard-consent').checked&&validIdentity();}
 function timeSpent(at=Date.now()){return elapsed+(started===null?0:Math.max(0,at-started));}
 function clock(){const sec=Math.floor(timeSpent()/1000);$('clock').textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');}
-function startClock(){if(started===null)started=Date.now();clock();}
+function startClock(){if(!randomized)refreshPendingParameters();if(started===null)started=Date.now();clock();}
 function stopClock(at=Date.now()){elapsed=timeSpent(at);started=null;clock();}
 function numeric(v){const s=v.trim().replace(',','.');return /^\d+(\.\d+)?$/.test(s)&&Number.isFinite(Number(s))?Number(s):null;}
 function normalized(v){return v.trim().toUpperCase().replace(/\s+/g,' ');}
@@ -146,16 +189,20 @@ async function encodeReport(text){
  let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);
  return 'SSII3G.'+btoa(binary).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'');
 }
-function empty() { return { values: Object.fromEntries(ids.map(id=>[id,''])), checked:{}, hints:{}, elapsed:0, started:null, report:'', language:null,reportEncoding:'gzip-base64url' }; }
+function empty() { return { values: Object.fromEntries(ids.map(id=>[id,''])), checked:{}, hints:{}, elapsed:0, started:null, report:'', parameters:variants.sanitize(variants.defaults),parameterLocks:{},randomized:false,language:null,reportEncoding:'gzip-base64url' }; }
 function sanitize(data) {
   if(!data || typeof data!=='object' || !data.values || typeof data.values!=='object' || Array.isArray(data.values)) throw new Error('Borrador inválido');
   const out=empty();
+  out.parameters=data.parameters===undefined?variants.sanitize(variants.defaults):variants.sanitize(data.parameters);
+  out.randomized=data.parameters===undefined?true:data.randomized===true;
+  if(data.parameterLocks!==undefined&&(!data.parameterLocks||typeof data.parameterLocks!=='object'||Array.isArray(data.parameterLocks)))throw Error('Invalid parameter locks');
   for(const id of ids) {
     const el=$(id), v=data.values[id];
     if(v!==undefined && typeof v!=='string') throw new Error('Campo inválido: '+id);
     out.values[id]=(v||'').slice(0,el.maxLength>0?el.maxLength:2400);
     if(el.tagName==='SELECT' && ![...el.options].some(o=>o.value===out.values[id])) out.values[id]='';
   }
+  for(const [key,group]of Object.entries(variants.groups))out.parameterLocks[key]=data.parameterLocks?.[key]===true||group.some(id=>out.values[id].trim());
   for(const sec of sections) out.checked[sec.id]=data.checked?.[sec.id]===true;
   hintNodes.forEach((_,i)=>{if(data.hints?.[i]===true)out.hints[i]=true;});
   out.elapsed=Number.isFinite(data.elapsed)&&data.elapsed>=0?Math.min(data.elapsed,31536000000):0;
@@ -170,10 +217,12 @@ function sanitize(data) {
   return out;
 }
 function snapshot() {
-  return {values:Object.fromEntries(ids.map(id=>[id,$(id).value])),checked:{...checked},hints:{...hints},elapsed,started,language,report:$('report').value,reportEncoding:$('report').value.startsWith('SSII3G.')?'gzip-base64url':'base64'};
+  lockStartedParameters();
+  return {values:Object.fromEntries(ids.map(id=>[id,$(id).value])),checked:{...checked},hints:{...hints},parameters:variants.sanitize(parameters),parameterLocks:{...parameterLocks},randomized,elapsed,started,language,report:$('report').value,reportEncoding:$('report').value.startsWith('SSII3G.')?'gzip-base64url':'base64'};
 }
 
 function restore(data) {
+  parameters=variants.sanitize(data.parameters||variants.defaults);parameterLocks={...data.parameterLocks};randomized=data.randomized===true;
   for(const id of ids) $(id).value=data.values[id]||'';
   checked={...data.checked};hints={...data.hints};elapsed=data.elapsed;started=data.started??null;
   setLanguage(data.language||null);
@@ -190,14 +239,15 @@ function setEnabled(enabled) {
 function setReport(report){$('report').value=report;}
 function afterRender(state,ctx){
  phase=state.phase;
+ const paused=phase==='paused',needsRecovery=paused||ctx.restoring;
  const active=phase==='active',submitted=phase==='submitted'||phase==='closing';
  $('language-stage').hidden=!!language||active||submitted;
  $('setup-stage').hidden=!language||submitted||recoveryMode;
  $('guard-panel').hidden=!language||submitted;$('guard-panel').inert=!language;
- document.querySelector('.setup-only').hidden=active||phase==='reset';
- $('active-status').hidden=!active&&phase!=='reset';
+ document.querySelector('.setup-only').hidden=active||paused||phase==='reset';
+ $('active-status').hidden=!active&&!paused&&phase!=='reset';
  $('event-details').hidden=!active&&phase!=='reset';
- $('cuaderno').hidden=!active;$('cuaderno').inert=!active;
+ $('cuaderno').hidden=!active||needsRecovery;$('cuaderno').inert=!active||needsRecovery;
  $('delivery-stage').hidden=!submitted&&!recoveryMode;
  if(phase==='closing'){
    if(!$('delivery-status').textContent)$('delivery-status').textContent=tr('forcedPending');
@@ -207,7 +257,7 @@ function afterRender(state,ctx){
  $('receipt-download').disabled=phase==='closing';
  $('download').hidden=true;
  document.querySelector('.identity').hidden=!$('guard-consent').checked;
- $('fullname').disabled=active||submitted;$('student').disabled=active||submitted;
+ $('fullname').disabled=active||paused||submitted;$('student').disabled=active||paused||submitted;
  $('guard-start').textContent=tr('start');
  $('guard-state').textContent=tr(active?($('answer-fields').disabled?'blocked':'active'):phase);
  $('guard-count').textContent=(language==='en'?'Incidents: ':'Incidencias: ')+state.count+'/3';
@@ -219,12 +269,15 @@ function afterRender(state,ctx){
  $('guard-warning-title').textContent=tr(k==='reset'?'resetTitle':k);
  $('guard-warning-text').textContent=tr(k+'Text');
  $('guard-warning-count').textContent=$('guard-count').textContent;
- $('guard-continue').textContent=tr(active?'continue':'understood');
+ $('guard-continue').textContent=tr(ctx.restoring?'resumeAction':active?'continue':'understood');
  }
  if(language==='en')translateErrors();
  if(language==='en')for(const el of $('guard-log').children)el.textContent=el.textContent
    .replace(/Comienzo del intento (\d+)\. Normas aceptadas\./g,'Attempt $1 started. Terms accepted.')
    .replaceAll('Intento reanudado en pantalla completa.','Attempt resumed in fullscreen.')
+   .replaceAll('Práctica guardada y pausada; recuperar consumirá una incidencia.','Practice saved and paused; recovery will consume one incident.')
+   .replaceAll('Recuperación guardada: incidencia ','Saved recovery: incident ')
+   .replaceAll('Datos renovados en ejercicios sin empezar: ','Values renewed in untouched exercises: ')
    .replaceAll('Respuestas vaciadas; intento detenido.','Answers cleared; attempt stopped.')
    .replaceAll('Intento finalizado. Exportación del informe habilitada.','Attempt finished. Report delivery enabled.')
    .replaceAll('Incidencia ','Incident ').replaceAll('Mismo episodio: ','Same episode: ')
@@ -233,6 +286,13 @@ function afterRender(state,ctx){
    .replaceAll('salida de pantalla completa','fullscreen exited').replaceAll('recarga o cierre','reload or close');
  $('recovery').hidden=!language||active||submitted||recoveryMode||!lastDelivery;
  $('recovery-message').textContent=tr('recovery');
+
+ $('practice-save').disabled=!active||ctx.restoring||!!ctx.problem||ctx.busy||$('answer-fields').disabled;
+ $('practice-recover').disabled=!needsRecovery||!!ctx.problem||ctx.busy||!ctx.supported;
+ $('practice-recover').textContent=tr(state.count===2?'recoverFinal':'recoverPractice');
+ $('toolbar-count').textContent=(language==='en'?'Incidents / recoveries: ':'Incidencias / recuperaciones: ')+state.count+'/3';
+ $('toolbar-status').textContent=ctx.problem?$('guard-problem-text').textContent:tr(paused?'pausedNote':ctx.restoring?'restoreNote':'saveNote');
+
 }
 const errorTranslations={
 'El guardado no es válido. No se ha sobrescrito: avisa al profesor.':'The saved data is invalid. It has not been overwritten; contact your teacher.',
@@ -255,7 +315,7 @@ async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
  if(!validIdentity()){$('reportStatus').textContent=tr('identityError');return null;}
  // Compact, versioned report avoids repeating the public question text in a prefilled URL.
  if(typeof CompressionStream!=='function'){$('reportStatus').textContent=tr('compressionError');return null;}
- const data={exam:'SSII-UD01',version:3,language,name:$('fullname').value.trim(),email:$('student').value.trim().toLowerCase(),finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:fields.map(f=>f.id),answers:fields.map((f,i)=>({question:f.id,answer:$(f.id).value.trim(),status:!hasAnswer(f)?'pending':f.kind==='open'?'teacher-review':correct(f)?'correct':'review'})),group:$('group').value.trim(),checked:{...checked},hints:{...hints},notes:$('reflection').value.trim().slice(0,2400),...context,audit:metadata,url:location.href};
+ const data={exam:'SSII-UD01',version:3,language,name:$('fullname').value.trim(),email:$('student').value.trim().toLowerCase(),finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:fields.map(f=>f.id),answers:fields.map((f,i)=>({question:f.id,answer:$(f.id).value.trim(),status:!hasAnswer(f)?'pending':f.kind==='open'?'teacher-review':correct(f)?'correct':'review'})),parameters:variants.sanitize(parameters),parameterLocks:{...parameterLocks},group:$('group').value.trim(),checked:{...checked},hints:{...hints},notes:$('reflection').value.trim().slice(0,2400),...context,audit:metadata,url:location.href};
  const body=JSON.stringify(data);
  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(body))),b=>b.toString(16).padStart(2,'0')).join('');
  return encodeReport(body+'\nCódigo de comprobación: SSII3-'+hash);
@@ -358,11 +418,17 @@ document.querySelectorAll('[data-check]').forEach(b=>b.addEventListener('click',
 hintNodes.forEach((d,i)=>d.addEventListener('toggle',()=>{
  if(guard?.canEdit()&&d.open&&!hints[i]){hints[i]=true;invalidate();guard.saveEdit();}
 }));
+$('practice-save').addEventListener('click',()=>guard.pausePractice());
+$('practice-recover').addEventListener('click',()=>guard.recoverPractice());
+const syncToolbarHeight=()=>document.documentElement.style.setProperty('--toolbar-height',Math.ceil($('practice-toolbar').getBoundingClientRect().height)+'px');
+if(typeof ResizeObserver==='function')new ResizeObserver(syncToolbarHeight).observe($('practice-toolbar'));
+window.addEventListener('resize',syncToolbarHeight);
+syncToolbarHeight();
 $('lab').addEventListener('submit',e=>e.preventDefault());
 setInterval(clock,1000);
 try{const item=JSON.parse(sessionStorage.getItem(RECOVERY));if(item&&typeof item.code==='string'&&item.code.length<2000000&&typeof item.name==='string'&&['es','en'].includes(item.language))lastDelivery=item;}catch{}
 setLanguage(null);
-guard=window.createPracticeGuard({empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,
+guard=window.createPracticeGuard({refreshPendingParameters,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,
 forcedError(){$('delivery-status').textContent=tr('forcedError');},
 isAnswer(el){return el instanceof HTMLElement&&ids.includes(el.id);},
 restoreValue(el,data){el.value=data.values[el.id]||'';}
