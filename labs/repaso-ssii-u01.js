@@ -75,7 +75,7 @@ deliveryTitle:['Tu entrega está preparada','Your submission is ready'],copyOpen
 deliveryNote:['La entrega solo se registra cuando pulsas Enviar en Google Forms. Si el código es demasiado largo para el enlace, pégalo en el campo del contenido.','Your submission is only recorded when you click Submit in Google Forms. If the code is too long for the link, paste it into the content field.'],
 recover:['Volver a copiar y abrir la última entrega','Copy and open the last submission again'],
 cancel:['Cancelar','Cancel'],confirm:['Confirmar','Confirm'],
-start:['Aceptar e iniciar en pantalla completa','Start in fullscreen'],
+start:['Empezar','Start'],
 identityError:['Introduce tu nombre y un correo válido terminado exactamente en @g.educaand.es.','Enter your name and a valid email ending exactly in @g.educaand.es.'],
 ready:['Pendiente de comenzar','Ready to start'],active:['En curso','In progress'],blocked:['Respuestas bloqueadas · reloj en marcha','Answers locked · timer running'],
 submitted:['Intento finalizado','Attempt finished'],reset:['Intento invalidado','Attempt invalidated'],
@@ -283,7 +283,7 @@ function afterRender(state,ctx){
  document.querySelector('.identity').hidden=!$('guard-consent').checked;
  $('fullname').disabled=false;$('student').disabled=false;
  $('guard-start').textContent=tr('start');
- $('setup-recover').disabled=!language||!validIdentity()||!!ctx.problem||ctx.busy||!ctx.supported||recoverySelecting||recoveryReading;
+ $('practice-recover').disabled=!active||ctx.restoring||!validIdentity()||!!ctx.problem||ctx.busy||!ctx.supported||recoverySelecting||recoveryReading;
  $('guard-state').textContent=tr(active?($('answer-fields').disabled?'blocked':'active'):phase);
  $('guard-count').textContent=(language==='en'?'Incidents: ':'Incidencias: ')+state.count+'/3';
  $('guard-conditions').textContent=(language==='en'?'Fullscreen: ':'Pantalla completa: ')+(document.fullscreenElement?'✓':'—')+' · '+(language==='en'?'Focus: ':'Foco: ')+(document.hasFocus()?'✓':'—')+' · '+(language==='en'?'Visible: ':'Visible: ')+(document.visibilityState==='visible'?'✓':'—');
@@ -489,8 +489,8 @@ async function waitForRecoveryFocus(){
  }
  throw Object.assign(Error('Focus not restored'),{code:'RECOVERY_FULLSCREEN'});
 }
-$('setup-recover').addEventListener('click',async()=>{
- if(recoverySelecting||recoveryReading||!recoveryEmailReady())return;
+$('practice-recover').addEventListener('click',async()=>{
+ if(recoverySelecting||recoveryReading||!recoveryEmailReady()||!guard.beginFileRecovery())return;
  recoverySelecting=true;$('practice-file-status').hidden=true;guard.render();
  try{
   // 1. Complete fullscreen from the user's gesture.
@@ -499,17 +499,17 @@ $('setup-recover').addEventListener('click',async()=>{
   // 2. Open the native file selector only once fullscreen is established.
   $('practice-file').value='';$('practice-file').click();
  }catch{
-  recoverySelecting=false;fileStatus('recoveryFullscreenError');guard.render();
+  recoverySelecting=false;guard.endFileRecovery();fileStatus('recoveryFullscreenError');guard.render();
  }
 });
 $('practice-file').addEventListener('cancel',()=>{
- recoverySelecting=false;guard.render();
+ recoverySelecting=false;guard.endFileRecovery();guard.render();
 });
 $('practice-file').addEventListener('change',async()=>{
  if(recoveryReading)return;
  recoverySelecting=false;
  const file=$('practice-file').files[0];
- if(!file||!recoveryEmailReady()){guard.render();return;}
+ if(!file||!recoveryEmailReady()){guard.endFileRecovery();guard.render();return;}
  recoveryReading=true;guard.render();
  const root=document.documentElement;
  try{
@@ -518,12 +518,13 @@ $('practice-file').addEventListener('change',async()=>{
   await waitForRecoveryFocus();
   // 3. Validate/import, then resume automatically. Only the guard charges recovery.
   guard.importPractice(text);importedPractice=false;
+  guard.endFileRecovery();
   $('practice-file-status').hidden=true;
   if(!await guard.recoverPractice())throw Object.assign(Error('Recovery did not start'),{code:'RECOVERY_FULLSCREEN'});
  }catch(error){
   fileStatus(error.code==='RECOVERY_FULLSCREEN'?'recoveryFullscreenError':error.code==='RECOVERY_EMAIL_MISMATCH'?'recoveryEmailMismatch':error.code==='RECOVERY_EMAIL_REQUIRED'?'recoveryEmailRequired':'fileInvalid');
-  if(document.fullscreenElement===root&&!guard.canEdit())document.exitFullscreen().catch(()=>{});
- }finally{recoveryReading=false;guard.render();}
+  
+ }finally{recoveryReading=false;guard.endFileRecovery();guard.render();}
 });
 $('practice-finish').addEventListener('click',()=>guard.ask('finish'));
 $('practice-reset').addEventListener('click',()=>guard.ask('erase'));
