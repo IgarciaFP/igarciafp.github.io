@@ -26,7 +26,7 @@
     const warning = $('guard-warning'), confirmBox = $('guard-confirm');
     let initialized = false, fatal = false, busy = false, restoring = false;
     let problem = '', problemText = '', lastRaw = null, timer = null;
-    let confirmation = null, forcedBusy = false;
+    let confirmation = null, forcedBusy = false, rerollPending = false;
     const recentActions = new Map();
     const supported = typeof root.requestFullscreen === 'function'
       && document.fullscreenEnabled === true && typeof document.hasFocus === 'function'
@@ -39,7 +39,7 @@
     function fresh() {
       return { version: 1, phase: 'ready', attempt: 0, count: 0, pending: null,
         episode: null, clipboardBlocked: 0, savedAt: null, events: [],
-        data: adapter.empty(), backup: null, closingAt: null, actionCounts: {}, actions: [] };
+        data: adapter.empty(), backup: null, closingAt: null, recoveries: 0, actionCounts: {}, actions: [] };
     }
     function log(text) {
       state.events.push({ at: Date.now(), text });
@@ -49,16 +49,17 @@
     function validate(s) {
       // Se validan estructura y límites. Esto detecta daños accidentales,
       // NO acredita que el alumno no haya modificado un JSON válido.
-      if (!s || s.version !== 1 || !['ready','active','closing','submitted','reset','review'].includes(s.phase)
+      if (!s || s.version !== 1 || !['ready','active','paused','closing','submitted','reset','review'].includes(s.phase)
         || !Number.isSafeInteger(s.attempt) || s.attempt < 0
         || !Number.isInteger(s.count) || s.count < 0 || s.count > CONFIG.limit
-        || (s.phase === 'active' && s.count >= CONFIG.limit)
+        || (['active','paused'].includes(s.phase) && s.count >= CONFIG.limit)
         || !Number.isInteger(s.clipboardBlocked) || s.clipboardBlocked < 0
         || s.clipboardBlocked > 1000000
         || ![null,'first','last','reset','resume'].includes(s.pending)
         || !s.data || !Array.isArray(s.events)) throw new Error('Estado inválido');
       return { ...fresh(), phase: s.phase, attempt: s.attempt, count: s.count,
         pending: s.pending, clipboardBlocked: s.clipboardBlocked,
+        recoveries: Number.isInteger(s.recoveries)&&s.recoveries>=0&&s.recoveries<=s.count?s.recoveries:0,
         closingAt: stamp(s.closingAt) ? s.closingAt : null,
         actionCounts: Object.fromEntries(Object.entries(s.actionCounts || {}).filter(([k,v]) => /^[A-Za-z0-9+_-]{1,48}$/.test(k) && Number.isSafeInteger(v) && v >= 0).slice(0,300)),
         actions: Array.isArray(s.actions) ? s.actions.filter(a => a && stamp(a.at) && typeof a.action === 'string' && /^[A-Za-z0-9+_-]{1,48}$/.test(a.action)).slice(-1000).map(a => ({at:a.at,action:a.action})) : [],
@@ -108,7 +109,7 @@
     }
     let state = load();
     restoring = state.phase === 'active';
-    if (restoring && !state.pending) state.pending = 'resume';
+    if (restoring) state.pending = 'resume';
 
     // 3. PERSISTENCIA. Cada edición aceptada y cada transición se guardan.
     // No se confía únicamente en unload/pagehide: pueden no llegar a emitirse.
@@ -159,13 +160,13 @@
       adapter.setEnabled(enabled);
 
       const names = { ready: 'Pendiente de comenzar', active: enabled ? 'En curso' : 'Respuestas bloqueadas · reloj en marcha',
-        closing: 'Cerrando intento: respuestas conservadas', submitted: 'Intento finalizado', reset: 'Reiniciado por tres incidencias', review: 'Copia recuperada: solo lectura' };
+        paused: 'Práctica guardada y pausada', closing: 'Cerrando intento: respuestas conservadas', submitted: 'Intento finalizado', reset: 'Reiniciado por tres incidencias', review: 'Copia recuperada: solo lectura' };
       $('guard-state').textContent = names[state.phase];
       $('guard-count').textContent = `${state.count} de ${CONFIG.limit}`;
       $('guard-conditions').textContent = `Pantalla completa: ${s.fullscreen ? 'sí' : 'no'} · Foco: ${s.focused ? 'sí' : 'no'} · Visible: ${s.visible ? 'sí' : 'no'}`;
       $('guard-start-box').hidden = state.phase === 'active';
       $('guard-consent').disabled = !supported || !!problem;
-      $('guard-start').disabled = !supported || !!problem || busy || !!state.pending || !$('guard-consent').checked || !adapter.canStart();
+      $('guard-start').disabled = !supported || !!problem || busy || !!state.pending || !$('guard-consent').checked || !adapter.canStart() || state.phase === 'paused';
       $('guard-start').textContent = state.phase === 'ready' ? 'Pantalla completa y comenzar' : 'Pantalla completa y nuevo intento vacío';
       $('guard-problem').hidden = !problem && supported;
       $('guard-problem-text').textContent = problemText || (!supported ? 'Este navegador no ofrece las funciones necesarias. Abre la página directamente en un navegador de escritorio compatible con pantalla completa.' : '');
@@ -191,7 +192,7 @@
       adapter.afterRender(state, {problem, supported, busy, restoring, forcedBusy});
     }
     function showWarning() {
-      if (!initialized || !state.pending || !signals().visible || !signals().focused || fatal) return;
+      if (restoring || !initialized || !state.pending || !signals().visible || !signals().focused || fatal) return;
       if (confirmBox.open) confirmBox.close();
       confirmation = null;
       const texts = {
@@ -219,13 +220,14 @@
       if (!state.episode) {
         state.data = adapter.snapshot();
         state.episode = { at: Date.now(), reasons: [reason] };
+        rerollPending = true;
         state.count++;
         log(`Incidencia ${state.count}/${CONFIG.limit}: ${WHY[reason]}.`);
         if (state.count >= CONFIG.limit) {
           state.closingAt = Date.now();
           adapter.stopClock(state.closingAt);
           state.data = adapter.snapshot();
-          state.phase = 'closing'; state.pending = null;
+          state.phase = 'closing'; state.pending = null; rerollPending = false;
           if (warning.open) warning.close();
           if (confirmBox.open) confirmBox.close();
           confirmation = null;
@@ -237,6 +239,12 @@
       }
       persist(); render();
       if (state.phase === 'closing') void finalizeForced();
+    }
+    function refreshPending() {
+      if (!rerollPending || restoring || state.phase !== 'active' || !safe(signals())) return;
+      const changed=adapter.refreshPendingParameters();
+      rerollPending=false;state.data=adapter.snapshot();
+      if(changed)log('Datos renovados en ejercicios sin empezar: '+changed+'.');
     }
     function environment(reason) {
       if (!initialized || fatal) return;
@@ -250,7 +258,7 @@
           clearTimeout(timer);
           timer = setTimeout(() => {
             if (safe(signals()) && state.phase === 'active' && !problem) {
-              state.episode = null; persist(); render();
+              refreshPending(); state.episode = null; persist(); render();
             }
           }, CONFIG.settleMs);
         }
@@ -265,13 +273,26 @@
     }
     async function startOrResume(resume) {
       if (busy || problem || !supported || fatal) return;
-      if (!resume && (!$('guard-consent').checked || !adapter.canStart() || state.phase === 'active')) return;
+      if (!resume && (!$('guard-consent').checked || !adapter.canStart() || !['ready','reset','review'].includes(state.phase))) return;
+      const recovery=resume&&(restoring||state.phase==='paused');
       busy = true; $('guard-warning-error').textContent = ''; render();
       try {
         await fullscreen();
         if (problem || fatal) return;
         // Una tercera salida durante la petición no puede revivir el intento.
-        if (resume && state.phase !== 'active') return;
+        if (resume && !['active','paused'].includes(state.phase)) return;
+        if(recovery){
+          state.count++;state.recoveries++;rerollPending=false;
+          log('Recuperación guardada: incidencia '+state.count+'/'+CONFIG.limit+'.');
+          if(state.count>=CONFIG.limit){
+            state.closingAt=Date.now();adapter.stopClock(state.closingAt);
+            state.data=adapter.snapshot();state.phase='closing';state.pending=null;state.episode=null;restoring=false;
+            if(warning.open)warning.close();
+            if(persist()){render();void finalizeForced();}
+            return;
+          }
+          state.phase='active';
+        } else if(resume) refreshPending();
         if (!resume) {
           const keep = state.phase === 'ready';
           const data = adapter.snapshot();
@@ -288,6 +309,22 @@
         $('guard-action-status').textContent = e.message || 'No se pudo activar pantalla completa.';
         $('guard-warning-error').textContent = 'No se pudo activar pantalla completa. Regresa a la página y vuelve a intentarlo.';
       } finally { busy = false; render(); }
+    }
+
+
+    async function pausePractice() {
+      if(!canEdit())return false;
+      adapter.stopClock();
+      state.data=adapter.snapshot();state.phase='paused';state.pending=null;state.episode=null;
+      rerollPending=false;restoring=false;
+      log('Práctica guardada y pausada; recuperar consumirá una incidencia.');
+      const saved=persist();render();
+      if(saved&&document.fullscreenElement===root){try{await document.exitFullscreen();}catch{}}
+      return saved;
+    }
+    function recoverPractice(){
+      if(!(state.phase==='paused'||(state.phase==='active'&&restoring)))return;
+      return startOrResume(true);
     }
 
     // 6. ENTRADA. Registrar acciones bloqueadas sin sumar incidencias de entorno.
@@ -397,7 +434,7 @@
       finally { busy = false; render(); }
     }
     function reportContext(reason) {
-      return {finishReason:reason, incidents:state.count, actionCounts:structuredClone(state.actionCounts), actions:structuredClone(state.actions)};
+      return {finishReason:reason, recoveries:state.recoveries, incidents:state.count, actionCounts:structuredClone(state.actionCounts), actions:structuredClone(state.actions)};
     }
     async function finalizeForced() {
       if (forcedBusy || fatal || problem || state.phase !== 'closing') return;
@@ -504,7 +541,7 @@
     $('guard-boot').hidden = true;
     render();
     if (state.phase === 'closing') setTimeout(() => void finalizeForced(), 0);
-    return Object.freeze({ canEdit, canDownloadReport, saveEdit, metadata, render, resetProcess, finalizeForced });
+    return Object.freeze({ canEdit, canDownloadReport, saveEdit, metadata, render, resetProcess, finalizeForced, pausePractice, recoverPractice });
   };
 })();
 
