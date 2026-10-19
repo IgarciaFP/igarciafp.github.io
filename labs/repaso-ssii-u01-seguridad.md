@@ -142,3 +142,12 @@ Los comprobantes nuevos usan el mismo documento SSII-UD01-SAVE, comprimido gzip/
 Recuperar admite documentos pausados o entregados con menos de tres incidencias, restaura las cantidades y respuestas, elimina el informe anterior de la edición y exige Continuar, que añade una incidencia. Los intentos con tres incidencias no se reabren. No modifica ninguna respuesta ya enviada a Forms; una nueva entrega genera un informe nuevo. Los antiguos comprobantes que solo contienen informe conservan su formato histórico y no incluyen el estado necesario para esta recuperación.
 
 Verificado con DOM simulado: exportación de un intento entregado, recuperación en el mismo navegador y en uno vacío, conservación de respuestas y rechazo del límite agotado. Añadida prueba Playwright del TXT descargado; su ejecución real continúa bloqueada por BitLocker.
+
+
+## Flujo simplificado de inicio, guardado y recuperación
+
+Grupo ya no se muestra en Antes de empezar; se mantiene un campo oculto para compatibilidad de documentos anteriores. Guardar y pausar pide Confirmar y explica que recuperar consumirá una de las tres incidencias; cancelar conserva la edición activa. La incidencia se sigue cargando al recuperar, no dos veces.
+
+Seleccionar un archivo válido solicita pantalla completa antes de leerlo de forma asíncrona y abre directamente el intento recuperado. Se elimina el paso normal de Continuar práctica recuperada. Si el navegador deniega pantalla completa por falta de activación, conserva el documento y solicita un clic en Recuperar práctica, sin cargar todavía ninguna incidencia.
+
+Verificado mediante DOM simulado: confirmación, cancelación, pausa y lectura de archivo con recuperación inmediata y una única incidencia. Suite Playwright adaptada, pendiente de ejecución real por BitLocker.
