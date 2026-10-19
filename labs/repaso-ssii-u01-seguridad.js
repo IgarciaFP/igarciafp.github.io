@@ -26,7 +26,7 @@
     const warning = $('guard-warning'), confirmBox = $('guard-confirm');
     let initialized = false, fatal = false, busy = false, restoring = false;
     let problem = '', problemText = '', lastRaw = null, timer = null;
-    let confirmation = null, forcedBusy = false, rerollPending = false;
+    let confirmation = null, forcedBusy = false, rerollPending = false, fileRecovery=false;
     let focusTimer = null;
     const recentActions = new Map();
     const supported = typeof root.requestFullscreen === 'function'
@@ -136,9 +136,17 @@
         return s;
       } catch { problem = 'io'; problemText = 'El navegador no permite acceder al guardado local.'; return fresh(); }
     }
-    let state = load();
-    restoring = state.phase === 'active';
-    if (restoring) state.pending = 'resume';
+    const previous=load();
+    // Opening the lab always starts at identification. Preserve the previous
+    // browser snapshot separately; resumption is explicit through a document.
+    if(lastRaw!==null&&problem!=='io'&&(previous.attempt>0||problem==='invalid')){
+      try{
+        localStorage.setItem(CONFIG.key+'-previous',lastRaw);
+        if(problem==='invalid'){problem='';problemText='';}
+      }catch{problem='io';problemText='No se pudo conservar el guardado anterior.';}
+    }
+    let state = fresh();
+    restoring = false;
 
     // 3. PERSISTENCIA. Cada edición aceptada y cada transición se guardan.
     // No se confía únicamente en unload/pagehide: pueden no llegar a emitirse.
@@ -168,7 +176,7 @@
     const safe = s => s.visible && s.focused && s.fullscreen;
     function canEdit() {
       return initialized && !fatal && !problem && supported && state.phase === 'active'
-        && !state.pending && !state.episode && !restoring && !busy && safe(signals());
+        && !state.pending && !state.episode && !restoring && !busy && !fileRecovery && safe(signals());
     }
     function failClosed() {
       fatal = true;
@@ -244,7 +252,7 @@
     // un regreso estable (200 ms) puede empezar otro episodio. No se sanciona
     // pasar de un campo a otro: escuchamos blur de window, sin capture.
     function record(reason) {
-      if (!initialized || fatal || problem || restoring || state.phase !== 'active') return;
+      if (!initialized || fatal || problem || restoring || fileRecovery || state.phase !== 'active') return;
       clearTimeout(timer);
       if (!state.episode) {
         state.data = adapter.snapshot();
@@ -279,7 +287,7 @@
       if (!initialized || fatal) return;
       const s = signals();
       if(safe(s)){clearTimeout(focusTimer);focusTimer=null;}
-      if (state.phase === 'active' && !restoring) {
+      if (state.phase === 'active' && !restoring && !fileRecovery) {
         if (reason === 'pagehide') record(reason);
         else if (!safe(s)) {
           // Entering fullscreen can briefly blur the window. Confirm a
@@ -371,7 +379,7 @@
       return JSON.stringify({format:'SSII-UD01-SAVE',version:1,language:state.data.language,state},null,2);
     }
     function importPractice(text){
-      if(problem||fatal||busy||!(['ready','paused','submitted','reset'].includes(state.phase)||(state.phase==='active'&&restoring)))throw Error('Cannot import now');
+      if(problem||fatal||busy||!(['ready','paused','submitted','reset'].includes(state.phase)||(state.phase==='active'&&(restoring||fileRecovery))))throw Error('Cannot import now');
       const doc=JSON.parse(text);
       if(doc.format!=='SSII-UD01-SAVE'||doc.version!==1||!['paused','submitted'].includes(doc.state?.phase))throw Error('Invalid save file');
       const next=validate(doc.state);
@@ -401,6 +409,11 @@
       if(!persist())throw Error('Could not save imported data');
       render();
     }
+    function beginFileRecovery(){
+      if(fileRecovery||busy||problem||fatal||!(canEdit()||state.phase==='paused'))return false;
+      fileRecovery=true;render();return true;
+    }
+    function endFileRecovery(){fileRecovery=false;render();}
     function recoverPractice(){
       if(!(state.phase==='paused'||(state.phase==='active'&&restoring)))return;
       return startOrResume(true);
@@ -480,7 +493,7 @@
       if(kind==='save'){
         if(await pausePractice()){
           busy=true;render();
-          try{await adapter.savePracticeDocument();}finally{busy=false;render();}
+          try{if(await adapter.savePracticeDocument())resetProcess();}finally{busy=false;render();}
         }
         return;
       }
@@ -548,7 +561,7 @@
       finally { forcedBusy = false; render(); }
     }
     function resetProcess() {
-      if (fatal || problem || !['submitted','reset'].includes(state.phase)) return false;
+      if (fatal || problem || !['submitted','reset','paused'].includes(state.phase)) return false;
       const prior = structuredClone(state);
       state = fresh(); restoring = false;
       if (!persist()) { state = prior; render(); return false; }
@@ -635,7 +648,7 @@
     $('guard-boot').hidden = true;
     render();
     if (state.phase === 'closing') setTimeout(() => void finalizeForced(), 0);
-    return Object.freeze({ canEdit, canDownloadReport, saveEdit, metadata, render, resetProcess, finalizeForced, pausePractice, recoverPractice, exportPractice, importPractice, ask });
+    return Object.freeze({ canEdit, canDownloadReport, saveEdit, metadata, render, resetProcess, finalizeForced, pausePractice, recoverPractice, exportPractice, importPractice, beginFileRecovery, endFileRecovery, ask });
   };
 })();
 

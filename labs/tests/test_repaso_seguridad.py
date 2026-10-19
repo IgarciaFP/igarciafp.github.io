@@ -22,7 +22,7 @@ from playwright.sync_api import sync_playwright
 LABS=Path(__file__).resolve().parents[1]
 KEY='ssii-repaso-ud01-seguridad-v1'
 LEGACY='ssii-repaso-ud01-v1'
-HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-editable-identity','')
+HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-simple-start','')
 for name in ('repaso-ssii-u01-variantes.js','repaso-ssii-u01-seguridad.js','repaso-ssii-u01.js'):
     HTML=HTML.replace(f'<script src="{name}"></script>',f'<script>{(LABS/name).read_text()}</script>')
 
@@ -683,3 +683,45 @@ def test_saved_identity_remains_editable(make_page):
     q.locator('#student').fill('otro@g.educaand.es')
     assert q.locator('#fullname').input_value()=='Otro nombre'
     assert q.locator('#student').input_value()=='otro@g.educaand.es'
+
+
+def test_new_entry_flow_starts_clean_with_previous_storage(make_page):
+    p=make_page();begin(p)
+    old_store=p.evaluate('window.testStore')
+    q=make_page(old_store)
+    assert q.locator('#language-stage').is_visible()
+    q.locator('[data-language=es]').click()
+    assert not q.locator('#fullname').is_visible()
+    assert q.locator('#guard-start').is_disabled()
+    q.locator('#guard-consent').check()
+    q.locator('#fullname').fill('Alumno nuevo')
+    q.locator('#student').fill('nuevo@g.educaand.es')
+    assert q.locator('#guard-start').is_enabled()
+    assert q.locator('#setup-recover').count()==0
+    q.locator('#guard-start').click()
+    q.wait_for_function("!document.querySelector('#answer-fields').disabled")
+    assert q.evaluate("document.fullscreenElement===document.documentElement")
+    assert q.locator('#practice-toolbar #practice-recover').is_visible()
+    assert state(q)['count']==0
+
+def test_new_toolbar_recovery_does_not_penalize_picker_cancel(make_page):
+    p=make_page();begin(p)
+    before=state(p)
+    with p.expect_file_chooser() as chooser:
+        p.locator('#practice-recover').click()
+    chooser.value.set_files([])
+    p.locator('#practice-file').dispatch_event('cancel')
+    assert state(p)['count']==before['count']
+    assert not p.locator('#answer-fields').is_disabled()
+
+def test_new_save_returns_to_initial_flow(make_page):
+    p=make_page();begin(p);p.locator('#t1').fill('123')
+    with p.expect_download() as downloaded:
+        save_practice(p)
+    p.wait_for_function("!document.querySelector('#language-stage').hidden")
+    code=Path(downloaded.value.path()).read_text()
+    encoded=code.split('.',1)[1]
+    doc=json.loads(gzip.decompress(base64.urlsafe_b64decode(encoded+'='*(-len(encoded)%4))))
+    assert doc['state']['data']['values']['t1']=='123'
+    assert doc['state']['phase']=='paused'
+    assert state(p)['phase']=='ready'
