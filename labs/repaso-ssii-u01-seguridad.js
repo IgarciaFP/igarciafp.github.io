@@ -343,7 +343,7 @@
 
 
     async function pausePractice() {
-      if(!canEdit())return false;
+      if(state.phase!=='paused'&&!canEdit())return false;
       adapter.stopClock();
       state.data=adapter.snapshot();state.phase='paused';state.pending=null;state.episode=null;
       rerollPending=false;restoring=false;
@@ -351,6 +351,29 @@
       const saved=persist();render();
       if(saved&&document.fullscreenElement===root){try{await document.exitFullscreen();}catch{}}
       return saved;
+    }
+    function exportPractice(){
+      if(problem||fatal||state.phase!=='paused')throw Error('Save is not paused');
+      return JSON.stringify({format:'SSII-UD01-SAVE',version:1,state},null,2);
+    }
+    function importPractice(text){
+      if(problem||fatal||busy||!(['ready','paused','submitted','reset'].includes(state.phase)||(state.phase==='active'&&restoring)))throw Error('Cannot import now');
+      const doc=JSON.parse(text);
+      if(doc.format!=='SSII-UD01-SAVE'||doc.version!==1||doc.state?.phase!=='paused')throw Error('Invalid save file');
+      const next=validate(doc.state);
+      if(!next.attemptAudit.startedAt||!next.data.values.fullname?.trim()||!/^\S+@g\.educaand\.es$/i.test(next.data.values.student||''))throw Error('Invalid identity');
+      // Reopening an older copy must not reduce this browser's recorded count.
+      if(next.attemptAudit.startedAt===state.attemptAudit.startedAt&&next.data.values.student===state.data.values.student){
+        if(['submitted','closing'].includes(state.phase))throw Error('Attempt already finished');
+        next.count=Math.max(next.count,state.count);
+        next.recoveries=Math.max(next.recoveries,state.recoveries);
+      }
+      next.data.started=null;next.pending=null;next.episode=null;
+      state=next;restoring=false;rerollPending=false;
+      adapter.restore(state.data);
+      log('Documento de práctica recuperado; pendiente de continuar.');
+      if(!persist())throw Error('Could not save imported data');
+      render();
     }
     function recoverPractice(){
       if(!(state.phase==='paused'||(state.phase==='active'&&restoring)))return;
@@ -415,7 +438,7 @@
     function ask(kind) {
       if (problem || busy || fatal) return;
       if (kind === 'finish' && !canEdit()) return;
-      if (kind === 'erase' && state.phase === 'active') return;
+
       confirmation = kind;
       $('guard-confirm-title').textContent = kind === 'finish' ? '¿Finalizar el intento?' : '¿Borrar los datos locales?';
       $('guard-confirm-text').textContent = kind === 'finish'
@@ -428,15 +451,18 @@
       const kind = confirmation;
       confirmation = null; confirmBox.close();
       if (kind === 'erase') {
-        if (state.phase === 'active' || problem) return;
+        if (problem) return;
         try {
           if (localStorage.getItem(CONFIG.key) !== lastRaw) { environment('focus'); persist(); return; }
           localStorage.removeItem(CONFIG.legacyKey);
           localStorage.removeItem(CONFIG.key);
-          state = fresh(); lastRaw = null; restoring = false;
+          adapter.stopClock();
+          state = fresh(); lastRaw = null; restoring = false;rerollPending=false;
+          adapter.onReset();
           adapter.restore(state.data); $('guard-consent').checked = false;
           // No persistir de nuevo durante pagehide: el borrado debe ser real.
           render();
+          if(document.fullscreenElement===root)document.exitFullscreen().catch(()=>{});
         } catch { problem = 'io'; problemText = 'No se pudieron borrar los datos. Se conserva la página para revisión.'; render(); }
         return;
       }
@@ -571,7 +597,7 @@
     $('guard-boot').hidden = true;
     render();
     if (state.phase === 'closing') setTimeout(() => void finalizeForced(), 0);
-    return Object.freeze({ canEdit, canDownloadReport, saveEdit, metadata, render, resetProcess, finalizeForced, pausePractice, recoverPractice });
+    return Object.freeze({ canEdit, canDownloadReport, saveEdit, metadata, render, resetProcess, finalizeForced, pausePractice, recoverPractice, exportPractice, importPractice, ask });
   };
 })();
 
