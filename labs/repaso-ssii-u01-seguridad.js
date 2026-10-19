@@ -331,8 +331,8 @@
             state.closingAt=Date.now();state.attemptAudit.finishedAt=state.closingAt;adapter.stopClock(state.closingAt);
             state.data=adapter.snapshot();state.phase='closing';state.pending=null;state.episode=null;restoring=false;
             if(warning.open)warning.close();
-            if(persist()){render();void finalizeForced();}
-            return;
+            if(persist()){render();void finalizeForced();return true;}
+            return false;
           }
           state.phase='active';
         } else if(resume) refreshPending();
@@ -348,7 +348,7 @@
         if (warning.open) warning.close();
         $('guard-action-status').textContent = '';
         adapter.startClock(); state.data = adapter.snapshot();
-        persist();
+        return persist();
       } catch (e) {
         $('guard-action-status').textContent = e.message || 'No se pudo activar pantalla completa.';
         $('guard-warning-error').textContent = 'No se pudo activar pantalla completa. Regresa a la página y vuelve a intentarlo.';
