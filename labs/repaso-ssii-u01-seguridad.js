@@ -28,7 +28,6 @@
     let problem = '', problemText = '', lastRaw = null, timer = null;
     let confirmation = null, forcedBusy = false, rerollPending = false;
     const recentActions = new Map();
-    let pendingIP=Promise.resolve();
     const supported = typeof root.requestFullscreen === 'function'
       && document.fullscreenEnabled === true && typeof document.hasFocus === 'function'
       && 'visibilityState' in document && typeof warning.showModal === 'function'
@@ -68,31 +67,12 @@
         })
       };
     }
-    function captureIPAddress(reason){
-      const owner=state,sample={at:Date.now(),reason,ip:null,status:'pending'};
-      owner.attemptAudit.ipSamples.push(sample);
-      owner.attemptAudit.ipSamples=owner.attemptAudit.ipSamples.slice(-8);
-      pendingIP=(async()=>{
-        let timeout;
-        try{
-          const controller=new AbortController();
-          const deadline=new Promise((_,reject)=>{timeout=setTimeout(()=>{controller.abort();reject(Error('IP timeout'));},4000);});
-          const request=(async()=>{
-            const response=await fetch('https://api64.ipify.org?format=json',{signal:controller.signal,credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer'});
-            if(!response.ok)throw Error('IP service unavailable');
-            const result=await response.json();
-            if(!validIP(result.ip))throw Error('Invalid IP response');
-            return result.ip;
-          })();
-          sample.ip=await Promise.race([request,deadline]);sample.status='available';
-        }catch{sample.ip=null;sample.status='unavailable';}
-        finally{
-          clearTimeout(timeout);
-          if(state===owner&&!fatal&&!problem&&['active','paused','closing'].includes(state.phase)){persist();render();}
-        }
-      })();
+    function recordIPUnavailable(reason){
+      // Browser JavaScript has no reliable public-IP API. No external requests,
+      // WebRTC/STUN probes or fingerprinting are used.
+      state.attemptAudit.ipSamples.push({at:Date.now(),reason,ip:null,status:'unavailable'});
+      state.attemptAudit.ipSamples=state.attemptAudit.ipSamples.slice(-8);
     }
-
     function validate(s) {
       // Se validan estructura y límites. Esto detecta daños accidentales,
       // NO acredita que el alumno no haya modificado un JSON válido.
@@ -331,7 +311,7 @@
         if (resume && !['active','paused'].includes(state.phase)) return;
         if(recovery){
           state.count++;state.recoveries++;rerollPending=false;
-          captureIPAddress('recovery');
+          recordIPUnavailable('recovery');
           log('Recuperación guardada: incidencia '+state.count+'/'+CONFIG.limit+'.');
           if(state.count>=CONFIG.limit){
             state.closingAt=Date.now();state.attemptAudit.finishedAt=state.closingAt;adapter.stopClock(state.closingAt);
@@ -347,7 +327,7 @@
           const data = adapter.snapshot();
           const backup = state.backup, events = state.events, attempt = state.attempt + 1;
           state = { ...fresh(), phase: 'active', attempt, data, backup, events };
-          state.attemptAudit.startedAt=Date.now();captureIPAddress('start');
+          state.attemptAudit.startedAt=Date.now();recordIPUnavailable('start');
           adapter.restore(data); log(`Comienzo del intento ${attempt}. Normas aceptadas.`);
         } else log('Intento reanudado en pantalla completa.');
         state.pending = null; state.episode = null; restoring = false;
@@ -466,7 +446,6 @@
       const beforeCount = state.count;
       busy = true; render();
       try {
-        await pendingIP;
         const report = await adapter.makeReport(metadata(), true, finishedAt, reportContext('voluntary',finishedAt));
         // El cálculo SHA-256 es asíncrono. Una salida en mitad del cálculo
         // cancela la entrega: no permite saltarse un aviso o el tercer reinicio.
@@ -491,7 +470,6 @@
       if (forcedBusy || fatal || problem || state.phase !== 'closing') return;
       forcedBusy = true;
       try {
-        await pendingIP;
         const report = await adapter.makeReport(metadata(), true, state.closingAt || Date.now(), reportContext('incident-limit'));
         if (!report) { adapter.forcedError(); return; }
         if (fatal || problem || state.phase !== 'closing') return;
