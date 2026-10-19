@@ -451,8 +451,11 @@
       const kind = confirmation;
       confirmation = null; confirmBox.close();
       if (kind === 'erase') {
-        if (problem) return;
+        if (problem||busy) return;
+        if(state.phase==='active'&&!await pausePractice())return;
+        busy=true;render();
         try {
+          if(!await adapter.saveBeforeReset(state.phase))return;
           if (localStorage.getItem(CONFIG.key) !== lastRaw) { environment('focus'); persist(); return; }
           localStorage.removeItem(CONFIG.legacyKey);
           localStorage.removeItem(CONFIG.key);
@@ -464,6 +467,7 @@
           render();
           if(document.fullscreenElement===root)document.exitFullscreen().catch(()=>{});
         } catch { problem = 'io'; problemText = 'No se pudieron borrar los datos. Se conserva la página para revisión.'; render(); }
+        finally {busy=false;render();}
         return;
       }
       if (kind !== 'finish' || !canEdit()) return;
