@@ -455,6 +455,9 @@ def test_downloaded_file_recovers_in_new_browser(make_page):
     saved=json.loads(gzip.decompress(base64.urlsafe_b64decode(encoded+'='*(-len(encoded)%4))))
     assert saved['format']=='SSII-UD01-SAVE'
     q=make_page()
+    q.locator('[data-language=es]').click()
+    q.locator('#guard-consent').check()
+    q.locator('#student').fill(doc['state']['data']['values']['student'] if 'doc' in locals() else saved['state']['data']['values']['student'])
     q.locator('#practice-file').set_input_files({'name':'practica.txt','mimeType':'text/plain','buffer':payload})
     finish_file_recovery(q)
     q.wait_for_function("!document.querySelector('#answer-fields').disabled")
@@ -524,6 +527,9 @@ def test_final_receipt_recovers_practice(make_page):
     assert doc['format']=='SSII-UD01-SAVE'
     assert doc['state']['phase']=='submitted'
     q=make_page()
+    q.locator('[data-language=es]').click()
+    q.locator('#guard-consent').check()
+    q.locator('#student').fill(doc['state']['data']['values']['student'] if 'doc' in locals() else saved['state']['data']['values']['student'])
     q.locator('#practice-file').set_input_files({'name':'comprobante.txt','mimeType':'text/plain','buffer':payload})
     finish_file_recovery(q)
     q.wait_for_function("!document.querySelector('#answer-fields').disabled")
@@ -558,3 +564,24 @@ def test_save_confirmation_and_group_hidden(make_page):
     p.locator('#guard-confirm-cancel').click()
     assert state(p)['phase']=='active'
     assert not p.locator('#answer-fields').is_disabled()
+
+
+def test_toolbar_hidden_on_language_screen(make_page):
+    p=make_page()
+    assert not p.locator('#practice-toolbar').is_visible()
+    p.locator('[data-language=es]').click()
+    assert p.locator('#practice-toolbar').is_visible()
+    p.locator('#back-language').click()
+    assert not p.locator('#practice-toolbar').is_visible()
+
+def test_recovery_rejects_other_email_without_incident(make_page):
+    p=make_page();begin(p);save_practice(p)
+    saved=state(p)
+    payload=json.dumps({'format':'SSII-UD01-SAVE','version':1,'state':saved}).encode()
+    q=make_page();q.locator('[data-language=es]').click();q.locator('#guard-consent').check()
+    q.locator('#student').fill('otro@g.educaand.es')
+    before=state(q)
+    q.locator('#practice-file').set_input_files({'name':'practica.json','mimeType':'application/json','buffer':payload})
+    q.wait_for_function("document.querySelector('#practice-file-status').textContent.includes('no coincide')")
+    assert state(q)==before
+    assert q.locator('#student').input_value()=='otro@g.educaand.es'
