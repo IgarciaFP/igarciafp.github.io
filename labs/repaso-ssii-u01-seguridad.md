@@ -200,3 +200,10 @@ Abrir → seleccionar idioma → aceptar términos → introducir nombre y corre
 Recuperar práctica existe solo en la barra fija, una vez dentro de la práctica. Mientras el selector está abierto se bloquea la edición y se suspenden las incidencias de entorno causadas por el propio selector. Cancelar devuelve al intento actual sin incidencia. Importar valida el correo y documento antes de sustituir el estado y reanuda con una recuperación contabilizada. Guardar confirmado descarga el documento y vuelve a la pantalla inicial; para continuar se entra y se recupera desde la barra. Si la descarga falla, el estado pausado se conserva.
 
 Verificado con DOM simulado: arranque limpio con estado previo, copia local preservada, entrada en pantalla completa, recuperación desde intento activo, selector sin incidencia, restauración y cancelación. Nuevas pruebas de flujo incluidas; las expectativas históricas de restauración automática en la suite anterior corresponden al flujo sustituido. No se ejecutó Chromium por bloqueo BitLocker.
+
+
+## Selector moderno y restauración de pantalla completa
+
+Se prefiere showOpenFilePicker cuando está disponible. Si el navegador interrumpe la pantalla completa al elegir archivo, se solicita restablecerla inmediatamente al resolverse el selector, antes de getFile o descompresión. La API renueva la activación al devolver la selección (https://wicg.github.io/file-system-access/#api-showopenfilepicker). El selector input se mantiene como compatibilidad y también intenta restablecer pantalla completa antes de leer. Cancelar no carga una recuperación.
+
+Verificado con DOM simulado: interrupción de fullscreen durante selector, restauración antes de lectura, respuestas, parámetros, idioma, tiempo y edición activa con una incidencia; cancelación sin incidencia. Añadida prueba Playwright con TXT comprimido y selector simulado. No se puede garantizar que el navegador no cierre temporalmente fullscreen al mostrar su diálogo del sistema; la política de permisos del navegador tiene prioridad. La prueba de extremo a extremo con selector nativo sigue pendiente por BitLocker.
