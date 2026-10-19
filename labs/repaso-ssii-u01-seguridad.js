@@ -368,13 +368,19 @@
     }
     function exportPractice(){
       if(problem||fatal||!['paused','submitted'].includes(state.phase))throw Error('Attempt cannot be exported');
-      return JSON.stringify({format:'SSII-UD01-SAVE',version:1,state},null,2);
+      return JSON.stringify({format:'SSII-UD01-SAVE',version:1,language:state.data.language,state},null,2);
     }
     function importPractice(text){
       if(problem||fatal||busy||!(['ready','paused','submitted','reset'].includes(state.phase)||(state.phase==='active'&&restoring)))throw Error('Cannot import now');
       const doc=JSON.parse(text);
       if(doc.format!=='SSII-UD01-SAVE'||doc.version!==1||!['paused','submitted'].includes(doc.state?.phase))throw Error('Invalid save file');
       const next=validate(doc.state);
+      if(doc.language!==undefined){
+        if(!['es','en'].includes(doc.language)||next.data.language&&next.data.language!==doc.language)throw Error('Invalid document language');
+        next.data.language=doc.language;
+      }
+      // Older files use the language already stored inside state.data.
+      next.data.language=next.data.language||adapter.snapshot().language||'es';
       if(!next.attemptAudit.startedAt||!next.data.values.fullname?.trim()||!/^\S+@g\.educaand\.es$/i.test(next.data.values.student||''))throw Error('Invalid identity');
       const currentEmail=$('student').value.trim().toLowerCase();
       if(!/^[^\s@]+@g\.educaand\.es$/.test(currentEmail))throw Object.assign(Error('Enter current email'),{code:'RECOVERY_EMAIL_REQUIRED'});
