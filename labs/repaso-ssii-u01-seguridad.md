@@ -160,3 +160,10 @@ Antes de importar un documento, se exige un correo actual válido y se compara c
 La barra empieza oculta en el HTML y se mantiene oculta mientras se selecciona idioma, sin espacio superior reservado. Elegir un idioma la muestra y reajusta su altura; volver al selector la oculta.
 
 Verificado con DOM simulado: correo ausente, distinto y coincidente normalizado; ausencia de cambios al rechazar y una incidencia al recuperar correctamente; visibilidad de barra. Suite Playwright actualizada, sin ejecución nativa por la limitación de BitLocker.
+
+
+## Idioma y visibilidad de la barra
+
+La vista sincroniza la barra en cada render: oculta únicamente sin idioma y visible después de seleccionarlo, también en pausa y recuperación. Se versionan las referencias a los scripts para evitar mezclas de HTML nuevo con JavaScript anterior en caché.
+
+El documento incluye explícitamente language además del idioma del estado. Recuperar valida ambos y aplica el idioma del archivo, aunque en la pantalla inicial se haya elegido otro. Los documentos anteriores conservan compatibilidad mediante state.data.language. Verificado ES/EN con DOM simulado y añadida cobertura Playwright; sin ejecución nativa por BitLocker.

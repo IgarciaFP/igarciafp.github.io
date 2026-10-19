@@ -250,6 +250,8 @@ Object.assign(texts,{
 let importedPractice=false;
 function afterRender(state,ctx){
  phase=state.phase;
+ $('practice-toolbar').hidden=!language;
+ syncToolbarHeight();
  const paused=phase==='paused',needsRecovery=paused||ctx.restoring;
  const active=phase==='active',submitted=phase==='submitted'||phase==='closing';
  $('language-stage').hidden=!!language||active||submitted;
