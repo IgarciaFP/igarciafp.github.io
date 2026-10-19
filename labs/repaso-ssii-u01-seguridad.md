@@ -115,3 +115,12 @@ Por petición del usuario no se consulta ningún servicio para obtener la IP. Ja
 Los intentos antiguos sin marcas de inicio conservan inicio nulo. Los datos se guardan localmente y dentro de la entrega; no se crea un servidor de vigilancia ni un historial central. Las horas dependen del reloj del dispositivo. El horario de SSII es una norma visible, no un bloqueo automático por horario.
 
 Las pruebas comprueban inicio/fin, conservación tras recuperar, exportación y ausencia de solicitudes de red para la IP. Se ejecutaron pruebas con DOM simulado; Chromium local sigue bloqueado por BitLocker.
+
+
+## Documento recuperable y barra de acciones
+
+Guardar y pausar descarga un JSON identificado como SSII-UD01-SAVE, con estado validado, respuestas, cantidades, reloj e incidencias. No es la entrega final comprimida SSII3G. Recuperar práctica lee el archivo elegido y exige pulsar Continuar para solicitar pantalla completa y cargar una incidencia. Se rechazan documentos ajenos, finalizados, demasiado grandes o inválidos. Reabrir una copia antigua no reduce el contador del mismo intento conservado en este navegador. Sin servidor no puede impedirse que un usuario manipule el archivo o lo reutilice desde un navegador vacío.
+
+La barra añade Entregar y Reiniciar. Entregar usa la confirmación y el informe final existentes: descarga TXT, copia el texto al portapapeles y abre el formulario autorizado. El alumno pega y envía; la política de mismo origen impide escribir directamente en Google Forms. Reiniciar pide confirmación, borra los datos locales del intento y vuelve al selector de idioma.
+
+Validación adicional ejecutada con DOM simulado: exportación/importación en navegador vacío, respuestas y cantidades conservadas, contador al reutilizar archivo, rechazo de archivo inválido y reinicio activo confirmado. Actualizada la suite Playwright para archivos; su ejecución real sigue pendiente por el bloqueo local descrito arriba.
