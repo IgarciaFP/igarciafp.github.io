@@ -22,7 +22,7 @@ from playwright.sync_api import sync_playwright
 LABS=Path(__file__).resolve().parents[1]
 KEY='ssii-repaso-ud01-seguridad-v1'
 LEGACY='ssii-repaso-ud01-v1'
-HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-simple-start','')
+HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-picker-restore','')
 for name in ('repaso-ssii-u01-variantes.js','repaso-ssii-u01-seguridad.js','repaso-ssii-u01.js'):
     HTML=HTML.replace(f'<script src="{name}"></script>',f'<script>{(LABS/name).read_text()}</script>')
 
@@ -725,3 +725,25 @@ def test_new_save_returns_to_initial_flow(make_page):
     assert doc['state']['data']['values']['t1']=='123'
     assert doc['state']['phase']=='paused'
     assert state(p)['phase']=='ready'
+
+
+def test_modern_picker_restores_compressed_saved_answers(make_page):
+    p=make_page();begin(p,'en');p.locator('#t1').fill('123')
+    before=state(p)
+    with p.expect_download() as downloaded:
+        save_practice(p)
+    code=Path(downloaded.value.path()).read_text()
+    q=make_page();begin(q,'es')
+    q.evaluate("""code=>{
+      window.showOpenFilePicker=async()=>{
+        await document.exitFullscreen();
+        return [{getFile:async()=>new File([code],'practica.txt',{type:'text/plain'})}];
+      };
+    }""",code)
+    q.locator('#practice-recover').click()
+    q.wait_for_function("document.documentElement.lang==='en' && !document.querySelector('#answer-fields').disabled")
+    restored=state(q)
+    assert q.evaluate("document.fullscreenElement===document.documentElement")
+    assert restored['data']['values']['t1']=='123'
+    assert restored['data']['parameters']==before['data']['parameters']
+    assert restored['count']==1
