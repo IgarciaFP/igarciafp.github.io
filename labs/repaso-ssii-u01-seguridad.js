@@ -376,6 +376,9 @@
       if(doc.format!=='SSII-UD01-SAVE'||doc.version!==1||!['paused','submitted'].includes(doc.state?.phase))throw Error('Invalid save file');
       const next=validate(doc.state);
       if(!next.attemptAudit.startedAt||!next.data.values.fullname?.trim()||!/^\S+@g\.educaand\.es$/i.test(next.data.values.student||''))throw Error('Invalid identity');
+      const currentEmail=$('student').value.trim().toLowerCase();
+      if(!/^[^\s@]+@g\.educaand\.es$/.test(currentEmail))throw Object.assign(Error('Enter current email'),{code:'RECOVERY_EMAIL_REQUIRED'});
+      if(currentEmail!==next.data.values.student.trim().toLowerCase())throw Object.assign(Error('Email mismatch'),{code:'RECOVERY_EMAIL_MISMATCH'});
       // Reopening an older copy must not reduce this browser's recorded count.
       if(next.attemptAudit.startedAt===state.attemptAudit.startedAt&&next.data.values.student===state.data.values.student){
         if(state.phase==='closing'||state.count>=CONFIG.limit)throw Error('Incident limit reached');

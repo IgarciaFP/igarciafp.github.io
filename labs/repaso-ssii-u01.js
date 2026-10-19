@@ -149,6 +149,8 @@ for(const [id,anchor]of [['receipt-download','delivery-retry'],['recovery-downlo
 const receiptStatus=document.createElement('p');receiptStatus.id='receipt-status';receiptStatus.setAttribute('role','status');$('receipt-download').after(receiptStatus);
 function setLanguage(lang){
  language=lang;document.documentElement.lang=lang||'es';
+ $('practice-toolbar').hidden=!language;
+ document.documentElement.style.setProperty('--toolbar-height',language?Math.ceil($('practice-toolbar').getBoundingClientRect().height)+'px':'0px');
  document.title=language==='en'?'SSII review · Unit 01':'Repaso SSII · Unidad 01';
  document.querySelector('.topline').textContent=document.title;
  document.querySelectorAll('[data-text]').forEach(el=>el.textContent=tr(el.dataset.text));
@@ -240,6 +242,8 @@ Object.assign(texts,{
  fileSaved:['Archivo descargado. Consérvalo: Recuperar práctica lo leerá para continuar otro día.','File downloaded. Keep it: Recover practice will read it to continue another day.'],
  fileLoaded:['Archivo leído. Pulsa Continuar práctica recuperada; contará como una incidencia.','File loaded. Click Continue recovered practice; this counts as one incident.'],
  fileError:['No se pudo descargar el documento. La práctica sigue guardada aquí; vuelve a pulsar Guardar.','Could not download the document. The practice is still saved here; click Save again.'],
+ recoveryEmailRequired:['Introduce primero tu correo de alumno en los datos de inicio para poder recuperar una práctica.','Enter your student email in the starting details before recovering a practice.'],
+ recoveryEmailMismatch:['El correo actual no coincide con el de la práctica guardada. No se ha recuperado ni se ha añadido ninguna incidencia.','The current email does not match the saved practice. Nothing was recovered and no incident was added.'],
  fileInvalid:['No se pudo recuperar: selecciona un archivo de práctica o comprobante válido que no haya agotado las tres incidencias.','Could not recover: choose a valid practice file or receipt that has not reached three incidents.'],
  restartWarning:['Se descargará automáticamente una copia antes de borrar el intento y volver al comienzo. ¿Reiniciar?','A copy will download automatically before this browser’s attempt is cleared and you return to the start. Restart?']
 });
@@ -459,12 +463,17 @@ async function decodePracticeDocument(text){
  return new TextDecoder('utf-8',{fatal:true}).decode(result);
 }
 $('practice-save').addEventListener('click',()=>guard.ask('save'));
+function recoveryEmailReady(){
+ if(/^[^\s@]+@g\.educaand\.es$/i.test($('student').value.trim()))return true;
+ fileStatus('recoveryEmailRequired');return false;
+}
 $('practice-recover').addEventListener('click',()=>{
+ if(!recoveryEmailReady())return;
  if(importedPractice){importedPractice=false;void guard.recoverPractice();return;}
  $('practice-file').value='';$('practice-file').click();
 });
 $('practice-file').addEventListener('change',async()=>{
- const file=$('practice-file').files[0];if(!file)return;
+ const file=$('practice-file').files[0];if(!file||!recoveryEmailReady())return;
  // Request fullscreen before asynchronous file reading consumes user activation.
  const root=document.documentElement;
  const fullscreenReady=(document.fullscreenElement===root?Promise.resolve():root.requestFullscreen()).then(()=>true,()=>false);
@@ -478,9 +487,9 @@ $('practice-file').addEventListener('change',async()=>{
     if(importedPractice)fileStatus('recoveryFullscreen');
   }else fileStatus('recoveryFullscreen');
   guard.render();
- }catch{
+ }catch(error){
   await fullscreenReady;
-  fileStatus('fileInvalid');
+  fileStatus(error.code==='RECOVERY_EMAIL_MISMATCH'?'recoveryEmailMismatch':error.code==='RECOVERY_EMAIL_REQUIRED'?'recoveryEmailRequired':'fileInvalid');
   if(document.fullscreenElement===root&&!guard.canEdit())document.exitFullscreen().catch(()=>{});
  }
 });

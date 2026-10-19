@@ -151,3 +151,12 @@ Grupo ya no se muestra en Antes de empezar; se mantiene un campo oculto para com
 Seleccionar un archivo válido solicita pantalla completa antes de leerlo de forma asíncrona y abre directamente el intento recuperado. Se elimina el paso normal de Continuar práctica recuperada. Si el navegador deniega pantalla completa por falta de activación, conserva el documento y solicita un clic en Recuperar práctica, sin cargar todavía ninguna incidencia.
 
 Verificado mediante DOM simulado: confirmación, cancelación, pausa y lectura de archivo con recuperación inmediata y una única incidencia. Suite Playwright adaptada, pendiente de ejecución real por BitLocker.
+
+
+## Correo de recuperación y barra inicial
+
+Antes de importar un documento, se exige un correo actual válido y se compara con el del archivo normalizando espacios exteriores y mayúsculas. Si falta o no coincide, muestra un error y no cambia el estado ni consume incidencias. La comparación ocurre antes de sustituir datos locales. Es una comprobación de coherencia del correo declarado, no autenticación de identidad.
+
+La barra empieza oculta en el HTML y se mantiene oculta mientras se selecciona idioma, sin espacio superior reservado. Elegir un idioma la muestra y reajusta su altura; volver al selector la oculta.
+
+Verificado con DOM simulado: correo ausente, distinto y coincidente normalizado; ausencia de cambios al rechazar y una incidencia al recuperar correctamente; visibilidad de barra. Suite Playwright actualizada, sin ejecución nativa por la limitación de BitLocker.
