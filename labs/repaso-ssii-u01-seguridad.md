@@ -133,3 +133,12 @@ El documento recuperable se serializa como JSON y se comprime con gzip, codifica
 Al confirmar Reiniciar, un intento activo se pausa y se descarga su documento antes de borrar el estado. Si falla la creación o descarga, no se borra. Un intento finalizado conserva su comprobante final mediante descarga; un estado inicial sin intento no necesita copia. El navegador puede solicitar o bloquear la descarga y no ofrece una confirmación de que el usuario haya conservado el archivo en disco. El botón de confirmación muestra Confirmar (Confirm en inglés).
 
 Verificación: sintaxis JavaScript y estados simulados de copia anterior al reinicio y fallo de generación sin pérdida de respuestas. Añadidas pruebas Playwright para compresión gzip/Base64URL, recuperación del TXT y reinicio. Chromium sigue sin ejecutarse en este entorno por BitLocker.
+
+
+## Comprobante recuperable
+
+Los comprobantes nuevos usan el mismo documento SSII-UD01-SAVE, comprimido gzip/Base64URL SSII3G, que Guardar. Además del informe final, incluyen el estado completo. Este documento se conserva también en la copia de sesión para poder volver a descargarlo tras abrir Forms. El campo del formulario continúa recibiendo el informe final, no el contenedor recuperable.
+
+Recuperar admite documentos pausados o entregados con menos de tres incidencias, restaura las cantidades y respuestas, elimina el informe anterior de la edición y exige Continuar, que añade una incidencia. Los intentos con tres incidencias no se reabren. No modifica ninguna respuesta ya enviada a Forms; una nueva entrega genera un informe nuevo. Los antiguos comprobantes que solo contienen informe conservan su formato histórico y no incluyen el estado necesario para esta recuperación.
+
+Verificado con DOM simulado: exportación de un intento entregado, recuperación en el mismo navegador y en uno vacío, conservación de respuestas y rechazo del límite agotado. Añadida prueba Playwright del TXT descargado; su ejecución real continúa bloqueada por BitLocker.

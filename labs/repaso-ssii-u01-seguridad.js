@@ -367,21 +367,24 @@
       return saved;
     }
     function exportPractice(){
-      if(problem||fatal||state.phase!=='paused')throw Error('Save is not paused');
+      if(problem||fatal||!['paused','submitted'].includes(state.phase))throw Error('Attempt cannot be exported');
       return JSON.stringify({format:'SSII-UD01-SAVE',version:1,state},null,2);
     }
     function importPractice(text){
       if(problem||fatal||busy||!(['ready','paused','submitted','reset'].includes(state.phase)||(state.phase==='active'&&restoring)))throw Error('Cannot import now');
       const doc=JSON.parse(text);
-      if(doc.format!=='SSII-UD01-SAVE'||doc.version!==1||doc.state?.phase!=='paused')throw Error('Invalid save file');
+      if(doc.format!=='SSII-UD01-SAVE'||doc.version!==1||!['paused','submitted'].includes(doc.state?.phase))throw Error('Invalid save file');
       const next=validate(doc.state);
       if(!next.attemptAudit.startedAt||!next.data.values.fullname?.trim()||!/^\S+@g\.educaand\.es$/i.test(next.data.values.student||''))throw Error('Invalid identity');
       // Reopening an older copy must not reduce this browser's recorded count.
       if(next.attemptAudit.startedAt===state.attemptAudit.startedAt&&next.data.values.student===state.data.values.student){
-        if(['submitted','closing'].includes(state.phase))throw Error('Attempt already finished');
+        if(state.phase==='closing'||state.count>=CONFIG.limit)throw Error('Incident limit reached');
         next.count=Math.max(next.count,state.count);
         next.recoveries=Math.max(next.recoveries,state.recoveries);
       }
+      if(next.count>=CONFIG.limit)throw Error('Incident limit reached');
+      next.phase='paused';next.data.report='';next.closingAt=null;
+      next.attemptAudit.finishedAt=null;
       next.data.started=null;next.pending=null;next.episode=null;
       state=next;restoring=false;rerollPending=false;
       adapter.restore(state.data);

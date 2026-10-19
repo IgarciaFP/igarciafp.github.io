@@ -511,3 +511,28 @@ def test_first_start_ignores_transient_fullscreen_focus(make_page):
     p.wait_for_timeout(300)
     assert state(p)['count']==0
     assert not p.locator('#answer-fields').is_disabled()
+
+
+def test_final_receipt_recovers_practice(make_page):
+    p=make_page();begin(p);p.locator('#t1').fill('123')
+    expected=state(p)['data']['parameters']
+    with p.expect_download() as downloaded:
+        finish(p)
+    payload=Path(downloaded.value.path()).read_bytes()
+    code=payload.decode('utf-8')
+    assert code.startswith('SSII3G.')
+    encoded=code.split('.',1)[1]
+    doc=json.loads(gzip.decompress(base64.urlsafe_b64decode(encoded+'='*(-len(encoded)%4))))
+    assert doc['format']=='SSII-UD01-SAVE'
+    assert doc['state']['phase']=='submitted'
+    q=make_page()
+    q.locator('#practice-file').set_input_files({'name':'comprobante.txt','mimeType':'text/plain','buffer':payload})
+    q.wait_for_function("document.querySelector('#practice-recover').textContent.includes('Continu')")
+    q.locator('#practice-recover').click()
+    q.wait_for_function("!document.querySelector('#answer-fields').disabled")
+    recovered=state(q)
+    assert recovered['data']['values']['t1']=='123'
+    assert recovered['data']['parameters']==expected
+    assert recovered['count']==1 and recovered['recoveries']==1
+    assert recovered['data']['report']==''
+    assert recovered['attemptAudit']['finishedAt'] is None

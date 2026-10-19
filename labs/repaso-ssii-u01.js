@@ -238,7 +238,7 @@ Object.assign(texts,{
  fileSaved:['Archivo descargado. Consérvalo: Recuperar práctica lo leerá para continuar otro día.','File downloaded. Keep it: Recover practice will read it to continue another day.'],
  fileLoaded:['Archivo leído. Pulsa Continuar práctica recuperada; contará como una incidencia.','File loaded. Click Continue recovered practice; this counts as one incident.'],
  fileError:['No se pudo descargar el documento. La práctica sigue guardada aquí; vuelve a pulsar Guardar.','Could not download the document. The practice is still saved here; click Save again.'],
- fileInvalid:['No se pudo recuperar: selecciona un archivo de práctica válido y sin finalizar.','Could not recover: choose a valid unfinished practice file.'],
+ fileInvalid:['No se pudo recuperar: selecciona un archivo de práctica o comprobante válido que no haya agotado las tres incidencias.','Could not recover: choose a valid practice file or receipt that has not reached three incidents.'],
  restartWarning:['Se descargará automáticamente una copia antes de borrar el intento y volver al comienzo. ¿Reiniciar?','A copy will download automatically before this browser’s attempt is cleared and you return to the start. Restart?']
 });
 let importedPractice=false;
@@ -328,8 +328,8 @@ async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
  return encodeReport(body+'\nCódigo de comprobación: SSII3-'+hash);
 }
 function rememberDelivery(report){
- if(lastDelivery?.code===report)return lastDelivery;
- const item={code:report,name:$('fullname').value.trim(),language:language||'es'};
+ if(lastDelivery?.code===report&&lastDelivery.practice)return lastDelivery;
+ const item={code:report,practice:guard.exportPractice(),name:$('fullname').value.trim(),language:language||'es'};
  lastDelivery=item;
  try{sessionStorage.setItem(RECOVERY,JSON.stringify(item));}catch{/* Current submitted state still preserves the report. */}
  return item;
@@ -367,11 +367,12 @@ async function deliver(item,reset=true){
  if(reset)guard.resetProcess();else {recoveryMode=false;guard.render();}
 }
 const requestedReceipts=new Set();
-function downloadReceipt(item){
+async function downloadReceipt(item){
  if(!item?.code)return false;
  let url;
  try{
-  url=URL.createObjectURL(new Blob([item.code],{type:'text/plain;charset=utf-8'}));
+  const documentCode=item.practice?await encodeReport(item.practice):item.code;
+  url=URL.createObjectURL(new Blob([documentCode],{type:'text/plain;charset=utf-8'}));
   const link=document.createElement('a');
   link.href=url;link.download='comprobante-ssii-u01-'+item.code.slice(-16).replace(/[^a-zA-Z0-9_-]/g,'')+'.txt';
   document.body.append(link);link.click();link.remove();
@@ -381,9 +382,9 @@ function downloadReceipt(item){
  }catch{$('receipt-status').textContent=tr('receiptError');return false;}
  finally{if(url)setTimeout(()=>URL.revokeObjectURL(url),60000);}
 }
-function downloadReport(){
+async function downloadReport(){
  const item=rememberDelivery($('report').value);
- if(!requestedReceipts.has(item.code)&&!downloadReceipt(item))return;
+ if(!requestedReceipts.has(item.code)&&!await downloadReceipt(item))return;
  return deliver(item);
 }
 function onReset(){importedPractice=false;$('practice-file-status').hidden=true;recoveryMode=false;setLanguage(null);pendingURL=null;$('delivery-retry').textContent=tr('copyOpen');$('delivery-status').textContent='';window.scrollTo(0,0);}
