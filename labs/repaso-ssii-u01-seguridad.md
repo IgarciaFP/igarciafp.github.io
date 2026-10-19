@@ -106,12 +106,12 @@ Destino: https://docs.google.com/forms/d/e/1FAIpQLSfwo1fdBwSlm-iWU00VAiTdAueuuNT
 
 Se conserva la descarga TXT y la copia del código. El alumno pega el código, completa los campos y pulsa Enviar. Los campos de este formulario no pudieron inspeccionarse en esta sesión; por ello no se añaden parámetros de prerrellenado no verificados.
 
-## Horas e IP por intento
+## Horas por intento sin servicios de IP externos
 
-El estado incluye `attemptAudit.startedAt`, `finishedAt` y `ipSamples`. Se registra la hora inicial del intento y se conserva durante pausas/recuperaciones. La finalización voluntaria o por límite registra la hora de cierre. Los informes incluyen `attemptStartedAt` y `attemptFinishedAt` en ISO UTC y la referencia `Europe/Madrid` para interpretación del horario. Los eventos de pausa y recuperación conservan sus propias marcas temporales.
+El estado incluye `attemptAudit.startedAt`, `finishedAt` e `ipSamples`. La hora inicial se conserva durante pausas/recuperaciones. La finalización voluntaria o por límite registra la hora de cierre. Los informes incluyen `attemptStartedAt` y `attemptFinishedAt` en ISO UTC y la referencia `Europe/Madrid`. Los eventos de pausa y recuperación conservan sus propias marcas temporales.
 
-Al iniciar o recuperar se consulta la IP pública mediante https://api64.ipify.org?format=json, sin enviar respuestas, nombre, correo, cookies ni referente. Cada muestra incluye momento, motivo e IP. El servicio externo es informado antes de aceptar. La petición tiene un límite de cuatro segundos; si falla se registra `unavailable` con IP nula, sin inventar una dirección ni bloquear la práctica. La entrega espera a que termine la consulta pendiente para incluir su resultado.
+Por petición del usuario no se consulta ningún servicio para obtener la IP. JavaScript del navegador no dispone de una API fiable para leer la IP pública por sí solo. Se registra explícitamente IP nula y estado `unavailable` al iniciar o recuperar, sin inventar una dirección. No hay consultas HTTP de IP, WebRTC, STUN ni técnicas de identificación del navegador. El formulario de entrega autorizado se conserva.
 
-Los intentos antiguos sin estas marcas conservan inicio nulo: no se inventa su hora de comienzo. Una consulta pendiente interrumpida por recarga pasa a no disponible. Los datos se guardan localmente y dentro de la entrega; no se crea un servidor de vigilancia ni un historial central. Las horas dependen del reloj del dispositivo y la IP puede ser compartida por NAT/VPN. El horario de SSII se establece como norma visible; no hay bloqueo automático por horario sin un calendario de clase configurado.
+Los intentos antiguos sin marcas de inicio conservan inicio nulo. Los datos se guardan localmente y dentro de la entrega; no se crea un servidor de vigilancia ni un historial central. Las horas dependen del reloj del dispositivo. El horario de SSII es una norma visible, no un bloqueo automático por horario.
 
-Se añadieron pruebas de inicio/fin, conservación tras recuperar, IP en el informe y fallo de red explícito. Se ejecutaron con APIs simuladas; Chromium sigue sin estar disponible en el entorno local por BitLocker.
+Las pruebas comprueban inicio/fin, conservación tras recuperar, exportación y ausencia de solicitudes de red para la IP. Se ejecutaron pruebas con DOM simulado; Chromium local sigue bloqueado por BitLocker.
