@@ -249,7 +249,7 @@ Object.assign(texts,{
  fileInvalid:['No se pudo recuperar: selecciona un archivo de práctica o comprobante válido que no haya agotado las tres incidencias.','Could not recover: choose a valid practice file or receipt that has not reached three incidents.'],
  restartWarning:['Se descargará automáticamente una copia antes de borrar el intento y volver al comienzo. ¿Reiniciar?','A copy will download automatically before this browser’s attempt is cleared and you return to the start. Restart?']
 });
-let importedPractice=false;
+let importedPractice=false,recoverySelecting=false,recoveryReading=false;
 function afterRender(state,ctx){
  phase=state.phase;
  $('practice-toolbar').hidden=!language||!['active','paused','closing','submitted'].includes(phase);
@@ -275,7 +275,7 @@ function afterRender(state,ctx){
  document.querySelector('.identity').hidden=!$('guard-consent').checked;
  $('fullname').disabled=active||paused||submitted;$('student').disabled=active||paused||submitted;
  $('guard-start').textContent=tr('start');
- $('setup-recover').disabled=!language||!validIdentity()||!!ctx.problem||ctx.busy||!ctx.supported;
+ $('setup-recover').disabled=!language||!validIdentity()||!!ctx.problem||ctx.busy||!ctx.supported||recoverySelecting||recoveryReading;
  $('guard-state').textContent=tr(active?($('answer-fields').disabled?'blocked':'active'):phase);
  $('guard-count').textContent=(language==='en'?'Incidents: ':'Incidencias: ')+state.count+'/3';
  $('guard-conditions').textContent=(language==='en'?'Fullscreen: ':'Pantalla completa: ')+(document.fullscreenElement?'✓':'—')+' · '+(language==='en'?'Focus: ':'Foco: ')+(document.hasFocus()?'✓':'—')+' · '+(language==='en'?'Visible: ':'Visible: ')+(document.visibilityState==='visible'?'✓':'—');
@@ -472,31 +472,50 @@ function recoveryEmailReady(){
  if(/^[^\s@]+@g\.educaand\.es$/i.test($('student').value.trim()))return true;
  fileStatus('recoveryEmailRequired');return false;
 }
+async function waitForRecoveryFocus(){
+ // The native file picker may dispatch change before window focus is restored.
+ for(let tries=0;tries<40;tries++){
+  if(document.fullscreenElement!==document.documentElement)throw Object.assign(Error('Fullscreen required'),{code:'RECOVERY_FULLSCREEN'});
+  if(document.visibilityState==='visible'&&document.hasFocus())return;
+  await new Promise(resolve=>setTimeout(resolve,50));
+ }
+ throw Object.assign(Error('Focus not restored'),{code:'RECOVERY_FULLSCREEN'});
+}
 $('setup-recover').addEventListener('click',async()=>{
- if(!recoveryEmailReady())return;
- $('practice-file-status').hidden=true;
+ if(recoverySelecting||recoveryReading||!recoveryEmailReady())return;
+ recoverySelecting=true;$('practice-file-status').hidden=true;guard.render();
  try{
-  // Fullscreen is requested directly from the user's click, before file I/O.
+  // 1. Complete fullscreen from the user's gesture.
   if(document.fullscreenElement!==document.documentElement)await document.documentElement.requestFullscreen();
+  if(document.fullscreenElement!==document.documentElement)throw Error('Fullscreen denied');
+  // 2. Open the native file selector only once fullscreen is established.
   $('practice-file').value='';$('practice-file').click();
- }catch{fileStatus('recoveryFullscreenError');}
+ }catch{
+  recoverySelecting=false;fileStatus('recoveryFullscreenError');guard.render();
+ }
+});
+$('practice-file').addEventListener('cancel',()=>{
+ recoverySelecting=false;guard.render();
 });
 $('practice-file').addEventListener('change',async()=>{
- const file=$('practice-file').files[0];if(!file||!recoveryEmailReady())return;
+ if(recoveryReading)return;
+ recoverySelecting=false;
+ const file=$('practice-file').files[0];
+ if(!file||!recoveryEmailReady()){guard.render();return;}
+ recoveryReading=true;guard.render();
  const root=document.documentElement;
  try{
-  if(document.fullscreenElement!==root)throw Object.assign(Error('Fullscreen required'),{code:'RECOVERY_FULLSCREEN'});
   if(file.size>3000000)throw Error('Too large');
   const text=await decodePracticeDocument(await file.text());
-  if(document.fullscreenElement!==root)throw Object.assign(Error('Fullscreen required'),{code:'RECOVERY_FULLSCREEN'});
+  await waitForRecoveryFocus();
+  // 3. Validate/import, then resume automatically. Only the guard charges recovery.
   guard.importPractice(text);importedPractice=false;
   $('practice-file-status').hidden=true;
-  await guard.recoverPractice();
-  guard.render();
+  if(!await guard.recoverPractice())throw Object.assign(Error('Recovery did not start'),{code:'RECOVERY_FULLSCREEN'});
  }catch(error){
   fileStatus(error.code==='RECOVERY_FULLSCREEN'?'recoveryFullscreenError':error.code==='RECOVERY_EMAIL_MISMATCH'?'recoveryEmailMismatch':error.code==='RECOVERY_EMAIL_REQUIRED'?'recoveryEmailRequired':'fileInvalid');
   if(document.fullscreenElement===root&&!guard.canEdit())document.exitFullscreen().catch(()=>{});
- }
+ }finally{recoveryReading=false;guard.render();}
 });
 $('practice-finish').addEventListener('click',()=>guard.ask('finish'));
 $('practice-reset').addEventListener('click',()=>guard.ask('erase'));

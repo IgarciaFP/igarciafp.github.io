@@ -186,3 +186,8 @@ El único botón Recuperar práctica se encuentra en Procedimiento del laborator
 El reloj se mueve a la barra fija, sin cambiar su cálculo. Incidencias: n/3 es el summary de un desplegable nativo con el registro del intento; su lista está limitada en altura y permite desplazamiento. El panel de estado anterior se oculta durante la práctica normal. Los problemas de guardado mantienen su aviso visible. Se elimina la sección Entrega del cuaderno y su enlace de navegación; Entregar en la barra conserva el diálogo y flujo final. Los errores de generación se muestran en la barra. La pantalla de resultado permanece para reintentar copia o descarga si falla el navegador.
 
 Verificado con DOM simulado: ubicación única del reloj y registro, ausencia de la sección de entrega y confirmación desde la barra. Prueba Playwright añadida; ejecución real pendiente por BitLocker.
+
+
+## Secuencia de recuperación revisada
+
+Recuperar práctica solicita y verifica pantalla completa desde el clic, abre una sola vez el selector y, al recibir el archivo, descomprime y espera hasta dos segundos a que regrese el foco de la ventana. Después valida/importa y reanuda automáticamente. El controlador devuelve explícitamente si inició la recuperación, incluido el cierre por tercera incidencia. La cancelación no importa datos ni suma incidencias; los clics repetidos no abren selectores simultáneos. Verificado con DOM simulado: orden, duplicados, cancelación, retorno tardío del foco, contador único y correo incorrecto. La prueba real de selector y pantalla completa sigue pendiente por BitLocker.
