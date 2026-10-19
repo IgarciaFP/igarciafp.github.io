@@ -27,6 +27,7 @@
     let initialized = false, fatal = false, busy = false, restoring = false;
     let problem = '', problemText = '', lastRaw = null, timer = null;
     let confirmation = null, forcedBusy = false, rerollPending = false;
+    let focusTimer = null;
     const recentActions = new Map();
     const supported = typeof root.requestFullscreen === 'function'
       && document.fullscreenEnabled === true && typeof document.hasFocus === 'function'
@@ -277,11 +278,24 @@
     function environment(reason) {
       if (!initialized || fatal) return;
       const s = signals();
+      if(safe(s)){clearTimeout(focusTimer);focusTimer=null;}
       if (state.phase === 'active' && !restoring) {
         if (reason === 'pagehide') record(reason);
         else if (!safe(s)) {
-          const r = reason === 'blur' ? 'blur' : !s.visible ? 'hidden' : !s.fullscreen ? 'fullscreen' : 'blur';
-          record(r);
+          // Entering fullscreen can briefly blur the window. Confirm a
+          // foreground focus loss after the same settling interval used on return.
+          // Hidden pages and actual fullscreen exits still count immediately.
+          const r = !s.visible ? 'hidden' : !s.fullscreen ? 'fullscreen' : 'blur';
+          if(r==='blur'){
+            if(focusTimer===null)focusTimer=setTimeout(()=>{
+              focusTimer=null;
+              if(state.phase==='active'&&!restoring&&!safe(signals())){
+                const now=signals();
+                record(!now.visible?'hidden':!now.fullscreen?'fullscreen':'blur');
+                render();
+              }
+            },CONFIG.settleMs);
+          }else{clearTimeout(focusTimer);focusTimer=null;record(r);}
         } else if (state.episode) {
           clearTimeout(timer);
           timer = setTimeout(() => {
