@@ -22,7 +22,7 @@ from playwright.sync_api import sync_playwright
 LABS=Path(__file__).resolve().parents[1]
 KEY='ssii-repaso-ud01-seguridad-v1'
 LEGACY='ssii-repaso-ud01-v1'
-HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-toolbar-incidents','')
+HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-recovery-flow','')
 for name in ('repaso-ssii-u01-variantes.js','repaso-ssii-u01-seguridad.js','repaso-ssii-u01.js'):
     HTML=HTML.replace(f'<script src="{name}"></script>',f'<script>{(LABS/name).read_text()}</script>')
 
@@ -642,3 +642,15 @@ def test_toolbar_contains_clock_and_incident_dropdown(make_page):
     assert p.locator('#event-details').get_attribute('open') is not None
     p.locator('#practice-finish').click()
     assert p.locator('#guard-confirm').is_visible()
+
+
+def test_recovery_picker_cancel_keeps_attempt(make_page):
+    p=make_page();setup_identity(p)
+    before=state(p)
+    with p.expect_file_chooser() as chooser:
+        p.locator('#setup-recover').click()
+    assert p.evaluate("document.fullscreenElement===document.documentElement")
+    chooser.value.set_files([])
+    p.locator('#practice-file').dispatch_event('cancel')
+    assert state(p)==before
+    assert p.locator('#setup-recover').is_enabled()
