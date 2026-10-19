@@ -28,6 +28,7 @@
     let problem = '', problemText = '', lastRaw = null, timer = null;
     let confirmation = null, forcedBusy = false, rerollPending = false;
     const recentActions = new Map();
+    let pendingIP=Promise.resolve();
     const supported = typeof root.requestFullscreen === 'function'
       && document.fullscreenEnabled === true && typeof document.hasFocus === 'function'
       && 'visibilityState' in document && typeof warning.showModal === 'function'
@@ -39,13 +40,59 @@
     function fresh() {
       return { version: 1, phase: 'ready', attempt: 0, count: 0, pending: null,
         episode: null, clipboardBlocked: 0, savedAt: null, events: [],
-        data: adapter.empty(), backup: null, closingAt: null, recoveries: 0, actionCounts: {}, actions: [] };
+        data: adapter.empty(), backup: null, attemptAudit:{startedAt:null,finishedAt:null,ipSamples:[]}, closingAt: null, recoveries: 0, actionCounts: {}, actions: [] };
     }
     function log(text) {
       state.events.push({ at: Date.now(), text });
       state.events = state.events.slice(-CONFIG.maxEvents);
     }
     const stamp = n => Number.isFinite(n) && n >= 0 && n <= 8640000000000000;
+
+    function validIP(ip){
+      if(typeof ip!=='string'||ip.length>45)return false;
+      if(/^(?:\d{1,3}\.){3}\d{1,3}$/.test(ip))return ip.split('.').every(n=>Number(n)<=255);
+      if(!/^[a-f0-9:]+$/i.test(ip)||!ip.includes(':'))return false;
+      try{return !!new URL('http://['+ip+']/').hostname;}catch{return false;}
+    }
+    function sanitizeAudit(a){
+      if(a===undefined)return {startedAt:null,finishedAt:null,ipSamples:[]};
+      if(!a||typeof a!=='object'||!Array.isArray(a.ipSamples))throw Error('Invalid attempt audit');
+      return {
+        startedAt:stamp(a.startedAt)?a.startedAt:null,
+        finishedAt:stamp(a.finishedAt)?a.finishedAt:null,
+        ipSamples:a.ipSamples.slice(-8).map(s=>{
+          if(!s||!stamp(s.at)||!['start','recovery'].includes(s.reason)||!['pending','available','unavailable'].includes(s.status))throw Error('Invalid IP sample');
+          if(s.ip!==null&&!validIP(s.ip))throw Error('Invalid IP address');
+          // A request cannot continue across a reload.
+          return {at:s.at,reason:s.reason,ip:s.ip,status:s.status==='pending'?'unavailable':s.status};
+        })
+      };
+    }
+    function captureIPAddress(reason){
+      const owner=state,sample={at:Date.now(),reason,ip:null,status:'pending'};
+      owner.attemptAudit.ipSamples.push(sample);
+      owner.attemptAudit.ipSamples=owner.attemptAudit.ipSamples.slice(-8);
+      pendingIP=(async()=>{
+        let timeout;
+        try{
+          const controller=new AbortController();
+          const deadline=new Promise((_,reject)=>{timeout=setTimeout(()=>{controller.abort();reject(Error('IP timeout'));},4000);});
+          const request=(async()=>{
+            const response=await fetch('https://api64.ipify.org?format=json',{signal:controller.signal,credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer'});
+            if(!response.ok)throw Error('IP service unavailable');
+            const result=await response.json();
+            if(!validIP(result.ip))throw Error('Invalid IP response');
+            return result.ip;
+          })();
+          sample.ip=await Promise.race([request,deadline]);sample.status='available';
+        }catch{sample.ip=null;sample.status='unavailable';}
+        finally{
+          clearTimeout(timeout);
+          if(state===owner&&!fatal&&!problem&&['active','paused','closing'].includes(state.phase)){persist();render();}
+        }
+      })();
+    }
+
     function validate(s) {
       // Se validan estructura y límites. Esto detecta daños accidentales,
       // NO acredita que el alumno no haya modificado un JSON válido.
@@ -59,6 +106,7 @@
         || !s.data || !Array.isArray(s.events)) throw new Error('Estado inválido');
       return { ...fresh(), phase: s.phase, attempt: s.attempt, count: s.count,
         pending: s.pending, clipboardBlocked: s.clipboardBlocked,
+        attemptAudit:sanitizeAudit(s.attemptAudit),
         recoveries: Number.isInteger(s.recoveries)&&s.recoveries>=0&&s.recoveries<=s.count?s.recoveries:0,
         closingAt: stamp(s.closingAt) ? s.closingAt : null,
         actionCounts: Object.fromEntries(Object.entries(s.actionCounts || {}).filter(([k,v]) => /^[A-Za-z0-9+_-]{1,48}$/.test(k) && Number.isSafeInteger(v) && v >= 0).slice(0,300)),
@@ -224,7 +272,7 @@
         state.count++;
         log(`Incidencia ${state.count}/${CONFIG.limit}: ${WHY[reason]}.`);
         if (state.count >= CONFIG.limit) {
-          state.closingAt = Date.now();
+          state.closingAt = Date.now();state.attemptAudit.finishedAt=state.closingAt;
           adapter.stopClock(state.closingAt);
           state.data = adapter.snapshot();
           state.phase = 'closing'; state.pending = null; rerollPending = false;
@@ -283,9 +331,10 @@
         if (resume && !['active','paused'].includes(state.phase)) return;
         if(recovery){
           state.count++;state.recoveries++;rerollPending=false;
+          captureIPAddress('recovery');
           log('Recuperación guardada: incidencia '+state.count+'/'+CONFIG.limit+'.');
           if(state.count>=CONFIG.limit){
-            state.closingAt=Date.now();adapter.stopClock(state.closingAt);
+            state.closingAt=Date.now();state.attemptAudit.finishedAt=state.closingAt;adapter.stopClock(state.closingAt);
             state.data=adapter.snapshot();state.phase='closing';state.pending=null;state.episode=null;restoring=false;
             if(warning.open)warning.close();
             if(persist()){render();void finalizeForced();}
@@ -298,6 +347,7 @@
           const data = adapter.snapshot();
           const backup = state.backup, events = state.events, attempt = state.attempt + 1;
           state = { ...fresh(), phase: 'active', attempt, data, backup, events };
+          state.attemptAudit.startedAt=Date.now();captureIPAddress('start');
           adapter.restore(data); log(`Comienzo del intento ${attempt}. Normas aceptadas.`);
         } else log('Intento reanudado en pantalla completa.');
         state.pending = null; state.episode = null; restoring = false;
@@ -416,12 +466,13 @@
       const beforeCount = state.count;
       busy = true; render();
       try {
-        const report = await adapter.makeReport(metadata(), true, finishedAt, reportContext('voluntary'));
+        await pendingIP;
+        const report = await adapter.makeReport(metadata(), true, finishedAt, reportContext('voluntary',finishedAt));
         // El cálculo SHA-256 es asíncrono. Una salida en mitad del cálculo
         // cancela la entrega: no permite saltarse un aviso o el tercer reinicio.
         if (!report || problem || fatal || state.phase !== 'active' || state.count !== beforeCount
           || state.pending || !safe(signals())) return;
-        adapter.stopClock(finishedAt);
+        adapter.stopClock(finishedAt);state.attemptAudit.finishedAt=finishedAt;
         state.phase = 'submitted'; state.pending = null; state.episode = null;
         adapter.setReport(report);
         state.data = adapter.snapshot(); log('Intento finalizado. Exportación del informe habilitada.');
@@ -433,13 +484,14 @@
       } catch { $('reportStatus').textContent = 'No se pudo generar el informe. No se ha finalizado el intento; revisa los datos y vuelve a intentarlo.'; }
       finally { busy = false; render(); }
     }
-    function reportContext(reason) {
-      return {finishReason:reason, recoveries:state.recoveries, incidents:state.count, actionCounts:structuredClone(state.actionCounts), actions:structuredClone(state.actions)};
+    function reportContext(reason,finishedAt=state.closingAt||Date.now()) {
+      return {attemptStartedAt:state.attemptAudit.startedAt===null?null:new Date(state.attemptAudit.startedAt).toISOString(),attemptFinishedAt:new Date(finishedAt).toISOString(),timeZone:'Europe/Madrid',ipSamples:structuredClone(state.attemptAudit.ipSamples),finishReason:reason, recoveries:state.recoveries, incidents:state.count, actionCounts:structuredClone(state.actionCounts), actions:structuredClone(state.actions)};
     }
     async function finalizeForced() {
       if (forcedBusy || fatal || problem || state.phase !== 'closing') return;
       forcedBusy = true;
       try {
+        await pendingIP;
         const report = await adapter.makeReport(metadata(), true, state.closingAt || Date.now(), reportContext('incident-limit'));
         if (!report) { adapter.forcedError(); return; }
         if (fatal || problem || state.phase !== 'closing') return;
