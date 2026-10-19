@@ -489,30 +489,47 @@ async function waitForRecoveryFocus(){
  }
  throw Object.assign(Error('Focus not restored'),{code:'RECOVERY_FULLSCREEN'});
 }
+async function restorePickerFullscreen(){
+ const root=document.documentElement;
+ if(document.fullscreenElement!==root){try{await root.requestFullscreen();}catch{throw Object.assign(Error('Fullscreen denied'),{code:'RECOVERY_FULLSCREEN'});}}
+ if(document.fullscreenElement!==root)throw Object.assign(Error('Fullscreen required'),{code:'RECOVERY_FULLSCREEN'});
+}
 $('practice-recover').addEventListener('click',async()=>{
  if(recoverySelecting||recoveryReading||!recoveryEmailReady()||!guard.beginFileRecovery())return;
  recoverySelecting=true;$('practice-file-status').hidden=true;guard.render();
  try{
-  // 1. Complete fullscreen from the user's gesture.
-  if(document.fullscreenElement!==document.documentElement)await document.documentElement.requestFullscreen();
-  if(document.fullscreenElement!==document.documentElement)throw Error('Fullscreen denied');
-  // 2. Open the native file selector only once fullscreen is established.
-  $('practice-file').value='';$('practice-file').click();
- }catch{
-  recoverySelecting=false;guard.endFileRecovery();fileStatus('recoveryFullscreenError');guard.render();
+  if(document.fullscreenElement!==document.documentElement)await restorePickerFullscreen();
+  if(typeof window.showOpenFilePicker==='function'){
+    const [handle]=await window.showOpenFilePicker({multiple:false,types:[{description:'Práctica SSII',accept:{'text/plain':['.txt'],'application/json':['.json']}}]});
+    // The picker renews activation; restore fullscreen before file I/O.
+    await restorePickerFullscreen();
+    const file=await handle.getFile();
+    await readRecoveryFile(file);
+  }else{
+    $('practice-file').value='';$('practice-file').click();
+  }
+ }catch(error){
+  try{await restorePickerFullscreen();}catch{
+    $('guard-action-status').textContent=tr('recoveryFullscreenError');
+  }
+  recoverySelecting=false;guard.endFileRecovery();
+  if(error.name!=='AbortError')fileStatus('recoveryFullscreenError');
+  guard.render();
  }
 });
-$('practice-file').addEventListener('cancel',()=>{
+$('practice-file').addEventListener('cancel',async()=>{
+ try{await restorePickerFullscreen();}catch{$('guard-action-status').textContent=tr('recoveryFullscreenError');}
  recoverySelecting=false;guard.endFileRecovery();guard.render();
 });
-$('practice-file').addEventListener('change',async()=>{
+$('practice-file').addEventListener('change',()=>readRecoveryFile($('practice-file').files[0]));
+async function readRecoveryFile(file){
  if(recoveryReading)return;
  recoverySelecting=false;
- const file=$('practice-file').files[0];
  if(!file||!recoveryEmailReady()){guard.endFileRecovery();guard.render();return;}
  recoveryReading=true;guard.render();
  const root=document.documentElement;
  try{
+  await restorePickerFullscreen();
   if(file.size>3000000)throw Error('Too large');
   const text=await decodePracticeDocument(await file.text());
   await waitForRecoveryFocus();
@@ -525,7 +542,7 @@ $('practice-file').addEventListener('change',async()=>{
   fileStatus(error.code==='RECOVERY_FULLSCREEN'?'recoveryFullscreenError':error.code==='RECOVERY_EMAIL_MISMATCH'?'recoveryEmailMismatch':error.code==='RECOVERY_EMAIL_REQUIRED'?'recoveryEmailRequired':'fileInvalid');
   
  }finally{recoveryReading=false;guard.endFileRecovery();guard.render();}
-});
+}
 $('practice-finish').addEventListener('click',()=>guard.ask('finish'));
 $('practice-reset').addEventListener('click',()=>guard.ask('erase'));
 const syncToolbarHeight=()=>document.documentElement.style.setProperty('--toolbar-height',Math.ceil($('practice-toolbar').getBoundingClientRect().height)+'px');
