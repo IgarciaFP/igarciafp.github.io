@@ -56,7 +56,7 @@ function refreshPendingParameters(){
 const texts={
 step:['Antes de empezar','Before you begin'],
 procedure:['Procedimiento del laboratorio','Exam procedure'],
-instructions:['Responde por escrito a 14 preguntas. Al generar la entrega, se cerrará el intento, se copiará el código y se abrirá Google Forms. Revisa los campos y pulsa Enviar allí. Este laboratorio volverá al selector de idioma.','Answer 14 questions in writing. Generating your submission closes the attempt, copies the code and opens Google Forms. Review the fields and click Submit there. This lab then returns to language selection.'],
+ instructions:["Este laboratorio práctico contiene medidas de seguridad para garantizar su correcta realización. Los intentos de utilización de IA, copia, plugins,etc son registrados y penalizados.","This practical lab includes security measures to ensure it is completed correctly. Attempts to use AI, copy, use plugins, etc. are recorded and penalized."],
 rules:['Mantén la página visible, con foco y en pantalla completa. Las dos primeras salidas generan avisos; la tercera borra las respuestas y reinicia el proceso. Copiar, cortar, pegar, arrastrar, Control y el botón derecho están bloqueados durante el laboratorio.','Keep this page visible, focused and in fullscreen. The first two departures trigger warnings; the third deletes your answers and restarts the process. Copy, cut, paste, drag, Control shortcuts and right-click are blocked during the lab.'],
 privacy:['El intento y el tiempo se guardan en este navegador. Al entregar, el código contiene tu nombre, correo, respuestas y registro de incidencias y se pasa al formulario indicado por el profesor. Los controles son disuasorios; una incidencia no demuestra copia.','Your attempt and elapsed time are saved in this browser. On delivery, the code contains your name, email, answers and incident log and is passed to the teacher’s form. These controls are deterrents; an incident does not prove cheating.'],
 terms:['He leído y acepto el procedimiento y las condiciones.','I have read and accept the procedure and conditions.'],
@@ -99,7 +99,6 @@ genericError:['No se pudo generar el informe. No se ha finalizado el intento; re
 };
 const tr=k=>texts[k]?.[language==='en'?1:0]??k;
 texts.rules=['Este laboratorio está protegido con diversas medidas de seguridad. Mantén la página visible, con foco y en pantalla completa. No utilices atajos de teclado ni intentes abrir plugins, devtools o cambiar de ventana o se cerrará el laboratorio automáticamente.','Keep this page visible, focused and in fullscreen. Don\'t use keyboard shortcuts neither plugings, devtools or change the window or the lab will auto finish.'];
-texts.instructions=['Responde por escrito a 14 preguntas. Al finalizar se descargará automáticamente un TXT con el código comprimido, se copiará el mismo código y se abrirá Google Forms. Revisa los campos y pulsa Enviar allí. Este laboratorio volverá al selector de idioma.','Answer 14 questions in writing. Finishing automatically downloads a TXT file with the compressed code, copies the same code and opens Google Forms. Review the fields and click Submit there. This lab then returns to language selection.'];
 texts.finishInfo=['Al finalizar el laboratorio, se descargará una copia codificada y se pasará otra al formulario de entrega.','At the end of the lab, it will download a cypher copy automatically and other will pass to the form'];
 texts.confirmBody=['Las respuestas quedarán bloqueadas. Se descargará un TXT con el código comprimido y se copiará el mismo código para Google Forms. Debes pulsar Enviar en el formulario. Después, este laboratorio volverá al selector de idioma.','Your answers will be locked. A TXT file containing the compressed code will download, and the same code will be copied for Google Forms. You must click Submit in the form. This lab will then return to language selection.'];
 texts.deliveryNote=['Conserva el TXT como copia de la entrega generada. La entrega solo se registra cuando pulsas Enviar en Google Forms. Si el código es demasiado largo para el enlace, pégalo en el campo del contenido.','Keep the TXT as a copy of your generated submission. Your submission is only recorded when you click Submit in Google Forms. If the code is too long for the link, paste it into the content field.'];
@@ -119,7 +118,7 @@ texts.privacy=texts.privacy.map((text,i)=>text+' '+texts.auditInfo[i]);
 
 Object.assign(texts,{
  procedure:['Procedimiento del laboratorio','Lab procedure'],
- instructions:['Resuelve los 7 bloques y explica tus cálculos. Al finalizar se descargará un TXT comprimido, se copiará el código y se abrirá Google Forms. Revisa los campos y pulsa Enviar allí.','Complete the 7 blocks and explain your calculations. Finishing downloads a compressed TXT receipt, copies the code and opens Google Forms. Review the fields and click Submit there.'],
+ instructions:["Este laboratorio práctico contiene medidas de seguridad para garantizar su correcta realización. Los intentos de utilización de IA, copia, plugins,etc son registrados y penalizados.","This practical lab includes security measures to ensure it is completed correctly. Attempts to use AI, copy, use plugins, etc. are recorded and penalized."],
  yourExam:['Tu laboratorio','Your lab'],
  missing:['Falta este paso.','This step is missing.'],
  review:['Registrado: pendiente de revisión del profesor.','Recorded: awaiting teacher review.'],
@@ -145,7 +144,6 @@ Object.assign(texts,{
  restoreNote:['Intento guardado encontrado. Recuperar suma 1 incidencia y restaura exactamente los datos guardados.','Saved attempt found. Recovery adds 1 incident and restores the saved values exactly.']
 });
 texts.rules=texts.rules.map((s,i)=>s+(i?' Recovering a saved attempt also adds one incident.':' Recuperar un intento guardado también suma una incidencia.'));
-texts.instructions=texts.instructions.map((s,i)=>s+(i?' Only untouched numerical exercises change when focus returns. Started exercises and saved recoveries retain their values.':' Solo los ejercicios numéricos sin empezar cambian al recuperar el foco. Los empezados y las recuperaciones guardadas conservan sus datos.'));
 
 for(const [id,anchor]of [['receipt-download','delivery-retry'],['recovery-download','recover-delivery']]){
  const button=document.createElement('button');button.id=id;button.type='button';button.className='secondary';button.dataset.text='receipt';$(anchor).after(button);
