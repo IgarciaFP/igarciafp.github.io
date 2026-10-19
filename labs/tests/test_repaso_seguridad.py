@@ -22,7 +22,7 @@ from playwright.sync_api import sync_playwright
 LABS=Path(__file__).resolve().parents[1]
 KEY='ssii-repaso-ud01-seguridad-v1'
 LEGACY='ssii-repaso-ud01-v1'
-HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-practice-toolbar','')
+HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-procedure-recovery','')
 for name in ('repaso-ssii-u01-variantes.js','repaso-ssii-u01-seguridad.js','repaso-ssii-u01.js'):
     HTML=HTML.replace(f'<script src="{name}"></script>',f'<script>{(LABS/name).read_text()}</script>')
 
@@ -400,7 +400,7 @@ def test_parameter_corruption_does_not_overwrite(make_page):
     raw=json.dumps(saved)
     q=make_page({KEY:raw})
     assert q.evaluate(f"localStorage.getItem('{KEY}')")==raw
-    assert q.locator('#practice-recover').is_disabled()
+    assert q.locator('#setup-recover').is_disabled()
 
 def test_paused_clock_does_not_include_next_day(make_page):
     p=make_page();begin(p);save_practice(p)
@@ -553,7 +553,7 @@ def finish_file_recovery(p):
       return state.phase!=='paused'||notice.includes('un clic')||notice.includes('requires a click');
     }""")
     if state(p)['phase']=='paused':
-        p.locator('#practice-recover').click()
+        p.locator('#setup-recover').click()
 
 def test_save_confirmation_and_group_hidden(make_page):
     p=make_page();begin(p)
