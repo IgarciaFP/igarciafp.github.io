@@ -238,7 +238,7 @@ function setEnabled(enabled) {
 function setReport(report){$('report').value=report;}
 Object.assign(texts,{
  saveWarning:['Se descargará un documento y se pausará la práctica. Al recuperarla se generará una incidencia de las 3 disponibles. Si es la tercera, se cerrará el intento. ¿Guardar y pausar?','A document will download and the practice will pause. Recovering it will consume one of the 3 available incidents. If it is the third, the attempt will close. Save and pause?'],
- recoveryFullscreen:['El documento está cargado, pero el navegador requiere un clic para entrar en pantalla completa. Pulsa Recuperar práctica.','The document is loaded, but the browser requires a click to enter fullscreen. Click Recover practice.'],
+ recoveryFullscreenError:['El navegador no ha permitido activar la pantalla completa. Revisa el permiso y vuelve a pulsar Recuperar práctica.','The browser did not allow fullscreen. Check the permission and click Recover practice again.'],
  toolbarFinish:['Entregar','Submit'],toolbarReset:['Reiniciar','Restart'],
  continueImported:['Continuar práctica recuperada','Continue recovered practice'],
  fileSaved:['Archivo descargado. Consérvalo: Recuperar práctica lo leerá para continuar otro día.','File downloaded. Keep it: Recover practice will read it to continue another day.'],
@@ -472,29 +472,29 @@ function recoveryEmailReady(){
  if(/^[^\s@]+@g\.educaand\.es$/i.test($('student').value.trim()))return true;
  fileStatus('recoveryEmailRequired');return false;
 }
-$('setup-recover').addEventListener('click',()=>{
+$('setup-recover').addEventListener('click',async()=>{
  if(!recoveryEmailReady())return;
- if(importedPractice){importedPractice=false;void guard.recoverPractice();return;}
- $('practice-file').value='';$('practice-file').click();
+ $('practice-file-status').hidden=true;
+ try{
+  // Fullscreen is requested directly from the user's click, before file I/O.
+  if(document.fullscreenElement!==document.documentElement)await document.documentElement.requestFullscreen();
+  $('practice-file').value='';$('practice-file').click();
+ }catch{fileStatus('recoveryFullscreenError');}
 });
 $('practice-file').addEventListener('change',async()=>{
  const file=$('practice-file').files[0];if(!file||!recoveryEmailReady())return;
- // Request fullscreen before asynchronous file reading consumes user activation.
  const root=document.documentElement;
- const fullscreenReady=(document.fullscreenElement===root?Promise.resolve():root.requestFullscreen()).then(()=>true,()=>false);
  try{
+  if(document.fullscreenElement!==root)throw Object.assign(Error('Fullscreen required'),{code:'RECOVERY_FULLSCREEN'});
   if(file.size>3000000)throw Error('Too large');
-  guard.importPractice(await decodePracticeDocument(await file.text()));importedPractice=true;
-  if(await fullscreenReady){
-    importedPractice=false;$('practice-file-status').hidden=true;
-    await guard.recoverPractice();
-    importedPractice=phase==='paused';
-    if(importedPractice)fileStatus('recoveryFullscreen');
-  }else fileStatus('recoveryFullscreen');
+  const text=await decodePracticeDocument(await file.text());
+  if(document.fullscreenElement!==root)throw Object.assign(Error('Fullscreen required'),{code:'RECOVERY_FULLSCREEN'});
+  guard.importPractice(text);importedPractice=false;
+  $('practice-file-status').hidden=true;
+  await guard.recoverPractice();
   guard.render();
  }catch(error){
-  await fullscreenReady;
-  fileStatus(error.code==='RECOVERY_EMAIL_MISMATCH'?'recoveryEmailMismatch':error.code==='RECOVERY_EMAIL_REQUIRED'?'recoveryEmailRequired':'fileInvalid');
+  fileStatus(error.code==='RECOVERY_FULLSCREEN'?'recoveryFullscreenError':error.code==='RECOVERY_EMAIL_MISMATCH'?'recoveryEmailMismatch':error.code==='RECOVERY_EMAIL_REQUIRED'?'recoveryEmailRequired':'fileInvalid');
   if(document.fullscreenElement===root&&!guard.canEdit())document.exitFullscreen().catch(()=>{});
  }
 });
