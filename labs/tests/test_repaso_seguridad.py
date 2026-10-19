@@ -94,8 +94,9 @@ def resume(p):
 
 def blur_return(p):
     p.evaluate("""() => {window.testFocus=false;document.hasFocus=()=>window.testFocus;
-      window.dispatchEvent(new FocusEvent('blur'));
-      window.testFocus=true;window.dispatchEvent(new FocusEvent('focus'));}""")
+      window.dispatchEvent(new FocusEvent('blur'));}""")
+    p.wait_for_timeout(250)
+    p.evaluate("window.testFocus=true;window.dispatchEvent(new FocusEvent('focus'))")
     p.wait_for_timeout(250)
 
 def finish(p):
@@ -495,3 +496,18 @@ def test_failed_compression_prevents_restart(make_page):
     p.locator('#guard-confirm-ok').click()
     assert state(p)['phase']=='paused'
     assert state(p)['data']['values']['t1']=='123'
+
+
+def test_first_start_ignores_transient_fullscreen_focus(make_page):
+    p=make_page();begin(p)
+    assert state(p)['count']==0
+    p.evaluate("""()=>{
+      const original=document.hasFocus.bind(document);
+      document.hasFocus=()=>false;
+      window.dispatchEvent(new Event('blur'));
+      document.hasFocus=original;
+      window.dispatchEvent(new Event('focus'));
+    }""")
+    p.wait_for_timeout(300)
+    assert state(p)['count']==0
+    assert not p.locator('#answer-fields').is_disabled()
