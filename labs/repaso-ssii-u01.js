@@ -57,8 +57,8 @@ const texts={
 step:['Antes de empezar','Before you begin'],
 procedure:['Procedimiento del laboratorio','Exam procedure'],
  instructions:["Este laboratorio práctico contiene medidas de seguridad para garantizar su correcta realización. Los intentos de utilización de IA, copia, plugins,etc son registrados y penalizados.","This practical lab includes security measures to ensure it is completed correctly. Attempts to use AI, copy, use plugins, etc. are recorded and penalized."],
-rules:['Mantén la página visible, con foco y en pantalla completa. Las dos primeras salidas generan avisos; la tercera borra las respuestas y reinicia el proceso. Copiar, cortar, pegar, arrastrar, Control y el botón derecho están bloqueados durante el laboratorio.','Keep this page visible, focused and in fullscreen. The first two departures trigger warnings; the third deletes your answers and restarts the process. Copy, cut, paste, drag, Control shortcuts and right-click are blocked during the lab.'],
-privacy:['El intento y el tiempo se guardan en este navegador. Al entregar, el código contiene tu nombre, correo, respuestas y registro de incidencias y se pasa al formulario indicado por el profesor. Los controles son disuasorios; una incidencia no demuestra copia.','Your attempt and elapsed time are saved in this browser. On delivery, the code contains your name, email, answers and incident log and is passed to the teacher’s form. These controls are deterrents; an incident does not prove cheating.'],
+rules:["Mantén la página visible, con foco y en pantalla completa.","Keep this page visible, focused and in fullscreen."],
+privacy:["Los datos de cada laboratorio son distintos para cada usuario/intento. No se permite su realización en grupo. Cualquier intento de copia será penalizado con un cero en la actividad.","The data in each lab differ for each user/attempt. Group work is not permitted. Any attempt to cheat will result in a zero for the activity."],
 terms:['He leído y acepto el procedimiento y las condiciones.','I have read and accept the procedure and conditions.'],
 name:['Nombre y apellidos','Full name'],email:['Correo del centro','School email'],domain:['Solo se admite el dominio @g.educaand.es.','Only the @g.educaand.es domain is accepted.'],
 back:['Cambiar idioma','Change language'],retrySave:['Reintentar guardado','Retry saving'],eventLog:['Registro del intento','Attempt log'],
@@ -98,7 +98,6 @@ longContinue:['Continuar al formulario','Continue to the form'],
 genericError:['No se pudo generar el informe. No se ha finalizado el intento; revisa los datos y vuelve a intentarlo.','The report could not be generated. Your attempt has not been finalized; check your details and try again.']
 };
 const tr=k=>texts[k]?.[language==='en'?1:0]??k;
-texts.rules=['Este laboratorio está protegido con diversas medidas de seguridad. Mantén la página visible, con foco y en pantalla completa. No utilices atajos de teclado ni intentes abrir plugins, devtools o cambiar de ventana o se cerrará el laboratorio automáticamente.','Keep this page visible, focused and in fullscreen. Don\'t use keyboard shortcuts neither plugings, devtools or change the window or the lab will auto finish.'];
 texts.finishInfo=['Al finalizar el laboratorio, se descargará una copia codificada y se pasará otra al formulario de entrega.','At the end of the lab, it will download a cypher copy automatically and other will pass to the form'];
 texts.confirmBody=["Las respuestas quedarán bloqueadas. Se descargará un TXT y se copiará el código. Se abrirá el formulario de entrega: pega el código, completa los datos solicitados y pulsa Enviar.","Your answers will be locked. A TXT file will download and the code will be copied. The submission form will open: paste the code, complete the requested details and click Submit."];
 texts.deliveryNote=["Conserva el TXT como copia. Pega el código copiado en el formulario de entrega, completa los datos solicitados y pulsa Enviar.","Keep the TXT as a copy. Paste the copied code into the submission form, complete the requested details and click Submit."];
@@ -106,7 +105,6 @@ texts.receipt=['Descargar comprobante TXT','Download TXT receipt'];
 texts.receiptRequested=['Descarga del comprobante solicitada. Si no aparece, pulsa «Descargar comprobante TXT».','Receipt download requested. If it does not appear, click “Download TXT receipt”.'];
 texts.receiptError=['No se pudo iniciar la descarga. La entrega sigue guardada; vuelve a descargar el comprobante.','The download could not be started. Your submission is still saved; download the receipt again.'];
 texts.compressionError=['Este navegador no permite comprimir la entrega. Actualízalo o consulta al profesor. El intento no se ha finalizado.','This browser cannot compress the submission. Update it or contact your teacher. The attempt has not been finalized.'];
-texts.rules=['Mantén la página visible, con foco y en pantalla completa. Las dos primeras salidas generan avisos. La tercera cierra el intento y genera una entrega con tus respuestas actuales, sin borrarlas. Se bloquean y registran las teclas de función, Control, botón derecho, copiar, cortar, pegar y arrastrar, cuando el navegador permite detectarlos. Estos usos no suman avisos de salida.','Keep this page visible, focused and in fullscreen. The first two departures trigger warnings. The third closes the attempt and generates a submission with your current answers, without deleting them. Function keys, Control, right-click, copy, cut, paste and drag actions are blocked and logged when the browser allows detection. These actions do not add departure warnings.'];
 texts.firstText=['Primer aviso. Tus respuestas se conservan. La tercera incidencia cerrará el intento y generará una entrega con el contenido actual.','First warning. Your answers are retained. The third incident will close the attempt and generate a submission with your current answers.'];
 texts.lastText=['Segundo aviso. La próxima incidencia cerrará el intento y generará automáticamente una entrega con tus respuestas actuales.','Second warning. The next incident will close the attempt and automatically generate a submission with your current answers.'];
 texts.closing=['Cierre automático: respuestas conservadas','Automatic closure: answers retained'];
@@ -114,7 +112,6 @@ texts.forcedPending=['Se ha alcanzado el tercer aviso. Se está generando la ent
 texts.forcedError=['No se pudo generar la entrega automática. Tus respuestas siguen guardadas y bloqueadas. Pulsa Reintentar entrega.','The automatic submission could not be generated. Your answers remain saved and locked. Click Retry submission.'];
 texts.forcedRetry=['Reintentar entrega','Retry submission'];
 texts.auditInfo=['Se registran el tipo de acción bloqueada, su fecha y hora y el número de usos. No se registran la escritura normal ni el contenido del portapapeles.','The type, timestamp and count of blocked actions are logged. Ordinary typing and clipboard contents are not recorded.'];
-texts.privacy=texts.privacy.map((text,i)=>text+' '+texts.auditInfo[i]);
 
 Object.assign(texts,{
  procedure:['Procedimiento del laboratorio','Lab procedure'],
@@ -143,7 +140,6 @@ Object.assign(texts,{
  recoverFinal:['Recuperar (+1: finalizará)','Recover (+1: will finish)'],
  restoreNote:['Intento guardado encontrado. Recuperar suma 1 incidencia y restaura exactamente los datos guardados.','Saved attempt found. Recovery adds 1 incident and restores the saved values exactly.']
 });
-texts.rules=texts.rules.map((s,i)=>s+(i?' Recovering a saved attempt also adds one incident.':' Recuperar un intento guardado también suma una incidencia.'));
 
 for(const [id,anchor]of [['receipt-download','delivery-retry'],['recovery-download','recover-delivery']]){
  const button=document.createElement('button');button.id=id;button.type='button';button.className='secondary';button.dataset.text='receipt';$(anchor).after(button);
