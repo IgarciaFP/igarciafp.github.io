@@ -57,7 +57,7 @@ function refreshPendingParameters(){
 const texts={
 step:['Antes de empezar','Before you begin'],
 procedure:['Procedimiento del laboratorio','Exam procedure'],
- instructions:["Este laboratorio práctico contiene medidas de seguridad para garantizar su correcta realización. Los intentos de utilización de IA, copia, plugins,etc son registrados y penalizados.","This practical lab includes security measures to ensure it is completed correctly. Attempts to use AI, copy, use plugins, etc. are recorded and penalized."],
+ instructions:["Este laboratorio práctico contiene medidas de seguridad para garantizar su correcta realización. Los intentos de utilización de IA, copia, plugins,etc son registrados y supondrán un cero en la práctica.","This practical lab includes security measures to ensure it is completed correctly. Attempts to use AI, copy, use plugins, etc. are recorded and will result in a zero for the lab."],
 rules:["Mantén la página visible, con foco y en pantalla completa. El laboratorio puede guardarse sin finalizar para acabarlo otro día, pero registra las horas de realización y es obligatorio realizarlo únicamente en las horas de clase de SSII.","Keep this page visible, focused and in fullscreen. You can save the lab without finishing and complete it another day, but working times are recorded, and you must work on it only during SSII class hours."],
 privacy:["Los datos de cada laboratorio son distintos para cada usuario/intento. No se permite su realización en grupo.","The data in each lab differ for each user/attempt. Group work is not permitted."],
 penalty:["Cualquier intento de copia será penalizado con un cero en la actividad.","Any attempt to cheat will result in a zero for the activity."],
@@ -117,7 +117,7 @@ texts.auditInfo=['Se registran el tipo de acción bloqueada, su fecha y hora y e
 
 Object.assign(texts,{
  procedure:['Procedimiento del laboratorio','Lab procedure'],
- instructions:["Este laboratorio práctico contiene medidas de seguridad para garantizar su correcta realización. Los intentos de utilización de IA, copia, plugins,etc son registrados y penalizados.","This practical lab includes security measures to ensure it is completed correctly. Attempts to use AI, copy, use plugins, etc. are recorded and penalized."],
+ instructions:["Este laboratorio práctico contiene medidas de seguridad para garantizar su correcta realización. Los intentos de utilización de IA, copia, plugins,etc son registrados y supondrán un cero en la práctica.","This practical lab includes security measures to ensure it is completed correctly. Attempts to use AI, copy, use plugins, etc. are recorded and will result in a zero for the lab."],
  yourExam:['Tu laboratorio','Your lab'],
  missing:['Falta este paso.','This step is missing.'],
  review:['Registrado: pendiente de revisión del profesor.','Recorded: awaiting teacher review.'],
