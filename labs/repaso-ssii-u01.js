@@ -258,11 +258,11 @@ function afterRender(state,ctx){
  const active=phase==='active',submitted=phase==='submitted'||phase==='closing';
  $('language-stage').hidden=!!language||active||submitted;
  $('setup-stage').hidden=!language||submitted||recoveryMode;
- $('guard-panel').hidden=!language||submitted;$('guard-panel').inert=!language;
+ $('guard-panel').hidden=!language||submitted||(active&&!ctx.restoring&&!ctx.problem&&!$('guard-action-status').textContent);$('guard-panel').inert=!language;
  document.querySelector('.setup-only').hidden=(active&&!ctx.restoring)||phase==='reset';
  $('guard-start-box').hidden=active&&!ctx.restoring;
- $('active-status').hidden=!active&&!paused&&phase!=='reset';
- $('event-details').hidden=!active&&phase!=='reset';
+ $('active-status').hidden=true;
+ $('event-details').hidden=false;
  $('cuaderno').hidden=!active||needsRecovery;$('cuaderno').inert=!active||needsRecovery;
  $('delivery-stage').hidden=!submitted&&!recoveryMode;
  if(phase==='closing'){
@@ -307,7 +307,7 @@ function afterRender(state,ctx){
  $('practice-save').disabled=(!active&&!paused)||ctx.restoring||!!ctx.problem||ctx.busy||(active&&$('answer-fields').disabled);
  $('practice-finish').disabled=!guard?.canEdit();
  $('practice-reset').disabled=!!ctx.problem||ctx.busy||phase==='closing';
- $('toolbar-count').textContent=(language==='en'?'Incidents / recoveries: ':'Incidencias / recuperaciones: ')+state.count+'/3';
+ $('toolbar-count').textContent=(language==='en'?'Incidents: ':'Incidencias: ')+state.count+'/3';
  // Toolbar guidance removed; save errors remain visible in the guard panel.
 
 }
