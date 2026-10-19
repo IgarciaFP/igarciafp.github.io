@@ -73,7 +73,7 @@ notes:['Observaciones (opcional)','Comments (optional)'],generate:['Generar entr
 deliveryTitle:['Tu entrega está preparada','Your submission is ready'],copyOpen:['Copiar código y abrir Google Forms','Copy code and open Google Forms'],
 deliveryNote:['La entrega solo se registra cuando pulsas Enviar en Google Forms. Si el código es demasiado largo para el enlace, pégalo en el campo del contenido.','Your submission is only recorded when you click Submit in Google Forms. If the code is too long for the link, paste it into the content field.'],
 recover:['Volver a copiar y abrir la última entrega','Copy and open the last submission again'],
-cancel:['Cancelar','Cancel'],confirm:['Confirmar y generar entrega','Confirm and generate submission'],
+cancel:['Cancelar','Cancel'],confirm:['Confirmar','Confirm'],
 start:['Aceptar e iniciar en pantalla completa','Start in fullscreen'],
 identityError:['Introduce tu nombre y un correo válido terminado exactamente en @g.educaand.es.','Enter your name and a valid email ending exactly in @g.educaand.es.'],
 ready:['Pendiente de comenzar','Ready to start'],active:['En curso','In progress'],blocked:['Respuestas bloqueadas · reloj en marcha','Answers locked · timer running'],
@@ -239,7 +239,7 @@ Object.assign(texts,{
  fileLoaded:['Archivo leído. Pulsa Continuar práctica recuperada; contará como una incidencia.','File loaded. Click Continue recovered practice; this counts as one incident.'],
  fileError:['No se pudo descargar el documento. La práctica sigue guardada aquí; vuelve a pulsar Guardar.','Could not download the document. The practice is still saved here; click Save again.'],
  fileInvalid:['No se pudo recuperar: selecciona un archivo de práctica válido y sin finalizar.','Could not recover: choose a valid unfinished practice file.'],
- restartWarning:['Se borrará el intento de este navegador y volverás al comienzo. Guarda antes el documento si quieres conservarlo. ¿Reiniciar?','This browser’s attempt will be cleared and you will return to the start. Save the document first if you want to keep it. Restart?']
+ restartWarning:['Se descargará automáticamente una copia antes de borrar el intento y volver al comienzo. ¿Reiniciar?','A copy will download automatically before this browser’s attempt is cleared and you return to the start. Restart?']
 });
 let importedPractice=false;
 function afterRender(state,ctx){
@@ -424,14 +424,40 @@ hintNodes.forEach((d,i)=>d.addEventListener('toggle',()=>{
  if(guard?.canEdit()&&d.open&&!hints[i]){hints[i]=true;invalidate();guard.saveEdit();}
 }));
 function fileStatus(key){$('practice-file-status').hidden=false;$('practice-file-status').textContent=tr(key);}
-$('practice-save').addEventListener('click',async()=>{
+async function savePracticeDocument(){
+ let url;
  try{
-  if(!await guard.pausePractice())return;
-  const url=URL.createObjectURL(new Blob([guard.exportPractice()],{type:'application/json'}));
-  const link=document.createElement('a');link.href=url;link.download='practica-ssii-u01-'+Date.now()+'.json';
-  document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
-  importedPractice=false;fileStatus('fileSaved');guard.render();
- }catch{fileStatus('fileError');}
+  const code=await encodeReport(guard.exportPractice());
+  url=URL.createObjectURL(new Blob([code],{type:'text/plain;charset=utf-8'}));
+  const link=document.createElement('a');link.href=url;link.download='practica-ssii-u01-'+Date.now()+'.txt';
+  document.body.append(link);link.click();link.remove();
+  importedPractice=false;fileStatus('fileSaved');return true;
+ }catch{fileStatus('fileError');return false;}
+ finally{if(url)setTimeout(()=>URL.revokeObjectURL(url),60000);}
+}
+async function decodePracticeDocument(text){
+ text=text.trim();
+ // Compatibility with practice documents downloaded before compression.
+ if(text.startsWith('{'))return text;
+ if(!/^SSII3G\.[A-Za-z0-9_-]+$/.test(text))throw Error('Invalid encoded document');
+ const encoded=text.slice(7).replaceAll('-','+').replaceAll('_','/');
+ const binary=atob(encoded+'='.repeat((4-encoded.length%4)%4));
+ const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));
+ const reader=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip')).getReader();
+ const chunks=[];let length=0;
+ try{
+  for(;;){const {value,done}=await reader.read();if(done)break;
+   length+=value.length;if(length>3000000){await reader.cancel();throw Error('Document too large');}
+   chunks.push(value);
+  }
+ }finally{reader.releaseLock();}
+ const result=new Uint8Array(length);let offset=0;
+ for(const chunk of chunks){result.set(chunk,offset);offset+=chunk.length;}
+ return new TextDecoder('utf-8',{fatal:true}).decode(result);
+}
+$('practice-save').addEventListener('click',async()=>{
+ if(await guard.pausePractice())await savePracticeDocument();
+ guard.render();
 });
 $('practice-recover').addEventListener('click',()=>{
  if(importedPractice){importedPractice=false;void guard.recoverPractice();return;}
@@ -441,7 +467,7 @@ $('practice-file').addEventListener('change',async()=>{
  const file=$('practice-file').files[0];if(!file)return;
  try{
   if(file.size>3000000)throw Error('Too large');
-  guard.importPractice(await file.text());importedPractice=true;fileStatus('fileLoaded');guard.render();
+  guard.importPractice(await decodePracticeDocument(await file.text()));importedPractice=true;fileStatus('fileLoaded');guard.render();
  }catch{fileStatus('fileInvalid');}
 });
 $('practice-finish').addEventListener('click',()=>guard.ask('finish'));
@@ -455,6 +481,11 @@ setInterval(clock,1000);
 try{const item=JSON.parse(sessionStorage.getItem(RECOVERY));if(item&&typeof item.code==='string'&&item.code.length<2000000&&typeof item.name==='string'&&['es','en'].includes(item.language))lastDelivery=item;}catch{}
 setLanguage(null);
 guard=window.createPracticeGuard({refreshPendingParameters,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,
+async saveBeforeReset(phase){
+ if(phase==='paused')return savePracticeDocument();
+ if(phase==='submitted')return downloadReceipt(rememberDelivery($('report').value));
+ return phase==='ready'||phase==='reset'||phase==='review';
+},
 forcedError(){$('delivery-status').textContent=tr('forcedError');},
 isAnswer(el){return el instanceof HTMLElement&&ids.includes(el.id);},
 restoreValue(el,data){el.value=data.values[el.id]||'';}
