@@ -283,7 +283,8 @@ def test_successful_open_resets_and_remembers(make_page):
     assert state(p)['phase']=='ready'
     assert all(not v for v in state(p)['data']['values'].values())
     assert p.locator('#language-stage').is_visible()
-    assert p.evaluate("new URL(window.formDestination).searchParams.get('entry.1438887233')")=='Repaso SSII · Unidad 01'
+    assert p.evaluate("window.formDestination")=="https://docs.google.com/forms/d/e/1FAIpQLSfwo1fdBwSlm-iWU00VAiTdAueuuNTYQOl0iibaCpF69O5ZWg/viewform?usp=publish-editor"
+    assert p.evaluate("Array.from(new URL(window.formDestination).searchParams.keys()).every(k=>!k.startsWith('entry.'))")
     assert p.evaluate("JSON.parse(sessionStorage.getItem('ssii-repaso-ud01-ultima-entrega-v2')).code===window.copied")
 
 def test_hash_failure_keeps_active(make_page):
