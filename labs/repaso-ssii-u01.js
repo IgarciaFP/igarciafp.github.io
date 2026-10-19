@@ -8,7 +8,7 @@ const fields=[{"id": "t1", "label": "1. Tiempo expresado en segundos", "answer":
 const hintNodes=[...document.querySelectorAll('.exercise details')];
 let checked={},hints={};
 const ids=[...fields.map(f=>f.id),'student','fullname','group','reflection'];
-const FORM='https://docs.google.com/forms/d/e/1FAIpQLSe0iRrYhaOF0WL5lwjWeFheZbz1jKhz8vkG45E1i3psjfKK-w/viewform';
+const FORM="https://docs.google.com/forms/d/e/1FAIpQLSfwo1fdBwSlm-iWU00VAiTdAueuuNTYQOl0iibaCpF69O5ZWg/viewform?usp=publish-editor";
 const RECOVERY='ssii-repaso-ud01-ultima-entrega-v2';
 let language=null,guard=null,elapsed=0,started=null,phase='ready',delivering=false,lastDelivery=null,recoveryMode=false;
 
@@ -100,8 +100,8 @@ genericError:['No se pudo generar el informe. No se ha finalizado el intento; re
 const tr=k=>texts[k]?.[language==='en'?1:0]??k;
 texts.rules=['Este laboratorio está protegido con diversas medidas de seguridad. Mantén la página visible, con foco y en pantalla completa. No utilices atajos de teclado ni intentes abrir plugins, devtools o cambiar de ventana o se cerrará el laboratorio automáticamente.','Keep this page visible, focused and in fullscreen. Don\'t use keyboard shortcuts neither plugings, devtools or change the window or the lab will auto finish.'];
 texts.finishInfo=['Al finalizar el laboratorio, se descargará una copia codificada y se pasará otra al formulario de entrega.','At the end of the lab, it will download a cypher copy automatically and other will pass to the form'];
-texts.confirmBody=['Las respuestas quedarán bloqueadas. Se descargará un TXT con el código comprimido y se copiará el mismo código para Google Forms. Debes pulsar Enviar en el formulario. Después, este laboratorio volverá al selector de idioma.','Your answers will be locked. A TXT file containing the compressed code will download, and the same code will be copied for Google Forms. You must click Submit in the form. This lab will then return to language selection.'];
-texts.deliveryNote=['Conserva el TXT como copia de la entrega generada. La entrega solo se registra cuando pulsas Enviar en Google Forms. Si el código es demasiado largo para el enlace, pégalo en el campo del contenido.','Keep the TXT as a copy of your generated submission. Your submission is only recorded when you click Submit in Google Forms. If the code is too long for the link, paste it into the content field.'];
+texts.confirmBody=["Las respuestas quedarán bloqueadas. Se descargará un TXT y se copiará el código. Se abrirá el formulario de entrega: pega el código, completa los datos solicitados y pulsa Enviar.","Your answers will be locked. A TXT file will download and the code will be copied. The submission form will open: paste the code, complete the requested details and click Submit."];
+texts.deliveryNote=["Conserva el TXT como copia. Pega el código copiado en el formulario de entrega, completa los datos solicitados y pulsa Enviar.","Keep the TXT as a copy. Paste the copied code into the submission form, complete the requested details and click Submit."];
 texts.receipt=['Descargar comprobante TXT','Download TXT receipt'];
 texts.receiptRequested=['Descarga del comprobante solicitada. Si no aparece, pulsa «Descargar comprobante TXT».','Receipt download requested. If it does not appear, click “Download TXT receipt”.'];
 texts.receiptError=['No se pudo iniciar la descarga. La entrega sigue guardada; vuelve a descargar el comprobante.','The download could not be started. Your submission is still saved; download the receipt again.'];
@@ -289,7 +289,7 @@ function afterRender(state,ctx){
  $('practice-recover').disabled=!needsRecovery||!!ctx.problem||ctx.busy||!ctx.supported;
  $('practice-recover').textContent=tr(state.count===2?'recoverFinal':'recoverPractice');
  $('toolbar-count').textContent=(language==='en'?'Incidents / recoveries: ':'Incidencias / recuperaciones: ')+state.count+'/3';
- $('toolbar-status').textContent=ctx.problem?$('guard-problem-text').textContent:tr(paused?'pausedNote':ctx.restoring?'restoreNote':'saveNote');
+ // Toolbar guidance removed; save errors remain visible in the guard panel.
 
 }
 const errorTranslations={
@@ -325,14 +325,10 @@ function rememberDelivery(report){
  try{sessionStorage.setItem(RECOVERY,JSON.stringify(item));}catch{/* Current submitted state still preserves the report. */}
  return item;
 }
-function formURL(item){
- const url=new URL(FORM);url.searchParams.set('usp','pp_url');
- url.searchParams.set('entry.346661486',item.name);
- url.searchParams.set('entry.1438887233','Repaso SSII · Unidad 01');
- url.searchParams.set('entry.1197951345',item.code);
- const long=url.href.length>7000;
- if(long)url.searchParams.delete('entry.1197951345');
- return {url:url.href,long};
+function formURL(){
+ // This form has its own question IDs. Do not reuse another form's entry IDs.
+ // The submission code is copied before opening; the student pastes it in Forms.
+ return {url:FORM,long:false};
 }
 let pendingURL=null;
 async function deliver(item,reset=true){
