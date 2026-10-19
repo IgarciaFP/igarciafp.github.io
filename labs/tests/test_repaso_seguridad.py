@@ -45,6 +45,7 @@ def make_page(browser):
         if js:
             p.evaluate('''data=>{
               window.testStore=data;window.testWriteFail=false;
+              window.fetch=async()=>({ok:true,json:async()=>({ip:'203.0.113.10'})});
               Object.defineProperty(window,'localStorage',{value:{
                 getItem:k=>window.testStore[k]??null,
                 setItem:(k,v)=>{if(window.testWriteFail)throw new DOMException('Cuota','QuotaExceededError');window.testStore[k]=String(v);},
@@ -402,3 +403,32 @@ def test_paused_clock_does_not_include_next_day(make_page):
     resume(q)
     assert state(q)['data']['elapsed']==elapsed
     assert state(q)['data']['started'] is not None
+
+def test_attempt_times_and_ip_are_saved_and_exported(make_page):
+    p=make_page();begin(p)
+    p.wait_for_function(f"JSON.parse(localStorage.getItem('{KEY}')).attemptAudit.ipSamples[0].status==='available'")
+    audit=state(p)['attemptAudit']
+    assert audit['startedAt'] is not None and audit['finishedAt'] is None
+    assert audit['ipSamples'][0]['ip']=='203.0.113.10'
+    p.locator('#practice-save').click()
+    q=make_page(p.evaluate('window.testStore'));resume(q);finish(q)
+    result=state(q)
+    assert result['attemptAudit']['startedAt']==audit['startedAt']
+    assert result['attemptAudit']['finishedAt']>=audit['startedAt']
+    report=decode(result['data']['report'])
+    assert report['attemptStartedAt'] and report['attemptFinishedAt']
+    assert report['timeZone']=='Europe/Madrid'
+    assert [s['reason'] for s in report['ipSamples']]==['start','recovery']
+
+def test_ip_failure_explicit_without_blocking_practice(make_page):
+    p=make_page(setup="window.fetch=()=>Promise.reject(Error('offline'))")
+    begin(p)
+    p.wait_for_function(f"JSON.parse(localStorage.getItem('{KEY}')).attemptAudit.ipSamples[0].status==='unavailable'")
+    assert state(p)['attemptAudit']['ipSamples'][0]['ip'] is None
+    finish(p)
+    assert decode(state(p)['data']['report'])['ipSamples'][0]['status']=='unavailable'
+
+def test_penalty_has_own_bold_paragraph(make_page):
+    p=make_page();p.locator('[data-language=es]').click()
+    assert p.locator('p > strong[data-text=penalty]').inner_text()=='Cualquier intento de copia será penalizado con un cero en la actividad.'
+    assert 'horas de clase de SSII' in p.locator('[data-text=rules]').inner_text()
