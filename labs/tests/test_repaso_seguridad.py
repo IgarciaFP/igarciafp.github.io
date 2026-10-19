@@ -94,8 +94,9 @@ def resume(p):
 
 def blur_return(p):
     p.evaluate("""() => {window.testFocus=false;document.hasFocus=()=>window.testFocus;
-      window.dispatchEvent(new FocusEvent('blur'));
-      window.testFocus=true;window.dispatchEvent(new FocusEvent('focus'));}""")
+      window.dispatchEvent(new FocusEvent('blur'));}""")
+    p.wait_for_timeout(250)
+    p.evaluate("window.testFocus=true;window.dispatchEvent(new FocusEvent('focus'))")
     p.wait_for_timeout(250)
 
 def finish(p):
