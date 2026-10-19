@@ -22,7 +22,7 @@ from playwright.sync_api import sync_playwright
 LABS=Path(__file__).resolve().parents[1]
 KEY='ssii-repaso-ud01-seguridad-v1'
 LEGACY='ssii-repaso-ud01-v1'
-HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-toolbar-fullscreen','')
+HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-language-entry','')
 for name in ('repaso-ssii-u01-variantes.js','repaso-ssii-u01-seguridad.js','repaso-ssii-u01.js'):
     HTML=HTML.replace(f'<script src="{name}"></script>',f'<script>{(LABS/name).read_text()}</script>')
 
@@ -80,6 +80,8 @@ def state(p):
 
 def recover_once(p):
     saved=state(p)
+    if p.locator('#language-stage').is_visible():
+        p.locator('[data-language='+ (saved['data'].get('language') or 'es') +']').click()
     if saved['phase']=='active':
         p.locator('#guard-continue').click()
     else:
@@ -654,3 +656,17 @@ def test_recovery_picker_cancel_keeps_attempt(make_page):
     p.locator('#practice-file').dispatch_event('cancel')
     assert state(p)==before
     assert p.locator('#setup-recover').is_enabled()
+
+
+def test_reload_starts_at_language_without_losing_saved_attempt(make_page):
+    p=make_page();begin(p,'en');p.locator('#t1').fill('123');save_practice(p)
+    saved=state(p)
+    q=make_page(p.evaluate('window.testStore'))
+    assert q.locator('#language-stage').is_visible()
+    assert not q.locator('#setup-stage').is_visible()
+    assert not q.locator('#practice-toolbar').is_visible()
+    assert state(q)['data']['values']['t1']=='123'
+    assert state(q)['data']['language']=='en'
+    q.locator('[data-language=es]').click()
+    assert q.locator('#setup-stage').is_visible()
+    assert not q.locator('#language-stage').is_visible()
