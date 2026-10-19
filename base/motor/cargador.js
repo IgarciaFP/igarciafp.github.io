@@ -21,8 +21,8 @@
     if(!config.id||!config.title?.[0]||!config.title?.[1]||!config.emailDomain||
       !config.storage?.key||!config.storage?.legacyKey||!config.storage?.recovery||
       !config.format?.save||!config.format?.report||!config.format?.checksum||
-      !config.filePrefix||!Array.isArray(config.rules)||!config.form?.entry||
-      new URL(config.form.url).protocol!=='https:')throw Error('Configuración incompleta o inválida.');
+      !config.filePrefix||!Array.isArray(config.rules)||!config.version||
+      config.delivery?.type!=='apps-script'||typeof config.delivery.endpoint!=='string')throw Error('Configuración incompleta o inválida.');
     if(!Array.isArray(activity.fields)||!activity.fields.length||!Array.isArray(activity.sections)||!activity.sections.length)
       throw Error('La actividad debe definir campos y bloques.');
     document.getElementById('cuaderno').innerHTML=html;
@@ -48,6 +48,7 @@
     await script('contenido/variantes.js');
     if(!window.Lab.variants)throw Error('Falta el adaptador de variantes.');
     await script('motor/seguridad.js');
+    await script('motor/entregas.js');
     await script('motor/laboratorio.js');
   } catch(error) {
     document.getElementById('language-stage').hidden=true;

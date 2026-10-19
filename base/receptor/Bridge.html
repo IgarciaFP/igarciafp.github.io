@@ -1,0 +1,17 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Entrega</title></head><body>
+<script>
+'use strict';
+const settings = <?!= settings ?>;
+let busy=false;
+const tell=message=>window.top.postMessage({channel:settings.channel,...message},settings.origin);
+window.addEventListener('message',event=>{
+  const m=event.data;
+  if(event.source!==window.top||event.origin!==settings.origin||m?.channel!==settings.channel||m?.type!=='LAB_SUBMIT'||busy)return;
+  if(m.envelope?.practiceId!==settings.practiceId)return;
+  busy=true;
+  google.script.run.withSuccessHandler(result=>{busy=false;tell({type:'LAB_RESULT',result});})
+    .withFailureHandler(()=>{busy=false;tell({type:'LAB_RESULT',result:{ok:false,code:'NETWORK'}});})
+    .recibirEntrega(m.envelope);
+});
+tell({type:'LAB_READY'});
+</script></body></html>

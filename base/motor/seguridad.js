@@ -3,7 +3,7 @@
  * -------------------------------------------
  * Esta plantilla es disuasoria, NO un sistema de examen seguro. El usuario
  * controla JavaScript, el DOM y localStorage. No se identifican otras webs,
- * no se lee el portapapeles. El adaptador prepara la entrega a Google Forms.
+ * no se lee el portapapeles. El adaptador prepara la entrega al registro del profesor.
  *
  * Integración: createPracticeGuard(adapter) recibe las operaciones del
  * examen. El controlador no conoce las preguntas ni sus soluciones.
@@ -467,7 +467,7 @@
       }
     }
 
-    // 7. FINALIZAR Y BORRAR. La finalización descarga un TXT sin enviar datos.
+    // 7. FINALIZAR Y BORRAR. El adaptador descarga el TXT y envía la entrega al receptor configurado.
     function metadata() {
       return [`Intento: ${state.attempt}`, `Incidencias de entorno: ${state.count}/${CONFIG.limit}`,
         'Acciones bloqueadas: ' + JSON.stringify(state.actionCounts),

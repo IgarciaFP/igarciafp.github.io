@@ -9,7 +9,6 @@ const fields=structuredClone(activity.fields), sections=activity.sections;
 const hintNodes=[...document.querySelectorAll('.exercise details')];
 let checked={},hints={};
 const ids=[...fields.map(f=>f.id),'student','fullname','group','reflection'];
-const FORM=config.form.url;
 const RECOVERY=config.storage.recovery;
 let emailTouched=false,languageSelected=false;
 let language=null,guard=null,elapsed=0,started=null,phase='ready',delivering=false,lastDelivery=null,recoveryMode=false;
@@ -67,10 +66,7 @@ name:['Nombre y apellidos','Full name'],email:['Correo del centro','School email
 back:['Cambiar idioma','Change language'],retrySave:['Reintentar guardado','Retry saving'],eventLog:['Registro del intento','Attempt log'],
 yourExam:['Tu examen','Your exam'],elapsed:['Tiempo transcurrido','Elapsed time'],goDelivery:['Ir a la entrega ↓','Go to submission ↓'],
 question:['Pregunta','Question'],finishTitle:['Generar entrega','Generate submission'],
-finishInfo:['Revisa tus respuestas. Al confirmar, se cerrará la edición, se copiará el código y se abrirá el formulario de entrega. Puedes finalizar con preguntas sin responder.','Review your answers. Confirmation closes editing, copies the code and opens the submission form. You may finish with unanswered questions.'],
 notes:['Observaciones (opcional)','Comments (optional)'],generate:['Generar entrega','Generate submission'],
-deliveryTitle:['Tu entrega está preparada','Your submission is ready'],copyOpen:['Copiar código y abrir Google Forms','Copy code and open Google Forms'],
-deliveryNote:['La entrega solo se registra cuando pulsas Enviar en Google Forms. Si el código es demasiado largo para el enlace, pégalo en el campo del contenido.','Your submission is only recorded when you click Submit in Google Forms. If the code is too long for the link, paste it into the content field.'],
 recover:['Volver a copiar y abrir la última entrega','Copy and open the last submission again'],
 cancel:['Cancelar','Cancel'],confirm:['Confirmar','Confirm'],
 start:['Empezar','Start'],
@@ -87,21 +83,12 @@ resetText:['Tercera incidencia. Se han borrado las respuestas. Volverás a elegi
 resumeText:['Se han recuperado las respuestas y el contador. El reloj sigue contando. Recupera la pantalla completa para continuar.','Your answers and incident count have been restored. The timer is still running. Return to fullscreen to continue.'],
 continue:['Continuar en pantalla completa','Continue in fullscreen'],understood:['Volver al inicio','Return to start'],
 confirmTitle:['¿Generar la entrega y finalizar?','Generate submission and finish?'],
-confirmBody:['Las respuestas quedarán bloqueadas. Se copiará el código y se abrirá Google Forms con tus datos. Debes pulsar Enviar en el formulario. Después, este laboratorio volverá al selector de idioma.','Your answers will be locked. The code will be copied and Google Forms will open with your details. You must click Submit in the form. This lab will then return to language selection.'],
-copying:['Copiando código y preparando Google Forms…','Copying code and preparing Google Forms…'],
-clipboardError:['El navegador no permitió copiar. Permite el portapapeles y pulsa de nuevo «Copiar código y abrir Google Forms». La entrega sigue guardada.','The browser did not allow copying. Allow clipboard access and click “Copy code and open Google Forms” again. Your submission is still saved.'],
-popupError:['El código está copiado, pero el navegador bloqueó la nueva pestaña. Permite las ventanas emergentes y vuelve a pulsar el botón.','The code was copied, but the browser blocked the new tab. Allow pop-ups and click the button again.'],
-recovery:['Última entrega preparada. Puedes volver a abrirla si todavía no la has enviado en Google Forms.','Last submission prepared. You can reopen it if you have not submitted it in Google Forms yet.'],
-longCode:['El código es demasiado largo para el enlace. Ya está copiado: pégalo en el campo de contenido de Google Forms y pulsa Enviar.','The code is too long for the link. It has been copied: paste it into the content field in Google Forms and click Submit.'],
-longContinue:['Continuar al formulario','Continue to the form'],
+recovery:['Última entrega guardada.','Last submission saved.'],
 genericError:['No se pudo generar el informe. No se ha finalizado el intento; revisa los datos y vuelve a intentarlo.','The report could not be generated. Your attempt has not been finalized; check your details and try again.']
 };
 texts.domain=[`Solo se admite el dominio @${config.emailDomain}.`,`Only the @${config.emailDomain} domain is accepted.`];
 texts.identityError=[`Introduce tu nombre y un correo válido terminado exactamente en @${config.emailDomain}.`,`Enter your name and a valid email ending exactly in @${config.emailDomain}.`];
 const tr=k=>texts[k]?.[language==='en'?1:0]??k;
-texts.finishInfo=['Al finalizar el laboratorio, se descargará una copia codificada y se pasará otra al formulario de entrega.','At the end of the lab, it will download a cypher copy automatically and other will pass to the form'];
-texts.confirmBody=["Las respuestas quedarán bloqueadas. Se descargará un TXT y se copiará el código. Se abrirá el formulario con el texto de entrega rellenado. Revisa los datos y pulsa Enviar. Si el texto supera el tamaño del enlace, se te indicará que lo pegues.","Your answers will be locked. A TXT file will download and the code will be copied. The form will open with the submission text filled in. Review the details and click Submit. If the text exceeds the link size, you will be asked to paste it."];
-texts.deliveryNote=["Conserva el TXT como copia. Pega el código copiado en el formulario de entrega, completa los datos solicitados y pulsa Enviar.","Keep the TXT as a copy. Paste the copied code into the submission form, complete the requested details and click Submit."];
 texts.receipt=['Descargar comprobante TXT','Download TXT receipt'];
 texts.receiptRequested=['Descarga del comprobante solicitada. Si no aparece, pulsa «Descargar comprobante TXT».','Receipt download requested. If it does not appear, click “Download TXT receipt”.'];
 texts.receiptError=['No se pudo iniciar la descarga. La entrega sigue guardada; vuelve a descargar el comprobante.','The download could not be started. Your submission is still saved; download the receipt again.'];
@@ -142,6 +129,24 @@ Object.assign(texts,{
  restoreNote:['Intento guardado encontrado. Recuperar suma 1 incidencia y restaura exactamente los datos guardados.','Saved attempt found. Recovery adds 1 incident and restores the saved values exactly.']
 });
 
+Object.assign(texts,{
+ finishInfo:['Al finalizar se descargará un TXT de respaldo y se enviarán tus respuestas al registro del profesor.','Finishing downloads a backup TXT and sends your answers to the teacher’s records.'],
+ confirmBody:['Las respuestas quedarán bloqueadas. Se descargará un TXT de respaldo y se enviará la entrega. Espera la confirmación de recepción.','Your answers will be locked. A backup TXT will download and your submission will be sent. Wait for the receipt.'],
+ deliveryTitle:['Entrega del laboratorio','Lab submission'],
+ copyOpen:['Enviar / reintentar entrega','Send / retry submission'],
+ deliveryNote:['Conserva el TXT. La entrega solo está registrada cuando aparece la confirmación con su identificador y fecha. Si falla la conexión, reintenta sin cambiar las respuestas.','Keep the TXT. Your submission is recorded only when its identifier and receipt date appear. If the connection fails, retry without changing your answers.'],
+ sending:['Enviando respuestas… Espera la confirmación.','Sending answers… Wait for confirmation.'],
+ received:['Entrega recibida. Identificador:','Submission received. Identifier:'],
+ receivedShort:['Entrega recibida','Submission received'],
+ deliveryFailed:['No se ha podido confirmar la recepción. Tus respuestas siguen guardadas. Pulsa «Enviar / reintentar entrega».','Receipt could not be confirmed. Your answers are still saved. Click “Send / retry submission”.'],
+ notConfigured:['Esta práctica todavía no tiene activado el destino de entrega. El profesor debe configurarlo antes de comenzar.','The submission destination is not active yet. Your teacher must configure it before you begin.'],
+ pendingDelivery:['Tienes una entrega pendiente de confirmar. Puedes volver a enviarla o descargar su TXT.','You have a submission awaiting confirmation. You can resend it or download its TXT.'],
+ previousReceived:['Tu última entrega tiene confirmación de recepción.','Your last submission has a confirmed receipt.'],
+ viewReceipt:['Ver confirmación','View receipt']
+});
+const deliveryConfigNote=document.createElement('p');deliveryConfigNote.id='delivery-config-note';deliveryConfigNote.className='note warm';
+$('guard-start-box').prepend(deliveryConfigNote);
+
 for(const [id,anchor]of [['receipt-download','delivery-retry'],['recovery-download','recover-delivery']]){
  const button=document.createElement('button');button.id=id;button.type='button';button.className='secondary';button.dataset.text='receipt';$(anchor).after(button);
  button.addEventListener('click',()=>downloadReceipt(guard.canDownloadReport()?rememberDelivery($('report').value):lastDelivery));
@@ -155,6 +160,7 @@ function setLanguage(lang){
  document.querySelector('.topline').textContent=document.title;
  document.querySelectorAll('[data-text]').forEach(el=>el.textContent=tr(el.dataset.text));
  $('delivery-retry').textContent=tr('copyOpen');
+ $('delivery-config-note').textContent=tr('notConfigured');$('delivery-config-note').hidden=window.LabDelivery.configured(config.delivery);
  translateWorkbook();
  applyParameters();
  progress();
@@ -164,7 +170,7 @@ function validIdentity(){
  const email=$('student').value.trim();
  return !!$('fullname').value.trim() && $('student').validity.valid && validEmail(email);
 }
-function canStart(){return !!language&&$('guard-consent').checked&&validIdentity();}
+function canStart(){return window.LabDelivery.configured(config.delivery)&&!!language&&$('guard-consent').checked&&validIdentity();}
 function timeSpent(at=Date.now()){return elapsed+(started===null?0:Math.max(0,at-started));}
 function clock(){const sec=Math.floor(timeSpent()/1000);$('clock').textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');}
 function startClock(){if(!randomized)refreshPendingParameters();if(started===null)started=Date.now();clock();}
@@ -257,7 +263,9 @@ function afterRender(state,ctx){
   $('language-stage').hidden=false;
   $('setup-stage').hidden=true;$('guard-panel').hidden=true;
   $('cuaderno').hidden=true;$('cuaderno').inert=true;
-  $('delivery-stage').hidden=true;$('recovery').hidden=true;
+  $('delivery-stage').hidden=!recoveryMode;$('recovery').hidden=recoveryMode||!lastDelivery;
+  $('recovery-message').textContent=tr(lastDelivery?.receipt?'previousReceived':'pendingDelivery');
+  $('recover-delivery').textContent=tr(lastDelivery?.receipt?'viewReceipt':'copyOpen');
   return;
  }
  $('practice-toolbar').hidden=!language||document.fullscreenElement!==document.documentElement||!['active','paused','closing','submitted'].includes(phase);
@@ -277,8 +285,9 @@ function afterRender(state,ctx){
    if(!$('delivery-status').textContent)$('delivery-status').textContent=tr('forcedPending');
    $('delivery-retry').textContent=tr('forcedRetry');
    $('delivery-retry').disabled=!!ctx.forcedBusy;
- } else if(phase==='submitted'&&!pendingURL){$('delivery-retry').textContent=tr('copyOpen');$('delivery-retry').disabled=delivering;}
+ } else if(phase==='submitted'){$('delivery-retry').textContent=tr('copyOpen');$('delivery-retry').disabled=delivering;}
  $('receipt-download').disabled=phase==='closing';
+ if(phase==='submitted'&&lastDelivery?.code===$('report').value&&lastDelivery.receipt)showDeliveryReceipt(lastDelivery);
  $('download').hidden=true;
  document.querySelector('.identity').hidden=!$('guard-consent').checked;
  $('fullname').disabled=false;$('student').disabled=false;
@@ -309,7 +318,7 @@ function afterRender(state,ctx){
    .replaceAll('(sin sumar otra incidencia).','(no additional incident).')
    .replaceAll('página oculta','page hidden').replaceAll('pérdida de foco','focus lost')
    .replaceAll('salida de pantalla completa','fullscreen exited').replaceAll('recarga o cierre','reload or close');
- $('recovery').hidden=true; // Recovery is available only through the toolbar file picker.
+ $('recovery').hidden=true; // Última entrega accesible desde el selector inicial.
  $('recovery-message').textContent=tr('recovery');
 
  $('practice-save').disabled=(!active&&!paused)||ctx.restoring||!!ctx.problem||ctx.busy||(active&&$('answer-fields').disabled);
@@ -338,9 +347,9 @@ function translateErrors(){for(const id of ['guard-problem-text','guard-action-s
 function confirmText(kind){if(kind==='save'){$('guard-confirm-title').textContent=tr('savePractice');$('guard-confirm-text').textContent=tr('saveWarning');}if(kind==='erase'){$('guard-confirm-title').textContent=tr('toolbarReset');$('guard-confirm-text').textContent=tr('restartWarning');}if(kind==='finish'){$('guard-confirm-title').textContent=tr('confirmTitle');$('guard-confirm-text').textContent=tr('confirmBody');}}
 async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
  if(!validIdentity()){$('reportStatus').textContent=tr('identityError');return null;}
- // Compact, versioned report avoids repeating the public question text in a prefilled URL.
+ // Informe versionado; incluye parámetros concretos para la corrección posterior.
  if(typeof CompressionStream!=='function'){$('reportStatus').textContent=tr('compressionError');return null;}
- const data={exam:config.id,version:3,language,name:$('fullname').value.trim(),email:$('student').value.trim().toLowerCase(),finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:fields.map(f=>f.id),answers:fields.map((f,i)=>({question:f.id,answer:$(f.id).value.trim(),status:!hasAnswer(f)?'pending':f.kind==='open'?'teacher-review':correct(f)?'correct':'review'})),parameters:variants.sanitize(parameters),parameterLocks:{...parameterLocks},group:$('group').value.trim(),checked:{...checked},hints:{...hints},notes:$('reflection').value.trim().slice(0,2400),...context,audit:metadata,url:location.href};
+ const data={exam:config.id,activityVersion:config.version,version:3,language,name:$('fullname').value.trim(),email:$('student').value.trim().toLowerCase(),finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:fields.map(f=>f.id),answers:fields.map((f,i)=>({question:f.id,answer:$(f.id).value.trim(),status:!hasAnswer(f)?'pending':f.kind==='open'?'teacher-review':correct(f)?'correct':'review'})),parameters:variants.sanitize(parameters),parameterLocks:{...parameterLocks},group:$('group').value.trim(),checked:{...checked},hints:{...hints},notes:$('reflection').value.trim().slice(0,2400),...context,audit:metadata,url:location.href};
  const body=JSON.stringify(data);
  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(body))),b=>b.toString(16).padStart(2,'0')).join('');
  return encodeReport(body+'\nCódigo de comprobación: '+config.format.checksum+hash);
@@ -349,40 +358,40 @@ function rememberDelivery(report){
  if(lastDelivery?.code===report&&lastDelivery.practice)return lastDelivery;
  const item={code:report,practice:guard.exportPractice(),name:$('fullname').value.trim(),language:language||'es'};
  lastDelivery=item;
- try{sessionStorage.setItem(RECOVERY,JSON.stringify(item));}catch{/* Current submitted state still preserves the report. */}
+ persistDelivery(item);
  return item;
 }
-function formURL(item){
- // Field confirmed by the teacher's Google Forms prefilled link.
- const base=FORM.split('?')[0]+'?usp=pp_url';
- const url=base+'&'+encodeURIComponent(config.form.entry)+'='+encodeURIComponent(item.code);
- // Keep the complete code in the clipboard/TXT if a URL would be too long.
- return url.length<=8000?{url,long:false}:{url:base,long:true};
+function persistDelivery(item){
+ lastDelivery=item;
+ try{localStorage.setItem(RECOVERY,JSON.stringify(item));}catch{/* El TXT sigue disponible. */}
 }
-let pendingURL=null;
-async function deliver(item,reset=true){
+async function deliveryEnvelope(item){
+ const decoded=await decodePracticeDocument(item.code);
+ const marker='\nCódigo de comprobación: '+config.format.checksum;
+ const offset=decoded.lastIndexOf(marker);
+ if(offset<0)throw Error('INVALID');
+ const payload=decoded.slice(0,offset), data=JSON.parse(payload);
+ const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(payload))),b=>b.toString(16).padStart(2,'0')).join('');
+ if(hash!==decoded.slice(offset+marker.length)||data.exam!==config.id||data.activityVersion!==config.version)throw Error('INVALID');
+ return {protocol:1,submissionId:hash,practiceId:config.id,practiceVersion:config.version,payload};
+}
+function showDeliveryReceipt(item){
+ $('delivery-status').textContent=tr('received')+' '+item.receipt.submissionId+' · '+new Date(item.receipt.receivedAt).toLocaleString(language==='en'?'en-GB':'es-ES');
+ $('delivery-retry').textContent=tr('receivedShort');$('delivery-retry').disabled=true;
+}
+async function deliver(item){
  if(delivering)return;
- delivering=true;$('delivery-retry').disabled=true;$('delivery-status').textContent=tr('copying');
- const dest=formURL(item);
- // Copy while this document is still focused. A blocked popup leaves the report intact.
+ if(item.receipt){showDeliveryReceipt(item);return;}
+ delivering=true;$('delivery-retry').disabled=true;$('delivery-status').textContent=tr('sending');
+ persistDelivery(item);
  try{
-   if(!navigator.clipboard?.writeText)throw Error('Clipboard unavailable');
-   await navigator.clipboard.writeText(item.code);
- }catch{
-   if(dest.long){$('delivery-status').textContent=tr('clipboardError');delivering=false;$('delivery-retry').disabled=false;return;}
- }
- if(dest.long){
-   pendingURL={url:dest.url,reset};
-   $('delivery-status').textContent=tr('longCode');
-   $('delivery-retry').textContent=tr('longContinue');
-   delivering=false;$('delivery-retry').disabled=false;return;
- }
- const popup=window.open('about:blank','_blank');
- if(!popup){$('delivery-status').textContent=tr('popupError');delivering=false;$('delivery-retry').disabled=false;return;}
- popup.opener=null;
- popup.location.replace(dest.url);
- delivering=false;$('delivery-retry').disabled=false;
- if(reset)guard.resetProcess();else {recoveryMode=false;guard.render();}
+   const envelope=await deliveryEnvelope(item);
+   item.receipt=await window.LabDelivery.send(config.delivery,envelope);
+   persistDelivery(item);showDeliveryReceipt(item);
+ }catch(error){
+   $('delivery-status').textContent=tr(error.message==='NOT_CONFIGURED'?'notConfigured':'deliveryFailed');
+   $('delivery-retry').textContent=tr('copyOpen');$('delivery-retry').disabled=false;
+ }finally{delivering=false;}
 }
 const requestedReceipts=new Set();
 async function downloadReceipt(item){
@@ -402,20 +411,12 @@ async function downloadReceipt(item){
 }
 async function downloadReport(){
  const item=rememberDelivery($('report').value);
- if(!requestedReceipts.has(item.code)&&!await downloadReceipt(item))return;
+ if(!requestedReceipts.has(item.code))await downloadReceipt(item);
  return deliver(item);
 }
-function onReset(){languageSelected=false;emailTouched=false;importedPractice=false;$('practice-file-status').hidden=true;recoveryMode=false;setLanguage(null);pendingURL=null;$('delivery-retry').textContent=tr('copyOpen');$('delivery-status').textContent='';window.scrollTo(0,0);}
+function onReset(){languageSelected=false;emailTouched=false;importedPractice=false;$('practice-file-status').hidden=true;recoveryMode=false;setLanguage(null);$('delivery-retry').textContent=tr('copyOpen');$('delivery-status').textContent='';window.scrollTo(0,0);}
 $('delivery-retry').addEventListener('click',()=>{
  if(phase==='closing'){$('delivery-status').textContent=tr('forcedPending');void guard.finalizeForced();return;}
- if(pendingURL){
-   const target=window.open('about:blank','_blank');
-   if(!target){$('delivery-status').textContent=tr('popupError');return;}
-   target.opener=null;target.location.replace(pendingURL.url);
-   const reset=pendingURL.reset;pendingURL=null;
-   if(reset)guard.resetProcess();else {recoveryMode=false;guard.render();}
-   return;
- }
  if(guard.canDownloadReport())downloadReport();
  else if(lastDelivery)deliver(lastDelivery,false);
 });
@@ -551,7 +552,7 @@ window.addEventListener('resize',syncToolbarHeight);
 syncToolbarHeight();
 $('lab').addEventListener('submit',e=>e.preventDefault());
 setInterval(clock,1000);
-try{const item=JSON.parse(sessionStorage.getItem(RECOVERY));if(item&&typeof item.code==='string'&&item.code.length<2000000&&typeof item.name==='string'&&['es','en'].includes(item.language))lastDelivery=item;}catch{}
+try{const item=JSON.parse(localStorage.getItem(RECOVERY));if(item&&typeof item.code==='string'&&item.code.length<2000000&&typeof item.name==='string'&&['es','en'].includes(item.language))lastDelivery=item;}catch{}
 setLanguage(null);
 guard=window.createPracticeGuard({config,validEmail,savePracticeDocument,refreshPendingParameters,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,
 async saveBeforeReset(phase){

@@ -8,8 +8,10 @@ Esta carpeta es la base para las próximas prácticas de SSII, DWEC y DIW. Inclu
 - `motor/estilos.css`: presentación compartida.
 - `motor/cargador.js`: carga y valida la configuración y el contenido antes de iniciar.
 - `motor/laboratorio.js`: idiomas, corrección, progreso, reloj, informes y entrega.
+- `motor/entregas.js`: envío y confirmación de recepción en Google Sheets.
+- `receptor/`: proyecto Apps Script y guía de instalación.
 - `motor/seguridad.js`: estados del intento, controles del navegador, guardado y recuperación.
-- `contenido/config.json`: identidad de la práctica, títulos ES/EN, reglas, dominio del correo, formulario y formatos.
+- `contenido/config.json`: identidad de la práctica, títulos ES/EN, reglas, dominio del correo, destino de entrega y formatos.
 - `contenido/actividad.html`: enunciados, ayudas, campos y navegación del cuaderno.
 - `contenido/actividad.json`: bloques, campos, soluciones y traducciones del contenido.
 - `contenido/variantes.js`: generador de datos y soluciones específicos de esta actividad.
@@ -18,7 +20,7 @@ Esta carpeta es la base para las próximas prácticas de SSII, DWEC y DIW. Inclu
 ## Crear otra práctica
 
 1. Copiar esta carpeta a la ubicación de la nueva práctica.
-2. Editar `contenido/config.json`: usar un `id` y un `filePrefix` propios, títulos en español e inglés, reglas y formulario de entrega. `form.entry` es el identificador del campo que recibe el informe.
+2. Editar `contenido/config.json`: usar un `id` y un `filePrefix` propios, títulos en español e inglés, reglas y `version` del contenido. Configurar `delivery.endpoint` con la URL del receptor de Apps Script. El destino de Sheets se registra en el receptor según se explica en [su guía](receptor/README.md).
 3. Asignar claves únicas a los tres valores de `storage`, para no mezclar intentos entre prácticas del mismo sitio. La plantilla ya usa claves distintas de `/labs/repaso-ssii-u01.html`.
 4. Asignar un identificador propio a `format.save`, que impide importar archivos de otra práctica. `format.report` y `format.checksum` identifican el formato de informe: coordinar cualquier cambio con la herramienta de corrección. El ejemplo mantiene los identificadores anteriores de SSII y admite sus TXT.
 5. Sustituir los enunciados en `actividad.html` y sincronizar sus campos y bloques con `actividad.json`.
@@ -72,6 +74,6 @@ python3 -m http.server 8000
 
 Abrir `http://localhost:8000/base/`. No abrir con `file://`: la plantilla carga los archivos de contenido mediante `fetch`. El navegador necesita admitir las mismas funciones de pantalla completa, almacenamiento y compresión que la práctica original.
 
-Antes de publicar una nueva actividad, comprobar ambos idiomas, identificación, inicio, corrección, guardado y recuperación, y generación del TXT. La entrega en Google Forms sigue requiriendo que el alumno pulse Enviar.
+Antes de publicar una nueva actividad, comprobar ambos idiomas, identificación, inicio, corrección, guardado y recuperación, y generación del TXT. La entrega en Google Sheets solo se considera recibida cuando el servidor devuelve su identificador y fecha. Si falla, las respuestas se conservan para reintentar. Sin URL de receptor configurada no se permite iniciar un intento.
 
 Los controles del navegador son disuasorios: las soluciones y el código se descargan en el cliente. No constituyen una plataforma de examen seguro.
