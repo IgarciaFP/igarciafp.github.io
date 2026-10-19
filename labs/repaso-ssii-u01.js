@@ -150,7 +150,7 @@ for(const [id,anchor]of [['receipt-download','delivery-retry'],['recovery-downlo
 const receiptStatus=document.createElement('p');receiptStatus.id='receipt-status';receiptStatus.setAttribute('role','status');$('receipt-download').after(receiptStatus);
 function setLanguage(lang){
  language=lang;document.documentElement.lang=lang||'es';
- $('practice-toolbar').hidden=!language||!['active','paused','closing','submitted'].includes(phase);
+ $('practice-toolbar').hidden=!language||document.fullscreenElement!==document.documentElement||!['active','paused','closing','submitted'].includes(phase);
  document.documentElement.style.setProperty('--toolbar-height',!$('practice-toolbar').hidden?Math.ceil($('practice-toolbar').getBoundingClientRect().height)+'px':'0px');
  document.title=language==='en'?'SSII review · Unit 01':'Repaso SSII · Unidad 01';
  document.querySelector('.topline').textContent=document.title;
@@ -252,7 +252,7 @@ Object.assign(texts,{
 let importedPractice=false,recoverySelecting=false,recoveryReading=false;
 function afterRender(state,ctx){
  phase=state.phase;
- $('practice-toolbar').hidden=!language||!['active','paused','closing','submitted'].includes(phase);
+ $('practice-toolbar').hidden=!language||document.fullscreenElement!==document.documentElement||!['active','paused','closing','submitted'].includes(phase);
  syncToolbarHeight();
  const paused=phase==='paused',needsRecovery=paused||ctx.restoring;
  const active=phase==='active',submitted=phase==='submitted'||phase==='closing';
