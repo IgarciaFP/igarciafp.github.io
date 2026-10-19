@@ -100,7 +100,7 @@ genericError:['No se pudo generar el informe. No se ha finalizado el intento; re
 };
 const tr=k=>texts[k]?.[language==='en'?1:0]??k;
 texts.finishInfo=['Al finalizar el laboratorio, se descargará una copia codificada y se pasará otra al formulario de entrega.','At the end of the lab, it will download a cypher copy automatically and other will pass to the form'];
-texts.confirmBody=["Las respuestas quedarán bloqueadas. Se descargará un TXT y se copiará el código. Se abrirá el formulario de entrega: pega el código, completa los datos solicitados y pulsa Enviar.","Your answers will be locked. A TXT file will download and the code will be copied. The submission form will open: paste the code, complete the requested details and click Submit."];
+texts.confirmBody=["Las respuestas quedarán bloqueadas. Se descargará un TXT y se copiará el código. Se abrirá el formulario con el texto de entrega rellenado. Revisa los datos y pulsa Enviar. Si el texto supera el tamaño del enlace, se te indicará que lo pegues.","Your answers will be locked. A TXT file will download and the code will be copied. The form will open with the submission text filled in. Review the details and click Submit. If the text exceeds the link size, you will be asked to paste it."];
 texts.deliveryNote=["Conserva el TXT como copia. Pega el código copiado en el formulario de entrega, completa los datos solicitados y pulsa Enviar.","Keep the TXT as a copy. Paste the copied code into the submission form, complete the requested details and click Submit."];
 texts.receipt=['Descargar comprobante TXT','Download TXT receipt'];
 texts.receiptRequested=['Descarga del comprobante solicitada. Si no aparece, pulsa «Descargar comprobante TXT».','Receipt download requested. If it does not appear, click “Download TXT receipt”.'];
@@ -334,23 +334,25 @@ function rememberDelivery(report){
  try{sessionStorage.setItem(RECOVERY,JSON.stringify(item));}catch{/* Current submitted state still preserves the report. */}
  return item;
 }
-function formURL(){
- // This form has its own question IDs. Do not reuse another form's entry IDs.
- // The submission code is copied before opening; the student pastes it in Forms.
- return {url:FORM,long:false};
+function formURL(item){
+ // Field confirmed by the teacher's Google Forms prefilled link.
+ const base=FORM.split('?')[0]+'?usp=pp_url';
+ const url=base+'&entry.659443543='+encodeURIComponent(item.code);
+ // Keep the complete code in the clipboard/TXT if a URL would be too long.
+ return url.length<=8000?{url,long:false}:{url:base,long:true};
 }
 let pendingURL=null;
 async function deliver(item,reset=true){
  if(delivering)return;
  delivering=true;$('delivery-retry').disabled=true;$('delivery-status').textContent=tr('copying');
+ const dest=formURL(item);
  // Copy while this document is still focused. A blocked popup leaves the report intact.
  try{
    if(!navigator.clipboard?.writeText)throw Error('Clipboard unavailable');
    await navigator.clipboard.writeText(item.code);
  }catch{
-   $('delivery-status').textContent=tr('clipboardError');delivering=false;$('delivery-retry').disabled=false;return;
+   if(dest.long){$('delivery-status').textContent=tr('clipboardError');delivering=false;$('delivery-retry').disabled=false;return;}
  }
- const dest=formURL(item);
  if(dest.long){
    pendingURL={url:dest.url,reset};
    $('delivery-status').textContent=tr('longCode');
