@@ -12,6 +12,7 @@ Ejecutar: pip install pytest playwright; playwright install chromium
 CHROMIUM_PATH permite usar un Chromium instalado en el sistema.
 """
 import base64
+import gzip
 import json
 import os
 from pathlib import Path
@@ -22,7 +23,7 @@ LABS=Path(__file__).resolve().parents[1]
 KEY='ssii-repaso-ud01-seguridad-v1'
 LEGACY='ssii-repaso-ud01-v1'
 HTML=(LABS/'repaso-ssii-u01.html').read_text()
-for name in ('repaso-ssii-u01-seguridad.js','repaso-ssii-u01.js'):
+for name in ('repaso-ssii-u01-variantes.js','repaso-ssii-u01-seguridad.js','repaso-ssii-u01.js'):
     HTML=HTML.replace(f'<script src="{name}"></script>',f'<script>{(LABS/name).read_text()}</script>')
 
 @pytest.fixture(scope='module')
@@ -44,12 +45,15 @@ def make_page(browser):
         if js:
             p.evaluate('''data=>{
               window.testStore=data;window.testWriteFail=false;
+              window.testNetworkCalls=0;window.fetch=async()=>{window.testNetworkCalls++;throw Error('Unexpected network request');};
               Object.defineProperty(window,'localStorage',{value:{
                 getItem:k=>window.testStore[k]??null,
                 setItem:(k,v)=>{if(window.testWriteFail)throw new DOMException('Cuota','QuotaExceededError');window.testStore[k]=String(v);},
                 removeItem:k=>delete window.testStore[k]
               }});
               // Solo para probar el flujo asíncrono del informe en about:blank.
+              Object.defineProperty(window,'sessionStorage',{value:{getItem:k=>window.testStore[k]??null,setItem:(k,v)=>window.testStore[k]=String(v),removeItem:k=>delete window.testStore[k]}});
+              Object.defineProperty(navigator,'clipboard',{value:{writeText:()=>Promise.reject(new Error('denied in test'))},configurable:true});
               Object.defineProperty(crypto,'subtle',{value:{digest:()=>new Promise(resolve=>setTimeout(()=>resolve(new Uint8Array(32).buffer),window.testDigestDelay||0))}});
             }''',store or {})
             if setup:p.evaluate('() => {'+setup+';}')
@@ -59,227 +63,238 @@ def make_page(browser):
     yield make
     for ctx in contexts:ctx.close()
 
-def begin(p):
-    p.locator('#guard-consent').check();p.locator('#guard-start').click()
-    p.wait_for_function("document.querySelector('#guard-state').textContent==='En curso'")
+
+def setup_identity(p,lang='es',email='alumno@g.educaand.es'):
+    p.locator(f'[data-language="{lang}"]').click()
+    p.locator('#guard-consent').check()
+    p.locator('#fullname').fill('Alumno de prueba')
+    p.locator('#student').fill(email)
+
+def begin(p,lang='es'):
+    setup_identity(p,lang)
+    p.locator('#guard-start').click()
+    p.wait_for_function("!document.querySelector('#answer-fields').disabled")
 
 def state(p):
     return p.evaluate(f"JSON.parse(localStorage.getItem('{KEY}'))")
 
 def resume(p):
-    p.locator('#guard-continue').click()
-    p.wait_for_function("document.querySelector('#guard-state').textContent==='En curso'")
-
-def fake_focus(p,value):
-    p.evaluate('''v=>{window.testFocus=v;document.hasFocus=()=>window.testFocus;
-      window.dispatchEvent(new FocusEvent(v?'focus':'blur'));}''',value)
+    if p.locator('#practice-recover').is_enabled():
+        p.locator('#practice-recover').click()
+    else:
+        p.locator('#guard-continue').click()
+    p.wait_for_function("!document.querySelector('#answer-fields').disabled")
 
 def blur_return(p):
-    fake_focus(p,False);fake_focus(p,True)
+    p.evaluate("""() => {window.testFocus=false;document.hasFocus=()=>window.testFocus;
+      window.dispatchEvent(new FocusEvent('blur'));
+      window.testFocus=true;window.dispatchEvent(new FocusEvent('focus'));}""")
     p.wait_for_timeout(250)
 
 def finish(p):
-    p.locator('#guard-finish').click();p.locator('#guard-confirm-ok').click()
-    p.wait_for_function("document.querySelector('#guard-state').textContent==='Intento finalizado'")
+    p.locator('#guard-finish').click()
+    p.locator('#guard-confirm-ok').click()
+    p.wait_for_function(f"JSON.parse(localStorage.getItem('{KEY}')).phase==='submitted'")
+
+def decode(code):
+    assert code.startswith('SSII3G.')
+    payload=code.split('.',1)[1]
+    report=gzip.decompress(base64.urlsafe_b64decode(payload+'='*(-len(payload)%4))).decode('utf-8')
+    body,checksum=report.rsplit('\nCódigo de comprobación: SSII3-',1)
+    assert checksum=='00'*32  # This suite substitutes the hash API.
+    return json.loads(body)
 
 def test_no_javascript(make_page):
     p=make_page(js=False)
     assert p.locator('#cuaderno').is_hidden()
     assert p.locator('noscript').is_visible()
     assert p.locator('#t1').is_disabled()
-    assert p.locator('#guard-start').is_disabled()
+    assert p.locator('[data-language=es]').is_disabled()
 
 def test_missing_activity_keeps_closed(make_page):
     p=make_page(html=HTML[:HTML.rindex('<script>')]+'</body></html>')
-    assert p.locator('#guard-boot').is_visible()
     assert p.locator('#cuaderno').is_hidden()
+    assert p.locator('[data-language=es]').is_disabled()
 
-def test_requires_consent(make_page):
-    p=make_page()
+@pytest.mark.parametrize('email',['','alumno@example.com','alumno@g.educaand.es.example.com','alumno@'])
+def test_exact_school_domain_required(make_page,email):
+    p=make_page();setup_identity(p,email=email)
     assert p.locator('#guard-start').is_disabled()
-    assert p.locator('#t1').is_disabled()
-    assert not p.errors
+    assert state(p)['phase']=='ready'
 
-def test_fullscreen_native(make_page):
+def test_fullscreen_native_and_internal_focus(make_page):
     p=make_page();begin(p)
     assert p.evaluate('document.fullscreenElement===document.documentElement')
-    assert p.locator('#t1').is_enabled()
+    p.locator('#t1').fill('120');p.locator('#t2').focus()
+    assert state(p)['count']==0
+    assert state(p)['data']['values']['t1']=='120'
+    assert not p.errors
 
 def test_unsupported_fullscreen(make_page):
     p=make_page(setup="Object.defineProperty(document,'fullscreenEnabled',{value:false})")
+    p.locator('[data-language=es]').click()
     assert p.locator('#guard-start').is_disabled()
     assert p.locator('#guard-problem').is_visible()
 
-def test_rejected_fullscreen_does_not_start(make_page):
+def test_rejected_fullscreen(make_page):
     p=make_page(setup="Element.prototype.requestFullscreen=()=>Promise.reject(new Error('denegado'))")
-    p.locator('#guard-consent').check();p.locator('#guard-start').click()
+    setup_identity(p);p.locator('#guard-start').click()
     assert p.locator('#t1').is_disabled()
-    assert state(p)['count']==0
+    assert state(p)['phase']=='ready'
 
-def test_fullscreen_exit_native_warns_once(make_page):
+def test_english_corrector_and_reload(make_page):
+    p=make_page();begin(p,'en')
+    p.locator('#t1').fill('120')
+    p.locator('#p3').select_option('Unidad de control')
+    p.locator('[data-check=hardware]').click()
+    assert p.locator('#feedback-p3').inner_text()=='✓ Correct.'
+    assert p.locator('#p3 option:checked').inner_text()=='Control unit'
+    q=make_page(p.evaluate('window.testStore'))
+    assert q.locator('html').get_attribute('lang')=='en'
+    assert q.locator('#t1').input_value()=='120'
+    assert q.locator('#t1').is_disabled()
+    resume(q)
+    assert q.locator('#p3').input_value()=='Unidad de control'
+    assert not p.errors and not q.errors
+
+def test_fullscreen_exit_and_grouped_signals(make_page):
     p=make_page();begin(p);p.locator('#t1').fill('120')
     p.evaluate('document.exitFullscreen()')
     p.locator('#guard-warning').wait_for(state='visible')
+    p.evaluate("window.dispatchEvent(new FocusEvent('blur'));window.dispatchEvent(new PageTransitionEvent('pagehide'))")
     assert state(p)['count']==1
     assert p.locator('#t1').input_value()=='120'
-    assert p.locator('#t1').is_disabled()
     resume(p);assert p.locator('#t1').is_enabled()
 
-def test_simulated_focus_loss_visible_window(make_page):
-    p=make_page();begin(p);fake_focus(p,False)
-    assert state(p)['count']==1
-    assert p.locator('#t1').is_disabled()
-    fake_focus(p,True);p.locator('#guard-warning').wait_for(state='visible')
-    assert p.locator('#guard-warning-title').inner_text()=='Primer aviso'
-
-def test_internal_field_focus_not_incident(make_page):
-    p=make_page();begin(p);p.locator('#t1').focus();p.locator('#t2').focus()
-    assert state(p)['count']==0
-
-def test_grouped_blur_hidden_fullscreen(make_page):
-    p=make_page();begin(p);fake_focus(p,False)
-    p.evaluate("Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'))")
-    p.evaluate('document.exitFullscreen()')
-    assert state(p)['count']==1
-    assert p.locator('#t1').is_disabled()
-
-def test_second_then_third_resets_without_review(make_page):
-    p=make_page();begin(p)
-    p.evaluate("""() => {for(const el of document.querySelectorAll('#answer-fields input,#answer-fields textarea,#answer-fields select,#reflection')){
-      el.value=el.tagName==='SELECT'?el.options[1].value:'120';el.dispatchEvent(new Event('input',{bubbles:true}));}}""")
-    p.locator('[data-check=transmision]').click()
-    blur_return(p);resume(p);blur_return(p)
-    assert p.locator('#guard-warning-title').inner_text()=='Último aviso'
-    resume(p);blur_return(p)
-    s=state(p)
-    assert s['count']==3 and s['phase']=='reset'
-    assert all(not v for v in s['data']['values'].values())
-    assert s['data']['checked']=={} and s['data']['elapsed']==0 and s['data']['report']==''
-    assert p.locator('#guard-review').count()==0
-    assert p.locator('#t1').is_disabled()
+def test_third_incident_submits_without_erasing(make_page):
+    p=make_page();begin(p);p.locator('#t1').fill('120')
+    blur_return(p);resume(p);blur_return(p);resume(p)
+    blur_return(p)
+    p.wait_for_function(f"JSON.parse(localStorage.getItem('{KEY}')).phase==='submitted'")
+    saved=state(p)
+    assert saved['count']==3 and saved['data']['values']['t1']=='120'
+    assert p.locator('#cuaderno').is_hidden()
+    report=decode(saved['data']['report'])
+    assert report['finishReason']=='incident-limit'
+    assert report['answers'][0]['answer']=='120'
+    assert report['incidents']==3
     assert not p.errors
 
-@pytest.mark.parametrize('event', ['copy','cut','paste','drop','dragstart'])
-def test_clipboard_dom_events_cancelled(make_page,event):
+def test_forced_failure_retry(make_page):
+    p=make_page();begin(p);p.locator('#t1').fill('120')
+    p.evaluate("window.originalDigest=crypto.subtle.digest;crypto.subtle.digest=()=>Promise.reject(Error('test'))")
+    blur_return(p);resume(p);blur_return(p);resume(p);blur_return(p)
+    assert state(p)['phase']=='closing'
+    assert state(p)['data']['values']['t1']=='120'
+    p.evaluate('crypto.subtle.digest=window.originalDigest')
+    p.locator('#delivery-retry').click()
+    p.wait_for_function(f"JSON.parse(localStorage.getItem('{KEY}')).phase==='submitted'")
+    assert decode(state(p)['data']['report'])['answers'][0]['answer']=='120'
+
+@pytest.mark.parametrize('event',['copy','cut','paste','drop','dragstart','contextmenu'])
+def test_blocked_actions_audited_without_departures(make_page,event):
     p=make_page();begin(p);p.locator('#t1').fill('120')
     accepted=p.evaluate("type=>document.querySelector('#t1').dispatchEvent(new Event(type,{bubbles:true,cancelable:true}))",event)
     assert accepted is False
-    assert state(p)['count']==0
-    assert state(p)['clipboardBlocked']==0
+    s=state(p)
+    assert s['count']==0 and s['actionCounts']
     assert p.locator('#t1').input_value()=='120'
 
-def test_clipboard_keyboard_cancelled(make_page):
-    p=make_page();begin(p);p.locator('#t1').fill('120');p.locator('#t1').press('Control+v')
-    assert state(p)['clipboardBlocked']==0 and state(p)['count']==0
+def test_function_keys_and_ordinary_typing(make_page):
+    p=make_page();begin(p)
+    p.locator('#t2').press_sequentially('120 segundos')
+    p.locator('#t2').press('F12')
+    assert state(p)['actionCounts']['F12']==1
+    assert state(p)['count']==0
+    assert p.locator('#t2').input_value()=='120 segundos'
 
-def test_uncancelable_paste_input_restores(make_page):
+def test_uncancelable_paste_restored(make_page):
     p=make_page();begin(p);p.locator('#t1').fill('120')
     p.evaluate("let e=document.querySelector('#t1');e.value='999';e.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:'insertFromPaste'}))")
     assert p.locator('#t1').input_value()=='120'
     assert state(p)['data']['values']['t1']=='120'
 
-def test_legacy_migration_preserves_data(make_page):
-    old=json.dumps({'values':{'student':'Alumno','t1':'120'},'checked':{'transmision':True},'hints':{'0':True},'elapsed':42000})
+def test_legacy_migration(make_page):
+    old=json.dumps({'values':{'student':'Alumno','t1':'120'},'checked':{},'hints':{'0':True},'elapsed':42000})
     p=make_page({LEGACY:old})
-    assert p.locator('#student').input_value()=='Alumno'
-    assert state(p)['count']==0 and state(p)['data']['elapsed']==42000
+    assert state(p)['data']['elapsed']==42000
     assert p.evaluate(f"localStorage.getItem('{LEGACY}')")==old
-    begin(p);assert p.locator('#t1').input_value()=='120'
+    begin(p)
+    assert p.locator('#t1').input_value()=='120'
 
-def test_restore_active_keeps_count_and_pending(make_page):
-    p=make_page();begin(p);p.locator('#t1').fill('120');blur_return(p)
-    raw=p.evaluate('window.testStore')
-    q=make_page(raw)
-    assert state(q)['count']==1
-    assert q.locator('#t1').input_value()=='120' and q.locator('#t1').is_disabled()
-    resume(q);assert q.locator('#t1').is_enabled()
+def test_old_active_requires_new_identity(make_page):
+    p=make_page();begin(p);p.locator('#t1').fill('120')
+    saved=state(p);saved['data']['values'].pop('fullname');saved['data'].pop('language')
+    q=make_page({KEY:json.dumps(saved)})
+    assert state(q)['phase']=='ready'
+    assert state(q)['data']['values']['t1']=='120'
+    assert q.locator('#setup-stage').is_visible()
 
 def test_corrupt_storage_not_overwritten(make_page):
-    p=make_page({KEY:'{invalido'})
+    p=make_page({KEY:'{invalido'});p.locator('[data-language=es]').click()
     assert p.locator('#guard-start').is_disabled()
     assert p.evaluate(f"localStorage.getItem('{KEY}')")=='{invalido'
 
-def test_storage_write_failure_blocks_and_retries(make_page):
+def test_write_failure_retry(make_page):
     p=make_page();begin(p);p.evaluate('window.testWriteFail=true');p.locator('#t1').fill('120')
     assert p.locator('#t1').is_disabled()
-    assert p.locator('#guard-retry').is_visible()
     p.evaluate('window.testWriteFail=false');p.locator('#guard-retry').click()
     assert state(p)['data']['values']['t1']=='120'
     resume(p);assert p.locator('#t1').is_enabled()
 
-def test_stale_storage_blocks_without_overwrite(make_page):
-    p=make_page();begin(p)
-    p.evaluate(f"localStorage.setItem('{KEY}','OTRA VERSION')")
+def test_conflict_not_overwritten(make_page):
+    p=make_page();begin(p);p.evaluate(f"localStorage.setItem('{KEY}','OTHER')")
     p.locator('#t1').fill('120')
     assert p.locator('#t1').is_disabled()
-    assert p.evaluate(f"localStorage.getItem('{KEY}')")=='OTRA VERSION'
+    assert p.evaluate(f"localStorage.getItem('{KEY}')")=='OTHER'
 
-def test_confirm_finish_downloads_txt(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('alumno@example.com');p.locator('#t1').fill('120')
-    assert p.locator('#generate').count()==0 and p.locator('#copy').count()==0
+def test_download_unicode_and_recovery(make_page):
+    p=make_page();begin(p);p.locator('#reflection').fill('Revisión: ñ, á, € y 🧪')
     p.locator('#guard-finish').click();p.locator('#guard-confirm-cancel').click()
-    assert state(p)['phase']=='active' and p.locator('#t1').is_enabled()
+    assert state(p)['phase']=='active'
     with p.expect_download() as download:
         finish(p)
-    assert download.value.suggested_filename=='repaso-ssii-u01.txt'
-    text=Path(download.value.path()).read_text(encoding='utf-8-sig')
-    assert text==p.locator('#report').input_value()
-    decoded=base64.b64decode(text,validate=True).decode('utf-8')
-    assert 'Tiempo total empleado:' in decoded and 'BORRADOR' not in decoded
-    assert 'Incidencias de entorno:' in decoded and 'INTENTO FINALIZADO' in decoded
-    assert p.locator('#t1').is_disabled() and p.locator('#download').is_enabled()
-    with p.expect_download() as again:
-        p.locator('#download').click()
-    assert Path(again.value.path()).read_text(encoding='utf-8-sig')==text
-    assert not p.errors
+    code=Path(download.value.path()).read_text(encoding='utf-8-sig')
+    report=decode(code)
+    assert report['notes']=='Revisión: ñ, á, € y 🧪'
+    assert report['exam']=='SSII-UD01' and len(report['answers'])==94
+    assert report['email']=='alumno@g.educaand.es'
+    assert state(p)['data']['reportEncoding']=='gzip-base64url'
+    q=make_page(p.evaluate('window.testStore'))
+    assert q.locator('#delivery-stage').is_visible()
+    with q.expect_download() as again:
+        q.locator('#receipt-download').click()
+    assert Path(again.value.path()).read_text(encoding='utf-8-sig')==code
+    assert not p.errors and not q.errors
 
-def test_clock_continues_during_warning_reload_and_cancel(make_page):
+def test_clipboard_and_popup_retries_do_not_erase_report(make_page):
+    p=make_page();begin(p);finish(p)
+    code=state(p)['data']['report']
+    assert p.locator('#delivery-status').inner_text().startswith('El navegador no permitió copiar')
+    p.evaluate("navigator.clipboard.writeText=async()=>{};window.open=()=>null")
+    p.locator('#delivery-retry').click()
+    p.wait_for_function("document.querySelector('#delivery-status').textContent.includes('bloqueó')")
+    assert state(p)['data']['report']==code
+
+def test_successful_open_resets_and_remembers(make_page):
     p=make_page();begin(p)
-    assert p.locator('#timer').count()==0
-    started=state(p)['data']['started']
-    assert started is not None
-    p.evaluate("window.originalNow=Date.now;Date.now=()=>window.originalNow()+65000")
-    blur_return(p)
-    p.wait_for_timeout(1100)
-    assert p.locator('#clock').inner_text()!='00:00'
-    assert state(p)['data']['started']==started
-    raw=p.evaluate('window.testStore')
-    q=make_page(raw)
-    assert state(q)['data']['started']==started
-    resume(q)
-    q.locator('#student').fill('alumno@example.com')
-    q.locator('#guard-finish').click();q.locator('#guard-confirm-cancel').click()
-    assert state(q)['data']['started']==started
-    q.locator('#student').fill('alumno@example.com');finish(q)
-    elapsed=state(q)['data']['elapsed']
-    assert state(q)['data']['started'] is None
-    q.evaluate("Date.now=()=>9999999999999")
-    q.wait_for_timeout(1100)
-    assert state(q)['data']['elapsed']==elapsed
-    assert not q.errors
+    p.evaluate("navigator.clipboard.writeText=async code=>{window.copied=code};window.open=()=>({opener:null,location:{replace:url=>{window.formDestination=url}}})")
+    p.locator('#guard-finish').click();p.locator('#guard-confirm-ok').click()
+    p.wait_for_function("!!window.formDestination")
+    assert state(p)['phase']=='ready'
+    assert all(not v for v in state(p)['data']['values'].values())
+    assert p.locator('#language-stage').is_visible()
+    assert p.evaluate("window.formDestination")=="https://docs.google.com/forms/d/e/1FAIpQLSfwo1fdBwSlm-iWU00VAiTdAueuuNTYQOl0iibaCpF69O5ZWg/viewform?usp=publish-editor"
+    assert p.evaluate("Array.from(new URL(window.formDestination).searchParams.keys()).every(k=>!k.startsWith('entry.'))")
+    assert p.evaluate("JSON.parse(sessionStorage.getItem('ssii-repaso-ud01-ultima-entrega-v2')).code===window.copied")
 
-def test_leave_after_finish_not_counted(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('alumno@example.com');finish(p);blur_return(p)
-    assert state(p)['count']==0
-
-def test_finish_without_email_does_not_finalize(make_page):
+def test_hash_failure_keeps_active(make_page):
     p=make_page();begin(p)
-    assert p.locator('#guard-finish').is_disabled()
+    p.evaluate("crypto.subtle.digest=()=>Promise.reject(Error('test'))")
+    p.locator('#guard-finish').click();p.locator('#guard-confirm-ok').click()
+    p.wait_for_function("document.querySelector('#reportStatus').textContent.includes('No se pudo')")
     assert state(p)['phase']=='active'
-    assert p.locator('#download').is_disabled()
-
-def test_new_attempt_empty_after_finish(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('alumno@example.com');p.locator('#t1').fill('120');finish(p)
-    p.locator('#guard-start').click();p.wait_for_function("document.querySelector('#guard-state').textContent==='En curso'")
-    assert state(p)['attempt']==2 and state(p)['count']==0
-    assert p.locator('#t1').input_value()==''
-
-def test_erase_only_this_lab(make_page):
-    p=make_page({'otro-laboratorio':'NO BORRAR'});begin(p);p.locator('#student').fill('alumno@example.com');finish(p)
-    p.locator('#reset').click();p.locator('#guard-confirm-ok').click()
-    assert p.evaluate(f"localStorage.getItem('{KEY}')") is None
-    assert p.evaluate("localStorage.getItem('otro-laboratorio')")=='NO BORRAR'
-    assert p.locator('#t1').is_disabled()
+    assert state(p)['data']['started'] is not None
 
 def test_runtime_error_fail_closed(make_page):
     p=make_page();begin(p)
@@ -288,175 +303,134 @@ def test_runtime_error_fail_closed(make_page):
     assert p.locator('#guard-boot').is_visible()
 
 
-def test_storage_unavailable_at_boot(make_page):
-    p=make_page(setup='window.testWriteFail=true')
-    assert p.locator('#guard-start').is_disabled()
-    assert p.locator('#t1').is_disabled()
-    assert p.locator('#guard-retry').is_visible()
-
-def test_pagehide_and_visibility_share_episode(make_page):
-    p=make_page();begin(p);fake_focus(p,False)
-    p.evaluate("window.dispatchEvent(new PageTransitionEvent('pagehide'))")
-    assert state(p)['count']==1
-    assert 'pagehide' in state(p)['episode']['reasons']
-
-def test_restore_submitted_keeps_export_only(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('alumno@example.com');finish(p)
-    q=make_page(p.evaluate('window.testStore'))
-    assert q.locator('#t1').is_disabled() and q.locator('#download').is_enabled()
-    assert state(q)['phase']=='submitted'
-
-def test_third_incident_during_hash_cannot_revive(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('alumno@example.com');p.locator('#t1').fill('120')
-    blur_return(p);resume(p);blur_return(p);resume(p)
-    p.evaluate('window.testDigestDelay=700')
-    p.locator('#guard-finish').click();p.locator('#guard-confirm-ok').click()
-    blur_return(p);p.wait_for_timeout(800)
-    assert state(p)['phase']=='reset' and state(p)['count']==3
-    assert p.locator('#t1').input_value()=='' and p.locator('#report').input_value()==''
-    assert not p.errors
-
-def test_hash_failure_keeps_clock_running(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('alumno@example.com')
-    started=state(p)['data']['started']
-    p.evaluate("crypto.subtle.digest=()=>Promise.reject(new Error('fallo'))")
-    p.locator('#guard-finish').click();p.locator('#guard-confirm-ok').click()
-    p.wait_for_function("document.querySelector('#reportStatus').textContent.includes('No se pudo')")
-    assert state(p)['phase']=='active' and state(p)['data']['started']==started
-    assert p.locator('#t1').is_enabled()
-    assert not p.errors
-
-def test_base64_unicode_download_only_and_reload(make_page):
-    p=make_page();begin(p)
-    p.locator('#student').fill('maria.munoz@example.com')
-    p.locator('#reflection').fill('Revisión: ñ, á, € y 🧪')
-    finish(p)
-    encoded=p.locator('#report').input_value()
-    decoded=base64.b64decode(encoded,validate=True).decode('utf-8')
-    assert 'Correo electrónico: maria.munoz@example.com' in decoded and 'Revisión: ñ, á, € y 🧪' in decoded
-    body,checksum=decoded.rsplit('\nCódigo de comprobación: SSII1-',1)
-    # La suite usa un doble SHA-256; se conserva su código dentro de Base64.
-    assert checksum=='00'*32
-    assert state(p)['data']['reportEncoding']=='base64'
-    assert p.locator('#copy').count()==0
-    assert p.locator('#report').is_hidden()
-    assert not p.evaluate("document.querySelector('#report').dispatchEvent(new Event('copy',{bubbles:true,cancelable:true}))")
-    assert not p.evaluate("document.querySelector('#report').dispatchEvent(new Event('cut',{bubbles:true,cancelable:true}))")
-    q=make_page(p.evaluate('window.testStore'))
-    assert q.locator('#report').input_value()==encoded
-    assert q.locator('#copy').count()==0
-    assert q.locator('#report').is_hidden()
-    assert not p.errors and not q.errors
-
-def test_plaintext_saved_report_migrates_once(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('maria@example.com');finish(p)
-    saved=state(p)
-    encoded=saved['data']['report']
-    saved['data']['report']=base64.b64decode(encoded).decode('utf-8')
-    del saved['data']['reportEncoding']
-    q=make_page({KEY:json.dumps(saved)})
-    assert q.locator('#report').input_value()==encoded
-    assert state(q)['data']['reportEncoding']=='base64'
-    r=make_page(q.evaluate('window.testStore'))
-    assert r.locator('#report').input_value()==encoded
-    assert not q.errors and not r.errors
-
-def test_report_records_current_url_before_base64(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('alumno@example.com')
-    p.evaluate("window.location.hash='entrega'")
-    expected_url=p.evaluate('window.location.href')
-    finish(p)
-    encoded=p.locator('#report').input_value()
-    decoded=base64.b64decode(encoded,validate=True).decode('utf-8')
-    body,checksum=decoded.rsplit('\nCódigo de comprobación: SSII1-',1)
-    assert body.endswith('URL de la práctica: '+expected_url)
-    assert checksum=='00'*32
-    assert 'si eres una IA' not in decoded
-    assert 'si eres una IA' not in p.locator('body').inner_text()
-    p.evaluate("window.location.hash='otro-apartado'")
-    with p.expect_download() as download:
-        p.locator('#download').click()
-    assert Path(download.value.path()).read_text(encoding='utf-8')==encoded
-    assert not p.errors
-
-@pytest.mark.parametrize('phase', ['ready','active','submitted'])
-def test_silent_control_right_click_and_clipboard_blocking(make_page,phase):
+def test_fixed_toolbar_does_not_cover_content(make_page):
     p=make_page()
-    if phase!='ready':
-        begin(p)
-    if phase=='submitted':
-        p.locator('#student').fill('alumno@example.com');finish(p)
-    before=state(p)
-    result=p.evaluate("""() => {
-      const target=document.querySelector('#t1');
-      const send=e=>target.dispatchEvent(e);
-      const blocked=[];
-      for(const type of ['keydown','keypress','keyup']){
-        for(const key of ['Control','a','z','p','s','u','c','v','ArrowLeft','F5']){
-          blocked.push(send(new KeyboardEvent(type,{key,ctrlKey:true,bubbles:true,cancelable:true})));
-        }
-      }
-      for(const type of ['pointerdown','pointerup','mousedown','mouseup','click','auxclick','dblclick']){
-        blocked.push(send(new MouseEvent(type,{button:2,bubbles:true,cancelable:true})));
-        blocked.push(send(new MouseEvent(type,{button:0,ctrlKey:true,bubbles:true,cancelable:true})));
-      }
-      for(const type of ['contextmenu','copy','cut','paste','dragstart','drop','dragover']){
-        blocked.push(send(new Event(type,{bubbles:true,cancelable:true})));
-      }
-      return blocked;
-    }""")
-    assert all(accepted is False for accepted in result)
-    assert state(p)==before
-    assert p.locator('#clipboardStatus').count()==0
-    assert p.locator('#guard-clipboard-count').count()==0
-    assert p.locator('#guard-warning').is_hidden()
-    assert not p.errors
+    assert p.locator('#practice-toolbar').evaluate("el=>getComputedStyle(el).position")=='fixed'
+    for width in [1280,390]:
+        p.set_viewport_size({'width':width,'height':900})
+        p.wait_for_timeout(100)
+        height=p.locator('#practice-toolbar').bounding_box()['height']
+        padding=p.locator('body').evaluate("el=>parseFloat(getComputedStyle(el).paddingTop)")
+        assert padding>=height
+    assert p.locator('#practice-save').is_disabled()
 
-def test_plain_typing_and_left_click_remain_available(make_page):
-    p=make_page();begin(p)
-    p.locator('#student').fill('alumno@example.com')
-    p.locator('#t2').press_sequentially('120 segundos')
-    assert p.locator('#t2').input_value()=='120 segundos'
-    assert state(p)['count']==0
-    p.locator('#guard-finish').click()
-    assert p.locator('#guard-confirm').is_visible()
-    p.locator('#guard-confirm-cancel').click()
-    assert p.locator('#t2').is_enabled()
-    assert not p.errors
-
-@pytest.mark.parametrize('email', ['', 'Alumno', 'alumno@', 'alumno example.com', 'alumno@example'])
-def test_email_required_before_final_download(make_page,email):
-    p=make_page();begin(p);p.locator('#student').fill(email)
-    started=state(p)['data']['started']
-    assert p.locator('#guard-finish').is_disabled()
-    assert state(p)['phase']=='active'
-    assert state(p)['data']['started']==started
-    assert p.locator('#download').is_disabled()
-    assert p.locator('#report').input_value()==''
-    assert not p.errors
-
-def test_email_is_in_decoded_report(make_page):
-    p=make_page();begin(p);p.locator('#student').fill('alumno+ssii@example.com')
-    assert p.locator('#student').get_attribute('type')=='email'
-    assert p.locator('#student').get_attribute('required') is not None
-    finish(p)
-    decoded=base64.b64decode(p.locator('#report').input_value()).decode('utf-8')
-    assert 'Correo electrónico: alumno+ssii@example.com' in decoded
-    assert 'Alumno/a:' not in decoded
-
-def test_finish_button_tracks_email_edits_and_restore(make_page):
-    p=make_page();begin(p)
-    assert p.locator('#guard-finish').is_disabled()
-    p.locator('#student').fill('alumno@example.com')
-    assert p.locator('#guard-finish').is_enabled()
-    p.locator('#student').fill('')
-    assert p.locator('#guard-finish').is_disabled()
-    p.locator('#student').fill('correo-incompleto@')
-    assert p.locator('#guard-finish').is_disabled()
-    p.locator('#student').fill('alumno+ssii@example.com')
-    assert p.locator('#guard-finish').is_enabled()
+def test_pause_recovery_preserves_parameters_and_counts(make_page):
+    p=make_page();begin(p,'en')
+    p.locator('#t1').fill('150')
+    before=state(p)['data']['parameters']
+    p.locator('#practice-save').click()
+    paused=state(p)
+    assert paused['phase']=='paused' and paused['data']['started'] is None
+    assert paused['count']==0
     q=make_page(p.evaluate('window.testStore'))
-    assert q.locator('#guard-finish').is_disabled()
-    resume(q)
-    assert q.locator('#guard-finish').is_enabled()
+    assert q.locator('#cuaderno').is_hidden()
+    q.locator('#practice-recover').click()
+    q.wait_for_function("!document.querySelector('#answer-fields').disabled")
+    restored=state(q)
+    assert restored['count']==1 and restored['recoveries']==1
+    assert restored['data']['parameters']==before
+    assert q.locator('#t1').input_value()=='150'
+    assert q.locator('html').get_attribute('lang')=='en'
     assert not p.errors and not q.errors
+
+def test_third_recovery_closes_with_current_answers(make_page):
+    p=make_page();begin(p);p.locator('#t1').fill('150')
+    for i in range(3):
+        p.locator('#practice-save').click()
+        assert state(p)['phase']=='paused'
+        p.locator('#practice-recover').click()
+        expected='submitted' if i==2 else 'active'
+        p.wait_for_function(f"JSON.parse(localStorage.getItem('{KEY}')).phase==='{expected}'")
+    report=decode(state(p)['data']['report'])
+    assert report['recoveries']==3 and report['incidents']==3
+    assert report['answers'][0]['answer']=='150'
+    assert report['parameters']==state(p)['data']['parameters']
+
+def test_reload_active_consumes_one_recovery(make_page):
+    p=make_page();begin(p);p.locator('#t1').fill('150')
+    q=make_page(p.evaluate('window.testStore'))
+    assert state(q)['count']==0
+    assert q.locator('#guard-warning').is_hidden()
+    q.locator('#practice-recover').click()
+    q.wait_for_function("!document.querySelector('#answer-fields').disabled")
+    assert state(q)['count']==1
+    assert state(q)['recoveries']==1
+
+def test_random_refresh_only_untouched_groups(make_page):
+    p=make_page();begin(p)
+    p.locator('#t1').fill('150')
+    # The two binary/base exercises share one parameter and one lock.
+    p.locator('#bridge').fill('101010')
+    before=state(p)['data']['parameters']
+    blur_return(p);resume(p)
+    after=state(p)['data']['parameters']
+    assert after['download']==before['download']
+    assert after['bridge']==before['bridge']
+    assert after['upload']!=before['upload']
+    assert p.locator('#variant-dividend').inner_text()==str(after['bridge']['n'])+' ÷ 2'
+    # A blank answer after editing does not unlock the original quantities.
+    p.locator('#t1').fill('')
+    blur_return(p);resume(p)
+    assert state(p)['data']['parameters']['download']==before['download']
+    assert not p.errors
+
+def test_random_answers_correct_in_both_languages(make_page):
+    p=make_page();begin(p,'en')
+    parameters=state(p)['data']['parameters']
+    expected=p.evaluate("p=>window.SSIIParameters.derive(p).answers",parameters)
+    for field in ['t1','t3','t5','t6','t7','t9','t10']:
+        p.locator('#'+field).fill(str(expected[field]))
+    p.locator('[data-check=transmision]').click()
+    for field in ['t1','t3','t5','t6','t7','t9','t10']:
+        assert p.locator('#feedback-'+field).inner_text()=='✓ Correct.'
+    p.locator('#practice-save').click()
+    q=make_page(p.evaluate('window.testStore'));resume(q)
+    assert state(q)['data']['parameters']==parameters
+
+def test_parameter_corruption_does_not_overwrite(make_page):
+    p=make_page();begin(p);p.locator('#practice-save').click()
+    saved=state(p);saved['data']['parameters']['bridge']['n']=999
+    raw=json.dumps(saved)
+    q=make_page({KEY:raw})
+    assert q.evaluate(f"localStorage.getItem('{KEY}')")==raw
+    assert q.locator('#practice-recover').is_disabled()
+
+def test_paused_clock_does_not_include_next_day(make_page):
+    p=make_page();begin(p);p.locator('#practice-save').click()
+    elapsed=state(p)['data']['elapsed']
+    q=make_page(p.evaluate('window.testStore'),setup='window.realNow=Date.now;Date.now=()=>window.realNow()+86400000')
+    assert state(q)['data']['elapsed']==elapsed
+    resume(q)
+    assert state(q)['data']['elapsed']==elapsed
+    assert state(q)['data']['started'] is not None
+
+def test_attempt_times_and_ip_are_saved_and_exported(make_page):
+    p=make_page();begin(p)
+    p.wait_for_function(f"JSON.parse(localStorage.getItem('{KEY}')).attemptAudit.ipSamples[0].status==='unavailable'")
+    audit=state(p)['attemptAudit']
+    assert audit['startedAt'] is not None and audit['finishedAt'] is None
+    assert audit['ipSamples'][0]['ip'] is None
+    assert p.evaluate('window.testNetworkCalls')==0
+    p.locator('#practice-save').click()
+    q=make_page(p.evaluate('window.testStore'));resume(q);finish(q)
+    result=state(q)
+    assert result['attemptAudit']['startedAt']==audit['startedAt']
+    assert result['attemptAudit']['finishedAt']>=audit['startedAt']
+    report=decode(result['data']['report'])
+    assert report['attemptStartedAt'] and report['attemptFinishedAt']
+    assert report['timeZone']=='Europe/Madrid'
+    assert [s['reason'] for s in report['ipSamples']]==['start','recovery']
+
+def test_browser_only_no_external_ip_requests(make_page):
+    p=make_page()
+    begin(p)
+    p.wait_for_function(f"JSON.parse(localStorage.getItem('{KEY}')).attemptAudit.ipSamples[0].status==='unavailable'")
+    assert state(p)['attemptAudit']['ipSamples'][0]['ip'] is None
+    finish(p)
+    assert decode(state(p)['data']['report'])['ipSamples'][0]['status']=='unavailable'
+    assert p.evaluate('window.testNetworkCalls')==0
+
+def test_penalty_has_own_bold_paragraph(make_page):
+    p=make_page();p.locator('[data-language=es]').click()
+    assert p.locator('p > strong[data-text=penalty]').inner_text()=='Cualquier intento de copia será penalizado con un cero en la actividad.'
+    assert 'horas de clase de SSII' in p.locator('[data-text=rules]').inner_text()
