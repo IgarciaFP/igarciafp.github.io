@@ -23,7 +23,7 @@ LABS=Path(__file__).resolve().parents[1]
 KEY='ssii-repaso-ud01-seguridad-v1'
 LEGACY='ssii-repaso-ud01-v1'
 HTML=(LABS/'repaso-ssii-u01.html').read_text()
-for name in ('repaso-ssii-u01-seguridad.js','repaso-ssii-u01.js'):
+for name in ('repaso-ssii-u01-variantes.js','repaso-ssii-u01-seguridad.js','repaso-ssii-u01.js'):
     HTML=HTML.replace(f'<script src="{name}"></script>',f'<script>{(LABS/name).read_text()}</script>')
 
 @pytest.fixture(scope='module')
@@ -78,7 +78,10 @@ def state(p):
     return p.evaluate(f"JSON.parse(localStorage.getItem('{KEY}'))")
 
 def resume(p):
-    p.locator('#guard-continue').click()
+    if p.locator('#practice-recover').is_enabled():
+        p.locator('#practice-recover').click()
+    else:
+        p.locator('#guard-continue').click()
     p.wait_for_function("!document.querySelector('#answer-fields').disabled")
 
 def blur_return(p):
@@ -296,3 +299,105 @@ def test_runtime_error_fail_closed(make_page):
     p.evaluate("window.dispatchEvent(new ErrorEvent('error',{message:'prueba'}))")
     assert p.locator('#cuaderno').is_hidden()
     assert p.locator('#guard-boot').is_visible()
+
+
+def test_fixed_toolbar_does_not_cover_content(make_page):
+    p=make_page()
+    assert p.locator('#practice-toolbar').evaluate("el=>getComputedStyle(el).position")=='fixed'
+    for width in [1280,390]:
+        p.set_viewport_size({'width':width,'height':900})
+        p.wait_for_timeout(100)
+        height=p.locator('#practice-toolbar').bounding_box()['height']
+        padding=p.locator('body').evaluate("el=>parseFloat(getComputedStyle(el).paddingTop)")
+        assert padding>=height
+    assert p.locator('#practice-save').is_disabled()
+
+def test_pause_recovery_preserves_parameters_and_counts(make_page):
+    p=make_page();begin(p,'en')
+    p.locator('#t1').fill('150')
+    before=state(p)['data']['parameters']
+    p.locator('#practice-save').click()
+    paused=state(p)
+    assert paused['phase']=='paused' and paused['data']['started'] is None
+    assert paused['count']==0
+    q=make_page(p.evaluate('window.testStore'))
+    assert q.locator('#cuaderno').is_hidden()
+    q.locator('#practice-recover').click()
+    q.wait_for_function("!document.querySelector('#answer-fields').disabled")
+    restored=state(q)
+    assert restored['count']==1 and restored['recoveries']==1
+    assert restored['data']['parameters']==before
+    assert q.locator('#t1').input_value()=='150'
+    assert q.locator('html').get_attribute('lang')=='en'
+    assert not p.errors and not q.errors
+
+def test_third_recovery_closes_with_current_answers(make_page):
+    p=make_page();begin(p);p.locator('#t1').fill('150')
+    for i in range(3):
+        p.locator('#practice-save').click()
+        assert state(p)['phase']=='paused'
+        p.locator('#practice-recover').click()
+        expected='submitted' if i==2 else 'active'
+        p.wait_for_function(f"JSON.parse(localStorage.getItem('{KEY}')).phase==='{expected}'")
+    report=decode(state(p)['data']['report'])
+    assert report['recoveries']==3 and report['incidents']==3
+    assert report['answers'][0]['answer']=='150'
+    assert report['parameters']==state(p)['data']['parameters']
+
+def test_reload_active_consumes_one_recovery(make_page):
+    p=make_page();begin(p);p.locator('#t1').fill('150')
+    q=make_page(p.evaluate('window.testStore'))
+    assert state(q)['count']==0
+    assert q.locator('#guard-warning').is_hidden()
+    q.locator('#practice-recover').click()
+    q.wait_for_function("!document.querySelector('#answer-fields').disabled")
+    assert state(q)['count']==1
+    assert state(q)['recoveries']==1
+
+def test_random_refresh_only_untouched_groups(make_page):
+    p=make_page();begin(p)
+    p.locator('#t1').fill('150')
+    # The two binary/base exercises share one parameter and one lock.
+    p.locator('#bridge').fill('101010')
+    before=state(p)['data']['parameters']
+    blur_return(p);resume(p)
+    after=state(p)['data']['parameters']
+    assert after['download']==before['download']
+    assert after['bridge']==before['bridge']
+    assert after['upload']!=before['upload']
+    assert p.locator('#variant-dividend').inner_text()==str(after['bridge']['n'])+' ÷ 2'
+    # A blank answer after editing does not unlock the original quantities.
+    p.locator('#t1').fill('')
+    blur_return(p);resume(p)
+    assert state(p)['data']['parameters']['download']==before['download']
+    assert not p.errors
+
+def test_random_answers_correct_in_both_languages(make_page):
+    p=make_page();begin(p,'en')
+    parameters=state(p)['data']['parameters']
+    expected=p.evaluate("p=>window.SSIIParameters.derive(p).answers",parameters)
+    for field in ['t1','t3','t5','t6','t7','t9','t10']:
+        p.locator('#'+field).fill(str(expected[field]))
+    p.locator('[data-check=transmision]').click()
+    for field in ['t1','t3','t5','t6','t7','t9','t10']:
+        assert p.locator('#feedback-'+field).inner_text()=='✓ Correct.'
+    p.locator('#practice-save').click()
+    q=make_page(p.evaluate('window.testStore'));resume(q)
+    assert state(q)['data']['parameters']==parameters
+
+def test_parameter_corruption_does_not_overwrite(make_page):
+    p=make_page();begin(p);p.locator('#practice-save').click()
+    saved=state(p);saved['data']['parameters']['bridge']['n']=999
+    raw=json.dumps(saved)
+    q=make_page({KEY:raw})
+    assert q.evaluate(f"localStorage.getItem('{KEY}')")==raw
+    assert q.locator('#practice-recover').is_disabled()
+
+def test_paused_clock_does_not_include_next_day(make_page):
+    p=make_page();begin(p);p.locator('#practice-save').click()
+    elapsed=state(p)['data']['elapsed']
+    q=make_page(p.evaluate('window.testStore'),setup='window.realNow=Date.now;Date.now=()=>window.realNow()+86400000')
+    assert state(q)['data']['elapsed']==elapsed
+    resume(q)
+    assert state(q)['data']['elapsed']==elapsed
+    assert state(q)['data']['started'] is not None
