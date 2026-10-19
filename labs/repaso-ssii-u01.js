@@ -289,7 +289,7 @@ function afterRender(state,ctx){
    .replaceAll('(sin sumar otra incidencia).','(no additional incident).')
    .replaceAll('página oculta','page hidden').replaceAll('pérdida de foco','focus lost')
    .replaceAll('salida de pantalla completa','fullscreen exited').replaceAll('recarga o cierre','reload or close');
- $('recovery').hidden=!language||active||submitted||recoveryMode||!lastDelivery;
+ $('recovery').hidden=true; // Recovery is available only through the toolbar file picker.
  $('recovery-message').textContent=tr('recovery');
 
  $('practice-save').disabled=(!active&&!paused)||ctx.restoring||!!ctx.problem||ctx.busy||(active&&$('answer-fields').disabled);
