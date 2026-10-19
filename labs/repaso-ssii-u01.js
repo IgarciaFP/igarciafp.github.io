@@ -149,8 +149,8 @@ for(const [id,anchor]of [['receipt-download','delivery-retry'],['recovery-downlo
 const receiptStatus=document.createElement('p');receiptStatus.id='receipt-status';receiptStatus.setAttribute('role','status');$('receipt-download').after(receiptStatus);
 function setLanguage(lang){
  language=lang;document.documentElement.lang=lang||'es';
- $('practice-toolbar').hidden=!language;
- document.documentElement.style.setProperty('--toolbar-height',language?Math.ceil($('practice-toolbar').getBoundingClientRect().height)+'px':'0px');
+ $('practice-toolbar').hidden=!language||!['active','paused','closing','submitted'].includes(phase);
+ document.documentElement.style.setProperty('--toolbar-height',!$('practice-toolbar').hidden?Math.ceil($('practice-toolbar').getBoundingClientRect().height)+'px':'0px');
  document.title=language==='en'?'SSII review · Unit 01':'Repaso SSII · Unidad 01';
  document.querySelector('.topline').textContent=document.title;
  document.querySelectorAll('[data-text]').forEach(el=>el.textContent=tr(el.dataset.text));
@@ -250,7 +250,7 @@ Object.assign(texts,{
 let importedPractice=false;
 function afterRender(state,ctx){
  phase=state.phase;
- $('practice-toolbar').hidden=!language;
+ $('practice-toolbar').hidden=!language||!['active','paused','closing','submitted'].includes(phase);
  syncToolbarHeight();
  const paused=phase==='paused',needsRecovery=paused||ctx.restoring;
  const active=phase==='active',submitted=phase==='submitted'||phase==='closing';
@@ -272,6 +272,7 @@ function afterRender(state,ctx){
  document.querySelector('.identity').hidden=!$('guard-consent').checked;
  $('fullname').disabled=active||paused||submitted;$('student').disabled=active||paused||submitted;
  $('guard-start').textContent=tr('start');
+ $('setup-recover').disabled=!language||!validIdentity()||!!ctx.problem||ctx.busy||!ctx.supported;
  $('guard-state').textContent=tr(active?($('answer-fields').disabled?'blocked':'active'):phase);
  $('guard-count').textContent=(language==='en'?'Incidents: ':'Incidencias: ')+state.count+'/3';
  $('guard-conditions').textContent=(language==='en'?'Fullscreen: ':'Pantalla completa: ')+(document.fullscreenElement?'✓':'—')+' · '+(language==='en'?'Focus: ':'Foco: ')+(document.hasFocus()?'✓':'—')+' · '+(language==='en'?'Visible: ':'Visible: ')+(document.visibilityState==='visible'?'✓':'—');
@@ -469,6 +470,7 @@ function recoveryEmailReady(){
  if(/^[^\s@]+@g\.educaand\.es$/i.test($('student').value.trim()))return true;
  fileStatus('recoveryEmailRequired');return false;
 }
+$('setup-recover').addEventListener('click',()=>$('practice-recover').click());
 $('practice-recover').addEventListener('click',()=>{
  if(!recoveryEmailReady())return;
  if(importedPractice){importedPractice=false;void guard.recoverPractice();return;}

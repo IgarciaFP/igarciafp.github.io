@@ -22,7 +22,7 @@ from playwright.sync_api import sync_playwright
 LABS=Path(__file__).resolve().parents[1]
 KEY='ssii-repaso-ud01-seguridad-v1'
 LEGACY='ssii-repaso-ud01-v1'
-HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-language','')
+HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-practice-toolbar','')
 for name in ('repaso-ssii-u01-variantes.js','repaso-ssii-u01-seguridad.js','repaso-ssii-u01.js'):
     HTML=HTML.replace(f'<script src="{name}"></script>',f'<script>{(LABS/name).read_text()}</script>')
 
@@ -570,7 +570,7 @@ def test_toolbar_hidden_on_language_screen(make_page):
     p=make_page()
     assert not p.locator('#practice-toolbar').is_visible()
     p.locator('[data-language=es]').click()
-    assert p.locator('#practice-toolbar').is_visible()
+    assert not p.locator('#practice-toolbar').is_visible()
     p.locator('#back-language').click()
     assert not p.locator('#practice-toolbar').is_visible()
 
@@ -593,7 +593,7 @@ def test_file_restores_saved_language_and_toolbar(make_page,saved_language):
     saved=state(p)
     q=make_page()
     q.locator('[data-language='+('en' if saved_language=='es' else 'es')+']').click()
-    assert q.locator('#practice-toolbar').is_visible()
+    assert not q.locator('#practice-toolbar').is_visible()
     q.locator('#guard-consent').check()
     q.locator('#student').fill(saved['data']['values']['student'])
     payload=json.dumps({'format':'SSII-UD01-SAVE','version':1,'language':saved_language,'state':saved}).encode()
@@ -604,3 +604,15 @@ def test_file_restores_saved_language_and_toolbar(make_page,saved_language):
     assert q.locator('html').get_attribute('lang')==saved_language
     assert q.locator('#practice-toolbar').is_visible()
     assert q.locator('#practice-save').inner_text()==('Guardar y pausar' if saved_language=='es' else 'Save and pause')
+
+
+@pytest.mark.parametrize('lang',['es','en'])
+def test_toolbar_only_after_entering_practice(make_page,lang):
+    p=make_page();setup_identity(p,lang)
+    assert not p.locator('#practice-toolbar').is_visible()
+    assert p.locator('#setup-recover').is_enabled()
+    p.locator('#guard-start').click()
+    p.wait_for_function("!document.querySelector('#answer-fields').disabled")
+    assert p.locator('#practice-toolbar').is_visible()
+    save_practice(p)
+    assert p.locator('#practice-toolbar').is_visible()
