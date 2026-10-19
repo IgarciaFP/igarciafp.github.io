@@ -455,6 +455,7 @@
     function ask(kind) {
       if (problem || busy || fatal) return;
       if (kind === 'finish' && !canEdit()) return;
+      if(kind==='save'&&!canEdit()&&state.phase!=='paused')return;
 
       confirmation = kind;
       $('guard-confirm-title').textContent = kind === 'finish' ? '¿Finalizar el intento?' : '¿Borrar los datos locales?';
@@ -467,6 +468,13 @@
     async function confirmAction() {
       const kind = confirmation;
       confirmation = null; confirmBox.close();
+      if(kind==='save'){
+        if(await pausePractice()){
+          busy=true;render();
+          try{await adapter.savePracticeDocument();}finally{busy=false;render();}
+        }
+        return;
+      }
       if (kind === 'erase') {
         if (problem||busy) return;
         if(state.phase==='active'&&!await pausePractice())return;
