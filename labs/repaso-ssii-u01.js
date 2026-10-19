@@ -232,6 +232,16 @@ function setEnabled(enabled) {
   document.querySelectorAll('[data-check]').forEach(b=>b.disabled=!enabled);
 }
 function setReport(report){$('report').value=report;}
+Object.assign(texts,{
+ toolbarFinish:['Entregar','Submit'],toolbarReset:['Reiniciar','Restart'],
+ continueImported:['Continuar práctica recuperada','Continue recovered practice'],
+ fileSaved:['Archivo descargado. Consérvalo: Recuperar práctica lo leerá para continuar otro día.','File downloaded. Keep it: Recover practice will read it to continue another day.'],
+ fileLoaded:['Archivo leído. Pulsa Continuar práctica recuperada; contará como una incidencia.','File loaded. Click Continue recovered practice; this counts as one incident.'],
+ fileError:['No se pudo descargar el documento. La práctica sigue guardada aquí; vuelve a pulsar Guardar.','Could not download the document. The practice is still saved here; click Save again.'],
+ fileInvalid:['No se pudo recuperar: selecciona un archivo de práctica válido y sin finalizar.','Could not recover: choose a valid unfinished practice file.'],
+ restartWarning:['Se borrará el intento de este navegador y volverás al comienzo. Guarda antes el documento si quieres conservarlo. ¿Reiniciar?','This browser’s attempt will be cleared and you will return to the start. Save the document first if you want to keep it. Restart?']
+});
+let importedPractice=false;
 function afterRender(state,ctx){
  phase=state.phase;
  const paused=phase==='paused',needsRecovery=paused||ctx.restoring;
@@ -282,9 +292,11 @@ function afterRender(state,ctx){
  $('recovery').hidden=!language||active||submitted||recoveryMode||!lastDelivery;
  $('recovery-message').textContent=tr('recovery');
 
- $('practice-save').disabled=!active||ctx.restoring||!!ctx.problem||ctx.busy||$('answer-fields').disabled;
- $('practice-recover').disabled=!needsRecovery||!!ctx.problem||ctx.busy||!ctx.supported;
- $('practice-recover').textContent=tr(state.count===2?'recoverFinal':'recoverPractice');
+ $('practice-save').disabled=(!active&&!paused)||ctx.restoring||!!ctx.problem||ctx.busy||(active&&$('answer-fields').disabled);
+ $('practice-recover').disabled=(active&&!ctx.restoring)||phase==='closing'||!!ctx.problem||ctx.busy||!ctx.supported;
+ $('practice-finish').disabled=!guard?.canEdit();
+ $('practice-reset').disabled=!!ctx.problem||ctx.busy||phase==='closing';
+ $('practice-recover').textContent=importedPractice?tr('continueImported'):tr('recoverPractice');
  $('toolbar-count').textContent=(language==='en'?'Incidents / recoveries: ':'Incidencias / recuperaciones: ')+state.count+'/3';
  // Toolbar guidance removed; save errors remain visible in the guard panel.
 
@@ -305,7 +317,7 @@ const errorTranslations={
 'No se pudo generar el informe. No se ha finalizado el intento; revisa los datos y vuelve a intentarlo.':texts.genericError[1]
 };
 function translateErrors(){for(const id of ['guard-problem-text','guard-action-status','guard-warning-error','guard-boot-detail','reportStatus']){const el=$(id);if(errorTranslations[el.textContent])el.textContent=errorTranslations[el.textContent];}}
-function confirmText(kind){if(kind==='finish'){$('guard-confirm-title').textContent=tr('confirmTitle');$('guard-confirm-text').textContent=tr('confirmBody');}}
+function confirmText(kind){if(kind==='erase'){$('guard-confirm-title').textContent=tr('toolbarReset');$('guard-confirm-text').textContent=tr('restartWarning');}if(kind==='finish'){$('guard-confirm-title').textContent=tr('confirmTitle');$('guard-confirm-text').textContent=tr('confirmBody');}}
 async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
  if(!validIdentity()){$('reportStatus').textContent=tr('identityError');return null;}
  // Compact, versioned report avoids repeating the public question text in a prefilled URL.
@@ -372,7 +384,7 @@ function downloadReport(){
  if(!requestedReceipts.has(item.code)&&!downloadReceipt(item))return;
  return deliver(item);
 }
-function onReset(){recoveryMode=false;setLanguage(null);pendingURL=null;$('delivery-retry').textContent=tr('copyOpen');$('delivery-status').textContent='';window.scrollTo(0,0);}
+function onReset(){importedPractice=false;$('practice-file-status').hidden=true;recoveryMode=false;setLanguage(null);pendingURL=null;$('delivery-retry').textContent=tr('copyOpen');$('delivery-status').textContent='';window.scrollTo(0,0);}
 $('delivery-retry').addEventListener('click',()=>{
  if(phase==='closing'){$('delivery-status').textContent=tr('forcedPending');void guard.finalizeForced();return;}
  if(pendingURL){
@@ -409,8 +421,29 @@ document.querySelectorAll('[data-check]').forEach(b=>b.addEventListener('click',
 hintNodes.forEach((d,i)=>d.addEventListener('toggle',()=>{
  if(guard?.canEdit()&&d.open&&!hints[i]){hints[i]=true;invalidate();guard.saveEdit();}
 }));
-$('practice-save').addEventListener('click',()=>guard.pausePractice());
-$('practice-recover').addEventListener('click',()=>guard.recoverPractice());
+function fileStatus(key){$('practice-file-status').hidden=false;$('practice-file-status').textContent=tr(key);}
+$('practice-save').addEventListener('click',async()=>{
+ try{
+  if(!await guard.pausePractice())return;
+  const url=URL.createObjectURL(new Blob([guard.exportPractice()],{type:'application/json'}));
+  const link=document.createElement('a');link.href=url;link.download='practica-ssii-u01-'+Date.now()+'.json';
+  document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+  importedPractice=false;fileStatus('fileSaved');guard.render();
+ }catch{fileStatus('fileError');}
+});
+$('practice-recover').addEventListener('click',()=>{
+ if(importedPractice){importedPractice=false;void guard.recoverPractice();return;}
+ $('practice-file').value='';$('practice-file').click();
+});
+$('practice-file').addEventListener('change',async()=>{
+ const file=$('practice-file').files[0];if(!file)return;
+ try{
+  if(file.size>3000000)throw Error('Too large');
+  guard.importPractice(await file.text());importedPractice=true;fileStatus('fileLoaded');guard.render();
+ }catch{fileStatus('fileInvalid');}
+});
+$('practice-finish').addEventListener('click',()=>guard.ask('finish'));
+$('practice-reset').addEventListener('click',()=>guard.ask('erase'));
 const syncToolbarHeight=()=>document.documentElement.style.setProperty('--toolbar-height',Math.ceil($('practice-toolbar').getBoundingClientRect().height)+'px');
 if(typeof ResizeObserver==='function')new ResizeObserver(syncToolbarHeight).observe($('practice-toolbar'));
 window.addEventListener('resize',syncToolbarHeight);
