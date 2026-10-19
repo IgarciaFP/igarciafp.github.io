@@ -22,7 +22,7 @@ from playwright.sync_api import sync_playwright
 LABS=Path(__file__).resolve().parents[1]
 KEY='ssii-repaso-ud01-seguridad-v1'
 LEGACY='ssii-repaso-ud01-v1'
-HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-fullscreen-recovery','')
+HTML=(LABS/'repaso-ssii-u01.html').read_text().replace('?v=20261019-toolbar-incidents','')
 for name in ('repaso-ssii-u01-variantes.js','repaso-ssii-u01-seguridad.js','repaso-ssii-u01.js'):
     HTML=HTML.replace(f'<script src="{name}"></script>',f'<script>{(LABS/name).read_text()}</script>')
 
@@ -100,7 +100,7 @@ def blur_return(p):
     p.wait_for_timeout(250)
 
 def finish(p):
-    p.locator('#guard-finish').click()
+    p.locator('#practice-finish').click()
     p.locator('#guard-confirm-ok').click()
     p.wait_for_function(f"JSON.parse(localStorage.getItem('{KEY}')).phase==='submitted'")
 
@@ -258,7 +258,7 @@ def test_conflict_not_overwritten(make_page):
 
 def test_download_unicode_and_recovery(make_page):
     p=make_page();begin(p);p.locator('#reflection').fill('Revisión: ñ, á, € y 🧪')
-    p.locator('#guard-finish').click();p.locator('#guard-confirm-cancel').click()
+    p.locator('#practice-finish').click();p.locator('#guard-confirm-cancel').click()
     assert state(p)['phase']=='active'
     with p.expect_download() as download:
         finish(p)
@@ -287,7 +287,7 @@ def test_clipboard_and_popup_retries_do_not_erase_report(make_page):
 def test_successful_open_resets_and_remembers(make_page):
     p=make_page();begin(p)
     p.evaluate("navigator.clipboard.writeText=async code=>{window.copied=code};window.open=()=>({opener:null,location:{replace:url=>{window.formDestination=url}}})")
-    p.locator('#guard-finish').click();p.locator('#guard-confirm-ok').click()
+    p.locator('#practice-finish').click();p.locator('#guard-confirm-ok').click()
     p.wait_for_function("!!window.formDestination")
     assert state(p)['phase']=='ready'
     assert all(not v for v in state(p)['data']['values'].values())
@@ -299,7 +299,7 @@ def test_successful_open_resets_and_remembers(make_page):
 def test_hash_failure_keeps_active(make_page):
     p=make_page();begin(p)
     p.evaluate("crypto.subtle.digest=()=>Promise.reject(Error('test'))")
-    p.locator('#guard-finish').click();p.locator('#guard-confirm-ok').click()
+    p.locator('#practice-finish').click();p.locator('#guard-confirm-ok').click()
     p.wait_for_function("document.querySelector('#reportStatus').textContent.includes('No se pudo')")
     assert state(p)['phase']=='active'
     assert state(p)['data']['started'] is not None
@@ -630,3 +630,15 @@ def test_recovery_click_enters_fullscreen_before_file_read(make_page):
     assert p.evaluate("document.fullscreenElement===document.documentElement")
     assert not p.locator('#practice-file-status').is_visible()
     chooser.value.set_files([])
+
+
+def test_toolbar_contains_clock_and_incident_dropdown(make_page):
+    p=make_page();begin(p)
+    assert p.locator('#practice-toolbar #clock').is_visible()
+    assert p.locator('#practice-toolbar #event-details summary').is_visible()
+    assert not p.locator('#guard-panel').is_visible()
+    assert p.locator('#entrega').count()==0
+    p.locator('#event-details summary').click()
+    assert p.locator('#event-details').get_attribute('open') is not None
+    p.locator('#practice-finish').click()
+    assert p.locator('#guard-confirm').is_visible()
