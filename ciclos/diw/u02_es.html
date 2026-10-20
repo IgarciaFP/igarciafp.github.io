@@ -214,6 +214,27 @@ a[href*="/recursos/"] { color: #0f766e; }</code></pre>
 <p><code>=</code> compara el valor completo; <code>^=</code>, su comienzo; <code>$=</code>, su final; y <code>*=</code>, una parte del valor. Estos selectores comparan el atributo: <code>[href$=".pdf"]</code> no coincidirá con un enlace que termine en <code>.pdf?descarga=1</code>.</p>
 <h4>Pseudoclases: estado y posición</h4>
 <p>Las pseudoclases se escriben con <strong>dos puntos</strong>. Seleccionan elementos que cumplen una condición, como estar bajo el puntero, tener foco visible o ocupar una posición determinada entre sus hermanos.</p>
+<div class="table-wrap"><table><caption>Pseudoclases habituales y su significado</caption><thead><tr><th scope="col">Pseudoclase</th><th scope="col">Significado</th><th scope="col">Ejemplo de selector</th></tr></thead><tbody>
+<tr><td><code>:hover</code></td><td>Puntero encima.</td><td><code>button:hover</code></td></tr>
+<tr><td><code>:active</code></td><td>Durante la activación.</td><td><code>a:active</code></td></tr>
+<tr><td><code>:focus</code></td><td>Elemento con foco.</td><td><code>input:focus</code></td></tr>
+<tr><td><code>:focus-visible</code></td><td>Con foco que el navegador considera necesario señalar.</td><td><code>button:focus-visible</code></td></tr>
+<tr><td><code>:focus-within</code></td><td>Él o un descendiente tiene foco.</td><td><code>form:focus-within</code></td></tr>
+<tr><td><code>:checked</code></td><td>Casilla o radio marcado; opción seleccionada.</td><td><code>input:checked</code></td></tr>
+<tr><td><code>:disabled</code></td><td>Control deshabilitado.</td><td><code>button:disabled</code></td></tr>
+<tr><td><code>:required</code></td><td>Campo obligatorio.</td><td><code>input:required</code></td></tr>
+<tr><td><code>:valid</code></td><td>Cumple la validación.</td><td><code>input:valid</code></td></tr>
+<tr><td><code>:invalid</code></td><td>Incumple la validación.</td><td><code>input:invalid</code></td></tr>
+<tr><td><code>:first-child</code></td><td>Primer elemento entre hermanos.</td><td><code>li:first-child</code></td></tr>
+<tr><td><code>:last-child</code></td><td>Último elemento entre hermanos.</td><td><code>li:last-child</code></td></tr>
+<tr><td><code>:nth-child(n)</code></td><td>Posición indicada entre hermanos.</td><td><code>li:nth-child(2n)</code></td></tr>
+<tr><td><code>:nth-of-type(n)</code></td><td>Posición entre hermanos de la misma etiqueta.</td><td><code>p:nth-of-type(2)</code></td></tr>
+<tr><td><code>:not()</code></td><td>No coincide con los selectores indicados.</td><td><code>p:not(.aviso)</code></td></tr>
+<tr><td><code>:is()</code></td><td>Coincide con alguno de los selectores.</td><td><code>:is(h1, h2)</code></td></tr>
+<tr><td><code>:where()</code></td><td>Como :is(), pero sin aportar especificidad.</td><td><code>:where(h1, h2)</code></td></tr>
+<tr><td><code>:has()</code></td><td>Cumple la relación indicada.</td><td><code>article:has(img)</code></td></tr>
+</tbody></table></div>
+
 <pre><code>button:hover { background-color: #ccfbf1; }
 button:focus-visible { outline: 3px solid #1e3a8a; }
 input:checked { accent-color: #0f766e; }
@@ -227,6 +248,18 @@ li:not(.destacado) { color: #475569; }</code></pre>
 <p>No bases una interacción únicamente en <code>:hover</code>: quien utiliza teclado necesita un foco visible y una forma de activar los controles. Conserva el indicador de foco o sustitúyelo por otro claramente perceptible.</p>
 <h4>Pseudoelementos: partes de un elemento</h4>
 <p>Se escriben con <strong>dos puntos consecutivos</strong> (<code>::</code>) y permiten aplicar estilos a partes de un elemento o generar contenido decorativo. No equivalen a añadir elementos HTML reales.</p>
+<div class="table-wrap"><table><caption>Pseudoelementos habituales y su significado</caption><thead><tr><th scope="col">Pseudoelemento</th><th scope="col">Significado</th><th scope="col">Ejemplo de selector</th></tr></thead><tbody>
+<tr><td><code>::before</code></td><td>Genera contenido al principio del elemento; usa content.</td><td><code>.etiqueta::before</code></td></tr>
+<tr><td><code>::after</code></td><td>Genera contenido al final del elemento; usa content.</td><td><code>.etiqueta::after</code></td></tr>
+<tr><td><code>::first-letter</code></td><td>Primera letra de la primera línea de un bloque.</td><td><code>p::first-letter</code></td></tr>
+<tr><td><code>::first-line</code></td><td>Primera línea de un bloque; cambia al variar el ancho.</td><td><code>p::first-line</code></td></tr>
+<tr><td><code>::marker</code></td><td>Viñeta o número de un elemento de lista.</td><td><code>li::marker</code></td></tr>
+<tr><td><code>::selection</code></td><td>Parte del texto seleccionada por el usuario.</td><td><code>p::selection</code></td></tr>
+<tr><td><code>::placeholder</code></td><td>Texto de ayuda de un campo.</td><td><code>input::placeholder</code></td></tr>
+<tr><td><code>::file-selector-button</code></td><td>Botón de un campo de subida de archivos.</td><td><code>input::file-selector-button</code></td></tr>
+<tr><td><code>::backdrop</code></td><td>Fondo detrás de un elemento en la capa superior, como un diálogo modal.</td><td><code>dialog::backdrop</code></td></tr>
+</tbody></table></div>
+
 <pre><code>.articulo::first-letter { font-size: 2em; }
 .articulo::first-line { font-weight: bold; }
 li::marker { color: #0f766e; }
