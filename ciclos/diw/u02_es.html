@@ -298,6 +298,36 @@ p.destacado { font-weight: bold; }
 <tr><td><code>max-block-size</code></td><td>Máximo en el eje perpendicular al texto; en escritura horizontal, alto máximo.</td><td><code>max-block-size: 30rem;</code></td></tr>
 <tr><td><code>aspect-ratio</code></td><td>Define la proporción preferida entre ancho y alto. Al menos una dimensión debe ser automática para calcularla a partir de la otra.</td><td><code>aspect-ratio: 16 / 9;</code></td></tr>
 </tbody></table></div>
+<aside class="extension-card" aria-labelledby="valor-auto">
+<p class="card-label">Ampliación</p><h4 id="valor-auto">¿Qué significa auto?</h4>
+<p><code>auto</code> deja que el navegador calcule el valor según la propiedad y el contexto. <strong>No significa siempre «ocupar el 100 %».</strong></p>
+<ul>
+<li><code>width: auto</code>: en un bloque normal, el ancho suele aprovechar el espacio disponible, teniendo en cuenta márgenes, relleno y borde.</li>
+<li><code>height: auto</code>: en un bloque de texto normal, la altura se adapta al contenido.</li>
+<li>En una imagen, <code>height: auto</code> permite conservar su proporción cuando cambia el ancho.</li>
+</ul>
+<pre><code>.texto { height: auto; }
+img {
+  max-width: 100%;
+  height: auto;
+}</code></pre>
+<p>Los límites mínimos y máximos siguen aplicándose. Otros modos de distribución pueden calcular <code>auto</code> de otra manera.</p>
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/width" target="_blank" rel="noopener noreferrer">Consultar width y auto en MDN ↗</a>
+</aside>
+<aside class="extension-card" aria-labelledby="centrado-horizontal">
+<p class="card-label">Ampliación</p><h4 id="centrado-horizontal">Centrar una caja horizontalmente</h4>
+<p>Para centrar un bloque en el flujo normal, dale un ancho menor que su contenedor y usa <code>margin-inline: auto</code>. En escritura horizontal, los márgenes izquierdo y derecho se reparten por igual el espacio sobrante.</p>
+<pre><code>.caja-centrada {
+  box-sizing: border-box;
+  width: 80%;
+  max-width: 40rem;
+  margin-inline: auto;
+}</code></pre>
+<p>Si el contenedor mide <strong>500 px</strong> y la caja ocupa <strong>400 px</strong>, sobran 100 px: quedan <strong>50 px a cada lado</strong>. Si la caja ocupa todo el ancho, no habrá espacio sobrante que repartir.</p>
+<p><code>text-align: center</code> centra el texto y el contenido en línea dentro de la caja; <code>margin-inline: auto</code> centra la propia caja. Este ejemplo no realiza centrado vertical.</p>
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/margin" target="_blank" rel="noopener noreferrer">Consultar márgenes automáticos en MDN ↗</a>
+</aside>
+
 <pre><code>/* Se adapta a la pantalla y limita el ancho de lectura. */
 .articulo {
   width: calc(100% - 2rem);
