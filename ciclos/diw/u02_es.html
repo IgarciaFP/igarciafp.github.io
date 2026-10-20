@@ -203,8 +203,8 @@ li::marker { color: #0f766e; }
 </svg>
 <figcaption style="margin-top:.75rem;color:#475569;text-align:left"><strong>De dentro hacia fuera:</strong> el contenido está rodeado por el relleno (<code>padding</code>), el borde (<code>border</code>) y el margen exterior (<code>margin</code>). Los colores distinguen las zonas del esquema; el margen real es transparente.</figcaption>
 </figure><h3 id="caja-tamano">3.1. Tamaño de la caja</h3>
-<p>La propiedad <code>box-sizing</code> determina qué partes de la caja quedan incluidas en el tamaño que declaramos con <code>width</code> y <code>height</code>. No cambia la estructura del modelo: contenido, relleno, borde y margen siguen existiendo.</p>
-<ul><li><strong><code>content-box</code>:</strong> el ancho y el alto declarados corresponden al contenido. El relleno y el borde se añaden por fuera. Es el valor inicial de la propiedad, aunque algunos elementos reciben otros estilos del navegador.</li><li><strong><code>border-box</code>:</strong> el tamaño declarado incluye contenido, relleno y borde. El espacio disponible para el contenido se reduce al añadir relleno y borde.</li></ul>
+<p><code>box-sizing</code> decide cómo se calcula el tamaño de una caja:</p>
+<ul><li><strong><code>content-box</code>:</strong> el relleno y el borde <strong>se suman</strong> al ancho indicado. La caja acaba siendo más ancha.</li><li><strong><code>border-box</code>:</strong> el relleno y el borde <strong>están incluidos</strong> en el ancho indicado. La caja mantiene ese ancho.</li></ul>
 <p>En ambos casos, el margen queda fuera. Para una caja de <code>width: 280px</code>, <code>padding: 20px</code> y <code>border: 2px solid</code>:</p>
 <div class="table-wrap"><table><caption>Cálculo del ancho sin contar márgenes</caption><thead><tr><th scope="col">Modelo</th><th scope="col">Ancho del contenido</th><th scope="col">Ancho hasta el borde exterior</th></tr></thead><tbody><tr><td><code>content-box</code></td><td>280 px</td><td>280 + 40 + 4 = <strong>324 px</strong></td></tr><tr><td><code>border-box</code></td><td>280 − 40 − 4 = <strong>236 px</strong></td><td>280 px</td></tr></tbody></table></div>
 <pre><code>.caja {
