@@ -66,14 +66,15 @@ p { color: maroon; }        /* 0-0-1 */</code></pre>
 <p>Si estas reglas son declaraciones normales del autor en la misma capa, gana <code>#aviso</code>, aunque esté escrito antes. La comparación se hace por grupos, de izquierda a derecha: no se suman como si fueran un número decimal. El selector universal <code>*</code> y los combinadores, como <code>&gt;</code>, no añaden especificidad. <code>!important</code> modifica la importancia de una declaración, no la especificidad de su selector.</p>
 <aside class="extension-card" id="ampliacion-important" aria-labelledby="important-title">
 <p class="card-label">Ampliación</p><h3 id="important-title">¿Qué hace <code>!important</code>?</h3>
-<p>Se escribe después del valor y antes del punto y coma. Marca <strong>esa declaración</strong> como importante; no aumenta la especificidad del selector ni afecta a todas las propiedades de la regla.</p>
-<pre><code>/* Reglas de autor en la misma capa, sin transiciones. */
-#aviso { color: navy; }
-p { color: teal !important; }</code></pre>
-<p>Un párrafo con <code>id="aviso"</code> será verde azulado: la declaración importante supera a la normal, aunque su selector tenga menor especificidad. Si ambas son importantes y comparten origen y capa, se compara la especificidad; si también empatan, el orden decide.</p>
-<p><strong>No significa «gana siempre»:</strong> intervienen el origen y las capas; para declaraciones importantes se invierte su prioridad. Las declaraciones importantes del usuario pueden superar a las del autor, y una transición activa tiene precedencia.</p>
-<p><strong>No abuses de él.</strong> Encadenar excepciones dificulta modificar componentes. Primero inspecciona la regla ganadora, revisa el orden y simplifica los selectores. Si necesitas una excepción justificada, limítala y comenta el motivo.</p>
-<p class="source">Consulta: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/important">MDN · !important</a>.</p>
+<p>Da prioridad a <strong>una declaración</strong> frente a las declaraciones normales del mismo origen. Se escribe después del valor y <strong>no aumenta la especificidad</strong>.</p>
+<pre><code>&lt;p id="aviso"&gt;Hola&lt;/p&gt;
+
+/* CSS */
+#aviso { color: blue; }
+p { color: red !important; }</code></pre>
+<p>El texto será <strong>rojo</strong>: la declaración importante vence a la normal, aunque esta use un selector con ID.</p>
+<p><strong>No abuses de él:</strong> dificulta cambiar los estilos después. Primero revisa los selectores y su orden. Resérvalo para excepciones justificadas.</p>
+<p class="source"><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/important">Más información en MDN</a>.</p>
 </aside>
 <article class="exercise inspector-activity" id="actividad-inspector-css" aria-labelledby="inspector-title">
 <p class="card-label">Actividad · UD02</p><h3 id="inspector-title">Investiga los estilos con el inspector</h3>
