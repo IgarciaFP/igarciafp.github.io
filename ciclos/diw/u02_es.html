@@ -181,7 +181,7 @@ p.destacado { font-weight: bold; }
 }</code></pre>
 <p>Ambas reglas seleccionan los <code>h2</code> y <code>h3</code> que estén dentro de <code>.tarjeta</code>.</p>
 <p><strong>Especificidad:</strong> <code>:is()</code> toma la del selector más específico de su lista. Por ejemplo, <code>:is(.aviso, #principal)</code> aporta el peso de un ID, incluso cuando coincide por la clase. Evita mezclar IDs y clases sin necesitarlo.</p>
-<p class="source"><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:is">Más sobre :is() en MDN</a>.</p>
+<aside class="extension-card" aria-labelledby="ampliacion-is-consulta"><p class="card-label">Ampliación</p><h4 id="ampliacion-is-consulta">Agrupar selectores con :is()</h4><p>Consulta ejemplos de agrupación y cómo se calcula su especificidad.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:is" target="_blank" rel="noopener noreferrer">Consultar :is() en MDN ↗</a></aside>
 <h3 id="selectores-avanzados">2.2. Selectores avanzados</h3>
 <p>Podemos afinar la selección utilizando relaciones entre elementos, atributos, estados de interacción y posiciones dentro del documento. El objetivo es expresar qué elementos necesitamos seleccionar sin añadir clases innecesarias ni crear reglas difíciles de mantener.</p>
 <h4>Relaciones entre elementos: combinadores</h4>
@@ -391,7 +391,7 @@ img { max-width: 100%; height: auto; }
 <h4>Valores y conflictos habituales</h4>
 <ul><li><code>auto</code> deja que el navegador calcule el tamaño según el contexto. <code>height: auto</code> suele permitir crecer con el contenido; no equivale a una altura fija.</li><li>Los porcentajes necesitan una referencia: <code>width: 100%</code> suele tomar el ancho del bloque contenedor. Un <code>height: 100%</code> no significa «toda la pantalla» y, en el flujo normal, necesita una altura de referencia definida para funcionar como esperas.</li><li><code>min-content</code>, <code>max-content</code> y <code>fit-content</code> permiten tamaños relacionados con las necesidades del contenido, en lugar de una medida fija.</li><li>Un máximo puede limitar el tamaño declarado y un mínimo puede ampliarlo. Si el mínimo supera al máximo, prevalece el mínimo. Evita un <code>min-width</code> mayor que la pantalla.</li><li>En elementos Flexbox o Grid, el mínimo automático puede impedir que una caja se reduzca. Cuando el diseño lo necesite, <code>min-width: 0</code> o <code>min-inline-size: 0</code> permite que ceda espacio; después debes decidir cómo tratar su contenido.</li></ul>
 <p>Prueba las dimensiones con texto largo, zoom e imágenes de distintos tamaños. No fijes una altura solo porque encaja con el texto de ejemplo: limita la capacidad del diseño para adaptarse.</p>
-<p class="source">Consulta: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/min-width">MDN · min-width</a>.</p>
+<aside class="extension-card" aria-labelledby="ampliacion-min-width-consulta"><p class="card-label">Ampliación</p><h4 id="ampliacion-min-width-consulta">Dimensiones mínimas</h4><p>Consulta los valores de min-width y ejemplos para limitar el ancho mínimo.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/min-width" target="_blank" rel="noopener noreferrer">Consultar min-width en MDN ↗</a></aside>
 <h3 id="caja-overflow">3.3. Overflow: contenido que no cabe</h3>
 <p><code>overflow</code> decide qué ocurre cuando el contenido rebasa el área disponible. Es independiente de definir el tamaño: para observar desbordamiento vertical en un bloque de texto, limita primero su altura o altura máxima.</p>
 <div class="table-wrap"><table><caption>Valores de overflow</caption><thead><tr><th scope="col">Valor</th><th scope="col">Resultado</th></tr></thead><tbody>
@@ -420,7 +420,7 @@ img { max-width: 100%; height: auto; }
   text-overflow: ellipsis;
 }</code></pre>
 <p>No ocultes el desbordamiento de toda la página para disimular un problema de anchura. Comprueba el origen y conserva el acceso a la información. Si creas una región desplazable, verifica su uso con teclado; cuando necesite foco propio, añade <code>tabindex="0"</code> y un nombre accesible, por ejemplo mediante <code>role="region"</code> y <code>aria-labelledby</code>.</p>
-<p class="source">Consulta: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/overflow">MDN · overflow</a>.</p>
+<aside class="extension-card" aria-labelledby="ampliacion-overflow-consulta"><p class="card-label">Ampliación</p><h4 id="ampliacion-overflow-consulta">Controlar el desbordamiento</h4><p>Consulta los valores de overflow y ejemplos de contenido que no cabe.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/overflow" target="_blank" rel="noopener noreferrer">Consultar overflow en MDN ↗</a></aside>
 <h3 id="caja-display">3.4. Propiedad Display</h3>
 <p>Por defecto, muchos elementos HTML se muestran <strong>en bloque</strong> o <strong>en línea (inline)</strong>. El navegador les aplica este comportamiento mediante sus estilos iniciales.</p>
 <div class="table-wrap"><table><caption>Ejemplos de comportamiento por defecto</caption><thead><tr><th scope="col">Tipo</th><th scope="col">Cómo se muestra</th><th scope="col">Elementos habituales</th></tr></thead><tbody>
