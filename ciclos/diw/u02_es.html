@@ -94,12 +94,14 @@ p { color: red !important; }</code></pre>
   color: #1e3a8a;
   padding: 1rem;
 }</code></pre><h3 id="selectores-basicos">2.1. Selectores básicos</h3>
-<p>Un selector indica <strong>a qué elementos HTML se aplica una regla</strong>. Para empezar, podemos seleccionar por el nombre de la etiqueta, por una clase o por un identificador. El selector universal permite seleccionar cualquier elemento.</p>
+<p>Un selector indica <strong>a qué elementos HTML se aplica una regla</strong>. Para empezar, podemos seleccionar por el nombre de la etiqueta, por una clase, por un identificador o por un atributo. El selector universal permite seleccionar cualquier elemento.</p>
 <div class="table-wrap"><table><caption>Selectores básicos y elementos seleccionados</caption><thead><tr><th scope="col">Selector</th><th scope="col">Ejemplo</th><th scope="col">Qué selecciona</th></tr></thead><tbody>
 <tr><td>De tipo o etiqueta</td><td><code>p</code></td><td>Todos los elementos <code>&lt;p&gt;</code>.</td></tr>
 <tr><td>De clase</td><td><code>.tarjeta</code></td><td>Los elementos cuyo atributo <code>class</code> contiene la clase <code>tarjeta</code>.</td></tr>
 <tr><td>De identificador</td><td><code>#cabecera</code></td><td>El elemento con <code>id="cabecera"</code>. Ese identificador debe ser único en el documento.</td></tr>
 <tr><td>Universal</td><td><code>*</code></td><td>Todos los elementos. No añade especificidad.</td></tr>
+<tr><td>De atributo: presencia</td><td><code>[required]</code></td><td>Los elementos que tienen el atributo <code>required</code>.</td></tr>
+<tr><td>De atributo: valor exacto</td><td><code>[type="email"]</code></td><td>Los elementos cuyo atributo <code>type</code> vale <code>email</code>.</td></tr>
 </tbody></table></div>
 <pre><code>&lt;header id="cabecera"&gt;Noticias del aula&lt;/header&gt;
 &lt;p&gt;Párrafo de introducción.&lt;/p&gt;
@@ -123,6 +125,21 @@ p.destacado { font-weight: bold; }
 /* Elementos que tengan las dos clases. */
 .tarjeta.destacado { border: 2px solid #0f766e; }</code></pre>
 <p><strong>Fíjate en el espacio:</strong> <code>p.destacado</code> selecciona un párrafo con esa clase; <code>p .destacado</code> selecciona un elemento con esa clase que esté dentro de un párrafo. Esta segunda forma utiliza una relación de descendencia.</p>
+<h4 id="agrupar-is">Agrupar con <code>:is()</code></h4>
+<p><code>:is()</code> selecciona los elementos que coincidan con <strong>cualquiera</strong> de los selectores entre paréntesis. Permite agrupar alternativas sin repetir la parte común.</p>
+<pre><code>/* Sin :is(): repetimos .tarjeta. */
+.tarjeta h2,
+.tarjeta h3 {
+  color: #1e3a8a;
+}
+
+/* Con :is(): seleccionamos los mismos elementos. */
+.tarjeta :is(h2, h3) {
+  color: #1e3a8a;
+}</code></pre>
+<p>Ambas reglas seleccionan los <code>h2</code> y <code>h3</code> que estén dentro de <code>.tarjeta</code>.</p>
+<p><strong>Especificidad:</strong> <code>:is()</code> toma la del selector más específico de su lista. Por ejemplo, <code>:is(.aviso, #principal)</code> aporta el peso de un ID, incluso cuando coincide por la clase. Evita mezclar IDs y clases sin necesitarlo.</p>
+<p class="source"><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:is">Más sobre :is() en MDN</a>.</p>
 <h3 id="selectores-avanzados">2.2. Selectores avanzados</h3>
 <p>Podemos afinar la selección utilizando relaciones entre elementos, atributos, estados de interacción y posiciones dentro del documento. El objetivo es expresar qué elementos necesitamos seleccionar sin añadir clases innecesarias ni crear reglas difíciles de mantener.</p>
 <h4>Relaciones entre elementos: combinadores</h4>
