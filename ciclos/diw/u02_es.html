@@ -56,7 +56,7 @@ p { color: navy; }</code></pre>
 <h4>CSS en línea: desaconsejado como práctica habitual</h4>
 <p>El atributo <code>style</code> afecta a un elemento. Mezcla presentación y contenido y dificulta los cambios. Prefiere clases y una hoja externa. Tiene usos concretos, como correos HTML o valores dinámicos aplicados con JavaScript.</p>
 <pre><code>&lt;p style="color: navy;"&gt;Texto de ejemplo&lt;/p&gt;</code></pre>
-<aside class="extension-card" aria-labelledby="css-incluir-more"><p class="card-label">Ampliación</p><h4 id="css-incluir-more">Incluir CSS en HTML</h4><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Getting_started#adding_css_to_our_document" target="_blank" rel="noopener noreferrer">Ver ejemplos y recomendaciones en MDN ↗</a></aside>
+
 <h3 id="css-cascada">1.2. Cascada</h3>
 <p>Un mismo elemento puede recibir declaraciones de distintas reglas. La cascada es el proceso que resuelve esos conflictos y determina el valor que se aplica a cada propiedad. El navegador considera, entre otros factores, el origen de los estilos, su importancia, las capas de cascada y la especificidad de los selectores. Cuando las declaraciones empatan en los criterios anteriores, gana la que aparece después.</p>
 <pre><code>/* Ambas reglas tienen el mismo origen, importancia y especificidad. */
@@ -93,6 +93,16 @@ p { color: maroon; }        /* 0-0-1 */</code></pre>
 #aviso { color: blue; }
 p { color: red !important; }</code></pre>
 <p>El texto será <strong>rojo</strong>: la declaración importante vence a la normal, aunque esta use un selector con ID.</p>
+<h4>Cuando añadir !important no cambia el resultado</h4>
+<p>Para el mismo párrafo, prueba estos dos casos por separado, en la misma hoja y sin capas:</p>
+<pre><code>/* Antes: el texto es azul. */
+#aviso { color: blue !important; }
+p { color: red; }
+
+/* Después: sigue siendo azul. */
+#aviso { color: blue !important; }
+p { color: red !important; }</code></pre>
+<p>En el segundo caso, ambas declaraciones son importantes. Gana <code>#aviso</code> por su mayor especificidad: <strong>1-0-0</strong> frente a <strong>0-0-1</strong> de <code>p</code>. Añadir <code>!important</code> no cambia esos valores, aunque la regla de <code>p</code> esté escrita después.</p>
 <p><strong>No abuses de él:</strong> dificulta cambiar los estilos después. Primero revisa los selectores y su orden. Resérvalo para excepciones justificadas.</p>
 <p class="source"><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/important">Más información en MDN</a>.</p>
 </aside>
