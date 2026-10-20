@@ -207,6 +207,7 @@ li::marker { color: #0f766e; }
 <ul><li><strong><code>content-box</code>:</strong> el relleno y el borde <strong>se suman</strong> al ancho indicado. La caja acaba siendo más ancha.</li><li><strong><code>border-box</code>:</strong> el relleno y el borde <strong>están incluidos</strong> en el ancho indicado. La caja mantiene ese ancho.</li></ul>
 <p>En ambos casos, el margen queda fuera. Para una caja de <code>width: 280px</code>, <code>padding: 20px</code> y <code>border: 2px solid</code>:</p>
 <div class="table-wrap"><table><caption>Cálculo del ancho sin contar márgenes</caption><thead><tr><th scope="col">Modelo</th><th scope="col">Ancho del contenido</th><th scope="col">Ancho hasta el borde exterior</th></tr></thead><tbody><tr><td><code>content-box</code></td><td>280 px</td><td>280 + 40 + 4 = <strong>324 px</strong></td></tr><tr><td><code>border-box</code></td><td>280 − 40 − 4 = <strong>236 px</strong></td><td>280 px</td></tr></tbody></table></div>
+<p><strong>Un criterio uniforme:</strong> podemos usar <code>border-box</code> como base para toda la página. Así, el ancho indicado incluye el relleno y el borde. El selector <code>*</code> selecciona todos los elementos; <code>*::before</code> y <code>*::after</code> incluyen sus pseudoelementos. Las clases del ejemplo permiten cambiar ese modelo en una caja concreta.</p>
 <pre><code>.caja {
   width: 280px;
   padding: 20px;
@@ -215,7 +216,7 @@ li::marker { color: #0f766e; }
 .caja--contenido { box-sizing: content-box; }
 .caja--borde { box-sizing: border-box; }
 
-/* Un criterio uniforme para la página y sus pseudoelementos. */
+/* Modelo base para toda la página. */
 *, *::before, *::after { box-sizing: border-box; }</code></pre>
 <p>Prueba cada variante por separado y mide su ancho en el inspector. Con <code>border-box</code>, el contenido no puede tener un tamaño negativo: un relleno y un borde excesivos pueden superar el tamaño declarado.</p>
 <p class="source">Consulta: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/box-sizing">MDN · box-sizing</a>.</p>
