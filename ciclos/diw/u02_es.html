@@ -27,8 +27,29 @@
 /* Botón de índice discreto hasta interactuar. */
 .toc-toggle { opacity: .2; }
 .toc-toggle:hover, .toc-toggle:focus-visible { opacity: 1; }
+
+/* Accesos a recursos con aspecto de botón en las ampliaciones. */
+.extension-card a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  box-sizing: border-box;
+  max-width: 100%;
+  padding: .6rem 1rem;
+  margin: .25rem .35rem .25rem 0;
+  border: 1px solid #6d28d9;
+  border-radius: 8px;
+  background: #6d28d9;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.extension-card a:hover { background: #5b21b6; border-color: #5b21b6; }
+.extension-card a:focus-visible { outline: 3px solid #1e3a8a; outline-offset: 3px; }
 </style></head>
-<body><a class="skip" href="#contenido">Saltar al contenido</a><button class="toc-toggle" aria-controls="unit-toc" aria-expanded="false">Índice</button><nav class="sidebar-toc" id="unit-toc" aria-label="Índice de la unidad"><h4>UD02 · Contenidos</h4><ul><li><a href="#ruta">1. CSS Cascade Style Sheets</a></li><li><a class="subsection-link" href="#css-incluir">1.1. Formas de incluir CSS</a></li><li><a class="subsection-link" href="#css-cascada">1.2. Cascada</a></li><li><a class="subsection-link" href="#css-herencia">1.3. Herencia</a></li><li><a class="subsection-link" href="#css-especificidad">1.4. Especifidad</a></li><li><a class="subsection-link" href="#ampliacion-important">Ampliación: !important</a></li><li><a class="subsection-link" href="#actividad-inspector-css">Actividad: inspector CSS</a></li><li><a href="#cascada">2. Selectores CSS</a></li><li><a class="subsection-link" href="#selectores-basicos">2.1. Selectores básicos</a></li><li><a class="subsection-link" href="#selectores-avanzados">2.2. Selectores avanzados</a></li><li><a href="#cajas">3. Modelo de caja y flujo</a></li><li><a class="subsection-link" href="#caja-tamano">3.1. Tamaño de la caja</a></li><li><a class="subsection-link" style="padding-left:32px" href="#box-model-reset">3.1.1. Box Model Reset</a></li><li><a class="subsection-link" href="#caja-dimensiones">3.2. Dimensiones, mínimos y máximos</a></li><li><a class="subsection-link" href="#caja-overflow">3.3. Overflow</a></li><li><a class="subsection-link" href="#caja-display">3.4. Propiedad Display</a></li><li><a class="subsection-link" href="#posicion">3.5. Posicionamiento y acabados</a></li><li><a href="#medidas">4. Unidades, color y tipografía</a></li><li><a href="#flexbox">5. Flexbox: distribuir en un eje</a></li><li><a href="#grid">6. Grid: filas y columnas</a></li><li><a href="#preferencias">7. Preferencias y comprobación de la interfaz</a></li><li><a href="#responsive">8. Diseño responsive y medios</a></li><li><a href="#repaso">9. Repaso y entrega</a></li><li><a href="#fuentes">10. Recursos de consulta</a></li></ul></nav><div class="document-wrapper"><main class="document-container" id="contenido"><header class="header-banner"><span class="module-tag">Diseño de Interfaces Web · 2º DAW</span><h1>UD02. CSS y diseño responsive</h1><p class="lead">De los selectores a la maquetación: construye interfaces legibles, flexibles y adaptables.</p></header><figure class="css-cover" aria-label="Portada del tema: CSS y diseño responsive">
+<body><a class="skip" href="#contenido">Saltar al contenido</a><button class="toc-toggle" aria-controls="unit-toc" aria-expanded="false">Índice</button><nav class="sidebar-toc" id="unit-toc" aria-label="Índice de la unidad"><h4>UD02 · Contenidos</h4><ul><li><a href="#ruta">1. CSS Cascade Style Sheets</a></li><li><a class="subsection-link" href="#css-incluir">1.1. Formas de incluir CSS</a></li><li><a class="subsection-link" href="#css-cascada">1.2. Cascada</a></li><li><a class="subsection-link" href="#css-herencia">1.3. Herencia</a></li><li><a class="subsection-link" href="#css-especificidad">1.4. Especifidad</a></li><li><a class="subsection-link" href="#ampliacion-important">Ampliación: !important</a></li><li><a class="subsection-link" href="#actividad-inspector-css">Actividad: inspector CSS</a></li><li><a href="#cascada">2. Selectores CSS</a></li><li><a class="subsection-link" href="#selectores-basicos">2.1. Selectores básicos</a></li><li><a class="subsection-link" href="#selectores-avanzados">2.2. Selectores avanzados</a></li><li><a href="#cajas">3. Modelo de caja y flujo</a></li><li><a class="subsection-link" href="#caja-tamano">3.1. Tamaño de la caja</a></li><li><a class="subsection-link" style="padding-left:32px" href="#box-model-reset">3.1.1. Box Model Reset</a></li><li><a class="subsection-link" href="#caja-dimensiones">3.2. Dimensiones, mínimos y máximos</a></li><li><a class="subsection-link" href="#caja-overflow">3.3. Overflow</a></li><li><a class="subsection-link" href="#medidas">3.4. Unidades</a></li><li><a class="subsection-link" href="#caja-colores">3.5. Colores y fondos</a></li><li><a class="subsection-link" href="#caja-bordes">3.6. Bordes y sombras</a></li><li><a class="subsection-link" href="#caja-tipografia">3.7. Tipografía</a></li><li><a href="#posicion">4. Posicionamiento</a></li><li><a class="subsection-link" href="#caja-display">4.1. Propiedad Display</a></li><li><a class="subsection-link" href="#caja-position">4.2. Propiedad Position</a></li><li><a href="#flexbox">5. Flexbox: distribuir en un eje</a></li><li><a href="#grid">6. Grid: filas y columnas</a></li><li><a href="#preferencias">7. Preferencias y comprobación de la interfaz</a></li><li><a href="#responsive">8. Diseño responsive y medios</a></li><li><a href="#repaso">9. Repaso y entrega</a></li><li><a href="#fuentes">10. Recursos de consulta</a></li></ul></nav><div class="document-wrapper"><main class="document-container" id="contenido"><header class="header-banner"><span class="module-tag">Diseño de Interfaces Web · 2º DAW</span><h1>UD02. CSS y diseño responsive</h1><p class="lead">De los selectores a la maquetación: construye interfaces legibles, flexibles y adaptables.</p></header><figure class="css-cover" aria-label="Portada del tema: CSS y diseño responsive">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 460" width="1000" height="460" role="img" aria-labelledby="cover-css-title cover-css-desc">
 <title id="cover-css-title">CSS: del código a una interfaz adaptable</title><desc id="cover-css-desc">Una hoja CSS conecta con una página de escritorio y una pantalla móvil. Los mismos colores y componentes se reorganizan según el espacio disponible.</desc>
 <defs><linearGradient id="cover-bg" x2="1" y2="1"><stop stop-color="#0f172a"/><stop offset="1" stop-color="#1e3a8a"/></linearGradient><pattern id="cover-grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#fff" stroke-opacity=".05"/></pattern></defs>
@@ -54,23 +75,22 @@
 </ul>
 <p>CSS aplica reglas a los elementos del HTML. Cuando varias reglas afectan al mismo elemento, el navegador necesita decidir cuáles usar. Por eso estudiaremos la <strong>cascada</strong>, la <strong>herencia</strong> y la <strong>especificidad</strong>. Primero veremos cómo incorporar esas reglas a una página.</p>
 <h3 id="css-incluir">1.1. Formas de incluir CSS</h3>
-<p><strong>Para nuestras páginas, utiliza una hoja externa.</strong> Las tres formas siguientes siguen siendo válidas, pero tienen usos distintos.</p>
-<h4>Hoja externa: recomendada</h4>
-<p>Guarda las reglas en un archivo <code>.css</code> y enlázalo desde <code>&lt;head&gt;</code>. Permite compartir estilos entre páginas y mantenerlos en un único lugar.</p>
-<pre><code>&lt;!-- En el head del HTML --&gt;
-&lt;link rel="stylesheet" href="css/estilos.css"&gt;
-
-/* En css/estilos.css */
+<p>Para aplicar estilos a una página, el navegador necesita saber dónde están escritas las reglas CSS. Podemos guardarlas en un archivo independiente, incluirlas en la cabecera del HTML o escribirlas directamente en un elemento. Las tres formas funcionan, pero la elección influye en lo fácil que será mantener la web.</p>
+<p>Cuando construimos un sitio con varias páginas, lo más práctico es utilizar una <strong>hoja de estilos externa</strong>. Escribimos las reglas en un archivo, como <code>estilos.css</code>, y lo enlazamos desde la cabecera de cada página mediante <code>&lt;link&gt;</code>:</p>
+<pre><code>&lt;!-- Dentro de head, en el archivo HTML --&gt;
+&lt;link rel="stylesheet" href="css/estilos.css"&gt;</code></pre>
+<p>El atributo <code>href</code> indica la ruta del archivo. En este caso, el navegador buscará <code>estilos.css</code> dentro de la carpeta <code>css</code>. En ese archivo escribimos únicamente CSS, sin etiquetas <code>&lt;style&gt;</code>:</p>
+<pre><code>/* Archivo css/estilos.css */
 p { color: navy; }</code></pre>
-<h4>CSS interno: para ejemplos o una página aislada</h4>
-<p>Escribe las reglas dentro de <code>&lt;style&gt;</code>, en <code>&lt;head&gt;</code>. Es útil para pruebas; evita repetir el mismo bloque en varias páginas.</p>
+<p>Si varias páginas enlazan esa misma hoja, todas compartirán sus estilos. Para cambiar el color de sus párrafos bastará con modificar una regla. <strong>Esta será la forma habitual de trabajar en nuestras prácticas.</strong></p>
+<p>También podemos escribir CSS en el propio documento, dentro de una etiqueta <code>&lt;style&gt;</code> situada en <code>&lt;head&gt;</code>. Es una <strong>hoja de estilos interna</strong>: resulta cómoda para probar una idea o preparar un ejemplo en un solo archivo.</p>
 <pre><code>&lt;style&gt;
   p { color: navy; }
 &lt;/style&gt;</code></pre>
-<h4>CSS en línea: desaconsejado como práctica habitual</h4>
-<p>El atributo <code>style</code> afecta a un elemento. Mezcla presentación y contenido y dificulta los cambios. Prefiere clases y una hoja externa. Tiene usos concretos, como correos HTML o valores dinámicos aplicados con JavaScript.</p>
+<p>Estas reglas se aplican a esa página. Si copiamos el bloque en varios documentos, después tendremos que modificarlos uno a uno; por eso conviene pasar los estilos compartidos a una hoja externa.</p>
+<p>La tercera posibilidad es el <strong>estilo en línea</strong>, escrito en el atributo <code>style</code> de una etiqueta. Aquí no indicamos un selector: las declaraciones afectan directamente a ese elemento.</p>
 <pre><code>&lt;p style="color: navy;"&gt;Texto de ejemplo&lt;/p&gt;</code></pre>
-
+<p>Aunque permite un cambio rápido, repetir atributos <code>style</code> mezcla la presentación con el contenido y dificulta mantener los estilos. <strong>Evítalo como forma habitual de maquetar:</strong> utiliza clases y reglas en una hoja externa. Sigue teniendo usos concretos, como ciertos correos HTML o valores que JavaScript cambia durante la interacción.</p>
 <h3 id="css-cascada">1.2. Cascada</h3>
 <p>Un mismo elemento puede recibir declaraciones de distintas reglas. La cascada es el proceso que resuelve esos conflictos y determina el valor que se aplica a cada propiedad. El navegador considera, entre otros factores, el origen de los estilos, su importancia, las capas de cascada y la especificidad de los selectores. Cuando las declaraciones empatan en los criterios anteriores, gana la que aparece después.</p>
 <pre><code>/* Ambas reglas tienen el mismo origen, importancia y especificidad. */
@@ -249,7 +269,65 @@ li:last-child { border-bottom: 0; }
 li:nth-child(2n) { background-color: #eff6ff; }
 li:not(.destacado) { color: #475569; }</code></pre>
 <p><code>:nth-child(2n)</code> selecciona posiciones pares. Las posiciones empiezan en 1 y se cuentan entre <strong>todos los hermanos que sean elementos</strong>; la regla anterior solo se aplica si el elemento de esa posición es un <code>li</code>. <code>:not(.destacado)</code> excluye los elementos con esa clase.</p>
-<p>No bases una interacción únicamente en <code>:hover</code>: quien utiliza teclado necesita un foco visible y una forma de activar los controles. Conserva el indicador de foco o sustitúyelo por otro claramente perceptible.</p>
+<article class="exercise" id="actividad-boton-wcag" aria-labelledby="boton-wcag-titulo">
+<h3 id="boton-wcag-titulo">Actividad · Diseñar los estados de un botón accesible</h3>
+<p>Crea un <code>&lt;button type="button"&gt;Guardar&lt;/button&gt;</code> y define sus seis estados con CSS. Usa el esquema del tema 1 como referencia visual: WCAG establece requisitos de accesibilidad, no una lista obligatoria de seis estados para todos los botones.</p>
+<figure><div class="table-wrap" tabindex="0" role="region" aria-label="Esquema de estados del botón; desplazamiento horizontal"><svg role="img" aria-labelledby="estados-boton-title estados-boton-desc" style="min-width:760px" viewBox="0 0 760 160" width="100%" height="160" xmlns="http://www.w3.org/2000/svg"><title id="estados-boton-title">Estados de un botón: esquema del tema 1</title><desc id="estados-boton-desc">Reposo, puntero encima, foco de teclado, pulsado, deshabilitado y cargando.</desc>
+                <rect x="0" y="0" width="760" height="160" rx="8" fill="#f8fafc"/>
+                <g transform="translate(15, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#2563eb"/>
+                    <text x="52" y="27" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Default</text>
+                    <text x="52" y="75" fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Estado Reposo</text>
+                </g>
+                <g transform="translate(138, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#1d4ed8"/>
+                    <text x="52" y="27" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Hover</text>
+                    <text x="52" y="75" fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Puntero Encima</text>
+                </g>
+                <g transform="translate(261, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#2563eb" stroke="#f59e0b" stroke-width="4"/>
+                    <text x="52" y="27" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Focus</text>
+                    <text x="52" y="75" fill="#d97706" font-family="Inter, sans-serif" font-size="10" font-weight="bold" text-anchor="middle">Teclado Tab (2.4.7)</text>
+                </g>
+                <g transform="translate(384, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#1e40af"/>
+                    <text x="52" y="27" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Active</text>
+                    <text x="52" y="75" fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Clic / Pulsado</text>
+                </g>
+                <g transform="translate(507, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#94a3b8"/>
+                    <text x="52" y="27" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Disabled</text>
+                    <text x="52" y="75" fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Deshabilitado</text>
+                </g>
+                <g transform="translate(630, 40)">
+                    <rect x="0" y="0" width="105" height="45" rx="6" fill="#60a5fa"/>
+                    <circle cx="52" cy="22" r="7" stroke="#ffffff" stroke-width="2" fill="none" stroke-dasharray="10 5"/>
+                    <text x="52" y="75" fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle">Cargando datos</text>
+                </g>
+            </svg></div><figcaption>Esquema del tema 1: seis estados de interacción. Comprueba los contrastes de tu propia propuesta.</figcaption></figure>
+<div class="table-wrap"><table><caption>Estados que debes implementar</caption><thead><tr><th scope="col">Estado</th><th scope="col">Selector</th><th scope="col">Qué comprobar</th></tr></thead><tbody>
+<tr><td>Reposo</td><td><code>.boton</code></td><td>Texto claro y aspecto reconocible como botón.</td></tr>
+<tr><td>Puntero encima</td><td><code>.boton:hover</code></td><td>Respuesta visual sin depender del ratón para usarlo.</td></tr>
+<tr><td>Foco</td><td><code>.boton:focus-visible</code></td><td>Contorno visible al llegar con Tab, también mientras está en hover o activo.</td></tr>
+<tr><td>Pulsado</td><td><code>.boton:active</code></td><td>Respuesta durante la pulsación; no es una selección permanente.</td></tr>
+<tr><td>Deshabilitado</td><td><code>.boton:disabled</code></td><td>Usa el atributo HTML disabled; cambiar el color no desactiva el botón.</td></tr>
+<tr><td>Cargando</td><td><code>.boton[aria-busy="true"]</code></td><td>Muestra «Guardando…». No existe :loading; simula el estado con HTML o actívalo con JavaScript.</td></tr>
+</tbody></table></div>
+<p>Prepara una muestra de cada estado y un botón para probar la interacción real. Si simulas una operación con JavaScript, evita envíos repetidos mientras carga y comunica su resultado mediante un mensaje con <code>role="status"</code>. <code>aria-busy</code> por sí solo no bloquea clics.</p>
+<h4>Comprobaciones WCAG 2.2</h4>
+<ul>
+<li><strong>Teclado (2.1.1):</strong> llega con Tab y activa con Intro y Espacio. Usa un botón HTML nativo.</li>
+<li><strong>Foco (2.4.7 y 2.4.11):</strong> conserva un indicador visible y comprueba que el elemento enfocado no quede totalmente oculto.</li>
+<li><strong>Contraste (1.4.3 y 1.4.11):</strong> texto normal de al menos 4,5:1; información visual necesaria para identificar el control y sus estados, 3:1 frente a colores adyacentes. Los controles inactivos están exentos, pero deben reconocerse.</li>
+<li><strong>Color (1.4.1):</strong> acompaña la carga de texto, no solo de un cambio de color.</li>
+<li><strong>Tamaño (2.5.8):</strong> el mínimo AA es 24 × 24 píxeles CSS, con excepciones de espaciado y otras. En esta práctica usa al menos 44 × 44 para facilitar la pulsación.</li>
+<li><strong>Nombre y mensajes (4.1.2 y 4.1.3):</strong> etiqueta comprensible y resultado de la operación perceptible por tecnologías de apoyo.</li>
+</ul>
+<p><strong>Entrega:</strong> HTML, CSS comentado y, si lo utilizas, JavaScript. Incluye las muestras de los seis estados y una breve comprobación de teclado y contrastes medidos.</p>
+<a class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad del botón accesible (abre una pestaña nueva)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V3m-5 5 5-5 5 5M4 16v5h16v-5"/></svg> Entrega</a>
+</article>
+<aside class="extension-card" aria-labelledby="boton-wcag-recursos"><p class="card-label">Ampliación</p><h4 id="boton-wcag-recursos">Comprobar un botón accesible</h4><p><a href="https://www.w3.org/WAI/WCAG22/quickref/" target="_blank" rel="noopener noreferrer">Criterios WCAG 2.2 ↗</a> · <a href="https://www.w3.org/WAI/ARIA/apg/patterns/button/" target="_blank" rel="noopener noreferrer">Interacción y estados de botones · WAI ↗</a></p></aside>
+
 <h4>Pseudoelementos: partes de un elemento</h4>
 <p>Se escriben con <strong>dos puntos consecutivos</strong> (<code>::</code>) y permiten aplicar estilos a partes de un elemento o generar contenido decorativo. No equivalen a añadir elementos HTML reales.</p>
 <div class="table-wrap"><table><caption>Pseudoelementos habituales y su significado</caption><thead><tr><th scope="col">Pseudoelemento</th><th scope="col">Significado</th><th scope="col">Ejemplo de selector</th></tr></thead><tbody>
@@ -421,7 +499,27 @@ img { max-width: 100%; height: auto; }
 }</code></pre>
 <p>No ocultes el desbordamiento de toda la página para disimular un problema de anchura. Comprueba el origen y conserva el acceso a la información. Si creas una región desplazable, verifica su uso con teclado; cuando necesite foco propio, añade <code>tabindex="0"</code> y un nombre accesible, por ejemplo mediante <code>role="region"</code> y <code>aria-labelledby</code>.</p>
 <aside class="extension-card" aria-labelledby="ampliacion-overflow-consulta"><p class="card-label">Ampliación</p><h4 id="ampliacion-overflow-consulta">Controlar el desbordamiento</h4><p>Consulta los valores de overflow y ejemplos de contenido que no cabe.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/overflow" target="_blank" rel="noopener noreferrer">Consultar overflow en MDN ↗</a></aside>
-<h3 id="caja-display">3.4. Propiedad Display</h3>
+<article class="exercise" id="act-02-03"><h3>Actividad 02-03 · Medir una caja</h3><p>Construye una tarjeta de 280 px con 20 px de relleno y borde de 2 px. Calcula su ancho exterior con ambos modelos y compruébalo en el inspector. Añade noticias, publicidad y pie con márgenes, bordes y fondos distintos. Explica qué ocurre al duplicar el texto.</p></article><details><summary>¿Cuánto mide la tarjeta con content-box y con border-box?</summary><p>Sin contar márgenes: 324 px con content-box y 280 px con border-box.</p></details><h3 id="medidas">3.4. Unidades</h3><p>Elige la unidad por su relación con el diseño. <code>rem</code> depende del tamaño de fuente raíz. En <code>font-size</code>, <code>em</code> depende de la fuente del padre; en muchas otras propiedades depende de la fuente del propio elemento. Los porcentajes toman una referencia que varía según la propiedad. <code>vw</code> se relaciona con el ancho del viewport y <code>dvh</code> con su alto dinámico. Un píxel CSS no equivale necesariamente a un píxel físico.</p><pre><code>.articulo {
+  width: min(100% - 2rem, 65ch);
+  margin-inline: auto;
+  padding: 1rem;
+}</code></pre><h3 id="caja-colores">3.5. Colores y fondos</h3><p>Define colores compartidos con propiedades personalizadas. RGB con alfa permite controlar la transparencia de un color; <code>opacity</code> afecta al elemento completo y a sus descendientes. Para una imagen de fondo translúcida sin alterar el texto, utiliza una capa o pseudoelemento independiente. Los fondos decorativos no sustituyen las imágenes con contenido y texto alternativo.</p><pre><code>:root { --marca: #1e3a8a; }
+a { color: var(--marca); }
+.aviso { background-color: rgb(30 58 138 / .1); }
+.portada { background: linear-gradient(135deg, #fff, #eff6ff); }</code></pre><h3 id="caja-bordes">3.6. Bordes y sombras</h3>
+<p><code>border</code> combina grosor, estilo y color. El borde participa en el tamaño de la caja; <code>border-radius</code> redondea las esquinas. <code>box-shadow</code> dibuja una sombra sin reservar espacio adicional.</p>
+<pre><code>.tarjeta {
+  border: 2px solid #1e3a8a;
+  border-radius: .75rem;
+  box-shadow: 0 .25rem 1rem rgb(15 23 42 / .12);
+}</code></pre>
+<p>En la sombra, los valores indican desplazamiento horizontal, vertical y desenfoque, seguidos del color. Mantén el contraste del texto y evita sombras que dificulten distinguir los límites.</p><h3 id="caja-tipografia">3.7. Tipografía</h3><p>Trabaja con una jerarquía de tamaños y una altura de línea cómoda. Limita el ancho de lectura, ofrece fuentes de reserva y evita justificar párrafos estrechos si genera huecos difíciles de leer. Las listas y tablas necesitan su propia separación, alineación y encabezados semánticos.</p><pre><code>body {
+  color: #172033;
+  font-family: system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+h1 { font-size: clamp(2rem, 5vw, 3.5rem); }</code></pre><article class="exercise" id="act-02-02"><h3>Actividad 02-02 · Artículo y sistema visual</h3><p>Crea un artículo con título, dos subtítulos, tres párrafos, lista y tabla con encabezados. Define una paleta en <code>:root</code>, una escala tipográfica y dos fondos diferentes. Compara un fondo con canal alfa y un contenedor con <code>opacity</code>. Incluye el código y explica la diferencia observada. Verifica legibilidad al ampliar el texto.</p></article></section><section id="posicion"><h2>4. Posicionamiento</h2><h3 id="caja-display">4.1. Propiedad Display</h3>
 <p>Por defecto, muchos elementos HTML se muestran <strong>en bloque</strong> o <strong>en línea (inline)</strong>. El navegador les aplica este comportamiento mediante sus estilos iniciales.</p>
 <div class="table-wrap"><table><caption>Ejemplos de comportamiento por defecto</caption><thead><tr><th scope="col">Tipo</th><th scope="col">Cómo se muestra</th><th scope="col">Elementos habituales</th></tr></thead><tbody>
 <tr><td><strong>En bloque</strong></td><td>Empieza en una línea nueva y, con ancho automático, ocupa el ancho disponible de su contenedor.</td><td><code>&lt;div&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;header&gt;</code>, <code>&lt;footer&gt;</code>.</td></tr>
@@ -464,7 +562,7 @@ div.texto-en-linea {
 <h4>Ocultar no siempre significa lo mismo</h4>
 <ul><li><code>display: none</code> elimina las cajas del elemento y sus descendientes del diseño y, normalmente, del árbol de accesibilidad. El HTML permanece en el DOM.</li><li><code>visibility: hidden</code> oculta el elemento conservando su espacio. No es equivalente a eliminarlo del flujo.</li><li><code>opacity: 0</code> lo hace transparente, pero conserva su espacio y puede mantener clics y foco. No basta por sí solo para ocultar un control interactivo.</li></ul>
 <aside class="extension-card" aria-labelledby="display-more"><p class="card-label">Ampliación</p><h4 id="display-more">Más sobre display</h4><p>Consulta los valores de esta propiedad y sus ejemplos de uso.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/display" target="_blank" rel="noopener noreferrer">Consultar display en MDN ↗</a></aside>
-<article class="exercise" id="act-02-03"><h3>Actividad 02-03 · Medir una caja</h3><p>Construye una tarjeta de 280 px con 20 px de relleno y borde de 2 px. Calcula su ancho exterior con ambos modelos y compruébalo en el inspector. Añade noticias, publicidad y pie con márgenes, bordes y fondos distintos. Explica qué ocurre al duplicar el texto.</p></article><details><summary>¿Cuánto mide la tarjeta con content-box y con border-box?</summary><p>Sin contar márgenes: 324 px con content-box y 280 px con border-box.</p></details><h3 id="posicion">3.5. Posicionamiento y acabados</h3>
+<h3 id="caja-position">4.2. Propiedad Position</h3>
 <p><code>position</code> decide cómo se coloca una caja. <strong>Conservar su espacio</strong> significa que los demás elementos siguen dejando su hueco, aunque la caja se desplace.</p>
 <div class="table-wrap"><table><caption>Valores de position</caption><thead><tr><th scope="col">Valor</th><th scope="col">¿Conserva su espacio?</th><th scope="col">Cómo se coloca</th></tr></thead><tbody>
 <tr><td><code>static</code></td><td>Sí.</td><td>Valor inicial. Sigue el flujo normal; top, right, bottom y left no la desplazan.</td></tr>
@@ -515,21 +613,7 @@ div.texto-en-linea {
 <h4>Superposición: z-index</h4>
 <p><code>z-index</code> controla qué caja aparece delante al solaparse. Dentro del mismo contexto de apilamiento, un valor mayor se dibuja por encima. Los contextos agrupan elementos: un hijo no puede superar otra agrupación solo por tener un número enorme.</p>
 <aside class="extension-card" aria-labelledby="position-more"><p class="card-label">Ampliación</p><h4 id="position-more">Practicar el posicionamiento</h4><p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position" target="_blank" rel="noopener noreferrer">Ejemplos de position en MDN ↗</a> · <a href="https://www.w3.org/TR/css-position-3/" target="_blank" rel="noopener noreferrer">Referencia de posicionamiento del W3C ↗</a></p></aside>
-<h4>Acabados visuales</h4>
-<p>Los bordes redondeados, las sombras y los gradientes decoran la caja. Mantén el texto legible y evita que las cajas superpuestas tapen contenido.</p>
-<pre><code>.tarjeta {
-  border-radius: .75rem;
-  box-shadow: 0 .25rem 1rem rgb(15 23 42 / .12);
-  background: linear-gradient(135deg, #fff, #eff6ff);
-}
-.boton { cursor: pointer; min-height: 2.75rem; }</code></pre><article class="exercise" id="act-02-04"><h3>Actividad 02-04 · Comparar posiciones</h3><p>Crea tres cajas y prueba <code>relative</code>, <code>absolute</code> y <code>fixed</code> sobre la segunda. Anota en cada caso qué ocurre con su hueco y cuál es la referencia. Añade una navegación <code>sticky</code> y suficiente texto para comprobarla. Entrega las tres variantes y las conclusiones.</p></article></section><section id="medidas"><h2>4. Unidades, color y tipografía</h2><p>Elige la unidad por su relación con el diseño. <code>rem</code> depende del tamaño de fuente raíz. En <code>font-size</code>, <code>em</code> depende de la fuente del padre; en muchas otras propiedades depende de la fuente del propio elemento. Los porcentajes toman una referencia que varía según la propiedad. <code>vw</code> se relaciona con el ancho del viewport y <code>dvh</code> con su alto dinámico. Un píxel CSS no equivale necesariamente a un píxel físico.</p><pre><code>:root {
-  --marca: #1e3a8a;
-  --espacio: 1rem;
-}
-body { color: #172033; font: 1rem/1.6 system-ui, sans-serif; }
-h1 { font-size: clamp(2rem, 5vw, 3.5rem); }
-.articulo { width: min(100% - 2rem, 65ch); margin-inline: auto; }
-a { color: var(--marca); }</code></pre><p>Define colores compartidos con propiedades personalizadas. RGB con alfa permite controlar la transparencia de un color; <code>opacity</code> afecta al elemento completo y a sus descendientes. Para una imagen de fondo translúcida sin alterar el texto, utiliza una capa o pseudoelemento independiente. Los fondos decorativos no sustituyen las imágenes con contenido y texto alternativo.</p><p>Trabaja con una jerarquía de tamaños y una altura de línea cómoda. Limita el ancho de lectura, ofrece fuentes de reserva y evita justificar párrafos estrechos si genera huecos difíciles de leer. Las listas y tablas necesitan su propia separación, alineación y encabezados semánticos.</p><article class="exercise" id="act-02-02"><h3>Actividad 02-02 · Artículo y sistema visual</h3><p>Crea un artículo con título, dos subtítulos, tres párrafos, lista y tabla con encabezados. Define una paleta en <code>:root</code>, una escala tipográfica y dos fondos diferentes. Compara un fondo con canal alfa y un contenedor con <code>opacity</code>. Incluye el código y explica la diferencia observada. Verifica legibilidad al ampliar el texto.</p></article></section><section id="flexbox"><h2>5. Flexbox: distribuir en un eje</h2><p>Flexbox organiza los hijos directos del contenedor sobre un eje principal. <code>flex-direction</code> define ese eje; <code>justify-content</code> reparte el espacio sobre él y <code>align-items</code> alinea en el transversal. Con <code>flex-wrap</code> aparecen nuevas líneas. Los elementos pueden crecer o encogerse mediante <code>flex</code>.</p><pre><code>.galeria { display: flex; flex-wrap: wrap; gap: 1rem; }
+<article class="exercise" id="act-02-04"><h3>Actividad 02-04 · Comparar posiciones</h3><p>Crea tres cajas y prueba <code>relative</code>, <code>absolute</code> y <code>fixed</code> sobre la segunda. Anota en cada caso qué ocurre con su hueco y cuál es la referencia. Añade una navegación <code>sticky</code> y suficiente texto para comprobarla. Entrega las tres variantes y las conclusiones.</p></article></section><section id="flexbox"><h2>5. Flexbox: distribuir en un eje</h2><p>Flexbox organiza los hijos directos del contenedor sobre un eje principal. <code>flex-direction</code> define ese eje; <code>justify-content</code> reparte el espacio sobre él y <code>align-items</code> alinea en el transversal. Con <code>flex-wrap</code> aparecen nuevas líneas. Los elementos pueden crecer o encogerse mediante <code>flex</code>.</p><pre><code>.galeria { display: flex; flex-wrap: wrap; gap: 1rem; }
 .galeria &gt; article { flex: 1 1 15rem; min-width: 0; }
 .barra { display: flex; align-items: center; justify-content: space-between; }</code></pre><div class="demo"><h3>Prueba los ejes</h3><label>Dirección <select id="flex-direction"><option>row</option><option>column</option></select></label><label>Reparto <select id="flex-justify"><option>flex-start</option><option>center</option><option>space-between</option><option>space-around</option></select></label><div class="demo-stage" id="flex-stage" style="display:flex;gap:.5rem;min-height:240px"><span>A</span><span>B</span><span>C</span></div><p id="flex-output" aria-live="polite">flex-direction: row; justify-content: flex-start;</p></div><p>Cambiar el orden visual no cambia automáticamente el orden del DOM ni la navegación con teclado. Mantén un orden lógico en el HTML.</p><article class="exercise" id="act-02-06"><h3>Actividad 02-06 · Galería Flexbox</h3><p>Practica con <a href="https://flexboxfroggy.com/#es">Flexbox Froggy</a>. Construye después una galería de seis tarjetas usando Flexbox y explica <code>flex-basis</code>, <code>flex-grow</code> y <code>flex-wrap</code> con ejemplos de tu código. Aporta una captura estrecha y otra ancha; la galería no debe desbordar horizontalmente.</p></article></section><section id="grid"><h2>6. Grid: filas y columnas</h2><p>Grid permite definir filas y columnas de forma conjunta. <code>fr</code> reparte espacio disponible; <code>minmax()</code> establece un intervalo. <code>repeat()</code> evita repetir pistas y <code>auto-fit</code> ajusta el número de columnas que caben. En diseños con textos extensos, <code>minmax(0, 1fr)</code> evita que el mínimo intrínseco de una pista fuerce un desbordamiento.</p><pre><code>.rejilla {
   display: grid;
