@@ -323,17 +323,23 @@ div.texto-en-linea {
 <ul><li><code>flow-root</code> crea un nuevo contexto de formato de bloque. Resulta útil para contener elementos flotantes y evitar que los márgenes de los hijos colapsen con los del contenedor.</li><li><code>list-item</code> genera una caja de lista con marcador. <code>table</code>, <code>table-row</code> y <code>table-cell</code> permiten comportamientos de tabla; para datos tabulares, utiliza HTML de tabla semántico.</li><li><code>contents</code> elimina la caja del elemento y deja participar a sus hijos. No lo uses como sustituto general de un contenedor: comprueba su efecto en la accesibilidad y en los estilos del propio elemento.</li></ul>
 <h4>Ocultar no siempre significa lo mismo</h4>
 <ul><li><code>display: none</code> elimina las cajas del elemento y sus descendientes del diseño y, normalmente, del árbol de accesibilidad. El HTML permanece en el DOM.</li><li><code>visibility: hidden</code> oculta el elemento conservando su espacio. No es equivalente a eliminarlo del flujo.</li><li><code>opacity: 0</code> lo hace transparente, pero conserva su espacio y puede mantener clics y foco. No basta por sí solo para ocultar un control interactivo.</li></ul>
-<p><strong><code>display</code> cambia cómo se coloca un elemento.</strong> Por ejemplo, un enlace con <code>display: block</code> empieza en una línea nueva, pero sigue siendo un enlace: al pulsarlo, abre su destino.</p>
 <aside class="extension-card" aria-labelledby="display-more"><p class="card-label">Ampliación</p><h4 id="display-more">Más sobre display</h4><p>Consulta los valores de esta propiedad y sus ejemplos de uso.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/display" target="_blank" rel="noopener noreferrer">Consultar display en MDN ↗</a></aside>
 <h3 id="caja-dimensiones">3.3. Dimensiones, mínimos y máximos</h3>
 <p>Definir un tamaño exacto y establecer un límite son operaciones distintas. Una tarjeta puede crecer con su texto y tener una altura mínima; un artículo puede adaptarse al ancho de pantalla sin superar una anchura cómoda para leer.</p>
 <div class="table-wrap"><table><caption>Propiedades de dimensiones</caption><thead><tr><th scope="col">Propiedad</th><th scope="col">Función</th><th scope="col">Ejemplo</th></tr></thead><tbody>
-<tr><td><code>width</code> / <code>height</code></td><td>Establecen ancho y alto, sujetos a los límites mínimo y máximo.</td><td><code>width: 80%; height: auto;</code></td></tr>
-<tr><td><code>min-width</code> / <code>min-height</code></td><td>Fijan el mínimo permitido.</td><td><code>min-height: 12rem;</code></td></tr>
-<tr><td><code>max-width</code> / <code>max-height</code></td><td>Fijan el máximo permitido. No eliminan el contenido que no cabe.</td><td><code>max-width: 65ch;</code></td></tr>
-<tr><td><code>inline-size</code> / <code>block-size</code></td><td>Equivalentes lógicos según el modo de escritura; en escritura horizontal suelen corresponder a ancho y alto.</td><td><code>inline-size: 100%;</code></td></tr>
-<tr><td><code>min-inline-size</code>, <code>max-inline-size</code>, <code>min-block-size</code>, <code>max-block-size</code></td><td>Mínimos y máximos en los ejes lógicos.</td><td><code>max-inline-size: 65ch;</code></td></tr>
-<tr><td><code>aspect-ratio</code></td><td>Define una proporción preferida entre ancho y alto. Para determinar una dimensión a partir de ella, al menos una debe ser automática.</td><td><code>aspect-ratio: 16 / 9;</code></td></tr>
+<tr><td><code>width</code></td><td>Establece el ancho, sujeto a los límites mínimo y máximo.</td><td><code>width: 80%;</code></td></tr>
+<tr><td><code>height</code></td><td>Establece el alto; con auto se calcula automáticamente.</td><td><code>height: auto;</code></td></tr>
+<tr><td><code>min-width</code></td><td>Fija el ancho mínimo.</td><td><code>min-width: 16rem;</code></td></tr>
+<tr><td><code>min-height</code></td><td>Fija el alto mínimo.</td><td><code>min-height: 12rem;</code></td></tr>
+<tr><td><code>max-width</code></td><td>Limita el ancho máximo.</td><td><code>max-width: 65ch;</code></td></tr>
+<tr><td><code>max-height</code></td><td>Limita el alto máximo; el contenido sobrante puede desbordarse.</td><td><code>max-height: 30rem;</code></td></tr>
+<tr><td><code>inline-size</code></td><td>Tamaño en el eje del texto; en escritura horizontal equivale al ancho.</td><td><code>inline-size: 100%;</code></td></tr>
+<tr><td><code>block-size</code></td><td>Tamaño en el eje perpendicular al texto; en escritura horizontal equivale al alto.</td><td><code>block-size: auto;</code></td></tr>
+<tr><td><code>min-inline-size</code></td><td>Mínimo en el eje del texto; en escritura horizontal, ancho mínimo.</td><td><code>min-inline-size: 16rem;</code></td></tr>
+<tr><td><code>max-inline-size</code></td><td>Máximo en el eje del texto; en escritura horizontal, ancho máximo.</td><td><code>max-inline-size: 65ch;</code></td></tr>
+<tr><td><code>min-block-size</code></td><td>Mínimo en el eje perpendicular al texto; en escritura horizontal, alto mínimo.</td><td><code>min-block-size: 12rem;</code></td></tr>
+<tr><td><code>max-block-size</code></td><td>Máximo en el eje perpendicular al texto; en escritura horizontal, alto máximo.</td><td><code>max-block-size: 30rem;</code></td></tr>
+<tr><td><code>aspect-ratio</code></td><td>Define la proporción preferida entre ancho y alto. Al menos una dimensión debe ser automática para calcularla a partir de la otra.</td><td><code>aspect-ratio: 16 / 9;</code></td></tr>
 </tbody></table></div>
 <pre><code>/* Se adapta a la pantalla y limita el ancho de lectura. */
 .articulo {
