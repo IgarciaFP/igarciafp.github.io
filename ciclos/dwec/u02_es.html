@@ -1696,10 +1696,16 @@ console.log(aplicarTransformacion(5, function (valor) {
         &lt;input type="text" id="nombre" autocomplete="given-name"&gt;
         &lt;button type="submit"&gt;Saludar&lt;/button&gt;
     &lt;/form&gt;
-    &lt;p id="saludo" aria-live="polite"&gt;&lt;/p&gt;
+    &lt;p id="saludo"&gt;&lt;/p&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-                <p><code>defer</code> ejecuta el script después de leer el HTML. El campo recoge el nombre y el párrafo vacío mostrará el saludo. <code>aria-live="polite"</code> permite que un lector de pantalla anuncie el cambio sin interrumpir.</p>
+                <p><code>defer</code> ejecuta el script después de leer el HTML. El campo recoge el nombre y el párrafo vacío mostrará el saludo.</p>
+                <div class="didactic-note">
+                    <p><strong>Accesibilidad: anunciar los cambios</strong></p>
+                    <p>Cuando JavaScript actualiza el saludo, una persona que utiliza un lector de pantalla puede no percibir el cambio. Conviene añadir <code>aria-live="polite"</code> al párrafo desde el HTML inicial para que el lector anuncie el nuevo texto cuando termine lo que esté leyendo, sin interrumpir.</p>
+                    <pre><code>&lt;p id="saludo" aria-live="polite"&gt;&lt;/p&gt;</code></pre>
+                    <p>Este atributo no cambia el aspecto del párrafo ni hace que la página hable por sí sola.</p>
+                </div>
 
                 <h4 id="sec8_6_2">8.6.2. Preparar la interacción</h4>
                 <p>En <code>saludo.js</code>, <code>iniciar()</code> agrupa la preparación y mantiene sus variables locales. La llamamos una vez al final:</p>
