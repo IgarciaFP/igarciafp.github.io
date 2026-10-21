@@ -1533,6 +1533,24 @@ mostrarInicio();</code></pre>
                 <p>Definir la función no ejecuta su cuerpo. Para <strong>invocarla</strong> se escribe su nombre seguido de paréntesis. En el ejemplo se muestra el mensaje dos veces porque hay dos llamadas.</p>
                 <div class="didactic-note"><p><strong>Referenciar o ejecutar una función</strong></p><p><code>mostrarInicio</code> referencia la función; <code>mostrarInicio()</code> la ejecuta.</p></div>
 
+                <h4>Hoisting: llamar antes de declarar</h4>
+                <p>¿Por qué funciona una llamada escrita antes de la declaración? Antes de ejecutar las instrucciones de un ámbito, JavaScript prepara sus declaraciones de función. Este comportamiento se conoce como <strong>hoisting</strong> o «elevación»: la función ya está disponible aunque su declaración aparezca más abajo. El código no se mueve físicamente.</p>
+                <pre><code>mostrarAviso(); // Funciona: muestra «Todo preparado».
+
+function mostrarAviso() {
+    console.log("Todo preparado");
+}</code></pre>
+                <p>Esto permite escribir primero los pasos principales del programa y después las funciones que los realizan. El hoisting prepara la función, pero <strong>no la ejecuta</strong>: su cuerpo solo se ejecuta cuando la llamamos.</p>
+                <div class="didactic-note">
+                    <p><strong>Una función guardada en <code>const</code> o <code>let</code> debe inicializarse antes de usarla.</strong> Aunque su nombre pertenece al ámbito desde el principio, no se puede acceder a él hasta ejecutar su declaración. Ese intervalo se llama <em>zona muerta temporal</em>.</p>
+                    <pre><code>mostrarMensaje(); // ReferenceError: todavía no se ha inicializado.
+
+const mostrarMensaje = function () {
+    console.log("Todo preparado");
+};</code></pre>
+                    <p>En este segundo ejemplo, coloca la llamada después de la declaración. Veremos estas expresiones de función en el <a href="#sec8_5">apartado 8.5</a>.</p>
+                </div>
+
                 <h3 id="sec8_2">8.2. Parámetros, argumentos y valores predeterminados</h3>
                 <p>Los <strong>parámetros</strong> son los nombres que aparecen en la definición. Los <strong>argumentos</strong> son los valores que se proporcionan al llamar:</p>
                 <aside class="function-card" id="ficha-ejemplo-7"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>saludar(nombre, saludo = &quot;Hola&quot;)</code></p><p>Muestra un saludo personalizado. Es una nueva versión de saludar, independiente del ejemplo del apartado 4.</p><p><strong>Parámetros:</strong> nombre: cadena con el nombre. saludo: cadena opcional; su valor predeterminado es &quot;Hola&quot;.</p><p><strong>Devuelve:</strong> undefined; muestra el mensaje, pero no lo devuelve.</p></aside>
