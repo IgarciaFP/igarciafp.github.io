@@ -1687,16 +1687,27 @@ console.log(aplicarTransformacion(5, function (valor) {
 <div class="resource-card expansion-card expansion-purple"><div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Expresiones de función</span><span class="resource-badge badge-reading">Ampliación</span></div><p class="resource-description">Funciones como valores, callbacks y diferencias respecto a las declaraciones.</p><a href="https://es.javascript.info/function-expressions" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Expresiones de función</a></div>
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-callbacks">
-                    <p><strong>2.32. Elegir y ejecutar una callback</strong></p>
-                    <p>Escribe una función que reciba una pregunta y dos callbacks. Según la respuesta de <code>confirm()</code>, debe ejecutar una u otra. Prueba primero con funciones guardadas en variables y después con expresiones de función pasadas directamente como argumentos. Comprueba que solo se ejecuta la acción elegida.</p>
-                    
+                    <p><strong>2.32. Confirmar una reserva con callbacks</strong></p>
+                    <p>Una aplicación permite reservar una plaza para un taller de JavaScript. Debe preguntar <strong>«¿Quieres confirmar tu plaza en el taller de JavaScript?»</strong> y realizar una acción distinta al aceptar o cancelar.</p>
+                    <ol>
+                        <li>Crea <code>solicitarConfirmacion(pregunta, alAceptar, alCancelar)</code>. Muestra la pregunta con <code>confirm()</code> y ejecuta únicamente la callback correspondiente a la respuesta.</li>
+                        <li>Guarda dos expresiones de función en <code>confirmarReserva</code> y <code>cancelarReserva</code>. La primera mostrará en consola «Reserva confirmada»; la segunda, «Reserva cancelada». Pasa sus referencias a <code>solicitarConfirmacion()</code>, sin llamarlas al pasarlas.</li>
+                        <li>Prueba una aceptación y una cancelación. Después repite pasando las expresiones de función directamente como argumentos, sin variables intermedias. Utiliza <code>function</code>, todavía sin funciones flecha.</li>
+                    </ol>
+                    <p><strong>Comprobación:</strong> cada diálogo debe producir un solo mensaje, después de responder. Explica en un comentario por qué pasas <code>confirmarReserva</code> y no <code>confirmarReserva()</code>: la función que recibe la callback decide cuándo ejecutarla. Se trata de una simulación; no se guarda ninguna reserva real.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-9-5">
-                    <p><strong>2.33. Elegir una función sin ejecutarla todavía</strong></p>
-                    <p>Declara <code>let transformar</code> y asígnale una expresión de función que duplique o triplique un número según una variable de configuración. Invócala después de la selección. Guarda también su referencia en <code>otraTransformacion</code>.</p>
-                    <p><strong>Comprobación:</strong> Comprueba ambas opciones y explica la diferencia entre guardar <code>transformar</code> y guardar <code>transformar(4)</code>.</p>
+                    <p><strong>2.33. Elegir una tarifa de envío mediante una función</strong></p>
+                    <p>Una tienda calcula el envío según la modalidad elegida: <strong>estándar, 2 euros por kilogramo</strong>, o <strong>urgente, 3 euros por kilogramo</strong>. Selecciona primero cómo calcular el precio y reutiliza después ese cálculo para varios paquetes.</p>
+                    <ol>
+                        <li>Declara <code>const modalidad = "estandar";</code> y <code>let calcularEnvio;</code>. Supón que la modalidad solo puede ser <code>"estandar"</code> o <code>"urgente"</code>.</li>
+                        <li>Según la modalidad, asigna a <code>calcularEnvio</code> una expresión <code>function (peso) { ... }</code> que devuelva el coste correspondiente. Al seleccionarla, guarda la función sin ejecutarla.</li>
+                        <li>Calcula y muestra el envío de paquetes de 4 y 6 kg utilizando esa misma función. Repite la ejecución con la modalidad urgente.</li>
+                        <li>Guarda <code>const otraTarifa = calcularEnvio;</code> y comprueba que puedes llamar a <code>otraTarifa(4)</code>. Compara con <code>const coste = calcularEnvio(4);</code> y explica en comentarios qué contiene cada constante.</li>
+                    </ol>
+                    <p><strong>Comprobación:</strong> los envíos estándar cuestan 8 y 12 euros; los urgentes, 12 y 18 euros. Seleccionar una función permite cambiar la tarifa sin modificar las llamadas que calculan los envíos.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
