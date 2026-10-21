@@ -1964,11 +1964,27 @@ console.log(parrafos.length); // 2</code></pre>
                 
 
                 <h3 id="sec8_4">8.4. Leer y modificar el contenido</h3>
+                <aside class="function-card" id="ficha-propiedad-textContent" aria-label="Ficha de propiedad: elemento.textContent">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de propiedad</p>
+                    <p class="function-signature"><code>elemento.textContent</code></p>
+                    <p><strong>Al leer:</strong> Lee el texto del elemento y sus descendientes, sin etiquetas.</p>
+                    <p><strong>Al asignar:</strong> Sustituye todo el contenido interior por texto literal, conservando el elemento. No interpreta HTML.</p>
+                    <p><strong>Para qué sirve:</strong> Mostrar mensajes y datos del usuario.</p>
+                    <p><strong>Uso:</strong> sin paréntesis; se modifica con <code>=</code>. <code>elemento.textContent = "Hola";</code></p>
+                </aside>
                 <p>La propiedad <code>textContent</code> permite leer o sustituir el texto de un elemento:</p>
                 <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
 console.log(mensaje.textContent); // Texto inicial
 mensaje.textContent = "El contenido ha cambiado";</code></pre>
                 <p>Si el elemento contiene otros elementos, asignar <code>textContent</code> sustituye todo su contenido por texto. Las etiquetas escritas en la cadena se muestran literalmente.</p>
+                <aside class="function-card" id="ficha-propiedad-innerHTML" aria-label="Ficha de propiedad: elemento.innerHTML">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de propiedad</p>
+                    <p class="function-signature"><code>elemento.innerHTML</code></p>
+                    <p><strong>Al leer:</strong> Obtiene una cadena con el HTML interior, incluidas las etiquetas de los descendientes.</p>
+                    <p><strong>Al asignar:</strong> Interpreta la cadena como HTML y reemplaza los descendientes; conserva el elemento contenedor.</p>
+                    <p><strong>Para qué sirve:</strong> Insertar HTML controlado. Para texto del usuario, utiliza textContent.</p>
+                    <p><strong>Uso:</strong> sin paréntesis; se modifica con <code>=</code>. <code>elemento.innerHTML = "&lt;strong&gt;Hola&lt;/strong&gt;";</code></p>
+                </aside>
                 <p><code>innerHTML</code> lee o sustituye el contenido interpretándolo como HTML:</p>
                 <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
 mensaje.innerHTML = "&lt;strong&gt;Aviso:&lt;/strong&gt; sesión iniciada";</code></pre>
@@ -1983,6 +1999,14 @@ console.log(avisoTexto.textContent); // Aviso: sesión iniciada
 avisoTexto.textContent = "&lt;strong&gt;Sesión cerrada&lt;/strong&gt;";
 console.log(avisoTexto.textContent); // &lt;strong&gt;Sesión cerrada&lt;/strong&gt;</code></pre>
                 <p>Al leer <code>textContent</code> obtenemos el texto, sin las etiquetas. Al asignarlo, desaparece el elemento <code>strong</code> anterior: la página muestra literalmente <code>&lt;strong&gt;Sesión cerrada&lt;/strong&gt;</code>, sin negrita. El párrafo conserva su etiqueta, su identificador y su clase.</p>
+                <aside class="function-card" id="ficha-propiedad-outerHTML" aria-label="Ficha de propiedad: elemento.outerHTML">
+                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de propiedad</p>
+                    <p class="function-signature"><code>elemento.outerHTML</code></p>
+                    <p><strong>Al leer:</strong> Obtiene una cadena con el elemento completo: su etiqueta, atributos y contenido.</p>
+                    <p><strong>Al asignar:</strong> Reemplaza el propio elemento por el HTML indicado. La variable anterior sigue apuntando al elemento retirado; selecciona de nuevo el sustituto si lo necesitas.</p>
+                    <p><strong>Para qué sirve:</strong> Sustituir un elemento completo usando únicamente HTML controlado.</p>
+                    <p><strong>Uso:</strong> sin paréntesis; se modifica con <code>=</code>. <code>elemento.outerHTML = "&lt;div&gt;Hola&lt;/div&gt;";</code></p>
+                </aside>
                 <p><code>outerHTML</code> incluye también la etiqueta del propio elemento. En la página de prueba, ejecuta este fragmento tras recargar:</p>
                 <pre data-example="dom-outer"><code>const mensaje = document.querySelector("#mensaje");
 console.log(mensaje.innerHTML); // Texto inicial
