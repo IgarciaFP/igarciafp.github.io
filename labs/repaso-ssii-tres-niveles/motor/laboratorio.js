@@ -79,7 +79,7 @@ penalty:["Cualquier intento de copia será penalizado con un cero en la activida
 terms:['He leído y acepto el procedimiento y las condiciones.','I have read and accept the procedure and conditions.'],
 name:['Nombre y apellidos','Full name'],email:['Correo del centro','School email'],
 back:['Cambiar idioma','Change language'],retrySave:['Reintentar guardado','Retry saving'],eventLog:['Registro del intento','Attempt log'],
-yourExam:['Tu examen','Your exam'],elapsed:['Tiempo transcurrido','Elapsed time'],goDelivery:['Ir a la entrega ↓','Go to submission ↓'],
+yourExam:['Tu examen','Your exam'],elapsed:['Tiempo','Time'],goDelivery:['Ir a la entrega ↓','Go to submission ↓'],
 question:['Pregunta','Question'],finishTitle:['Generar entrega','Generate submission'],
 notes:['Observaciones (opcional)','Comments (optional)'],generate:['Generar entrega','Generate submission'],
 recover:['Volver a copiar y abrir la última entrega','Copy and open the last submission again'],
@@ -156,7 +156,7 @@ Object.assign(texts,{
  deliveryFailed:['No se ha podido confirmar la recepción. Tus respuestas siguen guardadas. Pulsa «Enviar / reintentar entrega».','Receipt could not be confirmed. Your answers are still saved. Click “Send / retry submission”.'],
  notConfigured:['Esta práctica todavía no tiene activado el destino de entrega. El profesor debe configurarlo antes de comenzar.','The submission destination is not active yet. Your teacher must configure it before you begin.'],
  pendingDelivery:['Tienes una entrega pendiente de confirmar. Puedes volver a enviarla o descargar su TXT.','You have a submission awaiting confirmation. You can resend it or download its TXT.'],
- previousReceived:['Tu última entrega tiene confirmación de recepción.','Your last submission has a confirmed receipt.'],
+ previousReceived:['Ya has completado este laboratorio','You have completed this lab'],
  viewReceipt:['Ver confirmación','View receipt']
 });
 Object.assign(texts, {privacy:['Las preguntas son comunes a todos los intentos. Realiza la práctica individualmente.','Questions are the same in every attempt. Complete the practice individually.'],instructions:['Trabaja en este cuaderno y mantén la pantalla completa. La plantilla registra pérdidas de foco y acciones bloqueadas; no detecta qué páginas o herramientas utilizas.','Work in this workbook and stay in fullscreen. The template logs focus loss and blocked actions; it does not detect which pages or tools you use.']});
