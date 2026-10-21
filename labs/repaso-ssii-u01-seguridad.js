@@ -17,7 +17,7 @@
     // borraría también borradores de otros laboratorios del mismo dominio.
     const CONFIG = Object.freeze({
       key: 'ssii-repaso-ud01-seguridad-v1', legacyKey: 'ssii-repaso-ud01-v1',
-      limit: 3, maxEvents: 80, settleMs: 200, blockClipboard: true
+      limit: 5, maxEvents: 80, settleMs: 200, blockClipboard: true
     });
     const WHY = { hidden: 'página oculta', blur: 'pérdida de foco',
       fullscreen: 'salida de pantalla completa', pagehide: 'recarga o cierre' };
@@ -86,7 +86,7 @@
         || ![null,'first','last','reset','resume'].includes(s.pending)
         || !s.data || !Array.isArray(s.events)) throw new Error('Estado inválido');
       return { ...fresh(), phase: s.phase, attempt: s.attempt, count: s.count,
-        pending: s.pending, clipboardBlocked: s.clipboardBlocked,
+        pending: ['first','last'].includes(s.pending) ? (s.count === CONFIG.limit - 1 ? 'last' : 'first') : s.pending, clipboardBlocked: s.clipboardBlocked,
         attemptAudit:sanitizeAudit(s.attemptAudit),
         recoveries: Number.isInteger(s.recoveries)&&s.recoveries>=0&&s.recoveries<=s.count?s.recoveries:0,
         closingAt: stamp(s.closingAt) ? s.closingAt : null,
@@ -197,7 +197,7 @@
       adapter.setEnabled(enabled);
 
       const names = { ready: 'Pendiente de comenzar', active: enabled ? 'En curso' : 'Respuestas bloqueadas · reloj en marcha',
-        paused: 'Práctica guardada y pausada', closing: 'Cerrando intento: respuestas conservadas', submitted: 'Intento finalizado', reset: 'Reiniciado por tres incidencias', review: 'Copia recuperada: solo lectura' };
+        paused: 'Práctica guardada y pausada', closing: 'Cerrando intento: respuestas conservadas', submitted: 'Intento finalizado', reset: 'Reiniciado por cinco incidencias', review: 'Copia recuperada: solo lectura' };
       $('guard-state').textContent = names[state.phase];
       $('guard-count').textContent = `${state.count} de ${CONFIG.limit}`;
       $('guard-conditions').textContent = `Pantalla completa: ${s.fullscreen ? 'sí' : 'no'} · Foco: ${s.focused ? 'sí' : 'no'} · Visible: ${s.visible ? 'sí' : 'no'}`;
@@ -233,9 +233,9 @@
       if (confirmBox.open) confirmBox.close();
       confirmation = null;
       const texts = {
-        first: ['Primer aviso', 'El laboratorio perdió visibilidad, foco o pantalla completa. Las respuestas se conservan. La tercera incidencia generará una entrega automática.'],
-        last: ['Último aviso', 'Segunda incidencia. La próxima vez se cerrará el intento y se generará una entrega con las respuestas actuales.'],
-        reset: ['Intento reiniciado', 'Tercera incidencia: se han vaciado respuestas, comprobaciones e informe. Puedes comenzar un nuevo intento vacío.'],
+        first: ['Aviso', 'El laboratorio perdió visibilidad, foco o pantalla completa. Las respuestas se conservan. La quinta incidencia generará una entrega automática.'],
+        last: ['Último aviso', 'Cuarta incidencia. La próxima vez se cerrará el intento y se generará una entrega con las respuestas actuales.'],
+        reset: ['Intento reiniciado', 'Quinta incidencia: se han vaciado respuestas, comprobaciones e informe. Puedes comenzar un nuevo intento vacío.'],
         resume: ['Reanudar el intento', 'Se han recuperado las respuestas y el contador. El reloj sigue contando. Debes recuperar pantalla completa y foco para seguir.']
       };
       const [title, text] = texts[state.pending];
@@ -268,8 +268,8 @@
           if (warning.open) warning.close();
           if (confirmBox.open) confirmBox.close();
           confirmation = null;
-          log('Tercera incidencia: cierre automático con respuestas conservadas.');
-        } else state.pending = state.count === 1 ? 'first' : 'last';
+          log('Quinta incidencia: cierre automático con respuestas conservadas.');
+        } else state.pending = state.count === CONFIG.limit - 1 ? 'last' : 'first';
       } else if (!state.episode.reasons.includes(reason)) {
         state.episode.reasons.push(reason);
         log(`Mismo episodio: ${WHY[reason]} (sin sumar otra incidencia).`);
@@ -329,7 +329,7 @@
       try {
         await fullscreen();
         if (problem || fatal) return;
-        // Una tercera salida durante la petición no puede revivir el intento.
+        // Una salida al alcanzar el límite durante la petición no puede revivir el intento.
         if (resume && !['active','paused'].includes(state.phase)) return;
         if(recovery){
           state.count++;state.recoveries++;rerollPending=false;
@@ -525,7 +525,7 @@
       try {
         const report = await adapter.makeReport(metadata(), true, finishedAt, reportContext('voluntary',finishedAt));
         // El cálculo SHA-256 es asíncrono. Una salida en mitad del cálculo
-        // cancela la entrega: no permite saltarse un aviso o el tercer reinicio.
+        // cancela la entrega: no permite saltarse un aviso o el cierre por límite.
         if (!report || problem || fatal || state.phase !== 'active' || state.count !== beforeCount
           || state.pending || !safe(signals())) return;
         adapter.stopClock(finishedAt);state.attemptAudit.finishedAt=finishedAt;
@@ -552,7 +552,7 @@
         if (fatal || problem || state.phase !== 'closing') return;
         adapter.setReport(report); state.data = adapter.snapshot();
         state.phase = 'submitted'; state.pending = null; state.episode = null;
-        log('Entrega generada automáticamente tras tres incidencias.');
+        log('Entrega generada automáticamente tras cinco incidencias.');
         if (!persist()) return;
         render();
         await adapter.downloadReport();
