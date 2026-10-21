@@ -122,8 +122,8 @@
             <li><a href="#sec6_3" class="subsection-link">6.3. switch: alternativas según un valor</a></li>
             <li><a href="#sec6_4" class="subsection-link">6.4. Operador ternario</a></li>
             <li><a href="#sec6_5" class="subsection-link">6.5. Repeticiones con for, while y do...while</a></li>            <li><a href="#sec8">8. Funciones: organizar y reutilizar código</a></li>
-            <li><a href="#sec8_1" class="subsection-link">8.1. Hola Mundo (ahora sí)</a></li>
-            <li><a href="#sec8_2" class="subsection-link">8.2. Definición e invocación</a></li>
+            <li><a href="#sec8_1" class="subsection-link">8.1. Definición e invocación</a></li>
+            <li><a href="#sec8_2" class="subsection-link">8.2. Hola Mundo (ahora sí)</a></li>
             <li><a href="#sec8_3" class="subsection-link">8.3. Parámetros, argumentos y valores predeterminados</a></li>
             <li><a href="#sec8_4" class="subsection-link">8.4. Devolver resultados con return</a></li>
             <li><a href="#sec8_5" class="subsection-link">8.5. Ámbito local y variables externas</a></li>
@@ -1515,11 +1515,22 @@ for (let fila = 1; fila &lt;= 2; fila++) {
                 <p class="didactic-note">Las prácticas que utilizan elementos de la página o botones se completan con el DOM del apartado 9 y los eventos del apartado 10. Puedes comenzar por la lógica de las funciones y retomar después su conexión con la interfaz.</p>
                 <p>Una <strong>función</strong> agrupa instrucciones para realizar una tarea. Puede recibir datos y devolver un resultado. Permite reutilizar una operación y separar el programa en partes comprensibles. Aquí se estudiará cómo definirlas y utilizarlas; en el apartado 10 se aplicarán como manejadores de eventos.</p>
 
-                <h3 id="sec8_1">8.1. Hola Mundo (ahora sí)</h3>
+                <h3 id="sec8_1">8.1. Definición e invocación</h3>
+                <p>Una declaración de función utiliza <code>function</code>, un nombre, una lista de parámetros entre paréntesis y un cuerpo entre llaves:</p>
+                <pre><code>function mostrarInicio() {
+    console.log("Comienza la sesión");
+}
+
+mostrarInicio();
+mostrarInicio();</code></pre>
+                <p>Definir la función no ejecuta su cuerpo. Para <strong>invocarla</strong> se escribe su nombre seguido de paréntesis. En el ejemplo se muestra el mensaje dos veces porque hay dos llamadas.</p>
+                <p><code>mostrarInicio</code> referencia la función; <code>mostrarInicio()</code> la ejecuta. Esta diferencia explica por qué en <code>addEventListener()</code> se pasa el nombre del manejador sin los paréntesis de llamada.</p>
+
+                <h3 id="sec8_2">8.2. Hola Mundo (ahora sí)</h3>
                 <p>Hasta ahora hemos usado la consola y los diálogos para practicar. En una página web, el usuario escribe en controles, pulsa botones y recibe la respuesta en la propia página. Vamos a conectar esas tres acciones: <strong>introducir un nombre → pulsar «Saludar» o Intro → leer «Hola » seguido del nombre</strong>.</p>
                 <p>Esta es una forma habitual de trabajar con JavaScript en una interfaz web: el programa responde a eventos y modifica el documento. El usuario no necesita abrir la consola; la consola sigue siendo una herramienta del desarrollador para depurar.</p>
 
-                <h4 id="sec8_1_1">8.1.1. Preparar el formulario</h4>
+                <h4 id="sec8_2_1">8.2.1. Preparar el formulario</h4>
                 <p>Crea una carpeta con dos archivos, <code>index.html</code> y <code>saludo.js</code>. El HTML define la entrada, el botón y el lugar donde aparecerá la respuesta:</p>
                 <pre><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="es"&gt;
@@ -1543,7 +1554,7 @@ for (let fila = 1; fila &lt;= 2; fila++) {
                 <p><strong>¿Qué significa <code>aria-live="polite"</code>?</strong> Un lector de pantalla es una herramienta que lee en voz alta el contenido de la página. Este atributo le indica que anuncie el nuevo saludo cuando cambie el párrafo. <code>polite</code> significa que espere a terminar lo que esté leyendo, sin interrumpir. No cambia el aspecto del párrafo ni hace que la página hable por sí sola.</p>
                 <p><code>defer</code> hace que el archivo externo se ejecute cuando el navegador haya terminado de leer el HTML. Así los elementos ya existen al buscarlos. El botón es <code>type="submit"</code>: al pulsarlo, o al pulsar Intro dentro del campo, el formulario genera el evento <code>submit</code>. Escucharemos ese evento para mostrar el saludo sin recargar la página.</p>
 
-                <h4 id="sec8_1_2">8.1.2. Organizar el script en una función global</h4>
+                <h4 id="sec8_2_2">8.2.2. Organizar el script en una función global</h4>
                 <p>Escribe este código en <code>saludo.js</code>. Declaramos una función global llamada <code>iniciar()</code> y la llamamos una sola vez al final. Dentro quedan las referencias a los elementos y la función que atenderá el envío del formulario.</p>
                 <pre><code>"use strict";
 
@@ -1566,7 +1577,7 @@ iniciar();</code></pre>
                 <p><code>iniciar()</code> es global porque está declarada fuera de cualquier otra función en este script clásico. Agrupa la preparación de la página y mantiene sus variables en un ámbito local. Es una organización sencilla para esta práctica; no es obligatorio que todas las aplicaciones usen una única función global.</p>
                 <p>La función interior <code>saludar()</code> puede utilizar las variables de <code>iniciar()</code>. Se ejecuta al enviar el formulario con el botón o con Intro: lee el nombre en ese momento y sustituye el texto del párrafo. En los siguientes subapartados veremos cómo definir y utilizar funciones.</p>
 
-                <h4 id="sec8_1_3">8.1.3. Buscar, escuchar y responder</h4>
+                <h4 id="sec8_2_3">8.2.3. Buscar, escuchar y responder</h4>
                 <aside class="function-card" id="ficha-hola-getelementbyid">
                     <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
                     <p class="function-signature"><code>document.getElementById(id)</code></p>
@@ -1588,17 +1599,6 @@ iniciar();</code></pre>
                     <li><strong>Responder:</strong> <code>salida.textContent = "Hola " + nombre</code> escribe el saludo como texto en el párrafo.</li>
                 </ol>
                 <div class="didactic-note"><p><strong>¿Por qué se escribe <code>saludar</code> sin paréntesis?</strong> Pasamos la función para que el navegador la llame después. Con <code>saludar()</code> la ejecutaríamos al cargar el script y pasaríamos su resultado, no la función que debe atender el envío.</p></div>
-
-                <h3 id="sec8_2">8.2. Definición e invocación</h3>
-                <p>Una declaración de función utiliza <code>function</code>, un nombre, una lista de parámetros entre paréntesis y un cuerpo entre llaves:</p>
-                <pre><code>function mostrarInicio() {
-    console.log("Comienza la sesión");
-}
-
-mostrarInicio();
-mostrarInicio();</code></pre>
-                <p>Definir la función no ejecuta su cuerpo. Para <strong>invocarla</strong> se escribe su nombre seguido de paréntesis. En el ejemplo se muestra el mensaje dos veces porque hay dos llamadas.</p>
-                <p><code>mostrarInicio</code> referencia la función; <code>mostrarInicio()</code> la ejecuta. Esta diferencia explica por qué en <code>addEventListener()</code> se pasa el nombre del manejador sin los paréntesis de llamada.</p>
 
                 <div class="activity-card activity-callout" id="relacion-ejercicio-2"><p><strong>2.25. Saludo con una función y JavaScript externo</strong></p><ol><li>Añade al HTML un campo <code>&lt;input type="text" id="nombre"&gt;</code> con su etiqueta y un botón para saludar. Crea una función que lea el nombre mediante la propiedad <code>value</code> del campo y lo almacene en una variable.</li><li>Declara una constante con el valor <code>"¡Bienvenido!"</code> y combina el saludo con el nombre en una alerta, por ejemplo «¡Bienvenido, Ana!».</li><li>Guarda todo el JavaScript en un archivo externo y cárgalo mediante <code>&lt;script src="..." defer&gt;&lt;/script&gt;</code>. Registra la función con <code>addEventListener()</code> para que se ejecute al pulsar el botón y lea el valor actual del campo.</li><li>Modifica la función para que, en lugar de una alerta, introduzca el saludo en <code>&lt;div id="saludo"&gt;&lt;/div&gt;</code> mediante <code>textContent</code>.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
