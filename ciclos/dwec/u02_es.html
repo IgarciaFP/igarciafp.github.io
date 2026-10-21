@@ -1863,7 +1863,17 @@ iniciar();</code></pre>
                 </ul>
                 <div class="didactic-note"><p>Pasamos <code>saludar</code> sin paréntesis para que el navegador la ejecute cuando se envíe el formulario.</p></div>
 
-                <div class="activity-card activity-callout" id="relacion-ejercicio-17"><p><strong>2.36. Juego de dados contra el ordenador</strong></p><p>Programa una partida en la que el usuario y el ordenador lancen tres dados cada uno. Representa sus valores con caracteres, por ejemplo asteriscos, y actualiza la pantalla con <code>querySelector()</code>.</p><ol><li>Diseña una interfaz HTML con elementos identificados para mostrar los dados y el ganador.</li><li>Crea una función que devuelva el resultado de lanzar un dado, un entero entre 1 y 6. Usa <code>Math.random()</code> y <code>Math.floor()</code>.</li><li>Crea una función que clasifique los tres resultados como trío, pareja o ninguna combinación.</li><li>Crea una función que determine el ganador: un trío supera a una pareja y una pareja supera a ninguna combinación. Si ambos tienen pareja o ambos tienen trío, gana la combinación de mayor valor. Si ninguno tiene combinación, gana la suma mayor. Si el criterio aplicable da el mismo valor, declara empate.</li><li>Implementa los lanzamientos y muestra los resultados y el ganador en el DOM. Puedes guardar los tres valores de cada jugador en un array.</li><li>Opcional: añade estilos y mejora la interfaz.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
+                <div class="activity-card activity-callout" id="actividad-hola-mundo-dom">
+                    <p><strong>2.36. Implementar Hola Mundo en la página</strong></p>
+                    <p>Implementa el saludo interactivo del ejemplo anterior en <code>index.html</code> y <code>saludo.js</code>, enlazados con <code>defer</code>.</p>
+                    <ol>
+                        <li>Crea un formulario con un campo para el nombre, su etiqueta y el botón «Saludar». Añade un párrafo vacío para la respuesta con <code>aria-live="polite"</code>.</li>
+                        <li>Desde <code>iniciar()</code>, selecciona los elementos con <code>querySelector()</code> y registra <code>saludar</code> como manejador de <code>submit</code>. Al enviar, evita la recarga con <code>preventDefault()</code>, lee <code>value</code> y muestra «Hola » seguido del nombre mediante <code>textContent</code>.</li>
+                        <li>Prueba con «Ana» pulsando el botón y con «Luis» pulsando Intro. Deben aparecer «Hola Ana» y «Hola Luis», sustituyendo el saludo anterior sin recargar la página.</li>
+                    </ol>
+                    <p>Entrega ambos archivos y explica en comentarios para qué sirven <code>defer</code> y <code>preventDefault()</code>, y por qué registras <code>saludar</code> sin paréntesis.</p>
+                    <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
+                </div>
 
                 <h3 id="sec8_2">8.2. El documento como árbol de objetos</h3>
                 <p>El objeto <code>document</code> representa el documento cargado. Los elementos HTML, como un párrafo o un campo de entrada, son nodos del árbol y tienen propiedades y métodos. Por ejemplo, <code>textContent</code> es una propiedad que contiene texto y <code>querySelector()</code> es un método de búsqueda.</p>
@@ -1886,16 +1896,7 @@ iniciar();</code></pre>
 &lt;/html&gt;</code></pre>
                 <p>La estructura principal es <code>document → html → head / body</code>. Dentro de <code>body</code> se encuentran el título, los párrafos y los controles. <code>defer</code> permite ejecutar <code>dom.js</code> cuando estos elementos ya existen.</p>
 
-                <div class="activity-card activity-callout" id="actividad-jsinfo-arbol">
-                    <p><strong>2.37. Reconocer el árbol del documento</strong></p>
-                    <p>Crea un documento con este contenido en el cuerpo. Dibuja su árbol de elementos e identifica el padre y los hermanos del segundo elemento de la lista. Localiza esos elementos en el inspector del navegador.</p><pre><code>&lt;div&gt;Participantes&lt;/div&gt;
-&lt;ul&gt;
-    &lt;li&gt;Ana&lt;/li&gt;
-    &lt;li&gt;Luis&lt;/li&gt;
-&lt;/ul&gt;</code></pre>
-                    
-                    <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
-                </div>
+                <div class="activity-card activity-callout" id="relacion-ejercicio-17"><p><strong>2.37. Juego de dados contra el ordenador</strong></p><p>Programa una partida en la que el usuario y el ordenador lancen tres dados cada uno. Representa sus valores con caracteres, por ejemplo asteriscos, y actualiza la pantalla con <code>querySelector()</code>.</p><ol><li>Diseña una interfaz HTML con elementos identificados para mostrar los dados y el ganador.</li><li>Crea una función que devuelva el resultado de lanzar un dado, un entero entre 1 y 6. Usa <code>Math.random()</code> y <code>Math.floor()</code>.</li><li>Crea una función que clasifique los tres resultados como trío, pareja o ninguna combinación.</li><li>Crea una función que determine el ganador: un trío supera a una pareja y una pareja supera a ninguna combinación. Si ambos tienen pareja o ambos tienen trío, gana la combinación de mayor valor. Si ninguno tiene combinación, gana la suma mayor. Si el criterio aplicable da el mismo valor, declara empate.</li><li>Implementa los lanzamientos y muestra los resultados y el ganador en el DOM. Puedes guardar los tres valores de cada jugador en un array.</li><li>Opcional: añade estilos y mejora la interfaz.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
                 
 
