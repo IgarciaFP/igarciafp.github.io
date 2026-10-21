@@ -15,6 +15,6 @@ Práctica de 45 minutos con 21 preguntas adaptadas de los tres formularios del d
 - Direcciones de 16 bits: se explicita un byte por dirección; no se conserva la validación incorrecta de 131072 bytes del formulario.
 
 ## Entrega
-La base publicada no tenía receptor configurado. Esta copia admite `delivery.type: download`: descarga un TXT para entregar al docente, sin afirmar que se ha recibido en Sheets. No modifica /base. Los formatos de informe y checksum se conservan para la herramienta de corrección; el identificador y las claves de guardado son exclusivos.
+Conectada al receptor de Google Apps Script del docente. Al finalizar se descarga el TXT de respaldo y se envían las respuestas a Google Sheets. La recepción solo se anuncia tras la confirmación del servidor. Verificado el 21/10/2026: envío de 21 respuestas y reintento sin duplicados. Se conserva la entrega identificada como PRUEBA TÉCNICA — NO CALIFICAR.
 
-El docente ha elegido Google Sheets como destino. Receptor preparado para la hoja indicada, pendiente de despliegue por el propietario y URL /exec. Al activarlo, cambiar delivery.type a apps-script y completar endpoint; verificar recepción real antes de anunciar la conexión.
+Los formatos de informe y checksum se mantienen; el identificador de práctica y sus claves de guardado son exclusivos. Esta copia conserva la opción download como alternativa configurable; el modo activo es apps-script.
