@@ -77,3 +77,13 @@ Abrir `http://localhost:8000/base/`. No abrir con `file://`: la plantilla carga 
 Antes de publicar una nueva actividad, comprobar ambos idiomas, identificación, inicio, corrección, guardado y recuperación, y generación del TXT. La entrega en Google Sheets solo se considera recibida cuando el servidor devuelve su identificador y fecha. Si falla, las respuestas se conservan para reintentar. Sin URL de receptor configurada no se permite iniciar un intento.
 
 Los controles del navegador son disuasorios: las soluciones y el código se descargan en el cliente. No constituyen una plataforma de examen seguro.
+
+## Identificación y barra superior
+
+El paso inicial se titula «Identificación». Nombre y correo aparecen directamente, sin casilla de aceptación ni textos introductorios. Se recuerda la última identidad escrita mediante localStorage, en la clave `config.storage.key + '-identity'`. Los campos siguen siendo editables y el nombre y correo institucional se validan antes de iniciar. Si existe un intento guardado, se mantiene su mecanismo de recuperación y comprobación de identidad.
+
+La barra mantiene el fondo azul oscuro original, diferencia «Entregar» como acción principal y agrupa tiempo e incidencias. Se adapta a pantallas estrechas. El mensaje de una entrega confirmada es «Ya has completado este laboratorio».
+
+El index incluye una versión en las URLs del CSS y del cargador. El cargador propaga esa versión a los archivos de contenido y scripts. Al modificar archivos de la plantilla, actualizar ambos parámetros `v` en index.html para evitar mezclar archivos en caché de distintas versiones.
+
+Estas opciones de presentación no configuran el destino de entrega: cada laboratorio conserva su identificador, sus claves y el receptor propios.

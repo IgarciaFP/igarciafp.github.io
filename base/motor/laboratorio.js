@@ -10,6 +10,20 @@ const hintNodes=[...document.querySelectorAll('.exercise details')];
 let checked={},hints={};
 const ids=[...fields.map(f=>f.id),'student','fullname','group','reflection'];
 const RECOVERY=config.storage.recovery;
+const IDENTITY_KEY=config.storage.key+'-identity';
+function cachedIdentity(){
+ try{const value=JSON.parse(localStorage.getItem(IDENTITY_KEY));
+  if(value && typeof value.fullname==='string' && typeof value.student==='string')return {fullname:value.fullname.slice(0,160),student:value.student.slice(0,254)};
+ }catch{}
+ return null;
+}
+function rememberIdentity(){
+ try{localStorage.setItem(IDENTITY_KEY,JSON.stringify({fullname:$('fullname').value,student:$('student').value}));}catch{}
+}
+function fillCachedIdentity(onlyEmpty=true){
+ const saved=cachedIdentity();if(!saved)return;
+ for(const id of ['fullname','student'])if(!onlyEmpty||!$(id).value)$(id).value=saved[id];
+}
 let emailTouched=false,languageSelected=false;
 let language=null,guard=null,elapsed=0,started=null,phase='ready',delivering=false,lastDelivery=null,recoveryMode=false;
 
@@ -55,6 +69,7 @@ function refreshPendingParameters(){
 }
 
 const texts={
+identification:['Identificación','Identification'],
 step:['Antes de empezar','Before you begin'],
 procedure:['Procedimiento del laboratorio','Exam procedure'],
  instructions:["Este laboratorio práctico contiene medidas de seguridad para garantizar su correcta realización. Los intentos de utilización de IA, copia, plugins,etc son registrados y supondrán un cero en la práctica.","This practical lab includes security measures to ensure it is completed correctly. Attempts to use AI, copy, use plugins, etc. are recorded and will result in a zero for the lab."],
@@ -64,7 +79,7 @@ penalty:["Cualquier intento de copia será penalizado con un cero en la activida
 terms:['He leído y acepto el procedimiento y las condiciones.','I have read and accept the procedure and conditions.'],
 name:['Nombre y apellidos','Full name'],email:['Correo del centro','School email'],
 back:['Cambiar idioma','Change language'],retrySave:['Reintentar guardado','Retry saving'],eventLog:['Registro del intento','Attempt log'],
-yourExam:['Tu examen','Your exam'],elapsed:['Tiempo transcurrido','Elapsed time'],goDelivery:['Ir a la entrega ↓','Go to submission ↓'],
+yourExam:['Tu examen','Your exam'],elapsed:['Tiempo','Time'],goDelivery:['Ir a la entrega ↓','Go to submission ↓'],
 question:['Pregunta','Question'],finishTitle:['Generar entrega','Generate submission'],
 notes:['Observaciones (opcional)','Comments (optional)'],generate:['Generar entrega','Generate submission'],
 recover:['Volver a copiar y abrir la última entrega','Copy and open the last submission again'],
@@ -141,7 +156,7 @@ Object.assign(texts,{
  deliveryFailed:['No se ha podido confirmar la recepción. Tus respuestas siguen guardadas. Pulsa «Enviar / reintentar entrega».','Receipt could not be confirmed. Your answers are still saved. Click “Send / retry submission”.'],
  notConfigured:['Esta práctica todavía no tiene activado el destino de entrega. El profesor debe configurarlo antes de comenzar.','The submission destination is not active yet. Your teacher must configure it before you begin.'],
  pendingDelivery:['Tienes una entrega pendiente de confirmar. Puedes volver a enviarla o descargar su TXT.','You have a submission awaiting confirmation. You can resend it or download its TXT.'],
- previousReceived:['Tu última entrega tiene confirmación de recepción.','Your last submission has a confirmed receipt.'],
+ previousReceived:['Ya has completado este laboratorio','You have completed this lab'],
  viewReceipt:['Ver confirmación','View receipt']
 });
 const deliveryConfigNote=document.createElement('p');deliveryConfigNote.id='delivery-config-note';deliveryConfigNote.className='note warm';
@@ -170,7 +185,7 @@ function validIdentity(){
  const email=$('student').value.trim();
  return !!$('fullname').value.trim() && $('student').validity.valid && validEmail(email);
 }
-function canStart(){return window.LabDelivery.configured(config.delivery)&&!!language&&$('guard-consent').checked&&validIdentity();}
+function canStart(){return window.LabDelivery.configured(config.delivery)&&!!language&&validIdentity();}
 function timeSpent(at=Date.now()){return elapsed+(started===null?0:Math.max(0,at-started));}
 function clock(){const sec=Math.floor(timeSpent()/1000);$('clock').textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');}
 function startClock(){if(!randomized)refreshPendingParameters();if(started===null)started=Date.now();clock();}
@@ -229,6 +244,7 @@ function restore(data) {
   emailTouched=false;
   parameters=variants.sanitize(data.parameters||variants.defaults);parameterLocks={...data.parameterLocks};randomized=data.randomized===true;
   for(const id of ids) $(id).value=data.values[id]||'';
+  fillCachedIdentity();
   checked={...data.checked};hints={...data.hints};elapsed=data.elapsed;started=data.started??null;
   setLanguage(data.language||null);
   fields.forEach(clearFeedback);
@@ -289,7 +305,7 @@ function afterRender(state,ctx){
  $('receipt-download').disabled=phase==='closing';
  if(phase==='submitted'&&lastDelivery?.code===$('report').value&&lastDelivery.receipt)showDeliveryReceipt(lastDelivery);
  $('download').hidden=true;
- document.querySelector('.identity').hidden=!$('guard-consent').checked;
+ document.querySelector('.identity').hidden=false;
  $('fullname').disabled=false;$('student').disabled=false;
  $('guard-start').textContent=tr('start');
  $('practice-recover').disabled=!active||ctx.restoring||!validIdentity()||!!ctx.problem||ctx.busy||!ctx.supported||recoverySelecting||recoveryReading;
@@ -297,7 +313,7 @@ function afterRender(state,ctx){
  $('guard-count').textContent=(language==='en'?'Incidents: ':'Incidencias: ')+state.count+'/3';
  $('guard-conditions').textContent=(language==='en'?'Fullscreen: ':'Pantalla completa: ')+(document.fullscreenElement?'✓':'—')+' · '+(language==='en'?'Focus: ':'Foco: ')+(document.hasFocus()?'✓':'—')+' · '+(language==='en'?'Visible: ':'Visible: ')+(document.visibilityState==='visible'?'✓':'—');
  $('saveStatus').textContent=ctx.problem?tr('saveError'):state.savedAt?tr('saved')+new Date(state.savedAt).toLocaleTimeString(language==='en'?'en-GB':'es-ES'):tr('saveReady');
- $('identity-error').textContent=$('guard-consent').checked&&emailTouched&&$('student').value.trim()&&(!$('student').validity.valid||!validEmail($('student').value.trim()))?tr('identityError'):'';
+ $('identity-error').textContent=emailTouched&&$('student').value.trim()&&(!$('student').validity.valid||!validEmail($('student').value.trim()))?tr('identityError'):'';
  if(state.pending){
  const k=state.pending;
  $('guard-warning-title').textContent=tr(k==='reset'?'resetTitle':k);
@@ -427,10 +443,9 @@ $('recover-delivery').addEventListener('click',()=>{
  deliver(lastDelivery,false);
 });
 $('student').addEventListener('blur',()=>{emailTouched=!!$('student').value.trim();guard?.render();});
-for(const id of ['student','fullname'])$(id).addEventListener('input',()=>guard?.render());
-$('guard-consent').addEventListener('change',()=>guard?.render());
+for(const id of ['student','fullname'])$(id).addEventListener('input',()=>{rememberIdentity();guard?.render();});
 document.querySelectorAll('[data-language]').forEach(el=>el.addEventListener('click',()=>{languageSelected=true;setLanguage(el.dataset.language);guard.render();window.scrollTo(0,0);}));
-$('back-language').addEventListener('click',()=>{languageSelected=false;setLanguage(null);$('guard-consent').checked=false;guard.render();});
+$('back-language').addEventListener('click',()=>{languageSelected=false;setLanguage(null);guard.render();});
 
 for(const f of fields) $(f.id).addEventListener('input',()=>{
  if(!guard.canEdit())return;
@@ -564,6 +579,8 @@ forcedError(){$('delivery-status').textContent=tr('forcedError');},
 isAnswer(el){return el instanceof HTMLElement&&ids.includes(el.id);},
 restoreValue(el,data){el.value=data.values[el.id]||'';}
 });
+if(['ready','reset','review'].includes(phase))fillCachedIdentity(false);
+rememberIdentity();guard.render();
 document.querySelectorAll('[data-language]').forEach(el=>el.disabled=false);
 window.addEventListener('error',()=>{if(language==='en')translateErrors();});
 window.addEventListener('unhandledrejection',()=>{if(language==='en')translateErrors();});

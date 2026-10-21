@@ -202,8 +202,7 @@
       $('guard-count').textContent = `${state.count} de ${CONFIG.limit}`;
       $('guard-conditions').textContent = `Pantalla completa: ${s.fullscreen ? 'sí' : 'no'} · Foco: ${s.focused ? 'sí' : 'no'} · Visible: ${s.visible ? 'sí' : 'no'}`;
       $('guard-start-box').hidden = state.phase === 'active';
-      $('guard-consent').disabled = !supported || !!problem;
-      $('guard-start').disabled = !supported || !!problem || busy || !!state.pending || !$('guard-consent').checked || !adapter.canStart() || state.phase === 'paused';
+      $('guard-start').disabled = !supported || !!problem || busy || !!state.pending || !adapter.canStart() || state.phase === 'paused';
       $('guard-start').textContent = state.phase === 'ready' ? 'Pantalla completa y comenzar' : 'Pantalla completa y nuevo intento vacío';
       $('guard-problem').hidden = !problem && supported;
       $('guard-problem-text').textContent = problemText || (!supported ? 'Este navegador no ofrece las funciones necesarias. Abre la página directamente en un navegador de escritorio compatible con pantalla completa.' : '');
@@ -323,7 +322,7 @@
     }
     async function startOrResume(resume) {
       if (busy || problem || !supported || fatal) return;
-      if (!resume && (!$('guard-consent').checked || !adapter.canStart() || !['ready','reset','review'].includes(state.phase))) return;
+      if (!resume && (!adapter.canStart() || !['ready','reset','review'].includes(state.phase))) return;
       const recovery=resume&&(restoring||state.phase==='paused');
       busy = true; $('guard-warning-error').textContent = ''; render();
       try {
@@ -350,7 +349,7 @@
           const backup = state.backup, events = state.events, attempt = state.attempt + 1;
           state = { ...fresh(), phase: 'active', attempt, data, backup, events };
           state.attemptAudit.startedAt=Date.now();recordIPUnavailable('start');
-          adapter.restore(data); log(`Comienzo del intento ${attempt}. Normas aceptadas.`);
+          adapter.restore(data); log(`Comienzo del intento ${attempt}. Identificación completada.`);
         } else log('Intento reanudado en pantalla completa.');
         state.pending = null; state.episode = null; restoring = false;
         if (warning.open) warning.close();
@@ -509,7 +508,7 @@
           adapter.stopClock();
           state = fresh(); lastRaw = null; restoring = false;rerollPending=false;
           adapter.onReset();
-          adapter.restore(state.data); $('guard-consent').checked = false;
+          adapter.restore(state.data);
           // No persistir de nuevo durante pagehide: el borrado debe ser real.
           render();
           if(document.fullscreenElement===root)document.exitFullscreen().catch(()=>{});
@@ -566,7 +565,7 @@
       state = fresh(); restoring = false;
       if (!persist()) { state = prior; render(); return false; }
       adapter.onReset(); adapter.restore(state.data);
-      $('guard-consent').checked = false;
+     
       if (warning.open) warning.close();
       if (confirmBox.open) confirmBox.close();
       render();
@@ -617,7 +616,6 @@
         document.addEventListener(type, blockAction, true);
       }
     }
-    $('guard-consent').addEventListener('change', render);
     $('guard-start').addEventListener('click', () => startOrResume(false));
     $('guard-continue').addEventListener('click', () => {
       if (state.phase === 'active') startOrResume(true);

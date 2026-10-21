@@ -1,14 +1,17 @@
 /* Sirve esta carpeta por HTTP(S). Los archivos de contenido son del docente. */
 (async () => {
   'use strict';
-  const root=new URL('../',document.currentScript.src);
+  const loaderURL=new URL(document.currentScript.src);
+  const root=new URL('../',loaderURL);
+  const version=loaderURL.searchParams.get('v')||'20261021-base-1';
+  const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const read=async path=>{
-    const response=await fetch(new URL(path,root),{cache:'no-cache'});
+    const response=await fetch(asset(path),{cache:'no-cache'});
     if(!response.ok)throw Error(`No se pudo cargar ${path} (${response.status})`);
     return response;
   };
   const script=path=>new Promise((resolve,reject)=>{
-    const el=document.createElement('script');el.src=new URL(path,root);
+    const el=document.createElement('script');el.src=asset(path);
     el.onload=resolve;el.onerror=()=>reject(Error(`No se pudo cargar ${path}`));
     document.body.append(el);
   });
@@ -50,6 +53,7 @@
     await script('motor/seguridad.js');
     await script('motor/entregas.js');
     await script('motor/laboratorio.js');
+    if(document.querySelector('[data-language]').disabled)throw Error('No se pudo completar el inicio. Recarga la página con Ctrl + F5; tus respuestas guardadas se conservan.');
   } catch(error) {
     document.getElementById('language-stage').hidden=true;
     document.getElementById('guard-boot').hidden=false;
