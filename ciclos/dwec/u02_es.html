@@ -127,7 +127,9 @@
             <li><a href="#sec8_2" class="subsection-link">8.2. Parámetros, argumentos y valores predeterminados</a></li>
             <li><a href="#sec8_3" class="subsection-link">8.3. Devolver resultados con return</a></li>
             <li><a href="#sec8_4" class="subsection-link">8.4. Ámbito local y variables externas</a></li>
-            <li><a href="#sec8_5" class="subsection-link">8.5. Funciones como valores y expresiones de función</a></li>
+            <li><a href="#sec8_5" class="subsection-link">8.5. Callbacks y expresiones de función</a></li>
+            <li><a href="#sec8_5_1" class="subsection-link">8.5.1. Expresiones de función</a></li>
+            <li><a href="#sec8_5_2" class="subsection-link">8.5.2. Callbacks</a></li>
             
             <li><a href="#sec8_6" class="subsection-link">8.6. Funciones flecha</a></li>
             <li><a href="#sec9">9. El DOM: acceder y modificar la página</a></li>
@@ -1519,7 +1521,6 @@ for (let fila = 1; fila &lt;= 2; fila++) {
 
             <section aria-labelledby="sec8">
                 <h2 id="sec8"><i class="fa-solid fa-cubes" aria-hidden="true"></i> 8. Funciones: organizar y reutilizar código</h2>
-                <p class="didactic-note">Las prácticas que utilizan elementos de la página o botones se completan con el DOM del apartado 9 y los eventos del apartado 10. Puedes comenzar por la lógica de las funciones y retomar después su conexión con la interfaz.</p>
                 <p>Una <strong>función</strong> agrupa instrucciones para realizar una tarea. Puede recibir datos y devolver un resultado. Permite reutilizar una operación y separar el programa en partes comprensibles. Aquí se estudiará cómo definirlas y utilizarlas; en el apartado 10 se aplicarán como manejadores de eventos.</p>
 
                 <h3 id="sec8_1">8.1. Definición e invocación</h3>
@@ -1655,8 +1656,9 @@ console.log(estado);</code></pre>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec8_5">8.5. Funciones como valores y expresiones de función</h3>
-                <p>Las funciones también son valores. Se pueden guardar en una variable y pasar como argumento, como ocurre al registrar un manejador:</p>
+                <h3 id="sec8_5">8.5. Callbacks y expresiones de función</h3>
+                <h4 id="sec8_5_1">8.5.1. Expresiones de función</h4>
+                <p>Las funciones también son valores. Una expresión de función permite crear una función y guardarla en una variable:</p>
                 <aside class="function-card" id="ficha-ejemplo-13"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>obtenerTriple(numero)</code></p><p>Calcula el triple de un número.</p><p><strong>Parámetros:</strong> numero: número que se quiere triplicar.</p><p><strong>Devuelve:</strong> El producto de numero por 3.</p></aside>
                                 <pre><code>const obtenerTriple = function (numero) {
     return numero * 3;
@@ -1666,7 +1668,9 @@ console.log(obtenerTriple(4)); // 12</code></pre>
                 <p>Aquí se crea una <strong>expresión de función</strong> y se asigna a <code>obtenerTriple</code>. <code>const</code> impide reasignar ese nombre, pero permite invocar la función tantas veces como sea necesario.</p>
                 <p>Una declaración como <code>function mostrarInicio() { ... }</code> puede invocarse antes de su posición en el código dentro de su ámbito. En cambio, una función asignada a <code>const</code> solo puede utilizarse después de inicializar la variable. En los ejemplos se definirán antes de llamarlas.</p>
 
-                <h4>Guardar una referencia y pasar callbacks</h4><p><code>const otra = obtenerTriple;</code> guarda una referencia a la misma función; <code>const valor = obtenerTriple(4);</code> guarda su resultado. Una <em>callback</em> es una función recibida como argumento que otra función invoca cuando corresponde:</p>
+                <p>El punto y coma de <code>const f = function () {};</code> termina la declaración de la variable.</p>
+                <p><strong>Creación y ámbito.</strong></p><p>En modo estricto, una declaración de función dentro de un bloque solo está disponible en ese bloque. Para elegir una función y usarla después, puedes declararla en el ámbito exterior con <code>let</code> y asignarla en cada rama, o usar <code>const</code> e inicializarla directamente con un operador ternario. Con <code>const</code> no puedes dejar la declaración sin valor ni reasignarla después.</p>
+                <h4 id="sec8_5_2">8.5.2. Callbacks</h4><p><code>const otra = obtenerTriple;</code> guarda una referencia a la misma función; <code>const valor = obtenerTriple(4);</code> guarda su resultado. Una <em>callback</em> es una función recibida como argumento que otra función invoca cuando corresponde:</p>
 <pre><code>function aplicarTransformacion(numero, transformar) {
     return transformar(numero);
 }
@@ -1677,8 +1681,8 @@ console.log(resultadoTriple); // 15
 console.log(aplicarTransformacion(5, function (valor) {
     return valor + 10;
 })); // 15</code></pre>
-<p>Las callbacks pueden ejecutarse inmediatamente, como aquí, o más tarde, como en los eventos. El punto y coma de <code>const f = function () {};</code> termina la declaración de la variable.</p>
-<h4>Creación y ámbito</h4><p>En modo estricto, una declaración de función dentro de un bloque solo está disponible en ese bloque. Para elegir una función y usarla después, puedes declararla en el ámbito exterior con <code>let</code> y asignarla en cada rama, o usar <code>const</code> e inicializarla directamente con un operador ternario. Con <code>const</code> no puedes dejar la declaración sin valor ni reasignarla después.</p>
+<p>Una callback permite que quien llama elija qué operación realizar: <code>aplicarTransformacion()</code> recibe el número y delega el cálculo en <code>transformar</code>. Pasamos <code>obtenerTriple</code>, sin paréntesis, para entregar la función y no su resultado. Las callbacks pueden ejecutarse inmediatamente, como aquí, o más tarde, como en los eventos.</p>
+
 <div class="resource-card expansion-card expansion-purple"><div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Expresiones de función</span><span class="resource-badge badge-reading">Ampliación</span></div><p class="resource-description">Funciones como valores, callbacks y diferencias respecto a las declaraciones.</p><a href="https://es.javascript.info/function-expressions" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Expresiones de función</a></div>
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-callbacks">
