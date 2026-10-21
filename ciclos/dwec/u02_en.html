@@ -129,16 +129,19 @@
 <li><a class="subsection-link" href="#sec8_2">8.2. Default parameters, arguments and values</a></li>
 <li><a class="subsection-link" href="#sec8_3">8.3 Return results with return</a></li>
 <li><a class="subsection-link" href="#sec8_4">8.4. Local scope and external variables</a></li>
-<li><a class="subsection-link" href="#sec8_5">8.5. Functions as function values and expressions</a></li>
-<li><a class="subsection-link" href="#sec8_6">8.6. Hello World (now yes)</a></li>
-<li><a class="subsection-link" href="#sec8_7">8.7. Arrow Functions</a></li>
+<li><a class="subsection-link" href="#sec8_5">8.5. Callbacks and function expressions</a></li>
+<li><a class="subsection-link" href="#sec8_5_1">8.5.1. Function Expressions</a></li>
+<li><a class="subsection-link" href="#sec8_5_2">8.5.2. Callbacks</a></li>
+<li><a class="subsection-link" href="#sec8_6">8.6. Arrow Functions</a></li>
+<li><a class="subsection-link" href="#sec8_7">8.7. Functions with a variable number of arguments</a></li>
 <li><a href="#sec9">9. The DOM: access and modify the page</a></li>
-<li><a class="subsection-link" href="#sec9_1">9.1. The document as an object tree</a></li>
-<li><a class="subsection-link" href="#sec9_2">9.2. Selection of items</a></li>
-<li><a class="subsection-link" href="#sec9_3">9.3. Read and modify the content</a></li>
-<li><a class="subsection-link" href="#sec9_4">9.4. Read fields and convert your data</a></li>
-<li><a class="subsection-link" href="#sec9_5">9.5. CSS Styles and Classes</a></li>
-<li><a class="subsection-link" href="#sec9_6">9.6. Check that an item exists</a></li>
+<li><a class="subsection-link" href="#sec9_1">9.1. Hello World (now yes)</a></li>
+<li><a class="subsection-link" href="#sec9_2">9.2. Document as an object tree</a></li>
+<li><a class="subsection-link" href="#sec9_3">9.3. Selection of items</a></li>
+<li><a class="subsection-link" href="#sec9_4">9.4. Read and modify the content</a></li>
+<li><a class="subsection-link" href="#sec9_5">9.5. Read fields and convert your data</a></li>
+<li><a class="subsection-link" href="#sec9_6">9.6. CSS Styles and Classes</a></li>
+<li><a class="subsection-link" href="#sec9_7">9.7. Check that an item exists</a></li>
 <li><a href="#sec10">10. Events and user interaction</a></li>
 <li><a class="subsection-link" href="#sec10_1">10.1. Events and handlers</a></li>
 <li><a class="subsection-link" href="#sec10_2">10.2. Register handlers with addEventListener()</a></li>
@@ -327,7 +330,7 @@
 <p>In DevTools will be used mainly <strong>Console (Console)</strong>, to execute instructions and consult messages; <strong>Sources (Sources)</strong>, to examine and debug the code; and <strong>Network (Network)</strong>, to check the load of the files.</p>
 <div class="resource-card expansion-card expansion-purple" id="ampliacion-emmet">
 <div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-wand-magic-sparkles"></i> Emmet: writing HTML and CSS with abbreviations</span><span class="resource-badge badge-reading">Enlargement</span></div>
-<p>In class it will be necessary to use <strong>Emmet</strong>, first called <strong>Zen Coding</strong>, when working with VS Code. Allows to expand abbreviations to write HTML and CSS quickly; it is integrated into the editor and does not require to install an extension.</p>
+<p>In class it will be necessary to use <strong>Emmet</strong>, first called <strong>Zen Coding</strong>, when working with VS Code. Allows to expand abbreviations to write HTML and CSS quickly; it is integrated into the editor and does not require installing an extension.</p>
 <p>For example, <code>ul&gt;li*3</code> generates a list with three elements. Write the abbreviation in an HTML file and accept Emmet's suggestion.</p>
 <div class="resource-links"><a class="resource-link-btn" href="https://docs.emmet.io/cheat-sheet/" rel="noopener noreferrer" target="_blank">Emmet · Reference sheet</a>
 <a class="resource-link-btn" href="https://code.visualstudio.com/docs/languages/emmet" rel="noopener noreferrer" target="_blank">Emmet in VS Code</a></div>
@@ -1382,7 +1385,6 @@ for (let fila = 1; fila &lt;= 2; fila++) {
 </section>
 <section aria-labelledby="sec8">
 <h2 id="sec8"><i aria-hidden="true" class="fa-solid fa-cubes"></i> 8. Functions: organizing and reusing code</h2>
-<p class="didactic-note">The practices using page elements or buttons are completed with the DOM in paragraph 9 and the events in paragraph 10. You can start with the logic of the functions and then resume its connection to the interface.</p>
 <p>One <strong>function</strong> group instructions to perform a task. You can receive data and return a result. It allows you to reuse an operation and separate the program into understandable parts. Here you will study how to define and use them; in paragraph 10 they will be applied as event handlers.</p>
 <h3 id="sec8_1">8.1. Definition and invocation</h3>
 <p>A function statement uses <code>function</code>, a name, a list of parameters in parentheses and a body between keys:</p>
@@ -1394,6 +1396,23 @@ mostrarInicio();
 mostrarInicio();</code></pre>
 <p>Define the function does not execute your body. <strong>call on her</strong> your name is written followed by parentheses. The example shows the message twice because there are two calls.</p>
 <div class="didactic-note"><p><strong>Reference or execute a function</strong></p><p><code>mostrarInicio</code> reference to function; <code>mostrarInicio()</code> He executes it.</p></div>
+<h4>Hosting: Call before testifying</h4>
+<p>Why does a written call work before the statement? Before executing the instructions in a field, JavaScript prepares its function statements. This behavior is known as <strong>hoisting</strong> or ‘lift’: the function is already available even if your statement appears below. The code does not move physically.</p>
+<pre><code>mostrarAviso(); // Funciona: muestra «Todo preparado».
+
+function mostrarAviso() {
+    console.log("Todo preparado");
+}</code></pre>
+<p>This allows you to write first the main steps of the program and then the functions that perform them. The hosting prepares the function, but <strong>does not execute</strong>: your body only runs when we call it.</p>
+<div class="didactic-note">
+<p><strong>A function saved in <code>const</code> o <code>let</code> must be initialised before use.</strong> Although your name belongs to the field from the beginning, you cannot access it until you execute your statement. That interval is called <em>temporary dead zone</em>.</p>
+<pre><code>mostrarMensaje(); // ReferenceError: todavía no se ha inicializado.
+
+const mostrarMensaje = function () {
+    console.log("Todo preparado");
+};</code></pre>
+<p>In this second example, place the call after the statement. We will see these function expressions in the <a href="#sec8_5">paragraph 8.5</a>.</p>
+</div>
 <h3 id="sec8_2">8.2. Default parameters, arguments and values</h3>
 <p>The <strong>parameters</strong> are the names in the definition. <strong>arguments</strong> are the values that are provided when calling:</p>
 <aside class="function-card" id="ficha-ejemplo-7"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>saludar(nombre, saludo = "Hola")</code></p><p>It shows a personalized greeting. It is a new version of greeting, independent of the example in paragraph 4.</p><p><strong>Parameters:</strong> name: string with name. greeting: optional string; default value is "Hello".</p><p><strong>Returns:</strong> undefined; displays the message, but does not return it.</p></aside>
@@ -1480,8 +1499,9 @@ console.log(estado);</code></pre>
 <p><strong>Check:</strong> Justify which variable changes and verify that two calls with the same argument give the same result.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
-<h3 id="sec8_5">8.5. Functions as function values and expressions</h3>
-<p>The functions are also values. They can be saved to a variable and passed as an argument, as happens when registering a handler:</p>
+<h3 id="sec8_5">8.5. Callbacks and function expressions</h3>
+<h4 id="sec8_5_1">8.5.1. Function Expressions</h4>
+<p>Functions are also values. A function expression allows you to create a function and save it to a variable:</p>
 <aside class="function-card" id="ficha-ejemplo-13"><p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Example function</p><p class="function-signature"><code>obtenerTriple(numero)</code></p><p>Calculates the triple of a number.</p><p><strong>Parameters:</strong> number: number to be tripled.</p><p><strong>Returns:</strong> The product number by 3.</p></aside>
 <pre><code>const obtenerTriple = function (numero) {
     return numero * 3;
@@ -1490,7 +1510,9 @@ console.log(estado);</code></pre>
 console.log(obtenerTriple(4)); // 12</code></pre>
 <p>Here you create a <strong>function expression</strong> and assigned to <code>obtenerTriple</code>. <code>const</code> prevents reassigning that name, but allows the function to be invoked as many times as necessary.</p>
 <p>A statement like <code>function mostrarInicio() { ... }</code> can be invoked before its position in the code within its scope. Instead, a function assigned to <code>const</code> can only be used after initializing the variable. Examples will be defined before calling them.</p>
-<h4>Save a reference and pass calls</h4><p><code>const otra = obtenerTriple;</code> saves a reference to the same function; <code>const valor = obtenerTriple(4);</code> saves your result. <em>callback</em> is a function received as an argument that another function invokes when appropriate:</p>
+<p>The semicolon of <code>const f = function () {};</code> completes the variable statement.</p>
+<p><strong>Creation and scope.</strong></p><p>Strictly speaking, a function statement within a block is only available in that block. To choose a function and use it later, you can declare it in the external environment with <code>let</code> and assign it to each branch, or use <code>const</code> and initialize it directly with a ternary operator. <code>const</code> You can't leave the statement worthless or reassign it later.</p>
+<h4 id="sec8_5_2">8.5.2. Callbacks</h4><p><code>const otra = obtenerTriple;</code> saves a reference to the same function; <code>const valor = obtenerTriple(4);</code> saves your result. <em>callback</em> is a function received as an argument that another function invokes when appropriate:</p>
 <pre><code>function aplicarTransformacion(numero, transformar) {
     return transformar(numero);
 }
@@ -1501,8 +1523,7 @@ console.log(resultadoTriple); // 15
 console.log(aplicarTransformacion(5, function (valor) {
     return valor + 10;
 })); // 15</code></pre>
-<p>Callbacks can be executed immediately, as here, or later, as in events. <code>const f = function () {};</code> completes the variable statement.</p>
-<h4>Creation and scope</h4><p>Strictly speaking, a function statement within a block is only available in that block. To choose a function and use it later, you can declare it in the external environment with <code>let</code> and assign it to each branch, or use <code>const</code> and initialize it directly with a ternary operator. <code>const</code> You can't leave the statement worthless or reassign it later.</p>
+<p>A callback allows the caller to choose which operation to perform: <code>aplicarTransformacion()</code> receive the number and delegate the calculation to <code>transformar</code>We passed. <code>obtenerTriple</code>, without parenthesis, to deliver the function and not its result. Callbacks can be executed immediately, as here, or later, as in events.</p>
 <div class="resource-card expansion-card expansion-purple"><div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Function Expressions</span><span class="resource-badge badge-reading">Enlargement</span></div><p class="resource-description">Functions such as values, callbacks and differences from statements.</p><a class="resource-link-btn" href="https://es.javascript.info/function-expressions" rel="noopener noreferrer" target="_blank">JavaScript.info · Function Expressions</a></div>
 <div class="activity-card activity-callout" id="actividad-jsinfo-callbacks">
 <p><strong>2.32. Choose and execute a callback</strong></p>
@@ -1515,73 +1536,18 @@ console.log(aplicarTransformacion(5, function (valor) {
 <p><strong>Check:</strong> Check both options and explain the difference between save <code>transformar</code> and save <code>transformar(4)</code>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
-<h3 id="sec8_6">8.6. Hello World (now yes)</h3>
-<p>In a web interface, JavaScript responds to the user's actions and displays the result on the page. Let's ask for a name and write <strong>«Hello » followed by the name</strong> when pressing "Salute" or Enter. The console is left as a debugging tool.</p>
-<h4 id="sec8_6_1">8.6.1. Prepare the form</h4>
-<p>Create <code>index.html</code> y <code>saludo.js</code> in the same folder. <code>index.html</code> writes:</p>
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="es"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;title&gt;Hola Mundo (ahora sí)&lt;/title&gt;
-    &lt;script src="saludo.js" defer&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;h1&gt;Vamos a saludarte&lt;/h1&gt;
-    &lt;form id="formularioSaludo"&gt;
-        &lt;label for="nombre"&gt;Tu nombre:&lt;/label&gt;
-        &lt;input type="text" id="nombre" autocomplete="given-name"&gt;
-        &lt;button type="submit"&gt;Saludar&lt;/button&gt;
-    &lt;/form&gt;
-    &lt;p id="saludo"&gt;&lt;/p&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-<p><code>defer</code> executes the script after reading the HTML. The field collects the name and the empty paragraph will show the greeting.</p>
-<div class="didactic-note">
-<p><strong>Accessibility: announcing changes</strong></p>
-<p>When JavaScript updates the greeting, a person using a screen reader may not perceive the change. <code>aria-live="polite"</code> to the paragraph from the initial HTML so that the reader announces the new text when he finishes what he is reading, without interrupting.</p>
-<pre><code>&lt;p id="saludo" aria-live="polite"&gt;&lt;/p&gt;</code></pre>
-<p>This attribute does not change the aspect of the paragraph nor does it cause the page to speak for itself.</p>
-</div>
-<h4 id="sec8_6_2">8.6.2. Prepare interaction</h4>
-<p>In <code>saludo.js</code>, <code>iniciar()</code> group the preparation and maintain its local variables. We call it once at the end:</p>
-<pre><code>"use strict";
-
-function iniciar() {
-    const campoNombre = document.querySelector("#nombre");
-    const formulario = document.querySelector("#formularioSaludo");
-    const salida = document.querySelector("#saludo");
-
-    function saludar(evento) {
-        evento.preventDefault(); // Evita que el formulario recargue la página.
-        const nombre = campoNombre.value;
-        salida.textContent = "Hola " + nombre;
-    }
-
-    formulario.addEventListener("submit", saludar);
-}
-
-iniciar();</code></pre>
-<h4 id="sec8_6_3">8.6.3. Search, listen and respond</h4>
-<aside class="function-card" id="ficha-hola-queryselector">
-<p class="function-signature"><code>document.querySelector(selector)</code></p>
-<p>Returns the first element that matches a CSS selector, or <code>null</code> if it doesn't exist. <code>"#nombre"</code> select the item with <code>id="nombre"</code>: here the <code>#</code> It's necessary.</p>
-</aside>
-<ul>
-<li><code>addEventListener("submit", saludar)</code> records the function to respond to the form submission, with the button or with Enter.</li>
-<li><code>value</code> read the name and <code>textContent</code> write the greeting in the paragraph.</li>
-</ul>
-<div class="didactic-note"><p>We passed. <code>saludar</code> without parenthesis for the browser to execute when the form is sent.</p></div>
 <div class="activity-card activity-callout" id="relacion-ejercicio-2">
-<p><strong>2.34. Notice of collection of an order</strong></p>
-<p>A store needs to prepare a personalized notice for its customers. Create a page that asks for the name and shows: <strong>"Ana, your order is ready to pick up."</strong></p>
+<p><strong>2.34. Network address and part of host with functions</strong></p>
+<p>Redo the <a href="#relacion-ejercicio-8">activity 2.11</a> using functions. The aim is to reuse calculations for different IP addresses and masks without repeating the code.</p>
 <ol>
-<li>Create a form with a label, a text field for the name, and a "Prepare notice" button. Add an empty paragraph for the result below.</li>
-<li>Saves the code to <code>aviso.js</code> and link him to <code>defer</code>. Within <code>iniciar()</code>select the form, field and paragraph with <code>document.querySelector()</code>.</li>
-<li>Record a function for the event <code>submit</code> by <code>addEventListener()</code>. Avoid recharge with <code>preventDefault()</code>read the name with <code>value</code> and write the ad with <code>textContent</code>Call <code>iniciar()</code> at the end of the script.</li>
+<li>It represents the IP and mask using four integer vectors. It starts with <code>[172, 16, 25, 10]</code> y <code>[255, 255, 192, 0]</code>.</li>
+<li>Create <code>convertirABinario(octetos)</code>, that returns the four octets in binary, separated by points and with eight digits each. You can complete the zeros with <code>toString(2).padStart(8, "0")</code>.</li>
+<li>Create <code>calcularComplemento(mascara)</code>, that returns a new vector with the complement of each octet limited to eight bits: <code>(~octeto) &amp; 255</code>.</li>
+<li>Create <code>calcularRed(ip, mascara)</code> y <code>calcularHost(ip, mascara)</code>. Both must return a new vector: the first applies AND between the IP and the mask; the second uses the mask add-on. It reuses the previous function.</li>
+<li>From <code>iniciar()</code>, calls the functions and displays the IP, the mask, its binary representations, the plugin, the network and the host part in an element of the page by means of <code>querySelector()</code> y <code>textContent</code>Use <code>join(".")</code> to present the vectors in decimal.</li>
 </ol>
-<p><strong>Check:</strong> type "Anna" and press the button. Then change the name to "Luis" and press Enter: the new notice must replace the previous one without reloading the page.</p>
+<p>The calculation functions must receive your data by parameters and return the result with <code>return</code>, without modifying the original vectors or writing on the page.</p>
+<p><strong>Check:</strong> for initial data, the plugin is <code>0.0.63.255</code>, the network is <code>172.16.0.0</code> and the host part is <code>0.0.25.10</code>. Reuses the same functions with IP <code>192.168.1.130</code> and mask <code>255.255.255.128</code>: you must obtain network <code>192.168.1.128</code> and host part <code>0.0.0.2</code>.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
 <div class="activity-card activity-callout" id="actividad-complementaria-9-1">
 <p><strong>2.35. Invoking a presentation function</strong></p>
@@ -1589,7 +1555,7 @@ iniciar();</code></pre>
 <p><strong>Check:</strong> It explains why defining a function does not execute your body and distinguishes replacing the text from accumulating it.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
-<h3 id="sec8_7">8.7. Arrow Functions</h3>
+<h3 id="sec8_6">8.6. Arrow Functions</h3>
 <p>One <strong>arrow function</strong> is another way to write a function expression. <code>=&gt;</code> between parameters and body:</p>
 <pre><code>const obtenerDoble = (numero) =&gt; {
     return numero * 2;
@@ -1667,20 +1633,117 @@ console.log(crearAviso());   // Operación completada</code></pre>
 <p>Saves four sentences in an array. A button will show a random one. Separates selection and presentation into functions. To obtain the index use <code>Math.floor(Math.random() * frases.length)</code>. Repetitions are valid.</p><p><strong>Help:</strong> <code>Math.random()</code> produces a number from 0 to less than 1; <code>Math.floor()</code> round down.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
+<h3 id="sec8_7">8.7. Functions with a variable number of arguments</h3>
+<p>In a function, a <strong>rest parameter</strong> is written with three points in front of his name, as <code>...precios</code>. Collects in an array arguments that have not been assigned to the above parameters. Thus, the same function can receive a variable number of arguments.</p>
+<p>For example, a purchase may include one, two or many products. <code>...precios</code> We can add all your prices without creating a different function for each quantity:</p>
+<pre><code>function calcularTotal(...precios) {
+    let total = 0;
+    for (const precio of precios) {
+        total += precio;
+    }
+    return total;
+}
+
+console.log(calcularTotal(12, 8));     // 20
+console.log(calcularTotal(12, 8, 5));  // 25
+console.log(calcularTotal());         // 0</code></pre>
+<p>On the second call, <code>precios</code> contains <code>[12, 8, 5]</code>. If we do not pass arguments, it contains an empty array and this function returns <code>0</code>. The example presupposes numerical prices.</p>
+<p>We can combine fixed parameters with a rest, but <strong>the rest must be the last and there can only be one</strong>:</p>
+<pre><code>function calcularTotalConEnvio(envio, ...precios) {
+    return envio + calcularTotal(...precios);
+}
+
+console.log(calcularTotalConEnvio(3, 12, 8)); // 23</code></pre>
+<div class="didactic-note">
+<p><strong>The same three points, two uses:</strong> in the parameters, <code>...precios</code> collects arguments in an array (<em>rest</em>); in a call, it distributes them as individual arguments (<em>spread</em>).</p>
+<pre><code>const cesta = [12, 8, 5];
+console.log(calcularTotal(...cesta)); // Equivale a calcularTotal(12, 8, 5).</code></pre>
+</div>
+<p>Arrow functions also support rest parameters, for example <code>const contar = (...datos) =&gt; datos.length;</code>.</p>
+<div class="didactic-note">
+<p><strong>What is it <code>arguments</code>?</strong> It is an object automatically available within the traditional functions that contains the arguments received in each call. They are consulted by position: <code>arguments[0]</code> is the first and <code>arguments.length</code> indicates how many have been received.</p>
+<pre><code>function mostrarArgumentos() {
+    console.log(arguments[0]);     // "Ana"
+    console.log(arguments.length); // 2
+}
+
+mostrarArgumentos("Ana", 25);</code></pre>
+<p>Although it looks like an array, <code>arguments</code> is not an array. A rest parameter is and allows giving a descriptive name to the data, such as <code>...precios</code>. The arrow functions do not have a <code>arguments</code> own; to collect your arguments we use rest.</p>
+</div>
 </section>
 <section aria-labelledby="sec9">
 <h2 id="sec9"><i aria-hidden="true" class="fa-solid fa-sitemap"></i> 9. The DOM: access and modify the page</h2>
-<p>The <strong>DOM</strong> (<em>Document Object Model</em>) represents the document by means of an object tree. JavaScript can consult those objects and modify the content of the page. In this section the changes will be made when the script is executed; the response to user actions will be studied with the events.</p>
-<h3 id="sec9_1">9.1. The document as an object tree</h3>
+<p>The <strong>DOM</strong> (<em>Document Object Model</em>) represents the document using an object tree. JavaScript can consult those objects and modify the content of the page. We will start with an interactive greeting and then see how to select and modify elements. Events are developed in section 10.</p>
+<h3 id="sec9_1">9.1. Hello World (now yes)</h3>
+<p>So far we have used debugging tools such as <code>console.log()</code> to display results and check our programs. However, the console is not the usual interface for the user of a website.</p>
+<p>In the browser, JavaScript allows you to interact with HTML and CSS styles: read the data from a form, modify texts, add or delete items and change their appearance. These actions can respond to what the user does, such as pressing a button or writing in a field. Thus, the result appears on the page itself.</p>
+<p>We will apply this way of working: the user will enter his name and, when clicking "Say hello" or "Enter", JavaScript will write <strong>«Hello » followed by the name</strong> We will continue to use the console to debug.</p>
+<h4 id="sec9_1_1">Consider an example</h4>
+<p>Create <code>index.html</code> y <code>saludo.js</code> in the same folder. <code>index.html</code> writes:</p>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Hola Mundo (ahora sí)&lt;/title&gt;
+    &lt;script src="saludo.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Vamos a saludarte&lt;/h1&gt;
+    &lt;form id="formularioSaludo"&gt;
+        &lt;label for="nombre"&gt;Tu nombre:&lt;/label&gt;
+        &lt;input type="text" id="nombre" autocomplete="given-name"&gt;
+        &lt;button type="submit"&gt;Saludar&lt;/button&gt;
+    &lt;/form&gt;
+    &lt;p id="saludo"&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p><code>defer</code> executes the script after reading the HTML. The field collects the name and the empty paragraph will show the greeting.</p>
+<div class="didactic-note">
+<p><strong>Accessibility: announcing changes</strong></p>
+<p>When JavaScript updates the greeting, a person using a screen reader may not perceive the change. <code>aria-live="polite"</code> to the paragraph from the initial HTML so that the reader announces the new text when he finishes what he is reading, without interrupting.</p>
+<pre><code>&lt;p id="saludo" aria-live="polite"&gt;&lt;/p&gt;</code></pre>
+<p>This attribute does not change the aspect of the paragraph nor does it cause the page to speak for itself.</p>
+</div>
+<h4 id="sec9_1_2">Prepare the interaction</h4>
+<p>In <code>saludo.js</code>, <code>iniciar()</code> group the preparation and maintain its local variables. We call it once at the end:</p>
+<pre><code>"use strict";
+
+function iniciar() {
+    const campoNombre = document.querySelector("#nombre");
+    const formulario = document.querySelector("#formularioSaludo");
+    const salida = document.querySelector("#saludo");
+
+    function saludar(evento) {
+        evento.preventDefault(); // Evita que el formulario recargue la página.
+        const nombre = campoNombre.value;
+        salida.textContent = "Hola " + nombre;
+    }
+
+    formulario.addEventListener("submit", saludar);
+}
+
+iniciar();</code></pre>
+<h4 id="sec9_1_3">Search, listen and respond</h4>
+<aside class="function-card" id="ficha-hola-queryselector">
+<p class="function-signature"><code>document.querySelector(selector)</code></p>
+<p>Returns the first element that matches a CSS selector, or <code>null</code> if it doesn't exist. <code>"#nombre"</code> select the item with <code>id="nombre"</code>: here the <code>#</code> It's necessary.</p>
+</aside>
+<ul>
+<li><code>addEventListener("submit", saludar)</code> records the function to respond to the form submission, with the button or with Enter.</li>
+<li><code>value</code> read the name and <code>textContent</code> write the greeting in the paragraph.</li>
+</ul>
+<div class="didactic-note"><p>We passed. <code>saludar</code> without parenthesis for the browser to execute when the form is sent.</p></div>
+<h3 id="sec9_2">9.2. Document as an object tree</h3>
 <p>The object <code>document</code> represents the document loaded. HTML elements, such as a paragraph or input field, are tree nodes and have properties and methods. For example, <code>textContent</code> is a property that contains text and <code>querySelector()</code> It's a search method.</p>
-<p>Use this test page with a file <code>ej10-seleccionarElementos.js</code> in the same folder. It contains the necessary elements for the following examples:</p>
+<p>Use this test page with a file <code>dom.js</code> in the same folder. It contains the necessary elements for the following examples:</p>
 <pre data-example="dom-html"><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="es"&gt;
 &lt;head&gt;
     &lt;meta charset="UTF-8"&gt;
     &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
     &lt;title&gt;Pruebas con el DOM&lt;/title&gt;
-    &lt;script src="ej10-seleccionarElementos.js" defer&gt;&lt;/script&gt;
+    &lt;script src="dom.js" defer&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
     &lt;h1 id="titulo"&gt;Pruebas con el DOM&lt;/h1&gt;
@@ -1690,7 +1753,7 @@ console.log(crearAviso());   // Operación completada</code></pre>
     &lt;p id="resultado"&gt;&lt;/p&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-<p>The main structure is <code>document → html → head / body</code>. Within <code>body</code> the title, paragraphs and controls are found. <code>defer</code> allows you to run <code>ej10-seleccionarElementos.js</code> when these elements already exist.</p>
+<p>The main structure is <code>document → html → head / body</code>. Within <code>body</code> the title, paragraphs and controls are found. <code>defer</code> allows you to run <code>dom.js</code> when these elements already exist.</p>
 <div class="activity-card activity-callout" id="actividad-jsinfo-arbol">
 <p><strong>2.41. Recognize the document tree</strong></p>
 <p>Create a document with this content in the body. Draw your element tree and identify the parent and siblings of the second item in the list. Locate those elements in the browser inspector.</p><pre><code>&lt;div&gt;Participantes&lt;/div&gt;
@@ -1700,7 +1763,7 @@ console.log(crearAviso());   // Operación completada</code></pre>
 &lt;/ul&gt;</code></pre>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
-<h3 id="sec9_2">9.2. Selection of items</h3>
+<h3 id="sec9_3">9.3. Selection of items</h3>
 <p>The DOM offers specific methods for searching by identifier, class or tag. Names distinguish upper and lower case:</p>
 <aside aria-label="Function sheet: document.getElementById(id)" class="function-card" id="ficha-funcion-14">
 <p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Function or method sheet</p>
@@ -1747,7 +1810,7 @@ console.log(aviso.textContent);
 console.log(parrafos.length); // 2</code></pre>
 <p><code>querySelector()</code> returns the first match or <code>null</code>. <code>querySelectorAll()</code> returns a <code>NodeList</code> Static: does not automatically update if matches are added or removed later. When you do not find items, it returns an empty collection.</p>
 <div class="didactic-note"><p><strong>Which one to use today?</strong> Methods <code>getElementById()</code>, <code>getElementsByClassName()</code> y <code>getElementsByTagName()</code> In modern code it is common to use <code>querySelector()</code> y <code>querySelectorAll()</code> for their flexibility; they will be the general option of this course. To search for a specific identifier, <code>getElementById()</code> remains a direct and appropriate option.</p></div>
-<p>Test each fragment separately on the 9.1 page. Save the references you're going to reuse and check that an item exists before accessing its properties.</p>
+<p>Test each fragment separately on the page in paragraph 9.2. Save the references you are going to reuse and check that an item exists before accessing its properties.</p>
 <div class="activity-card activity-callout" id="actividad-jsinfo-seleccion">
 <p><strong>2.42. Locate elements of a form</strong></p>
 <p>Prepare this HTML and write a selection to get: the form by its identifier, all its tags <code>label</code>, your first <code>input</code> and the mail field. Check the console which returns each search.</p><pre><code>&lt;form id="busqueda"&gt;
@@ -1758,7 +1821,7 @@ console.log(parrafos.length); // 2</code></pre>
 &lt;/form&gt;</code></pre>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
-<h3 id="sec9_3">9.3. Read and modify the content</h3>
+<h3 id="sec9_4">9.4. Read and modify the content</h3>
 <p>The property <code>textContent</code> allows reading or replacing the text of an element:</p>
 <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
 console.log(mensaje.textContent); // Texto inicial
@@ -1795,7 +1858,7 @@ mensaje.outerHTML = '&lt;div id="mensaje" class="aviso"&gt;Nuevo elemento&lt;/di
 <p><strong>Check:</strong> It explains why only one of the first paragraphs shows boldness and what happens when you cancel the dialog.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
-<h3 id="sec9_4">9.4. Read fields and convert your data</h3>
+<h3 id="sec9_5">9.5. Read fields and convert your data</h3>
 <p>In an entry field, <code>value</code> allows reading or setting the current value. Your reading returns a string, also when the field is <code>type="number"</code>.</p>
 <pre data-example="dom-js"><code>const campo = document.querySelector("#unidades");
 const resultado = document.querySelector("#resultado");
@@ -1820,7 +1883,7 @@ resultado.textContent = `El doble es ${unidades * 2}`;</code></pre>
 <p>Prepares three fields with accommodation, food and leisure expenses. When loading, converts its values and shows the sum by <code>textContent</code>. Test 60, 25 and 15: total 100.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
-<h3 id="sec9_5">9.5. CSS Styles and Classes</h3>
+<h3 id="sec9_6">9.6. CSS Styles and Classes</h3>
 <p><code>style</code> modifies online styles. Properties with CSS scripts are written in <em>camelCase</em> when accessing by a point:</p>
 <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
 mensaje.style.backgroundColor = "#e0f2fe";
@@ -1876,7 +1939,7 @@ mensaje.classList.toggle("destacado"); // La añade de nuevo.</code></pre>
 <p><strong>Check:</strong> The final appearance must match in both versions and the base class must be preserved.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
-<h3 id="sec9_6">9.6. Check that an item exists</h3>
+<h3 id="sec9_7">9.7. Check that an item exists</h3>
 <p>A search without matches returns <code>null</code>. Try to use a property of that value, such as <code>null.textContent</code>, causes a <code>TypeError</code>. Check the selector, HTML and time of execution.</p>
 <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
 
@@ -1895,7 +1958,7 @@ if (mensaje !== null) {
 </div>
 <div class="activity-card activity-callout" id="actividad-jsinfo-busqueda-vacia">
 <p><strong>2.51. Check a search without results</strong></p>
-<p>On the 9.1 test page, look for a non-existent identifier. Shows the search result and avoids accessing <code>textContent</code> if there is no element. Repeat with a valid identifier and check that the text is then updated.</p>
+<p>On the test page in paragraph 9.2, look for a non-existent identifier. Shows the search result and avoids accessing <code>textContent</code> if there is no element. Repeat with a valid identifier and check that the text is then updated.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-6-6">
@@ -1994,7 +2057,7 @@ campo.addEventListener("change", confirmarCambio);</code></pre>
 <p>Assign a value from JavaScript by <code>campo.value = "Ana"</code> does not automatically trigger these events. If the program modifies the data, you must also update the presentation when applicable.</p>
 <div class="activity-card activity-callout" id="actividad-jsinfo-deposito-eventos">
 <p><strong>2.57. Update a calculation when editing</strong></p>
-<p>Retakes the calculation of capital, percentage and years in paragraph 9.4. Updates the result by <code>input</code> every time you change a field. Also check the text paste. <code>change</code> to compare when it is fired; do not show a calculation if a data is missing.</p>
+<p>Retakes the calculation of capital, percentage and years in paragraph 9.5. Updates the result by <code>input</code> every time you change a field. Also check the text paste. <code>change</code> to compare when it is fired; do not show a calculation if a data is missing.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (open the form in a new tab)" class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-8-3">
@@ -2109,7 +2172,7 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
 for (const parrafo of parrafos) {
     parrafo.classList.add("destacado");
 }</code></pre>
-<p>Use the 9.1 test page as support material; the selection of elements and classes are explained in 9.2 and 9.5. This code adds the class <code>destacado</code> to each paragraph. The stylesheet must contain the class for the change to be visible. If the selection is empty, the block is not executed.</p>
+<p>Use the test page in paragraph 9.2 as support material; the selection of elements and classes are explained in paragraphs 9.3 and 9.6. This code adds the class <code>destacado</code> to each paragraph. The stylesheet must contain the class for the change to be visible. If the selection is empty, the block is not executed.</p>
 <p><code>const parrafo</code> creates a variable for each iteration: the one from the previous iteration is not reassigned. To navigate these elements is used <code>for...of</code>; <code>for...in</code> It runs property names and has another purpose.</p>
 <div class="activity-card activity-callout" id="actividad-jsinfo-recorrer">
 <p><strong>2.65. Tour and mark items</strong></p>
