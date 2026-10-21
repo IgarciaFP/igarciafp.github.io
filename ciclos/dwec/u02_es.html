@@ -130,7 +130,6 @@
             <li><a href="#sec8_5" class="subsection-link">8.5. Funciones como valores y expresiones de función</a></li>
             <li><a href="#sec8_6" class="subsection-link">8.6. Hola Mundo (ahora sí)</a></li>
             <li><a href="#sec8_7" class="subsection-link">8.7. Funciones flecha</a></li>
-            <li><a href="#sec8_8" class="subsection-link">8.8. Funciones pequeñas y conexión con los eventos</a></li>
             <li><a href="#sec9">9. El DOM: acceder y modificar la página</a></li>
             <li><a href="#sec9_1" class="subsection-link">9.1. El documento como árbol de objetos</a></li>
             <li><a href="#sec9_2" class="subsection-link">9.2. Selección de elementos</a></li>
@@ -1814,28 +1813,6 @@ console.log(crearAviso());   // Operación completada</code></pre>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec8_8">8.8. Funciones pequeñas y conexión con los eventos</h3>
-                <p>Una función debe tener una responsabilidad clara y un nombre que la exprese. Separar la obtención de un resultado de su presentación permite utilizarlo tanto en la consola como en el DOM.</p>
-                <p>Como adelanto de la conexión con los eventos, usa la página de prueba del apartado 10.1 y sustituye <code>ej20-personalizarLlamada.js</code> por este ejemplo. Una función construye el saludo y el manejador lo muestra al activar el botón:</p>
-                <aside class="function-card" id="ficha-ejemplo-15"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>crearSaludo(nombre)</code></p><p>Construye un saludo sin consultar ni modificar el documento.</p><p><strong>Parámetros:</strong> nombre: cadena, que se limpia con trim().</p><p><strong>Devuelve:</strong> Una cadena con el saludo o con la indicación de escribir un nombre.</p></aside>
-                                <pre data-example="functions-dom"><code>const boton = document.querySelector("#saludar");
-const campo = document.querySelector("#nombre");
-const mensaje = document.querySelector("#mensaje");
-
-function crearSaludo(nombre) {
-    const nombreLimpio = nombre.trim();
-    if (nombreLimpio === "") {
-        return "Escribe un nombre";
-    }
-    return `Hola, ${nombreLimpio}`;
-}
-
-boton.addEventListener("click", () =&gt; {
-    mensaje.textContent = crearSaludo(campo.value);
-});</code></pre>
-                <p><code>crearSaludo()</code> recibe una cadena y devuelve otra sin consultar el documento. La función flecha se pasa como manejador y se ejecuta cuando ocurre <code>click</code>; en ese momento lee el campo y actualiza el párrafo.</p>
-                <p>Para una respuesta muy breve puede utilizarse una función flecha en el registro. Si el manejador crece o se reutiliza, conviene darle un nombre. La claridad debe guiar la elección.</p>
-                
                 <div class="resource-card expansion-card expansion-purple">
                     <div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Funciones y funciones flecha</span><span class="resource-badge badge-reading">Ampliación</span></div>
                     <p class="resource-description">Referencias sobre parámetros, retorno, ámbito y las diferencias entre las formas de definir funciones. La recursividad y los cierres se reservan para más adelante.</p>
