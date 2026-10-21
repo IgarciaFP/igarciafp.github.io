@@ -1801,7 +1801,34 @@ console.log(crearAviso());   // Operación completada</code></pre>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                </section>
+                <h4 id="funciones-argumentos-variables">Funciones con un número variable de argumentos</h4>
+                <p>Una compra puede incluir uno, dos o muchos productos. Para sumar sus precios sin definir una función distinta para cada cantidad, usamos un <strong>parámetro rest</strong>: <code>...precios</code> recoge los argumentos recibidos en un array.</p>
+                <pre><code>function calcularTotal(...precios) {
+    let total = 0;
+    for (const precio of precios) {
+        total += precio;
+    }
+    return total;
+}
+
+console.log(calcularTotal(12, 8));     // 20
+console.log(calcularTotal(12, 8, 5));  // 25
+console.log(calcularTotal());         // 0</code></pre>
+                <p>En la segunda llamada, <code>precios</code> contiene <code>[12, 8, 5]</code>. Si no pasamos argumentos, contiene un array vacío y esta función devuelve <code>0</code>. El ejemplo presupone precios numéricos.</p>
+                <p>Podemos combinar parámetros fijos con uno rest, pero <strong>el rest debe ser el último y solo puede haber uno</strong>:</p>
+                <pre><code>function calcularTotalConEnvio(envio, ...precios) {
+    return envio + calcularTotal(...precios);
+}
+
+console.log(calcularTotalConEnvio(3, 12, 8)); // 23</code></pre>
+                <div class="didactic-note">
+                    <p><strong>Los mismos tres puntos, dos usos:</strong> en los parámetros, <code>...precios</code> recoge argumentos en un array (<em>rest</em>); en una llamada, los reparte como argumentos individuales (<em>spread</em>).</p>
+                    <pre><code>const cesta = [12, 8, 5];
+console.log(calcularTotal(...cesta)); // Equivale a calcularTotal(12, 8, 5).</code></pre>
+                </div>
+                <p>Las funciones flecha también admiten parámetros rest, por ejemplo <code>const contar = (...datos) =&gt; datos.length;</code>. Las funciones tradicionales disponen además de <code>arguments</code>, pero rest proporciona un array explícito y también funciona con flechas, que no tienen un <code>arguments</code> propio.</p>
+
+            </section>
 
             <section aria-labelledby="sec9">
                 <h2 id="sec9"><i class="fa-solid fa-sitemap" aria-hidden="true"></i> 9. El DOM: acceder y modificar la página</h2>
