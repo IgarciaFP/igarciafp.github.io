@@ -121,20 +121,15 @@
             <li><a href="#sec6_2" class="subsection-link">6.2. if, else if y else</a></li>
             <li><a href="#sec6_3" class="subsection-link">6.3. switch: alternativas según un valor</a></li>
             <li><a href="#sec6_4" class="subsection-link">6.4. Operador ternario</a></li>
-            <li><a href="#sec6_5" class="subsection-link">6.5. Repeticiones con for, while y do...while</a></li>
-            
-            <li><a href="#sec7">7. Hola Mundo (ahora sí)</a></li>
-            <li><a href="#sec7_1" class="subsection-link">7.1. Preparar el formulario</a></li>
-            <li><a href="#sec7_2" class="subsection-link">7.2. Organizar el script en una función global</a></li>
-            <li><a href="#sec7_3" class="subsection-link">7.3. Buscar, escuchar y responder</a></li>
-            <li><a href="#sec8">8. Funciones: organizar y reutilizar código</a></li>
-            <li><a href="#sec8_1" class="subsection-link">8.1. Definición e invocación</a></li>
-            <li><a href="#sec8_2" class="subsection-link">8.2. Parámetros, argumentos y valores predeterminados</a></li>
-            <li><a href="#sec8_3" class="subsection-link">8.3. Devolver resultados con return</a></li>
-            <li><a href="#sec8_4" class="subsection-link">8.4. Ámbito local y variables externas</a></li>
-            <li><a href="#sec8_5" class="subsection-link">8.5. Funciones como valores y expresiones de función</a></li>
-            <li><a href="#sec8_6" class="subsection-link">8.6. Funciones flecha</a></li>
-            <li><a href="#sec8_7" class="subsection-link">8.7. Funciones pequeñas y conexión con los eventos</a></li>
+            <li><a href="#sec6_5" class="subsection-link">6.5. Repeticiones con for, while y do...while</a></li>            <li><a href="#sec8">8. Funciones: organizar y reutilizar código</a></li>
+            <li><a href="#sec8_1" class="subsection-link">8.1. Hola Mundo (ahora sí)</a></li>
+            <li><a href="#sec8_2" class="subsection-link">8.2. Definición e invocación</a></li>
+            <li><a href="#sec8_3" class="subsection-link">8.3. Parámetros, argumentos y valores predeterminados</a></li>
+            <li><a href="#sec8_4" class="subsection-link">8.4. Devolver resultados con return</a></li>
+            <li><a href="#sec8_5" class="subsection-link">8.5. Ámbito local y variables externas</a></li>
+            <li><a href="#sec8_6" class="subsection-link">8.6. Funciones como valores y expresiones de función</a></li>
+            <li><a href="#sec8_7" class="subsection-link">8.7. Funciones flecha</a></li>
+            <li><a href="#sec8_8" class="subsection-link">8.8. Funciones pequeñas y conexión con los eventos</a></li>
             <li><a href="#sec9">9. El DOM: acceder y modificar la página</a></li>
             <li><a href="#sec9_1" class="subsection-link">9.1. El documento como árbol de objetos</a></li>
             <li><a href="#sec9_2" class="subsection-link">9.2. Selección de elementos</a></li>
@@ -1513,12 +1508,18 @@ for (let fila = 1; fila &lt;= 2; fila++) {
 
             </section>
 
-            <section aria-labelledby="sec7">
-                <h2 id="sec7"><i class="fa-solid fa-hand-pointer" aria-hidden="true"></i> 7. Hola Mundo (ahora sí)</h2>
+            
+
+            <section aria-labelledby="sec8">
+                <h2 id="sec8"><i class="fa-solid fa-cubes" aria-hidden="true"></i> 8. Funciones: organizar y reutilizar código</h2>
+                <p class="didactic-note">Las prácticas que utilizan elementos de la página o botones se completan con el DOM del apartado 9 y los eventos del apartado 10. Puedes comenzar por la lógica de las funciones y retomar después su conexión con la interfaz.</p>
+                <p>Una <strong>función</strong> agrupa instrucciones para realizar una tarea. Puede recibir datos y devolver un resultado. Permite reutilizar una operación y separar el programa en partes comprensibles. Aquí se estudiará cómo definirlas y utilizarlas; en el apartado 10 se aplicarán como manejadores de eventos.</p>
+
+                <h3 id="sec8_1">8.1. Hola Mundo (ahora sí)</h3>
                 <p>Hasta ahora hemos usado la consola y los diálogos para practicar. En una página web, el usuario escribe en controles, pulsa botones y recibe la respuesta en la propia página. Vamos a conectar esas tres acciones: <strong>introducir un nombre → pulsar «Saludar» o Intro → leer «Hola » seguido del nombre</strong>.</p>
                 <p>Esta es una forma habitual de trabajar con JavaScript en una interfaz web: el programa responde a eventos y modifica el documento. El usuario no necesita abrir la consola; la consola sigue siendo una herramienta del desarrollador para depurar.</p>
 
-                <h3 id="sec7_1">7.1. Preparar el formulario</h3>
+                <h4 id="sec8_1_1">8.1.1. Preparar el formulario</h4>
                 <p>Crea una carpeta con dos archivos, <code>index.html</code> y <code>saludo.js</code>. El HTML define la entrada, el botón y el lugar donde aparecerá la respuesta:</p>
                 <pre><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="es"&gt;
@@ -1542,7 +1543,7 @@ for (let fila = 1; fila &lt;= 2; fila++) {
                 <p><strong>¿Qué significa <code>aria-live="polite"</code>?</strong> Un lector de pantalla es una herramienta que lee en voz alta el contenido de la página. Este atributo le indica que anuncie el nuevo saludo cuando cambie el párrafo. <code>polite</code> significa que espere a terminar lo que esté leyendo, sin interrumpir. No cambia el aspecto del párrafo ni hace que la página hable por sí sola.</p>
                 <p><code>defer</code> hace que el archivo externo se ejecute cuando el navegador haya terminado de leer el HTML. Así los elementos ya existen al buscarlos. El botón es <code>type="submit"</code>: al pulsarlo, o al pulsar Intro dentro del campo, el formulario genera el evento <code>submit</code>. Escucharemos ese evento para mostrar el saludo sin recargar la página.</p>
 
-                <h3 id="sec7_2">7.2. Organizar el script en una función global</h3>
+                <h4 id="sec8_1_2">8.1.2. Organizar el script en una función global</h4>
                 <p>Escribe este código en <code>saludo.js</code>. Declaramos una función global llamada <code>iniciar()</code> y la llamamos una sola vez al final. Dentro quedan las referencias a los elementos y la función que atenderá el envío del formulario.</p>
                 <pre><code>"use strict";
 
@@ -1563,9 +1564,9 @@ function iniciar() {
 iniciar();</code></pre>
                 <p>El navegador pasa a <code>saludar(evento)</code> un objeto con información sobre el envío. <code>evento.preventDefault()</code> evita el envío convencional y la navegación que podría recargar la página; el resto de la función continúa y escribe el saludo. Escuchamos <code>submit</code> en el formulario para atender el botón y la tecla Intro con el mismo código.</p>
                 <p><code>iniciar()</code> es global porque está declarada fuera de cualquier otra función en este script clásico. Agrupa la preparación de la página y mantiene sus variables en un ámbito local. Es una organización sencilla para esta práctica; no es obligatorio que todas las aplicaciones usen una única función global.</p>
-                <p>La función interior <code>saludar()</code> puede utilizar las variables de <code>iniciar()</code>. Se ejecuta al enviar el formulario con el botón o con Intro: lee el nombre en ese momento y sustituye el texto del párrafo. Las funciones se desarrollan en el siguiente apartado.</p>
+                <p>La función interior <code>saludar()</code> puede utilizar las variables de <code>iniciar()</code>. Se ejecuta al enviar el formulario con el botón o con Intro: lee el nombre en ese momento y sustituye el texto del párrafo. En los siguientes subapartados veremos cómo definir y utilizar funciones.</p>
 
-                <h3 id="sec7_3">7.3. Buscar, escuchar y responder</h3>
+                <h4 id="sec8_1_3">8.1.3. Buscar, escuchar y responder</h4>
                 <aside class="function-card" id="ficha-hola-getelementbyid">
                     <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
                     <p class="function-signature"><code>document.getElementById(id)</code></p>
@@ -1588,18 +1589,9 @@ iniciar();</code></pre>
                 </ol>
                 <div class="didactic-note"><p><strong>¿Por qué se escribe <code>saludar</code> sin paréntesis?</strong> Pasamos la función para que el navegador la llame después. Con <code>saludar()</code> la ejecutaríamos al cargar el script y pasaríamos su resultado, no la función que debe atender el envío.</p></div>
 
-            </section>
-
-            <section aria-labelledby="sec8">
-                <h2 id="sec8"><i class="fa-solid fa-cubes" aria-hidden="true"></i> 8. Funciones: organizar y reutilizar código</h2>
-                <p class="didactic-note">Las prácticas que utilizan elementos de la página o botones se completan con el DOM del apartado 9 y los eventos del apartado 10. Puedes comenzar por la lógica de las funciones y retomar después su conexión con la interfaz.</p>
-                <p>Una <strong>función</strong> agrupa instrucciones para realizar una tarea. Puede recibir datos y devolver un resultado. Permite reutilizar una operación y separar el programa en partes comprensibles. Aquí se estudiará cómo definirlas y utilizarlas; en el apartado 10 se aplicarán como manejadores de eventos.</p>
-                <p>Ejecuta cada ejemplo por separado en <code>ej20-personalizarLlamada.js</code> para evitar declaraciones repetidas.</p>
-
-                <h3 id="sec8_1">8.1. Definición e invocación</h3>
+                <h3 id="sec8_2">8.2. Definición e invocación</h3>
                 <p>Una declaración de función utiliza <code>function</code>, un nombre, una lista de parámetros entre paréntesis y un cuerpo entre llaves:</p>
-                <aside class="function-card" id="ficha-ejemplo-6"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>mostrarInicio()</code></p><p>Muestra el mensaje de inicio de sesión en la consola.</p><p><strong>Parámetros:</strong> No recibe parámetros.</p><p><strong>Devuelve:</strong> undefined.</p></aside>
-                                <pre><code>function mostrarInicio() {
+                <pre><code>function mostrarInicio() {
     console.log("Comienza la sesión");
 }
 
@@ -1617,7 +1609,7 @@ mostrarInicio();</code></pre>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec8_2">8.2. Parámetros, argumentos y valores predeterminados</h3>
+                <h3 id="sec8_3">8.3. Parámetros, argumentos y valores predeterminados</h3>
                 <p>Los <strong>parámetros</strong> son los nombres que aparecen en la definición. Los <strong>argumentos</strong> son los valores que se proporcionan al llamar:</p>
                 <aside class="function-card" id="ficha-ejemplo-7"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>saludar(nombre, saludo = &quot;Hola&quot;)</code></p><p>Muestra un saludo personalizado. Es una nueva versión de saludar, independiente del ejemplo del apartado 4.</p><p><strong>Parámetros:</strong> nombre: cadena con el nombre. saludo: cadena opcional; su valor predeterminado es &quot;Hola&quot;.</p><p><strong>Devuelve:</strong> undefined; muestra el mensaje, pero no lo devuelve.</p></aside>
                                 <pre><code>function saludar(nombre, saludo = "Hola") {
@@ -1644,7 +1636,7 @@ saludar("Luis", "Buenos días"); // Buenos días, Luis</code></pre>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec8_3">8.3. Devolver resultados con return</h3>
+                <h3 id="sec8_4">8.4. Devolver resultados con return</h3>
                 <p><code>return</code> termina la ejecución de la función y entrega un valor al código que la llamó. Ese valor puede guardarse o utilizarse en otra expresión:</p>
                 <aside class="function-card" id="ficha-ejemplo-9"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>calcularArea(base, altura)</code></p><p>Calcula el área de un rectángulo.</p><p><strong>Parámetros:</strong> base y altura: números que representan sus dimensiones.</p><p><strong>Devuelve:</strong> El número obtenido al multiplicar base por altura.</p></aside>
                                 <pre><code>function calcularArea(base, altura) {
@@ -1686,7 +1678,7 @@ console.log(resultado);          // undefined</code></pre>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec8_4">8.4. Ámbito local y variables externas</h3>
+                <h3 id="sec8_5">8.5. Ámbito local y variables externas</h3>
                 <p>Los parámetros y las variables declaradas dentro de una función son locales a ella. La función puede acceder a variables de su ámbito exterior:</p>
                 <aside class="function-card" id="ficha-ejemplo-12"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>crearPresentacion(nombre)</code></p><p>Construye una presentación utilizando también la variable externa centro.</p><p><strong>Parámetros:</strong> nombre: cadena con el nombre de la persona.</p><p><strong>Devuelve:</strong> Una cadena con la presentación.</p></aside>
                                 <pre><code>const centro = "IES Ejemplo";
@@ -1721,7 +1713,7 @@ console.log(estado);</code></pre>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec8_5">8.5. Funciones como valores y expresiones de función</h3>
+                <h3 id="sec8_6">8.6. Funciones como valores y expresiones de función</h3>
                 <p>Las funciones también son valores. Se pueden guardar en una variable y pasar como argumento, como ocurre al registrar un manejador:</p>
                 <aside class="function-card" id="ficha-ejemplo-13"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>obtenerTriple(numero)</code></p><p>Calcula el triple de un número.</p><p><strong>Parámetros:</strong> numero: número que se quiere triplicar.</p><p><strong>Devuelve:</strong> El producto de numero por 3.</p></aside>
                                 <pre><code>const obtenerTriple = function (numero) {
@@ -1761,7 +1753,7 @@ console.log(aplicarTransformacion(5, function (valor) {
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec8_6">8.6. Funciones flecha</h3>
+                <h3 id="sec8_7">8.7. Funciones flecha</h3>
                 <p>Una <strong>función flecha</strong> es otra forma de escribir una expresión de función. Utiliza <code>=&gt;</code> entre los parámetros y el cuerpo:</p>
                 <pre><code>const obtenerDoble = (numero) =&gt; {
     return numero * 2;
@@ -1824,7 +1816,7 @@ console.log(crearAviso());   // Operación completada</code></pre>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec8_7">8.7. Funciones pequeñas y conexión con los eventos</h3>
+                <h3 id="sec8_8">8.8. Funciones pequeñas y conexión con los eventos</h3>
                 <p>Una función debe tener una responsabilidad clara y un nombre que la exprese. Separar la obtención de un resultado de su presentación permite utilizarlo tanto en la consola como en el DOM.</p>
                 <p>Como adelanto de la conexión con los eventos, usa la página de prueba del apartado 10.1 y sustituye <code>ej20-personalizarLlamada.js</code> por este ejemplo. Una función construye el saludo y el manejador lo muestra al activar el botón:</p>
                 <aside class="function-card" id="ficha-ejemplo-15"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>crearSaludo(nombre)</code></p><p>Construye un saludo sin consultar ni modificar el documento.</p><p><strong>Parámetros:</strong> nombre: cadena, que se limpia con trim().</p><p><strong>Devuelve:</strong> Una cadena con el saludo o con la indicación de escribir un nombre.</p></aside>
