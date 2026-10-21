@@ -126,7 +126,7 @@ Object.assign(texts,{
  groups:['Revisa cada grupo y sepáralos con espacios.','Check each group and separate them with spaces.'],
  wrong:['Revisa este paso: el resultado no coincide.','Check this step: the result does not match.'],
  changed:['Has cambiado respuestas: vuelve a comprobar este bloque.','Answers changed: check this block again.'],
- blocks:[` de ${sections.length} bloques comprobados y completos. Las explicaciones requieren revisión.`,` of ${sections.length} blocks checked and complete. Explanations require review.`],
+ blocks:[` de ${sections.length} preguntas respondidas. Pendientes de corrección docente.`,` of ${sections.length} questions answered. Awaiting teacher marking.`],
  hits:['respuestas cerradas correctas','correct closed answers'],errors:['por corregir','to correct'],
  pendingSteps:['pasos pendientes','missing steps'],explanations:['explicaciones para revisión','explanations for review']
 });
@@ -195,7 +195,7 @@ function normalized(v){return v.trim().toUpperCase().replace(/\s+/g,' ');}
 function correct(f){const v=$(f.id).value;if(!v.trim())return false;if(f.kind==='open')return null;if(f.kind==='number'){const n=numeric(v);return n!==null&&Math.abs(n-f.answer)<1e-8;}return normalized(v)===normalized(String(f.answer));}
 function hasAnswer(f){return !!$(f.id).value.trim();}
 function complete(s){return fields.filter(f=>f.section===s.id).every(f=>f.kind==='open'?hasAnswer(f):correct(f));}
-function progress(){const n=sections.filter(s=>checked[s.id]&&complete(s)).length;$('progress').value=n;$('progressText').textContent=`${n}${tr('blocks')}`;}
+function progress(){const n=sections.filter(s=>complete(s)).length;$('progress').value=n;$('progressText').textContent=`${n}${tr('blocks')}`;}
 let reportRevision=0;
 function invalidate(){reportRevision++;if($('report').value){$('report').value='';$('download').disabled=true;$('reportStatus').textContent=tr('changed');}}
 function clearFeedback(f){const el=$(f.id);el.removeAttribute('aria-invalid');el.closest('.field').classList.remove('correct','wrong');$('feedback-'+f.id).textContent='';}
