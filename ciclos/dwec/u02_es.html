@@ -123,11 +123,12 @@
             <li><a href="#sec6_4" class="subsection-link">6.4. Operador ternario</a></li>
             <li><a href="#sec6_5" class="subsection-link">6.5. Repeticiones con for, while y do...while</a></li>            <li><a href="#sec8">8. Funciones: organizar y reutilizar código</a></li>
             <li><a href="#sec8_1" class="subsection-link">8.1. Definición e invocación</a></li>
-            <li><a href="#sec8_2" class="subsection-link">8.2. Hola Mundo (ahora sí)</a></li>
-            <li><a href="#sec8_3" class="subsection-link">8.3. Parámetros, argumentos y valores predeterminados</a></li>
-            <li><a href="#sec8_4" class="subsection-link">8.4. Devolver resultados con return</a></li>
-            <li><a href="#sec8_5" class="subsection-link">8.5. Ámbito local y variables externas</a></li>
-            <li><a href="#sec8_6" class="subsection-link">8.6. Funciones como valores y expresiones de función</a></li>
+            
+            <li><a href="#sec8_2" class="subsection-link">8.2. Parámetros, argumentos y valores predeterminados</a></li>
+            <li><a href="#sec8_3" class="subsection-link">8.3. Devolver resultados con return</a></li>
+            <li><a href="#sec8_4" class="subsection-link">8.4. Ámbito local y variables externas</a></li>
+            <li><a href="#sec8_5" class="subsection-link">8.5. Funciones como valores y expresiones de función</a></li>
+            <li><a href="#sec8_6" class="subsection-link">8.6. Hola Mundo (ahora sí)</a></li>
             <li><a href="#sec8_7" class="subsection-link">8.7. Funciones flecha</a></li>
             <li><a href="#sec8_8" class="subsection-link">8.8. Funciones pequeñas y conexión con los eventos</a></li>
             <li><a href="#sec9">9. El DOM: acceder y modificar la página</a></li>
@@ -1532,81 +1533,7 @@ mostrarInicio();</code></pre>
                 <p>Definir la función no ejecuta su cuerpo. Para <strong>invocarla</strong> se escribe su nombre seguido de paréntesis. En el ejemplo se muestra el mensaje dos veces porque hay dos llamadas.</p>
                 <div class="didactic-note"><p><strong>Referenciar o ejecutar una función</strong></p><p><code>mostrarInicio</code> referencia la función; <code>mostrarInicio()</code> la ejecuta.</p></div>
 
-                <h3 id="sec8_2">8.2. Hola Mundo (ahora sí)</h3>
-                <p>En una interfaz web, JavaScript responde a las acciones del usuario y muestra el resultado en la página. Vamos a pedir un nombre y escribir <strong>«Hola » seguido del nombre</strong> al pulsar «Saludar» o Intro. La consola queda como herramienta de depuración.</p>
-
-                <h4 id="sec8_2_1">8.2.1. Preparar el formulario</h4>
-                <p>Crea <code>index.html</code> y <code>saludo.js</code> en la misma carpeta. En <code>index.html</code> escribe:</p>
-                <pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="es"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;title&gt;Hola Mundo (ahora sí)&lt;/title&gt;
-    &lt;script src="saludo.js" defer&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;h1&gt;Vamos a saludarte&lt;/h1&gt;
-    &lt;form id="formularioSaludo"&gt;
-        &lt;label for="nombre"&gt;Tu nombre:&lt;/label&gt;
-        &lt;input type="text" id="nombre" autocomplete="given-name"&gt;
-        &lt;button type="submit"&gt;Saludar&lt;/button&gt;
-    &lt;/form&gt;
-    &lt;p id="saludo" aria-live="polite"&gt;&lt;/p&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-                <p><code>defer</code> ejecuta el script después de leer el HTML. El campo recoge el nombre y el párrafo vacío mostrará el saludo. <code>aria-live="polite"</code> permite que un lector de pantalla anuncie el cambio sin interrumpir.</p>
-
-                <h4 id="sec8_2_2">8.2.2. Preparar la interacción</h4>
-                <p>En <code>saludo.js</code>, <code>iniciar()</code> agrupa la preparación y mantiene sus variables locales. La llamamos una vez al final:</p>
-                <pre><code>"use strict";
-
-function iniciar() {
-    const campoNombre = document.querySelector("#nombre");
-    const formulario = document.querySelector("#formularioSaludo");
-    const salida = document.querySelector("#saludo");
-
-    function saludar(evento) {
-        evento.preventDefault(); // Evita que el formulario recargue la página.
-        const nombre = campoNombre.value;
-        salida.textContent = "Hola " + nombre;
-    }
-
-    formulario.addEventListener("submit", saludar);
-}
-
-iniciar();</code></pre>
-
-                <h4 id="sec8_2_3">8.2.3. Buscar, escuchar y responder</h4>
-                <aside class="function-card" id="ficha-hola-queryselector">
-                    <p class="function-signature"><code>document.querySelector(selector)</code></p>
-                    <p>Devuelve el primer elemento que coincide con un selector CSS, o <code>null</code> si no existe. <code>"#nombre"</code> selecciona el elemento con <code>id="nombre"</code>: aquí el <code>#</code> es necesario.</p>
-                </aside>
-                <ul>
-                    <li><code>addEventListener("submit", saludar)</code> registra la función para responder al envío del formulario, con el botón o con Intro.</li>
-                    <li><code>value</code> lee el nombre y <code>textContent</code> escribe el saludo en el párrafo.</li>
-                </ul>
-                <div class="didactic-note"><p>Pasamos <code>saludar</code> sin paréntesis para que el navegador la ejecute cuando se envíe el formulario.</p></div>
-
-                <div class="activity-card activity-callout" id="relacion-ejercicio-2">
-                    <p><strong>2.25. Aviso de recogida de un pedido</strong></p>
-                    <p>Una tienda necesita preparar un aviso personalizado para sus clientes. Crea una página que pida el nombre y muestre: <strong>«Ana, tu pedido está listo para recoger.»</strong></p>
-                    <ol>
-                        <li>Crea un formulario con una etiqueta, un campo de texto para el nombre y un botón «Preparar aviso». Añade debajo un párrafo vacío para el resultado.</li>
-                        <li>Guarda el código en <code>aviso.js</code> y enlázalo con <code>defer</code>. Dentro de <code>iniciar()</code>, selecciona el formulario, el campo y el párrafo con <code>document.querySelector()</code>.</li>
-                        <li>Registra una función para el evento <code>submit</code> mediante <code>addEventListener()</code>. Evita la recarga con <code>preventDefault()</code>, lee el nombre con <code>value</code> y escribe el aviso con <code>textContent</code>. Llama a <code>iniciar()</code> al final del script.</li>
-                    </ol>
-                    <p><strong>Comprobación:</strong> escribe «Ana» y pulsa el botón. Después cambia el nombre por «Luis» y pulsa Intro: el nuevo aviso debe sustituir al anterior sin recargar la página.</p>
-                    <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
-
-                <div class="activity-card activity-callout" id="actividad-complementaria-9-1">
-                    <p><strong>2.26. Invocar una función de presentación</strong></p>
-                    <p>Define <code>mostrarTurnos()</code> para escribir tres turnos de una lista en un párrafo existente. Separa la definición de la llamada. Ejecuta una vez, elimina la llamada y recarga; después llama dos veces.</p>
-                    <p><strong>Comprobación:</strong> Explica por qué definir una función no ejecuta su cuerpo y distingue sustituir el texto de acumularlo.</p>
-                    <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
-                </div>
-
-                <h3 id="sec8_3">8.3. Parámetros, argumentos y valores predeterminados</h3>
+                <h3 id="sec8_2">8.2. Parámetros, argumentos y valores predeterminados</h3>
                 <p>Los <strong>parámetros</strong> son los nombres que aparecen en la definición. Los <strong>argumentos</strong> son los valores que se proporcionan al llamar:</p>
                 <aside class="function-card" id="ficha-ejemplo-7"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>saludar(nombre, saludo = &quot;Hola&quot;)</code></p><p>Muestra un saludo personalizado. Es una nueva versión de saludar, independiente del ejemplo del apartado 4.</p><p><strong>Parámetros:</strong> nombre: cadena con el nombre. saludo: cadena opcional; su valor predeterminado es &quot;Hola&quot;.</p><p><strong>Devuelve:</strong> undefined; muestra el mensaje, pero no lo devuelve.</p></aside>
                                 <pre><code>function saludar(nombre, saludo = "Hola") {
@@ -1620,20 +1547,20 @@ saludar("Luis", "Buenos días"); // Buenos días, Luis</code></pre>
                 
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-parametros">
-                    <p><strong>2.27. Probar argumentos y valores predeterminados</strong></p>
+                    <p><strong>2.25. Probar argumentos y valores predeterminados</strong></p>
                     <p>Define una función que reciba un nombre y un mensaje predeterminado y los muestre en consola. Invócala con ambos argumentos, solo con el nombre, con <code>undefined</code> y con <code>""</code> como segundo argumento. Explica cuándo se aplica el valor predeterminado.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-9-2">
-                    <p><strong>2.28. Recuadro configurable</strong></p>
+                    <p><strong>2.26. Recuadro configurable</strong></p>
                     <p>Escribe <code>configurarRecuadro(ancho, alto = 60, color = &quot;blue&quot;)</code> para aplicar dimensiones en píxeles y color a un div existente. Usa los parámetros, sin pedir datos dentro de la función.</p>
                     <p><strong>Comprobación:</strong> Prueba una llamada completa, otra solo con ancho y otra pasando <code>undefined</code> como alto.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec8_4">8.4. Devolver resultados con return</h3>
+                <h3 id="sec8_3">8.3. Devolver resultados con return</h3>
                 <p><code>return</code> termina la ejecución de la función y entrega un valor al código que la llamó. Ese valor puede guardarse o utilizarse en otra expresión:</p>
                 
                                 <pre><code>function calcularArea(base, altura) {
@@ -1656,28 +1583,28 @@ console.log(resultado);          // undefined</code></pre>
                 
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-retorno">
-                    <p><strong>2.29. Devolver el menor y calcular una potencia</strong></p>
+                    <p><strong>2.27. Devolver el menor y calcular una potencia</strong></p>
                     <ol><li>Crea una función que devuelva el menor de dos números. Comprueba un caso creciente, otro decreciente y dos valores iguales.</li><li>Crea otra que calcule una potencia mediante multiplicaciones repetidas. Admite exponentes enteros desde 1. La función devuelve el resultado; la lectura y la presentación quedan fuera.</li><li>Prueba una base negativa y exponentes pares e impares. Anota resultados esperados y reales.</li></ol>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-9-3">
-                    <p><strong>2.30. Contar un carácter</strong></p>
+                    <p><strong>2.28. Contar un carácter</strong></p>
                     <p>Crea <code>contarCaracter(texto, caracter)</code> que recorra una cadena y devuelva cuántas veces aparece el carácter indicado. Supón un carácter sencillo y distingue mayúsculas de minúsculas; muestra el resultado fuera de la función.</p>
                     <p><strong>Comprobación:</strong> Prueba una cadena vacía, ninguna coincidencia y varias coincidencias. Evita <code>prompt()</code> y cambios del DOM dentro de la función.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="extra-eniun-descuento">
-                    <p><strong>2.31. Precio con descuento</strong></p>
+                    <p><strong>2.29. Precio con descuento</strong></p>
                     <p>Escribe <code>precioFinal(precio, porcentaje)</code>: devuelve el precio rebajado. Mantén la entrada y la salida fuera de la función. Comprueba 80 euros con descuentos del 0 %, 25 % y 100 %.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec8_5">8.5. Ámbito local y variables externas</h3>
+                <h3 id="sec8_4">8.4. Ámbito local y variables externas</h3>
                 <p>Los parámetros y las variables declaradas dentro de una función son locales a ella. La función puede acceder a variables de su ámbito exterior:</p>
-                <aside class="function-card" id="ficha-ejemplo-12"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>crearPresentacion(nombre)</code></p><p>Construye una presentación utilizando también la variable externa centro.</p><p><strong>Parámetros:</strong> nombre: cadena con el nombre de la persona.</p><p><strong>Devuelve:</strong> Una cadena con la presentación.</p></aside>
+                
                                 <pre><code>const centro = "IES Ejemplo";
 
 function crearPresentacion(nombre) {
@@ -1691,7 +1618,7 @@ console.log(crearPresentacion("Ana"));
                 <p>Para que una función sea fácil de reutilizar, conviene recibir mediante parámetros los datos que necesita y evitar modificar variables externas sin necesidad.</p>
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-variables-locales">
-                    <p><strong>2.32. Distinguir cambios locales y externos</strong></p>
+                    <p><strong>2.30. Distinguir cambios locales y externos</strong></p>
                     <p>Predice las dos salidas. Compruébalas y repite eliminando únicamente <code>let</code> dentro de la función. Explica qué variable se modifica en cada versión.</p><pre><code>let estado = "Pendiente";
 function revisar() {
     let estado = "Revisado";
@@ -1704,13 +1631,13 @@ console.log(estado);</code></pre>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-9-4">
-                    <p><strong>2.33. Un parámetro que no cambia el dato exterior</strong></p>
+                    <p><strong>2.31. Un parámetro que no cambia el dato exterior</strong></p>
                     <p>Declara <code>let cantidad = 12</code> fuera de una función <code>reducir(cantidad)</code>. Dentro, resta 2 al parámetro y devuelve el resultado. Muestra el retorno y la variable exterior. Repite usando un nombre distinto para el parámetro.</p>
                     <p><strong>Comprobación:</strong> Justifica qué variable cambia y verifica que dos llamadas con el mismo argumento dan el mismo resultado.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec8_6">8.6. Funciones como valores y expresiones de función</h3>
+                <h3 id="sec8_5">8.5. Funciones como valores y expresiones de función</h3>
                 <p>Las funciones también son valores. Se pueden guardar en una variable y pasar como argumento, como ocurre al registrar un manejador:</p>
                 <aside class="function-card" id="ficha-ejemplo-13"><p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Función del ejemplo</p><p class="function-signature"><code>obtenerTriple(numero)</code></p><p>Calcula el triple de un número.</p><p><strong>Parámetros:</strong> numero: número que se quiere triplicar.</p><p><strong>Devuelve:</strong> El producto de numero por 3.</p></aside>
                                 <pre><code>const obtenerTriple = function (numero) {
@@ -1733,20 +1660,94 @@ console.log(aplicarTransformacion(5, function (valor) {
     return valor + 10;
 })); // 15</code></pre>
 <p>Las callbacks pueden ejecutarse inmediatamente, como aquí, o más tarde, como en los eventos. El punto y coma de <code>const f = function () {};</code> termina la declaración de la variable.</p>
-<h4>Creación y ámbito</h4><p>En modo estricto, una declaración de función dentro de un bloque está disponible únicamente en ese bloque. Para elegir una función condicionalmente y usarla después, declara una variable con <code>let</code> en el ámbito exterior y asígnale una expresión de función en cada rama.</p>
+<h4>Creación y ámbito</h4><p>En modo estricto, una declaración de función dentro de un bloque solo está disponible en ese bloque. Para elegir una función y usarla después, puedes declararla en el ámbito exterior con <code>let</code> y asignarla en cada rama, o usar <code>const</code> e inicializarla directamente con un operador ternario. Con <code>const</code> no puedes dejar la declaración sin valor ni reasignarla después.</p>
 <div class="resource-card expansion-card expansion-purple"><div class="resource-card-header"><span class="resource-title"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Expresiones de función</span><span class="resource-badge badge-reading">Ampliación</span></div><p class="resource-description">Funciones como valores, callbacks y diferencias respecto a las declaraciones.</p><a href="https://es.javascript.info/function-expressions" target="_blank" rel="noopener noreferrer" class="resource-link-btn">JavaScript.info · Expresiones de función</a></div>
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-callbacks">
-                    <p><strong>2.34. Elegir y ejecutar una callback</strong></p>
+                    <p><strong>2.32. Elegir y ejecutar una callback</strong></p>
                     <p>Escribe una función que reciba una pregunta y dos callbacks. Según la respuesta de <code>confirm()</code>, debe ejecutar una u otra. Prueba primero con funciones guardadas en variables y después con expresiones de función pasadas directamente como argumentos. Comprueba que solo se ejecuta la acción elegida.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-9-5">
-                    <p><strong>2.35. Elegir una función sin ejecutarla todavía</strong></p>
+                    <p><strong>2.33. Elegir una función sin ejecutarla todavía</strong></p>
                     <p>Declara <code>let transformar</code> y asígnale una expresión de función que duplique o triplique un número según una variable de configuración. Invócala después de la selección. Guarda también su referencia en <code>otraTransformacion</code>.</p>
                     <p><strong>Comprobación:</strong> Comprueba ambas opciones y explica la diferencia entre guardar <code>transformar</code> y guardar <code>transformar(4)</code>.</p>
+                    <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
+                </div>
+
+                <h3 id="sec8_6">8.6. Hola Mundo (ahora sí)</h3>
+                <p>En una interfaz web, JavaScript responde a las acciones del usuario y muestra el resultado en la página. Vamos a pedir un nombre y escribir <strong>«Hola » seguido del nombre</strong> al pulsar «Saludar» o Intro. La consola queda como herramienta de depuración.</p>
+
+                <h4 id="sec8_6_1">8.6.1. Preparar el formulario</h4>
+                <p>Crea <code>index.html</code> y <code>saludo.js</code> en la misma carpeta. En <code>index.html</code> escribe:</p>
+                <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Hola Mundo (ahora sí)&lt;/title&gt;
+    &lt;script src="saludo.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Vamos a saludarte&lt;/h1&gt;
+    &lt;form id="formularioSaludo"&gt;
+        &lt;label for="nombre"&gt;Tu nombre:&lt;/label&gt;
+        &lt;input type="text" id="nombre" autocomplete="given-name"&gt;
+        &lt;button type="submit"&gt;Saludar&lt;/button&gt;
+    &lt;/form&gt;
+    &lt;p id="saludo" aria-live="polite"&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                <p><code>defer</code> ejecuta el script después de leer el HTML. El campo recoge el nombre y el párrafo vacío mostrará el saludo. <code>aria-live="polite"</code> permite que un lector de pantalla anuncie el cambio sin interrumpir.</p>
+
+                <h4 id="sec8_6_2">8.6.2. Preparar la interacción</h4>
+                <p>En <code>saludo.js</code>, <code>iniciar()</code> agrupa la preparación y mantiene sus variables locales. La llamamos una vez al final:</p>
+                <pre><code>"use strict";
+
+function iniciar() {
+    const campoNombre = document.querySelector("#nombre");
+    const formulario = document.querySelector("#formularioSaludo");
+    const salida = document.querySelector("#saludo");
+
+    function saludar(evento) {
+        evento.preventDefault(); // Evita que el formulario recargue la página.
+        const nombre = campoNombre.value;
+        salida.textContent = "Hola " + nombre;
+    }
+
+    formulario.addEventListener("submit", saludar);
+}
+
+iniciar();</code></pre>
+
+                <h4 id="sec8_6_3">8.6.3. Buscar, escuchar y responder</h4>
+                <aside class="function-card" id="ficha-hola-queryselector">
+                    <p class="function-signature"><code>document.querySelector(selector)</code></p>
+                    <p>Devuelve el primer elemento que coincide con un selector CSS, o <code>null</code> si no existe. <code>"#nombre"</code> selecciona el elemento con <code>id="nombre"</code>: aquí el <code>#</code> es necesario.</p>
+                </aside>
+                <ul>
+                    <li><code>addEventListener("submit", saludar)</code> registra la función para responder al envío del formulario, con el botón o con Intro.</li>
+                    <li><code>value</code> lee el nombre y <code>textContent</code> escribe el saludo en el párrafo.</li>
+                </ul>
+                <div class="didactic-note"><p>Pasamos <code>saludar</code> sin paréntesis para que el navegador la ejecute cuando se envíe el formulario.</p></div>
+
+                <div class="activity-card activity-callout" id="relacion-ejercicio-2">
+                    <p><strong>2.34. Aviso de recogida de un pedido</strong></p>
+                    <p>Una tienda necesita preparar un aviso personalizado para sus clientes. Crea una página que pida el nombre y muestre: <strong>«Ana, tu pedido está listo para recoger.»</strong></p>
+                    <ol>
+                        <li>Crea un formulario con una etiqueta, un campo de texto para el nombre y un botón «Preparar aviso». Añade debajo un párrafo vacío para el resultado.</li>
+                        <li>Guarda el código en <code>aviso.js</code> y enlázalo con <code>defer</code>. Dentro de <code>iniciar()</code>, selecciona el formulario, el campo y el párrafo con <code>document.querySelector()</code>.</li>
+                        <li>Registra una función para el evento <code>submit</code> mediante <code>addEventListener()</code>. Evita la recarga con <code>preventDefault()</code>, lee el nombre con <code>value</code> y escribe el aviso con <code>textContent</code>. Llama a <code>iniciar()</code> al final del script.</li>
+                    </ol>
+                    <p><strong>Comprobación:</strong> escribe «Ana» y pulsa el botón. Después cambia el nombre por «Luis» y pulsa Intro: el nuevo aviso debe sustituir al anterior sin recargar la página.</p>
+                    <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
+
+                <div class="activity-card activity-callout" id="actividad-complementaria-9-1">
+                    <p><strong>2.35. Invocar una función de presentación</strong></p>
+                    <p>Define <code>mostrarTurnos()</code> para escribir tres turnos de una lista en un párrafo existente. Separa la definición de la llamada. Ejecuta una vez, elimina la llamada y recarga; después llama dos veces.</p>
+                    <p><strong>Comprobación:</strong> Explica por qué definir una función no ejecuta su cuerpo y distingue sustituir el texto de acumularlo.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
