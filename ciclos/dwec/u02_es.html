@@ -1739,14 +1739,17 @@ iniciar();</code></pre>
                 <div class="didactic-note"><p>Pasamos <code>saludar</code> sin paréntesis para que el navegador la ejecute cuando se envíe el formulario.</p></div>
 
                 <div class="activity-card activity-callout" id="relacion-ejercicio-2">
-                    <p><strong>2.34. Aviso de recogida de un pedido</strong></p>
-                    <p>Una tienda necesita preparar un aviso personalizado para sus clientes. Crea una página que pida el nombre y muestre: <strong>«Ana, tu pedido está listo para recoger.»</strong></p>
+                    <p><strong>2.34. Dirección de red y parte de host con funciones</strong></p>
+                    <p>Rehaz la <a href="#relacion-ejercicio-8">actividad 2.11</a> utilizando funciones. El objetivo es reutilizar los cálculos para distintas direcciones IP y máscaras sin repetir el código.</p>
                     <ol>
-                        <li>Crea un formulario con una etiqueta, un campo de texto para el nombre y un botón «Preparar aviso». Añade debajo un párrafo vacío para el resultado.</li>
-                        <li>Guarda el código en <code>aviso.js</code> y enlázalo con <code>defer</code>. Dentro de <code>iniciar()</code>, selecciona el formulario, el campo y el párrafo con <code>document.querySelector()</code>.</li>
-                        <li>Registra una función para el evento <code>submit</code> mediante <code>addEventListener()</code>. Evita la recarga con <code>preventDefault()</code>, lee el nombre con <code>value</code> y escribe el aviso con <code>textContent</code>. Llama a <code>iniciar()</code> al final del script.</li>
+                        <li>Representa la IP y la máscara mediante vectores de cuatro enteros. Comienza con <code>[172, 16, 25, 10]</code> y <code>[255, 255, 192, 0]</code>.</li>
+                        <li>Crea <code>convertirABinario(octetos)</code>, que devuelva los cuatro octetos en binario, separados por puntos y con ocho cifras cada uno. Puedes completar los ceros con <code>toString(2).padStart(8, "0")</code>.</li>
+                        <li>Crea <code>calcularComplemento(mascara)</code>, que devuelva un nuevo vector con el complemento de cada octeto limitado a ocho bits: <code>(~octeto) &amp; 255</code>.</li>
+                        <li>Crea <code>calcularRed(ip, mascara)</code> y <code>calcularHost(ip, mascara)</code>. Ambas deben devolver un nuevo vector: la primera aplica AND entre la IP y la máscara; la segunda utiliza el complemento de la máscara. Reutiliza la función anterior.</li>
+                        <li>Desde <code>iniciar()</code>, llama a las funciones y muestra la IP, la máscara, sus representaciones binarias, el complemento, la red y la parte de host en un elemento de la página mediante <code>querySelector()</code> y <code>textContent</code>. Usa <code>join(".")</code> para presentar los vectores en decimal.</li>
                     </ol>
-                    <p><strong>Comprobación:</strong> escribe «Ana» y pulsa el botón. Después cambia el nombre por «Luis» y pulsa Intro: el nuevo aviso debe sustituir al anterior sin recargar la página.</p>
+                    <p>Las funciones de cálculo deben recibir sus datos mediante parámetros y devolver el resultado con <code>return</code>, sin modificar los vectores originales ni escribir en la página.</p>
+                    <p><strong>Comprobación:</strong> para los datos iniciales, el complemento es <code>0.0.63.255</code>, la red es <code>172.16.0.0</code> y la parte de host es <code>0.0.25.10</code>. Reutiliza las mismas funciones con IP <code>192.168.1.130</code> y máscara <code>255.255.255.128</code>: debes obtener red <code>192.168.1.128</code> y parte de host <code>0.0.0.2</code>.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-9-1">
