@@ -128,15 +128,16 @@
             <li><a href="#sec8_3" class="subsection-link">8.3. Devolver resultados con return</a></li>
             <li><a href="#sec8_4" class="subsection-link">8.4. Ámbito local y variables externas</a></li>
             <li><a href="#sec8_5" class="subsection-link">8.5. Funciones como valores y expresiones de función</a></li>
-            <li><a href="#sec8_6" class="subsection-link">8.6. Hola Mundo (ahora sí)</a></li>
-            <li><a href="#sec8_7" class="subsection-link">8.7. Funciones flecha</a></li>
+            
+            <li><a href="#sec8_6" class="subsection-link">8.6. Funciones flecha</a></li>
             <li><a href="#sec9">9. El DOM: acceder y modificar la página</a></li>
-            <li><a href="#sec9_1" class="subsection-link">9.1. El documento como árbol de objetos</a></li>
-            <li><a href="#sec9_2" class="subsection-link">9.2. Selección de elementos</a></li>
-            <li><a href="#sec9_3" class="subsection-link">9.3. Leer y modificar el contenido</a></li>
-            <li><a href="#sec9_4" class="subsection-link">9.4. Leer campos y convertir sus datos</a></li>
-            <li><a href="#sec9_5" class="subsection-link">9.5. Estilos y clases CSS</a></li>
-            <li><a href="#sec9_6" class="subsection-link">9.6. Comprobar que un elemento existe</a></li>
+            <li><a href="#sec9_1" class="subsection-link">9.1. Hola Mundo (ahora sí)</a></li>
+            <li><a href="#sec9_2" class="subsection-link">9.2. El documento como árbol de objetos</a></li>
+            <li><a href="#sec9_3" class="subsection-link">9.3. Selección de elementos</a></li>
+            <li><a href="#sec9_4" class="subsection-link">9.4. Leer y modificar el contenido</a></li>
+            <li><a href="#sec9_5" class="subsection-link">9.5. Leer campos y convertir sus datos</a></li>
+            <li><a href="#sec9_6" class="subsection-link">9.6. Estilos y clases CSS</a></li>
+            <li><a href="#sec9_7" class="subsection-link">9.7. Comprobar que un elemento existe</a></li>
             <li><a href="#sec10">10. Eventos e interacción con el usuario</a></li>
             <li><a href="#sec10_1" class="subsection-link">10.1. Eventos y manejadores</a></li>
             <li><a href="#sec10_2" class="subsection-link">10.2. Registrar manejadores con addEventListener()</a></li>
@@ -1676,68 +1677,6 @@ console.log(aplicarTransformacion(5, function (valor) {
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec8_6">8.6. Hola Mundo (ahora sí)</h3>
-                <p>En una interfaz web, JavaScript responde a las acciones del usuario y muestra el resultado en la página. Vamos a pedir un nombre y escribir <strong>«Hola » seguido del nombre</strong> al pulsar «Saludar» o Intro. La consola queda como herramienta de depuración.</p>
-
-                <h4 id="sec8_6_1">8.6.1. Preparar el formulario</h4>
-                <p>Crea <code>index.html</code> y <code>saludo.js</code> en la misma carpeta. En <code>index.html</code> escribe:</p>
-                <pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="es"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;title&gt;Hola Mundo (ahora sí)&lt;/title&gt;
-    &lt;script src="saludo.js" defer&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;h1&gt;Vamos a saludarte&lt;/h1&gt;
-    &lt;form id="formularioSaludo"&gt;
-        &lt;label for="nombre"&gt;Tu nombre:&lt;/label&gt;
-        &lt;input type="text" id="nombre" autocomplete="given-name"&gt;
-        &lt;button type="submit"&gt;Saludar&lt;/button&gt;
-    &lt;/form&gt;
-    &lt;p id="saludo"&gt;&lt;/p&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-                <p><code>defer</code> ejecuta el script después de leer el HTML. El campo recoge el nombre y el párrafo vacío mostrará el saludo.</p>
-                <div class="didactic-note">
-                    <p><strong>Accesibilidad: anunciar los cambios</strong></p>
-                    <p>Cuando JavaScript actualiza el saludo, una persona que utiliza un lector de pantalla puede no percibir el cambio. Conviene añadir <code>aria-live="polite"</code> al párrafo desde el HTML inicial para que el lector anuncie el nuevo texto cuando termine lo que esté leyendo, sin interrumpir.</p>
-                    <pre><code>&lt;p id="saludo" aria-live="polite"&gt;&lt;/p&gt;</code></pre>
-                    <p>Este atributo no cambia el aspecto del párrafo ni hace que la página hable por sí sola.</p>
-                </div>
-
-                <h4 id="sec8_6_2">8.6.2. Preparar la interacción</h4>
-                <p>En <code>saludo.js</code>, <code>iniciar()</code> agrupa la preparación y mantiene sus variables locales. La llamamos una vez al final:</p>
-                <pre><code>"use strict";
-
-function iniciar() {
-    const campoNombre = document.querySelector("#nombre");
-    const formulario = document.querySelector("#formularioSaludo");
-    const salida = document.querySelector("#saludo");
-
-    function saludar(evento) {
-        evento.preventDefault(); // Evita que el formulario recargue la página.
-        const nombre = campoNombre.value;
-        salida.textContent = "Hola " + nombre;
-    }
-
-    formulario.addEventListener("submit", saludar);
-}
-
-iniciar();</code></pre>
-
-                <h4 id="sec8_6_3">8.6.3. Buscar, escuchar y responder</h4>
-                <aside class="function-card" id="ficha-hola-queryselector">
-                    <p class="function-signature"><code>document.querySelector(selector)</code></p>
-                    <p>Devuelve el primer elemento que coincide con un selector CSS, o <code>null</code> si no existe. <code>"#nombre"</code> selecciona el elemento con <code>id="nombre"</code>: aquí el <code>#</code> es necesario.</p>
-                </aside>
-                <ul>
-                    <li><code>addEventListener("submit", saludar)</code> registra la función para responder al envío del formulario, con el botón o con Intro.</li>
-                    <li><code>value</code> lee el nombre y <code>textContent</code> escribe el saludo en el párrafo.</li>
-                </ul>
-                <div class="didactic-note"><p>Pasamos <code>saludar</code> sin paréntesis para que el navegador la ejecute cuando se envíe el formulario.</p></div>
-
                 <div class="activity-card activity-callout" id="relacion-ejercicio-2">
                     <p><strong>2.34. Dirección de red y parte de host con funciones</strong></p>
                     <p>Rehaz la <a href="#relacion-ejercicio-8">actividad 2.11</a> utilizando funciones. El objetivo es reutilizar los cálculos para distintas direcciones IP y máscaras sin repetir el código.</p>
@@ -1759,7 +1698,7 @@ iniciar();</code></pre>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec8_7">8.7. Funciones flecha</h3>
+                <h3 id="sec8_6">8.6. Funciones flecha</h3>
                 <p>Una <strong>función flecha</strong> es otra forma de escribir una expresión de función. Utiliza <code>=&gt;</code> entre los parámetros y el cuerpo:</p>
                 <pre><code>const obtenerDoble = (numero) =&gt; {
     return numero * 2;
@@ -1848,9 +1787,71 @@ console.log(crearAviso());   // Operación completada</code></pre>
 
             <section aria-labelledby="sec9">
                 <h2 id="sec9"><i class="fa-solid fa-sitemap" aria-hidden="true"></i> 9. El DOM: acceder y modificar la página</h2>
-                <p>El <strong>DOM</strong> (<em>Document Object Model</em>) representa el documento mediante un árbol de objetos. JavaScript puede consultar esos objetos y modificar el contenido de la página. En este apartado los cambios se realizarán al ejecutar el script; la respuesta a acciones del usuario se estudiará con los eventos.</p>
+                <p>El <strong>DOM</strong> (<em>Document Object Model</em>) representa el documento mediante un árbol de objetos. JavaScript puede consultar esos objetos y modificar el contenido de la página. Comenzaremos con un saludo interactivo y después veremos cómo seleccionar y modificar elementos. Los eventos se desarrollan en el apartado 10.</p>
 
-                <h3 id="sec9_1">9.1. El documento como árbol de objetos</h3>
+                <h3 id="sec9_1">9.1. Hola Mundo (ahora sí)</h3>
+                <p>En una interfaz web, JavaScript responde a las acciones del usuario y muestra el resultado en la página. Vamos a pedir un nombre y escribir <strong>«Hola » seguido del nombre</strong> al pulsar «Saludar» o Intro. La consola queda como herramienta de depuración.</p>
+
+                <h4 id="sec9_1_1">9.1.1. Preparar el formulario</h4>
+                <p>Crea <code>index.html</code> y <code>saludo.js</code> en la misma carpeta. En <code>index.html</code> escribe:</p>
+                <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Hola Mundo (ahora sí)&lt;/title&gt;
+    &lt;script src="saludo.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Vamos a saludarte&lt;/h1&gt;
+    &lt;form id="formularioSaludo"&gt;
+        &lt;label for="nombre"&gt;Tu nombre:&lt;/label&gt;
+        &lt;input type="text" id="nombre" autocomplete="given-name"&gt;
+        &lt;button type="submit"&gt;Saludar&lt;/button&gt;
+    &lt;/form&gt;
+    &lt;p id="saludo"&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                <p><code>defer</code> ejecuta el script después de leer el HTML. El campo recoge el nombre y el párrafo vacío mostrará el saludo.</p>
+                <div class="didactic-note">
+                    <p><strong>Accesibilidad: anunciar los cambios</strong></p>
+                    <p>Cuando JavaScript actualiza el saludo, una persona que utiliza un lector de pantalla puede no percibir el cambio. Conviene añadir <code>aria-live="polite"</code> al párrafo desde el HTML inicial para que el lector anuncie el nuevo texto cuando termine lo que esté leyendo, sin interrumpir.</p>
+                    <pre><code>&lt;p id="saludo" aria-live="polite"&gt;&lt;/p&gt;</code></pre>
+                    <p>Este atributo no cambia el aspecto del párrafo ni hace que la página hable por sí sola.</p>
+                </div>
+
+                <h4 id="sec9_1_2">9.1.2. Preparar la interacción</h4>
+                <p>En <code>saludo.js</code>, <code>iniciar()</code> agrupa la preparación y mantiene sus variables locales. La llamamos una vez al final:</p>
+                <pre><code>"use strict";
+
+function iniciar() {
+    const campoNombre = document.querySelector("#nombre");
+    const formulario = document.querySelector("#formularioSaludo");
+    const salida = document.querySelector("#saludo");
+
+    function saludar(evento) {
+        evento.preventDefault(); // Evita que el formulario recargue la página.
+        const nombre = campoNombre.value;
+        salida.textContent = "Hola " + nombre;
+    }
+
+    formulario.addEventListener("submit", saludar);
+}
+
+iniciar();</code></pre>
+
+                <h4 id="sec9_1_3">9.1.3. Buscar, escuchar y responder</h4>
+                <aside class="function-card" id="ficha-hola-queryselector">
+                    <p class="function-signature"><code>document.querySelector(selector)</code></p>
+                    <p>Devuelve el primer elemento que coincide con un selector CSS, o <code>null</code> si no existe. <code>"#nombre"</code> selecciona el elemento con <code>id="nombre"</code>: aquí el <code>#</code> es necesario.</p>
+                </aside>
+                <ul>
+                    <li><code>addEventListener("submit", saludar)</code> registra la función para responder al envío del formulario, con el botón o con Intro.</li>
+                    <li><code>value</code> lee el nombre y <code>textContent</code> escribe el saludo en el párrafo.</li>
+                </ul>
+                <div class="didactic-note"><p>Pasamos <code>saludar</code> sin paréntesis para que el navegador la ejecute cuando se envíe el formulario.</p></div>
+
+                <h3 id="sec9_2">9.2. El documento como árbol de objetos</h3>
                 <p>El objeto <code>document</code> representa el documento cargado. Los elementos HTML, como un párrafo o un campo de entrada, son nodos del árbol y tienen propiedades y métodos. Por ejemplo, <code>textContent</code> es una propiedad que contiene texto y <code>querySelector()</code> es un método de búsqueda.</p>
                 <p>Utiliza esta página de prueba con un archivo <code>ej10-seleccionarElementos.js</code> en la misma carpeta. Contiene los elementos necesarios para los ejemplos siguientes:</p>
                 <pre data-example="dom-html"><code>&lt;!DOCTYPE html&gt;
@@ -1884,7 +1885,7 @@ console.log(crearAviso());   // Operación completada</code></pre>
 
                 
 
-                <h3 id="sec9_2">9.2. Selección de elementos</h3>
+                <h3 id="sec9_3">9.3. Selección de elementos</h3>
                 <p>El DOM ofrece métodos específicos para buscar por identificador, clase o etiqueta. Los nombres distinguen mayúsculas y minúsculas:</p>
                 <aside class="function-card" id="ficha-funcion-14" aria-label="Ficha de función: document.getElementById(id)">
                     <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
@@ -1931,7 +1932,7 @@ console.log(aviso.textContent);
 console.log(parrafos.length); // 2</code></pre>
                 <p><code>querySelector()</code> devuelve la primera coincidencia o <code>null</code>. <code>querySelectorAll()</code> devuelve una <code>NodeList</code> estática: no se actualiza automáticamente si después se añaden o eliminan coincidencias. Cuando no encuentra elementos, devuelve una colección vacía.</p>
                 <div class="didactic-note"><p><strong>¿Cuál usar hoy?</strong> Los métodos <code>getElementById()</code>, <code>getElementsByClassName()</code> y <code>getElementsByTagName()</code> siguen vigentes. En código moderno es habitual utilizar <code>querySelector()</code> y <code>querySelectorAll()</code> por su flexibilidad; serán la opción general de este curso. Para buscar un identificador concreto, <code>getElementById()</code> sigue siendo una opción directa y adecuada.</p></div>
-                <p>Prueba cada fragmento por separado en la página del apartado 9.1. Guarda las referencias que vayas a reutilizar y comprueba que un elemento existe antes de acceder a sus propiedades.</p>
+                <p>Prueba cada fragmento por separado en la página del apartado 9.2. Guarda las referencias que vayas a reutilizar y comprueba que un elemento existe antes de acceder a sus propiedades.</p>
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-seleccion">
                     <p><strong>2.42. Localizar elementos de un formulario</strong></p>
@@ -1947,7 +1948,7 @@ console.log(parrafos.length); // 2</code></pre>
 
                 
 
-                <h3 id="sec9_3">9.3. Leer y modificar el contenido</h3>
+                <h3 id="sec9_4">9.4. Leer y modificar el contenido</h3>
                 <p>La propiedad <code>textContent</code> permite leer o sustituir el texto de un elemento:</p>
                 <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
 console.log(mensaje.textContent); // Texto inicial
@@ -1988,7 +1989,7 @@ mensaje.outerHTML = '&lt;div id="mensaje" class="aviso"&gt;Nuevo elemento&lt;/di
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec9_4">9.4. Leer campos y convertir sus datos</h3>
+                <h3 id="sec9_5">9.5. Leer campos y convertir sus datos</h3>
                 <p>En un campo de entrada, <code>value</code> permite leer o establecer el valor actual. Su lectura devuelve una cadena, también cuando el campo es <code>type="number"</code>.</p>
                 <pre data-example="dom-js"><code>const campo = document.querySelector("#unidades");
 const resultado = document.querySelector("#resultado");
@@ -2018,7 +2019,7 @@ resultado.textContent = `El doble es ${unidades * 2}`;</code></pre>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec9_5">9.5. Estilos y clases CSS</h3>
+                <h3 id="sec9_6">9.6. Estilos y clases CSS</h3>
                 <p><code>style</code> modifica estilos en línea. Las propiedades con guiones en CSS se escriben en <em>camelCase</em> al acceder mediante un punto:</p>
                 <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
 mensaje.style.backgroundColor = "#e0f2fe";
@@ -2079,7 +2080,7 @@ mensaje.classList.toggle("destacado"); // La añade de nuevo.</code></pre>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <h3 id="sec9_6">9.6. Comprobar que un elemento existe</h3>
+                <h3 id="sec9_7">9.7. Comprobar que un elemento existe</h3>
                 <p>Una búsqueda sin coincidencias devuelve <code>null</code>. Intentar utilizar una propiedad de ese valor, como <code>null.textContent</code>, provoca un <code>TypeError</code>. Comprueba el selector, el HTML y el momento de ejecución.</p>
                 <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
 
@@ -2099,7 +2100,7 @@ if (mensaje !== null) {
                 </div>
                 <div class="activity-card activity-callout" id="actividad-jsinfo-busqueda-vacia">
                     <p><strong>2.51. Comprobar una búsqueda sin resultados</strong></p>
-                    <p>En la página de prueba del apartado 9.1, busca un identificador inexistente. Muestra el resultado de la búsqueda y evita acceder a <code>textContent</code> si no hay elemento. Repite con un identificador válido y comprueba que en ese caso sí se actualiza el texto.</p>
+                    <p>En la página de prueba del apartado 9.2, busca un identificador inexistente. Muestra el resultado de la búsqueda y evita acceder a <code>textContent</code> si no hay elemento. Repite con un identificador válido y comprueba que en ese caso sí se actualiza el texto.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
@@ -2214,7 +2215,7 @@ campo.addEventListener("change", confirmarCambio);</code></pre>
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-deposito-eventos">
                     <p><strong>2.57. Actualizar un cálculo al editar</strong></p>
-                    <p>Retoma el cálculo de capital, porcentaje y años del apartado 9.4. Actualiza el resultado mediante <code>input</code> cada vez que cambie un campo. Comprueba también el pegado de texto. Registra <code>change</code> para comparar cuándo se dispara; no muestres un cálculo si falta un dato.</p>
+                    <p>Retoma el cálculo de capital, porcentaje y años del apartado 9.5. Actualiza el resultado mediante <code>input</code> cada vez que cambie un campo. Comprueba también el pegado de texto. Registra <code>change</code> para comparar cuándo se dispara; no muestres un cálculo si falta un dato.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
@@ -2345,7 +2346,7 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
 for (const parrafo of parrafos) {
     parrafo.classList.add("destacado");
 }</code></pre>
-                <p>Usa la página de prueba del apartado 9.1 como material de apoyo; la selección de elementos y las clases se explican en los apartados 9.2 y 9.5. Este código añade la clase <code>destacado</code> a cada párrafo. La hoja de estilos debe contener la clase para que el cambio sea visible. Si la selección está vacía, el bloque no se ejecuta.</p>
+                <p>Usa la página de prueba del apartado 9.2 como material de apoyo; la selección de elementos y las clases se explican en los apartados 9.3 y 9.6. Este código añade la clase <code>destacado</code> a cada párrafo. La hoja de estilos debe contener la clase para que el cambio sea visible. Si la selección está vacía, el bloque no se ejecuta.</p>
                 <p><code>const parrafo</code> crea una variable para cada iteración: no se reasigna la de la iteración anterior. Para recorrer estos elementos se utiliza <code>for...of</code>; <code>for...in</code> recorre nombres de propiedades y tiene otro propósito.</p>
                 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-recorrer">
