@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 02: Introduction to Networked Systems — Computer Systems</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --primary-light: #eff6ff;
+            --primary-border: #3b82f6;
+            --secondary-color: #0f766e;
+            --secondary-light: #f0fdf4;
+            --accent-color: #d97706;
+            --accent-light: #fffbeb;
+            --danger-color: #b91c1c;
+            --danger-light: #fef2f2;
+            --purple-color: #6d28d9;
+            --purple-light: #f5f3ff;
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+            --bg-page: #f1f5f9;
+            --bg-card: #ffffff;
+            --border-color: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-page);
+            line-height: 1.7;
+            padding: 30px 20px;
+        }
+
+        .document-wrapper {
+            max-width: 1350px;
+            width: 100%;
+            margin: 0 auto;
+            display: block;
+        }
+
+        /* Índice lateral flotante deslizable (Slide-out Sidebar) */
+        .sidebar-toc {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 310px;
+            max-height: calc(100vh - 40px);
+            background: var(--bg-card);
+            padding: 22px 20px;
+            border-radius: 0 12px 12px 0;
+            border: 1px solid var(--border-color);
+            border-left: none;
+            box-shadow: 6px 0 25px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            transform: translateX(-292px);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto;
+        }
+
+        /* Pestaña indicadora al aproximar el ratón al borde izquierdo */
+        .sidebar-toc::after {
+            content: "\f0c9  CONTENTS";
+            font-family: 'Font Awesome 6 Free', 'Inter', sans-serif;
+            font-weight: 900;
+            font-size: 0.78rem;
+            position: absolute;
+            top: 20px;
+            right: -88px;
+            width: 88px;
+            height: 40px;
+            background: var(--primary-color);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            box-shadow: 4px 2px 10px rgba(0,0,0,0.15);
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-toc:hover {
+            transform: translateX(0);
+        }
+
+        .sidebar-toc h4 {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 8px;
+        }
+
+        .sidebar-toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .sidebar-toc li {
+            margin-bottom: 6px;
+        }
+
+        .sidebar-toc a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.86rem;
+            display: block;
+            padding: 5px 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-toc a:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Contenido Principal a Ancho Completo (100% Flexible) */
+        .document-container {
+            background: var(--bg-card);
+            padding: 50px 65px;
+            border-radius: 12px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border-color);
+            width: 100%;
+        }
+
+        /* Encabezados y Jerarquía */
+        .header-banner {
+            border-bottom: 4px solid var(--primary-color);
+            padding-bottom: 25px;
+            margin-bottom: 40px;
+        }
+
+        .module-tag {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 5px 14px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+        }
+
+        h1 {
+            font-family: 'Merriweather', Georgia, serif;
+            font-size: 2.3rem;
+            color: var(--primary-color);
+            line-height: 1.25;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-family: 'Merriweather', Georgia, serif;
+            font-size: 1.6rem;
+            color: var(--primary-color);
+            margin-top: 50px;
+            margin-bottom: 22px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            scroll-margin-top: 20px;
+        }
+
+        h3 {
+            font-size: 1.28rem;
+            color: var(--secondary-color);
+            margin-top: 32px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            scroll-margin-top: 20px;
+        }
+
+        h4 {
+            font-size: 1.08rem;
+            color: var(--text-dark);
+            margin-top: 24px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 18px;
+            text-align: justify;
+            font-size: 1rem;
+            color: var(--text-dark);
+        }
+
+        strong {
+            color: #000000;
+            font-weight: 600;
+        }
+
+        ul, ol {
+            margin-bottom: 22px;
+            padding-left: 28px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Cajas Didácticas Especiales */
+        .objectives-box {
+            background-color: var(--primary-light);
+            border-left: 5px solid var(--primary-border);
+            padding: 26px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .objectives-box h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .didactic-note {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid #0284c7;
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .didactic-note h5 {
+            color: #0369a1;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .didactic-note p {
+            margin-bottom: 0;
+            font-size: 0.95rem;
+        }
+
+        /* Cajas de Recursos e Hipervínculos */
+        .resource-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .resource-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .resource-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .resource-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .badge-video { background-color: #fee2e2; color: #dc2626; }
+        .badge-tool { background-color: #e0e7ff; color: #4338ca; }
+        .badge-reading { background-color: #dcfce7; color: #15803d; }
+        .badge-course { background-color: #fef3c7; color: #b45309; }
+
+        .resource-description {
+            font-size: 0.94rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .resource-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--primary-border);
+            width: fit-content;
+            transition: all 0.2s ease;
+        }
+
+        .resource-link-btn:hover {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        /* Tarjetas Leyes UX y Conceptos Avanzados */
+        .ux-law-card {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--purple-color);
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .ux-law-card h5 {
+            font-size: 1.08rem;
+            color: var(--purple-color);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ux-law-card p {
+            margin-bottom: 0;
+            font-size: 0.96rem;
+        }
+
+        .advanced-concept-box {
+            background-color: #fcfcfc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid var(--secondary-color);
+            padding: 22px 26px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .advanced-concept-box h4 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            font-size: 1.12rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Ejemplos y Errores */
+        .example-box {
+            background-color: var(--secondary-light);
+            border: 1px solid #bbf7d0;
+            border-left: 5px solid var(--secondary-color);
+            padding: 25px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .example-box h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            font-size: 1.18rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .error-box {
+            background-color: var(--danger-light);
+            border: 1px solid #fecaca;
+            border-left: 5px solid var(--danger-color);
+            padding: 25px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .error-box h3,
+        .error-box h4 {
+            color: var(--danger-color);
+            margin-top: 0;
+            font-size: 1.18rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .case-study-box {
+            background-color: #ffffff;
+            border: 2px solid var(--primary-color);
+            padding: 35px;
+            border-radius: 12px;
+            margin: 35px 0;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        }
+
+        .case-study-box h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 12px;
+            font-size: 1.4rem;
+        }
+
+        .phase-block {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid var(--accent-color);
+            padding: 22px 26px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .phase-block h4 {
+            color: var(--accent-color);
+            margin-top: 0;
+            font-size: 1.18rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .key-ideas-box {
+            background-color: var(--accent-light);
+            border: 1px solid #fde68a;
+            border-left: 5px solid var(--accent-color);
+            padding: 28px;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+        }
+
+        .key-ideas-box h3 {
+            color: var(--accent-color);
+            margin-top: 0;
+        }
+
+        .activities-section {
+            background-color: #fafafa;
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            border-radius: 10px;
+            margin-top: 45px;
+        }
+
+        /* Portada visual de la unidad */
+        .unit-cover {
+            padding: 0;
+            overflow: hidden;
+            border: 1px solid #bfdbfe;
+            background: #0f172a;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
+        }
+
+        .unit-cover svg {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 9px 9px 0 0;
+        }
+
+        .unit-cover .image-caption {
+            margin: 0;
+            padding: 11px 18px 13px;
+            color: #334155;
+            background: #ffffff;
+        }
+
+        /* Esquema del cifrado César */
+        .caesar-scheme {
+            margin: 20px 0 14px;
+            overflow: hidden;
+            background: #ffffff;
+            border: 1px solid #99f6e4;
+            border-radius: 10px;
+        }
+
+        .caesar-scheme svg {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .caesar-scheme .image-caption {
+            margin: 0;
+            padding: 11px 16px 13px;
+            text-align: center;
+            background: #ffffff;
+        }
+
+        /* Identidad visual de bloques pedagógicos */
+        .curiosity-card,
+        .activity-callout,
+        .expansion-card,
+        .activities-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .curiosity-card::before,
+        .activity-callout::before,
+        .expansion-card::before {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            line-height: 1.5;
+        }
+
+        /* Curiosidades */
+        .didactic-note.curiosity-card {
+            background: linear-gradient(135deg, #faf5ff 0%, #f5f3ff 100%);
+            border-color: #ddd6fe;
+            border-left-color: var(--purple-color);
+            box-shadow: 0 3px 14px rgba(109, 40, 217, 0.08);
+        }
+
+        .curiosity-card::before {
+            content: "\f0eb  DID YOU KNOW?";
+            font-family: "Font Awesome 6 Free", "Inter", sans-serif;
+            color: #5b21b6;
+            background: #ede9fe;
+            border: 1px solid #c4b5fd;
+        }
+
+        .curiosity-card p:first-of-type {
+            color: #5b21b6;
+            font-weight: 700;
+        }
+
+        /* Enlaces y materiales para ampliar */
+        .resource-card.expansion-card {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 75%);
+            border-color: #99f6e4;
+            border-left-color: var(--secondary-color);
+            box-shadow: 0 3px 14px rgba(15, 118, 110, 0.09);
+        }
+
+        .expansion-card::before {
+            align-self: flex-start;
+            width: fit-content;
+            content: "\f02d  FURTHER EXPLORATION";
+            font-family: "Font Awesome 6 Free", "Inter", sans-serif;
+            color: #115e59;
+            background: #ccfbf1;
+            border: 1px solid #5eead4;
+        }
+
+        .expansion-card .resource-title {
+            color: #115e59;
+        }
+
+        .expansion-card .resource-link-btn {
+            color: #115e59;
+            background: #f0fdfa;
+            border-color: #0d9488;
+        }
+
+        .expansion-card .resource-link-btn:hover,
+        .expansion-card .resource-link-btn:focus-visible {
+            color: #ffffff;
+            background: #0f766e;
+            outline: 3px solid rgba(13, 148, 136, 0.25);
+            outline-offset: 2px;
+        }
+
+        /* Actividades prácticas */
+        .activity-card.activity-callout {
+            background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%);
+            border-color: #fed7aa;
+            border-left-color: var(--accent-color);
+            box-shadow: 0 3px 14px rgba(217, 119, 6, 0.09);
+        }
+
+        .activity-callout::before {
+            content: "\f303  ACTIVITY";
+            font-family: "Font Awesome 6 Free", "Inter", sans-serif;
+            color: #92400e;
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+        }
+
+        .activity-callout strong {
+            color: #92400e;
+        }
+
+        /* Evaluaciones y bloques extensos de actividades */
+        .activities-section {
+            background: linear-gradient(180deg, #fffbeb 0%, #ffffff 24%);
+            border: 2px solid #f59e0b;
+            border-top-width: 7px;
+            padding: 34px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(146, 64, 14, 0.10);
+        }
+
+        .activities-section h3 {
+            color: #92400e;
+            margin-top: 0;
+            padding-left: 13px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .activities-section h4 {
+            color: #9a3412;
+        }
+
+        @media (max-width: 560px) {
+            .activities-section {
+                padding: 24px 18px;
+            }
+
+            .resource-card-header {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+
+        /* Imágenes e Ilustraciones Vectoriales Embebidas */
+        .image-container {
+            text-align: center;
+            margin: 35px 0;
+            background: #ffffff;
+            padding: 18px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+        }
+
+        .image-container svg {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+        }
+
+        .image-caption {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 12px;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        /* Tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 28px 0;
+            font-size: 0.96rem;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        .table-scroll {
+            width: 100%;
+            overflow-x: auto;
+            margin: 28px 0;
+        }
+
+        .table-scroll table {
+            min-width: 720px;
+            margin: 0;
+        }
+
+        /* Código */
+        code {
+            font-family: 'Fira Code', Consolas, Monaco, monospace;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        pre {
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Fira Code', Consolas, Monaco, monospace;
+            font-size: 0.9rem;
+            margin: 22px 0;
+        }
+
+        blockquote {
+            font-style: italic;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 18px;
+            margin: 24px 0;
+            color: var(--text-muted);
+        }
+
+        @media print {
+            body {
+                background-color: #ffffff;
+                padding: 0;
+            }
+            .sidebar-toc {
+                display: none;
+            }
+            .document-container {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+            }
+            .ux-law-card, .example-box, .error-box, .resource-card, .advanced-concept-box, .phase-block {
+                break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .document-container {
+                padding: 30px 20px;
+            }
+            .sidebar-toc {
+                width: 280px;
+                transform: translateX(-265px);
+            }
+            .sidebar-toc::after {
+                right: -80px;
+                width: 80px;
+            }
+        }
+    </style>
+<style>
+        .header-subtitle {
+            margin-top: 10px;
+            margin-bottom: 0;
+            color: var(--text-muted);
+            font-size: 1.08rem;
+            text-align: left;
+        }
+
+        .image-container img {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto;
+            border-radius: 6px;
+        }
+
+        .activity-card {
+            background-color: var(--accent-light);
+            border: 1px solid #fde68a;
+            border-left: 5px solid var(--accent-color);
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .activity-card h4,
+        .activities-section h3 {
+            margin-top: 0;
+        }
+
+        .activity-card p:last-child,
+        .didactic-note p:last-child {
+            margin-bottom: 0;
+        }
+
+        .activities-section .evaluation-step {
+            margin-bottom: 8px;
+            padding-left: 0;
+            text-align: left;
+        }
+
+        .activities-section .evaluation-question {
+            margin-bottom: 9px;
+            padding: 8px 12px;
+            background: #ffffff;
+            border-left: 3px solid var(--accent-color);
+            text-align: left;
+        }
+
+        .sidebar-toc a.subsection-link {
+            padding-left: 20px;
+            font-size: 0.82rem;
+        }
+
+        h4.numbered-subsection {
+            color: var(--text-dark);
+            scroll-margin-top: 20px;
+        }
+
+        .document-footer {
+            margin-top: 55px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            text-align: center;
+        }
+
+        main a {
+            color: var(--primary-color);
+            overflow-wrap: anywhere;
+        }
+
+        @media (max-width: 700px) {
+            h1 { font-size: 1.85rem; }
+            h2 { font-size: 1.38rem; }
+            h3 { font-size: 1.15rem; }
+            .image-container { padding: 8px; margin: 24px 0; }
+            .activities-section { padding: 22px 18px; }
+        }
+
+        @media print {
+            h2, h3, h4 { break-after: avoid-page; }
+            .image-container, .activity-card, .didactic-note { break-inside: avoid; }
+            .image-container img { max-height: 235mm; object-fit: contain; }
+        }
+
+        .header-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+        .header-top-row .module-tag { margin-bottom: 0; }
+        .language-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 13px;
+            border: 1px solid var(--primary-border);
+            border-radius: 7px;
+            background: var(--primary-light);
+            color: var(--primary-color);
+            font-size: 0.88rem;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background-color .2s ease, color .2s ease;
+        }
+        .language-switch:hover { background: var(--primary-color); color: #fff; }
+        @media (max-width: 560px) {
+            .header-top-row { align-items: flex-start; }
+            .language-switch { font-size: 0.8rem; padding: 6px 10px; }
+        }
+</style>
+<style>
+    /* Guided learning, sections 4–6. */
+    .learning-section { margin-top: 48px; }
+    .learning-section h2, .learning-section h3, .learning-section h4 { scroll-margin-top: 76px; }
+    .learning-section p { text-align: left; }
+    #cuatro-libertades { scroll-margin-top: 76px; }
+    #cuatro-libertades svg { display: block; width: 100%; }
+    .api-demo { padding: 18px; margin: 20px 0; border: 1px solid #cbd5e1; border-radius: 8px; background: white; }
+    #api-response { white-space: pre-wrap; overflow-wrap: anywhere; }
+    .api-demo button:disabled { opacity: 0.65; cursor: wait; }
+    .api-demo label { display: block; font-weight: 600; margin-bottom: 6px; }
+    .api-demo select { display: block; width: 100%; padding: 9px; margin-bottom: 16px; font: inherit; border: 1px solid #64748b; border-radius: 6px; }
+    .api-demo button { padding: 12px 16px; font: inherit; font-weight: 600; color: white; background: #1e3a8a; border: 0; border-radius: 6px; cursor: pointer; }
+
+    .learning-section .section-lead { font-size: 1.18rem; color: var(--secondary-color); }
+    .learning-section .objectives-box { padding: 22px 26px; }
+    .learning-section .objectives-box ul { margin-bottom: 0; }
+    .learning-section h4 { margin-top: 0; }
+    .learning-section h4.numbered-subsection { margin-top: 28px; }
+    .learning-section .table-scroll { border: 1px solid var(--border-color); border-radius: 8px; }
+    .learning-section .table-scroll table { min-width: 560px; }
+    .learning-section caption { text-align: left; padding: 12px 16px; font-weight: 700; color: var(--primary-color); background: #f8fafc; }
+    .learning-section th[scope="row"] { background: transparent; color: var(--text-dark); }
+    .learning-section th, .learning-section td { padding: 12px 14px; vertical-align: top; }
+    .learning-section details { padding: 14px 18px; margin: 20px 0; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; }
+    .learning-section details.answer { border-left: 4px solid var(--secondary-color); }
+    .learning-section details.extension { border-left: 4px solid var(--purple-color); background: #faf5ff; }
+    .learning-section summary { cursor: pointer; color: var(--primary-color); font-weight: 600; }
+    .learning-section details[open] summary { margin-bottom: 14px; }
+    .learning-section details p:last-child, .learning-section details ul:last-child { margin-bottom: 0; }
+    .learning-section :focus-visible, .toc-toggle:focus-visible, .sidebar-toc a:focus-visible { outline: 3px solid #d97706; outline-offset: 3px; }
+    .toc-toggle { position: fixed; top: 20px; left: 12px; z-index: 10000; padding: 10px 16px; border: 1px solid #fff; border-radius: 7px; background: var(--primary-color); color: #fff; font: 600 0.9rem 'Inter', sans-serif; cursor: pointer; }
+    .sidebar-toc { top: 70px; max-height: calc(100vh - 90px); transform: translateX(-100%); visibility: hidden; }
+    .sidebar-toc::after { content: none; }
+    .sidebar-toc.is-open { transform: translateX(0); visibility: visible; }
+    .sidebar-toc h4 { margin-top: 0; }
+    @media (max-width: 700px) {
+        .toc-toggle { top: 0; left: 0; width: 100%; border-radius: 0; min-height: 48px; text-align: left; }
+        .sidebar-toc { top: 54px; max-height: calc(100vh - 66px); }
+        body { padding-top: 60px; }
+        .learning-section .case-study-box, .learning-section .example-box { padding: 20px 18px; }
+        .learning-section .objectives-box, .learning-section .activity-card { padding: 20px 16px; }
+        .learning-section details { padding: 12px; }
+        .learning-section .table-scroll::before { content: 'Scroll the table to see all columns →'; display: block; padding: 9px 12px; color: #475569; background: #f8fafc; font-size: 0.8rem; }
+    }
+    @media (prefers-reduced-motion: reduce) { .sidebar-toc { transition: none; } }
+    @media print {
+        .toc-toggle { display: none; }
+        .learning-section .table-scroll { overflow: visible; }
+        .learning-section .table-scroll table { min-width: 0; }
+        .learning-section .table-scroll::before { display: none; }
+        .learning-section th, .learning-section td { padding: 6px; }
+        .learning-section .activity-card { break-inside: auto; }
+        .learning-section details { break-inside: avoid; }
+    }
+</style>
+<noscript><style>.toc-toggle{display:none}.sidebar-toc{position:static;transform:none;visibility:visible;width:100%;max-height:none;margin-bottom:24px;border-radius:8px}</style></noscript>
+<meta name="description" content="Computer Systems Unit 2: communication, network types, topologies, technologies, devices and the OSI and TCP/IP models.">
+<style>
+.topology-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:24px 0}.topology-grid figure{margin:0;padding:14px;border:1px solid #cbd5e1;border-radius:12px;background:#f8fafc}.topology-grid svg{width:100%;height:auto;display:block}.topology-grid figcaption{text-align:center;font-weight:700;font-style:normal;color:#1e3a8a}.network-overview svg{width:100%;height:auto}.document-container li,.document-container p{overflow-wrap:anywhere} .unit-links{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.skip-link{position:absolute;top:-100px;left:12px;z-index:999;background:white;padding:12px}.skip-link:focus{top:12px}@media(max-width:560px){.topology-grid{grid-template-columns:1fr}}@media print{.topology-grid{grid-template-columns:1fr 1fr}.skip-link{display:none}}
+</style>
+<style>
+.sidebar-toc .toc-group { margin: 0; padding: 0; border: 0; }
+.sidebar-toc .toc-group summary { cursor: pointer; color: var(--primary-color); padding-left: 4px; border-radius: 4px; }
+.sidebar-toc .toc-group summary a { display: inline; padding: 5px 4px; line-height: 1.8; }
+.sidebar-toc .toc-group summary:focus-visible { outline: 3px solid #d97706; outline-offset: 3px; }
+.sidebar-toc .toc-group > ul { margin: 6px 0 10px 12px; border-left: 2px solid var(--primary-light); padding-left: 6px; }
+.sidebar-toc > ul > li > a { position: relative; padding-left: 24px; }
+.sidebar-toc > ul > li > a::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: calc(5px + 0.55em);
+    width: 7px;
+    height: 7px;
+    background: var(--primary-color);
+}
+</style>
+<style>.card-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}.card-actions .resource-link-btn{margin:0;white-space:normal;max-width:100%;text-align:left}</style><style>.header-banner .unit-cover{margin:28px 0 0}.header-banner .unit-cover svg{display:block;width:100%;height:auto}.header-banner .unit-cover figcaption{margin-top:10px;text-align:center;font-size:.9rem;color:var(--text-muted)}</style><style>.wireless-diagram{margin:24px 0}.wireless-diagram svg{display:block;width:100%;height:auto}.wireless-diagram figcaption{font-size:.9rem;line-height:1.6;color:var(--text-muted);margin-top:10px}@media(max-width:560px){.wireless-diagram{overflow-x:auto}.wireless-diagram svg{min-width:560px}}</style></head><body><a class="skip-link" href="#contenido">Skip to content</a><button class="toc-toggle" type="button" aria-expanded="false" aria-controls="unit-toc">Contents</button><nav class="sidebar-toc" id="unit-toc" aria-label="Unit contents"><h4>Contents</h4><ul><li><a href="#introduccion">1. Introduction to networked systems</a></li><li><details class="toc-group"><summary><a href="#comunicacion">2. Communication elements and systems</a></summary><ul><li><a href="#elementos" class="subsection-link">2.1. Elements of communication</a></li><li><a href="#clasificacion-comunicacion" class="subsection-link">2.2. Classifying communication systems</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#tipologia">3. Network classification</a></summary><ul><li><a href="#relacion-nodos" class="subsection-link">3.1. Relationships between nodes</a></li><li><a href="#alcance" class="subsection-link">3.2. Geographical scope</a></li><li><a href="#acceso-red" class="subsection-link">3.3. Ownership, access and virtual networks</a></li><li><a href="#conmutacion" class="subsection-link">3.4. Transporting and distributing information</a></li><li><a href="#privacidad" class="subsection-link">3.5. Privacy-oriented networks</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#topologias">4. Network topologies</a></summary><ul><li><a href="#topologias-cableadas" class="subsection-link">4.1. Wired topologies</a></li><li><details class="toc-group"><summary><a href="#topologias-inalambricas" class="subsection-link">4.2. Wireless topologies</a></summary><ul><li><a href="#wifi-infraestructura" class="subsection-link">4.2.1. Infrastructure mode</a></li><li><a href="#wifi-varios-ap" class="subsection-link">4.2.2. Multiple access points</a></li><li><a href="#wifi-malla" class="subsection-link">4.2.3. Mesh networks</a></li><li><a href="#wifi-conexion-directa" class="subsection-link">4.2.4. Direct connections</a></li></ul></details></li></ul></details></li><li><details class="toc-group"><summary><a href="#tecnologias">5. Network technologies and media</a></summary><ul><li><a class="subsection-link" href="#medios-cableados">5.1. Wired media</a></li><li><a class="subsection-link" href="#medios-inalambricos">5.2. Wireless media</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#componentes">6. Network components and services</a></summary><ul><li><a href="#software-red" class="subsection-link">6.1. Operating systems and network services</a></li><li><a href="#proxy-seguridad" class="subsection-link">6.2. Intermediaries and security</a></li><li><a href="#balanceo" class="subsection-link">6.3. Load balancing and link aggregation</a></li><li><a href="#hardware-red" class="subsection-link">6.4. Interconnection devices</a></li><li><a href="#almacenamiento-red" class="subsection-link">6.5. Network storage</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#arquitecturas">7. Network architectures: OSI and TCP/IP</a></summary><ul><li><a href="#capas" class="subsection-link">7.1. Why use layers?</a></li><li><a href="#encapsulacion" class="subsection-link">7.2. Encapsulation and decapsulation</a></li><li><a href="#osi" class="subsection-link">7.3. The seven OSI layers</a></li><li><a href="#tcpip" class="subsection-link">7.4. Mapping OSI to TCP/IP</a></li></ul></details></li><li><a href="#referencias">8. References and bibliography</a></li></ul></nav><div class="document-wrapper"><main class="document-container" id="contenido"><div class="header-banner"><div class="header-top-row"><span class="module-tag">Computer Systems • Unit 02</span><a class="language-switch" href="u02_es.html" hreflang="es" lang="es" aria-label="Leer esta página en español"><i class="fa-solid fa-language" aria-hidden="true"></i> Español</a></div><h1>Unit 02: Introduction to Networked Systems</h1><p class="header-subtitle">Communication, technologies, components and architectures · First-year DAW</p><figure class="unit-cover"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 340" role="img" aria-labelledby="cover-network-title cover-network-desc">
+<title id="cover-network-title">From the local network to the Internet</title>
+<desc id="cover-network-desc">A desktop and a laptop connect to a switch. The switch connects to a router, which links the local network to the Internet and a remote server.</desc>
+<defs>
+<linearGradient id="cover-bg" x2="1" y2="1"><stop stop-color="#eef4ff"/><stop offset="1" stop-color="#effcf8"/></linearGradient>
+<pattern id="cover-dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#bccde5" opacity=".5"/></pattern>
+</defs>
+<rect width="960" height="340" rx="22" fill="url(#cover-bg)"/>
+<rect width="960" height="340" rx="22" fill="url(#cover-dots)"/>
+<rect x="24" y="26" width="510" height="286" rx="20" fill="#fff" fill-opacity=".68" stroke="#b7c8e7" stroke-dasharray="6 6"/>
+<g font-family="system-ui,sans-serif" fill="#213b82">
+<text x="46" y="60" font-size="16" font-weight="700" letter-spacing="2">LOCAL NETWORK</text>
+<text x="568" y="60" font-size="16" font-weight="700" letter-spacing="2">NETWORK OF NETWORKS</text>
+</g>
+<g fill="none" stroke="#738bb3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+<path d="M168 125H218V170H253M168 247H218V170"/>
+<path d="M347 170H412M512 170H588M728 170H803"/>
+</g>
+<g fill="#07958e" stroke="#fff" stroke-width="3">
+<rect x="198" y="151" width="16" height="16" rx="4"/>
+<rect x="370" y="162" width="16" height="16" rx="4"/>
+<rect x="548" y="162" width="16" height="16" rx="4"/>
+<rect x="756" y="162" width="16" height="16" rx="4"/>
+</g>
+<!-- Terminales -->
+<g stroke="#253e86" stroke-width="3" stroke-linejoin="round">
+<rect x="73" y="88" width="94" height="62" rx="7" fill="#fff"/>
+<rect x="83" y="98" width="74" height="40" rx="3" fill="#d9e9ff" stroke="none"/>
+<path d="M120 150V163M101 164H139" fill="none"/>
+<path d="M88 211H155Q160 211 160 216V250H83V216Q83 211 88 211Z" fill="#fff"/>
+<path d="M73 250H170L163 260H80Z" fill="#d9e9ff"/>
+</g>
+<!-- Switch -->
+<g stroke="#253e86" stroke-width="3">
+<rect x="253" y="139" width="94" height="62" rx="11" fill="#fff"/>
+<path d="M270 155H329" stroke="#bacded"/>
+<g fill="#07958e" stroke="none"><rect x="267" y="175" width="12" height="11" rx="2"/><rect x="285" y="175" width="12" height="11" rx="2"/><rect x="303" y="175" width="12" height="11" rx="2"/><rect x="321" y="175" width="12" height="11" rx="2"/></g>
+</g>
+<!-- Router -->
+<rect x="412" y="132" width="100" height="76" rx="18" fill="#253e86"/>
+<g stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M431 156H450L444 150M450 156L444 162M492 183H473L479 177M473 183L479 189"/>
+<path d="M434 184L449 169M434 184V176M434 184H442M491 154L476 169M491 154V162M491 154H483"/>
+</g>
+<!-- Internet -->
+<path d="M606 199C578 199 572 158 596 148C590 115 628 96 650 115C674 90 713 110 709 138C744 141 750 195 720 199Z" fill="#fff" stroke="#07958e" stroke-width="3"/>
+<g stroke="#7fc8be" stroke-width="2" fill="none"><path d="M627 153L651 132L685 160L651 180Z"/><path d="M627 153L685 160M651 132V180"/></g>
+<g fill="#07958e"><circle cx="627" cy="153" r="5"/><circle cx="651" cy="132" r="5"/><circle cx="685" cy="160" r="5"/><circle cx="651" cy="180" r="5"/></g>
+<!-- Servicio remoto -->
+<rect x="803" y="113" width="100" height="106" rx="12" fill="#fff" stroke="#253e86" stroke-width="3"/>
+<g fill="#e7efff" stroke="#b7c8e7"><rect x="815" y="126" width="76" height="22" rx="4"/><rect x="815" y="155" width="76" height="22" rx="4"/><rect x="815" y="184" width="76" height="22" rx="4"/></g>
+<g fill="#07958e"><circle cx="878" cy="137" r="4"/><circle cx="878" cy="166" r="4"/><circle cx="878" cy="195" r="4"/></g>
+<g font-family="system-ui,sans-serif" text-anchor="middle" fill="#21304d" font-size="20" font-weight="650">
+<text x="120" y="190">PC</text><text x="120" y="289">Laptop</text>
+<text x="300" y="235">Switch</text><text x="462" y="242">Router</text>
+<text x="660" y="235">Internet</text><text x="853" y="252">Server</text>
+</g>
+<text x="580" y="294" font-family="system-ui,sans-serif" font-size="17" fill="#526683">Connect · Share · Communicate</text>
+</svg>
+<figcaption>A network connects devices; the Internet connects networks.</figcaption></figure></div><section class="learning-section" aria-labelledby="introduccion">
+<h2 id="introduccion">1. Introduction to networked systems</h2>
+<p>A <strong>computer network</strong> connects devices to exchange information and share resources: files, printers, applications or access to other systems. Representing and transmitting data enables different devices to work together.</p>
+<p>To design or maintain a network, we need to identify what we want to communicate, through which medium, using which devices and following which rules. A network can work without an Internet connection; the Internet is an interconnection of networks.</p>
+<div class="didactic-note"><p><strong>In this unit you will learn to:</strong> recognise the elements of communication, classify networks and topologies, distinguish media and technologies, identify services and devices, and relate their functions to the OSI and TCP/IP models.</p></div>
+<div class="activity-card activity-callout" id="actividad-red-casa"><h4>Before you start: your home network</h4><p>List the devices in your network, how they connect and what each one does. Keep this initial explanation and review it after studying the components.</p></div>
+<div class="activity-card activity-callout" id="video-internet"><h4>Video: the creation of the Internet</h4><p>Identify two milestones or ideas and explain which communication problem they helped solve.</p><div class="card-actions"><a class="resource-link-btn" href="https://youtu.be/9hIQjrMHTv4" target="_blank" rel="noopener noreferrer">Watch the video: the creation of the Internet</a></div></div>
+<div class="activity-card activity-callout" id="recorrido-internet"><h4>Video: how does the Internet work?</h4><p>Before watching, think about what happens when you open a website. Then describe the path between your device and the server, identifying which parts belong to your local network and which belong to other networks.</p><div class="card-actions"><a class="resource-link-btn" href="https://youtu.be/rw41W8crZ_Y" target="_blank" rel="noopener noreferrer">Watch how the Internet works</a></div></div>
+
+</section>
+<section class="learning-section" aria-labelledby="comunicacion">
+<h2 id="comunicacion">2. Communication elements and systems</h2>
+<h3 id="elementos">2.1. Elements of communication</h3>
+<ul><li><strong>Sender:</strong> creates and transmits the information.</li><li><strong>Receiver:</strong> receives and interprets the information.</li><li><strong>Channel:</strong> the medium through which the signal travels, such as copper, optical fibre or the space through which radio waves propagate. It can be affected by noise, interference and attenuation.</li><li><strong>Message:</strong> the information being communicated. It is represented using an encoding, such as UTF-8 for text. It can also be compressed or encrypted; these operations serve different purposes.</li><li><strong>Protocol:</strong> a set of rules governing message format, order and processing. Sender and receiver need compatible rules.</li></ul>
+<p>A <strong>standard</strong> sets common specifications that support interoperability. A protocol is different from the organisation or document that standardises it. IEEE develops standards such as Ethernet; the IETF publishes Internet protocol specifications in RFC documents.</p>
+<figure class="image-container network-overview"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 230" role="img" aria-labelledby="com-title com-desc"><title id="com-title">Elements of communication</title><desc id="com-desc">The sender sends a message through a channel to the receiver. Both use compatible protocols.</desc><rect width="760" height="230" rx="16" fill="#eff6ff"/><path d="M175 95H580" stroke="#0f766e" stroke-width="5"/><path d="M565 83l18 12-18 12" fill="none" stroke="#0f766e" stroke-width="5"/><g fill="#1e3a8a"><rect x="25" y="55" width="150" height="80" rx="12"/><rect x="585" y="55" width="150" height="80" rx="12"/></g><g font-family="Arial,sans-serif" text-anchor="middle" font-size="22"><text x="100" y="103" fill="white">Sender</text><text x="660" y="103" fill="white">Receiver</text><text x="380" y="65" fill="#0f172a">Message → channel</text><text x="380" y="155" fill="#0f172a">Noise and interference</text><text x="380" y="205" fill="#1e3a8a">Compatible protocols at both ends</text></g></svg><figcaption>Communication needs a medium and shared rules.</figcaption></figure>
+<h3 id="clasificacion-comunicacion">2.2. Classifying communication systems</h3>
+<h4>By transmission medium</h4>
+<ul><li><strong>Guided:</strong> use a physical medium that guides the signal. Twisted pair and coaxial cable carry electrical signals; optical fibre carries light. Performance depends on the cable type, interfaces, distance and installation.</li><li><strong>Unguided or wireless:</strong> use electromagnetic waves without a cable between sender and receiver. Coverage can be omnidirectional or directional, depending on antennas and link design. Wi-Fi does not necessarily use an omnidirectional antenna; microwave and laser links are usually directional.</li></ul>
+<h4>By transmission direction</h4>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Direction of communication"><table><caption>Direction of communication</caption><thead><tr><th>Mode</th><th>How it works</th><th>Example</th></tr></thead><tbody><tr><th>Simplex</th><td>One direction only.</td><td>Radio broadcasting to a receiver.</td></tr><tr><th>Half-duplex</th><td>Both directions, taking turns.</td><td>A walkie-talkie.</td></tr><tr><th>Full-duplex</th><td>Both directions simultaneously.</td><td>A switched Ethernet link configured for full-duplex operation.</td></tr></tbody></table></div>
+<h4>By synchronisation</h4>
+<p>During <strong>synchronous transmission</strong>, sender and receiver maintain coordinated timing to interpret symbols. During <strong>asynchronous transmission</strong>, blocks or characters can start at independent times; for example, a UART (Universal Asynchronous Receiver/Transmitter: a circuit that sends and receives serial data without a shared clock line) uses start and stop bits. Asynchronous does not mean there is no timing: both ends must correctly interpret the duration of the bits.</p>
+<h4>By signal type</h4>
+<p>An <strong>analogue signal</strong> represents information through continuous variations. A <strong>digital representation</strong> uses a discrete set of symbols, usually bits. The physical signal is always affected by the medium: digital communication can also suffer errors. Regeneration and error detection or correction mechanisms help handle them.</p>
+
+</section>
+<section class="learning-section" aria-labelledby="tipologia">
+<h2 id="tipologia">3. Network classification</h2>
+<p>A network can have several labels at the same time: it can be local, private and wireless, and use client–server services. Each classification answers a different question.</p>
+<h3 id="relacion-nodos">3.1. Relationships between nodes</h3>
+<p>A <strong>node</strong> is an element connected to the network. An end device can also be called a <em>host</em>; this term does not refer exclusively to servers.</p>
+<ul><li><strong>Client–server:</strong> the client requests a service and the server provides it. A browser requests a page from a web server. The load can be shared among several servers; the client also processes information.</li><li><strong>Peer-to-peer (P2P):</strong> participants can both offer and request resources. BitTorrent is an example of file distribution between peers. Some P2P systems use central services to locate participants: P2P does not guarantee that the entire architecture is serverless.</li></ul>
+<div class="topology-grid" id="esquema-cliente-servidor-p2p"><figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 330" role="img" aria-labelledby="roles-cs-title roles-cs-desc"><title id="roles-cs-title">Client–server structure</title><desc id="roles-cs-desc">Two clients request a service from a server and receive its responses.</desc><defs><marker id="roles-cs-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#07857e"/></marker></defs><g font-family="system-ui,sans-serif"><text x="200" y="28" text-anchor="middle" font-size="22" fill="#213c85">Client–server</text><path d="M165 112 L85 200" stroke="#07857e" stroke-width="3" marker-start="url(#roles-cs-arrow)" marker-end="url(#roles-cs-arrow)"/><path d="M235 112 L315 200" stroke="#07857e" stroke-width="3" marker-start="url(#roles-cs-arrow)" marker-end="url(#roles-cs-arrow)"/><rect x="125" y="48" width="150" height="64" rx="10" fill="white" stroke="#213c85" stroke-width="2"/><text x="200.0" y="74" text-anchor="middle" font-size="17" fill="#213c85">Server</text><text x="200.0" y="96" text-anchor="middle" font-size="13" fill="#475569">Provides the service</text><rect x="15" y="205" width="140" height="64" rx="10" fill="white" stroke="#213c85" stroke-width="2"/><text x="85.0" y="231" text-anchor="middle" font-size="17" fill="#213c85">Client A</text><text x="85.0" y="253" text-anchor="middle" font-size="13" fill="#475569">Requests the service</text><rect x="245" y="205" width="140" height="64" rx="10" fill="white" stroke="#213c85" stroke-width="2"/><text x="315.0" y="231" text-anchor="middle" font-size="17" fill="#213c85">Client B</text><text x="315.0" y="253" text-anchor="middle" font-size="13" fill="#475569">Requests the service</text><text x="200" y="167" text-anchor="middle" font-size="15" fill="#213c85">Request ↔ response</text><text x="200" y="305" text-anchor="middle" font-size="16" fill="#213c85">Example: browser and web server</text></g></svg><figcaption>The service is requested from a server.</figcaption></figure><figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 330" role="img" aria-labelledby="roles-p2p-title roles-p2p-desc"><title id="roles-p2p-title">Peer-to-peer structure</title><desc id="roles-p2p-desc">Three peers exchange resources. Each participant can offer and request them.</desc><defs><marker id="roles-p2p-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#07857e"/></marker></defs><g font-family="system-ui,sans-serif"><text x="200" y="28" text-anchor="middle" font-size="22" fill="#213c85">Peer-to-peer · P2P</text><path d="M165 112 L85 200" stroke="#07857e" stroke-width="3" marker-start="url(#roles-p2p-arrow)" marker-end="url(#roles-p2p-arrow)"/><path d="M235 112 L315 200" stroke="#07857e" stroke-width="3" marker-start="url(#roles-p2p-arrow)" marker-end="url(#roles-p2p-arrow)"/><path d="M160 237 L240 237" stroke="#07857e" stroke-width="3" marker-start="url(#roles-p2p-arrow)" marker-end="url(#roles-p2p-arrow)"/><rect x="125" y="48" width="150" height="64" rx="10" fill="white" stroke="#213c85" stroke-width="2"/><text x="200.0" y="74" text-anchor="middle" font-size="17" fill="#213c85">Peer A</text><text x="200.0" y="96" text-anchor="middle" font-size="13" fill="#475569">Offers and requests</text><rect x="15" y="205" width="140" height="64" rx="10" fill="white" stroke="#213c85" stroke-width="2"/><text x="85.0" y="231" text-anchor="middle" font-size="17" fill="#213c85">Peer B</text><text x="85.0" y="253" text-anchor="middle" font-size="13" fill="#475569">Offers and requests</text><rect x="245" y="205" width="140" height="64" rx="10" fill="white" stroke="#213c85" stroke-width="2"/><text x="315.0" y="231" text-anchor="middle" font-size="17" fill="#213c85">Peer C</text><text x="315.0" y="253" text-anchor="middle" font-size="13" fill="#475569">Offers and requests</text><text x="200" y="287" text-anchor="middle" font-size="14" fill="#213c85">Resource exchange</text><text x="200" y="305" text-anchor="middle" font-size="15" fill="#213c85">Example: sharing file chunks</text></g></svg><figcaption>Peers can offer and request resources.</figcaption></figure></div><p>The arrows represent <strong>logical communication</strong>, not direct cables. P2P can use supporting servers to locate participants; not every peer needs to connect to every other peer.</p>
+<h3 id="alcance">3.2. Geographical scope</h3>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Network scope"><table><caption>Network scope</caption><thead><tr><th>Type</th><th>Typical scope</th><th>Example</th></tr></thead><tbody>
+<tr><th>PAN</th><td>The immediate personal environment.</td><td>A phone and Bluetooth headphones.</td></tr>
+<tr><th>LAN / WLAN</th><td>A local area under common administration; a WLAN is a wireless LAN.</td><td>A home, classroom or office network.</td></tr>
+<tr><th>CAN</th><td>Campus: interconnecting nearby buildings.</td><td>A university network. Here, CAN means Campus Area Network.</td></tr>
+<tr><th>MAN</th><td>A metropolitan area.</td><td>Links between sites in a city.</td></tr>
+<tr><th>WAN</th><td>A large geographical area, often using service providers.</td><td>Interconnecting offices in different regions.</td></tr>
+</tbody></table></div>
+<p>These scopes are guidelines: no universal distance determines each category on its own. Link technologies and administration also matter.</p>
+<h3 id="acceso-red">3.3. Ownership, access and virtual networks</h3>
+<ul><li><strong>Public network:</strong> provides communication services to multiple users, such as a service provider's network. “Public” does not mean that all its data is accessible to everyone.</li><li><strong>Private network:</strong> its use is restricted to an organisation or group. It may use its own infrastructure or contracted services.</li><li><strong>Intranet:</strong> an organisation's internal services based on Internet technologies, such as an employee portal.</li><li><strong>Extranet:</strong> controlled access for external people, such as suppliers or customers, to specific resources within the organisation.</li><li><strong>VPN:</strong> a virtual private network built over other infrastructure. Remote-access VPNs usually create encrypted tunnels; some provider VPNs offer isolation without necessarily including end-to-end encryption.</li></ul>
+<figure class="wireless-diagram" id="esquema-vpn" tabindex="0" aria-label="VPN diagram; scroll horizontally if necessary"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 375" role="img" aria-labelledby="vpn-remota-title vpn-remota-desc"><title id="vpn-remota-title">How a remote-access VPN works</title><desc id="vpn-remota-desc">A laptop authenticates with the company's VPN gateway. Traffic crosses the Internet through an encrypted tunnel between the two endpoints. The gateway forwards it to an internal server according to the user's permissions.</desc><defs><marker id="vpn-remota-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#07857e"/></marker></defs><g font-family="system-ui,sans-serif"><text x="400" y="30" text-anchor="middle" font-size="23" fill="#213c85">Remote-access VPN: connecting to the company network</text><rect x="235" y="64" width="310" height="160" rx="35" fill="#eff6ff" stroke="#cbd5e1"/><text x="390" y="95" text-anchor="middle" font-size="16" fill="#213c85">Internet · public infrastructure</text><rect x="590" y="65" width="195" height="285" rx="16" fill="#ecfdf5" stroke="#07857e"/><text x="687" y="95" text-anchor="middle" font-size="16" fill="#213c85">Company network</text><path d="M160 155H625" stroke="#99f6e4" stroke-width="40" stroke-linecap="round"/><path d="M165 155 L615 155" stroke="#07857e" stroke-width="3" marker-start="url(#vpn-remota-arrow)" marker-end="url(#vpn-remota-arrow)"/><rect x="15" y="123" width="170" height="64" rx="10" fill="white" stroke="#213c85" stroke-width="2"/><text x="100.0" y="149" text-anchor="middle" font-size="17" fill="#213c85">Laptop</text><text x="100.0" y="171" text-anchor="middle" font-size="13" fill="#475569">VPN client</text><rect x="600" y="123" width="175" height="64" rx="10" fill="white" stroke="#213c85" stroke-width="2"/><text x="687.5" y="149" text-anchor="middle" font-size="17" fill="#213c85">VPN gateway</text><text x="687.5" y="171" text-anchor="middle" font-size="13" fill="#475569">Authenticates and decrypts</text><text x="390" y="202" text-anchor="middle" font-size="20" fill="#07857e">Encrypted tunnel</text><path d="M687 192 L687 257" stroke="#07857e" stroke-width="3" marker-start="url(#vpn-remota-arrow)" marker-end="url(#vpn-remota-arrow)"/><rect x="610" y="267" width="155" height="64" rx="10" fill="white" stroke="#213c85" stroke-width="2"/><text x="687.5" y="293" text-anchor="middle" font-size="17" fill="#213c85">Internal server</text><text x="687.5" y="315" text-anchor="middle" font-size="13" fill="#475569">Intranet or files</text><text x="265" y="278" text-anchor="middle" font-size="17" fill="#213c85">1. Authenticate with the VPN gateway</text><text x="265" y="309" text-anchor="middle" font-size="17" fill="#213c85">2. Send data through the encrypted tunnel</text><text x="265" y="340" text-anchor="middle" font-size="17" fill="#213c85">3. Access authorised resources</text></g></svg><figcaption>The tunnel is a logical connection over the Internet: VPN encryption ends at the gateway. Inside the company, traffic protection also depends on the protocols used, such as HTTPS.</figcaption></figure><p>A VPN can connect a user to their company network or connect different sites. Its security depends on the protocol, authentication and configuration. It does not guarantee anonymity or prevent every threat on its own.</p>
+<h3 id="conmutacion">3.4. Transporting and distributing information</h3>
+<h4>Circuit, message and packet switching</h4>
+<ul><li><strong>Circuits:</strong> a path or resources are reserved for the duration of the communication. This is the traditional approach in switched telephony.</li><li><strong>Messages:</strong> each node stores the entire message before forwarding it. This can require substantial memory and add delay.</li><li><strong>Packets:</strong> information is divided into smaller units transmitted over shared links. The Internet uses packet switching; packets may be lost, delayed or arrive out of order.</li></ul>
+<figure class="wireless-diagram" id="viaje-paquetes" tabindex="0" aria-label="Packet routes diagram; scroll horizontally if necessary"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" role="img" aria-labelledby="paquetes-title paquetes-desc"><title id="paquetes-title">Packets taking different routes across the Internet</title><desc id="paquetes-desc">The sender divides the information into three packets. In this example, each packet follows a different route through routers. They arrive in the order 3, 1, 2. With TCP, the receiver orders the data and reconstructs the original stream: 1, 2, 3.</desc><g font-family="system-ui,sans-serif"><rect width="960" height="460" rx="16" fill="#f8fafc"/><text x="480" y="32" text-anchor="middle" font-size="24" fill="#213c85">One message, several packets and possible routes</text><rect x="215" y="66" width="520" height="340" rx="40" fill="#eef2ff" stroke="#cbd5e1"/><text x="475" y="91" text-anchor="middle" font-size="18" fill="#213c85">Internet · routers and links</text><defs><marker id="pkt-uno" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#1d4ed8"/></marker></defs><polyline points="180,220 250,220 360,130 590,130 700,220 780,220" fill="none" stroke="#1d4ed8" stroke-width="4" marker-end="url(#pkt-uno)"/><text x="475" y="119" text-anchor="middle" font-size="18" fill="#1d4ed8">Packet 1</text><defs><marker id="pkt-dos" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#087f78"/></marker></defs><polyline points="180,225 250,225 360,225 590,225 700,225 780,225" fill="none" stroke="#087f78" stroke-width="4" marker-end="url(#pkt-dos)"/><text x="475" y="211" text-anchor="middle" font-size="18" fill="#087f78">Packet 2</text><defs><marker id="pkt-tres" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#9333a8"/></marker></defs><polyline points="180,230 250,230 360,340 590,340 700,230 780,230" fill="none" stroke="#9333a8" stroke-width="4" marker-end="url(#pkt-tres)"/><text x="475" y="328" text-anchor="middle" font-size="18" fill="#9333a8">Packet 3</text><circle cx="250" cy="225" r="18" fill="white" stroke="#475569" stroke-width="2"/><text x="250" y="230" text-anchor="middle" font-size="12" fill="#334155">R1</text><circle cx="360" cy="130" r="18" fill="white" stroke="#475569" stroke-width="2"/><text x="360" y="135" text-anchor="middle" font-size="12" fill="#334155">R2</text><circle cx="590" cy="130" r="18" fill="white" stroke="#475569" stroke-width="2"/><text x="590" y="135" text-anchor="middle" font-size="12" fill="#334155">R3</text><circle cx="360" cy="225" r="18" fill="white" stroke="#475569" stroke-width="2"/><text x="360" y="230" text-anchor="middle" font-size="12" fill="#334155">R4</text><circle cx="590" cy="225" r="18" fill="white" stroke="#475569" stroke-width="2"/><text x="590" y="230" text-anchor="middle" font-size="12" fill="#334155">R5</text><circle cx="360" cy="340" r="18" fill="white" stroke="#475569" stroke-width="2"/><text x="360" y="345" text-anchor="middle" font-size="12" fill="#334155">R6</text><circle cx="590" cy="340" r="18" fill="white" stroke="#475569" stroke-width="2"/><text x="590" y="345" text-anchor="middle" font-size="12" fill="#334155">R7</text><circle cx="700" cy="225" r="18" fill="white" stroke="#475569" stroke-width="2"/><text x="700" y="230" text-anchor="middle" font-size="12" fill="#334155">R8</text><rect x="20" y="185" width="160" height="75" rx="12" fill="white" stroke="#213c85" stroke-width="2"/><text x="100" y="215" text-anchor="middle" font-size="22" fill="#213c85">Sender</text><text x="100" y="243" text-anchor="middle" font-size="15" fill="#213c85">Splits the message</text><rect x="780" y="185" width="160" height="75" rx="12" fill="white" stroke="#213c85" stroke-width="2"/><text x="860" y="215" text-anchor="middle" font-size="22" fill="#213c85">Receiver</text><text x="860" y="243" text-anchor="middle" font-size="15" fill="#213c85">Receives the packets</text><text x="100" y="294" text-anchor="middle" font-size="16" fill="#213c85">Sending order</text><rect x="41" y="309" width="34" height="30" rx="5" fill="#1d4ed8"/><text x="58" y="330" text-anchor="middle" font-size="18" fill="white">1</text><rect x="83" y="309" width="34" height="30" rx="5" fill="#087f78"/><text x="100" y="330" text-anchor="middle" font-size="18" fill="white">2</text><rect x="125" y="309" width="34" height="30" rx="5" fill="#9333a8"/><text x="142" y="330" text-anchor="middle" font-size="18" fill="white">3</text><text x="860" y="294" text-anchor="middle" font-size="16" fill="#213c85">Arrival: 3, 1, 2</text><rect x="801" y="309" width="34" height="30" rx="5" fill="#9333a8"/><text x="818" y="330" text-anchor="middle" font-size="18" fill="white">3</text><rect x="843" y="309" width="34" height="30" rx="5" fill="#1d4ed8"/><text x="860" y="330" text-anchor="middle" font-size="18" fill="white">1</text><rect x="885" y="309" width="34" height="30" rx="5" fill="#087f78"/><text x="902" y="330" text-anchor="middle" font-size="18" fill="white">2</text><text x="860" y="364" text-anchor="middle" font-size="15" fill="#213c85">TCP orders the data</text><rect x="801" y="378" width="34" height="30" rx="5" fill="#1d4ed8"/><text x="818" y="399" text-anchor="middle" font-size="18" fill="white">1</text><rect x="843" y="378" width="34" height="30" rx="5" fill="#087f78"/><text x="860" y="399" text-anchor="middle" font-size="18" fill="white">2</text><rect x="885" y="378" width="34" height="30" rx="5" fill="#9333a8"/><text x="902" y="399" text-anchor="middle" font-size="18" fill="white">3</text><text x="480" y="438" text-anchor="middle" font-size="18" fill="#213c85">Destination: information is reconstructed in its original order.</text></g></svg><figcaption><strong>Simplified example:</strong> packets can follow different routes and arrive out of order; they can also follow the same route. If the communication uses <strong>TCP</strong>, it orders the received data and recovers missing data through retransmission. IP alone does not guarantee delivery or ordering. The numbers 1, 2 and 3 illustrate the order; TCP uses byte sequence numbers.</figcaption></figure>
+<details class="extension" id="ampliacion-conmutacion"><summary>Further reading: Frame Relay, ATM and xDSL</summary><p>Frame Relay and ATM are historical switching technologies; ATM uses fixed-size cells. xDSL is an access technology over copper, not a switching category. Switching alone does not determine how many recipients receive a transmission.</p></details>
+<h4>Unicast, broadcast and multicast</h4>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Recipients of a transmission"><table><caption>Recipients of a transmission</caption><thead><tr><th>Type</th><th>Recipients</th><th>Key idea</th></tr></thead><tbody><tr><th>Unicast</th><td>One.</td><td>One device sends to another; traffic may cross several routers.</td></tr><tr><th>Broadcast</th><td>All devices in the relevant broadcast domain.</td><td>This does not mean sending to the entire Internet.</td></tr><tr><th>Multicast</th><td>Members of a group.</td><td>The network distributes traffic to interested receivers when the infrastructure supports it.</td></tr></tbody></table></div>
+<p>In a conventional IPv4 subnet with broadcast, the address with all host bits set to 1 is the broadcast address; there are exceptions, such as /31 links. IPv4 multicast address space is <code>224.0.0.0/4</code>, from 224.0.0.0 to 239.255.255.255, with ranges reserved for specific uses.</p>
+<p>IPv6 <strong>does not use broadcast</strong>; it uses multicast for many of those functions. Its multicast addresses start with <code>FF00::/8</code>. IPv6 also supports unicast and anycast. Internet video can be delivered using unicast: streaming does not necessarily mean multicast.</p>
+<h3 id="privacidad">3.5. Privacy-oriented networks</h3>
+<p>Some networks and services reduce exposure of a user's identity or the origin of traffic. Their aims and guarantees differ:</p>
+<ul><li><strong>Tor:</strong> routes traffic through several relays and provides access to onion services. Encryption of the connection to the final site remains important.</li><li><strong>I2P:</strong> an overlay network focused on communication and services within its own environment.</li><li><strong>VPN:</strong> can hide the source address from the destination site, but shifts some trust to the VPN provider or administrator.</li></ul>
+<p>Decentralisation, encryption and anonymity are not synonyms; none can promise absolute privacy.</p>
+<div class="activity-card activity-callout" id="video-tor"><h4>Further exploration: the Tor network</h4><p>Explain its purpose and one limitation; distinguish privacy, anonymity and security. Record your reflection in lab 2.2.</p><div class="card-actions"><a class="resource-link-btn" href="https://youtu.be/tEJsKW8AFxs" target="_blank" rel="noopener noreferrer">Watch the video about Tor</a></div></div>
+</section>
+<section class="learning-section" aria-labelledby="topologias">
+<h2 id="topologias">4. Network topologies</h2>
+<p>The <strong>physical topology</strong> describes how nodes and links are connected. The <strong>logical topology</strong> describes how information flows. They may differ. They are chosen with functionality, growth, cost and fault tolerance in mind.</p>
+<h3 id="topologias-cableadas">4.1. Wired topologies</h3>
+<div class="topology-grid"><figure><svg viewBox="0 0 320 210" role="img" aria-labelledby="top-estrella"><title id="top-estrella">Star topology</title><line x1="160" y1="105" x2="60" y2="40" stroke="#0f766e" stroke-width="3"/><line x1="160" y1="105" x2="260" y2="40" stroke="#0f766e" stroke-width="3"/><line x1="160" y1="105" x2="60" y2="170" stroke="#0f766e" stroke-width="3"/><line x1="160" y1="105" x2="260" y2="170" stroke="#0f766e" stroke-width="3"/><circle cx="160" cy="105" r="15" fill="#1e3a8a"/><text x="160" y="110" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">1</text><circle cx="60" cy="40" r="15" fill="#1e3a8a"/><text x="60" y="45" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">2</text><circle cx="260" cy="40" r="15" fill="#1e3a8a"/><text x="260" y="45" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">3</text><circle cx="60" cy="170" r="15" fill="#1e3a8a"/><text x="60" y="175" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">4</text><circle cx="260" cy="170" r="15" fill="#1e3a8a"/><text x="260" y="175" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">5</text></svg><figcaption>Star</figcaption></figure><figure><svg viewBox="0 0 320 210" role="img" aria-labelledby="top-bus"><title id="top-bus">Bus topology: three nodes connected to a shared medium</title><path d="M30 130H290 M30 115V145 M290 115V145 M85 130V65 M160 130V65 M235 130V65" fill="none" stroke="#0f766e" stroke-width="3"/><g fill="#1e3a8a"><circle cx="85" cy="65" r="15"/><circle cx="160" cy="65" r="15"/><circle cx="235" cy="65" r="15"/></g><g fill="white" font-size="14" font-family="Arial,sans-serif" text-anchor="middle"><text x="85" y="70">1</text><text x="160" y="70">2</text><text x="235" y="70">3</text></g><text x="160" y="175" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" fill="#475569">Shared medium and terminators</text></svg><figcaption>Bus</figcaption></figure><figure><svg viewBox="0 0 320 210" role="img" aria-labelledby="top-anillo"><title id="top-anillo">Ring topology</title><line x1="260" y1="105" x2="210" y2="170" stroke="#0f766e" stroke-width="3"/><line x1="210" y1="170" x2="110" y2="170" stroke="#0f766e" stroke-width="3"/><line x1="110" y1="170" x2="60" y2="105" stroke="#0f766e" stroke-width="3"/><line x1="60" y1="105" x2="110" y2="40" stroke="#0f766e" stroke-width="3"/><line x1="110" y1="40" x2="210" y2="40" stroke="#0f766e" stroke-width="3"/><line x1="210" y1="40" x2="260" y2="105" stroke="#0f766e" stroke-width="3"/><circle cx="260" cy="105" r="15" fill="#1e3a8a"/><text x="260" y="110" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">1</text><circle cx="210" cy="170" r="15" fill="#1e3a8a"/><text x="210" y="175" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">2</text><circle cx="110" cy="170" r="15" fill="#1e3a8a"/><text x="110" y="175" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">3</text><circle cx="60" cy="105" r="15" fill="#1e3a8a"/><text x="60" y="110" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">4</text><circle cx="110" cy="40" r="15" fill="#1e3a8a"/><text x="110" y="45" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">5</text><circle cx="210" cy="40" r="15" fill="#1e3a8a"/><text x="210" y="45" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">6</text></svg><figcaption>Ring</figcaption></figure><figure><svg viewBox="0 0 320 210" role="img" aria-labelledby="top-rbol"><title id="top-rbol">Tree topology</title><line x1="160" y1="30" x2="85" y2="100" stroke="#0f766e" stroke-width="3"/><line x1="160" y1="30" x2="235" y2="100" stroke="#0f766e" stroke-width="3"/><line x1="85" y1="100" x2="40" y2="175" stroke="#0f766e" stroke-width="3"/><line x1="85" y1="100" x2="125" y2="175" stroke="#0f766e" stroke-width="3"/><line x1="235" y1="100" x2="195" y2="175" stroke="#0f766e" stroke-width="3"/><line x1="235" y1="100" x2="280" y2="175" stroke="#0f766e" stroke-width="3"/><circle cx="160" cy="30" r="15" fill="#1e3a8a"/><text x="160" y="35" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">1</text><circle cx="85" cy="100" r="15" fill="#1e3a8a"/><text x="85" y="105" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">2</text><circle cx="235" cy="100" r="15" fill="#1e3a8a"/><text x="235" y="105" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">3</text><circle cx="40" cy="175" r="15" fill="#1e3a8a"/><text x="40" y="180" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">4</text><circle cx="125" cy="175" r="15" fill="#1e3a8a"/><text x="125" y="180" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">5</text><circle cx="195" cy="175" r="15" fill="#1e3a8a"/><text x="195" y="180" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">6</text><circle cx="280" cy="175" r="15" fill="#1e3a8a"/><text x="280" y="180" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">7</text></svg><figcaption>Tree</figcaption></figure><figure><svg viewBox="0 0 320 210" role="img" aria-labelledby="top-mallaparcial"><title id="top-mallaparcial">Partial mesh topology</title><line x1="260" y1="105" x2="210" y2="170" stroke="#0f766e" stroke-width="3"/><line x1="210" y1="170" x2="110" y2="170" stroke="#0f766e" stroke-width="3"/><line x1="110" y1="170" x2="60" y2="105" stroke="#0f766e" stroke-width="3"/><line x1="60" y1="105" x2="110" y2="40" stroke="#0f766e" stroke-width="3"/><line x1="110" y1="40" x2="210" y2="40" stroke="#0f766e" stroke-width="3"/><line x1="210" y1="40" x2="260" y2="105" stroke="#0f766e" stroke-width="3"/><line x1="260" y1="105" x2="60" y2="105" stroke="#0f766e" stroke-width="3"/><line x1="210" y1="170" x2="110" y2="40" stroke="#0f766e" stroke-width="3"/><circle cx="260" cy="105" r="15" fill="#1e3a8a"/><text x="260" y="110" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">1</text><circle cx="210" cy="170" r="15" fill="#1e3a8a"/><text x="210" y="175" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">2</text><circle cx="110" cy="170" r="15" fill="#1e3a8a"/><text x="110" y="175" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">3</text><circle cx="60" cy="105" r="15" fill="#1e3a8a"/><text x="60" y="110" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">4</text><circle cx="110" cy="40" r="15" fill="#1e3a8a"/><text x="110" y="45" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">5</text><circle cx="210" cy="40" r="15" fill="#1e3a8a"/><text x="210" y="45" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">6</text></svg><figcaption>Partial mesh</figcaption></figure><figure><svg viewBox="0 0 320 210" role="img" aria-labelledby="top-mallacompleta"><title id="top-mallacompleta">Full mesh topology</title><line x1="260" y1="105" x2="210" y2="170" stroke="#0f766e" stroke-width="3"/><line x1="260" y1="105" x2="110" y2="170" stroke="#0f766e" stroke-width="3"/><line x1="260" y1="105" x2="60" y2="105" stroke="#0f766e" stroke-width="3"/><line x1="260" y1="105" x2="110" y2="40" stroke="#0f766e" stroke-width="3"/><line x1="210" y1="170" x2="110" y2="170" stroke="#0f766e" stroke-width="3"/><line x1="210" y1="170" x2="60" y2="105" stroke="#0f766e" stroke-width="3"/><line x1="210" y1="170" x2="110" y2="40" stroke="#0f766e" stroke-width="3"/><line x1="110" y1="170" x2="60" y2="105" stroke="#0f766e" stroke-width="3"/><line x1="110" y1="170" x2="110" y2="40" stroke="#0f766e" stroke-width="3"/><line x1="60" y1="105" x2="110" y2="40" stroke="#0f766e" stroke-width="3"/><circle cx="260" cy="105" r="15" fill="#1e3a8a"/><text x="260" y="110" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">1</text><circle cx="210" cy="170" r="15" fill="#1e3a8a"/><text x="210" y="175" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">2</text><circle cx="110" cy="170" r="15" fill="#1e3a8a"/><text x="110" y="175" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">3</text><circle cx="60" cy="105" r="15" fill="#1e3a8a"/><text x="60" y="110" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">4</text><circle cx="110" cy="40" r="15" fill="#1e3a8a"/><text x="110" y="45" fill="white" font-family="Arial,sans-serif" text-anchor="middle" font-size="14">5</text></svg><figcaption>Full mesh</figcaption></figure></div><p class="image-caption">Circles represent nodes and lines represent links. These are simplified physical diagrams; in a bus, several nodes share the same medium.</p>
+<ul><li><strong>Star:</strong> each device connects to a central element, usually a switch. A failure in one device's link does not disconnect everyone; failure of the central element can.</li><li><strong>Bus:</strong> nodes share a common medium. This is a historical coaxial Ethernet topology, with terminators at its ends. Shared access requires coordination.</li><li><strong>Ring:</strong> each node connects to its neighbours to form a closed loop. Some variants include a second ring or recovery mechanisms.</li><li><strong>Tree:</strong> a hierarchical structure connecting groups of devices through several levels of equipment. It supports growth, but upper-level links concentrate traffic.</li><li><strong>Partial mesh:</strong> some nodes have several paths available. This improves redundancy, although it does not guarantee continuity under every failure.</li><li><strong>Full mesh:</strong> each node connects to every other node. With n nodes, n × (n − 1) / 2 bidirectional point-to-point links are needed. Redundancy increases cost and complexity.</li><li><strong>Hybrid:</strong> combines several topologies, such as stars connected through a hierarchy of switches.</li></ul>
+<div class="activity-card activity-callout" id="video-topologia-fisica-logica"><h4>Video: physical and logical topology</h4><p>How devices connect and how data flows are different questions. After watching the video, explain the difference and apply it to a switched Ethernet network.</p><div class="card-actions"><a class="resource-link-btn" href="https://youtu.be/oy_vnFR-nzI" target="_blank" rel="noopener noreferrer">Watch physical and logical topology</a></div></div>
+<h3 id="topologias-inalambricas">4.2. Wireless topologies</h3>
+<p>A wireless topology describes <strong>how devices are organised and how they communicate</strong>. Choosing it well helps provide coverage, share resources and maintain access to applications.</p>
+<div class="didactic-note"><p><strong>Connected to Wi-Fi, but no Internet?</strong> Yes, it is possible. Wi-Fi provides access to a local network; the Internet is a separate connection. If the web server is on your network and accessible, you can use its application even if the Internet connection fails, provided it does not depend on external services.</p></div>
+<h4 id="wifi-infraestructura">4.2.1. Infrastructure: one access point</h4>
+<p>In <strong>infrastructure mode</strong>, clients associate with an <strong>access point (AP)</strong>. It receives and transmits wireless communications and usually links the WLAN to the wired network. This is the usual Wi-Fi arrangement in a classroom or home.</p>
+<ul><li><strong>AP:</strong> provides wireless access to the network.</li><li><strong>Switch:</strong> connects devices on the LAN and forwards frames to the appropriate port.</li><li><strong>Router:</strong> connects different networks, such as the local network and the Internet.</li></ul>
+<p>The device we call a “home router” often combines all three functions. Being in the same box does not make them the same function.</p>
+<figure class="wireless-diagram" tabindex="0" aria-label="Network diagram; scroll horizontally if necessary"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" role="img" aria-labelledby="wifi-infra-title wifi-infra-desc"><title id="wifi-infra-title">Infrastructure with one access point</title><desc id="wifi-infra-desc">Two laptops connect to the access point over Wi-Fi. The AP is wired to a switch, which connects to a local web server.</desc><rect width="800" height="320" rx="16" fill="#f2f7fc"/><g font-family="system-ui,sans-serif"><path d="M170 90L255 157" fill="none" stroke="#07857e" stroke-width="3" stroke-dasharray="7 6"/><path d="M170 237L255 157" fill="none" stroke="#07857e" stroke-width="3" stroke-dasharray="7 6"/><path d="M405 157L455 157" fill="none" stroke="#213c85" stroke-width="3"/><path d="M605 157L640 157" fill="none" stroke="#213c85" stroke-width="3"/><rect x="20" y="58" width="150" height="64" rx="12" fill="white" stroke="#213c85" stroke-width="2"/><text x="95.0" y="85" text-anchor="middle" font-size="18" font-weight="700" fill="#213c85">Laptop A</text><text x="95.0" y="107" text-anchor="middle" font-size="14" fill="#475569">Wi-Fi client</text><rect x="20" y="205" width="150" height="64" rx="12" fill="white" stroke="#213c85" stroke-width="2"/><text x="95.0" y="232" text-anchor="middle" font-size="18" font-weight="700" fill="#213c85">Laptop B</text><text x="95.0" y="254" text-anchor="middle" font-size="14" fill="#475569">Wi-Fi client</text><rect x="255" y="125" width="150" height="64" rx="12" fill="white" stroke="#07857e" stroke-width="2"/><text x="330.0" y="152" text-anchor="middle" font-size="18" font-weight="700" fill="#07857e">AP</text><text x="330.0" y="174" text-anchor="middle" font-size="14" fill="#475569">Wireless access</text><rect x="455" y="125" width="150" height="64" rx="12" fill="white" stroke="#213c85" stroke-width="2"/><text x="530.0" y="152" text-anchor="middle" font-size="18" font-weight="700" fill="#213c85">Switch</text><text x="530.0" y="174" text-anchor="middle" font-size="14" fill="#475569">Wired connection</text><rect x="640" y="125" width="140" height="64" rx="12" fill="white" stroke="#213c85" stroke-width="2"/><text x="710.0" y="152" text-anchor="middle" font-size="18" font-weight="700" fill="#213c85">Server</text><text x="710.0" y="174" text-anchor="middle" font-size="14" fill="#475569">Local web server</text><text x="270" y="275" font-size="17" fill="#475569">Dashed: Wi-Fi · Solid: cable</text></g></svg><figcaption>Clients access the server through the AP and the switch. This local communication does not require the Internet.</figcaption></figure>
+<h4 id="wifi-varios-ap">4.2.2. Multiple access points: coverage and mobility</h4>
+<p>One AP may not cover an entire school or have enough capacity for its users. We can deploy <strong>several APs wired to the LAN</strong>. This extends the service area; their placement and channels must be planned to avoid coverage gaps and reduce interference.</p>
+<ul><li><strong>SSID:</strong> the Wi-Fi network name users see, such as “Classroom”.</li><li><strong>BSSID:</strong> the identifier of a Wi-Fi cell, usually in MAC address format. One physical AP can provide several BSSIDs.</li><li><strong>Roaming:</strong> a client changing its association from one AP to another as it moves.</li></ul>
+<p>In a WLAN with several APs, they can advertise the same SSID and security policy. <strong>Copying the name and password does not guarantee a seamless handover</strong>: the client's decision, coverage, authentication and network configuration all matter. A device may remain connected to a distant AP longer than expected.</p>
+<figure class="wireless-diagram" tabindex="0" aria-label="Network diagram; scroll horizontally if necessary"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" role="img" aria-labelledby="wifi-roaming-title wifi-roaming-desc"><title id="wifi-roaming-title">Two classrooms connected to the same network</title><desc id="wifi-roaming-desc">Each classroom has an AP wired to the same switch. A laptop moves from one classroom to the other.</desc><rect width="800" height="320" rx="16" fill="#f2f7fc"/><g font-family="system-ui,sans-serif"><rect x="20" y="20" width="360" height="180" rx="14" fill="#e8f3ff"/><rect x="420" y="20" width="360" height="180" rx="14" fill="#e6f7f1"/><text x="40" y="48" fill="#213c85" font-size="18">Classroom A</text><text x="440" y="48" fill="#07857e" font-size="18">Classroom B</text><path d="M245 107L400 247" fill="none" stroke="#213c85" stroke-width="3"/><path d="M645 107L400 247" fill="none" stroke="#213c85" stroke-width="3"/><path d="M145 107L170 107" fill="none" stroke="#07857e" stroke-width="3" stroke-dasharray="7 6"/><rect x="35" y="75" width="110" height="64" rx="12" fill="white" stroke="#213c85" stroke-width="2"/><text x="90.0" y="102" text-anchor="middle" font-size="18" font-weight="700" fill="#213c85">Laptop</text><text x="90.0" y="124" text-anchor="middle" font-size="14" fill="#475569">Moves</text><rect x="170" y="75" width="150" height="64" rx="12" fill="white" stroke="#07857e" stroke-width="2"/><text x="245.0" y="102" text-anchor="middle" font-size="18" font-weight="700" fill="#07857e">AP A</text><text x="245.0" y="124" text-anchor="middle" font-size="14" fill="#475569">BSSID A</text><rect x="570" y="75" width="150" height="64" rx="12" fill="white" stroke="#07857e" stroke-width="2"/><text x="645.0" y="102" text-anchor="middle" font-size="18" font-weight="700" fill="#07857e">AP B</text><text x="645.0" y="124" text-anchor="middle" font-size="14" fill="#475569">BSSID B</text><rect x="325" y="215" width="150" height="64" rx="12" fill="white" stroke="#213c85" stroke-width="2"/><text x="400.0" y="242" text-anchor="middle" font-size="18" font-weight="700" fill="#213c85">Switch</text><text x="400.0" y="264" text-anchor="middle" font-size="14" fill="#475569">Same local network</text><path d="M145 167H570l-12 -7m12 7l-12 7" stroke="#a86b05" stroke-width="2" fill="none"/><text x="210" y="190" font-size="16" fill="#825800">Same SSID: Classroom · AP handover</text></g></svg><figcaption>A shared network name makes access easier, but roaming also depends on the client, coverage and configuration.</figcaption></figure>
+<h4 id="wifi-malla">4.2.3. Mesh networks: connecting the nodes</h4>
+<p>A <strong>mesh network</strong> coordinates several nodes to extend access. It is useful when running cable to every location is difficult. We must distinguish two connections:</p>
+<ul><li><strong>Access:</strong> the Wi-Fi link between a phone or laptop and the node it connects to.</li><li><strong>Backhaul:</strong> the connection carrying traffic from the nodes to the rest of the network. Depending on the system, it may use radio, Ethernet cable or a combination.</li></ul>
+<p>The mesh can be <strong>partial</strong>: not every node connects directly to every other node. Path selection depends on the system and available links. Several wired APs do not automatically become a mesh simply because they share an SSID.</p>
+<figure class="wireless-diagram" tabindex="0" aria-label="Network diagram; scroll horizontally if necessary"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" role="img" aria-labelledby="wifi-mesh-title wifi-mesh-desc"><title id="wifi-mesh-title">Client access and links between mesh nodes</title><desc id="wifi-mesh-desc">Three nodes form a triangular partial mesh. A fourth node connects to only one of them. Clients use Wi-Fi links distinct from the backhaul links.</desc><rect width="800" height="320" rx="16" fill="#f2f7fc"/><g font-family="system-ui,sans-serif"><path d="M175 110L360 75" fill="none" stroke="#9555bd" stroke-width="3" stroke-dasharray="7 6"/><path d="M360 75L360 225" fill="none" stroke="#9555bd" stroke-width="3" stroke-dasharray="7 6"/><path d="M175 110L360 225" fill="none" stroke="#9555bd" stroke-width="3" stroke-dasharray="7 6"/><path d="M510 225L620 225" fill="none" stroke="#9555bd" stroke-width="3" stroke-dasharray="7 6"/><path d="M435 43L635 43" fill="none" stroke="#07857e" stroke-width="3" stroke-dasharray="7 6"/><rect x="25" y="78" width="150" height="64" rx="12" fill="white" stroke="#213c85" stroke-width="2"/><text x="100.0" y="105" text-anchor="middle" font-size="18" font-weight="700" fill="#213c85">Main node</text><text x="100.0" y="127" text-anchor="middle" font-size="14" fill="#475569">To the network</text><rect x="360" y="43" width="150" height="64" rx="12" fill="white" stroke="#9555bd" stroke-width="2"/><text x="435.0" y="70" text-anchor="middle" font-size="18" font-weight="700" fill="#9555bd">Node A</text><text x="435.0" y="92" text-anchor="middle" font-size="14" fill="#475569">Mesh</text><rect x="360" y="193" width="150" height="64" rx="12" fill="white" stroke="#9555bd" stroke-width="2"/><text x="435.0" y="220" text-anchor="middle" font-size="18" font-weight="700" fill="#9555bd">Node B</text><text x="435.0" y="242" text-anchor="middle" font-size="14" fill="#475569">Mesh</text><rect x="620" y="193" width="150" height="64" rx="12" fill="white" stroke="#9555bd" stroke-width="2"/><text x="695.0" y="220" text-anchor="middle" font-size="18" font-weight="700" fill="#9555bd">Node C</text><text x="695.0" y="242" text-anchor="middle" font-size="14" fill="#475569">Mesh</text><rect x="635" y="11" width="150" height="64" rx="12" fill="white" stroke="#07857e" stroke-width="2"/><text x="710.0" y="38" text-anchor="middle" font-size="18" font-weight="700" fill="#07857e">Client</text><text x="710.0" y="60" text-anchor="middle" font-size="14" fill="#475569">WiFi</text><text x="28" y="285" font-size="17" fill="#07857e">Green: client access</text><text x="350" y="285" font-size="17" fill="#9555bd">Purple: backhaul between nodes</text></g></svg><figcaption>Partial mesh: not all nodes have direct links to each other. The links shown represent possible connections, not necessarily routes used simultaneously.</figcaption></figure>
+<p><strong>Mesh and repeaters:</strong> a repeater extends a signal by retransmitting traffic; a mesh system usually coordinates its nodes and link selection. The “mesh” label alone does not guarantee higher speed or perfect roaming. When backhaul shares radio resources with clients, they compete for them; additional hops can also increase latency.</p>
+<div class="didactic-note"><p><strong>More coverage does not mean more capacity.</strong> Having a signal in more rooms does not increase the bandwidth of your Internet subscription. Performance depends on distance, obstacles, interference, medium utilisation and backhaul capacity. Nor is there a universal rule that every repeater always halves the speed.</p><p><strong>Good practice:</strong> place nodes where they still receive a suitable backhaul connection; a node in a dead zone cannot retransmit a connection it does not receive. If the system supports it and cabling is available, Ethernet backhaul frees up radio resources.</p></div>
+<div class="activity-card activity-callout" id="video-mesh"><h4>Video: mesh Wi-Fi networks</h4><p>Explain which coverage problem a mesh network aims to solve, how its nodes communicate and how it differs from adding a single repeater. Do not assume that all nodes connect directly to one another.</p><div class="card-actions"><a class="resource-link-btn" href="https://youtu.be/_qpWCVgA8OA" target="_blank" rel="noopener noreferrer">Watch mesh Wi-Fi networks</a></div></div>
+<h4 id="wifi-conexion-directa">4.2.4. Direct connections: ad hoc and Wi-Fi Direct</h4>
+<p>When we only need to connect nearby devices, external Wi-Fi infrastructure may be unnecessary.</p>
+<ul><li><strong>Classic ad hoc (IBSS):</strong> devices form a network without an infrastructure AP. This is an important reference for understanding peer-to-peer organisation; do not assume that all current devices support this mode.</li><li><strong>WiFi Direct:</strong> compatible devices form a group without an external AP. One takes the role of <em>Group Owner</em> or coordinator, similar to an AP for that group. It is therefore not identical to classic ad hoc mode.</li></ul>
+<figure class="wireless-diagram" tabindex="0" aria-label="Network diagram; scroll horizontally if necessary"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" role="img" aria-labelledby="wifi-direct-title wifi-direct-desc"><title id="wifi-direct-title">Connecting with Wi-Fi Direct</title><desc id="wifi-direct-desc">A laptop and a compatible printer form a Wi-Fi Direct group. In this example, the printer coordinates the group.</desc><rect width="800" height="320" rx="16" fill="#f2f7fc"/><g font-family="system-ui,sans-serif"><path d="M275 155L525 155" fill="none" stroke="#07857e" stroke-width="3" stroke-dasharray="7 6"/><rect x="105" y="123" width="170" height="64" rx="12" fill="white" stroke="#213c85" stroke-width="2"/><text x="190.0" y="150" text-anchor="middle" font-size="18" font-weight="700" fill="#213c85">Laptop</text><text x="190.0" y="172" text-anchor="middle" font-size="14" fill="#475569">Group client</text><rect x="525" y="123" width="170" height="64" rx="12" fill="white" stroke="#07857e" stroke-width="2"/><text x="610.0" y="150" text-anchor="middle" font-size="18" font-weight="700" fill="#07857e">Printer</text><text x="610.0" y="172" text-anchor="middle" font-size="14" fill="#475569">Coordinates the group</text><text x="400" y="98" text-anchor="middle" font-size="22" fill="#213c85">WiFi Direct</text><text x="400" y="245" text-anchor="middle" font-size="18" fill="#475569">No external AP or Internet connection</text></g></svg><figcaption>Example of a Wi-Fi Direct group: one device acts as coordinator. This is not classic ad hoc mode.</figcaption></figure>
+<p><strong>Application:</strong> printing from a laptop to a compatible printer without using the school's Wi-Fi. Actual support depends on both devices and the software. Sharing a phone's Internet connection is a different case: the phone normally creates an access point, not a classic ad hoc network.</p>
+<div class="activity-card activity-callout" id="actividad-wifi-daw">
+<h4>Activity: a web application for two classrooms · 15 minutes</h4>
+<p>The school has a wired web server, two classrooms with laptops and a corridor with poor coverage. The application runs on the school's server.</p>
+<ol><li>Propose how to connect the devices and position the access points. Justify your choice and explain whether you would use wired APs, mesh or another arrangement.</li><li>Describe the path of a request from a laptop to the server. Identify which links are wireless and which are wired.</li><li>Explain whether the application could keep working if the Internet connection failed and which external dependencies might prevent this.</li><li>The laptop shows a strong Wi-Fi signal, but the application responds slowly. State what you would check and how you would distinguish a network problem from a server or application problem.</li></ol>
+<p><strong>Submit:</strong> your proposal and reasoned answers, in text only.</p>
+</div>
+<div class="activity-card activity-callout" id="laboratorio22"><h4>Lab 2.2. Classify and design networks · 25 minutes</h4><p>Classify an office network, two sites connected by a VPN and a Bluetooth connection. Propose a topology for a classroom and analyse what happens when a failure occurs.</p><div class="card-actions"><a class="resource-link-btn" href="../../labs/redes-ssii-u02.html#lab22">Open lab</a></div></div>
+
+<div class="activity-card activity-callout" id="laboratorio21"><h4>Lab 2.1. From your home to the Internet · 20 minutes</h4><p>Identify the elements of a home network, describe their connections and analyse a specific communication. Also complete the reflection on the Internet video.</p><div class="card-actions"><a class="resource-link-btn" href="../../labs/redes-ssii-u02.html#lab21">Open lab</a></div></div>
+</section>
+<section class="learning-section" aria-labelledby="tecnologias">
+<h2 id="tecnologias">5. Network technologies and media</h2>
+<p>The physical medium, communication standard and contracted service are different concepts. For example, <strong>Ethernet can run over copper or fibre</strong>, while Wi-Fi provides access to a local network and does not require an Internet connection.</p>
+<h3 id="medios-cableados">5.1. Wired media</h3>
+<p>Wired or <strong>guided media</strong> carry the signal through a physical medium. Twisted pair and coaxial cable carry electrical signals; optical fibre carries light. They are used when we need stable links between devices, cabinets or buildings.</p>
+<p><strong>A medium and a technology are not the same:</strong> Ethernet is a family of technologies that can use copper or fibre. PLC transmits data over electrical wiring.</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Wired media and technologies"><table><caption>Wired media and technologies</caption><thead><tr><th>Medium or technology</th><th>How it communicates</th><th>Uses and considerations</th></tr></thead><tbody><tr><th>Ethernet</th><td>IEEE 802.3 family over compatible media.</td><td>LANs and other links; cables, transceivers and ports must support the required performance.</td></tr><tr><th>Optical fibre</th><td>Light pulses through a fibre.</td><td>Access, campus and long-distance links. It is a medium used by different technologies.</td></tr><tr><th>PLC</th><td>Data signals over electrical wiring.</td><td>Connections between adapters. Performance depends on the electrical installation and interference.</td></tr></tbody></table></div>
+<p>Coaxial cable, twisted pair and fibre are not interchangeable without suitable interfaces. When choosing a link, check distance, environment, cable, connectors and compatible ports.</p>
+<div class="activity-card activity-callout" id="videos-medios-guiados"><h4>Resources: from classroom cables to submarine cables</h4><p>Observe how the medium changes with distance and environment. Identify what carries information in twisted pair and fibre, and explain an appropriate use for each.</p><p>The submarine cable video links physical media to the idea of the Internet as an interconnection of networks.</p><div class="card-actions"><a class="resource-link-btn" href="https://youtu.be/nUMLZJ7Rtmk" target="_blank" rel="noopener noreferrer">Watch the UTP cable guide</a><a class="resource-link-btn" href="https://www.youtube.com/watch?v=zZ7ay-j6ZQQ&amp;t=110s" target="_blank" rel="noopener noreferrer">Watch how optical fibre works</a><a class="resource-link-btn" href="https://www.youtube.com/watch?v=u1xxZ8r2rRc" target="_blank" rel="noopener noreferrer">Watch submarine cables</a></div></div>
+<h3 id="medios-inalambricos">5.2. Wireless media</h3>
+<p>Wireless or <strong>unguided media</strong> allow devices to communicate without a cable between them. The technologies in this table use electromagnetic waves: they support mobility or access where cabling is difficult, but depend on coverage, obstacles, interference and available radio resources.</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Wireless technologies"><table><caption>Wireless technologies</caption><thead><tr><th>Medium or technology</th><th>How it communicates</th><th>Uses and considerations</th></tr></thead><tbody><tr><th>Mobile networks</th><td>Base stations and devices communicating by radio.</td><td>Generations such as 3G, 4G and 5G. Coverage, mobility, capacity and availability depend on the operator and deployment.</td></tr><tr><th>Wi-Fi</th><td>Radio, IEEE 802.11 family.</td><td>Wireless LANs. Band, channels, antennas, coverage and client numbers matter.</td></tr><tr><th>Bluetooth</th><td>Short-range radio.</td><td>Peripherals and personal devices; their profiles determine supported functions.</td></tr><tr><th>NFC</th><td>Proximity communication.</td><td>Identification, tag reading or data exchange over very short distances.</td></tr><tr><th>Satellite</th><td>Radio links with satellites and ground stations.</td><td>Access in locations with limited alternatives; Starlink is one example of a service. Coverage and suitable installation conditions are required.</td></tr></tbody></table></div>
+<p>With any medium, the advertised link speed is not always the useful throughput of an application: there is overhead, shared traffic and potential bottlenecks.</p>
+<div class="activity-card activity-callout" id="video-espectro"><h4>Video: the electromagnetic spectrum</h4><p>Relate wireless communications to the spectrum. Explain why <strong>signal frequency</strong> and <strong>transmission rate</strong> are different quantities and state their units.</p><div class="card-actions"><a class="resource-link-btn" href="https://youtu.be/IO1iW-jytgM" target="_blank" rel="noopener noreferrer">Watch the electromagnetic spectrum</a></div></div><div class="activity-card activity-callout" id="laboratorio-wifi"><h4>Lab 2.3. Wi-Fi networks · 30 minutes</h4><p>Compare 802.11a, b, g, n, ac and ax: date, name, bands, spatial streams and theoretical speed with its conditions. Rank the security mechanisms and justify a choice for a classroom.</p><p>Distinguish antennas from spatial streams and theoretical speed from actual performance. Include sources and the date accessed.</p><div class="card-actions"><a class="resource-link-btn" href="../../labs/redes-ssii-u02.html#wifi">Open lab</a></div></div><div class="activity-card activity-callout" id="actividad-observacion-wifi"><h4>Activity: observe your Wi-Fi signal · 25 minutes</h4><p>A weak connection may be caused by distance, obstacles or the radio environment. Work with the classroom network or your own network and compare observations before proposing changes.</p><ol><li>In Ubuntu with NetworkManager, open a terminal and run <code>nmcli device wifi list</code>. Note the channel, signal and security of your chosen network. To see all available fields, use <code>nmcli -f all device wifi list</code>.</li><li>Repeat in two locations using the same device. Record the positions and obstacles. Identify the signal unit or scale: nmcli's SIGNAL value uses a scale from 0 to 100, not dBm.</li><li>Distinguish SSID (network name) from BSSID (logical access point identifier). If several BSSIDs share the same SSID, explain what this might mean.</li><li>Propose an improvement in placement, band or channel and justify it. Counting nearby networks alone does not prove congestion: their activity, signal and channel width also matter.</li></ol><p><strong>Submit:</strong> your observations and conclusion in text, using labels such as Network A for other people's networks. If the device has no Wi-Fi, use the observations supplied by your teacher.</p><div class="card-actions"><a class="resource-link-btn" href="https://networkmanager.pages.freedesktop.org/NetworkManager/NetworkManager/nmcli-examples.html" target="_blank" rel="noopener noreferrer">Consult NetworkManager commands</a></div></div><div class="activity-card activity-callout" id="actividad-5g"><h4>Further exploration: investigate 5G networks</h4><p>Explain the device, radio access and core; describe applications, compare with Wi-Fi, and distinguish theoretical performance from real-world conditions. Document your sources.</p><div class="card-actions"><a class="resource-link-btn" href="../../labs/redes-ssii-u02.html#ampliacion">Open lab</a></div></div><div class="activity-card activity-callout" id="actividad-tecnologias"><h4>Activity 1. Complete the technology comparison in class</h4><p>Choose one wired and one wireless technology from the tables above. Find a technical source for each and explain its transmission medium, one appropriate use and one limitation. If you give a speed or range, specify the version and conditions.</p><p><strong>Submit:</strong> a short text comparison, with links and dates accessed. You do not need to buy or install anything.</p></div>
+</section>
+<section class="learning-section" aria-labelledby="componentes">
+<h2 id="componentes">6. Network components and services</h2>
+<h3 id="software-red">6.1. Operating systems and network services</h3>
+<p>The operating system manages interfaces, communications, users and resources. It runs <strong>network services</strong>; not all are part of the operating system itself, and they do not all have to be installed on one machine.</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Common services"><table><caption>Common services</caption><thead><tr><th>Service</th><th>Function</th><th>Examples or protocols</th></tr></thead><tbody>
+<tr><th>Web and email</th><td>Publish applications and manage messages.</td><td>HTTP/HTTPS for the web; SMTP and IMAP for email. Apache HTTP Server and Nginx are web servers.</td></tr>
+<tr><th>Remote desktop</th><td>Access a graphical session on another computer.</td><td>RDP, VNC.</td></tr>
+<tr><th>Printing</th><td>Manage printers and print queues.</td><td>CUPS and system printing services.</td></tr>
+<tr><th>DNS</th><td>Resolve names and other records.</td><td>Map a server's name to its addresses.</td></tr>
+<tr><th>DHCP</th><td>Provide configuration parameters to clients.</td><td>IP address, gateway and DNS servers, depending on the protocol and configuration.</td></tr>
+<tr><th>Files</th><td>Share folders and control access to them.</td><td>SMB, NFS; Samba implements SMB services.</td></tr>
+<tr><th>Directory and authentication</th><td>Centralise identities, groups and access.</td><td>Active Directory, LDAP and Kerberos in their respective areas.</td></tr>
+<tr><th>Virtualisation</th><td>Host and manage virtual machines.</td><td>Platforms such as Hyper-V or Proxmox VE.</td></tr>
+<tr><th>Security and monitoring</th><td>Filter, log and detect incidents.</td><td>Firewalls, monitoring and IDS/IPS.</td></tr>
+</tbody></table></div>
+<h3 id="proxy-seguridad">6.2. Intermediaries and security</h3>
+<h4>Forward and reverse proxies</h4>
+<p>A <strong>proxy</strong> acts as an intermediary in communications. A forward proxy receives client requests and forwards them to other servers; a reverse proxy receives requests for a service and distributes them to internal servers. Depending on its functions, it can apply policies, caching or load balancing.</p>
+<p>An HTTP proxy works with the application protocol; it should not always be described as a layer 4 device. It can be software or part of specialised equipment. It does not guarantee anonymity either: that depends on what information it records or forwards. A reverse proxy is not necessarily transparent, and <strong>proxying and NAT are different mechanisms</strong>.</p>
+<h4>Firewalls and WAFs</h4>
+<p>A <strong>firewall</strong> allows or blocks traffic according to rules. It can inspect addresses, ports, connection states or application characteristics. It may be installed on an end device or protect network segments. It is not universally limited to a single OSI layer.</p>
+<p>A <strong>WAF</strong> specialises in web application traffic and helps filter malicious requests. Protection against denial-of-service attacks may require additional services and measures. A DMZ is a segment typically used for exposed services, separated by access controls.</p>
+<h4>Monitoring, IDS and IPS</h4>
+<ul><li><strong>Protocol analyser:</strong> captures traffic and lets you examine it; Wireshark is an example. Only capture traffic in authorised environments.</li><li><strong>IDS:</strong> detects suspicious activity and generates alerts. It does not necessarily block traffic automatically.</li><li><strong>IPS:</strong> can intervene to block traffic; it normally sits in the communication path.</li></ul>
+<p>Snort and Suricata can be used for detection and, with an appropriate deployment, prevention. No tool replaces updates, configuration and alert review.</p>
+<h3 id="balanceo">6.3. Load balancing and link aggregation</h3>
+<p><strong>Link aggregation</strong> combines several physical connections into one logical interface. Depending on the mode, it provides redundancy and combined capacity. LACP negotiates compatible aggregations between endpoints. A single connection does not necessarily gain the combined speed of all links: traffic is usually distributed by flow.</p>
+<p>The <strong>load-balancing mechanism</strong> distributes work among resources, such as servers or WAN links. Having two providers can improve availability, but failover and combining throughput depend on the solution. Server load balancing should not be confused with Ethernet link aggregation.</p>
+<p>There are also mechanisms that combine mobile and wireless access, such as LWA for LTE and WLAN. Do not assume that every phone automatically combines Wi-Fi and mobile data, or that two SIM cards add their speeds together.</p>
+<h3 id="hardware-red">6.4. Interconnection devices</h3>
+<p>A device's function helps place it within a layered model. One commercial device can combine several functions; for example, a home router often includes a switch, an AP and a firewall.</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Devices and their main functions"><table><caption>Devices and their main functions</caption><thead><tr><th>Device</th><th>Function</th><th>OSI reference</th></tr></thead><tbody>
+<tr><th>NIC or network interface</th><td>Connects a device to the medium. It may use Ethernet over copper or fibre, or a wireless connection.</td><td>Physical and data link functions.</td></tr>
+<tr><th>Repeater</th><td>Regenerates the signal to extend a link within the technology's limits.</td><td>Physical, layer 1.</td></tr>
+<tr><th>Hub</th><td>A multiport repeater that propagates the signal to the other ports. It shares the collision domain.</td><td>Physical, layer 1; a historical technology in Ethernet LANs.</td></tr>
+<tr><th>Bridge</th><td>Interconnects segments using MAC addresses and learning where devices are located.</td><td>Data link, layer 2.</td></tr>
+<tr><th>Switch</th><td>A multiport bridge that forwards frames according to its MAC table and the relevant VLAN.</td><td>Data link, layer 2; some also provide layer 3 functions.</td></tr>
+<tr><th>Access point</th><td>Provides wireless access and usually links the WLAN to a wired LAN.</td><td>Physical and data link functions.</td></tr>
+<tr><th>Router</th><td>Routes packets between networks using IP addresses and a routing table.</td><td>Network, layer 3.</td></tr>
+<tr><th>Gateway</th><td>A context-dependent term: it may mean the outbound router or a translator between protocols and applications.</td><td>Depends on the function.</td></tr>
+</tbody></table></div>
+<h4>How a switch works</h4>
+<p>A switch learns the <strong>source MAC address</strong> of received frames and associates it with a port and a VLAN. If it knows the destination MAC address, it forwards through the relevant port. Broadcast traffic and unknown destinations may be flooded through other ports in that VLAN, according to the device's rules. It does not create and remove a connection for each transmission.</p>
+<p>Switched full-duplex Ethernet links avoid the collisions associated with shared media. A layer 2 switch does not use the IP subnet mask to decide which port should receive a frame. Communication between subnets requires a routing function, provided by a router or a layer 3 switch.</p>
+<h4>Interfaces and connectors</h4>
+<ul><li><strong>RJ45 / 8P8C:</strong> the common name for connectors used in Ethernet over twisted pair. Speed depends on the standard, cable and ports.</li><li><strong>SC and LC:</strong> examples of optical fibre connectors. Their shape alone does not determine speed.</li><li><strong>SFP, SFP+ and other families:</strong> slots and transceiver modules for compatible interfaces. Optical and copper variants exist; the module, device and cable must be compatible. GBIC is an older, larger form factor.</li></ul>
+<p>Ethernet supports many speeds; it is not limited to 10, 100, 1000 or 10000 Mbit/s. An optical interface does not necessarily mean Fibre Channel either: that is a different set of technologies, common in storage.</p>
+<details class="extension"><summary>Historical reference: Token Ring and MAU</summary><p>Token Ring uses token passing to regulate access to the medium. An MAU can physically connect stations in a star while maintaining a logical ring. This shows why physical and logical topologies do not always match. An MAU should not be confused with a modern Ethernet switch.</p></details>
+<h4>Routing and gateways</h4>
+<p>A router selects the next hop using its routing table. Routes can be connected, configured <strong>statically</strong> or learned through <strong>dynamic routing protocols</strong>. NAT and CGNAT translate addresses, but they are not required for routing packets.</p>
+<ul><li><strong>RIP:</strong> uses hop count as its metric; RIPv2 includes subnet mask information and supports VLSM.</li><li><strong>IGRP and EIGRP:</strong> IGRP is a historical Cisco protocol; EIGRP includes more advanced mechanisms. VLANs and trunk links are data link concepts, not what defines a routing protocol.</li><li><strong>OSPF:</strong> a link-state protocol that calculates routes using Dijkstra's algorithm and organises the domain into areas.</li></ul>
+<p>The <strong>default gateway</strong> is usually the router to which a device sends traffic destined for other networks. An application gateway, by contrast, can translate messages between different systems. They are not necessarily the same device. Remote administration should use protected channels such as HTTPS or SSH when available.</p>
+<div class="activity-card activity-callout" id="actividad-nic-ubuntu"><h4>Activity: explore your network interface in Ubuntu · 20 minutes</h4><p>The NIC connects the device to the medium; the driver lets the operating system use it. Identify both to distinguish hardware features from connection configuration.</p><ol><li>Run <code>ip link show</code> and identify an Ethernet or Wi-Fi interface. Do not confuse <code>lo</code> (loopback) with a physical network card.</li><li>Check <code>nmcli device status</code> and <code>nmcli device show</code> to relate the interface name, type and state. If NetworkManager is unavailable, check the system's network details.</li><li>Find the model in the hardware information or the manufacturer's specification sheet. Record the medium, connection interface and supported speed. If information is missing, say so.</li><li>Compare the advertised capacity with the link speed shown by the system. Explain why neither necessarily equals your Internet download speed.</li></ol><p><strong>Submit:</strong> a text fact sheet with the interface, model, type, state, features and sources. Explain what the MAC address represents; it can be configured or randomised, so it does not always permanently identify the manufacturer.</p><div class="card-actions"><a class="resource-link-btn" href="https://manpages.ubuntu.com/manpages/noble/man8/ip-link.8.html" target="_blank" rel="noopener noreferrer">Consult ip link in Ubuntu</a></div></div>
+<div class="activity-card activity-callout" id="recursos-rack"><h4>Further exploration: racks, patch panels and data centres</h4><p>A rack organises equipment; a patch panel terminates and organises cabling; a switch switches frames. After watching the videos, describe the path <strong>device → wall outlet → patch panel → switch</strong> and explain why the panel does not replace the switch.</p><div class="card-actions"><a class="resource-link-btn" href="https://youtu.be/nqm6t8c6O_g" target="_blank" rel="noopener noreferrer">Watch a patch panel installation</a><a class="resource-link-btn" href="https://youtu.be/F5hnaTySeis" target="_blank" rel="noopener noreferrer">Watch what a data centre is</a></div></div>
+<h3 id="almacenamiento-red">6.5. Network storage</h3>
+<p>Storage may reside on the server itself or on shared systems. A <strong>NAS</strong> provides file access over the network; a <strong>SAN</strong> provides block storage access, for example through Fibre Channel or iSCSI. These are different ways to present and manage data.</p>
+<p>Disk arrays and RAID can improve availability or performance depending on their configuration. <strong>RAID is not a substitute for a backup</strong>: by itself, it does not protect against deletion, corruption or every incident. Backup traffic can be separated using dedicated networks or links to reduce its impact, but this requires design and does not happen automatically.</p>
+<div class="activity-card activity-callout" id="practica24"><h4>Practical task 2.4. Investigate and explain a network service</h4><p>In groups of two or three, choose DNS, DHCP, a reverse proxy, load balancing or IDS/IPS. Investigate the need it addresses, how it works, a practical example and its relationship to what you have studied. Bluetooth can be linked to section 5; CG-NAT and LAMP remain guided extension topics.</p><p>Consult at least three sources, including official documentation or a primary technical source. Record links, dates and what each source contributes. Write in your own words and prepare a presentation lasting up to ten minutes.</p><p><strong>Submit:</strong> a text report and presentation outline, with group members and task allocation. No attached PDF, video or slides. Assessment will consider clarity, technical accuracy, the practical example and use of sources.</p><div class="card-actions"><a class="resource-link-btn" href="../../labs/redes-ssii-u02.html#investigacion">Open lab</a></div></div>
+<div class="activity-card activity-callout" id="valoracion-exposiciones"><h4>Presentation feedback lab</h4><p>Rate clarity, technical accuracy, the practical example and sources from 1 to 4. Support your ratings with evidence and identify one strength, one improvement and one question. This assessment provides feedback; it does not set a percentage of the grade on its own.</p><div class="card-actions"><a class="resource-link-btn" href="../../labs/redes-ssii-u02.html#valoracion">Open lab</a></div></div>
+</section>
+<section class="learning-section" aria-labelledby="arquitecturas">
+<h2 id="arquitecturas">7. Network architectures: OSI and TCP/IP</h2>
+<div class="activity-card activity-callout" id="curso-udemy"><h4>Resource: OSI and TCP/IP models</h4><p>Lesson by Josep Ricard: Cisco, networking fundamentals for IP networks. Use it alongside your study of layers. Access depends on your account and the availability of the course.</p><div class="card-actions"><a class="resource-link-btn" href="https://www.udemy.com/course/cisco-fundamentos-de-networking-para-redes-ip-ccna/learn/lecture/11193240#overview" target="_blank" rel="noopener noreferrer">Open the Udemy lesson · Cisco: networking fundamentals for IP networks</a></div></div>
+<h3 id="capas">7.1. Why use layers?</h3>
+<p>An architecture defines rules, functions and relationships so that different systems can communicate. Dividing the work into layers makes complexity manageable: each layer provides services to the one above and uses those below through defined interfaces.</p>
+<p>Equivalent layers on two devices follow a common protocol. This communication is <strong>logical</strong>: actual data passes through the sender's stack, the medium and the receiver's stack. A change in one implementation can remain independent of other layers if the interfaces and expected behaviour are preserved.</p>
+<h3 id="encapsulacion">7.2. Encapsulation and decapsulation</h3>
+<p>When information is sent, protocols add control data such as headers and, in some cases, trailers. On reception, each layer interprets and removes the information that belongs to it. Not every layer necessarily adds a separate header.</p>
+<div class="didactic-note"><p><strong>Simplified path:</strong> application data → TCP segment or UDP datagram → IP packet → link-layer frame → signals in the medium. The receiver performs the reverse process.</p><p>A layer 2 switch makes decisions about frames; a router interprets the IP packet and carries it in a new frame over the next link. Intermediate devices do not need to run the destination application to forward traffic.</p></div>
+<h3 id="osi">7.3. The seven OSI layers</h3>
+<p>OSI is a reference model developed within ISO and also covered by ITU-T recommendation X.200. It describes functions, not a mandatory list of specific products or protocols.</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="OSI model, from the application to the medium"><table><caption>OSI model, from the application to the medium</caption><thead><tr><th>Layer</th><th>Responsibility</th><th>What it helps explain</th></tr></thead><tbody>
+<tr><th>7. Application</th><td>Communication services used by applications.</td><td>Web requests, email or name resolution.</td></tr>
+<tr><th>6. Presentation</th><td>Data representation and transformation.</td><td>Formats, encoding, compression and encryption as conceptual functions.</td></tr>
+<tr><th>5. Session</th><td>Organising the dialogue between applications.</td><td>Establishing, maintaining and synchronising sessions.</td></tr>
+<tr><th>4. Transport</th><td>Communication between processes at the endpoints.</td><td>Ports; reliability and flow control when provided by the protocol. UDP does not guarantee delivery.</td></tr>
+<tr><th>3. Network</th><td>Logical addressing and routing.</td><td>IP packets crossing different networks.</td></tr>
+<tr><th>2. Data link</th><td>Transferring frames over a link and accessing the medium.</td><td>MAC addresses, error detection and switching. It does not ensure secure communication on its own.</td></tr>
+<tr><th>1. Physical</th><td>Transmitting symbols through signals.</td><td>Electrical, optical or radio characteristics, connectors and timing.</td></tr>
+</tbody></table></div>
+<div class="activity-card activity-callout" id="actividad-capas"><h4>Lab: explain the OSI layers</h4><p>Write an ordered outline of the seven layers with a function and example for each. Then explain which layers an Ethernet NIC, a layer 2 switch and a router operate at, and justify your answers.</p><div class="card-actions"><a class="resource-link-btn" href="../../labs/redes-ssii-u02.html#osi">Open lab</a></div></div>
+<h3 id="tcpip">7.4. Mapping OSI to TCP/IP</h3>
+<p>TCP/IP is the protocol family used on the Internet. Its usual model has four layers; teaching materials also use a five-layer version that separates data link and physical functions. OSI provides a reference for describing functions, although the mappings are not always exact.</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="A teaching comparison of the models"><table><caption>A teaching comparison of the models</caption><thead><tr><th>OSI</th><th>TCP/IP: four layers</th><th>Examples</th></tr></thead><tbody>
+<tr><td>Application, presentation and session</td><td>Application</td><td>HTTP, DNS, SMTP.</td></tr>
+<tr><td>Transport</td><td>Transport</td><td>TCP, UDP.</td></tr>
+<tr><td>Network</td><td>Internet</td><td>IPv4, IPv6, ICMP.</td></tr>
+<tr><td>Data link and physical</td><td>Network access or link</td><td>Ethernet, Wi-Fi and their physical media.</td></tr>
+</tbody></table></div>
+<p>TCP provides an ordered byte stream and retransmission and control mechanisms; this does not guarantee that an application can always complete an operation if the connection fails. UDP provides datagrams without those built-in guarantees. The choice depends on the needs of the application protocol.</p>
+<div class="activity-card activity-callout" id="repaso-redes"><h4>Review lab: OSI, TCP/IP and components</h4><p>Match protocols to their functions and layers, explain encapsulation, and review devices and network domains. The block includes guided research on cabling, racks, patch panels and PoE.</p><p>You can also consult the original OSI and TCP/IP exercise form. For this unit's submission, use the lab's text report.</p><div class="card-actions"><a class="resource-link-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSc4TwVi2ZBkxpDEKuL8ZQJNOYIDtRZ-XSD-H_sBFYaBnlzYNA/viewform" target="_blank" rel="noopener noreferrer">original OSI and TCP/IP exercise form</a><a class="resource-link-btn" href="../../labs/redes-ssii-u02.html#osi">Open lab</a></div></div>
+<div class="activity-card activity-callout" id="packet-tracer"><h4>Lab: introduction to Cisco Packet Tracer · 40 minutes</h4><p>Start with the introductory Cisco Packet Tracer course. Access or installation may require a Cisco account.</p><p>Set up three PCs and a switch, configure the specified addresses, test communication and observe a controlled failure. The lab guides you through the steps and generates the report that replaces the old submission form. Save the simulation for your work, but submit text only.</p><div class="card-actions"><a class="resource-link-btn" href="https://skillsforall.com/es/course/getting-started-cisco-packet-tracer?courseLang=es-XL" target="_blank" rel="noopener noreferrer">introductory Cisco Packet Tracer course</a><a class="resource-link-btn" href="../../labs/redes-ssii-u02.html#packet">Open lab</a></div></div>
+<div class="activity-card activity-callout" id="resumen-unidad"><h4>Extension: your structured summary</h4><p>Create a hierarchical text outline linking classification, topologies, technologies, components and models. Add an example that connects several sections.</p><div class="card-actions"><a class="resource-link-btn" href="../../labs/redes-ssii-u02.html#ampliacion">Open lab</a></div></div>
+<div class="activity-card activity-callout" id="actividad-identificadores"><h4>Activity: distinguish MAC, IPv4 and IPv6 · 15 minutes</h4><p>A link-layer address and an IP address serve different purposes. Compare these documentation examples:</p><ul><li>MAC: <code>02:11:22:33:44:55</code>.</li><li>IPv4: <code>192.0.2.10</code>.</li><li>IPv6: <code>2001:db8::10</code>.</li></ul><ol><li>State the format, size in bits and function of each address. Explain what <code>::</code> abbreviates in IPv6.</li><li>Relate MAC to the data link layer and IP to the network layer in OSI. Explain why a device can have several addresses.</li><li>Give an example of when each type is used while accessing a server.</li></ol><p><strong>Submit:</strong> a text comparison. These examples are for studying address representation, not for configuring a real network.</p></div>
+<div class="activity-card activity-callout" id="actividad-servicios-packet"><h4>Extension task: DHCP, HTTP and DNS in Packet Tracer · 45 minutes</h4><p>Continue after building your first Packet Tracer network. The aim is to observe three distinct services: <strong>DHCP configures clients, DNS resolves names and HTTP serves pages</strong>. Use this adapted version of the course worksheets.</p><ol><li>Connect four PCs and a Server-PT to a switch. Configure the server with <code>10.0.0.2</code> and subnet mask <code>255.255.255.0</code>. This is an isolated network: it does not need a router or a fictitious gateway.</li><li>Under <strong>Services → DHCP</strong>, enable a pool starting at <code>10.0.0.10</code>, subnet mask <code>255.255.255.0</code>, a maximum of 91 users and DNS <code>10.0.0.2</code>. Leave the gateway unconfigured (or use <code>0.0.0.0</code> if the simulator requires a value). Select DHCP on the clients and record their addresses.</li><li>Enable HTTP on the server and edit the home page. From a client, open <code>http://10.0.0.2</code> and check the response.</li><li>Under <strong>Services → DNS</strong>, create an A record for <code>www.aula.test</code> with address <code>10.0.0.2</code>. Open <code>http://www.aula.test</code> on the client and compare it with access by IP address.</li><li>In Simulation mode, observe DHCP, DNS and HTTP. Also run <code>ping 10.0.0.2</code>: it uses ICMP, not UDP, and does not by itself prove that HTTP is working.</li><li>Disable only HTTP and compare ping with opening the website. Restore it; disable DNS and repeat access by IP address and by name. If the name still works, consider caching and try a client that has not resolved it before. Restore the services when you finish.</li></ol><p><strong>Submit:</strong> configuration, tests, results and explanations in text. No screenshots or simulation files are required.</p></div>
+<div class="activity-card activity-callout" id="actividad-protocolo-programa"><h4>Activity: from a protocol to a server program · 15 minutes</h4><p>A protocol defines rules; a program implements them. For HTTP, DNS, DHCP and SSH, find a server program that uses each protocol.</p><p>State the <strong>protocol, the need it addresses, the program, the TCP/IP layer and a link to its official documentation</strong>. Explain why changing the program does not necessarily mean changing the protocol. Submit text only.</p></div>
+</section>
+<section class="learning-section" aria-labelledby="referencias">
+<h2 id="referencias">8. References and bibliography</h2>
+<p>Content adapted from Ignacio García's teaching material, <em>Introduction to Networked Systems. Unit 02</em>. The topic sequence is retained, with revised distinctions between technologies, devices and models.</p>
+<h3>Technical references</h3>
+<ul><li><a href="https://www.rfc-editor.org/rfc/rfc4291.html" target="_blank" rel="noopener noreferrer">IETF · RFC 4291: IPv6 addressing architecture</a>.</li><li><a href="https://www.iana.org/assignments/multicast-addresses/multicast-addresses.xhtml" target="_blank" rel="noopener noreferrer">IANA · IPv4 multicast address space</a>.</li><li><a href="https://www.rfc-editor.org/rfc/rfc1122.html" target="_blank" rel="noopener noreferrer">IETF · RFC 1122: communication requirements for Internet hosts</a>.</li><li><a href="https://www.itu.int/rec/T-REC-X.200" target="_blank" rel="noopener noreferrer">ITU-T · X.200: OSI reference model</a>.</li><li><a href="https://www.cisco.com/c/en/us/td/docs/switches/lan/c9000/lyr2-fwd/etherchannel/etherchannel-configuration-guide/etherchannels.html" target="_blank" rel="noopener noreferrer">Cisco · EtherChannel link aggregation</a>.</li></ul>
+<h3>Bibliography of the source document (original editions)</h3>
+<ul><li>Alberto León-García and Indra Widjaja. <em>Redes de comunicación</em>. McGraw-Hill, 2001.</li><li>William Stallings. <em>Comunicaciones y redes de computadores</em>. 6th edition. Prentice Hall, 2000.</li><li>Andrew S. Tanenbaum. <em>Redes de computadoras</em>. Prentice Hall, 2003.</li><li>Merilee Ford and colleagues. <em>Tecnologías de interconectividad de redes</em>. Prentice Hall, 1998.</li><li>Uyless Black. <em>Redes de ordenadores: protocolos, normas e interfaces</em>. Ra-Ma, 1995.</li><li>James Kurose and Keith Ross. <em>Redes de computadoras: un enfoque descendente</em>. Pearson, 2017.</li></ul>
+</section>
+<nav class="unit-links" aria-label="Unit navigation"><a href="u01_en.html">← Unit 01 · Computer architecture</a><a href="#contenido">Back to top ↑</a></nav><footer class="document-footer">© Ignacio García · Computer Systems</footer></main></div><script>
+(() => {
+    const toggle = document.querySelector('.toc-toggle');
+    const toc = document.getElementById('unit-toc');
+    function setOpen(open) {
+        toc.classList.toggle('is-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.textContent = open ? 'Close contents' : 'Contents';
+    }
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    toc.addEventListener('click', event => {
+        const link = event.target.closest('a');
+        if (!link) return;
+        setOpen(false);
+        const heading = document.getElementById(link.hash.slice(1));
+        if (heading) {
+            heading.setAttribute('tabindex', '-1');
+            heading.focus({ preventScroll: true });
+        }
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+            setOpen(false);
+            toggle.focus();
+        }
+    });
+    // Make answers and extensions available in the printed copy, then restore the reading state.
+    let printClosed = [];
+    window.addEventListener('beforeprint', () => {
+        printClosed = [...document.querySelectorAll('.learning-section details:not([open])')];
+        printClosed.forEach(detail => { detail.open = true; });
+    });
+    window.addEventListener('afterprint', () => {
+        printClosed.forEach(detail => { detail.open = false; });
+        printClosed = [];
+    });
+})();
+</script></body></html>
