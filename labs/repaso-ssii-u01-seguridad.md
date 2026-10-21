@@ -8,7 +8,7 @@ Se mantienen los 94 pasos, siete bloques, soluciones, pistas y comprobaciones de
 1. Elegir español o inglés; los enunciados, opciones, pistas y mensajes de corrección se traducen. Los valores internos de las opciones permanecen estables para el corrector y los borradores.
 2. Aceptar las condiciones e introducir nombre y correo del dominio exacto `g.educaand.es`. Se valida el formato, no la titularidad.
 3. Iniciar mediante la API Fullscreen. Solo se permite editar con foco, visibilidad y pantalla completa, sin avisos o errores pendientes.
-4. Las dos primeras salidas muestran avisos. La tercera detiene el reloj y cierra el intento **conservando todas las respuestas**, genera una entrega y bloquea la edición. Si la generación falla, se mantiene el estado `closing` y se permite reintentar.
+4. Las cuatro primeras salidas muestran avisos. La quinta detiene el reloj y cierra el intento **conservando todas las respuestas**, genera una entrega y bloquea la edición. Si la generación falla, se mantiene el estado `closing` y se permite reintentar.
 5. La finalización voluntaria pide confirmación y permite respuestas pendientes. Se descarga un TXT, se copia el mismo código y se abre el formulario de entrega indicado para este laboratorio. **El alumno debe pulsar Enviar en Forms**; abrirlo no acredita recepción.
 6. Si se deniega el portapapeles o la ventana emergente, la entrega permanece guardada y puede reintentarse. El código se copia para pegarlo en el nuevo formulario; no se reutilizan los identificadores de preguntas del formulario anterior.
 7. Tras abrir el formulario se vuelve al selector. La última entrega se conserva en `sessionStorage` durante la sesión de esa pestaña y puede volver a copiarse o descargarse.
@@ -67,7 +67,7 @@ La barra permanece visible al desplazarse y adapta el espacio superior a su altu
 
 Guardar y pausar conserva respuestas, correcciones, pistas, idioma, cantidades, bloqueos de ejercicios, tiempo e incidencias en el mismo navegador y perfil. Detiene el reloj antes de salir de pantalla completa; cerrar después de pausar no añade una salida. No es una copia exportada ni sincronizada entre dispositivos.
 
-Cada recuperación correcta (incluida una recarga de un intento activo) suma **una incidencia al mismo límite de tres** que las pérdidas de foco. No crea un intento nuevo ni reinicia el contador. Con dos incidencias, el botón avisa de que recuperar finalizará. La tercera genera entrega conservando las respuestas. La denegación de pantalla completa no consume una recuperación. La entrega registra por separado el número de recuperaciones.
+Cada recuperación correcta (incluida una recarga de un intento activo) suma **una incidencia al mismo límite de cinco** que las pérdidas de foco. No crea un intento nuevo ni reinicia el contador. Con cuatro incidencias, el botón avisa de que recuperar finalizará. La quinta genera entrega conservando las respuestas. La denegación de pantalla completa no consume una recuperación. La entrega registra por separado el número de recuperaciones.
 
 Se restaura exactamente el conjunto guardado de cantidades, también las de ejercicios vacíos. Solo al volver del foco durante el trabajo activo se renuevan los ejercicios sin empezar. Una recuperación guardada es una restauración, no una nueva generación. El autoguardado de cada edición sigue activo.
 
@@ -207,3 +207,7 @@ Verificado con DOM simulado: arranque limpio con estado previo, copia local pres
 Se prefiere showOpenFilePicker cuando está disponible. Si el navegador interrumpe la pantalla completa al elegir archivo, se solicita restablecerla inmediatamente al resolverse el selector, antes de getFile o descompresión. La API renueva la activación al devolver la selección (https://wicg.github.io/file-system-access/#api-showopenfilepicker). El selector input se mantiene como compatibilidad y también intenta restablecer pantalla completa antes de leer. Cancelar no carga una recuperación.
 
 Verificado con DOM simulado: interrupción de fullscreen durante selector, restauración antes de lectura, respuestas, parámetros, idioma, tiempo y edición activa con una incidencia; cancelación sin incidencia. Añadida prueba Playwright con TXT comprimido y selector simulado. No se puede garantizar que el navegador no cierre temporalmente fullscreen al mostrar su diálogo del sistema; la política de permisos del navegador tiene prioridad. La prueba de extremo a extremo con selector nativo sigue pendiente por BitLocker.
+
+## Ampliación a cinco incidencias
+
+El cierre automático se produce en la quinta incidencia. Se mantienen las claves de almacenamiento y la versión 1 de los documentos recuperables. Los guardados previos conservan sus respuestas, parámetros, comprobaciones y tiempo; un antiguo aviso final con dos incidencias pasa a aviso ordinario. Recuperar sigue consumiendo una incidencia. Se han comprobado la importación de documentos con contadores de 0 a 4, la conservación de datos y el cierre en la quinta incidencia mediante pruebas de las funciones de estado.
