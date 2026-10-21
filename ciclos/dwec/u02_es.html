@@ -1533,11 +1533,10 @@ mostrarInicio();</code></pre>
                 <div class="didactic-note"><p><strong>Referenciar o ejecutar una función</strong></p><p><code>mostrarInicio</code> referencia la función; <code>mostrarInicio()</code> la ejecuta.</p></div>
 
                 <h3 id="sec8_2">8.2. Hola Mundo (ahora sí)</h3>
-                <p>Hasta ahora hemos usado la consola y los diálogos para practicar. En una página web, el usuario escribe en controles, pulsa botones y recibe la respuesta en la propia página. Vamos a conectar esas tres acciones: <strong>introducir un nombre → pulsar «Saludar» o Intro → leer «Hola » seguido del nombre</strong>.</p>
-                <p>Esta es una forma habitual de trabajar con JavaScript en una interfaz web: el programa responde a eventos y modifica el documento. El usuario no necesita abrir la consola; la consola sigue siendo una herramienta del desarrollador para depurar.</p>
+                <p>En una interfaz web, JavaScript responde a las acciones del usuario y muestra el resultado en la página. Vamos a pedir un nombre y escribir <strong>«Hola » seguido del nombre</strong> al pulsar «Saludar» o Intro. La consola queda como herramienta de depuración.</p>
 
                 <h4 id="sec8_2_1">8.2.1. Preparar el formulario</h4>
-                <p>Crea una carpeta con dos archivos, <code>index.html</code> y <code>saludo.js</code>. El HTML define la entrada, el botón y el lugar donde aparecerá la respuesta:</p>
+                <p>Crea <code>index.html</code> y <code>saludo.js</code> en la misma carpeta. En <code>index.html</code> escribe:</p>
                 <pre><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="es"&gt;
 &lt;head&gt;
@@ -1556,21 +1555,19 @@ mostrarInicio();</code></pre>
     &lt;p id="saludo" aria-live="polite"&gt;&lt;/p&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-                <p>Cada <code>id</code> identifica un único elemento. El atributo <code>for="nombre"</code> relaciona la etiqueta con el campo. El párrafo <code>&lt;p id="saludo"&gt;</code> está vacío al principio: JavaScript escribirá en él. </p>
-                <p><strong>¿Qué significa <code>aria-live="polite"</code>?</strong> Un lector de pantalla es una herramienta que lee en voz alta el contenido de la página. Este atributo le indica que anuncie el nuevo saludo cuando cambie el párrafo. <code>polite</code> significa que espere a terminar lo que esté leyendo, sin interrumpir. No cambia el aspecto del párrafo ni hace que la página hable por sí sola.</p>
-                <p><code>defer</code> hace que el archivo externo se ejecute cuando el navegador haya terminado de leer el HTML. Así los elementos ya existen al buscarlos. El botón es <code>type="submit"</code>: al pulsarlo, o al pulsar Intro dentro del campo, el formulario genera el evento <code>submit</code>. Escucharemos ese evento para mostrar el saludo sin recargar la página.</p>
+                <p><code>defer</code> ejecuta el script después de leer el HTML. El campo recoge el nombre y el párrafo vacío mostrará el saludo. <code>aria-live="polite"</code> permite que un lector de pantalla anuncie el cambio sin interrumpir.</p>
 
-                <h4 id="sec8_2_2">8.2.2. Organizar el script en una función global</h4>
-                <p>Escribe este código en <code>saludo.js</code>. Declaramos una función global llamada <code>iniciar()</code> y la llamamos una sola vez al final. Dentro quedan las referencias a los elementos y la función que atenderá el envío del formulario.</p>
+                <h4 id="sec8_2_2">8.2.2. Preparar la interacción</h4>
+                <p>En <code>saludo.js</code>, <code>iniciar()</code> agrupa la preparación y mantiene sus variables locales. La llamamos una vez al final:</p>
                 <pre><code>"use strict";
 
 function iniciar() {
-    const campoNombre = document.getElementById("nombre");
-    const formulario = document.getElementById("formularioSaludo");
-    const salida = document.getElementById("saludo");
+    const campoNombre = document.querySelector("#nombre");
+    const formulario = document.querySelector("#formularioSaludo");
+    const salida = document.querySelector("#saludo");
 
     function saludar(evento) {
-        evento.preventDefault();
+        evento.preventDefault(); // Evita que el formulario recargue la página.
         const nombre = campoNombre.value;
         salida.textContent = "Hola " + nombre;
     }
@@ -1579,32 +1576,17 @@ function iniciar() {
 }
 
 iniciar();</code></pre>
-                
-                <p><strong>¿Es recomendable usar <code>iniciar()</code>?</strong> Sí, en esta práctica ayuda a reunir la preparación de la página y mantener las variables dentro de la función. Lo recomendable es organizar el código y evitar variables globales innecesarias. Aquí <code>iniciar()</code> es global porque usamos un script clásico; no necesita ser global para cumplir su tarea. En proyectos con módulos, puede mantenerse dentro del módulo, sin añadirse al ámbito global.</p>
-                <p>La función interior <code>saludar()</code> puede utilizar las variables de <code>iniciar()</code>. Se ejecuta al enviar el formulario con el botón o con Intro: lee el nombre en ese momento y sustituye el texto del párrafo. En los siguientes subapartados veremos cómo definir y utilizar funciones.</p>
 
                 <h4 id="sec8_2_3">8.2.3. Buscar, escuchar y responder</h4>
-                <aside class="function-card" id="ficha-hola-getelementbyid">
-                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
-                    <p class="function-signature"><code>document.getElementById(id)</code></p>
-                    <p><strong>Para qué sirve:</strong> obtener una referencia al elemento del documento con ese identificador.</p>
-                    <p><strong>Parámetro:</strong> el identificador como cadena, sin <code>#</code>; por ejemplo, <code>"nombre"</code>.</p>
-                    <p><strong>Devuelve:</strong> el elemento o <code>null</code> si no existe. El identificador debe coincidir exactamente con el HTML.</p>
+                <aside class="function-card" id="ficha-hola-queryselector">
+                    <p class="function-signature"><code>document.querySelector(selector)</code></p>
+                    <p>Devuelve el primer elemento que coincide con un selector CSS, o <code>null</code> si no existe. <code>"#nombre"</code> selecciona el elemento con <code>id="nombre"</code>: aquí el <code>#</code> es necesario.</p>
                 </aside>
-                <aside class="function-card" id="ficha-hola-submit">
-                    <p class="function-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Ficha de función o método</p>
-                    <p class="function-signature"><code>formulario.addEventListener("submit", manejador)</code></p>
-                    <p><strong>Para qué sirve:</strong> registrar la función que responderá al envío del formulario, tanto con el botón como con Intro.</p>
-                    <p><strong>Parámetros:</strong> <code>"submit"</code> es el nombre del evento; <code>manejador</code> es la función que se ejecutará cuando ocurra.</p>
-                    <p><strong>Devuelve:</strong> <code>undefined</code>. Registrar el manejador no lo ejecuta en ese momento.</p>
-                </aside>
-                <ol>
-                    <li><strong>Buscar:</strong> <code>getElementById()</code> localiza el campo, el formulario y el párrafo.</li>
-                    <li><strong>Escuchar:</strong> <code>addEventListener("submit", saludar)</code> conecta el envío del formulario con la función.</li>
-                    <li><strong>Leer:</strong> <code>campoNombre.value</code> obtiene el texto actual del campo.</li>
-                    <li><strong>Responder:</strong> <code>salida.textContent = "Hola " + nombre</code> escribe el saludo como texto en el párrafo.</li>
-                </ol>
-                <div class="didactic-note"><p><strong>¿Por qué se escribe <code>saludar</code> sin paréntesis?</strong> Pasamos la función para que el navegador la llame después. Con <code>saludar()</code> la ejecutaríamos al cargar el script y pasaríamos su resultado, no la función que debe atender el envío.</p></div>
+                <ul>
+                    <li><code>addEventListener("submit", saludar)</code> registra la función para responder al envío del formulario, con el botón o con Intro.</li>
+                    <li><code>value</code> lee el nombre y <code>textContent</code> escribe el saludo en el párrafo.</li>
+                </ul>
+                <div class="didactic-note"><p>Pasamos <code>saludar</code> sin paréntesis para que el navegador la ejecute cuando se envíe el formulario.</p></div>
 
                 <div class="activity-card activity-callout" id="relacion-ejercicio-2"><p><strong>2.25. Saludo con una función y JavaScript externo</strong></p><ol><li>Añade al HTML un campo <code>&lt;input type="text" id="nombre"&gt;</code> con su etiqueta y un botón para saludar. Crea una función que lea el nombre mediante la propiedad <code>value</code> del campo y lo almacene en una variable.</li><li>Declara una constante con el valor <code>"¡Bienvenido!"</code> y combina el saludo con el nombre en una alerta, por ejemplo «¡Bienvenido, Ana!».</li><li>Guarda todo el JavaScript en un archivo externo y cárgalo mediante <code>&lt;script src="..." defer&gt;&lt;/script&gt;</code>. Registra la función con <code>addEventListener()</code> para que se ejecute al pulsar el botón y lea el valor actual del campo.</li><li>Modifica la función para que, en lugar de una alerta, introduzca el saludo en <code>&lt;div id="saludo"&gt;&lt;/div&gt;</code> mediante <code>textContent</code>.</li></ol><div class="delivery-tip"><a class="delivery-trigger" href="https://forms.gle/Qe5Sd1P8TpKrtNiN7" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre el formulario en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
