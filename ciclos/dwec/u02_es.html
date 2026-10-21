@@ -1807,7 +1807,7 @@ console.log(crearAviso());   // Operación completada</code></pre>
                 </div>
 
                 <h3 id="sec8_7">8.7. Funciones con un número variable de argumentos</h3>
-                <p>Un <strong>parámetro rest</strong> se escribe con tres puntos delante de su nombre, como <code>...precios</code>. Recoge en un array los argumentos que no se hayan asignado a los parámetros anteriores. Así, una misma función puede recibir un número variable de argumentos.</p>
+                <p>En una función, un <strong>parámetro rest</strong> se escribe con tres puntos delante de su nombre, como <code>...precios</code>. Recoge en un array los argumentos que no se hayan asignado a los parámetros anteriores. Así, una misma función puede recibir un número variable de argumentos.</p>
                 <p>Por ejemplo, una compra puede incluir uno, dos o muchos productos. Con <code>...precios</code> podemos sumar todos sus precios sin crear una función distinta para cada cantidad:</p>
                 <pre><code>function calcularTotal(...precios) {
     let total = 0;
@@ -1832,7 +1832,17 @@ console.log(calcularTotalConEnvio(3, 12, 8)); // 23</code></pre>
                     <pre><code>const cesta = [12, 8, 5];
 console.log(calcularTotal(...cesta)); // Equivale a calcularTotal(12, 8, 5).</code></pre>
                 </div>
-                <p>Las funciones flecha también admiten parámetros rest, por ejemplo <code>const contar = (...datos) =&gt; datos.length;</code>. Las funciones tradicionales disponen además de <code>arguments</code>, pero rest proporciona un array explícito y también funciona con flechas, que no tienen un <code>arguments</code> propio.</p>
+                <p>Las funciones flecha también admiten parámetros rest, por ejemplo <code>const contar = (...datos) =&gt; datos.length;</code>.</p>
+                <div class="didactic-note">
+                    <p><strong>¿Qué es <code>arguments</code>?</strong> Es un objeto disponible automáticamente dentro de las funciones tradicionales que contiene los argumentos recibidos en cada llamada. Se consultan por posición: <code>arguments[0]</code> es el primero y <code>arguments.length</code> indica cuántos se han recibido.</p>
+                    <pre><code>function mostrarArgumentos() {
+    console.log(arguments[0]);     // "Ana"
+    console.log(arguments.length); // 2
+}
+
+mostrarArgumentos("Ana", 25);</code></pre>
+                    <p>Aunque se parece a un array, <code>arguments</code> no es un array. Un parámetro rest sí lo es y permite darle un nombre descriptivo a los datos, como <code>...precios</code>. Las funciones flecha no tienen un <code>arguments</code> propio; para recoger sus argumentos utilizamos rest.</p>
+                </div>
 
             </section>
 
