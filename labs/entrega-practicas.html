@@ -4,11 +4,12 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entrega de prácticas</title>
 <style>
-:root{font-family:system-ui,sans-serif;color:#172b3c;background:#f1f5f9;line-height:1.6;color-scheme:light}*{box-sizing:border-box}body{margin:0;padding:40px 18px}main{max-width:800px;margin:auto}.eyebrow{font-size:.8rem;color:#34616a;font-weight:750;letter-spacing:.12em}h1{font-size:clamp(1.9rem,5vw,2.7rem);line-height:1.15;margin:12px 0}p{margin:10px 0 22px}.card{background:white;border:1px solid #dce4eb;border-radius:18px;padding:clamp(20px,4vw,36px);margin-top:24px;box-shadow:0 12px 35px #18384908}label{display:block;font-weight:700;margin:20px 0 7px}input,textarea{font:inherit;width:100%;border:1px solid #93a6b6;border-radius:8px;padding:12px;background:#fff;color:inherit}textarea{min-height:290px;resize:vertical}input:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:3px solid #87cbd4;outline-offset:3px}small,.muted{color:#536b7e}small{display:block}.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}button,.button{font:inherit;font-weight:650;border:0;border-radius:8px;padding:12px 20px;background:#126474;color:white;cursor:pointer;text-decoration:none}button.secondary,.button.secondary{background:#e9f1f4;color:#214958}button:disabled{opacity:.55;cursor:wait}.notice{padding:14px 16px;background:#fff5d9;border-left:4px solid #dca72c;border-radius:6px}.success{background:#e8f7ef;border-left-color:#2d8960}#status{white-space:pre-line;overflow-wrap:anywhere}#code{min-height:120px;font:12px/1.5 monospace}h2{font-size:1.25rem;margin-top:0}[hidden]{display:none!important}footer{font-size:.85rem;margin:24px 4px;color:#536b7e}
+:root{font-family:system-ui,sans-serif;color:#172b3c;background:#f1f5f9;line-height:1.6;color-scheme:light}*{box-sizing:border-box}body{margin:0;padding:40px 18px}main{max-width:800px;margin:auto}.eyebrow{font-size:.8rem;color:#34616a;font-weight:750;letter-spacing:.12em}h1{font-size:clamp(1.9rem,5vw,2.7rem);line-height:1.15;margin:12px 0}p{margin:10px 0 22px}.card{background:white;border:1px solid #dce4eb;border-radius:18px;padding:clamp(20px,4vw,36px);margin-top:24px;box-shadow:0 12px 35px #18384908}label{display:block;font-weight:700;margin:20px 0 7px}input,textarea{font:inherit;width:100%;border:1px solid #93a6b6;border-radius:8px;padding:12px;background:#fff;color:inherit}textarea{min-height:193px;resize:vertical}input:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:3px solid #87cbd4;outline-offset:3px}small,.muted{color:#536b7e}small{display:block}.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}button,.button{font:inherit;font-weight:650;border:0;border-radius:8px;padding:12px 20px;background:#126474;color:white;cursor:pointer;text-decoration:none}button.secondary,.button.secondary{background:#e9f1f4;color:#214958}button:disabled{opacity:.55;cursor:wait}.notice{padding:14px 16px;background:#fff5d9;border-left:4px solid #dca72c;border-radius:6px}.success{background:#e8f7ef;border-left-color:#2d8960}#status{white-space:pre-line;overflow-wrap:anywhere}#code{min-height:120px;font:12px/1.5 monospace}h2{font-size:1.25rem;margin-top:0}[hidden]{display:none!important}footer{font-size:.85rem;margin:24px 4px;color:#536b7e}
+dialog{width:min(620px,calc(100% - 32px));max-height:calc(100dvh - 40px);overflow:auto;border:1px solid #dce4eb;border-radius:18px;padding:clamp(20px,4vw,32px);color:#172b3c;background:white;box-shadow:0 24px 80px #172b3c33}dialog::backdrop{background:#172b3c99}#receipt-details{overflow-wrap:anywhere;white-space:pre-line}button:disabled{cursor:default}
 </style>
 </head>
 <body><main>
-<header><span class="eyebrow">AULA · ENTREGA DE PRÁCTICAS</span><h1 id="title">Entrega de prácticas</h1><p>Introduce tu correo del centro y pega el texto de tu práctica. Conserva el justificante cuando se confirme la entrega.</p></header>
+<header><h1 id="title">Entrega de prácticas</h1><p>Introduce tu correo del centro y pega el texto de tu práctica. Conserva el justificante cuando se confirme la entrega.</p></header>
 <p id="setup" class="notice" hidden>El docente debe conectar esta página con Google Sheets antes de recibir entregas.</p>
 <form id="form" class="card">
 <label for="email">Email</label><input id="email" type="email" required maxlength="254" autocomplete="email" placeholder="nombre@g.educaand.es" aria-describedby="email-help"><small id="email-help">Usa tu dirección terminada en @g.educaand.es.</small>
@@ -16,7 +17,12 @@
 <div class="actions"><button id="submit" type="submit">Entregar práctica</button><button id="edit" type="button" class="secondary" hidden>Preparar otra entrega</button></div>
 </form>
 <p id="status" class="notice" role="status" aria-live="polite" hidden></p>
-<section id="receipt" class="card" hidden><h2>Justificante de entrega</h2><p>La hoja de Google Sheets ha confirmado la recepción. Descarga el justificante o copia el código completo.</p><div class="actions"><a id="download" class="button" download>Descargar justificante TXT</a><button id="copy" type="button" class="secondary">Copiar código</button></div><label for="code">Código de entrega</label><textarea id="code" readonly spellcheck="false"></textarea></section>
+<dialog id="receipt" aria-labelledby="receipt-title" aria-describedby="receipt-description">
+<h2 id="receipt-title">Justificante de entrega</h2>
+<p id="receipt-description">La entrega se ha guardado en Google Sheets. Se ha solicitado la descarga automática del justificante. Si no aparece en tus descargas, puedes descargarlo aquí.</p>
+<p id="receipt-details" class="notice success"></p>
+<div class="actions"><a id="download" class="button" download>Descargar justificante TXT</a><button id="another" type="button" class="secondary" autofocus>Realizar otra entrega</button></div>
+</dialog>
 <div class="actions"><a id="backup" class="button secondary" hidden download>Descargar copia pendiente</a></div>
 <noscript>Activa JavaScript para realizar la entrega.</noscript>
 </main><script>
@@ -64,6 +70,7 @@ const CONFIG = Object.freeze({
 const $=id=>document.getElementById(id);
 const delivery={type:'apps-script',endpoint:CONFIG.endpoint};
 const key='entrega-texto-v1:'+CONFIG.id+':'+CONFIG.version;
+const emailKey=key+':email';
 let current=null,busy=false,storageOK=true;
 const urls={};
 const validEmail=value=>/^[^\s@]+@g\.educaand\.es$/i.test(value);
@@ -84,15 +91,18 @@ function refresh(){
  $('submit').disabled=busy||!!current?.receipt||!LabDelivery.configured(delivery);
  $('submit').textContent=busy?'Enviando…':current?.receipt?'Entrega confirmada':pending?'Reintentar entrega':'Entregar práctica';
  $('edit').hidden=!pending;$('edit').disabled=busy;
+ $('edit').textContent=current?.receipt?'Ver justificante':'Preparar otra entrega';
  $('count').textContent=$('text').value.length.toLocaleString('es-ES')+' / 10 000 caracteres';
 }
 async function showReceipt(){
  const data=JSON.parse(current.envelope.payload);
  // Se conserva el esquema v3 de la base y se añade la confirmación del servidor.
  const code=await token({...data,receipt:current.receipt});
- $('code').value=code;link('download',code,'justificante-'+current.envelope.submissionId.slice(0,16)+'.txt');
- $('receipt').hidden=false;$('backup').hidden=true;
- notice('Entrega guardada en Google Sheets.\nFecha de recepción: '+new Date(current.receipt.receivedAt).toLocaleString('es-ES',{timeZone:'Europe/Madrid'})+' (hora de Madrid).\nID: '+current.receipt.submissionId,true);
+ link('download',code,'justificante-'+current.envelope.submissionId.slice(0,16)+'.txt');
+ $('backup').hidden=true;$('status').hidden=true;
+ $('receipt-details').textContent='Fecha de recepción: '+new Date(current.receipt.receivedAt).toLocaleString('es-ES',{timeZone:'Europe/Madrid'})+' (hora de Madrid).\nID: '+current.receipt.submissionId;
+ if(!$('receipt').open)$('receipt').showModal();
+ if(!current.downloadRequested){$('download').click();current.downloadRequested=true;save();}
 }
 async function backup(){
  const data=JSON.parse(current.envelope.payload);
@@ -123,17 +133,28 @@ $('form').addEventListener('submit',async event=>{
 });
 $('email').addEventListener('input',()=>{$('email').setCustomValidity('');});
 $('text').addEventListener('input',()=>{$('text').setCustomValidity('');refresh();});
-$('edit').addEventListener('click',()=>{
- if(!current?.receipt&&!confirm('La recepción está pendiente. Si continúas, ya no podrás reintentar esta misma entrega desde aquí. Descarga antes la copia pendiente. ¿Continuar?'))return;
- current=null;try{localStorage.removeItem(key);}catch{}
- $('receipt').hidden=true;$('backup').hidden=true;$('status').hidden=true;refresh();$('text').focus();
-});
-$('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('code').value);$('copy').textContent='Código copiado';}catch{$('code').focus();$('code').select();$('copy').textContent='Seleccionado: pulsa Ctrl+C';}});
+function anotherDelivery(){
+ if(busy)return;
+ if(current&&!current.receipt&&!confirm('La recepción está pendiente. Si continúas, ya no podrás reintentar esta misma entrega desde aquí. Descarga antes la copia pendiente. ¿Continuar?'))return;
+ const email=$('email').value;
+ current=null;
+ try{localStorage.removeItem(key);localStorage.setItem(emailKey,email);}catch{}
+ if($('receipt').open)$('receipt').close();
+ $('text').value='';$('email').value=email;
+ $('text').setCustomValidity('');$('email').setCustomValidity('');
+ $('backup').hidden=true;$('status').hidden=true;
+ for(const id of Object.keys(urls)){URL.revokeObjectURL(urls[id]);delete urls[id];$(id).removeAttribute('href');}
+ refresh();window.scrollTo({top:0,behavior:'instant'});$('email').focus({preventScroll:true});
+}
+$('another').addEventListener('click',anotherDelivery);
+$('edit').addEventListener('click',()=>{if(current?.receipt){$('receipt').showModal();}else anotherDelivery();});
+$('email').addEventListener('change',()=>{try{localStorage.setItem(emailKey,$('email').value);}catch{}});
 async function init(){
  $('title').textContent=CONFIG.title;document.title=CONFIG.title;
  $('setup').hidden=LabDelivery.configured(delivery);
  if(!window.crypto?.subtle||typeof CompressionStream!=='function'){notice('Abre esta página por HTTPS con un navegador actualizado para generar el justificante.');$('submit').disabled=true;return;}
  try{
+  $('email').value=localStorage.getItem(emailKey)||'';
   const raw=localStorage.getItem(key);
   if(raw){
    const item=JSON.parse(raw),e=item.envelope,d=JSON.parse(e.payload);
