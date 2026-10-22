@@ -18,11 +18,15 @@ dialog{width:min(620px,calc(100% - 32px));max-height:calc(100dvh - 40px);overflo
 <div class="actions"><button id="submit" type="submit">Entregar práctica</button><button id="edit" type="button" class="secondary" hidden>Preparar otra entrega</button></div>
 </form>
 <p id="status" class="notice" role="status" aria-live="polite" hidden></p>
-<dialog id="receipt" aria-labelledby="receipt-title" aria-describedby="receipt-description">
-<h2 id="receipt-title">Justificante de entrega</h2>
-<p id="receipt-description">La entrega se ha guardado en Google Sheets. Se ha solicitado la descarga automática del justificante. Si no aparece en tus descargas, puedes descargarlo aquí.</p>
+<dialog id="receipt" aria-labelledby="receipt-title" aria-describedby="receipt-progress receipt-description">
+<h2 id="receipt-title" tabindex="-1">Justificante de entrega</h2>
+<p id="receipt-progress" role="status" aria-live="polite" hidden></p>
+<div id="receipt-result" hidden>
+<p id="receipt-description">La entrega ha sido registrada correctamente</p>
 <p id="receipt-details" class="notice success"></p>
 <div class="actions"><a id="download" class="button" download>Descargar justificante TXT</a><button id="another" type="button" class="secondary" autofocus>Realizar otra entrega</button></div>
+</div>
+<button id="receipt-back" type="button" class="secondary" hidden>Volver al formulario</button>
 </dialog>
 <div class="actions"><a id="backup" class="button secondary" hidden download>Descargar copia pendiente</a></div>
 <noscript>Activa JavaScript para realizar la entrega.</noscript>
@@ -95,6 +99,28 @@ function refresh(){
  $('edit').textContent=current?.receipt?'Ver justificante':'Preparar otra entrega';
  $('count').textContent=$('text').value.length.toLocaleString('es-ES')+' / 10 000 caracteres';
 }
+function showSaving(){
+ $('status').hidden=true;
+ $('receipt-title').textContent='Guardando entrega…';
+ $('receipt-progress').textContent='Espera mientras se guarda la práctica en Google Sheets.';
+ $('receipt-progress').hidden=false;
+ $('receipt-result').hidden=true;
+ $('receipt-back').hidden=true;
+ if(!$('receipt').open)$('receipt').showModal();
+ $('receipt-title').focus();
+}
+function showDeliveryError(message){
+ $('status').hidden=true;
+ $('receipt-title').textContent=current?.receipt?'Entrega guardada':'No se ha podido confirmar la entrega';
+ $('receipt-progress').textContent=message;
+ $('receipt-progress').hidden=false;
+ $('receipt-result').hidden=true;
+ $('receipt-back').hidden=false;
+ if(!$('receipt').open)$('receipt').showModal();
+ $('receipt-back').focus();
+}
+$('receipt').addEventListener('cancel',event=>{if(busy)event.preventDefault();});
+$('receipt-back').addEventListener('click',()=>{$('receipt').close();});
 async function showReceipt(){
  const data=JSON.parse(current.envelope.payload);
  // Se conserva el esquema v3 de la base y se añade la confirmación del servidor.
@@ -102,7 +128,11 @@ async function showReceipt(){
  link('download',code,'justificante-'+current.envelope.submissionId.slice(0,16)+'.txt');
  $('backup').hidden=true;$('status').hidden=true;
  $('receipt-details').textContent='Práctica: '+(data.practiceName||'Práctica anterior')+'\nFecha de recepción: '+new Date(current.receipt.receivedAt).toLocaleString('es-ES',{timeZone:'Europe/Madrid'})+' (hora de Madrid).\nID: '+current.receipt.submissionId;
+ $('receipt-title').textContent='Justificante de entrega';
+ $('receipt-progress').hidden=true;$('receipt-progress').textContent='';
+ $('receipt-result').hidden=false;$('receipt-back').hidden=true;
  if(!$('receipt').open)$('receipt').showModal();
+ $('another').focus();
  if(!current.downloadRequested){$('download').click();current.downloadRequested=true;save();}
 }
 async function backup(){
@@ -119,7 +149,7 @@ $('form').addEventListener('submit',async event=>{
  $('text').setCustomValidity($('text').value.trim()?'':'Pega el texto de tu práctica.');
  if(!$('form').reportValidity())return;
  if(!LabDelivery.configured(delivery)){notice('El receptor de Google Sheets todavía no está configurado.');return;}
- busy=true;refresh();notice('Enviando la práctica. Espera la confirmación de Google Sheets.');
+ busy=true;refresh();showSaving();
  try{
   if(!current){
    const data={exam:CONFIG.id,activityVersion:CONFIG.version,version:3,language:'es',name:'',email,practiceName,group:'',notes:'',finishedAt:new Date().toISOString(),seconds:0,answers:[{question:practiceName,answer:$('text').value,status:'teacher-review'}],url:location.href};
@@ -130,8 +160,8 @@ $('form').addEventListener('submit',async event=>{
   current.receipt=await LabDelivery.send(delivery,current.envelope);save();
   await showReceipt();
  }catch(error){
-  if(current?.receipt){notice('Google Sheets ha guardado la entrega, pero no se pudo preparar el justificante. Recarga para volver a generarlo. ID: '+current.receipt.submissionId,true);}
-  else notice('No se ha podido confirmar la recepción. Reintenta el envío: se conservará el mismo identificador para evitar duplicados. Puedes descargar una copia pendiente; esa copia no confirma la entrega.'+(storageOK?'':' No se pudo guardar la copia en este navegador. Descárgala antes de cerrar.'));
+  if(current?.receipt){showDeliveryError('Google Sheets ha guardado la entrega, pero no se pudo preparar el justificante. Recarga para volver a generarlo. ID: '+current.receipt.submissionId);}
+  else showDeliveryError('No se ha podido confirmar la recepción. Reintenta el envío: se conservará el mismo identificador para evitar duplicados. Puedes descargar una copia pendiente; esa copia no confirma la entrega.'+(storageOK?'':' No se pudo guardar la copia en este navegador. Descárgala antes de cerrar.'));
  }finally{busy=false;refresh();}
 });
 $('practice-name').addEventListener('input',()=>{$('practice-name').setCustomValidity('');});
