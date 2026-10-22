@@ -125,7 +125,8 @@ async function showReceipt(){
  const data=JSON.parse(current.envelope.payload);
  // Se conserva el esquema v3 de la base y se añade la confirmación del servidor.
  const code=await token({...data,receipt:current.receipt});
- link('download',code,'justificante-'+current.envelope.submissionId.slice(0,16)+'.txt');
+ const practiceFile=(data.practiceName||'Práctica anterior').normalize('NFC').replace(/[<>:"/\\|?*\u0000-\u001f]/g,'-').replace(/\s+/g,'-').replace(/-+/g,'-').replace(/^[-.]+|[-.]+$/g,'')||'practica';
+ link('download',code,practiceFile+'-justificante-'+current.envelope.submissionId.slice(0,16)+'.txt');
  $('backup').hidden=true;$('status').hidden=true;
  $('receipt-details').textContent='Práctica: '+(data.practiceName||'Práctica anterior')+'\nFecha de recepción: '+new Date(current.receipt.receivedAt).toLocaleString('es-ES',{timeZone:'Europe/Madrid'})+' (hora de Madrid).\nID: '+current.receipt.submissionId;
  $('receipt-title').textContent='Justificante de entrega';
