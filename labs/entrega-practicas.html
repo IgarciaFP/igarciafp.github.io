@@ -6,13 +6,14 @@
 <style>
 :root{font-family:system-ui,sans-serif;color:#172b3c;background:#f1f5f9;line-height:1.6;color-scheme:light}*{box-sizing:border-box}body{margin:0;padding:40px 18px}main{max-width:800px;margin:auto}.eyebrow{font-size:.8rem;color:#34616a;font-weight:750;letter-spacing:.12em}h1{font-size:clamp(1.9rem,5vw,2.7rem);line-height:1.15;margin:12px 0}p{margin:10px 0 22px}.card{background:white;border:1px solid #dce4eb;border-radius:18px;padding:clamp(20px,4vw,36px);margin-top:24px;box-shadow:0 12px 35px #18384908}label{display:block;font-weight:700;margin:20px 0 7px}input,textarea{font:inherit;width:100%;border:1px solid #93a6b6;border-radius:8px;padding:12px;background:#fff;color:inherit}textarea{min-height:193px;resize:vertical}input:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:3px solid #87cbd4;outline-offset:3px}small,.muted{color:#536b7e}small{display:block}.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}button,.button{font:inherit;font-weight:650;border:0;border-radius:8px;padding:12px 20px;background:#126474;color:white;cursor:pointer;text-decoration:none}button.secondary,.button.secondary{background:#e9f1f4;color:#214958}button:disabled{opacity:.55;cursor:wait}.notice{padding:14px 16px;background:#fff5d9;border-left:4px solid #dca72c;border-radius:6px}.success{background:#e8f7ef;border-left-color:#2d8960}#status{white-space:pre-line;overflow-wrap:anywhere}#code{min-height:120px;font:12px/1.5 monospace}h2{font-size:1.25rem;margin-top:0}[hidden]{display:none!important}footer{font-size:.85rem;margin:24px 4px;color:#536b7e}
 dialog{width:min(620px,calc(100% - 32px));max-height:calc(100dvh - 40px);overflow:auto;border:1px solid #dce4eb;border-radius:18px;padding:clamp(20px,4vw,32px);color:#172b3c;background:white;box-shadow:0 24px 80px #172b3c33}dialog::backdrop{background:#172b3c99}#receipt-details{overflow-wrap:anywhere;white-space:pre-line}button:disabled{cursor:default}
+.identity{display:grid;grid-template-columns:1fr 1fr;gap:20px}.identity>div{min-width:0}@media(max-width:600px){.identity{grid-template-columns:1fr;gap:0}}
 </style>
 </head>
 <body><main>
 <header><h1 id="title">Entrega de prácticas</h1><p>Introduce tu correo del centro y pega el texto de tu práctica. Conserva el justificante cuando se confirme la entrega.</p></header>
 <p id="setup" class="notice" hidden>El docente debe conectar esta página con Google Sheets antes de recibir entregas.</p>
 <form id="form" class="card">
-<label for="email">Email</label><input id="email" type="email" required maxlength="254" autocomplete="email" placeholder="nombre@g.educaand.es" aria-describedby="email-help"><small id="email-help">Usa tu dirección terminada en @g.educaand.es.</small>
+<div class="identity"><div><label for="email">Email</label><input id="email" type="email" required maxlength="254" autocomplete="email" placeholder="nombre@g.educaand.es" aria-describedby="email-help"><small id="email-help">Usa tu dirección terminada en @g.educaand.es.</small></div><div><label for="practice-name">Nombre de la práctica</label><input id="practice-name" required maxlength="100" placeholder="Ej.: Práctica 4 · Flexbox" autocomplete="off"></div></div>
 <label for="text">Texto de la práctica</label><textarea id="text" required maxlength="10000" placeholder="Pega aquí el contenido que quieres entregar…" aria-describedby="count"></textarea><small id="count">0 / 10 000 caracteres</small>
 <div class="actions"><button id="submit" type="submit">Entregar práctica</button><button id="edit" type="button" class="secondary" hidden>Preparar otra entrega</button></div>
 </form>
@@ -87,7 +88,7 @@ function save(){try{localStorage.setItem(key,JSON.stringify(current));}catch{sto
 function link(id,code,name){if(urls[id])URL.revokeObjectURL(urls[id]);urls[id]=URL.createObjectURL(new Blob([code+'\n'],{type:'text/plain;charset=utf-8'}));$(id).href=urls[id];$(id).download=name;$(id).hidden=false;}
 function refresh(){
  const pending=!!current;
- $('email').readOnly=pending||busy;$('text').readOnly=pending||busy;
+ $('email').readOnly=pending||busy;$('text').readOnly=pending||busy;$('practice-name').readOnly=pending||busy;
  $('submit').disabled=busy||!!current?.receipt||!LabDelivery.configured(delivery);
  $('submit').textContent=busy?'Enviando…':current?.receipt?'Entrega confirmada':pending?'Reintentar entrega':'Entregar práctica';
  $('edit').hidden=!pending;$('edit').disabled=busy;
@@ -100,7 +101,7 @@ async function showReceipt(){
  const code=await token({...data,receipt:current.receipt});
  link('download',code,'justificante-'+current.envelope.submissionId.slice(0,16)+'.txt');
  $('backup').hidden=true;$('status').hidden=true;
- $('receipt-details').textContent='Fecha de recepción: '+new Date(current.receipt.receivedAt).toLocaleString('es-ES',{timeZone:'Europe/Madrid'})+' (hora de Madrid).\nID: '+current.receipt.submissionId;
+ $('receipt-details').textContent='Práctica: '+(data.practiceName||'Práctica anterior')+'\nFecha de recepción: '+new Date(current.receipt.receivedAt).toLocaleString('es-ES',{timeZone:'Europe/Madrid'})+' (hora de Madrid).\nID: '+current.receipt.submissionId;
  if(!$('receipt').open)$('receipt').showModal();
  if(!current.downloadRequested){$('download').click();current.downloadRequested=true;save();}
 }
@@ -112,6 +113,8 @@ async function backup(){
 $('form').addEventListener('submit',async event=>{
  event.preventDefault();if(busy||current?.receipt)return;
  const email=$('email').value.trim().toLowerCase();
+ const practiceName=$('practice-name').value.trim();
+ $('practice-name').setCustomValidity(practiceName?'':'Escribe el nombre de la práctica.');
  $('email').setCustomValidity(validEmail(email)?'':'Usa un correo del dominio g.educaand.es.');
  $('text').setCustomValidity($('text').value.trim()?'':'Pega el texto de tu práctica.');
  if(!$('form').reportValidity())return;
@@ -119,7 +122,7 @@ $('form').addEventListener('submit',async event=>{
  busy=true;refresh();notice('Enviando la práctica. Espera la confirmación de Google Sheets.');
  try{
   if(!current){
-   const data={exam:CONFIG.id,activityVersion:CONFIG.version,version:3,language:'es',name:'',email,group:'',notes:'',finishedAt:new Date().toISOString(),seconds:0,answers:[{question:'texto-practica',answer:$('text').value,status:'teacher-review'}],url:location.href};
+   const data={exam:CONFIG.id,activityVersion:CONFIG.version,version:3,language:'es',name:'',email,practiceName,group:'',notes:'',finishedAt:new Date().toISOString(),seconds:0,answers:[{question:practiceName,answer:$('text').value,status:'teacher-review'}],url:location.href};
    const payload=JSON.stringify(data);
    current={envelope:{protocol:1,submissionId:await hash(payload),practiceId:CONFIG.id,practiceVersion:CONFIG.version,payload}};save();
   }
@@ -131,6 +134,7 @@ $('form').addEventListener('submit',async event=>{
   else notice('No se ha podido confirmar la recepción. Reintenta el envío: se conservará el mismo identificador para evitar duplicados. Puedes descargar una copia pendiente; esa copia no confirma la entrega.'+(storageOK?'':' No se pudo guardar la copia en este navegador. Descárgala antes de cerrar.'));
  }finally{busy=false;refresh();}
 });
+$('practice-name').addEventListener('input',()=>{$('practice-name').setCustomValidity('');});
 $('email').addEventListener('input',()=>{$('email').setCustomValidity('');});
 $('text').addEventListener('input',()=>{$('text').setCustomValidity('');refresh();});
 function anotherDelivery(){
@@ -140,7 +144,7 @@ function anotherDelivery(){
  current=null;
  try{localStorage.removeItem(key);localStorage.setItem(emailKey,email);}catch{}
  if($('receipt').open)$('receipt').close();
- $('text').value='';$('email').value=email;
+ $('text').value='';$('practice-name').value='';$('practice-name').setCustomValidity('');$('email').value=email;
  $('text').setCustomValidity('');$('email').setCustomValidity('');
  $('backup').hidden=true;$('status').hidden=true;
  for(const id of Object.keys(urls)){URL.revokeObjectURL(urls[id]);delete urls[id];$(id).removeAttribute('href');}
@@ -160,7 +164,7 @@ async function init(){
    const item=JSON.parse(raw),e=item.envelope,d=JSON.parse(e.payload);
    if(e.practiceId!==CONFIG.id||e.practiceVersion!==CONFIG.version||await hash(e.payload)!==e.submissionId||!validEmail(d.email)||typeof d.answers?.[0]?.answer!=='string')throw Error('INVALID');
    if(item.receipt&&(item.receipt.submissionId!==e.submissionId||!Number.isFinite(Date.parse(item.receipt.receivedAt))))throw Error('INVALID');
-   current=item;$('email').value=d.email;$('text').value=d.answers[0].answer;
+   current=item;$('email').value=d.email;$('text').value=d.answers[0].answer;$('practice-name').value=d.practiceName||'Práctica anterior';
    if(current.receipt)await showReceipt();else{await backup();notice('Hay una entrega pendiente en este navegador. Pulsa «Reintentar entrega» para comprobar su recepción.');}
   }
  }catch{notice('No se pudo recuperar la copia guardada. Revisa los datos antes de enviar.');}
