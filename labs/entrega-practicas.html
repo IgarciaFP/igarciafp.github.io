@@ -4,13 +4,77 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entrega de prácticas</title>
 <style>
-:root{font-family:system-ui,sans-serif;color:#172b3c;background:#f1f5f9;line-height:1.6;color-scheme:light}*{box-sizing:border-box}body{margin:0;padding:40px 18px}main{max-width:800px;margin:auto}.eyebrow{font-size:.8rem;color:#34616a;font-weight:750;letter-spacing:.12em}h1{font-size:clamp(1.9rem,5vw,2.7rem);line-height:1.15;margin:12px 0}p{margin:10px 0 22px}.card{background:white;border:1px solid #dce4eb;border-radius:18px;padding:clamp(20px,4vw,36px);margin-top:24px;box-shadow:0 12px 35px #18384908}label{display:block;font-weight:700;margin:20px 0 7px}input,textarea{font:inherit;width:100%;border:1px solid #93a6b6;border-radius:8px;padding:12px;background:#fff;color:inherit}textarea{min-height:193px;resize:vertical}input:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:3px solid #87cbd4;outline-offset:3px}small,.muted{color:#536b7e}small{display:block}.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}button,.button{font:inherit;font-weight:650;border:0;border-radius:8px;padding:12px 20px;background:#126474;color:white;cursor:pointer;text-decoration:none}button.secondary,.button.secondary{background:#e9f1f4;color:#214958}button:disabled{opacity:.55;cursor:wait}.notice{padding:14px 16px;background:#fff5d9;border-left:4px solid #dca72c;border-radius:6px}.success{background:#e8f7ef;border-left-color:#2d8960}#status{white-space:pre-line;overflow-wrap:anywhere}#code{min-height:120px;font:12px/1.5 monospace}h2{font-size:1.25rem;margin-top:0}[hidden]{display:none!important}footer{font-size:.85rem;margin:24px 4px;color:#536b7e}
-dialog{width:min(620px,calc(100% - 32px));max-height:calc(100dvh - 40px);overflow:auto;border:1px solid #dce4eb;border-radius:18px;padding:clamp(20px,4vw,32px);color:#172b3c;background:white;box-shadow:0 24px 80px #172b3c33}dialog::backdrop{background:#172b3c99}#receipt-details{overflow-wrap:anywhere;white-space:pre-line}button:disabled{cursor:default}
-.identity{display:grid;grid-template-columns:1fr 1fr;gap:20px}.identity>div{min-width:0}@media(max-width:600px){.identity{grid-template-columns:1fr;gap:0}}
+
+:root{
+ font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ color:#172b42;background:#f4f6f9;line-height:1.55;color-scheme:light;
+ --accent:#176b69;--accent-hover:#115654;--muted:#607087;--line:#dce3ec;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:64px 24px 48px;min-height:100vh;background:radial-gradient(ellipse at 50% 0,#e8eef4 0,transparent 65%)}
+main{max-width:860px;margin:0 auto}
+header{position:relative;margin:0 0 32px;padding-left:72px}
+.header-icon{position:absolute;top:3px;left:0;display:grid;place-items:center;width:48px;height:48px;color:var(--accent);background:#e4efed;border:1px solid #cfe0dc;border-radius:14px}
+.header-icon svg{width:25px;height:25px}
+h1{font-size:clamp(1.8rem,4vw,2.25rem);font-weight:700;line-height:1.2;letter-spacing:-.04em;margin:0 0 12px}
+header p{max-width:650px;margin:0;color:var(--muted);font-size:.96rem;line-height:1.7}
+p{margin:0 0 20px}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:0 4px 6px #162b4203,0 18px 48px #162b4207}
+.identity{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px}
+.identity>div{min-width:0}
+label{display:block;font-size:.875rem;font-weight:650;color:#293e55;margin:0 0 9px}
+input,textarea{font:inherit;font-size:.95rem;width:100%;border:1px solid #cdd6e2;border-radius:10px;padding:13px 15px;background:#fff;color:#172b42;transition:border-color .15s,box-shadow .15s}
+input{height:48px}
+textarea{display:block;min-height:193px;resize:vertical;line-height:1.7}
+input::placeholder,textarea::placeholder{color:#8490a1;opacity:1}
+input:hover,textarea:hover{border-color:#a8b8c9}
+input:focus,textarea:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px #176b691a}
+input[readonly],textarea[readonly]{background:#f7f9fb;color:#53647a}
+button:focus-visible,a:focus-visible{outline:3px solid #67a8a4;outline-offset:4px}
+small,.muted{color:var(--muted)}
+small{display:block;font-size:.75rem;margin-top:8px}
+#count{text-align:right;font-variant-numeric:tabular-nums}
+.actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:24px}
+#form>.actions{border-top:1px solid #edf0f5;padding-top:24px;margin-top:24px;justify-content:flex-end}
+button,.button{display:inline-flex;justify-content:center;align-items:center;min-height:46px;font:inherit;font-size:.875rem;font-weight:650;border:1px solid transparent;border-radius:10px;padding:12px 21px;background:var(--accent);color:#fff;cursor:pointer;text-decoration:none;transition:background .15s,box-shadow .15s,transform .15s;text-align:center}
+button:hover:not(:disabled),.button:hover{background:var(--accent-hover);box-shadow:0 4px 12px #176b691a}
+button:active:not(:disabled),.button:active{transform:translateY(1px)}
+button.secondary,.button.secondary{background:#fff;border-color:var(--line);color:#334b62}
+button.secondary:hover:not(:disabled),.button.secondary:hover{background:#f3f6f9;border-color:#b9c7d5;box-shadow:none}
+button:disabled{opacity:.6;cursor:default}
+#submit:not(:disabled)::after{content:"→";font-size:1.1rem;font-weight:400;margin-left:14px}
+.notice{padding:16px 18px;background:#fff9ec;color:#71561b;border:1px solid #efdfba;border-radius:10px;font-size:.875rem;line-height:1.7}
+.success{background:#f0f8f4;color:#285646;border-color:#d7e9df}
+#status{margin-top:24px;white-space:pre-line;overflow-wrap:anywhere}
+h2{font-size:1.4rem;line-height:1.3;letter-spacing:-.025em;margin:0 0 14px;font-weight:700}
+[hidden]{display:none!important}
+dialog{width:min(600px,calc(100% - 32px));max-height:calc(100dvh - 40px);overflow:auto;border:1px solid #e0e7ee;border-radius:20px;padding:32px;color:#172b42;background:#fff;box-shadow:0 24px 100px #0e203d40}
+dialog::backdrop{background:#12243a80;backdrop-filter:blur(4px)}
+#receipt-title:focus{outline:none}
+#receipt-description{font-size:.95rem;color:var(--muted);line-height:1.7}
+#receipt-details{overflow-wrap:anywhere;white-space:pre-line;font-size:.8125rem;line-height:1.9;margin:24px 0 0}
+#receipt .actions{align-items:stretch}
+#receipt .actions>*{flex:1}
+#receipt-progress{color:var(--muted);font-size:.95rem;line-height:1.7;margin-bottom:0}
+#receipt-back{margin-top:24px}
+#receipt:has(#receipt-back[hidden]):has(#receipt-result[hidden]) #receipt-progress::before{content:"";display:block;width:30px;height:30px;margin:24px 0;border:3px solid #deebe9;border-top-color:var(--accent);border-radius:50%;animation:spin .85s linear infinite}
+#receipt:has(#receipt-result:not([hidden])) #receipt-title::before{content:"✓";display:grid;place-items:center;width:42px;height:42px;margin-bottom:20px;border-radius:50%;background:#e5f3ec;color:#277253;font-size:1.3rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:600px){
+ body{padding:32px 16px}
+ header{padding-left:0;margin-bottom:24px}
+ .header-icon{position:static;margin-bottom:18px;width:44px;height:44px;border-radius:12px}
+ h1{font-size:1.8rem}
+ .card,dialog{padding:24px 20px;border-radius:16px}
+ .identity{grid-template-columns:1fr;gap:22px;margin-bottom:24px}
+ #form>.actions>*{width:100%}
+ #receipt .actions{flex-direction:column}
+}
+@media(prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body><main>
-<header><h1 id="title">Entrega de prácticas</h1><p>Introduce tu correo del centro y pega el texto de tu práctica. Conserva el justificante cuando se confirme la entrega.</p></header>
+<header><span class="header-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></span><h1 id="title">Entrega de prácticas</h1><p>Introduce tu correo del centro y pega el texto de tu práctica. Conserva el justificante cuando se confirme la entrega.</p></header>
 <p id="setup" class="notice" hidden>El docente debe conectar esta página con Google Sheets antes de recibir entregas.</p>
 <form id="form" class="card">
 <div class="identity"><div><label for="email">Email</label><input id="email" type="email" required maxlength="254" autocomplete="email" placeholder="nombre@g.educaand.es" aria-describedby="email-help"><small id="email-help">Usa tu dirección terminada en @g.educaand.es.</small></div><div><label for="practice-name">Nombre de la práctica</label><input id="practice-name" required maxlength="100" placeholder="Ej.: Práctica 4 · Flexbox" autocomplete="off"></div></div>
