@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entrega de prácticas</title>
+<style>
+:root{font-family:system-ui,sans-serif;color:#172b3c;background:#f1f5f9;line-height:1.6;color-scheme:light}*{box-sizing:border-box}body{margin:0;padding:40px 18px}main{max-width:800px;margin:auto}.eyebrow{font-size:.8rem;color:#34616a;font-weight:750;letter-spacing:.12em}h1{font-size:clamp(1.9rem,5vw,2.7rem);line-height:1.15;margin:12px 0}p{margin:10px 0 22px}.card{background:white;border:1px solid #dce4eb;border-radius:18px;padding:clamp(20px,4vw,36px);margin-top:24px;box-shadow:0 12px 35px #18384908}label{display:block;font-weight:700;margin:20px 0 7px}input,textarea{font:inherit;width:100%;border:1px solid #93a6b6;border-radius:8px;padding:12px;background:#fff;color:inherit}textarea{min-height:290px;resize:vertical}input:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:3px solid #87cbd4;outline-offset:3px}small,.muted{color:#536b7e}small{display:block}.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}button,.button{font:inherit;font-weight:650;border:0;border-radius:8px;padding:12px 20px;background:#126474;color:white;cursor:pointer;text-decoration:none}button.secondary,.button.secondary{background:#e9f1f4;color:#214958}button:disabled{opacity:.55;cursor:wait}.notice{padding:14px 16px;background:#fff5d9;border-left:4px solid #dca72c;border-radius:6px}.success{background:#e8f7ef;border-left-color:#2d8960}#status{white-space:pre-line;overflow-wrap:anywhere}#code{min-height:120px;font:12px/1.5 monospace}h2{font-size:1.25rem;margin-top:0}[hidden]{display:none!important}footer{font-size:.85rem;margin:24px 4px;color:#536b7e}
+</style>
+</head>
+<body><main>
+<header><span class="eyebrow">AULA · ENTREGA DE PRÁCTICAS</span><h1 id="title">Entrega de prácticas</h1><p>Introduce tu correo del centro y pega el texto de tu práctica. Conserva el justificante cuando se confirme la entrega.</p></header>
+<p id="setup" class="notice" hidden>El docente debe conectar esta página con Google Sheets antes de recibir entregas.</p>
+<form id="form" class="card">
+<label for="email">Correo del centro</label><input id="email" type="email" required maxlength="254" autocomplete="email" placeholder="nombre@g.educaand.es" aria-describedby="email-help"><small id="email-help">Usa tu dirección terminada en @g.educaand.es.</small>
+<label for="text">Texto de la práctica</label><textarea id="text" required maxlength="10000" placeholder="Pega aquí el contenido que quieres entregar…" aria-describedby="count"></textarea><small id="count">0 / 10 000 caracteres</small>
+<div class="actions"><button id="submit" type="submit">Entregar práctica</button><button id="edit" type="button" class="secondary" hidden>Preparar otra entrega</button></div>
+</form>
+<p id="status" class="notice" role="status" aria-live="polite" hidden></p>
+<section id="receipt" class="card" hidden><h2>Justificante de entrega</h2><p>La hoja de Google Sheets ha confirmado la recepción. Descarga el justificante o copia el código completo.</p><div class="actions"><a id="download" class="button" download>Descargar justificante TXT</a><button id="copy" type="button" class="secondary">Copiar código</button></div><label for="code">Código de entrega</label><textarea id="code" readonly spellcheck="false"></textarea></section>
+<div class="actions"><a id="backup" class="button secondary" hidden download>Descargar copia pendiente</a></div>
+<footer>El justificante contiene tu entrega comprimida y codificada. No está cifrado: compártelo únicamente con tu docente.</footer>
+<noscript>Activa JavaScript para realizar la entrega.</noscript>
+</main><script>
+// CONFIGURACIÓN DEL DOCENTE. El ID y la versión deben coincidir con Code.gs.
+const CONFIG = Object.freeze({
+  id: 'ENTREGA-PRACTICAS', version: '1', title: 'Entrega de prácticas',
+  endpoint: 'https://script.google.com/macros/s/AKfycbyqdS1_j0EwUZehTHkIHSjiwklzBfdX92KqieJmCh2ZiiS5GOOtxFeBsujt9cXTrKLb/exec'
+});
+(() => {
+  'use strict';
+  const configured=delivery=>delivery?.type==='apps-script' && /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(delivery.endpoint || '');
+  const googleOrigin=origin=>/^https:\/\/(?:[a-z0-9-]+-)?script\.googleusercontent\.com$/.test(origin);
+  function send(delivery,envelope) {
+    if(!configured(delivery))return Promise.reject(Error('NOT_CONFIGURED'));
+    return new Promise((resolve,reject)=>{
+      const channel=Array.from(crypto.getRandomValues(new Uint8Array(16)),x=>x.toString(16).padStart(2,'0')).join('');
+      const url=new URL(delivery.endpoint);url.searchParams.set('practice',envelope.practiceId);url.searchParams.set('channel',channel);
+      const frame=document.createElement('iframe');frame.hidden=true;frame.title='Recepción de entrega';
+      let peer=null,peerOrigin=null,sent=false;
+      const cleanup=()=>{clearTimeout(timer);window.removeEventListener('message',receive);frame.remove();};
+      const fail=code=>{cleanup();reject(Error(code));};
+      const timer=setTimeout(()=>fail('TIMEOUT'),90000);
+      function receive(event) {
+        const m=event.data;
+        if(!googleOrigin(event.origin)||m?.channel!==channel||!event.source)return;
+        if(m.type==='LAB_READY'&&!sent){
+          // HtmlService se ejecuta dentro de un iframe adicional de Google.
+          peer=event.source;peerOrigin=event.origin;sent=true;
+          peer.postMessage({type:'LAB_SUBMIT',channel,envelope},peerOrigin);
+        } else if(m.type==='LAB_RESULT'&&sent&&event.source===peer&&event.origin===peerOrigin){
+          const result=m.result;
+          if(!result?.ok){fail(result?.code||'STORAGE');return;}
+          if(result.submissionId!==envelope.submissionId||typeof result.receivedAt!=='string'||!Number.isFinite(Date.parse(result.receivedAt))){fail('INVALID_RECEIPT');return;}
+          cleanup();resolve({submissionId:result.submissionId,receivedAt:result.receivedAt});
+        }
+      }
+      window.addEventListener('message',receive);
+      frame.onerror=()=>fail('NETWORK');frame.src=url.href;document.body.append(frame);
+    });
+  }
+  window.LabDelivery=Object.freeze({configured,send});
+})();
+
+'use strict';
+const $=id=>document.getElementById(id);
+const delivery={type:'apps-script',endpoint:CONFIG.endpoint};
+const key='entrega-texto-v1:'+CONFIG.id+':'+CONFIG.version;
+let current=null,busy=false,storageOK=true;
+const urls={};
+const validEmail=value=>/^[^\s@]+@g\.educaand\.es$/i.test(value);
+async function hash(text){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text))),b=>b.toString(16).padStart(2,'0')).join('');}
+async function encode(text){
+ const stream=new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'));
+ const bytes=new Uint8Array(await new Response(stream).arrayBuffer());
+ let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);
+ return 'ENTREGA3G.'+btoa(binary).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'');
+}
+async function token(data){const body=JSON.stringify(data);return encode(body+'\nCódigo de comprobación: ENTREGA3-'+await hash(body));}
+function notice(text,success=false){$('status').hidden=false;$('status').textContent=text;$('status').classList.toggle('success',success);}
+function save(){try{localStorage.setItem(key,JSON.stringify(current));}catch{storageOK=false;}}
+function link(id,code,name){if(urls[id])URL.revokeObjectURL(urls[id]);urls[id]=URL.createObjectURL(new Blob([code+'\n'],{type:'text/plain;charset=utf-8'}));$(id).href=urls[id];$(id).download=name;$(id).hidden=false;}
+function refresh(){
+ const pending=!!current;
+ $('email').readOnly=pending||busy;$('text').readOnly=pending||busy;
+ $('submit').disabled=busy||!!current?.receipt||!LabDelivery.configured(delivery);
+ $('submit').textContent=busy?'Enviando…':current?.receipt?'Entrega confirmada':pending?'Reintentar entrega':'Entregar práctica';
+ $('edit').hidden=!pending;$('edit').disabled=busy;
+ $('count').textContent=$('text').value.length.toLocaleString('es-ES')+' / 10 000 caracteres';
+}
+async function showReceipt(){
+ const data=JSON.parse(current.envelope.payload);
+ // Se conserva el esquema v3 de la base y se añade la confirmación del servidor.
+ const code=await token({...data,receipt:current.receipt});
+ $('code').value=code;link('download',code,'justificante-'+current.envelope.submissionId.slice(0,16)+'.txt');
+ $('receipt').hidden=false;$('backup').hidden=true;
+ notice('Entrega guardada en Google Sheets.\nFecha de recepción: '+new Date(current.receipt.receivedAt).toLocaleString('es-ES',{timeZone:'Europe/Madrid'})+' (hora de Madrid).\nID: '+current.receipt.submissionId,true);
+}
+async function backup(){
+ const data=JSON.parse(current.envelope.payload);
+ const code=await token({...data,deliveryStatus:'pending',submissionId:current.envelope.submissionId});
+ link('backup',code,'copia-pendiente-'+current.envelope.submissionId.slice(0,16)+'.txt');
+}
+$('form').addEventListener('submit',async event=>{
+ event.preventDefault();if(busy||current?.receipt)return;
+ const email=$('email').value.trim().toLowerCase();
+ $('email').setCustomValidity(validEmail(email)?'':'Usa un correo del dominio g.educaand.es.');
+ $('text').setCustomValidity($('text').value.trim()?'':'Pega el texto de tu práctica.');
+ if(!$('form').reportValidity())return;
+ if(!LabDelivery.configured(delivery)){notice('El receptor de Google Sheets todavía no está configurado.');return;}
+ busy=true;refresh();notice('Enviando la práctica. Espera la confirmación de Google Sheets.');
+ try{
+  if(!current){
+   const data={exam:CONFIG.id,activityVersion:CONFIG.version,version:3,language:'es',name:'',email,group:'',notes:'',finishedAt:new Date().toISOString(),seconds:0,answers:[{question:'texto-practica',answer:$('text').value,status:'teacher-review'}],url:location.href};
+   const payload=JSON.stringify(data);
+   current={envelope:{protocol:1,submissionId:await hash(payload),practiceId:CONFIG.id,practiceVersion:CONFIG.version,payload}};save();
+  }
+  await backup();
+  current.receipt=await LabDelivery.send(delivery,current.envelope);save();
+  await showReceipt();
+ }catch(error){
+  if(current?.receipt){notice('Google Sheets ha guardado la entrega, pero no se pudo preparar el justificante. Recarga para volver a generarlo. ID: '+current.receipt.submissionId,true);}
+  else notice('No se ha podido confirmar la recepción. Reintenta el envío: se conservará el mismo identificador para evitar duplicados. Puedes descargar una copia pendiente; esa copia no confirma la entrega.'+(storageOK?'':' No se pudo guardar la copia en este navegador. Descárgala antes de cerrar.'));
+ }finally{busy=false;refresh();}
+});
+$('email').addEventListener('input',()=>{$('email').setCustomValidity('');});
+$('text').addEventListener('input',()=>{$('text').setCustomValidity('');refresh();});
+$('edit').addEventListener('click',()=>{
+ if(!current?.receipt&&!confirm('La recepción está pendiente. Si continúas, ya no podrás reintentar esta misma entrega desde aquí. Descarga antes la copia pendiente. ¿Continuar?'))return;
+ current=null;try{localStorage.removeItem(key);}catch{}
+ $('receipt').hidden=true;$('backup').hidden=true;$('status').hidden=true;refresh();$('text').focus();
+});
+$('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('code').value);$('copy').textContent='Código copiado';}catch{$('code').focus();$('code').select();$('copy').textContent='Seleccionado: pulsa Ctrl+C';}});
+async function init(){
+ $('title').textContent=CONFIG.title;document.title=CONFIG.title;
+ $('setup').hidden=LabDelivery.configured(delivery);
+ if(!window.crypto?.subtle||typeof CompressionStream!=='function'){notice('Abre esta página por HTTPS con un navegador actualizado para generar el justificante.');$('submit').disabled=true;return;}
+ try{
+  const raw=localStorage.getItem(key);
+  if(raw){
+   const item=JSON.parse(raw),e=item.envelope,d=JSON.parse(e.payload);
+   if(e.practiceId!==CONFIG.id||e.practiceVersion!==CONFIG.version||await hash(e.payload)!==e.submissionId||!validEmail(d.email)||typeof d.answers?.[0]?.answer!=='string')throw Error('INVALID');
+   if(item.receipt&&(item.receipt.submissionId!==e.submissionId||!Number.isFinite(Date.parse(item.receipt.receivedAt))))throw Error('INVALID');
+   current=item;$('email').value=d.email;$('text').value=d.answers[0].answer;
+   if(current.receipt)await showReceipt();else{await backup();notice('Hay una entrega pendiente en este navegador. Pulsa «Reintentar entrega» para comprobar su recepción.');}
+  }
+ }catch{notice('No se pudo recuperar la copia guardada. Revisa los datos antes de enviar.');}
+ refresh();
+}
+void init();
+</script></body></html>
