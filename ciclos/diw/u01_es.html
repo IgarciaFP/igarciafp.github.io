@@ -14,7 +14,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="u01_es.css">
     <style>
-        /* Índice desplegable: mismo estilo que SSII U01. */
+        /* Índice desplegable y jerárquico: mismo estilo que SSII U02. */
+.sidebar-toc .toc-group { margin: 0; padding: 0; border: 0; }
+.sidebar-toc .toc-group summary { cursor: pointer; color: var(--primary-color); padding-left: 4px; border-radius: 4px; }
+.sidebar-toc .toc-group summary a { display: inline; padding: 5px 4px; line-height: 1.8; }
+.sidebar-toc .toc-group summary:focus-visible { outline: 3px solid #d97706; outline-offset: 3px; }
+.sidebar-toc .toc-group > ul { margin: 6px 0 10px 12px; border-left: 2px solid var(--primary-light); padding-left: 6px; }
+.sidebar-toc > ul > li > a { position: relative; padding-left: 24px; }
+.sidebar-toc > ul > li > a::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: calc(5px + 0.55em);
+    width: 7px;
+    height: 7px;
+    background: var(--primary-color);
+}
+
         .toc-toggle { position: fixed; top: 20px; left: 12px; z-index: 10000; padding: 10px 16px; border: 1px solid #fff; border-radius: 7px; background: var(--primary-color); color: #fff; font: 600 0.9rem 'Inter', sans-serif; cursor: pointer; }
         .sidebar-toc { position: fixed; top: 70px; left: 0; width: min(310px, 100%); max-height: calc(100vh - 90px); padding: 22px 20px; border: 1px solid var(--border-color); border-left: none; border-radius: 0 12px 12px 0; background: var(--bg-card); box-shadow: 6px 0 25px rgba(0,0,0,.15); overflow-y: auto; transform: translateX(-100%); visibility: hidden; z-index: 9999; }
         .sidebar-toc::after { content: none; display: none; }
@@ -89,62 +105,8 @@
 
 <!-- Navegación lateral deslizable actualizable -->
 <nav id="unit-toc" class="sidebar-toc" aria-label="Índice de contenidos">
-    <h4><i class="fa-solid fa-list-ol" aria-hidden="true"></i> Contenidos</h4>
-    <ul>
-        <li><a href="#sec1">1. Introducción al Diseño Web</a></li>
-        <li><a href="#sec1_1" class="subsection-link">1.1. Evolución histórica</a></li>
-        <li><a href="#sec1_2" class="subsection-link">1.2. Cronología de hitos</a></li>
-        <li><a href="#sec1_3" class="subsection-link">1.3. Tendencias y ejemplos actuales</a></li>
-        <li><a href="#sec2">2. Interacción Persona-Ordenador</a></li>
-        <li><a href="#sec2_1" class="subsection-link">2.1. Fundamentos de UI e IPO</a></li>
-        <li><a href="#sec2_2" class="subsection-link">2.2. UI vs. UX</a></li>
-        <li><a href="#sec2_3" class="subsection-link">2.3. Usabilidad y accesibilidad</a></li>
-        <li><a href="#sec3">3. Elementos del Diseño Gráfico</a></li>
-        <li><a href="#sec3_1" class="subsection-link">3.1. Elementos conceptuales</a></li>
-        <li><a href="#sec3_2" class="subsection-link">3.2. Elementos visuales</a></li>
-        <li><a href="#sec3_3" class="subsection-link">3.3. Elementos de relación</a></li>
-        <li><a href="#sec3_4" class="subsection-link">3.4. Elementos prácticos</a></li>
-        <li><a href="#sec4_4" class="subsection-link">3.5. Atomic Design</a></li>
-        <li><a href="#sec4_4_1" class="subsection-link">3.5.1. Design Tokens</a></li>
-        <li><a href="#sec4_4_2" class="subsection-link">3.5.2. CSS tradicional y Tailwind CSS</a></li>
-        <li><a href="#sec4">4. Percepción Visual</a></li>
-        <li><a href="#sec4_1" class="subsection-link">4.1. Psicología de la Gestalt</a></li>
-        <li><a href="#sec4_2" class="subsection-link">4.2. Leyes Fundamentales de UX</a></li>
-        <li><a href="#sec4_3" class="subsection-link">4.3. Color e imágenes para la web</a></li>
-        <li><a href="#sec4_3_1" class="subsection-link">4.3.1. Armonía cromática</a></li>
-        <li><a href="#sec4_3_2" class="subsection-link">4.3.2. Imágenes para la web</a></li>
-
-        <li><a href="#sec4_6" class="subsection-link">4.4. Composición, Estados & Mobile-First</a></li>
-        <li><a href="#sec4_7" class="subsection-link">4.5. Tipografía, logotipo e iconografía</a></li>
-        <li><a href="#sec4_7_1" class="subsection-link">4.5.1. Tipografía</a></li>
-        <li><a href="#sec4_7_2" class="subsection-link">4.5.2. Logotipo</a></li>
-        <li><a href="#favicons" class="subsection-link">4.5.2.1. Icono de página o favicon</a></li>
-        <li><a href="#sec4_7_3" class="subsection-link">4.5.3. Iconografía</a></li>
-        <li><a href="#sec4_7_4" class="subsection-link">4.5.4. Mapa de navegación, sitemap.xml y robots.txt</a></li>
-        <li><a href="#sec6_2">5. Prototipado web</a></li>
-        <li><a href="#prototipado-1" class="subsection-link">5.1. Boceto en papel o sketch</a></li>
-        <li><a href="#prototipado-2" class="subsection-link">5.2. Wireframe</a></li>
-        <li><a href="#prototipado-3" class="subsection-link">5.3. Mockup</a></li>
-        <li><a href="#prototipado-4" class="subsection-link">5.4. Prototipo interactivo</a></li>
-        <li><a href="#sec6">6. Metodología Design Thinking</a></li>
-        <li><a href="#sec5">7. Guía de estilo</a></li>
-        <li><a href="#sec5_1" class="subsection-link">7.1. Finalidad y contenidos</a></li>
-        <li><a href="#sec5_2" class="subsection-link">7.2. Práctica: Elaboración de la guía didáctica de Migas-Amigas</a></li>
-        <li><a href="#sec7">8. Sistemas de diseño</a></li>
-        <li><a href="#sec7_4" class="subsection-link">8.3. Referentes de guías y sistemas</a></li>
-        <li><a href="#sec9">9. Errores Frecuentes</a></li>
-        <li><a href="#planificacion-proyecto">10. Planificación del proyecto web</a></li>
-        <li><a href="#sec13">11. Análisis de la web</a></li>
-        <li><a href="#aspectos-legales">12. Aspectos legales del diseño web</a></li>
-        <li><a href="#legal-marco" class="subsection-link">12.1. Normativa aplicable</a></li>
-        <li><a href="#legal-verificacion" class="subsection-link">12.2. Lista de comprobación</a></li>
-        <li><a href="#legal-formularios" class="subsection-link">12.3. Formularios y consentimiento</a></li>
-        <li><a href="#legal-gestion" class="subsection-link">12.4. Gestión de los datos</a></li>
-        <li><a href="#legal-migas" class="subsection-link">12.5. Aplicación a Migas Amigas</a></li>
-        <li><a href="#sec10">13. Proyecto final: Migas Amigas</a></li>
-        <li><a href="#sec11">14. Resumen (Ideas clave)</a></li>
-        <li><a href="#sec12">15. Actividades</a></li>
-    </ul>
+    <h4>Contenidos</h4>
+    <ul><li><details class="toc-group"><summary><a href="#sec1">1. Introducción al Diseño Web</a></summary><ul><li><a href="#sec1_1" class="subsection-link">1.1. Evolución histórica</a></li><li><a href="#sec1_2" class="subsection-link">1.2. Cronología de hitos</a></li><li><a href="#sec1_3" class="subsection-link">1.3. Tendencias y ejemplos actuales</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec2">2. Interacción Persona-Ordenador</a></summary><ul><li><a href="#sec2_1" class="subsection-link">2.1. Fundamentos de UI e IPO</a></li><li><a href="#sec2_2" class="subsection-link">2.2. UI vs. UX</a></li><li><a href="#sec2_3" class="subsection-link">2.3. Usabilidad y accesibilidad</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec3">3. Elementos del Diseño Gráfico</a></summary><ul><li><a href="#sec3_1" class="subsection-link">3.1. Elementos conceptuales</a></li><li><a href="#sec3_2" class="subsection-link">3.2. Elementos visuales</a></li><li><a href="#sec3_3" class="subsection-link">3.3. Elementos de relación</a></li><li><a href="#sec3_4" class="subsection-link">3.4. Elementos prácticos</a></li><li><details class="toc-group"><summary><a href="#sec4_4" class="subsection-link">3.5. Atomic Design</a></summary><ul><li><a href="#sec4_4_1" class="subsection-link">3.5.1. Design Tokens</a></li><li><a href="#sec4_4_2" class="subsection-link">3.5.2. CSS tradicional y Tailwind CSS</a></li></ul></details></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec4">4. Percepción Visual</a></summary><ul><li><a href="#sec4_1" class="subsection-link">4.1. Psicología de la Gestalt</a></li><li><a href="#sec4_2" class="subsection-link">4.2. Leyes Fundamentales de UX</a></li><li><details class="toc-group"><summary><a href="#sec4_3" class="subsection-link">4.3. Color e imágenes para la web</a></summary><ul><li><a href="#sec4_3_1" class="subsection-link">4.3.1. Armonía cromática</a></li><li><a href="#sec4_3_2" class="subsection-link">4.3.2. Imágenes para la web</a></li></ul></details></li><li><a href="#sec4_6" class="subsection-link">4.4. Composición, Estados & Mobile-First</a></li><li><details class="toc-group"><summary><a href="#sec4_7" class="subsection-link">4.5. Tipografía, logotipo e iconografía</a></summary><ul><li><a href="#sec4_7_1" class="subsection-link">4.5.1. Tipografía</a></li><li><details class="toc-group"><summary><a href="#sec4_7_2" class="subsection-link">4.5.2. Logotipo</a></summary><ul><li><a href="#favicons" class="subsection-link">4.5.2.1. Icono de página o favicon</a></li></ul></details></li><li><a href="#sec4_7_3" class="subsection-link">4.5.3. Iconografía</a></li><li><a href="#sec4_7_4" class="subsection-link">4.5.4. Mapa de navegación, sitemap.xml y robots.txt</a></li></ul></details></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec6_2">5. Prototipado web</a></summary><ul><li><a href="#prototipado-1" class="subsection-link">5.1. Boceto en papel o sketch</a></li><li><a href="#prototipado-2" class="subsection-link">5.2. Wireframe</a></li><li><a href="#prototipado-3" class="subsection-link">5.3. Mockup</a></li><li><a href="#prototipado-4" class="subsection-link">5.4. Prototipo interactivo</a></li></ul></details></li><li><a href="#sec6">6. Metodología Design Thinking</a></li><li><details class="toc-group"><summary><a href="#sec5">7. Guía de estilo</a></summary><ul><li><a href="#sec5_1" class="subsection-link">7.1. Finalidad y contenidos</a></li><li><a href="#sec5_2" class="subsection-link">7.2. Práctica: Elaboración de la guía didáctica de Migas-Amigas</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec7">8. Sistemas de diseño</a></summary><ul><li><a href="#sec7_4" class="subsection-link">8.3. Referentes de guías y sistemas</a></li></ul></details></li><li><a href="#sec9">9. Errores Frecuentes</a></li><li><a href="#planificacion-proyecto">10. Planificación del proyecto web</a></li><li><a href="#sec13">11. Análisis de la web</a></li><li><details class="toc-group"><summary><a href="#aspectos-legales">12. Aspectos legales del diseño web</a></summary><ul><li><a href="#legal-marco" class="subsection-link">12.1. Normativa aplicable</a></li><li><a href="#legal-verificacion" class="subsection-link">12.2. Lista de comprobación</a></li><li><a href="#legal-formularios" class="subsection-link">12.3. Formularios y consentimiento</a></li><li><a href="#legal-gestion" class="subsection-link">12.4. Gestión de los datos</a></li><li><a href="#legal-migas" class="subsection-link">12.5. Aplicación a Migas Amigas</a></li></ul></details></li><li><a href="#sec10">13. Proyecto final: Migas Amigas</a></li><li><a href="#sec11">14. Resumen (Ideas clave)</a></li><li><a href="#sec12">15. Actividades</a></li></ul>
 </nav>
 
 <div class="document-wrapper">
@@ -2411,6 +2373,15 @@ de los que sí.</p>
             <figcaption class="image-caption">Wireframe: fijar la posición y la jerarquía de los elementos antes del acabado visual.</figcaption>
         </figure>
 
+        <div class="resource-card expansion-card">
+            <div class="resource-card-header">
+                <span class="resource-title"><i class="fa-brands fa-youtube" aria-hidden="true"></i> Vídeo de prototipos</span>
+                <span class="resource-badge badge-video">Vídeo didáctico</span>
+            </div>
+            <div class="resource-description">Recurso audiovisual para acompañar la introducción al prototipado.</div>
+            <a href="https://www.youtube.com/watch?v=yqt_MEOGQEE" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-brands fa-youtube" aria-hidden="true"></i> Ver vídeo de prototipos</a>
+        </div>
+
         <div class="didactic-note activity-callout" id="actividad-wireframes-migas">
             <h5 class="exercise-title"><i class="fa-solid fa-pen-ruler" aria-hidden="true"></i> Actividad: Prueba herramientas de wireframing y diseña Migas Amigas (Apartado 5.2)</h5>
             <p>Explora distintas herramientas para crear wireframes y diseña <strong>todas las páginas del mapa de navegación de Migas Amigas</strong>. Crea primero <strong>bocetos en papel (sketches)</strong> para decidir qué contenido y estructura necesita cada página; después implementa sus wireframes en la herramienta que selecciones.</p>
@@ -2482,14 +2453,7 @@ de los que sí.</p>
  <div class="flex-wrap-group"><a href="https://youtu.be/AdwaVcpBjmQ" target="_blank" rel="noopener noreferrer" class="resource-link-btn">Ver vídeo · Prototipar en Figma</a></div>
 </div>
 
-        <div class="resource-card expansion-card">
-            <div class="resource-card-header">
-                <span class="resource-title"><i class="fa-brands fa-youtube" aria-hidden="true"></i> Vídeo de prototipos</span>
-                <span class="resource-badge badge-video">Vídeo didáctico</span>
-            </div>
-            <div class="resource-description">Recurso audiovisual para acompañar la introducción al prototipado.</div>
-            <a href="https://www.youtube.com/watch?v=yqt_MEOGQEE" target="_blank" rel="noopener noreferrer" class="resource-link-btn"><i class="fa-brands fa-youtube" aria-hidden="true"></i> Ver vídeo de prototipos</a>
-        </div>
+
 
         <div class="didactic-note curiosity-card">
             <h5><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> Elige el nivel según la duda que quieras resolver</h5>
