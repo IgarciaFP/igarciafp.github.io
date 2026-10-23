@@ -15,7 +15,23 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
 <link href="u01_es.css" rel="stylesheet"/>
 <style>
-        /* Índice desplegable: mismo estilo que SSII U01. */
+        /* Índice desplegable y jerárquico: mismo estilo que SSII U02. */
+.sidebar-toc .toc-group { margin: 0; padding: 0; border: 0; }
+.sidebar-toc .toc-group summary { cursor: pointer; color: var(--primary-color); padding-left: 4px; border-radius: 4px; }
+.sidebar-toc .toc-group summary a { display: inline; padding: 5px 4px; line-height: 1.8; }
+.sidebar-toc .toc-group summary:focus-visible { outline: 3px solid #d97706; outline-offset: 3px; }
+.sidebar-toc .toc-group > ul { margin: 6px 0 10px 12px; border-left: 2px solid var(--primary-light); padding-left: 6px; }
+.sidebar-toc > ul > li > a { position: relative; padding-left: 24px; }
+.sidebar-toc > ul > li > a::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: calc(5px + 0.55em);
+    width: 7px;
+    height: 7px;
+    background: var(--primary-color);
+}
+
         .toc-toggle { position: fixed; top: 20px; left: 12px; z-index: 10000; padding: 10px 16px; border: 1px solid #fff; border-radius: 7px; background: var(--primary-color); color: #fff; font: 600 0.9rem 'Inter', sans-serif; cursor: pointer; }
         .sidebar-toc { position: fixed; top: 70px; left: 0; width: min(310px, 100%); max-height: calc(100vh - 90px); padding: 22px 20px; border: 1px solid var(--border-color); border-left: none; border-radius: 0 12px 12px 0; background: var(--bg-card); box-shadow: 6px 0 25px rgba(0,0,0,.15); overflow-y: auto; transform: translateX(-100%); visibility: hidden; z-index: 9999; }
         .sidebar-toc::after { content: none; display: none; }
@@ -89,61 +105,8 @@
 <button aria-controls="unit-toc" aria-expanded="false" class="toc-toggle" type="button">Contents</button>
 <!-- Navegación lateral deslizable actualizable -->
 <nav aria-label="Contents Index" class="sidebar-toc" id="unit-toc">
-<h4><i aria-hidden="true" class="fa-solid fa-list-ol"></i> Contents</h4>
-<ul>
-<li><a href="#sec1">1. Introduction to Web Design</a></li>
-<li><a class="subsection-link" href="#sec1_1">1.1. Historical developments</a></li>
-<li><a class="subsection-link" href="#sec1_2">1.2. Milestone timeline</a></li>
-<li><a class="subsection-link" href="#sec1_3">1.3. Current trends and examples</a></li>
-<li><a href="#sec2">2. Person-Computer interaction</a></li>
-<li><a class="subsection-link" href="#sec2_1">2.1. Fundamentals of IU and IPO</a></li>
-<li><a class="subsection-link" href="#sec2_2">2.2. IU vs. UX</a></li>
-<li><a class="subsection-link" href="#sec2_3">2.3. Usability and accessibility</a></li>
-<li><a href="#sec3">3. Elements of Graphic Design</a></li>
-<li><a class="subsection-link" href="#sec3_1">3.1. Conceptual elements</a></li>
-<li><a class="subsection-link" href="#sec3_2">3.2. Visual elements</a></li>
-<li><a class="subsection-link" href="#sec3_3">3.3. Elements of relationship</a></li>
-<li><a class="subsection-link" href="#sec3_4">3.4. Practical elements</a></li>
-<li><a class="subsection-link" href="#sec4_4">3.5. Atomic Design</a></li>
-<li><a class="subsection-link" href="#sec4_4_1">3.5.1. Design Tokens</a></li>
-<li><a class="subsection-link" href="#sec4_4_2">3.5.2. Traditional CSS and Tailwind CSS</a></li>
-<li><a href="#sec4">4. Visual perception</a></li>
-<li><a class="subsection-link" href="#sec4_1">4.1. Gestalt Psychology</a></li>
-<li><a class="subsection-link" href="#sec4_2">4.2. Fundamental Laws of UX</a></li>
-<li><a class="subsection-link" href="#sec4_3">4.3. Color and images for the web</a></li>
-<li><a class="subsection-link" href="#sec4_3_1">4.3.1. Color harmony</a></li>
-<li><a class="subsection-link" href="#sec4_3_2">4.3.2. Images for the web</a></li>
-<li><a class="subsection-link" href="#sec4_6">4.4. Membership, States &amp; Mobile-First</a></li>
-<li><a class="subsection-link" href="#sec4_7">4.5. Typography, logo and iconography</a></li>
-<li><a class="subsection-link" href="#sec4_7_1">4.5.1. Typography</a></li>
-<li><a class="subsection-link" href="#sec4_7_2">4.5.2. Logo</a></li>
-<li><a class="subsection-link" href="#favicons">4.5.2.1. Page icon or favicon</a></li>
-<li><a class="subsection-link" href="#sec4_7_3">4.5.3. Iconography</a></li>
-<li><a class="subsection-link" href="#sec4_7_4">4.5.4. Navigation map, sitemap.xml and robots.txt</a></li>
-<li><a href="#sec6_2">5. Web Prototyping</a></li>
-<li><a class="subsection-link" href="#prototipado-1">5.1. Paper sketch or sketch</a></li>
-<li><a class="subsection-link" href="#prototipado-2">5.2. Wireframe</a></li>
-<li><a class="subsection-link" href="#prototipado-3">5.3. Mockup</a></li>
-<li><a class="subsection-link" href="#prototipado-4">5.4. Interactive Prototype</a></li>
-<li><a href="#sec6">6. Design Thinking methodology</a></li>
-<li><a href="#sec5">7. Style Guide</a></li>
-<li><a class="subsection-link" href="#sec5_1">7.1. Purpose and contents</a></li>
-<li><a class="subsection-link" href="#sec5_2">7.2. Practice: Preparation of the Migas-Amigas didactic guide</a></li>
-<li><a href="#sec7">8. Design systems</a></li>
-<li><a class="subsection-link" href="#sec7_4">8.3. Guides and systems referents</a></li>
-<li><a href="#sec9">9. Common Mistakes</a></li>
-<li><a href="#planificacion-proyecto">10. Web project planning</a></li>
-<li><a href="#sec13">11. Web analysis</a></li>
-<li><a href="#aspectos-legales">12. Legal aspects of web design</a></li>
-<li><a class="subsection-link" href="#legal-marco">12.1. Applicable rules</a></li>
-<li><a class="subsection-link" href="#legal-verificacion">12.2. Checklist</a></li>
-<li><a class="subsection-link" href="#legal-formularios">12.3. Forms and consent</a></li>
-<li><a class="subsection-link" href="#legal-gestion">12.4. Data management</a></li>
-<li><a class="subsection-link" href="#legal-migas">12.5. Application to Migas Amigas</a></li>
-<li><a href="#sec10">13. Final project: Migas Amigas</a></li>
-<li><a href="#sec11">14. Summary (key ideas)</a></li>
-<li><a href="#sec12">15. Activities</a></li>
-</ul>
+<h4>Contents</h4>
+<ul><li><details class="toc-group"><summary><a href="#sec1">1. Introduction to Web Design</a></summary><ul><li><a class="subsection-link" href="#sec1_1">1.1. Historical developments</a></li><li><a class="subsection-link" href="#sec1_2">1.2. Milestone timeline</a></li><li><a class="subsection-link" href="#sec1_3">1.3. Current trends and examples</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec2">2. Person-Computer interaction</a></summary><ul><li><a class="subsection-link" href="#sec2_1">2.1. Fundamentals of IU and IPO</a></li><li><a class="subsection-link" href="#sec2_2">2.2. IU vs. UX</a></li><li><a class="subsection-link" href="#sec2_3">2.3. Usability and accessibility</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec3">3. Elements of Graphic Design</a></summary><ul><li><a class="subsection-link" href="#sec3_1">3.1. Conceptual elements</a></li><li><a class="subsection-link" href="#sec3_2">3.2. Visual elements</a></li><li><a class="subsection-link" href="#sec3_3">3.3. Elements of relationship</a></li><li><a class="subsection-link" href="#sec3_4">3.4. Practical elements</a></li><li><details class="toc-group"><summary><a class="subsection-link" href="#sec4_4">3.5. Atomic Design</a></summary><ul><li><a class="subsection-link" href="#sec4_4_1">3.5.1. Design Tokens</a></li><li><a class="subsection-link" href="#sec4_4_2">3.5.2. Traditional CSS and Tailwind CSS</a></li></ul></details></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec4">4. Visual perception</a></summary><ul><li><a class="subsection-link" href="#sec4_1">4.1. Gestalt Psychology</a></li><li><a class="subsection-link" href="#sec4_2">4.2. Fundamental Laws of UX</a></li><li><details class="toc-group"><summary><a class="subsection-link" href="#sec4_3">4.3. Color and images for the web</a></summary><ul><li><a class="subsection-link" href="#sec4_3_1">4.3.1. Color harmony</a></li><li><a class="subsection-link" href="#sec4_3_2">4.3.2. Images for the web</a></li></ul></details></li><li><a class="subsection-link" href="#sec4_6">4.4. Membership, States &amp; Mobile-First</a></li><li><details class="toc-group"><summary><a class="subsection-link" href="#sec4_7">4.5. Typography, logo and iconography</a></summary><ul><li><a class="subsection-link" href="#sec4_7_1">4.5.1. Typography</a></li><li><details class="toc-group"><summary><a class="subsection-link" href="#sec4_7_2">4.5.2. Logo</a></summary><ul><li><a class="subsection-link" href="#favicons">4.5.2.1. Page icon or favicon</a></li></ul></details></li><li><a class="subsection-link" href="#sec4_7_3">4.5.3. Iconography</a></li><li><a class="subsection-link" href="#sec4_7_4">4.5.4. Navigation map, sitemap.xml and robots.txt</a></li></ul></details></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec6_2">5. Web Prototyping</a></summary><ul><li><a class="subsection-link" href="#prototipado-1">5.1. Paper sketch or sketch</a></li><li><a class="subsection-link" href="#prototipado-2">5.2. Wireframe</a></li><li><a class="subsection-link" href="#prototipado-3">5.3. Mockup</a></li><li><a class="subsection-link" href="#prototipado-4">5.4. Interactive Prototype</a></li></ul></details></li><li><a href="#sec6">6. Design Thinking methodology</a></li><li><details class="toc-group"><summary><a href="#sec5">7. Style Guide</a></summary><ul><li><a class="subsection-link" href="#sec5_1">7.1. Purpose and contents</a></li><li><a class="subsection-link" href="#sec5_2">7.2. Practice: Preparation of the Migas-Amigas didactic guide</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec7">8. Design systems</a></summary><ul><li><a class="subsection-link" href="#sec7_4">8.3. Guides and systems referents</a></li></ul></details></li><li><a href="#sec9">9. Common Mistakes</a></li><li><a href="#planificacion-proyecto">10. Web project planning</a></li><li><a href="#sec13">11. Web analysis</a></li><li><details class="toc-group"><summary><a href="#aspectos-legales">12. Legal aspects of web design</a></summary><ul><li><a class="subsection-link" href="#legal-marco">12.1. Applicable rules</a></li><li><a class="subsection-link" href="#legal-verificacion">12.2. Checklist</a></li><li><a class="subsection-link" href="#legal-formularios">12.3. Forms and consent</a></li><li><a class="subsection-link" href="#legal-gestion">12.4. Data management</a></li><li><a class="subsection-link" href="#legal-migas">12.5. Application to Migas Amigas</a></li></ul></details></li><li><a href="#sec10">13. Final project: Migas Amigas</a></li><li><a href="#sec11">14. Summary (key ideas)</a></li><li><a href="#sec12">15. Activities</a></li></ul>
 </nav>
 <div class="document-wrapper">
 <main class="document-container">
@@ -2194,6 +2157,14 @@ of the same colour.</p>
 </div>
 <figcaption class="image-caption">Wireframe: fix the position and hierarchy of the elements before visual finishing.</figcaption>
 </figure>
+<div class="resource-card expansion-card">
+<div class="resource-card-header">
+<span class="resource-title"><i aria-hidden="true" class="fa-brands fa-youtube"></i> Prototyping video</span>
+<span class="resource-badge badge-video">Teaching video</span>
+</div>
+<div class="resource-description">Audiovisual resource to accompany the introduction to the prototyping.</div>
+<a class="resource-link-btn" href="https://www.youtube.com/watch?v=yqt_MEOGQEE" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-brands fa-youtube"></i> Watch video of prototypes</a>
+</div>
 <div class="didactic-note activity-callout" id="actividad-wireframes-migas">
 <h5 class="exercise-title"><i aria-hidden="true" class="fa-solid fa-pen-ruler"></i> Activity: Test Wireframing Tools and Design Migas Amigas (Apartment 5.2)</h5>
 <p>Explore different tools to create wireframes and design <strong>all pages of Migas Amigas navigation map</strong>. Create first <strong>sketches on paper (sketches)</strong> to decide what content and structure each page needs; then implement your wireframes in the tool you select.</p>
@@ -2258,14 +2229,6 @@ of the same colour.</p>
 <p class="resource-description">Look at this step-by-step tutorial on prototype interfaces in Figma. As you look at it, identify what turns drawn screens into an interactive tour and note what connections you would need for Migas Amigas.</p>
 <div class="flex-wrap-group"><a class="resource-link-btn" href="https://youtu.be/AdwaVcpBjmQ" rel="noopener noreferrer" target="_blank">Watch video · Prototipar en Figma</a></div>
 </div>
-<div class="resource-card expansion-card">
-<div class="resource-card-header">
-<span class="resource-title"><i aria-hidden="true" class="fa-brands fa-youtube"></i> Prototyping video</span>
-<span class="resource-badge badge-video">Teaching video</span>
-</div>
-<div class="resource-description">Audiovisual resource to accompany the introduction to the prototyping.</div>
-<a class="resource-link-btn" href="https://www.youtube.com/watch?v=yqt_MEOGQEE" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-brands fa-youtube"></i> Watch video of prototypes</a>
-</div>
 <div class="didactic-note curiosity-card">
 <h5><i aria-hidden="true" class="fa-solid fa-arrows-rotate"></i> Choose the level according to the doubt you want to solve</h5>
 <p><strong>What idea works?</strong> Sketch. <strong>Where does every element go?</strong> Wireframe. <strong>How will it look?</strong> Mockup. <strong>Is it understood by using it?</strong> Interactive Prototype. After each revision, correct and re-test; no detail needs to be added if there are still structural problems.</p>
@@ -2285,14 +2248,14 @@ of the same colour.</p>
 </div>
 <div class="didactic-note activity-callout">
 <h5 class="exercise-title"><i aria-hidden="true" class="fa-solid fa-pen-clip"></i> Activity 9: From Wireframe to Migas Amigas Mockup in Figma</h5>
-<p>Part of <strong>wireframes of all pages of your navigation map</strong>, already designed in the previous activity, and performs its <strong>mockups in Figma</strong>. Concrete the appearance of the web as it will be seen in its final version: images, colors, typography, logo, icons and all visual elements. In this activity <strong>no interactivity added yet</strong>; connections between screens will be worked when creating the interactive prototype.</p>
+<p>Part of the wireframes already designed in the previous activity and performs in Figma the <strong>mockups of at least the landing page, shopping basket and contact page</strong> of Migas Amigas. The result must be a <strong>original design of the student</strong>. Concrete the appearance of the web as it will be seen in its final version: images, colors, typography, logo, icons and all visual elements. In this activity <strong>no interactivity added yet</strong>; connections between screens will be worked when creating the interactive prototype.</p>
 <ol>
 <li><strong>Prepares the design:</strong> use the wireframes as the basis and recover the decisions of your Migas Amigas style guide. Define the color, font and spacing styles that you will apply consistently across all pages.</li>
 <li><strong>Designs atoms:</strong> specify the basic elements, such as buttons, links, icons, labels and form fields. Sets their sizes, colors, edges and text styles. Creates reusable components in Figma and visually represents the necessary states, such as focus, error or disabled, without programming or connecting interactions.</li>
 <li><strong>Form molecules:</strong> combines atoms into simple sets, such as a field with its tag and help message, a search engine, or a quantity selector. It reuses components to keep the same look.</li>
 <li><strong>Builds organisms:</strong> collect molecules and atoms in complete blocks, such as the navigation header, the product catalogue, the contact form or the order summary.</li>
-<li><strong>Compose templates and pages:</strong> organizes the agencies following the structure of the wireframes and uses these templates to complete <strong>all pages of the navigation map</strong>. Replaces position markers with user-permitted photographs, the logo, icons and realistic Migas Amigas texts. It includes prices, labels, messages and other visual content as it should appear on the final website.</li>
-<li><strong>Check the visual finish:</strong> Check with a companion the hierarchy, readability, contrast, alignment, spacing and consistency between pages. Check that all the elements provided in the wireframes already have their visual design and corrects the differences before moving to the interactive prototype.</li>
+<li><strong>Compose templates and pages:</strong> organizes the agencies following the structure of the wireframes and uses these templates to complete <strong>at least the landing page, shopping basket and contact page</strong>. Replaces position markers with user-permitted photographs, the logo, icons and realistic Migas Amigas texts. It includes prices, labels, messages and other visual content as it should appear on the final website.</li>
+<li><strong>Check the visual finish:</strong> checks with a companion the hierarchy, readability, contrast, alignment, spacing and consistency between pages. Checks that all the elements provided in the wireframes of the selected pages already have their visual design and corrects the differences before moving on to the interactive prototype.</li>
 </ol>
 <p><strong>Includes mockups in the Migas Amigas style guide</strong> and retains the editable Figma file with the components, templates and organized pages.</p>
 </div>
