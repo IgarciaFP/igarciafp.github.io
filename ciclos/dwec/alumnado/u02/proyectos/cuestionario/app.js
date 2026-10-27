@@ -6,7 +6,7 @@ const preguntas = [
     ["¿Qué tipo devuelve prompt() al aceptar?", ["string", "number", "boolean"], 0],
     ["¿Qué propiedad escribe texto sin interpretarlo como HTML?", ["innerHTML", "value", "textContent"], 2],
     ["¿Cómo se pasa una función como callback?", ["saludar()", "saludar", "return saludar()"], 1],
-    ["¿Qué evita el envío convencional de un formulario?", ["preventDefault()", "querySelector()", "console.log()"], 0]
+    ["¿Qué evita el envío convencional de un formulario?", ["preventDefault()", "querySelector()", "textContent"], 0]
 ];
 
 // TODO: guarda el índice de pregunta (0) y los aciertos (0).

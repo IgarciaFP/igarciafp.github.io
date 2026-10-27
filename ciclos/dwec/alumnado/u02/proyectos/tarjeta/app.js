@@ -5,5 +5,6 @@
 // Recuerda añadir "px" a los valores de tamaño y radio.
 // TODO: muestra los tres valores en #resumen con textContent.
 // TODO: llama a la función al cargar y regístrala para input en cada control.
-// TODO: registra change para escribir en consola y comparar cuándo se dispara.
+// TODO: en input, muestra «Editando» en #estadoEvento.
+// En change, muestra «Cambio confirmado» en ese párrafo y compara cuándo ocurre.
 
