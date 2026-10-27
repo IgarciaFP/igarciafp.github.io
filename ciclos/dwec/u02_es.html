@@ -1788,12 +1788,10 @@ console.log(crearAviso());   // Operación completada</code></pre>
                 <p>El <strong>DOM</strong> (<em>Document Object Model</em>) representa el documento mediante un árbol de objetos. JavaScript puede consultar esos objetos y modificar el contenido de la página. Comenzaremos con un saludo interactivo y después veremos cómo seleccionar y modificar elementos. Los eventos se desarrollan en el apartado 9.</p>
 
                 <h3 id="sec8_1">8.1. Hola Mundo (ahora sí)</h3>
-                <p>Hasta ahora hemos utilizado herramientas de depuración como <code>console.log()</code> para mostrar resultados y comprobar nuestros programas. Sin embargo, la consola no es la interfaz habitual para el usuario de una página web.</p>
-                <p>En el navegador, JavaScript permite interactuar con el HTML y los estilos CSS: leer los datos de un formulario, modificar textos, añadir o eliminar elementos y cambiar su aspecto. Estas acciones pueden responder a lo que hace el usuario, como pulsar un botón o escribir en un campo. Así, el resultado aparece en la propia página.</p>
-                <p>Vamos a aplicar esta forma de trabajar: el usuario introducirá su nombre y, al pulsar «Saludar» o Intro, JavaScript escribirá <strong>«Hola » seguido del nombre</strong> en un párrafo. Seguiremos usando la consola para depurar.</p>
+                <p>Hasta ahora hemos mostrado resultados en la consola con <code>console.log()</code>. Ahora vamos a escribirlos en la propia página: JavaScript localizará un título vacío y añadirá el texto <strong>Hola mundo</strong> al cargar.</p>
 
-                <h4 id="sec8_1_1">Veamos un ejemplo</h4>
-                <p>Crea <code>index.html</code> y <code>saludo.js</code> en la misma carpeta. En <code>index.html</code> escribe:</p>
+                <h4 id="sec8_1_1">Preparar un título vacío</h4>
+                <p>Crea <code>index.html</code> y <code>saludo.js</code> en la misma carpeta. El <code>body</code> solo contiene un <code>h1</code> vacío con un identificador:</p>
                 <pre><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="es"&gt;
 &lt;head&gt;
@@ -1803,63 +1801,39 @@ console.log(crearAviso());   // Operación completada</code></pre>
     &lt;script src="saludo.js" defer&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
-    &lt;h1&gt;Vamos a saludarte&lt;/h1&gt;
-    &lt;form id="formularioSaludo"&gt;
-        &lt;label for="nombre"&gt;Tu nombre:&lt;/label&gt;
-        &lt;input type="text" id="nombre" autocomplete="given-name"&gt;
-        &lt;button type="submit"&gt;Saludar&lt;/button&gt;
-    &lt;/form&gt;
-    &lt;p id="saludo"&gt;&lt;/p&gt;
+    &lt;h1 id="saludo"&gt;&lt;/h1&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-                <p><code>defer</code> ejecuta el script después de leer el HTML. El campo recoge el nombre y el párrafo vacío mostrará el saludo.</p>
-                <div class="didactic-note">
-                    <p><strong>Accesibilidad: anunciar los cambios</strong></p>
-                    <p>Cuando JavaScript actualiza el saludo, una persona que utiliza un lector de pantalla puede no percibir el cambio. Conviene añadir <code>aria-live="polite"</code> al párrafo desde el HTML inicial para que el lector anuncie el nuevo texto cuando termine lo que esté leyendo, sin interrumpir.</p>
-                    <pre><code>&lt;p id="saludo" aria-live="polite"&gt;&lt;/p&gt;</code></pre>
-                    <p>Este atributo no cambia el aspecto del párrafo ni hace que la página hable por sí sola.</p>
-                </div>
+                <p>El atributo <code>id="saludo"</code> permite identificar el título. <code>defer</code> hace que el script se ejecute después de leer el HTML, cuando ese elemento ya existe.</p>
 
-                <h4 id="sec8_1_2">Preparar la interacción</h4>
-                <p>En <code>saludo.js</code>, <code>iniciar()</code> agrupa la preparación y mantiene sus variables locales. La llamamos una vez al final:</p>
+                <h4 id="sec8_1_2">Escribir desde JavaScript</h4>
+                <p>En <code>saludo.js</code> escribe:</p>
                 <pre><code>"use strict";
 
-function iniciar() {
-    const campoNombre = document.querySelector("#nombre");
-    const formulario = document.querySelector("#formularioSaludo");
-    const salida = document.querySelector("#saludo");
+const titulo = document.getElementById("saludo");
+titulo.textContent = "Hola mundo";</code></pre>
+                <p>Al abrir <code>index.html</code>, el navegador ejecuta el script y aparece <strong>Hola mundo</strong> dentro del título. No hay que pulsar ningún botón.</p>
 
-    function saludar(evento) {
-        evento.preventDefault(); // Evita que el formulario recargue la página.
-        const nombre = campoNombre.value;
-        salida.textContent = "Hola " + nombre;
-    }
-
-    formulario.addEventListener("submit", saludar);
-}
-
-iniciar();</code></pre>
-
-                <h4 id="sec8_1_3">Buscar, escuchar y responder</h4>
-                <aside class="function-card" id="ficha-hola-queryselector">
-                    <p class="function-signature"><code>document.querySelector(selector)</code></p>
-                    <p>Devuelve el primer elemento que coincide con un selector CSS, o <code>null</code> si no existe. <code>"#nombre"</code> selecciona el elemento con <code>id="nombre"</code>: aquí el <code>#</code> es necesario.</p>
+                <h4 id="sec8_1_3">Localizar y modificar</h4>
+                <aside class="function-card" id="ficha-hola-getelementbyid">
+                    <p class="function-signature"><code>document.getElementById(id)</code></p>
+                    <p>Devuelve el elemento que tiene ese identificador, o <code>null</code> si no existe. Se escribe <code>"saludo"</code>, sin <code>#</code>, y debe coincidir exactamente con el <code>id</code> del HTML.</p>
                 </aside>
                 <ul>
-                    <li><code>addEventListener("submit", saludar)</code> registra la función para responder al envío del formulario, con el botón o con Intro.</li>
-                    <li><code>value</code> lee el nombre y <code>textContent</code> escribe el saludo en el párrafo.</li>
+                    <li><code>getElementById("saludo")</code> localiza el <code>h1</code> y guarda su referencia en <code>titulo</code>.</li>
+                    <li><code>titulo.textContent = "Hola mundo"</code> escribe el texto dentro de ese elemento.</li>
                 </ul>
-                <div class="didactic-note"><p>Pasamos <code>saludar</code> sin paréntesis para que el navegador la ejecute cuando se envíe el formulario.</p></div>
+                <div class="didactic-note"><p><strong>¿De dónde sale el texto?</strong> El archivo HTML conserva el <code>h1</code> vacío. JavaScript modifica el documento que el navegador muestra, no el archivo guardado. Sin ejecutar el script, el título permanece vacío.</p></div>
 
                 <div class="activity-card activity-callout" id="actividad-hola-mundo-dom">
                     <p><strong>2.35. Implementar Hola Mundo en la página</strong></p>
-                    <p>Implementa el saludo interactivo del ejemplo anterior en <code>index.html</code> y <code>saludo.js</code>, enlazados con <code>defer</code>.</p>
+                    <p>Reproduce el ejemplo con <code>index.html</code> y <code>saludo.js</code>.</p>
                     <ol>
-                        <li>Crea un formulario con un campo para el nombre, su etiqueta y el botón «Saludar». Añade un párrafo vacío para la respuesta con <code>aria-live="polite"</code>.</li>
-                        <li>Desde <code>iniciar()</code>, selecciona los elementos con <code>querySelector()</code> y registra <code>saludar</code> como manejador de <code>submit</code>. Al enviar, evita la recarga con <code>preventDefault()</code>, lee <code>value</code> y muestra «Hola » seguido del nombre mediante <code>textContent</code>.</li>
-                        <li>Prueba con «Ana» pulsando el botón y con «Luis» pulsando Intro. Deben aparecer «Hola Ana» y «Hola Luis», sustituyendo el saludo anterior sin recargar la página.</li>
+                        <li>En el <code>body</code>, escribe únicamente <code>&lt;h1 id="saludo"&gt;&lt;/h1&gt;</code>, sin texto dentro. Enlaza el JavaScript externo con <code>defer</code>.</li>
+                        <li>En el script, localiza el título con <code>document.getElementById("saludo")</code> y escribe <code>"Hola mundo"</code> mediante <code>textContent</code>. No utilices eventos.</li>
+                        <li>Abre la página y comprueba que el saludo aparece automáticamente. Comenta temporalmente la asignación a <code>textContent</code> y recarga: la página debe quedar sin texto visible. Restaura la línea y vuelve a comprobarlo.</li>
                     </ol>
-                    <p>Entrega ambos archivos y explica en comentarios para qué sirven <code>defer</code> y <code>preventDefault()</code>, y por qué registras <code>saludar</code> sin paréntesis.</p>
+                    <p>Entrega ambos archivos y explica en un comentario para qué sirven <code>getElementById()</code>, <code>textContent</code> y <code>defer</code>.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
