@@ -1819,6 +1819,12 @@ titulo.textContent = "Hola mundo";</code></pre>
                     <p class="function-signature"><code>document.getElementById(id)</code></p>
                     <p>Devuelve el elemento que tiene ese identificador, o <code>null</code> si no existe. Se escribe <code>"saludo"</code>, sin <code>#</code>, y debe coincidir exactamente con el <code>id</code> del HTML.</p>
                 </aside>
+                <aside class="function-card" id="ficha-hola-textcontent">
+                    <p class="function-signature"><code>elemento.textContent</code></p>
+                    <p>Propiedad que permite leer o sustituir el texto de un elemento. Se utiliza sin paréntesis.</p>
+                    <p><strong>Leer:</strong> <code>titulo.textContent</code> obtiene el texto actual. <strong>Escribir:</strong> <code>titulo.textContent = "Hola mundo"</code> sustituye su contenido por ese texto.</p>
+                    <p>Las etiquetas incluidas en la cadena se muestran como texto, no se interpretan como HTML. Si el elemento tiene hijos, la asignación también los sustituye.</p>
+                </aside>
                 <ul>
                     <li><code>getElementById("saludo")</code> localiza el <code>h1</code> y guarda su referencia en <code>titulo</code>.</li>
                     <li><code>titulo.textContent = "Hola mundo"</code> escribe el texto dentro de ese elemento.</li>
@@ -1827,13 +1833,28 @@ titulo.textContent = "Hola mundo";</code></pre>
 
                 <div class="activity-card activity-callout" id="actividad-hola-mundo-dom">
                     <p><strong>2.35. Implementar Hola Mundo en la página</strong></p>
-                    <p>Reproduce el ejemplo con <code>index.html</code> y <code>saludo.js</code>.</p>
+                    <p>Realiza la actividad en dos partes. Guarda cada versión en su propia carpeta, <code>parte1</code> y <code>parte2</code>, con <code>index.html</code> y <code>saludo.js</code>.</p>
+                    <p><strong>Parte 1. Escribir al cargar</strong></p>
                     <ol>
                         <li>En el <code>body</code>, escribe únicamente <code>&lt;h1 id="saludo"&gt;&lt;/h1&gt;</code>, sin texto dentro. Enlaza el JavaScript externo con <code>defer</code>.</li>
                         <li>En el script, localiza el título con <code>document.getElementById("saludo")</code> y escribe <code>"Hola mundo"</code> mediante <code>textContent</code>. No utilices eventos.</li>
                         <li>Abre la página y comprueba que el saludo aparece automáticamente. Comenta temporalmente la asignación a <code>textContent</code> y recarga: la página debe quedar sin texto visible. Restaura la línea y vuelve a comprobarlo.</li>
                     </ol>
-                    <p>Entrega ambos archivos y explica en un comentario para qué sirven <code>getElementById()</code>, <code>textContent</code> y <code>defer</code>.</p>
+                    <p><strong>Parte 2. Saludar al pulsar un botón</strong></p>
+                    <p>Ahora el saludo debe esperar a que el usuario escriba su nombre y pulse «Saludar». Copia los archivos en <code>parte2</code> y sustituye el contenido del <code>body</code> por:</p>
+                    <pre><code>&lt;label for="nombre"&gt;¿Cómo te llamas?&lt;/label&gt;
+&lt;input type="text" id="nombre"&gt;
+&lt;button type="button" id="botonSaludar"&gt;Saludar&lt;/button&gt;
+&lt;h1 id="saludo"&gt;&lt;/h1&gt;</code></pre>
+                    <ol>
+                        <li>Mantén el script externo con <code>defer</code>. Localiza el título, el campo y el botón con <code>getElementById()</code>, y guarda sus referencias en <code>titulo</code>, <code>campoNombre</code> y <code>boton</code>.</li>
+                        <li>Elimina la asignación que escribía «Hola mundo» al cargar. Define una función <code>saludar()</code> que lea <code>campoNombre.value</code> y escriba <code>"Hola " + nombre</code> en <code>titulo.textContent</code>. Lee el valor dentro de la función para recoger el nombre que haya en ese momento.</li>
+                        <li>Después de definirla, registra la función para el evento <code>click</code> del botón:</li>
+                    </ol>
+                    <pre><code>boton.addEventListener("click", saludar);</code></pre>
+                    <p><strong>¿Por qué así?</strong> Un evento es una acción que el navegador detecta. <code>addEventListener()</code> indica qué función debe ejecutar cuando ocurra. Pasamos <code>saludar</code> sin paréntesis para que espere al clic; <code>saludar()</code> la ejecutaría en ese momento. Más adelante profundizaremos en los eventos.</p>
+                    <p><strong>Comprobación:</strong> al cargar, el título está vacío. Escribe «Ana»: todavía no debe aparecer ningún saludo. Pulsa «Saludar»: aparece «Hola Ana». Cambia el nombre a «Luis»: el saludo se mantiene hasta el siguiente clic, que lo sustituye por «Hola Luis».</p>
+                    <p>Entrega las dos carpetas y explica en comentarios para qué sirven <code>getElementById()</code>, <code>textContent</code>, <code>value</code> y <code>defer</code>, y por qué la segunda versión espera al clic.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
