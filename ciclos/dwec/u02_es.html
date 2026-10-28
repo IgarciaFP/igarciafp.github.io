@@ -1954,16 +1954,37 @@ avisos[1].textContent = "Entrega el jueves";</code></pre>
                     <p>Busca todos los elementos que coinciden con un selector CSS.</p><p><strong>Parámetros:</strong> selector: cadena con un selector CSS válido.</p><p><strong>Devuelve:</strong> Una NodeList estática: no se actualiza automáticamente al cambiar el documento. Puede estar vacía.</p>
                 </aside>
                                 <p><code>querySelector()</code> y <code>querySelectorAll()</code> permiten utilizar selectores CSS, desde una etiqueta hasta una combinación de clases y atributos:</p>
-                <pre data-example="selection-css"><code>const titulo = document.querySelector("#titulo");
-const aviso = document.querySelector(".aviso");
-const parrafos = document.querySelectorAll("p");
+                <p>Prueba cada fragmento por separado, recargando una página independiente con este HTML. Los dos párrafos comparten la clase <code>aviso</code>:</p>
+                <pre><code>&lt;p class="aviso"&gt;Examen el lunes&lt;/p&gt;
+&lt;p class="aviso"&gt;Entrega el viernes&lt;/p&gt;
+&lt;p&gt;Trae tu portátil&lt;/p&gt;</code></pre>
+                <h4 class="content-subtitle">querySelector(): solo el primero</h4>
+                <pre data-example="selection-css"><code>const aviso = document.querySelector(".aviso");
+aviso.textContent = "AVISO ACTUALIZADO";</code></pre>
+                <p>Resultado: solo «Examen el lunes» cambia a «AVISO ACTUALIZADO». Aunque hay dos coincidencias, <code>aviso</code> contiene un único elemento: el primero en el documento.</p>
+                <h4 class="content-subtitle">querySelectorAll(): todos los que coinciden</h4>
+                <pre><code>const avisos = document.querySelectorAll(".aviso");
+// avisos.length vale 2.
 
-const resultado = document.querySelector("#resultado");
-resultado.textContent = titulo.textContent + " | " + aviso.textContent
-    + " | Párrafos: " + parrafos.length;</code></pre>
+for (const aviso of avisos) {
+    aviso.textContent = "AVISO ACTUALIZADO";
+}</code></pre>
+                <p>Resultado: los dos primeros párrafos muestran «AVISO ACTUALIZADO». El tercero conserva «Trae tu portátil», porque no tiene la clase <code>aviso</code>. La colección no tiene un <code>textContent</code> que cambie todos sus elementos: hay que recorrerla.</p>
+                <div class="didactic-note">
+                    <p><strong>querySelector() frente a getElementsByTagName()</strong></p>
+                    <p><code>document.querySelector("p")</code> devuelve <strong>solo el primer párrafo</strong>, o <code>null</code> si no existe. Admite cualquier selector CSS, como <code>".aviso"</code> o <code>"p.aviso"</code>.</p>
+                    <p><code>document.getElementsByTagName("p")</code> devuelve <strong>todos los párrafos</strong> en una <code>HTMLCollection</code> viva, aunque solo haya uno. Solo busca por nombre de etiqueta; <code>"p.aviso"</code> no sirve para filtrar una clase. Si no hay coincidencias, la colección está vacía.</p>
+                    <pre><code>const primero = document.querySelector("p");
+const todos = document.getElementsByTagName("p");
+
+// En el HTML anterior:
+primero === todos[0]; // true: es el mismo elemento.
+todos.length;        // 3: incluye también el párrafo sin clase.</code></pre>
+                    <p>Para seleccionar varios elementos mediante CSS, utiliza <code>querySelectorAll()</code>. Su colección es estática; la de <code>getElementsByTagName()</code> se actualiza cuando cambian los elementos de esa etiqueta en el DOM.</p>
+                </div>
                 <p><code>querySelector()</code> devuelve la primera coincidencia o <code>null</code>. <code>querySelectorAll()</code> devuelve una <code>NodeList</code> estática: no se actualiza automáticamente si después se añaden o eliminan coincidencias. Cuando no encuentra elementos, devuelve una colección vacía.</p>
                 <div class="didactic-note"><p><strong>¿Cuál usar hoy?</strong> Los métodos <code>getElementById()</code>, <code>getElementsByClassName()</code> y <code>getElementsByTagName()</code> siguen vigentes. En código moderno es habitual utilizar <code>querySelector()</code> y <code>querySelectorAll()</code> por su flexibilidad; serán la opción general de este curso. Para buscar un identificador concreto, <code>getElementById()</code> sigue siendo una opción directa y adecuada.</p></div>
-                <p>Prueba cada fragmento por separado en la página del apartado 8.3. Guarda las referencias que vayas a reutilizar y comprueba que un elemento existe antes de acceder a sus propiedades.</p>
+                <p>Para estos ejemplos utiliza el HTML indicado y recarga entre pruebas. Guarda las referencias que vayas a reutilizar y comprueba que un elemento existe antes de acceder a sus propiedades.</p>
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-seleccion">
                     <p><strong>2.37. Localizar elementos de un formulario</strong></p>
