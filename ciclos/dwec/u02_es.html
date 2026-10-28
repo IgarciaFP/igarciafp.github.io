@@ -1903,13 +1903,30 @@ boton.addEventListener("click", saludar);</code></pre>
                     <p>Busca elementos por su nombre de etiqueta.</p><p><strong>Parámetros:</strong> etiqueta: cadena como &quot;p&quot; o &quot;input&quot;; &quot;*&quot; selecciona todas las etiquetas.</p><p><strong>Devuelve:</strong> Una HTMLCollection viva, que puede estar vacía.</p>
                 </aside>
                                 <ul><li><code>document.getElementById("titulo")</code>: devuelve el elemento con ese identificador, o <code>null</code>. El identificador se escribe sin <code>#</code>.</li><li><code>document.getElementsByClassName("aviso")</code>: devuelve los elementos con esa clase, sin escribir el punto.</li><li><code>document.getElementsByTagName("p")</code>: devuelve los elementos de esa etiqueta.</li></ul>
-                <pre data-example="selection-classic"><code>const titulo = document.getElementById("titulo");
-const avisos = document.getElementsByClassName("aviso");
-const parrafos = document.getElementsByTagName("p");
+                <p>Para estos dos ejemplos, utiliza una página independiente con este contenido dentro de <code>body</code> y carga el JavaScript con <code>defer</code>. Recarga la página antes de probar cada ejemplo:</p>
+                <pre><code>&lt;h1 id="titulo"&gt;Avisos del aula&lt;/h1&gt;
+&lt;p class="aviso"&gt;Examen el lunes&lt;/p&gt;
+&lt;p&gt;Trae tu portátil&lt;/p&gt;
+&lt;div class="aviso"&gt;Entrega el viernes&lt;/div&gt;</code></pre>
+                <h4 class="content-subtitle">Por etiqueta: getElementsByTagName()</h4>
+                <pre data-example="selection-tag"><code>const titulo = document.getElementById("titulo");
+titulo.textContent = "Información del aula";
 
-const resultado = document.getElementById("resultado");
-resultado.textContent = titulo.textContent + " | Avisos: " + avisos.length
-    + " | Párrafos: " + parrafos.length;</code></pre>
+const parrafos = document.getElementsByTagName("p");
+// parrafos.length vale 2.
+parrafos[0].textContent = "Examen el martes";
+parrafos[1].textContent = "Trae el cargador";</code></pre>
+                <p><code>titulo</code> es un elemento: accedemos directamente a <code>titulo.textContent</code>. En cambio, <code>parrafos</code> contiene los dos elementos <code>p</code>, tengan o no clase. Usamos <code>[0]</code> para el primero y <code>[1]</code> para el segundo. El <code>div</code> conserva su texto porque no es un párrafo.</p>
+                <h4 class="content-subtitle">Por clase: getElementsByClassName()</h4>
+                <pre data-example="selection-class"><code>const titulo = document.getElementById("titulo");
+titulo.textContent = "Avisos importantes";
+
+const avisos = document.getElementsByClassName("aviso");
+// avisos.length vale 2.
+avisos[0].textContent = "Examen el miércoles";
+avisos[1].textContent = "Entrega el jueves";</code></pre>
+                <p><code>avisos</code> contiene el primer <code>p</code> y el <code>div</code>, porque ambos tienen la clase <code>aviso</code>. La etiqueta puede ser distinta. El segundo párrafo conserva «Trae tu portátil» porque no tiene esa clase. Escribimos <code>"aviso"</code>, sin punto.</p>
+                <div class="didactic-note"><p><strong>Un elemento frente a una colección:</strong> con <code>getElementById()</code> trabajas directamente con el elemento. Con <code>getElementsByTagName()</code> y <code>getElementsByClassName()</code> debes elegir una posición o recorrer la colección para modificar sus elementos. No uses <code>avisos.textContent</code> para cambiar todos los avisos.</p></div>
                 <p>Los dos métodos en plural devuelven una <code>HTMLCollection</code>, incluso si solo hay una coincidencia. Se consulta su tamaño con <code>length</code> y su primer elemento con <code>[0]</code>, si existe. Estas colecciones son <strong>vivas</strong>: se actualizan cuando cambian las coincidencias en el DOM.</p>
                 <h4 class="content-subtitle">Selección mediante CSS</h4>
                 <aside class="function-card" id="ficha-funcion-9" aria-label="Ficha de función: document.querySelector(selector)">
