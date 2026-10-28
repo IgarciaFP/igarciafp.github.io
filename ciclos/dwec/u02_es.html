@@ -1900,6 +1900,127 @@ boton.addEventListener("click", saludar);</code></pre>
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
                 <p>La estructura principal es <code>document → html → head / body</code>. Dentro de <code>body</code> se encuentran el título, los párrafos y los controles. <code>defer</code> permite ejecutar <code>dom.js</code> cuando estos elementos ya existen.</p>
+<div class="dom-example-tree" id="dom-example-tree">
+    <h4>Explora el árbol de este ejemplo</h4>
+    <p>Pulsa los nodos con <strong>−</strong> o <strong>+</strong> para cerrar o abrir sus hijos. También puedes enfocarlos con Tab y pulsar Intro o Espacio.</p>
+    <div class="dom-tree-controls">
+        <button type="button" data-tree-action="expand">Expandir todo</button>
+        <button type="button" data-tree-action="collapse">Contraer todo</button>
+        <label><input type="checkbox" id="dom-tree-whitespace"> Mostrar espacios y saltos de línea</label>
+    </div>
+    <div class="dom-tree-viewport" tabindex="0" role="region" aria-label="Árbol DOM del ejemplo; desplazamiento horizontal disponible">
+        <svg xmlns="http://www.w3.org/2000/svg" id="dom-tree-svg" role="group" aria-label="Árbol desplegable del documento de prueba" width="720" height="160" viewBox="0 0 720 160"></svg>
+    </div>
+    <p class="dom-tree-legend"><span>Azul: documento y elementos.</span> <span>Verde: nodos de texto.</span> <span>Gris: tipo de documento.</span></p>
+    <p>El texto de <code>h1</code>, <code>p</code> y <code>label</code> aparece en nodos <code>#text</code>. Los atributos se muestran junto a su elemento: <code>value="3"</code> no es un hijo de <code>input</code>. El párrafo <code>p id="resultado"</code> está vacío y no tiene hijos.</p>
+    <p>El árbol representa el HTML inicial, antes de ejecutar <code>dom.js</code>. Los nodos que solo contienen espacios se ocultan inicialmente; al mostrarlos, <code>␣</code> representa un espacio y <code>↵</code> un salto de línea.</p>
+    <p>Representación interactiva inspirada en el <a href="https://es.javascript.info/dom-nodes" target="_blank" rel="noopener noreferrer">árbol DOM de JavaScript.info</a>, adaptada al ejemplo de esta unidad.</p>
+    <noscript><p>Activa JavaScript para desplegar el árbol. Estructura: document → html → head y body. head contiene dos meta, title y script; body contiene h1, p, label, input y p.</p></noscript>
+</div>
+<style>
+.dom-example-tree { margin: 1.5rem 0; padding: 1.25rem; border: 1px solid #cbd5e1; border-radius: 12px; background: #f8fafc; }
+.dom-example-tree .dom-tree-controls { display: flex; flex-wrap: wrap; gap: .65rem; align-items: center; margin: 1rem 0; }
+.dom-example-tree button { font: inherit; padding: .5rem .8rem; border: 1px solid #64748b; border-radius: 6px; background: white; color: #172033; cursor: pointer; }
+.dom-example-tree label { display: flex; gap: .5rem; align-items: center; }
+.dom-example-tree .dom-tree-viewport { overflow-x: auto; background: white; border: 1px solid #cbd5e1; border-radius: 8px; }
+.dom-example-tree svg { display: block; width: 100%; min-width: 720px; height: auto; }
+.dom-example-tree .tree-link { fill: none; stroke: #94a3b8; stroke-width: 1.5; }
+.dom-example-tree .tree-node rect { fill: #eff6ff; stroke: #93c5fd; }
+.dom-example-tree .tree-node[data-kind="3"] rect { fill: #f0fdf4; stroke: #86efac; }
+.dom-example-tree .tree-node[data-kind="10"] rect { fill: #f1f5f9; stroke: #cbd5e1; }
+.dom-example-tree .tree-node[role="button"] { cursor: pointer; }
+.dom-example-tree .tree-node[role="button"]:hover rect { stroke: #1d4ed8; stroke-width: 2; }
+.dom-example-tree .tree-node:focus { outline: none; }
+.dom-example-tree .tree-node:focus rect { stroke: #1d4ed8; stroke-width: 3; }
+.dom-example-tree button:focus-visible, .dom-example-tree input:focus-visible, .dom-example-tree .dom-tree-viewport:focus-visible { outline: 3px solid #1d4ed8; outline-offset: 3px; }
+.dom-example-tree .tree-label { font: 16px monospace; fill: #172033; }
+.dom-example-tree .tree-attribute { font: 13px monospace; fill: #475569; }
+.dom-example-tree .tree-toggle { font: bold 20px Arial, sans-serif; fill: #1d4ed8; }
+.dom-example-tree .dom-tree-legend { display: flex; flex-wrap: wrap; gap: .5rem 1rem; font-size: .9em; }
+</style>
+<script>
+(() => {
+    const container = document.getElementById("dom-example-tree");
+    const svg = document.getElementById("dom-tree-svg");
+    const whitespace = document.getElementById("dom-tree-whitespace");
+    const example = document.querySelector('pre[data-example="dom-html"] code');
+    if (!container || !svg || !example) return;
+    // Parsear el ejemplo permite representar sus nodos sin ejecutar dom.js.
+    const parsed = new DOMParser().parseFromString(example.textContent, "text/html");
+    const ns = "http://www.w3.org/2000/svg";
+    let nextId = 0;
+    function model(node) {
+        return {
+            id: "dom-node-" + nextId++, type: node.nodeType,
+            name: node.nodeType === 9 ? "document" : node.nodeType === 10 ? "<!DOCTYPE html>" : node.nodeName.toLowerCase(),
+            value: node.nodeValue || "",
+            attributes: node.attributes ? Array.from(node.attributes, a => a.name + '="' + a.value + '"') : [],
+            open: node.nodeName !== "HEAD",
+            children: Array.from(node.childNodes, model)
+        };
+    }
+    const root = model(parsed);
+    function children(node) {
+        return node.children.filter(child => whitespace.checked || child.type !== 3 || child.value.trim() !== "");
+    }
+    function make(name, attrs, text) {
+        const element = document.createElementNS(ns, name);
+        for (const [key, value] of Object.entries(attrs)) element.setAttribute(key, value);
+        if (text !== undefined) element.textContent = text;
+        return element;
+    }
+    function linesFor(node) {
+        if (node.type === 3) {
+            const value = node.value.trim() ? node.value : node.value.replace(/ /g, "␣").replace(/\n/g, "↵").replace(/\t/g, "⇥");
+            return [node.name, '"' + value + '"'];
+        }
+        return [node.name, ...node.attributes];
+    }
+    function render(focusId) {
+        svg.replaceChildren();
+        const rows = [];
+        let y = 16;
+        function visit(node, depth, parent) {
+            const lines = linesFor(node);
+            const row = { node, depth, parent, x: 16 + depth * 28, y, height: 38 + (lines.length - 1) * 21, lines };
+            rows.push(row);
+            y += row.height + 12;
+            if (node.open) for (const child of children(node)) visit(child, depth + 1, row);
+        }
+        visit(root, 0, null);
+        svg.setAttribute("viewBox", "0 0 720 " + (y + 4));
+        svg.setAttribute("height", y + 4);
+        for (const row of rows) {
+            if (row.parent) svg.append(make("path", {class: "tree-link", d: "M " + (row.parent.x + 12) + " " + (row.parent.y + row.parent.height) + " V " + (row.y + 19) + " H " + row.x}));
+        }
+        for (const row of rows) {
+            const expandable = children(row.node).length > 0;
+            const group = make("g", {class: "tree-node", "data-kind": row.node.type, "data-node-id": row.node.id,
+                transform: "translate(" + row.x + " " + row.y + ")", role: expandable ? "button" : "img",
+                "aria-label": row.lines.join(". ")});
+            group.append(make("rect", {width: 704 - row.x, height: row.height, rx: 6}));
+            if (expandable) {
+                group.setAttribute("tabindex", "0");
+                group.setAttribute("aria-expanded", String(row.node.open));
+                group.append(make("text", {x: 10, y: 25, class: "tree-toggle", "aria-hidden": "true"}, row.node.open ? "−" : "+"));
+                const toggle = () => { row.node.open = !row.node.open; render(row.node.id); };
+                group.addEventListener("click", toggle);
+                group.addEventListener("keydown", event => {
+                    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); toggle(); }
+                });
+            }
+            row.lines.forEach((line, index) => group.append(make("text", {x: 36, y: 25 + index * 21, class: index ? "tree-attribute" : "tree-label", "aria-hidden": "true"}, line)));
+            svg.append(group);
+        }
+        if (focusId) svg.querySelector('[data-node-id="' + focusId + '"]')?.focus();
+    }
+    function setOpen(node, open) { node.open = open; node.children.forEach(child => setOpen(child, open)); }
+    container.querySelector('[data-tree-action="expand"]').addEventListener("click", () => { setOpen(root, true); render(); });
+    container.querySelector('[data-tree-action="collapse"]').addEventListener("click", () => { setOpen(root, false); render(); });
+    whitespace.addEventListener("change", () => render());
+    render();
+})();
+</script>
 
                 
 
