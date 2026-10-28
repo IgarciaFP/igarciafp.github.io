@@ -1972,60 +1972,22 @@ for (const aviso of avisos) {
 
                 <div class="activity-card activity-callout" id="actividad-seleccion-material">
 <p><strong>2.34. Buscar elementos</strong></p>
-<p>Aquí está el documento con la tabla y el formulario.</p>
-<p>¿Cómo encontrar?...</p>
-<ol><li>La tabla con <code>id="age-table"</code>.</li>
-<li>Todos los elementos <code>label</code>dentro de la tabla (debería haber 3).</li>
-<li>El primer <code>td</code> en la tabla (con la palabra "Age").</li>
+<p>Descarga el HTML de partida, que contiene una tabla y dos formularios. Escribe instrucciones de JavaScript para obtener los siguientes elementos:</p>
+<div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/buscar-elementos/table.html" download="table.html">Descargar table.html</a></div>
+<ol>
+<li>La tabla con <code>id="age-table"</code>.</li>
+<li>Todos los elementos <code>label</code> dentro de la tabla (debería haber 3).</li>
+<li>El primer <code>td</code> de la tabla, que contiene el texto «Edad:».</li>
 <li>El <code>form</code> con <code>name="search"</code>.</li>
-<li>El primer <code>input</code> en ese formulario.</li>
-<li>El último <code>input</code> en ese formulario.</li></ol>
-<p>Guarda el siguiente HTML como <code>table.html</code>, ábrelo en el navegador y utiliza sus herramientas de desarrollo para comprobar las búsquedas.</p>
-<pre><code>&lt;!DOCTYPE HTML&gt;
-&lt;html&gt;
-&lt;body&gt;
-  &lt;form name="search"&gt;
-    &lt;label&gt;Buscar en la página:
-      &lt;input type="text" name="search"&gt;
-    &lt;/label&gt;
-    &lt;input type="submit" value="Search!"&gt;
-  &lt;/form&gt;
-
-  &lt;hr&gt;
-
-  &lt;form name="search-person"&gt;
-    Buscar a los visitantes:
-    &lt;table id="age-table"&gt;
-      &lt;tr&gt;
-        &lt;td&gt;Edad:&lt;/td&gt;
-        &lt;td id="age-list"&gt;
-          &lt;label&gt;
-            &lt;input type="radio" name="age" value="young"&gt;menor de 18&lt;/label&gt;
-          &lt;label&gt;
-            &lt;input type="radio" name="age" value="mature"&gt;18-50&lt;/label&gt;
-          &lt;label&gt;
-            &lt;input type="radio" name="age" value="senior"&gt;mayor de 50&lt;/label&gt;
-        &lt;/td&gt;
-      &lt;/tr&gt;
-
-      &lt;tr&gt;
-        &lt;td&gt;Más:&lt;/td&gt;
-        &lt;td&gt;
-          &lt;input type="text" name="info[0]"&gt;
-          &lt;input type="text" name="info[1]"&gt;
-          &lt;input type="text" name="info[2]"&gt;
-        &lt;/td&gt;
-      &lt;/tr&gt;
-
-    &lt;/table&gt;
-
-    &lt;input type="submit" value="Search!"&gt;
-  &lt;/form&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-<p>En este HTML, la celda que el enunciado llama «Age» contiene «Edad:».</p>
+<li>El primer <code>input</code> de ese formulario.</li>
+<li>El último <code>input</code> de ese formulario.</li>
+</ol>
+<p>Crea <code>busquedas.js</code> en la misma carpeta que <code>table.html</code>. Enlázalo desde el <code>head</code> del HTML con:</p>
+<pre><code>&lt;script src="busquedas.js" defer&gt;&lt;/script&gt;</code></pre>
+<p>Realiza las seis búsquedas en <code>busquedas.js</code>, guarda sus resultados en variables y compruébalos con <code>console.log()</code> al abrir el HTML en el navegador.</p>
+<p><strong>Entrega:</strong> <code>table.html</code> y <code>busquedas.js</code> con las seis búsquedas.</p>
 <div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
+
 </div>
 
                 <div class="activity-card activity-callout" id="relacion-ejercicio-17"><p><strong>2.35. Juego de dados contra el ordenador</strong></p><p>Programa una partida en la que el usuario y el ordenador lancen tres dados cada uno. Representa el valor de cada dado mediante un número entero entre 1 y 6. Selecciona los elementos con <code>querySelector()</code> y muestra los valores con <code>textContent</code>.</p><figure style="margin:1.25rem 0" id="interfaz-juego-dados"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 530" role="img" aria-labelledby="dados-interfaz-titulo dados-interfaz-desc" style="display:block;width:100%;max-width:600px;height:auto;margin:auto">
@@ -2142,37 +2104,7 @@ mensaje.outerHTML = '&lt;div id="mensaje" class="aviso"&gt;Nuevo elemento&lt;/di
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-<div class="activity-card activity-callout" id="actividad-jsinfo-crear-lista">
-<p><strong>2.38. Crear una lista</strong></p>
-<p>Crea una lista con los textos que introduzca el usuario; por ejemplo, películas que quiere ver o tareas pendientes.</p>
-<ol>
-<li>Crea un <code>ul</code> desde JavaScript y añádelo al documento.</li>
-<li>Pide un texto mediante <code>prompt()</code>. Si el usuario cancela o acepta sin escribir nada, termina.</li>
-<li>Para cada texto aceptado, crea un <code>li</code>, escribe su contenido con <code>textContent</code> y añádelo a la lista. Repite la pregunta.</li>
-</ol>
-<p>Tanto el <code>ul</code> como todos los <code>li</code> deben crearse dinámicamente. Las etiquetas introducidas por el usuario deben verse como texto, sin convertirse en HTML.</p>
-<p><strong>HTML de partida:</strong> guarda este archivo junto a <code>lista.js</code>.</p>
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="es"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;title&gt;Mi lista&lt;/title&gt;
-    &lt;script src="lista.js" defer&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;h1&gt;Mi lista&lt;/h1&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-<div class="didactic-note">
-<p><strong>Crear no es insertar.</strong> <code>document.createElement("li")</code> crea un elemento, pero todavía no aparece en la página. <code>lista.append(elemento)</code> lo incorpora al final de una lista existente. Para insertar la lista completa en el cuerpo, utiliza <code>document.body.append(lista)</code>.</p>
-<p>Este ejemplo añade un solo elemento a una variable <code>lista</code> que ya contiene un <code>ul</code>:</p>
-<pre><code>const elemento = document.createElement("li");
-elemento.textContent = "Ver una película";
-lista.append(elemento);</code></pre>
-</div>
-<p><strong>Comprobación:</strong> introduce dos textos y cancela: deben quedar dos elementos. Prueba una entrada vacía y el texto <code>&lt;strong&gt;Leer&lt;/strong&gt;</code>: debe mostrarse literalmente.</p>
-<div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
-</div>
+
 
                 <h3 id="sec8_6">8.6. Estilos y clases CSS</h3>
                 <p><code>style</code> modifica estilos en línea. Las propiedades con guiones en CSS se escriben en <em>camelCase</em> al acceder mediante un punto:</p>
@@ -2227,7 +2159,7 @@ mensaje.classList.toggle("destacado"); // La añade de nuevo.</code></pre>
                 </aside>
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-notificacion">
-<p><strong>2.39. Haz los enlaces externos naranjas</strong></p>
+<p><strong>2.38. Haz los enlaces externos naranjas</strong></p>
 <p>Haz todos los enlaces externos de color orange alterando su propiedad <code>style</code>.</p>
 <p>Un link es externo si:</p>
 <ul><li>Su <code>href</code> tiene <code>://</code></li><li>Pero no comienza con <code>http://internal.com</code>.</li></ul>
@@ -2246,26 +2178,10 @@ mensaje.classList.toggle("destacado"); // La añade de nuevo.</code></pre>
 </div>
 
 <div class="activity-card activity-callout" id="actividad-jsinfo-calendario">
-<p><strong>2.40. Crea un calendario</strong></p>
+<p><strong>2.39. Crea un calendario</strong></p>
 <p>Programa <code>createCalendar(elem, year, month)</code> para mostrar el mes indicado dentro de <code>elem</code>. Recibirá el año y un mes del 1 al 12. La tabla tendrá siete columnas, de lunes a domingo: utiliza <code>th</code> para sus encabezados, <code>tr</code> para cada semana y <code>td</code> para los días. No necesita responder a clics.</p>
-<p><strong>HTML de partida:</strong> guarda este archivo junto a <code>calendario.js</code>.</p>
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="es"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;title&gt;Calendario&lt;/title&gt;
-    &lt;style&gt;
-        table { border-collapse: collapse; }
-        th, td { border: 1px solid #777; padding: 8px; text-align: center; }
-        th { background: #e5e7eb; }
-    &lt;/style&gt;
-    &lt;script src="calendario.js" defer&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;h1&gt;Septiembre de 2012&lt;/h1&gt;
-    &lt;div id="calendario"&gt;&lt;/div&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
+<p><strong>HTML de partida:</strong> descarga <code>index.html</code> y guárdalo junto al archivo <code>calendario.js</code> que vas a programar.</p>
+<div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/calendario/index.html" download="index.html">Descargar HTML del calendario</a></div>
 <p>Después de definir tu función en <code>calendario.js</code>, llámala así:</p>
 <pre><code>const cal = document.querySelector("#calendario");
 createCalendar(cal, 2012, 9);</code></pre>
@@ -2310,7 +2226,7 @@ if (mensaje !== null) {
                 
 
             <div class="activity-card activity-callout" id="actividad-repaso-dom-estudio">
-<p><strong>2.41. Repaso del DOM: modo lectura en 10 minutos</strong></p>
+<p><strong>2.40. Repaso del DOM: modo lectura en 10 minutos</strong></p>
 <p>Mejora la lectura de una web de apuntes o noticias aplicando tus propios estilos desde Chrome. Crearás un pequeño script reutilizable sobre la página que tengas abierta.</p>
 <p><strong>Configuración de lectura:</strong> utiliza estos valores concretos para obtener letra grande, líneas separadas y buen contraste.</p>
 <table>
@@ -2414,10 +2330,10 @@ boton.addEventListener("click", mostrarSaludo);</code></pre>
                 <p>Registra los manejadores cuando los elementos ya existan, como ocurre al usar <code>defer</code>. <code>addEventListener()</code> permite asociar varias funciones a un mismo evento y mantiene el comportamiento en el archivo JavaScript.</p>
                 
 
-                <div class="activity-card activity-callout" id="actividad-jsinfo-ocultar"><p><strong>2.42. Panel de ayuda desplegable</strong></p><p>Construye una ayuda que pueda consultarse sin abandonar la página de entrega.</p><ol><li>Antes de programar, identifica el botón, el evento <code>click</code> y el cambio que hará el manejador.</li><li>Conserva un booleano que indique si la ayuda está abierta. Registra el manejador una sola vez con <code>addEventListener()</code>.</li><li>En cada clic, cambia el estado y añade o retira la clase <code>oculto</code>. Alterna el texto entre «Mostrar ayuda» y «Ocultar ayuda».</li></ol><p><strong>Pruebas:</strong> al cargar está cerrado; tras un clic se abre; tras cuatro vuelve al inicio. Prueba Tab para enfocar el botón y Espacio o Intro para activarlo.</p><p>Inspiración: <a href="https://github.com/bradtraversy/50projects50days/tree/master/faq-collapse">FAQ Collapse</a>, reducido a una tarjeta.</p><p><strong>Material facilitado:</strong> descarga estos archivos juntos en una carpeta llamada <code>ayuda</code>. El HTML y el CSS están preparados; completa <code>app.js</code>. La personalización visual es opcional.</p><div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/proyectos/ayuda/index.html" download="index.html">index.html</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/ayuda/estilos.css" download="estilos.css">estilos.css</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/ayuda/app.js" download="app.js">app.js</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/ayuda/LEEME.txt" download="LEEME.txt">LEEME.txt</a></div><p><strong>Entrega:</strong> incluye los archivos del proyecto y <code>pruebas.txt</code> con los resultados esperados y observados. Se evalúa el comportamiento de JavaScript; no necesitas ampliar el CSS.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
+                <div class="activity-card activity-callout" id="actividad-jsinfo-ocultar"><p><strong>2.41. Panel de ayuda desplegable</strong></p><p>Construye una ayuda que pueda consultarse sin abandonar la página de entrega.</p><ol><li>Antes de programar, identifica el botón, el evento <code>click</code> y el cambio que hará el manejador.</li><li>Conserva un booleano que indique si la ayuda está abierta. Registra el manejador una sola vez con <code>addEventListener()</code>.</li><li>En cada clic, cambia el estado y añade o retira la clase <code>oculto</code>. Alterna el texto entre «Mostrar ayuda» y «Ocultar ayuda».</li></ol><p><strong>Pruebas:</strong> al cargar está cerrado; tras un clic se abre; tras cuatro vuelve al inicio. Prueba Tab para enfocar el botón y Espacio o Intro para activarlo.</p><p>Inspiración: <a href="https://github.com/bradtraversy/50projects50days/tree/master/faq-collapse">FAQ Collapse</a>, reducido a una tarjeta.</p><p><strong>Material facilitado:</strong> descarga estos archivos juntos en una carpeta llamada <code>ayuda</code>. El HTML y el CSS están preparados; completa <code>app.js</code>. La personalización visual es opcional.</p><div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/proyectos/ayuda/index.html" download="index.html">index.html</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/ayuda/estilos.css" download="estilos.css">estilos.css</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/ayuda/app.js" download="app.js">app.js</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/ayuda/LEEME.txt" download="LEEME.txt">LEEME.txt</a></div><p><strong>Entrega:</strong> incluye los archivos del proyecto y <code>pruebas.txt</code> con los resultados esperados y observados. Se evalúa el comportamiento de JavaScript; no necesitas ampliar el CSS.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-8-2">
-                    <p><strong>2.43. Dos manejadores en el mismo botón</strong></p>
+                    <p><strong>2.42. Dos manejadores en el mismo botón</strong></p>
                     <p>Registra con <code>addEventListener()</code> dos manejadores para un botón: uno incrementa un contador y otro muestra un aviso en un párrafo. Regístralos una sola vez, fuera de los manejadores.</p>
                     <p><strong>Comprobación:</strong> Cada clic debe aumentar el contador exactamente en uno y ejecutar ambos efectos. Compara con <code>boton.onclick = primerManejador;</code> seguido de <code>boton.onclick = segundoManejador;</code>: la segunda asignación sustituye a la primera, mientras que los dos registros con <code>addEventListener()</code> se conservan.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
@@ -2450,7 +2366,7 @@ campo.addEventListener("change", confirmarCambio);</code></pre>
                 <p>Asignar un valor desde JavaScript mediante <code>campo.value = "Ana"</code> no dispara automáticamente estos eventos. Si el programa modifica el dato, debe actualizar también la presentación cuando corresponda.</p>
                 
 
-                <div class="activity-card activity-callout" id="actividad-jsinfo-deposito-eventos"><p><strong>2.44. Diseñador de tarjetas en directo</strong></p><p>Personaliza una tarjeta ya maquetada cambiando tres propiedades básicas: color del texto, tamaño de letra y esquinas redondeadas.</p><ol><li>Crea <code>actualizarTarjeta()</code> para leer los tres controles y modificar <code>style.color</code>, <code>style.fontSize</code> y <code>style.borderRadius</code>.</li><li>Añade <code>"px"</code> a tamaño y radio. Muestra los valores elegidos en el resumen con <code>textContent</code>.</li><li>Ejecuta la función al cargar y regístrala para <code>input</code> en cada control.</li><li>Registra además <code>change</code> para mostrar «Cambio confirmado» en el párrafo <code>#estadoEvento</code> facilitado. En el manejador de <code>input</code>, muestra «Editando». Explica cuándo aparece cada mensaje.</li></ol><p><strong>Pruebas:</strong> al cargar, letra de 18 px y radio de 8 px. Prueba los extremos de ambos controles, cambia el color y usa también las flechas del teclado. La tarjeta y el resumen deben coincidir. No necesitas variables CSS ni animaciones.</p><p>Inspiración: <a href="https://github.com/wesbos/JavaScript30/tree/master/03%20-%20CSS%20Variables">CSS Variables</a> y <a href="https://github.com/florinpop17/app-ideas/blob/master/Projects/1-Beginner/Border-Radius-Previewer.md">Border-radius Previewer</a>, adaptados a estilos básicos.</p><p><strong>Material facilitado:</strong> descarga estos archivos juntos en una carpeta llamada <code>tarjeta</code>. El HTML y el CSS están preparados; completa <code>app.js</code>. La personalización visual es opcional.</p><div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/proyectos/tarjeta/index.html" download="index.html">index.html</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/tarjeta/estilos.css" download="estilos.css">estilos.css</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/tarjeta/app.js" download="app.js">app.js</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/tarjeta/LEEME.txt" download="LEEME.txt">LEEME.txt</a></div><p><strong>Entrega:</strong> incluye los archivos del proyecto y <code>pruebas.txt</code> con los resultados esperados y observados. Se evalúa el comportamiento de JavaScript; no necesitas ampliar el CSS.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
+                <div class="activity-card activity-callout" id="actividad-jsinfo-deposito-eventos"><p><strong>2.43. Diseñador de tarjetas en directo</strong></p><p>Personaliza una tarjeta ya maquetada cambiando tres propiedades básicas: color del texto, tamaño de letra y esquinas redondeadas.</p><ol><li>Crea <code>actualizarTarjeta()</code> para leer los tres controles y modificar <code>style.color</code>, <code>style.fontSize</code> y <code>style.borderRadius</code>.</li><li>Añade <code>"px"</code> a tamaño y radio. Muestra los valores elegidos en el resumen con <code>textContent</code>.</li><li>Ejecuta la función al cargar y regístrala para <code>input</code> en cada control.</li><li>Registra además <code>change</code> para mostrar «Cambio confirmado» en el párrafo <code>#estadoEvento</code> facilitado. En el manejador de <code>input</code>, muestra «Editando». Explica cuándo aparece cada mensaje.</li></ol><p><strong>Pruebas:</strong> al cargar, letra de 18 px y radio de 8 px. Prueba los extremos de ambos controles, cambia el color y usa también las flechas del teclado. La tarjeta y el resumen deben coincidir. No necesitas variables CSS ni animaciones.</p><p>Inspiración: <a href="https://github.com/wesbos/JavaScript30/tree/master/03%20-%20CSS%20Variables">CSS Variables</a> y <a href="https://github.com/florinpop17/app-ideas/blob/master/Projects/1-Beginner/Border-Radius-Previewer.md">Border-radius Previewer</a>, adaptados a estilos básicos.</p><p><strong>Material facilitado:</strong> descarga estos archivos juntos en una carpeta llamada <code>tarjeta</code>. El HTML y el CSS están preparados; completa <code>app.js</code>. La personalización visual es opcional.</p><div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/proyectos/tarjeta/index.html" download="index.html">index.html</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/tarjeta/estilos.css" download="estilos.css">estilos.css</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/tarjeta/app.js" download="app.js">app.js</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/tarjeta/LEEME.txt" download="LEEME.txt">LEEME.txt</a></div><p><strong>Entrega:</strong> incluye los archivos del proyecto y <code>pruebas.txt</code> con los resultados esperados y observados. Se evalúa el comportamiento de JavaScript; no necesitas ampliar el CSS.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
                 
 
@@ -2475,7 +2391,7 @@ campo.addEventListener("input", mostrarEntrada);</code></pre>
 
                 
 
-                <div class="activity-card activity-callout" id="actividad-complementaria-8-4"><p><strong>2.45. Botonera de efectos sonoros</strong></p><p>Crea una botonera con los efectos «Aviso», «Acierto» y «Error». El material incluye los sonidos dentro del HTML y la función auxiliar <code>reproducirSonido(nombre)</code>; no tienes que implementar audio ni descargar archivos adicionales.</p><ol><li>Selecciona los tres botones y registra la misma función para el evento <code>click</code> de cada uno.</li><li>Recibe el evento y usa <code>event.currentTarget.id</code> para identificar el botón y llamar a <code>reproducirSonido()</code>.</li><li>Escribe qué sonido se ha elegido en el mensaje.</li><li>Muestra en <code>#detalleEvento</code> los valores de <code>event.target.tagName</code> y <code>event.currentTarget.tagName</code> al pulsar el botón y su <code>span</code> interior.</li></ol><p><strong>Pruebas:</strong> los tres sonidos se seleccionan correctamente al pulsar texto e icono; repetir un sonido vuelve a iniciarlo. No necesitas bucles ni animaciones. La función de audio facilitada se conserva sin cambios.</p><p>Inspiración: <a href="https://github.com/bradtraversy/50projects50days/tree/master/sound-board">Sound Board</a> y <a href="https://github.com/wesbos/JavaScript30/tree/master/01%20-%20JavaScript%20Drum%20Kit">Drum Kit</a>.</p><p><strong>Material facilitado:</strong> descarga estos archivos juntos en una carpeta llamada <code>sonidos</code>. El HTML y el CSS están preparados; completa <code>app.js</code>. La personalización visual es opcional.</p><div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/proyectos/sonidos/index.html" download="index.html">index.html</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/sonidos/estilos.css" download="estilos.css">estilos.css</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/sonidos/app.js" download="app.js">app.js</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/sonidos/LEEME.txt" download="LEEME.txt">LEEME.txt</a></div><p><strong>Entrega:</strong> incluye los archivos del proyecto y <code>pruebas.txt</code> con los resultados esperados y observados. Se evalúa el comportamiento de JavaScript; no necesitas ampliar el CSS.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
+                <div class="activity-card activity-callout" id="actividad-complementaria-8-4"><p><strong>2.44. Botonera de efectos sonoros</strong></p><p>Crea una botonera con los efectos «Aviso», «Acierto» y «Error». El material incluye los sonidos dentro del HTML y la función auxiliar <code>reproducirSonido(nombre)</code>; no tienes que implementar audio ni descargar archivos adicionales.</p><ol><li>Selecciona los tres botones y registra la misma función para el evento <code>click</code> de cada uno.</li><li>Recibe el evento y usa <code>event.currentTarget.id</code> para identificar el botón y llamar a <code>reproducirSonido()</code>.</li><li>Escribe qué sonido se ha elegido en el mensaje.</li><li>Muestra en <code>#detalleEvento</code> los valores de <code>event.target.tagName</code> y <code>event.currentTarget.tagName</code> al pulsar el botón y su <code>span</code> interior.</li></ol><p><strong>Pruebas:</strong> los tres sonidos se seleccionan correctamente al pulsar texto e icono; repetir un sonido vuelve a iniciarlo. No necesitas bucles ni animaciones. La función de audio facilitada se conserva sin cambios.</p><p>Inspiración: <a href="https://github.com/bradtraversy/50projects50days/tree/master/sound-board">Sound Board</a> y <a href="https://github.com/wesbos/JavaScript30/tree/master/01%20-%20JavaScript%20Drum%20Kit">Drum Kit</a>.</p><p><strong>Material facilitado:</strong> descarga estos archivos juntos en una carpeta llamada <code>sonidos</code>. El HTML y el CSS están preparados; completa <code>app.js</code>. La personalización visual es opcional.</p><div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/proyectos/sonidos/index.html" download="index.html">index.html</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/sonidos/estilos.css" download="estilos.css">estilos.css</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/sonidos/app.js" download="app.js">app.js</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/sonidos/LEEME.txt" download="LEEME.txt">LEEME.txt</a></div><p><strong>Entrega:</strong> incluye los archivos del proyecto y <code>pruebas.txt</code> con los resultados esperados y observados. Se evalúa el comportamiento de JavaScript; no necesitas ampliar el CSS.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
                 <h3 id="sec9_5">9.5. Comportamiento predeterminado y preventDefault()</h3>
                 <aside class="function-card" id="ficha-funcion-24" aria-label="Ficha de función: event.preventDefault()">
@@ -2507,20 +2423,20 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
                 
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-enlace">
-                    <p><strong>2.46. Confirmar antes de navegar</strong></p>
+                    <p><strong>2.45. Confirmar antes de navegar</strong></p>
                     <p>Crea un enlace a una página externa de tu elección. Registra su evento <code>click</code> y pregunta con <code>confirm()</code> si se desea abrir el destino. Si se cancela, utiliza <code>preventDefault()</code>; si se acepta, deja actuar al navegador. Prueba ambas respuestas.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-8-5">
-                    <p><strong>2.47. ¿Basta con return false?</strong></p>
+                    <p><strong>2.46. ¿Basta con return false?</strong></p>
                     <p>Crea un formulario con un campo y un botón de envío. Registra un manejador con <code>addEventListener()</code> que escriba «Envío recibido» en un párrafo y devuelva <code>false</code>. Comprueba si el mensaje desaparece al recargarse la página por el envío. Sustituye ese retorno por <code>event.preventDefault()</code>.</p>
                     <p><strong>Comprobación:</strong> Prueba con clic y con Intro y explica por qué la segunda versión permanece en la página.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <div class="activity-card activity-callout" id="actividad-complementaria-9-7"><p><strong>2.48. Conversor binario para SSII</strong></p><p>Programa un conversor de uno a ocho bits. Una entrada válida contiene exclusivamente ceros y unos.</p><figure id="interfaz-conversor-binario" style="margin:1.25rem 0">
+                <div class="activity-card activity-callout" id="actividad-complementaria-9-7"><p><strong>2.47. Conversor binario para SSII</strong></p><p>Programa un conversor de uno a ocho bits. Una entrada válida contiene exclusivamente ceros y unos.</p><figure id="interfaz-conversor-binario" style="margin:1.25rem 0">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 430" role="img" style="display:block;width:100%;max-width:520px;height:auto;margin:0 auto">
 <title>Conversor binario a decimal: ejemplo con 1010</title>
 <desc>Formulario con un campo para un número binario de uno a ocho bits, un botón Convertir y una zona de resultado. El campo contiene 1010 y el resultado decimal es 10.</desc>
@@ -2542,7 +2458,7 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
 <figcaption style="margin-top:.75rem;font-size:.95em;text-align:center">Interfaz de referencia después de convertir <code>1010</code>: el resultado es <code>10</code>. Es una imagen ilustrativa.</figcaption>
 </figure><ol><li>Implementa <code>binarioADecimal(texto)</code> sin acceder al DOM. Devuelve <code>null</code> si la longitud o algún carácter no son válidos; en otro caso devuelve el número decimal.</li><li>Recorre los caracteres: empieza con un acumulado de cero y, para cada bit, multiplica lo acumulado por 2 y suma el bit convertido a número. No uses <code>parseInt(texto, 2)</code> en esta práctica.</li><li>Registra <code>submit</code>, evita la recarga, lee el texto y retira los espacios exteriores con <code>trim()</code>.</li><li>Muestra el resultado con <code>textContent</code>. Ante un error muestra un mensaje claro y sustituye cualquier resultado anterior por «—». Comprueba <code>resultado === null</code>: cero sí es válido.</li></ol><p><strong>Pruebas:</strong> <code>0 → 0</code>, <code>0001 → 1</code>, <code>1010 → 10</code> y <code>11111111 → 255</code>. Rechaza vacío, <code>102</code>, <code>10 01</code> y nueve bits. Prueba válido → error → válido, con botón e Intro.</p><p>Inspiración: <a href="https://github.com/florinpop17/app-ideas/blob/master/Projects/1-Beginner/Bin2Dec-App.md">Bin2Dec</a>, con requisitos adaptados.</p><p><strong>Material facilitado:</strong> descarga estos archivos juntos en una carpeta llamada <code>binario</code>. El HTML y el CSS están preparados; completa <code>app.js</code>. La personalización visual es opcional.</p><div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/proyectos/binario/index.html" download="index.html">index.html</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/binario/estilos.css" download="estilos.css">estilos.css</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/binario/app.js" download="app.js">app.js</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/binario/LEEME.txt" download="LEEME.txt">LEEME.txt</a></div><p><strong>Entrega:</strong> incluye los archivos del proyecto y <code>pruebas.txt</code> con los resultados esperados y observados. Se evalúa el comportamiento de JavaScript; no necesitas ampliar el CSS.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 <div class="activity-card activity-callout" id="actividad-complementaria-8-3">
-                    <p><strong>2.49. Ficha de inscripción en vivo</strong></p>
+                    <p><strong>2.48. Ficha de inscripción en vivo</strong></p>
                     <p>Prepara la inscripción a un taller de fotografía. La persona escribirá su nombre y elegirá si quiere asistir por la mañana o por la tarde. La página le mostrará su elección mientras rellena el formulario y un resumen al enviarlo.</p>
 <p>Incluye un campo de texto etiquetado «Nombre», un <strong>desplegable de horario</strong> y un botón «Confirmar inscripción» de tipo <code>submit</code>. El desplegable es un elemento <code>select</code>; cada <code>option</code> representa un turno:</p>
 <pre><code>&lt;label for="turno"&gt;Horario del taller&lt;/label&gt;
@@ -2572,13 +2488,13 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · preventDefault()</a></div>
                 </div>
                 <div class="activity-card activity-callout" id="actividad-jsinfo-menu">
-                    <p><strong>2.50. Mostrar y ocultar un menú</strong></p>
+                    <p><strong>2.49. Mostrar y ocultar un menú</strong></p>
                     <p>Crea un botón y una lista de enlaces inicialmente oculta mediante CSS. Alterna su visibilidad con <code>classList.toggle()</code> al pulsar el botón. Mantén el registro del evento fuera del manejador y prueba varias aperturas y cierres seguidos.</p>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
-                <div class="activity-card activity-callout" id="actividad-complementaria-8-6"><p><strong>2.51. Medidor de una meta de ocho pasos</strong></p><p>Registra el progreso de una tarea dividida en ocho pasos. La barra está preparada con el elemento HTML <code>&lt;progress&gt;</code>; no hay que dibujarla con CSS.</p><ol><li>Guarda el número de pasos completados, inicialmente cero.</li><li>«Completar paso» suma uno hasta un máximo de ocho; «Deshacer» resta uno hasta cero; «Reiniciar» vuelve a cero.</li><li>Centraliza la presentación en <code>actualizarVista()</code>: asigna el número a <code>progreso.value</code> y muestra pasos y porcentaje con <code>textContent</code>.</li><li>Registra los manejadores una sola vez. Llama a la actualización al cargar y después de cada acción.</li></ol><p><strong>Pruebas:</strong> cuatro pasos equivalen al 50 %; ocho al 100 %. Un noveno clic no aumenta la cuenta. Deshacer desde cero mantiene cero. Reinicia después de cinco pasos y comprueba que puedes empezar otra vez.</p><p>Inspiración: <a href="https://github.com/bradtraversy/50projects50days/tree/master/drink-water">Drink Water</a>, adaptado a una meta genérica.</p><p><strong>Material facilitado:</strong> descarga estos archivos juntos en una carpeta llamada <code>progreso</code>. El HTML y el CSS están preparados; completa <code>app.js</code>. La personalización visual es opcional.</p><div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/proyectos/progreso/index.html" download="index.html">index.html</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/progreso/estilos.css" download="estilos.css">estilos.css</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/progreso/app.js" download="app.js">app.js</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/progreso/LEEME.txt" download="LEEME.txt">LEEME.txt</a></div><p><strong>Entrega:</strong> incluye los archivos del proyecto y <code>pruebas.txt</code> con los resultados esperados y observados. Se evalúa el comportamiento de JavaScript; no necesitas ampliar el CSS.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
+                <div class="activity-card activity-callout" id="actividad-complementaria-8-6"><p><strong>2.50. Medidor de una meta de ocho pasos</strong></p><p>Registra el progreso de una tarea dividida en ocho pasos. La barra está preparada con el elemento HTML <code>&lt;progress&gt;</code>; no hay que dibujarla con CSS.</p><ol><li>Guarda el número de pasos completados, inicialmente cero.</li><li>«Completar paso» suma uno hasta un máximo de ocho; «Deshacer» resta uno hasta cero; «Reiniciar» vuelve a cero.</li><li>Centraliza la presentación en <code>actualizarVista()</code>: asigna el número a <code>progreso.value</code> y muestra pasos y porcentaje con <code>textContent</code>.</li><li>Registra los manejadores una sola vez. Llama a la actualización al cargar y después de cada acción.</li></ol><p><strong>Pruebas:</strong> cuatro pasos equivalen al 50 %; ocho al 100 %. Un noveno clic no aumenta la cuenta. Deshacer desde cero mantiene cero. Reinicia después de cinco pasos y comprueba que puedes empezar otra vez.</p><p>Inspiración: <a href="https://github.com/bradtraversy/50projects50days/tree/master/drink-water">Drink Water</a>, adaptado a una meta genérica.</p><p><strong>Material facilitado:</strong> descarga estos archivos juntos en una carpeta llamada <code>progreso</code>. El HTML y el CSS están preparados; completa <code>app.js</code>. La personalización visual es opcional.</p><div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/proyectos/progreso/index.html" download="index.html">index.html</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/progreso/estilos.css" download="estilos.css">estilos.css</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/progreso/app.js" download="app.js">app.js</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/progreso/LEEME.txt" download="LEEME.txt">LEEME.txt</a></div><p><strong>Entrega:</strong> incluye los archivos del proyecto y <code>pruebas.txt</code> con los resultados esperados y observados. Se evalúa el comportamiento de JavaScript; no necesitas ampliar el CSS.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
                 <h3 id="sec9_7">9.7. Recorrer elementos del DOM con for...of</h3>
                 <aside class="function-card" id="ficha-control-for-of" aria-label="Ficha de estructura de control: Recorrido de valores">
@@ -2601,7 +2517,7 @@ for (const parrafo of parrafos) {
                 
                 
 
-                <div class="activity-card activity-callout" id="actividad-complementaria-7-7"><p><strong>2.52. Checklist antes de entregar</strong></p><p>Convierte una lista de comprobaciones en una herramienta para revisar tus prácticas.</p><ol><li>Selecciona las casillas con <code>querySelectorAll()</code> y recórrelas con <code>for...of</code> para registrar el mismo manejador de <code>change</code>.</li><li>En <code>actualizarResumen()</code>, recorre la colección, cuenta las casillas marcadas y construye el texto de las pendientes.</li><li>Muestra «X de Y comprobaciones completadas». Obtén Y de la colección; no escribas un total fijo.</li><li>Si no queda ninguna pendiente, muestra «Todo revisado». El botón de reinicio desmarca las casillas y actualiza el resumen.</li></ol><p><strong>Ayuda:</strong> <code>casilla.checked</code> indica si está marcada. <code>casilla.parentElement</code> referencia su etiqueta; <code>casilla.parentElement.textContent.trim()</code> obtiene la descripción.</p><p><strong>Pruebas:</strong> ninguna, todas, marcar y desmarcar una, y reiniciar. Añade una sexta comprobación al HTML y recarga: el resumen debe incluirla sin cambiar JavaScript. No se exige persistencia ni creación de nodos.</p><p>Inspiración: <a href="https://github.com/wesbos/JavaScript30/tree/master/10%20-%20Hold%20Shift%20and%20Check%20Checkboxes">Checkboxes de JavaScript30</a> y <a href="https://github.com/dwyl/javascript-todo-list-tutorial">Todo List</a>, enlazado desde Project Based Learning.</p><p><strong>Material facilitado:</strong> descarga estos archivos juntos en una carpeta llamada <code>checklist</code>. El HTML y el CSS están preparados; completa <code>app.js</code>. La personalización visual es opcional.</p><div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/proyectos/checklist/index.html" download="index.html">index.html</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/checklist/estilos.css" download="estilos.css">estilos.css</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/checklist/app.js" download="app.js">app.js</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/checklist/LEEME.txt" download="LEEME.txt">LEEME.txt</a></div><p><strong>Entrega:</strong> incluye los archivos del proyecto y <code>pruebas.txt</code> con los resultados esperados y observados. Se evalúa el comportamiento de JavaScript; no necesitas ampliar el CSS.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
+                <div class="activity-card activity-callout" id="actividad-complementaria-7-7"><p><strong>2.51. Checklist antes de entregar</strong></p><p>Convierte una lista de comprobaciones en una herramienta para revisar tus prácticas.</p><ol><li>Selecciona las casillas con <code>querySelectorAll()</code> y recórrelas con <code>for...of</code> para registrar el mismo manejador de <code>change</code>.</li><li>En <code>actualizarResumen()</code>, recorre la colección, cuenta las casillas marcadas y construye el texto de las pendientes.</li><li>Muestra «X de Y comprobaciones completadas». Obtén Y de la colección; no escribas un total fijo.</li><li>Si no queda ninguna pendiente, muestra «Todo revisado». El botón de reinicio desmarca las casillas y actualiza el resumen.</li></ol><p><strong>Ayuda:</strong> <code>casilla.checked</code> indica si está marcada. <code>casilla.parentElement</code> referencia su etiqueta; <code>casilla.parentElement.textContent.trim()</code> obtiene la descripción.</p><p><strong>Pruebas:</strong> ninguna, todas, marcar y desmarcar una, y reiniciar. Añade una sexta comprobación al HTML y recarga: el resumen debe incluirla sin cambiar JavaScript. No se exige persistencia ni creación de nodos.</p><p>Inspiración: <a href="https://github.com/wesbos/JavaScript30/tree/master/10%20-%20Hold%20Shift%20and%20Check%20Checkboxes">Checkboxes de JavaScript30</a> y <a href="https://github.com/dwyl/javascript-todo-list-tutorial">Todo List</a>, enlazado desde Project Based Learning.</p><p><strong>Material facilitado:</strong> descarga estos archivos juntos en una carpeta llamada <code>checklist</code>. El HTML y el CSS están preparados; completa <code>app.js</code>. La personalización visual es opcional.</p><div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/proyectos/checklist/index.html" download="index.html">index.html</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/checklist/estilos.css" download="estilos.css">estilos.css</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/checklist/app.js" download="app.js">app.js</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/checklist/LEEME.txt" download="LEEME.txt">LEEME.txt</a></div><p><strong>Entrega:</strong> incluye los archivos del proyecto y <code>pruebas.txt</code> con los resultados esperados y observados. Se evalúa el comportamiento de JavaScript; no necesitas ampliar el CSS.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
 
             </section>
 
@@ -2675,7 +2591,7 @@ for (const parrafo of parrafos) {
 </tbody></table>
 <p>Los decimales de tipo <code>Number</code> pueden tener pequeñas imprecisiones: <code>0.1 + 0.2</code> produce <code>0.30000000000000004</code>. En este proyecto no es necesario implementar un redondeo especial.</p>
 <div class="activity-card activity-callout" id="relacion-ejercicio-21">
-<p><strong>2.53. Proyecto 1: calculadora</strong></p>
+<p><strong>2.52. Proyecto 1: calculadora</strong></p>
 <p>Implementa la calculadora descrita y entrega <strong>un único texto plano</strong> con el contenido completo de los cuatro archivos. Escribe el nombre de cada archivo seguido de dos puntos en una línea independiente y, debajo, su contenido:</p>
 <pre><code>index.html:
 [Contenido completo del HTML]
@@ -2727,14 +2643,13 @@ pruebas.txt:
 <p>El proyecto tiene <strong>una única entrega al final</strong>. Conserva en una carpeta <code>cuestionario</code> la versión final de <code>index.html</code>, <code>estilos.css</code>, <code>app.js</code> y <code>pruebas.txt</code>.</p>
 <ul><li><strong>Funcionamiento:</strong> preguntas, validación, puntuación y reinicio correctos.</li><li><strong>Organización:</strong> funciones con una responsabilidad clara, comparación separada del DOM y eventos registrados una sola vez.</li><li><strong>Interacción:</strong> mensajes comprensibles, navegación con teclado y actualización sin recargas.</li><li><strong>Pruebas:</strong> casos normales, errores y reinicios documentados con resultados observados.</li></ul>
 <p>No se exige ampliar el CSS. Utiliza JavaScript sin bibliotecas y conserva la interfaz facilitada si lo prefieres.</p>
-<div class="activity-card activity-callout" id="actividad-complementaria-10-5"><p><strong>2.54. Proyecto 2: entrega final del cuestionario</strong></p><p>Entrega el proyecto completo y <code>pruebas.txt</code>. Documenta una partida completa y un intento de enviar sin selección, desde que se abre la página. Explica brevemente qué hace cada función y repite las pruebas siguiendo únicamente tus instrucciones.</p><p><strong>Comprobación:</strong> otra persona puede reproducir las acciones y obtener las mismas salidas. La modificación del CSS es opcional y no puntúa en esta práctica.</p><p><strong>Entrega:</strong> incluye los archivos del proyecto y <code>pruebas.txt</code> con los resultados esperados y observados. Se evalúa el comportamiento de JavaScript; no necesitas ampliar el CSS.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div></section>
+<div class="activity-card activity-callout" id="actividad-complementaria-10-5"><p><strong>2.53. Proyecto 2: entrega final del cuestionario</strong></p><p>Entrega el proyecto completo y <code>pruebas.txt</code>. Documenta una partida completa y un intento de enviar sin selección, desde que se abre la página. Explica brevemente qué hace cada función y repite las pruebas siguiendo únicamente tus instrucciones.</p><p><strong>Comprobación:</strong> otra persona puede reproducir las acciones y obtener las mismas salidas. La modificación del CSS es opcional y no puntúa en esta práctica.</p><p><strong>Entrega:</strong> incluye los archivos del proyecto y <code>pruebas.txt</code> con los resultados esperados y observados. Se evalúa el comportamiento de JavaScript; no necesitas ampliar el CSS.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div></section>
 
             <footer class="document-footer">
 <p>DAW / DWEC · © Ignacio García</p>
 <p><strong>Créditos de actividades.</strong> Material de JavaScript.info, de Ilya Kantor y colaboradores de la traducción española:</p>
 <ul>
 <li><a href="https://es.javascript.info/task/find-elements" target="_blank" rel="noopener noreferrer">Buscar elementos</a>: enunciado y HTML de partida.</li>
-<li><a href="https://es.javascript.info/task/create-list" target="_blank" rel="noopener noreferrer">Crear una lista</a>: enunciado adaptado y ayuda didáctica añadida.</li>
 <li><a href="https://es.javascript.info/task/yellow-links" target="_blank" rel="noopener noreferrer">Haz los enlaces externos naranjas</a>: enunciado y HTML de partida; se ha retirado el script de ejemplo.</li>
 <li><a href="https://es.javascript.info/task/calendar-table" target="_blank" rel="noopener noreferrer">Crea un calendario</a>: enunciado y guía de resolución adaptados; HTML de partida y comprobaciones añadidos.</li>
 </ul>
