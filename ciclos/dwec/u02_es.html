@@ -1936,9 +1936,16 @@ avisos[1].textContent = "Entrega el jueves";</code></pre>
                         <li>Incluye un <code>h2</code> con <code>id="titulo-material"</code>, una lista de cuatro elementos <code>li</code> con nombres de materiales y un párrafo de aviso fuera de la lista. Asigna la clase <code>pendiente</code> al segundo y al cuarto <code>li</code>, y también al párrafo. Añade un <code>div id="resumen"</code> vacío.</li>
                         <li>En un archivo JavaScript externo cargado con <code>defer</code>, selecciona el título con <code>getElementById()</code> y cambia su texto por «Material para el próximo taller».</li>
                         <li>Selecciona los elementos <code>li</code> con <code>getElementsByTagName()</code>. Cambia únicamente el texto del primero usando <code>[0]</code>.</li>
-                        <li>Selecciona la clase <code>pendiente</code> con <code>getElementsByClassName()</code>. Recorre la colección y añade «Pendiente: » al principio del texto de cada elemento seleccionado, sin cambiar sus clases.</li>
+                        <li>Selecciona la clase <code>pendiente</code> con <code>getElementsByClassName()</code>. Recorre la colección con <code>for...of</code> y añade «Pendiente: » al principio del texto de cada elemento seleccionado, sin cambiar sus clases.</li>
                         <li>Muestra en el resumen las cantidades obtenidas con <code>length</code>: «Materiales: 4 | Pendientes: 3». Usa <code>textContent</code> para escribir todos los cambios.</li>
                     </ol>
+                    <p><strong>Ejemplo básico de <code>length</code>:</strong> esta propiedad indica cuántos elementos contiene una colección; se escribe sin paréntesis. Si la página tiene cuatro elementos <code>li</code>:</p>
+                    <pre><code>const materiales = document.getElementsByTagName("li");
+const resumen = document.getElementById("resumen");
+
+resumen.textContent = "Materiales: " + materiales.length;
+// Muestra: Materiales: 4</code></pre>
+                    <p>Completa el resumen de la actividad añadiendo también la cantidad de elementos con la clase <code>pendiente</code>.</p>
                     <p><strong>Comprobación:</strong> la selección por etiqueta contiene cuatro elementos; la selección por clase contiene dos elementos de la lista y el párrafo. El tercer material debe conservar su texto. Explica en un comentario por qué el título se modifica directamente y las otras selecciones necesitan un índice o un recorrido. No utilices <code>querySelector()</code> ni <code>querySelectorAll()</code> en esta actividad.</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
@@ -1970,18 +1977,7 @@ for (const aviso of avisos) {
     aviso.textContent = "AVISO ACTUALIZADO";
 }</code></pre>
                 <p>Resultado: los dos primeros párrafos muestran «AVISO ACTUALIZADO». El tercero conserva «Trae tu portátil», porque no tiene la clase <code>aviso</code>. La colección no tiene un <code>textContent</code> que cambie todos sus elementos: hay que recorrerla.</p>
-                <div class="didactic-note">
-                    <p><strong>querySelector() frente a getElementsByTagName()</strong></p>
-                    <p><code>document.querySelector("p")</code> devuelve <strong>solo el primer párrafo</strong>, o <code>null</code> si no existe. Admite cualquier selector CSS, como <code>".aviso"</code> o <code>"p.aviso"</code>.</p>
-                    <p><code>document.getElementsByTagName("p")</code> devuelve <strong>todos los párrafos</strong> en una <code>HTMLCollection</code> viva, aunque solo haya uno. Solo busca por nombre de etiqueta; <code>"p.aviso"</code> no sirve para filtrar una clase. Si no hay coincidencias, la colección está vacía.</p>
-                    <pre><code>const primero = document.querySelector("p");
-const todos = document.getElementsByTagName("p");
-
-// En el HTML anterior:
-primero === todos[0]; // true: es el mismo elemento.
-todos.length;        // 3: incluye también el párrafo sin clase.</code></pre>
-                    <p>Para seleccionar varios elementos mediante CSS, utiliza <code>querySelectorAll()</code>. Su colección es estática; la de <code>getElementsByTagName()</code> se actualiza cuando cambian los elementos de esa etiqueta en el DOM.</p>
-                </div>
+                
                 <p><code>querySelector()</code> devuelve la primera coincidencia o <code>null</code>. <code>querySelectorAll()</code> devuelve una <code>NodeList</code> estática: no se actualiza automáticamente si después se añaden o eliminan coincidencias. Cuando no encuentra elementos, devuelve una colección vacía.</p>
                 <div class="didactic-note"><p><strong>¿Cuál usar hoy?</strong> Los métodos <code>getElementById()</code>, <code>getElementsByClassName()</code> y <code>getElementsByTagName()</code> siguen vigentes. En código moderno es habitual utilizar <code>querySelector()</code> y <code>querySelectorAll()</code> por su flexibilidad; serán la opción general de este curso. Para buscar un identificador concreto, <code>getElementById()</code> sigue siendo una opción directa y adecuada.</p></div>
                 <p>Para estos ejemplos utiliza el HTML indicado y recarga entre pruebas. Guarda las referencias que vayas a reutilizar y comprueba que un elemento existe antes de acceder a sus propiedades.</p>
