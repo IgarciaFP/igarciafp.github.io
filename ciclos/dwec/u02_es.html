@@ -2228,27 +2228,24 @@ if (mensaje !== null) {
             <div class="activity-card activity-callout" id="actividad-repaso-dom-estudio">
 <p><strong>2.40. Repaso del DOM: modo lectura en 10 minutos</strong></p>
 <p>Mejora la lectura de una web de apuntes o noticias aplicando tus propios estilos desde Chrome. Crearás un pequeño script reutilizable sobre la página que tengas abierta.</p>
-<p><strong>Configuración de lectura:</strong> utiliza estos valores concretos para obtener letra grande, líneas separadas y buen contraste.</p>
-<table>
-<thead><tr><th>Propiedad CSS</th><th>Valor</th></tr></thead>
-<tbody>
-<tr><td><code>font-family</code></td><td><code>Arial, sans-serif</code></td></tr>
-<tr><td><code>font-size</code></td><td><code>20px</code></td></tr>
-<tr><td><code>line-height</code></td><td><code>1.6</code></td></tr>
-<tr><td><code>color</code></td><td><code>#1F2937</code> (gris oscuro)</td></tr>
-<tr><td><code>background</code></td><td><code>#FFF8E7</code> (crema claro)</td></tr>
-</tbody>
-</table>
+<p><strong>Configuración de lectura:</strong> este CSS define los estilos que aplicarás desde JavaScript para obtener letra grande, líneas separadas y buen contraste.</p>
+<pre><code class="language-css">body, body * {
+    font-family: Arial, sans-serif !important;
+    font-size: 20px !important;
+    line-height: 1.6 !important;
+    color: #1F2937 !important;
+    background: #FFF8E7 !important;
+}</code></pre>
 <ol>
 <li><strong>Abre el editor (2 minutos).</strong> En Chrome, abre un artículo y pulsa <kbd>F12</kbd>. En DevTools entra en <strong>Sources → Snippets</strong> (puede estar dentro de <strong>»</strong>). Pulsa <strong>New snippet</strong> y llámalo <code>lectura</code>. Un snippet guarda código para ejecutarlo sobre la web abierta.</li>
-<li><strong>Completa el script (5 minutos).</strong> Escribe esta plantilla en el editor, sin etiquetas <code>&lt;script&gt;</code>. Añade dentro del bucle cuatro llamadas a <code>setProperty()</code>, siguiendo la primera y usando la tabla.</li>
+<li><strong>Completa el script (5 minutos).</strong> Escribe esta plantilla en el editor, sin etiquetas <code>&lt;script&gt;</code>. Añade dentro del bucle cuatro llamadas a <code>setProperty()</code>, siguiendo la primera y usando los valores del bloque CSS.</li>
 </ol>
 <pre><code class="language-javascript">{
     const elementos = document.querySelectorAll("body, body *");
 
     for (const elemento of elementos) {
         elemento.style.setProperty("font-family", "Arial, sans-serif", "important");
-        // Añade aquí las otras cuatro propiedades de la tabla.
+        // Añade aquí las otras cuatro propiedades del bloque CSS.
     }
 }</code></pre>
 <p><code>body, body *</code> selecciona el cuerpo y sus elementos: no necesitas conocer los identificadores de cada web. <code>setProperty(propiedad, valor, "important")</code> aplica el estilo con prioridad sobre las reglas habituales de la página.</p>
