@@ -2450,8 +2450,39 @@ for (const parrafo of parrafos) {
 <li>Al pulsar «Calcular» o Intro, muestra la operación y su resultado sin recargar la página. Escribe los mensajes con <code>textContent</code>.</li>
 <li>Añade un botón «Limpiar» de tipo <code>button</code>: debe vaciar los campos, seleccionar de nuevo la suma, borrar resultados y errores y devolver el foco al primer campo.</li>
 </ul>
+<p>Ejemplo de los dos campos: <code>for</code> relaciona cada etiqueta con el <code>id</code> de su campo. <code>step="any"</code> admite decimales y, al no indicar <code>min</code>, también se permiten números negativos.</p>
+<pre><code>&lt;label for="numero1"&gt;Primer número:&lt;/label&gt;
+&lt;input type="number" id="numero1" name="numero1" step="any"&gt;
+
+&lt;label for="numero2"&gt;Segundo número:&lt;/label&gt;
+&lt;input type="number" id="numero2" name="numero2" step="any"&gt;</code></pre>
 <h3 id="sec10_2">10.2. Comprobaciones y organización</h3>
 <p>Realiza las comprobaciones desde JavaScript. Añade <code>novalidate</code> al formulario para que la validación automática del navegador no sustituya los mensajes que debes programar. Atiende el evento <code>submit</code> y evita la recarga con <code>preventDefault()</code>.</p>
+<p>Este ejemplo reúne los campos anteriores en un formulario. Puedes adaptarlo como base de tu HTML; la lógica de cálculo, validación y limpieza debes programarla en <code>app.js</code>.</p>
+<pre><code>&lt;form id="calculadora" novalidate&gt;
+    &lt;label for="numero1"&gt;Primer número:&lt;/label&gt;
+    &lt;input type="number" id="numero1" name="numero1" step="any"&gt;
+
+    &lt;label for="operacion"&gt;Operación:&lt;/label&gt;
+    &lt;select id="operacion" name="operacion"&gt;
+        &lt;option value="suma"&gt;Sumar&lt;/option&gt;
+        &lt;option value="resta"&gt;Restar&lt;/option&gt;
+        &lt;option value="multiplicacion"&gt;Multiplicar&lt;/option&gt;
+        &lt;option value="division"&gt;Dividir&lt;/option&gt;
+        &lt;option value="potencia"&gt;Potencia&lt;/option&gt;
+        &lt;option value="resto"&gt;Resto&lt;/option&gt;
+    &lt;/select&gt;
+
+    &lt;label for="numero2"&gt;Segundo número:&lt;/label&gt;
+    &lt;input type="number" id="numero2" name="numero2" step="any"&gt;
+
+    &lt;button type="submit"&gt;Calcular&lt;/button&gt;
+    &lt;button type="button" id="limpiar"&gt;Limpiar&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;p id="error" role="alert"&gt;&lt;/p&gt;
+&lt;p id="resultado" aria-live="polite"&gt;&lt;/p&gt;</code></pre>
+<p><code>novalidate</code> desactiva la validación automática al enviar, pero no evita la recarga: eso corresponde al manejador de <code>submit</code>. El botón «Limpiar» no envía el formulario. <code>role="alert"</code> permite anunciar los errores a los lectores de pantalla y <code>aria-live="polite"</code> anuncia los resultados sin interrumpir.</p>
 <ol>
 <li>Lee los valores actuales en cada envío. Rechaza los campos vacíos o formados solo por espacios antes de convertirlos a número: <code>Number("")</code> devuelve cero, pero un campo vacío no es una entrada válida.</li>
 <li>Comprueba que ambos valores son números finitos. No aceptes texto no numérico ni conversiones parciales como interpretar <code>"12abc"</code> como <code>12</code>.</li>
@@ -2479,7 +2510,7 @@ for (const parrafo of parrafos) {
 <p><strong>2.60. Proyecto 1: calculadora</strong></p>
 <p>Implementa la calculadora descrita y entrega una carpeta con <code>index.html</code>, <code>estilos.css</code>, <code>app.js</code> y <code>pruebas.txt</code>. El proyecto debe poder abrirse y utilizarse sin modificar el código.</p>
 <p><strong>Evaluación:</strong> se valorará el JavaScript: exactitud de las operaciones, control de errores, organización en funciones, gestión de eventos y actualización de la interfaz. Debes crear el HTML y el CSS adecuados, pero su diseño y acabado visual no se puntuarán.</p>
-<div class="activity-delivery"><a class="resource-button" href="https://igarciafp.github.io/labs/entrega-practicas.html"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
+<div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar proyecto (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
 </div>
 </section>
 
