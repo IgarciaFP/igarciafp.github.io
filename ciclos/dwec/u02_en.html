@@ -280,7 +280,7 @@ body { padding-top:60px; }
 <p>In DevTools will be used mainly <strong>Console (Console)</strong>, to execute instructions and consult messages; <strong>Sources (Sources)</strong>, to examine and debug the code; and <strong>Network (Network)</strong>, to check the load of the files.</p>
 <div class="resource-card expansion-card expansion-purple" id="ampliacion-emmet">
 <div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-wand-magic-sparkles"></i> Emmet: writing HTML and CSS with abbreviations</span><span class="resource-badge badge-reading">Enlargement</span></div>
-<p>In class it will be necessary to use <strong>Emmet</strong>, first called <strong>Zen Coding</strong>, when working with VS Code. Allows to expand abbreviations to write HTML and CSS quickly; it is integrated into the editor and does not require installing an extension.</p>
+<p>In class it will be necessary to use <strong>Emmet</strong>, first called <strong>Zen Coding</strong>, when working with VS Code. Allows to expand abbreviations to write HTML and CSS quickly; it is integrated into the editor and does not require to install an extension.</p>
 <p>For example, <code>ul&gt;li*3</code> generates a list with three elements. Write the abbreviation in an HTML file and accept Emmet's suggestion.</p>
 <div class="resource-links"><a class="resource-link-btn" href="https://docs.emmet.io/cheat-sheet/" rel="noopener noreferrer" target="_blank">Emmet · Reference sheet</a>
 <a class="resource-link-btn" href="https://code.visualstudio.com/docs/languages/emmet" rel="noopener noreferrer" target="_blank">Emmet in VS Code</a></div>
@@ -1704,6 +1704,134 @@ boton.addEventListener("click", saludar);</code></pre>
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
 <p>The main structure is <code>document → html → head / body</code>. Within <code>body</code> the title, paragraphs and controls are found. <code>defer</code> allows you to run <code>dom.js</code> when these elements already exist.</p>
+<div class="dom-example-tree" id="dom-example-tree">
+<h4>Explore the tree in this example</h4>
+<p>Pulse <strong>− / +</strong> to close or open branches (keyboard: Intro or Space).</p>
+<div class="dom-tree-controls">
+<button data-tree-action="expand" type="button">Expand everything</button>
+<button data-tree-action="collapse" type="button">Collapse All</button>
+<label><input id="dom-tree-whitespace" type="checkbox"/> Show Spaces</label>
+</div>
+<div aria-label="Example DOM tree; horizontal scrolling available" class="dom-tree-viewport" role="region" tabindex="0">
+<svg aria-label="Test document drop-down tree" height="160" id="dom-tree-svg" role="group" viewbox="0 0 600 160" width="600" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+<p class="dom-tree-legend"><span>Blue: document and elements.</span> <span>Green: text nodes.</span> <span>Grey: type of document.</span></p>
+<details><summary>How to read this tree</summary>
+<p>The tree represents the initial HTML, before running <code>dom.js</code>. Nodes containing only spaces are initially hidden; when showing them, <code>␣</code> represents a space and <code>↵</code> a line jump.</p>
+</details>
+<noscript><p>Activa JavaScript para desplegar el árbol. Estructura: document → html → head y body. head contiene dos meta, title y script; body contiene h1, p, label, input y p.</p></noscript>
+</div>
+<style>
+.dom-example-tree { margin: 1.5rem 0; padding: .75rem; border: 1px solid #cbd5e1; border-radius: 12px; background: #f8fafc; }
+.dom-example-tree .dom-tree-controls { display: flex; flex-wrap: wrap; gap: .65rem; align-items: center; margin: .5rem 0; font-size: .85rem; }
+.dom-example-tree button { font: inherit; padding: .3rem .55rem; border: 1px solid #64748b; border-radius: 6px; background: white; color: #172033; cursor: pointer; }
+.dom-example-tree label { display: flex; gap: .5rem; align-items: center; }
+.dom-example-tree .dom-tree-viewport { overflow-x: auto; background: white; border: 1px solid #cbd5e1; border-radius: 8px; }
+.dom-example-tree svg { display: block; width: 100%; max-width: 600px; height: auto; margin: auto; }
+.dom-example-tree .tree-link { fill: none; stroke: #94a3b8; stroke-width: 1.5; }
+.dom-example-tree .tree-node rect { fill: #eff6ff; stroke: #93c5fd; }
+.dom-example-tree .tree-node[data-kind="3"] rect { fill: #f0fdf4; stroke: #86efac; }
+.dom-example-tree .tree-node[data-kind="10"] rect { fill: #f1f5f9; stroke: #cbd5e1; }
+.dom-example-tree .tree-node[role="button"] { cursor: pointer; }
+.dom-example-tree .tree-node[role="button"]:hover rect { stroke: #1d4ed8; stroke-width: 2; }
+.dom-example-tree .tree-node:focus { outline: none; }
+.dom-example-tree .tree-node:focus rect { stroke: #1d4ed8; stroke-width: 3; }
+.dom-example-tree button:focus-visible, .dom-example-tree input:focus-visible, .dom-example-tree .dom-tree-viewport:focus-visible { outline: 3px solid #1d4ed8; outline-offset: 3px; }
+.dom-example-tree .tree-label { font: 14px monospace; fill: #172033; }
+.dom-example-tree .tree-attribute { font: 13px monospace; fill: #475569; }
+.dom-example-tree .tree-toggle { font: bold 16px Arial, sans-serif; fill: #1d4ed8; }
+.dom-example-tree .dom-tree-legend { display: flex; flex-wrap: wrap; gap: .5rem 1rem; font-size: .75rem; margin: .35rem 0; }
+.dom-example-tree h4 { margin: 0 0 .4rem; }
+.dom-example-tree > p { margin: .4rem 0; font-size: .85rem; }
+.dom-example-tree details { margin-top: .4rem; font-size: .85rem; }
+.dom-example-tree summary { cursor: pointer; }
+</style>
+<script>
+(() => {
+    const container = document.getElementById("dom-example-tree");
+    const svg = document.getElementById("dom-tree-svg");
+    const whitespace = document.getElementById("dom-tree-whitespace");
+    const example = document.querySelector('pre[data-example="dom-html"] code');
+    if (!container || !svg || !example) return;
+    // Parsear el ejemplo permite representar sus nodos sin ejecutar dom.js.
+    const parsed = new DOMParser().parseFromString(example.textContent, "text/html");
+    const ns = "http://www.w3.org/2000/svg";
+    let nextId = 0;
+    function model(node) {
+        return {
+            id: "dom-node-" + nextId++, type: node.nodeType,
+            name: node.nodeType === 9 ? "document" : node.nodeType === 10 ? "<!DOCTYPE html>" : node.nodeName.toLowerCase(),
+            value: node.nodeValue || "",
+            attributes: node.attributes ? Array.from(node.attributes, a => a.name + '="' + a.value + '"') : [],
+            open: node.nodeName !== "HEAD",
+            children: Array.from(node.childNodes, model)
+        };
+    }
+    const root = model(parsed);
+    function children(node) {
+        return node.children.filter(child => whitespace.checked || child.type !== 3 || child.value.trim() !== "");
+    }
+    function make(name, attrs, text) {
+        const element = document.createElementNS(ns, name);
+        for (const [key, value] of Object.entries(attrs)) element.setAttribute(key, value);
+        if (text !== undefined) element.textContent = text;
+        return element;
+    }
+    function linesFor(node) {
+        if (node.type === 3) {
+            const value = node.value.trim() ? node.value : node.value.replace(/ /g, "␣").replace(/\n/g, "↵").replace(/\t/g, "⇥");
+            return ['#text "' + value + '"'];
+        }
+        const id = node.attributes.find(a => a.startsWith('id="'));
+        const cls = node.attributes.find(a => a.startsWith('class="'));
+        return [node.name + (id ? "#" + id.slice(4, -1) : "") + (cls ? "." + cls.slice(7, -1).split(" ").join(".") : "")];
+    }
+    function render(focusId) {
+        svg.replaceChildren();
+        const rows = [];
+        let y = 8;
+        function visit(node, depth, parent) {
+            const lines = linesFor(node);
+            const row = { node, depth, parent, x: 8 + depth * 20, y, height: 24, lines };
+            rows.push(row);
+            y += row.height + 4;
+            if (node.open) for (const child of children(node)) visit(child, depth + 1, row);
+        }
+        visit(root, 0, null);
+        svg.setAttribute("viewBox", "0 0 600 " + (y + 4));
+        svg.setAttribute("height", y + 4);
+        for (const row of rows) {
+            if (row.parent) svg.append(make("path", {class: "tree-link", d: "M " + (row.parent.x + 12) + " " + (row.parent.y + row.parent.height) + " V " + (row.y + 12) + " H " + row.x}));
+        }
+        for (const row of rows) {
+            const expandable = children(row.node).length > 0;
+            const group = make("g", {class: "tree-node", "data-kind": row.node.type, "data-node-id": row.node.id,
+                transform: "translate(" + row.x + " " + row.y + ")", role: expandable ? "button" : "img",
+                "aria-label": row.lines.concat(row.node.attributes).join(". ")});
+            group.append(make("title", {}, row.lines.concat(row.node.attributes).join("\n")));
+            group.append(make("rect", {width: 592 - row.x, height: row.height, rx: 6}));
+            if (expandable) {
+                group.setAttribute("tabindex", "0");
+                group.setAttribute("aria-expanded", String(row.node.open));
+                group.append(make("text", {x: 8, y: 17, class: "tree-toggle", "aria-hidden": "true"}, row.node.open ? "−" : "+"));
+                const toggle = () => { row.node.open = !row.node.open; render(row.node.id); };
+                group.addEventListener("click", toggle);
+                group.addEventListener("keydown", event => {
+                    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); toggle(); }
+                });
+            }
+            row.lines.forEach((line, index) => group.append(make("text", {x: 28, y: 17 + index * 21, class: index ? "tree-attribute" : "tree-label", "aria-hidden": "true"}, line)));
+            svg.append(group);
+        }
+        if (focusId) svg.querySelector('[data-node-id="' + focusId + '"]')?.focus();
+    }
+    function setOpen(node, open) { node.open = open; node.children.forEach(child => setOpen(child, open)); }
+    container.querySelector('[data-tree-action="expand"]').addEventListener("click", () => { setOpen(root, true); render(); });
+    container.querySelector('[data-tree-action="collapse"]').addEventListener("click", () => { setOpen(root, false); render(); });
+    whitespace.addEventListener("change", () => render());
+    render();
+})();
+</script>
 <h3 id="sec8_4">8.4. Selection of elements</h3>
 <p>The DOM offers specific methods for searching by identifier, class or tag. Names distinguish upper and lower case:</p>
 <aside aria-label="Function sheet: document.getElementById(id)" class="function-card" id="ficha-funcion-14">
