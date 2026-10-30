@@ -497,6 +497,7 @@ img { max-width: 100%; height: auto; }
 <p>Prueba las dimensiones con texto largo, zoom e imágenes de distintos tamaños. No fijes una altura solo porque encaja con el texto de ejemplo: limita la capacidad del diseño para adaptarse.</p>
 <section aria-labelledby="ampliacion-min-width-consulta"><h5 id="ampliacion-min-width-consulta">Dimensiones mínimas</h5><p>Consulta los valores de min-width y ejemplos para limitar el ancho mínimo.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/min-width" rel="noopener noreferrer" target="_blank">Consultar min-width en MDN ↗</a></section>
 <h5>Tamaños basados en el contenido</h5><ul><li><code>min-content</code>: tamaño intrínseco mínimo; en texto, permite todos los saltos de línea posibles.</li><li><code>max-content</code>: tamaño intrínseco máximo; el texto no realiza saltos opcionales y puede desbordarse.</li><li><code>fit-content</code>: se ajusta al espacio disponible entre esos límites intrínsecos. Una palabra indivisible todavía puede desbordarse.</li></ul><pre><code>.etiqueta { width: fit-content; max-width: 100%; overflow-wrap: anywhere; }</code></pre><p class="source">MDN: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/inline-size">inline-size</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/aspect-ratio">aspect-ratio</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/fit-content">fit-content</a>.</p></details></aside><h3 id="caja-overflow">3.5. Overflow: contenido que no cabe</h3>
+<p><a href="#laboratorio-overflow">Experimentar aquí con el laboratorio de dimensiones y overflow ↓</a></p>
 <p><code>overflow</code> decide qué ocurre cuando el contenido rebasa el área disponible. Es independiente de definir el tamaño: para observar desbordamiento vertical en un bloque de texto, limita primero su altura o altura máxima.</p><!-- propiedades-caja-overflow --><div class="table-wrap"><table><caption>Propiedades y valores de referencia</caption><thead><tr><th scope="col">Propiedad</th><th scope="col">Valores y significado</th><th scope="col">Ejemplo</th></tr></thead><tbody><tr><td><code>overflow</code></td><td>visible, hidden, clip, scroll o auto. Un valor para ambos ejes o dos valores: horizontal y vertical.</td><td><code>overflow: auto;</code></td></tr><tr><td><code>overflow-x</code></td><td>Controla el desbordamiento horizontal con los mismos cinco valores.</td><td><code>overflow-x: auto;</code></td></tr><tr><td><code>overflow-y</code></td><td>Controla el desbordamiento vertical con los mismos cinco valores.</td><td><code>overflow-y: auto;</code></td></tr></tbody></table></div>
 <aside class="extension-card" aria-labelledby="ampliacion-overflow"><p class="card-label">Ampliación</p><h4 id="ampliacion-overflow">Desbordamiento y texto: referencia completa</h4><p>Despliega los valores, las reglas de ajuste del texto y los ejemplos cuando necesites controlar cómo se muestra el contenido que no cabe.</p><details class="full-reference"><summary>Ver explicación, ejemplos y tablas completas</summary><div class="table-wrap"><table><caption>Propiedades para controlar el texto</caption><thead><tr><th scope="col">Propiedad</th><th scope="col">Valores y significado</th><th scope="col">Ejemplo</th></tr></thead><tbody><tr><td><code>overflow-wrap</code></td><td>Corte de palabras: normal, break-word o anywhere.</td><td><code>overflow-wrap: anywhere;</code></td></tr><tr><td><code>text-overflow</code></td><td>Marca texto recortado en línea: clip o ellipsis; necesita que el desbordamiento se recorte.</td><td><code>text-overflow: ellipsis;</code></td></tr><tr><td><code>white-space</code></td><td>Conserva espacios y permite saltos: normal, nowrap, pre, pre-wrap, pre-line o break-spaces; la sintaxis moderna también combina reglas de conservación y ajuste.</td><td><code>white-space: nowrap;</code></td></tr></tbody></table></div><h5>Cómo elegir la regla de texto</h5>
 <ul><li><code>overflow-wrap: normal</code> conserva los puntos de corte habituales. <code>anywhere</code> permite partir una palabra o URL si no cabe y tiene en cuenta esos cortes al calcular el ancho mínimo del contenido. <code>break-word</code> permite el corte, pero no lo incluye en ese cálculo.</li>
@@ -704,6 +705,53 @@ p.destacado { font-weight: bold; }
 <p>Ambas reglas seleccionan los <code>h2</code> y <code>h3</code> que estén dentro de <code>.tarjeta</code>.</p>
 <p><strong>Especificidad:</strong> <code>:is()</code> toma la del selector más específico de su lista. Por ejemplo, <code>:is(.aviso, #principal)</code> aporta el peso de un ID, incluso cuando coincide por la clase. Evita mezclar IDs y clases sin necesitarlo.</p>
 <aside aria-labelledby="ampliacion-is-consulta" class="extension-card"><p class="card-label">Ampliación</p><h4 id="ampliacion-is-consulta">Agrupar selectores con :is()</h4><p>Consulta ejemplos de agrupación y cómo se calcula su especificidad.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:is" rel="noopener noreferrer" target="_blank">Consultar :is() en MDN ↗</a></aside>
+<aside class="extension-card" aria-labelledby="ampliacion-css-nesting">
+<p class="card-label">Ampliación</p><h4 id="ampliacion-css-nesting">CSS nesting: anidar reglas relacionadas</h4>
+<p>La anidación permite escribir los estilos de un componente dentro de su regla, evitando repetir el selector. Es CSS nativo: el navegador lo interpreta sin Sass ni compilación.</p>
+<pre><code>.tarjeta {
+  padding: 1rem;
+  border: 2px solid #6d28d9;
+
+  &amp; h3 {
+    color: #6d28d9;
+  }
+
+  &amp;:hover {
+    border-color: #4c1d95;
+  }
+}
+
+/* Equivalente sin anidación: */
+.tarjeta { padding: 1rem; border: 2px solid #6d28d9; }
+.tarjeta h3 { color: #6d28d9; }
+.tarjeta:hover { border-color: #4c1d95; }</code></pre>
+<p><code>&amp;</code> representa el selector de la regla exterior. <code>&amp; h3</code> selecciona sus encabezados descendientes; <code>&amp;:hover</code>, la propia tarjeta al pasar el puntero. El espacio cambia el significado.</p>
+<p>Mantén pocos niveles para facilitar la lectura. La especificidad de <code>&amp;</code> se calcula como en <code>:is()</code>: una lista que mezcle una clase y un ID toma la especificidad mayor. No concatena nombres: <code>&amp;__titulo</code> no sirve para formar <code>.tarjeta__titulo</code>.</p>
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Nesting/Using" target="_blank" rel="noopener noreferrer">Consultar CSS nesting en MDN ↗</a>
+</aside>
+<aside class="extension-card" aria-labelledby="ampliacion-variables-css">
+<p class="card-label">Ampliación</p><h4 id="ampliacion-variables-css">Variables CSS: reutilizar valores con sentido</h4>
+<p>Las propiedades personalizadas evitan repetir colores, espacios y otros valores. Se declaran con <code>--nombre</code> y se utilizan mediante <code>var()</code>. Así puedes cambiar una decisión visual desde un único lugar.</p>
+<pre><code>:root {
+  --color-marca: #6d28d9;
+  --espacio: 1rem;
+}
+
+.tarjeta {
+  border: 2px solid var(--color-marca);
+  padding: var(--espacio);
+  border-radius: var(--radio, .5rem);
+}
+
+.tarjeta--oferta {
+  --color-marca: #9a3412;
+}</code></pre>
+<p><code>:root</code> establece valores generales. En una tarjeta con las clases <code>tarjeta tarjeta--oferta</code>, el borde será marrón porque se redefine <code>--color-marca</code> en ese elemento. Las propiedades declaradas con <code>--</code> participan en la cascada y se heredan por defecto.</p>
+<p><code>var(--radio, .5rem)</code> usa <code>.5rem</code> si la variable no está definida o tiene un valor inválido como propiedad personalizada. No corrige cualquier error de tipo: si <code>--radio: rojo</code>, ese texto no sirve como radio y la declaración de <code>border-radius</code> será inválida.</p>
+<p>Utiliza nombres por función, como <code>--color-marca</code>. <code>var()</code> sustituye valores, no nombres de propiedades ni selectores.</p>
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascading_variables/Using_custom_properties" target="_blank" rel="noopener noreferrer">Consultar variables CSS en MDN ↗</a>
+</aside>
+
 <h4>Relaciones entre elementos: combinadores</h4>
 <div class="table-wrap"><table><caption>Combinadores CSS</caption><thead><tr><th scope="col">Relación</th><th scope="col">Ejemplo</th><th scope="col">Qué selecciona</th></tr></thead><tbody>
 <tr><td>Descendiente: espacio</td><td><code>nav a</code></td><td>Los enlaces que estén dentro de <code>nav</code>, aunque haya elementos intermedios.</td></tr>
