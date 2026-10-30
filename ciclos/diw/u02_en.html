@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="From selectors to layout: build readable, flexible and adaptable interfaces." name="description"/><title>UD02 · CSS and responsive design · DIW</title><link href="u01_es.css" rel="stylesheet"/><style>
+        /* Índice desplegable y jerárquico: mismo estilo que SSII U02. */
+.sidebar-toc .toc-group { margin: 0; padding: 0; border: 0; }
+.sidebar-toc .toc-group summary { cursor: pointer; color: var(--primary-color); padding-left: 4px; border-radius: 4px; }
+.sidebar-toc .toc-group summary a { display: inline; padding: 5px 4px; line-height: 1.8; }
+.sidebar-toc .toc-group summary:focus-visible { outline: 3px solid #d97706; outline-offset: 3px; }
+.sidebar-toc .toc-group > ul { margin: 6px 0 10px 12px; border-left: 2px solid var(--primary-light); padding-left: 6px; }
+.sidebar-toc > ul > li > a { position: relative; padding-left: 24px; }
+.sidebar-toc > ul > li > a::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: calc(5px + 0.55em);
+    width: 7px;
+    height: 7px;
+    background: var(--primary-color);
+}
+
+
+        /* Índice desplegable: mismo estilo que SSII U01. */
+        .toc-toggle { position: fixed; top: 20px; left: 12px; z-index: 10000; padding: 10px 16px; border: 1px solid #fff; border-radius: 7px; background: var(--primary-color); color: #fff; font: 600 0.9rem 'Inter', sans-serif; cursor: pointer; }
+        .sidebar-toc { position: fixed; top: 70px; left: 0; width: min(310px, 100%); max-height: calc(100vh - 90px); padding: 22px 20px; border: 1px solid var(--border-color); border-left: none; border-radius: 0 12px 12px 0; background: var(--bg-card); box-shadow: 6px 0 25px rgba(0,0,0,.15); overflow-y: auto; transform: translateX(-100%); visibility: hidden; z-index: 9999; }
+        .sidebar-toc::after { content: none; display: none; }
+        .sidebar-toc:hover, .sidebar-toc:focus-within { transform: translateX(-100%); }
+        .sidebar-toc.is-open { transform: translateX(0); visibility: visible; }
+        .sidebar-toc h4 { margin-top: 0; }
+        .sidebar-toc ul { max-height: none; overflow: visible; }
+        .sidebar-toc a.subsection-link { padding-left: 20px; font-size: 0.82rem; }
+        .toc-toggle:focus-visible, .sidebar-toc a:focus-visible { outline: 3px solid #d97706; outline-offset: 3px; }
+        @media (max-width: 700px) {
+            .toc-toggle { top: 0; left: 0; width: 100%; border-radius: 0; min-height: 48px; text-align: left; }
+            .sidebar-toc { top: 54px; max-height: calc(100vh - 66px); }
+            body { padding-top: 60px; }
+            main [id] { scroll-margin-top: 65px; }
+        }
+        @media (prefers-reduced-motion: reduce) { .sidebar-toc { transition: none; } }
+        @media print { .toc-toggle, .sidebar-toc { display: none; } }
+
+.document-container p{text-align:left}.unit-nav{display:flex;gap:1rem;flex-wrap:wrap;margin:1.5rem 0}.unit-nav a{font-weight:650}.lead{font-size:1.15rem;color:var(--text-muted)}.route{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:1rem;margin:2rem 0}.route article,.demo,.exercise{padding:1.25rem;border:1px solid var(--border-color);border-radius:12px;background:#f8fafc}.route h3{margin-top:0}.exercise{margin:1.5rem 0;background:#fffbeb;border-left:5px solid #d97706}.exercise h3{margin-top:0}.source{font-size:.88rem;color:#475569}.demo{margin:1.5rem 0;background:#eff6ff}.demo label{display:inline-block;margin:.5rem 1rem .5rem 0}.demo select,.demo input,.demo button{font:inherit;max-width:100%;padding:.4rem;border:1px solid #64748b;border-radius:5px}.demo button{background:#1e3a8a;color:white;cursor:pointer;min-height:44px}pre{white-space:pre;overflow:auto;max-width:100%;padding:1.2rem;border-radius:8px;background:#0f172a;color:#e2e8f0;font-size:.9rem}pre code{background:none;color:inherit;padding:0}.demo-stage{padding:1rem;background:white;border:1px dashed #64748b;margin:1rem 0;overflow:auto}.demo-stage>span{background:#1e3a8a;color:white;padding:1rem;border-radius:6px}.checks{padding:1rem;background:#f0fdf4;border-left:4px solid #0f766e;margin:1rem 0}summary{cursor:pointer;font-weight:650;padding:.7rem 0}details{margin:1rem 0}a{overflow-wrap:anywhere}:focus-visible{outline:3px solid #d97706;outline-offset:4px}section{scroll-margin-top:75px}table{width:100%;border-collapse:collapse}th,td{padding:.6rem;border:1px solid #cbd5e1;text-align:left;vertical-align:top}.table-wrap{overflow:auto}canvas{display:block;width:min(100%,400px);height:auto;background:white;border:1px solid #64748b}.skip{position:absolute;top:-100px}.skip:focus{top:10px;z-index:10001;background:white;padding:1rem}.toc-toggle{display:none}.js .toc-toggle{display:block}html:not(.js) .sidebar-toc{position:static;transform:none;visibility:visible;max-height:none;width:auto}.header-banner{padding-top:1rem}.badge{font:700 .8rem system-ui;color:#0f766e}.document-container{max-width:1100px;margin:auto} @media(max-width:600px){.document-container{padding:24px 18px}body{padding-left:10px;padding-right:10px}h1{font-size:1.8rem}pre{font-size:.8rem}}@media print{.demo button,.unit-nav{display:none}body,.document-container{padding:0;box-shadow:none}pre{white-space:pre-wrap;color:black;background:#f1f5f9}.exercise{break-inside:avoid}}
+.css-cover{margin:0 0 2rem}.css-cover svg{display:block;width:100%;height:auto;border-radius:18px}.extension-card{margin:2rem 0;padding:1.5rem;border:1px solid #c4b5fd;border-left:5px solid #7c3aed;border-radius:12px;background:#f5f3ff}.extension-card h3{color:#5b21b6;margin-top:.4rem}.card-label{font:750 .8rem/1.4 system-ui,sans-serif;text-transform:uppercase;letter-spacing:.1em;margin:0 0 .6rem;color:#6d28d9}.inspector-activity .card-label{color:#92400e}.delivery-trigger{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:44px;margin-top:.5rem;padding:.65rem 1rem;border:1px solid #b45309;border-radius:8px;background:#fffbeb;color:#92400e;font-weight:700;text-decoration:none}.delivery-trigger:hover{background:#fef3c7}.delivery-trigger:focus-visible{outline:3px solid #4338ca;outline-offset:3px}.extension-card pre{margin:1rem 0}.inspector-activity ol{padding-left:1.5rem}.inspector-activity li{margin-bottom:.75rem}@media(max-width:600px){.extension-card{padding:1rem}.css-cover{margin-bottom:1.5rem}}@media print{.delivery-trigger{display:none}.extension-card{break-inside:avoid}}
+/* Controles y tarjeta basados en la presentación de /base/. */
+.box-lab{--lab-blue:#2456df;--lab-line:#d5deeb;margin:2rem 0;padding:24px;border:1px solid var(--lab-line);border-radius:14px;background:#f3f6fb;min-width:0}.box-lab h3{margin-top:0}.box-lab .card-label{color:#173eb1}.box-lab h4{margin:0 0 .75rem}.box-lab-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:1.5rem 0}.box-lab-controls label{display:block;font-size:.9rem;font-weight:650;min-width:0}.box-lab-controls input,.box-lab-controls select{display:block;width:100%;margin-top:.5rem;font:inherit;min-height:40px}.box-lab-controls select{padding:8px;border:1px solid #8697ba;border-radius:8px;background:white}.box-lab-controls input{accent-color:var(--lab-blue)}.box-lab-columns{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px}.box-lab-columns>div{min-width:0}.box-lab-viewport{overflow:auto;min-height:280px;max-height:440px;padding:12px;border:1px solid #8697ba;border-radius:10px;background:white}.box-lab-margin-area{display:flow-root;width:max-content;background:#ffedd5;outline:1px dashed #c2410c}#box-lab-box{box-sizing:content-box;width:280px;height:140px;padding:20px;border:2px solid #6d28d9;margin:20px;background:#d1fae5;max-width:none;min-width:0;min-height:0;display:flow-root}#box-lab-content{width:100%;height:100%;min-width:0;min-height:0;background:#dbeafe}.box-lab-legend{list-style:none;display:flex;flex-wrap:wrap;gap:.5rem 1rem;padding:0;margin:1rem 0;font-size:.8rem}.box-lab-legend li{margin:0;display:flex;align-items:center;gap:.4rem}.box-lab-legend i{width:12px;height:12px;display:inline-block;border:1px solid #64748b}.box-lab-code pre{margin:0;padding:16px;font-size:.85rem;line-height:1.65}.box-lab-results{margin:1rem 0;padding:14px 16px;border-left:4px solid var(--lab-blue);background:#edf3ff;border-radius:0 10px 10px 0}.box-lab-results p{margin:.3rem 0}.box-lab button{background:var(--lab-blue);color:white;border:1px solid var(--lab-blue);border-radius:9px;padding:11px 16px;font:700 .95rem system-ui;cursor:pointer;min-height:44px}.box-lab :focus-visible{outline:3px solid #f97316;outline-offset:3px}@media(max-width:800px){.box-lab-columns{grid-template-columns:1fr}.box-lab-controls{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:440px){.box-lab{padding:14px}.box-lab-controls{grid-template-columns:1fr}.box-lab-code pre{font-size:.8rem}}@media print{.box-lab-controls,.box-lab button{display:none}.box-lab-viewport{overflow:visible;max-height:none}}
+
+/* Botón de índice opaco. */
+.toc-toggle { opacity: 1; background: #1e3a8a; color: #fff; border: 1px solid #1e3a8a; box-shadow: 0 0 0 1px #fff; cursor: pointer; }
+.toc-toggle:hover, .toc-toggle:focus-visible { background: #1e3a8a; color: #fff; cursor: pointer; }
+
+/* Accesos a recursos con aspecto de botón en las ampliaciones. */
+.extension-card a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  box-sizing: border-box;
+  max-width: 100%;
+  padding: .6rem 1rem;
+  margin: .25rem .35rem .25rem 0;
+  border: 1px solid #6d28d9;
+  border-radius: 8px;
+  background: #6d28d9;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.extension-card a:hover { background: #5b21b6; border-color: #5b21b6; }
+.extension-card a:focus-visible { outline: 3px solid #1e3a8a; outline-offset: 3px; }
+</style><link href="u02_es.html" hreflang="es" rel="alternate"/><link href="u02_en.html" hreflang="en" rel="alternate"/></head>
+<body><a class="skip" href="#contenido">Skip to content</a><button aria-controls="unit-toc" aria-expanded="false" class="toc-toggle">Contents</button><nav aria-label="Unit contents" class="sidebar-toc" id="unit-toc"><h4>UD02 · Contents</h4><ul><li><details class="toc-group"><summary><a href="#ruta">1. CSS: Cascading Style Sheets</a></summary><ul><li><a class="subsection-link" href="#css-incluir">1.1. Ways to include CSS</a></li><li><a class="subsection-link" href="#css-cascada">1.2. The cascade</a></li><li><a class="subsection-link" href="#css-herencia">1.3. Inheritance</a></li><li><a class="subsection-link" href="#css-especificidad">1.4. Specificity</a></li><li><a class="subsection-link" href="#css-valores-globales">1.5. Global property values</a></li><li><a class="subsection-link" href="#ampliacion-important">Further reading: !important</a></li><li><a class="subsection-link" href="#actividad-inspector-css">Activity: CSS inspector</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#cascada">2. CSS selectors</a></summary><ul><li><a class="subsection-link" href="#selectores-basicos">2.1. Basic selectors</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#cajas">3. The box model and flow</a></summary><ul><li><details class="toc-group"><summary><a class="subsection-link" href="#caja-tamano">3.1. Box size</a></summary><ul><li><a class="subsection-link" href="#box-model-reset" style="padding-left:32px">3.1.1. Box Model Reset</a></li></ul></details></li><li><a class="subsection-link" href="#caja-dimensiones">3.2. Dimensions, minimums and maximums</a></li><li><a class="subsection-link" href="#caja-overflow">3.3. Overflow</a></li><li><a class="subsection-link" href="#medidas">3.4. Units</a></li><li><a class="subsection-link" href="#caja-colores">3.5. Colours and backgrounds</a></li><li><a class="subsection-link" href="#caja-bordes">3.6. Borders and shadows</a></li><li><a class="subsection-link" href="#caja-tipografia">3.7. Typography</a></li></ul></details></li><li><a href="#selectores-avanzados">4. Advanced selectors</a></li><li><details class="toc-group"><summary><a href="#posicion">5. Positioning</a></summary><ul><li><a class="subsection-link" href="#caja-display">5.1. The display property</a></li><li><a class="subsection-link" href="#caja-position">5.2. The position property</a></li></ul></details></li><li><a href="#flexbox">6. Flexbox: layout along one axis</a></li><li><a href="#grid">7. Grid: rows and columns</a></li><li><a href="#preferencias">8. Preferences and interface checks</a></li><li><a href="#responsive">9. Responsive design and media</a></li><li><a href="#repaso">10. Review and submission</a></li><li><a href="#fuentes">11. Reference resources</a></li></ul></nav><div class="document-wrapper"><main class="document-container" id="contenido"><header class="header-banner"><div class="header-top-row"><span class="module-tag">Web Interface Design · 2nd year DAW</span><a aria-label="Leer esta página en español" class="language-switch" href="u02_es.html" hreflang="es" lang="es">Español</a></div><h1>UD02. CSS and responsive design</h1><p class="lead">From selectors to layout: build readable, flexible and adaptable interfaces.</p></header><figure aria-label="Unit cover: CSS and responsive design" class="css-cover">
+<svg aria-labelledby="cover-css-title cover-css-desc" height="460" role="img" viewbox="0 0 1000 460" width="1000" xmlns="http://www.w3.org/2000/svg">
+<title id="cover-css-title">CSS: from code to an adaptable interface</title><desc id="cover-css-desc">A CSS stylesheet connects to a desktop page and a mobile screen. The same colours and components rearrange themselves to fit the available space.</desc>
+<defs><lineargradient id="cover-bg" x2="1" y2="1"><stop stop-color="#0f172a"></stop><stop offset="1" stop-color="#1e3a8a"></stop></lineargradient><pattern height="32" id="cover-grid" patternunits="userSpaceOnUse" width="32"><path d="M32 0H0V32" fill="none" stroke="#fff" stroke-opacity=".05"></path></pattern></defs>
+<rect fill="url(#cover-bg)" height="460" rx="22" width="1000"></rect><rect fill="url(#cover-grid)" height="460" rx="22" width="1000"></rect>
+<circle cx="940" cy="20" fill="#14b8a6" opacity=".10" r="200"></circle>
+<g font-family="system-ui,sans-serif"><text fill="#5eead4" font-size="18" font-weight="700" letter-spacing="3" x="46" y="58">DIW / UD02</text><text fill="#fff" font-size="36" font-weight="750" x="46" y="108">One design. Many screens.</text></g>
+<g transform="translate(46 150)"><rect fill="#0b1224" height="238" rx="13" stroke="#64748b" width="344"></rect><path d="M0 42H344" stroke="#475569"></path><g fill="#94a3b8"><circle cx="20" cy="21" r="5"></circle><circle cx="38" cy="21" r="5"></circle><circle cx="56" cy="21" r="5"></circle></g><text fill="#cbd5e1" font-family="monospace" font-size="16" x="90" y="27">estilos.css</text><g font-family="monospace" font-size="20"><text fill="#5eead4" x="24" y="84">.interfaz {</text><text fill="#e2e8f0" x="40" y="120">display: grid;</text><text fill="#e2e8f0" x="40" y="156">gap: 1rem;</text><text fill="#5eead4" x="24" y="192">}</text></g></g>
+<path d="M407 270H451M438 257L451 270L438 283" fill="none" stroke="#5eead4" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
+<g transform="translate(474 156)"><rect fill="#f8fafc" height="224" rx="13" width="366"></rect><path d="M0 36H366" stroke="#cbd5e1"></path><rect fill="#94a3b8" height="9" rx="4" width="84" x="17" y="13"></rect><rect fill="#1e3a8a" height="55" rx="8" width="326" x="20" y="55"></rect><rect fill="#fff" height="9" rx="4" width="150" x="36" y="72"></rect><rect fill="#93c5fd" height="6" rx="3" width="104" x="36" y="89"></rect><g fill="#ccfbf1"><rect height="75" rx="8" width="99" x="20" y="126"></rect><rect height="75" rx="8" width="99" x="133" y="126"></rect><rect height="75" rx="8" width="99" x="247" y="126"></rect></g><g fill="#0f766e"><circle cx="69" cy="150" r="11"></circle><circle cx="182" cy="150" r="11"></circle><circle cx="296" cy="150" r="11"></circle></g><g stroke="#5f8c87" stroke-linecap="round" stroke-width="6"><path d="M42 180H96M155 180H209M269 180H323"></path></g><path d="M148 224V242H218V224" fill="#94a3b8"></path><rect fill="#cbd5e1" height="7" rx="3" width="128" x="119" y="242"></rect></g>
+<g transform="translate(813 230)"><rect fill="#0f172a" height="198" rx="20" stroke="#94a3b8" stroke-width="3" width="132"></rect><rect fill="#f8fafc" height="180" rx="13" width="116" x="8" y="9"></rect><rect fill="#0f172a" height="7" rx="4" width="44" x="44" y="13"></rect><rect fill="#1e3a8a" height="40" rx="6" width="96" x="18" y="32"></rect><rect fill="#fff" height="6" rx="3" width="62" x="28" y="48"></rect><g fill="#ccfbf1"><rect height="27" rx="5" width="96" x="18" y="83"></rect><rect height="27" rx="5" width="96" x="18" y="119"></rect><rect height="23" rx="5" width="96" x="18" y="155"></rect></g><g fill="#0f766e"><circle cx="32" cy="96" r="6"></circle><circle cx="32" cy="132" r="6"></circle><circle cx="32" cy="166" r="6"></circle></g></g>
+<text fill="#cbd5e1" font-family="system-ui,sans-serif" font-size="17" x="46" y="428">Cascade · Inheritance · Specificity · Responsive</text>
+</svg></figure>
+<section id="ruta"><h2>1. CSS: Cascading Style Sheets</h2>
+<p>When creating a page, <strong>HTML identifies the content and its structure</strong>: a heading, paragraph, list or link. The browser already gives them a basic appearance, but we need to control how they look to build our design.</p>
+<p><strong>CSS defines that presentation.</strong> CSS stands for <em>Cascading Style Sheets</em> . With CSS we choose colours, fonts, sizes, spacing and the layout of elements.</p>
+<p>For example, HTML marks text as a heading using <code>&lt;h1&gt;</code>. CSS can make it blue, enlarge it and separate it from the following paragraph. <strong>The content stays the same; its presentation changes.</strong></p>
+<p>Separating these tasks makes it easier to:</p>
+<ul>
+<li><strong>Maintain the website:</strong> a shared stylesheet lets you change headings on every page from a single file.</li>
+<li><strong>Keep things consistent:</strong> buttons, menus and cards can reuse the same styles.</li>
+<li><strong>Adapt the design:</strong> the same HTML can appear in one column on mobile and several columns on a larger screen.</li>
+<li><strong>Improve readability:</strong> we can adjust contrast, text size and spacing between elements.</li>
+</ul>
+<p>CSS applies rules to HTML elements. When several rules affect the same element, the browser must decide which to use. That is why we will study the <strong>cascade</strong>, <strong>inheritance</strong> and <strong>specificity</strong>. First, we will see how to add those rules to a page.</p>
+<article aria-labelledby="primera-hoja-titulo" class="exercise" id="actividad-primera-hoja">
+<p class="badge">Activity · Think</p>
+<h3 id="primera-hoja-titulo">Which stylesheet is applied to our HTML first?</h3>
+<p>Before writing CSS, consider why headings look larger than paragraphs and links are usually underlined. Write down your hypothesis and test it: create an HTML page with a heading, paragraph, link and list, without your own styles. Open the inspector and find where their styles come from.</p>
+<details><summary>Check the explanation</summary>
+<p>The browser includes a <strong>default stylesheet</strong>, called the <em>user agent stylesheet</em> (<code>user agent stylesheet</code>). It provides the basic appearance even when we have written no CSS: margins, heading sizes, list markers and other initial styles.</p>
+<p>Author rules combine with this base through the cascade. Calling it “first” identifies the starting point, but the result does not depend on loading order alone: origin, importance and the other criteria we will study also matter.</p>
+</details>
+</article>
+<h3 id="css-incluir">1.1. Ways to include CSS</h3>
+<p>To style a page, the browser needs to know where the CSS rules are written. We can store them in a separate file, include them in the HTML head or write them directly on an element. All three work, but the choice affects how easy the website is to maintain.</p>
+<p>For a site with several pages, the most practical choice is an <strong>external stylesheet</strong>. We write the rules in a file, such as <code>estilos.css</code>, and link it from each page's head using <code>&lt;link&gt;</code>:</p>
+<pre><code>&lt;!-- Inside head, in the HTML file --&gt;
+&lt;link rel="stylesheet" href="css/estilos.css"&gt;</code></pre>
+<p>The <code>href</code> attribute specifies the file path. Here, the browser looks for <code>estilos.css</code> inside the <code>css</code>folder. This file contains CSS only, without <code>&lt;style&gt;</code>:</p>
+<pre><code>/* File css/estilos.css */
+p { color: navy; }</code></pre>
+<p>If several pages link to the same stylesheet, they share its styles. Changing one rule changes the colour of their paragraphs. <strong>This will be our usual approach in practical work.</strong></p>
+<p>We can also write CSS inside the document, in a <code>&lt;style&gt;</code> element within <code>&lt;head&gt;</code>. This is an <strong>internal stylesheet</strong>: useful for trying an idea or creating a self-contained example.</p>
+<pre><code>&lt;style&gt;
+  p { color: navy; }
+&lt;/style&gt;</code></pre>
+<p>These rules apply to that page. If we copy the block into several documents, we must later edit them one by one, so shared styles should go in an external stylesheet.</p>
+<p>The third option is an <strong>inline style</strong>, written in the <code>style</code> attribute of a tag. No selector is needed: the declarations apply directly to that element.</p>
+<pre><code>&lt;p style="color: navy;"&gt;Sample text&lt;/p&gt;</code></pre>
+<p>Although it allows a quick change, repeating <code>style</code> attributes mixes presentation with content and makes styles harder to maintain. <strong>Avoid it as your normal layout method:</strong> use classes and rules in an external stylesheet. It still has specific uses, such as some HTML emails or values changed by JavaScript during interaction.</p>
+<h3 id="css-cascada">1.2. The cascade</h3>
+<p>An element can receive declarations from several rules. The cascade resolves these conflicts and determines the value applied to each property. The browser considers the styles' origin, importance, cascade layers and selector specificity, among other factors. When declarations tie on earlier criteria, the later declaration wins.</p>
+<pre><code>/* Both rules have the same origin, importance and specificity. */
+p { color: navy; }
+p { color: teal; } /* This declaration comes later and wins. */</code></pre>
+<p>Here, paragraphs appear teal. Writing a rule last does not guarantee that it wins: source order breaks a tie, but does not replace the other cascade criteria.</p>
+<h3 id="css-herencia">1.3. Inheritance</h3>
+<p>Inheritance passes certain properties from an element to its descendants when they have no value of their own to replace them. Properties such as <code>color</code> and <code>font-family</code> are inherited by default; others, such as <code>margin</code>, <code>padding</code> and <code>border</code>, are not.</p>
+<pre><code>&lt;article class="noticia"&gt;
+  &lt;p&gt;This text inherits the article colour and font.&lt;/p&gt;
+&lt;/article&gt;
+
+.noticia {
+  color: navy;
+  font-family: sans-serif;
+  border: 1px solid navy;
+}</code></pre>
+<p>The paragraph inherits the colour and font, but does not get its own border. If we add <code>.noticia p { color: teal; }</code>, it uses that colour declaration instead of the inherited value. The keyword <code>inherit</code> explicitly requests the parent's value, even for properties that are not inherited by default.</p>
+<h3 id="css-especificidad">1.4. Specificity</h3>
+<p>Specificity is a selector's weight. It helps determine which declaration wins when the cascade requires a selector comparison. Three groups are compared in order: IDs; classes, attributes and pseudo-classes; element types and pseudo-elements.</p>
+<ul><li><code>#aviso</code>: one ID → <strong>1-0-0</strong>.</li><li><code>.destacado</code>: one class → <strong>0-1-0</strong>.</li><li><code>p</code>: one element type → <strong>0-0-1</strong>.</li></ul>
+<pre><code>&lt;p id="aviso" class="destacado"&gt;Important information&lt;/p&gt;
+
+#aviso { color: navy; }      /* 1-0-0 */
+.destacado { color: teal; }  /* 0-1-0 */
+p { color: maroon; }        /* 0-0-1 */</code></pre>
+<p>If these are normal author declarations in the same layer, <code>#aviso</code>wins, even if it appears earlier. Groups are compared from left to right: they are not added as a decimal number. The universal selector <code>*</code> and combinators such as <code>&gt;</code>do not add specificity. <code>!important</code> changes a declaration's importance, not its selector's specificity.</p>
+<h3 id="css-valores-globales">1.5. Global property values</h3>
+<p>Besides each property's own values, CSS provides common keywords to choose where its value comes from. They let us inherit from a parent, restore an initial value or use other cascade rules.</p>
+<div class="table-wrap"><table><caption>CSS global values</caption><thead><tr><th scope="col">Value</th><th scope="col">What it does</th><th scope="col">Example</th></tr></thead><tbody>
+<tr><td><code>inherit</code></td><td>Takes the computed value of the same property on the parent, even if the property is not normally inherited.</td><td><code>border-color: inherit;</code></td></tr>
+<tr><td><code>initial</code></td><td>Uses the initial value defined by CSS for that property. This is not the same as restoring browser styles for a particular element.</td><td><code>display: initial;</code> sets the initial value <code>inline</code>, even on a <code>div</code>.</td></tr>
+<tr><td><code>unset</code></td><td>Acts as inherit for inherited properties and initial for the others.</td><td><code>color: unset;</code> inherits the colour; <code>margin: unset;</code> restores its initial value, zero.</td></tr>
+<tr><td><code>revert</code></td><td>Discards the current origin's value for that property. In author styles, it allows user or browser styles to apply according to the cascade.</td><td><code>h2 { font-size: revert; }</code> restores the h2 size without author rules for that property.</td></tr>
+<tr><td><code>revert-layer</code></td><td>Discards the current cascade layer's value for that property, allowing other layers to determine it. Layers are declared using <code>@layer</code>; they are not elements or visual layers.</td><td><code>color: revert-layer;</code></td></tr>
+</tbody></table></div>
+<p><strong>The key difference:</strong> <code>initial</code> uses the property's initial value; <code>revert</code> allows styles from other origins to apply. They therefore do not necessarily produce the same result.</p>
+<aside aria-labelledby="important-title" class="extension-card" id="ampliacion-important">
+<p class="card-label">Further reading</p><h3 id="important-title">What does <code>!important</code>do?</h3>
+<p>It gives priority to <strong>a declaration</strong> over normal declarations from the same origin. It is written after the value and <strong>does not increase specificity</strong>.</p>
+<pre><code>&lt;p id="aviso"&gt;Hello&lt;/p&gt;
+
+/* CSS */
+#aviso { color: blue; }
+p { color: red !important; }</code></pre>
+<p>The text will be <strong>red</strong>: the important declaration beats the normal one, even though the latter uses an ID selector.</p>
+<h4>When adding !important does not change the result</h4>
+<p>For the same paragraph, try these two cases separately, in the same stylesheet and without layers:</p>
+<pre><code>/* Before: the text is blue. */
+#aviso { color: blue !important; }
+p { color: red; }
+
+/* After: it is still blue. */
+#aviso { color: blue !important; }
+p { color: red !important; }</code></pre>
+<p>In the second case, both declarations are important. <code>#aviso</code> wins because its specificity is higher: <strong>1-0-0</strong> compared with <strong>0-0-1</strong> for <code>p</code>. Adding <code>!important</code> does not change those values, even if the <code>p</code> rule appears later.</p>
+<p><strong>Do not overuse it:</strong> it makes later changes harder. First check your selectors and their order. Reserve it for justified exceptions.</p>
+<p class="source"><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/important">Read more on MDN</a>.</p>
+</aside>
+<article aria-labelledby="inspector-title" class="exercise inspector-activity" id="actividad-inspector-css">
+<p class="card-label">Activity · UD02</p><h3 id="inspector-title">Investigate styles with the inspector</h3>
+<p>Create an HTML document using this section's cascade, inheritance and specificity examples. Before opening the inspector, write down the colour you expect in each case and why.</p>
+<ol><li><strong>Cascade:</strong> reverse the order of the two <code>p</code> rules and check which declaration wins.</li><li><strong>Inheritance:</strong> select the paragraph inside <code>.noticia</code>. Find the inherited colour and font and explain why the border is not inherited.</li><li><strong>Specificity:</strong> identify the winning rule among <code>#aviso</code>, <code>.destacado</code> and <code>p</code>. Record each selector's weight.</li><li><strong>Importance:</strong> add <code>!important</code> to the colour of <code>p</code>, observe the result, then remove it. Explain why it should not resolve every conflict.</li></ol>
+<p><strong>Submit:</strong> a CSS file with comments explaining what you observed in this activity.</p>
+<a aria-label="Submit the CSS inspector activity (opens the form in a new tab)" class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" rel="noopener noreferrer" target="_blank"><svg aria-hidden="true" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M12 16V3m-5 5 5-5 5 5M4 16v5h16v-5"></path></svg> Submit</a>
+</article>
+</section><section id="cascada"><h2>2. CSS selectors</h2><p>A CSS rule combines a selector and a declaration block. The selector finds document elements; each declaration assigns a value to a property. Link an external stylesheet from <code>&lt;head&gt;</code> to reuse styles across pages.</p><pre><code>&lt;link rel="stylesheet" href="css/estilos.css"&gt;
+
+/* estilos.css */
+.tarjeta {
+  color: #1e3a8a;
+  padding: 1rem;
+}</code></pre><h3 id="selectores-basicos">2.1. Basic selectors</h3>
+<p>A selector specifies <strong>which HTML elements a rule applies to</strong>. We can start by selecting a tag name, class, ID or attribute. The universal selector selects any element.</p>
+<div class="table-wrap"><table><caption>Basic selectors and selected elements</caption><thead><tr><th scope="col">Selector</th><th scope="col">Example</th><th scope="col">What it selects</th></tr></thead><tbody>
+<tr><td>Type or tag</td><td><code>p</code></td><td>All <code>&lt;p&gt;</code>.</td></tr>
+<tr><td>Class</td><td><code>.tarjeta</code></td><td>Elements whose <code>class</code> attribute contains the class <code>tarjeta</code>.</td></tr>
+<tr><td>ID</td><td><code>#cabecera</code></td><td>The element with <code>id="cabecera"</code>. This ID must be unique in the document.</td></tr>
+<tr><td>Universal</td><td><code>*</code></td><td>All elements. Does not add specificity.</td></tr>
+<tr><td>Attribute: presence</td><td><code>[required]</code></td><td>Elements with the attribute <code>required</code>.</td></tr>
+<tr><td>Attribute: exact value</td><td><code>[type="email"]</code></td><td>Elements whose <code>type</code> equals <code>email</code>.</td></tr>
+</tbody></table></div>
+<pre><code>&lt;header id="cabecera"&gt;Classroom news&lt;/header&gt;
+&lt;p&gt;Introductory paragraph.&lt;/p&gt;
+&lt;p class="destacado"&gt;Important notice.&lt;/p&gt;
+&lt;article class="tarjeta destacado"&gt;Next workshop&lt;/article&gt;
+
+/* CSS */
+p { line-height: 1.6; }
+.destacado { color: #0f766e; }
+#cabecera { background-color: #eff6ff; }
+* { box-sizing: border-box; }</code></pre>
+<p>In this example, <code>.destacado</code> selects both the second paragraph and the article. A class can be reused on several elements, and an element can have several space-separated classes in HTML. Use classes for reusable styles and IDs for specific elements.</p>
+<h4>Grouping selectors and combining conditions</h4>
+<p>The <strong>comma</strong> shares declarations among several selectors. Writing selectors together without a space instead requires one element to meet all those conditions.</p>
+<pre><code>/* Selects all h1 and h2 elements. */
+h1, h2 { color: #1e3a8a; }
+
+/* Only paragraphs with the destacado class. */
+p.destacado { font-weight: bold; }
+
+/* Elements with both classes. */
+.tarjeta.destacado { border: 2px solid #0f766e; }</code></pre>
+<p><strong>Notice the space:</strong> <code>p.destacado</code> selects a paragraph with that class; <code>p .destacado</code> selects an element with that class inside a paragraph. The second form uses a descendant relationship.</p>
+<h4 id="agrupar-is">Grouping with <code>:is()</code></h4>
+<p><code>:is()</code> selects elements matching <strong>any</strong> selector in the parentheses. It groups alternatives without repeating the shared part.</p>
+<pre><code>/* Without :is(): repeat .tarjeta. */
+.tarjeta h2,
+.tarjeta h3 {
+  color: #1e3a8a;
+}
+
+/* With :is(): select the same elements. */
+.tarjeta :is(h2, h3) {
+  color: #1e3a8a;
+}</code></pre>
+<p>Both rules select <code>h2</code> and <code>h3</code> elements inside <code>.tarjeta</code>.</p>
+<p><strong>Specificity:</strong> <code>:is()</code> uses the specificity of the most specific selector in its list. For example, <code>:is(.aviso, #principal)</code> contributes an ID's weight even when matching through the class. Avoid mixing IDs and classes unnecessarily.</p>
+<aside aria-labelledby="ampliacion-is-consulta" class="extension-card"><p class="card-label">Further reading</p><h4 id="ampliacion-is-consulta">Grouping selectors with :is()</h4><p>See grouping examples and how specificity is calculated.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:is" rel="noopener noreferrer" target="_blank">Read about :is() on MDN ↗</a></aside>
+<p>The <a href="#selectores-avanzados">advanced selectors</a> will be covered later, after the box model.</p>
+</section><section id="cajas"><h2>3. The box model and flow</h2><p>Each box has content, padding, a border and a margin. Padding separates content from the border; margins create outside space. Vertical margins of some normal-flow blocks can collapse, so they do not always add up.</p><figure id="modelo-caja-svg" style="margin:2rem 0">
+<svg aria-labelledby="box-model-title box-model-desc" height="500" role="img" style="display:block;width:100%;height:auto" viewbox="0 0 720 500" width="720" xmlns="http://www.w3.org/2000/svg">
+<title id="box-model-title">The CSS box model: from content to margin</title>
+<desc id="box-model-desc">Four concentric rectangles. From outside to inside: orange margin, purple border, green padding and blue content. The margin is outside the border. Padding separates content from the border.</desc>
+<rect fill="#fff7ed" height="476" rx="16" stroke="#c2410c" stroke-dasharray="9 6" stroke-width="2" width="696" x="12" y="12"></rect>
+<rect fill="#ede9fe" height="344" rx="10" stroke="#6d28d9" stroke-width="3" width="580" x="70" y="84"></rect>
+<rect fill="#d1fae5" height="223" rx="6" stroke="#047857" stroke-width="2" width="476" x="122" y="151"></rect>
+<rect fill="#dbeafe" height="93" rx="4" stroke="#1d4ed8" stroke-width="2" width="356" x="182" y="222"></rect>
+<g font-family="system-ui,sans-serif" font-size="26" font-weight="700" text-anchor="middle">
+<text fill="#9a3412" x="360" y="54">margin</text>
+<text fill="#5b21b6" x="360" y="125">border</text>
+<text fill="#065f46" x="360" y="192">padding</text>
+<text fill="#1e3a8a" x="360" y="260">content</text>
+</g>
+<text fill="#1e3a8a" font-family="system-ui,sans-serif" font-size="21" text-anchor="middle" x="360" y="292">text, images…</text>
+<g fill="none" stroke-width="2"><path d="M28 452H692M28 445V459M692 445V459" stroke="#c2410c"></path><path d="M86 401H634M86 394V408M634 394V408" stroke="#6d28d9"></path><path d="M138 346H582M138 339V353M582 339V353" stroke="#047857"></path></g>
+</svg>
+<figcaption style="margin-top:.75rem;color:#475569;text-align:left"><strong>From inside to outside:</strong> the content is surrounded by padding (<code>padding</code>), the border (<code>border</code>) and the outside margin (<code>margin</code>). Colours distinguish the diagram's areas; the actual margin is transparent.</figcaption>
+</figure><div aria-labelledby="box-lab-title" class="box-lab" id="laboratorio-caja">
+<p class="card-label">Laboratory · Proof of concept</p><h3 id="box-lab-title">Change the box and inspect its CSS</h3>
+<p>Adjust the controls and compare the two models. CSS and measurements update immediately.</p>
+<noscript><p>Enable JavaScript to use the lab controls.</p></noscript>
+<div class="box-lab-controls">
+<label for="box-lab-sizing"><code>box-sizing</code><select id="box-lab-sizing"><option value="content-box">content-box</option><option value="border-box">border-box</option></select></label>
+<label for="box-lab-width"><code>width</code> · <output for="box-lab-width" id="box-lab-width-value">280 px</output><input id="box-lab-width" max="400" min="80" step="10" type="range" value="280"/></label>
+<label for="box-lab-height"><code>height</code> · <output for="box-lab-height" id="box-lab-height-value">140 px</output><input id="box-lab-height" max="260" min="60" step="10" type="range" value="140"/></label>
+<label for="box-lab-padding"><code>padding</code> · <output for="box-lab-padding" id="box-lab-padding-value">20 px</output><input id="box-lab-padding" max="50" min="0" step="1" type="range" value="20"/></label>
+<label for="box-lab-border"><code>border</code> · <output for="box-lab-border" id="box-lab-border-value">2 px</output><input id="box-lab-border" max="20" min="0" step="1" type="range" value="2"/></label>
+<label for="box-lab-margin"><code>margin</code> · <output for="box-lab-margin" id="box-lab-margin-value">20 px</output><input id="box-lab-margin" max="50" min="0" step="1" type="range" value="20"/></label>
+</div>
+<div class="box-lab-columns">
+<div class="box-lab-preview"><h4>Box preview</h4><div aria-label="Box preview; scrollable when the box does not fit" class="box-lab-viewport" role="region" tabindex="0"><div class="box-lab-margin-area"><div id="box-lab-box"><div id="box-lab-content"></div></div></div></div><ul aria-label="Legend" class="box-lab-legend"><li><i style="background:#dbeafe"></i>Content</li><li><i style="background:#d1fae5"></i>Padding</li><li><i style="background:#6d28d9"></i>Border</li><li><i style="background:#ffedd5"></i>Margin</li></ul></div>
+<div class="box-lab-code"><h4>Box CSS</h4><pre><code id="box-lab-code">.caja {
+  box-sizing: content-box;
+  width: 280px;
+  height: 140px;
+  padding: 20px;
+  border: 2px solid #6d28d9;
+  margin: 20px;
+}</code></pre></div>
+</div>
+<div aria-atomic="true" aria-live="polite" class="box-lab-results"><p id="box-lab-measures"></p><p id="box-lab-formula"></p></div>
+<p class="source">Orange marks the margin area; actual margins are transparent. If the box does not fit, scroll the preview: measurements are not scaled down to fit.</p>
+<button id="box-lab-reset" type="button">Reset</button>
+</div>
+<h3 id="caja-tamano">3.1. Box size</h3>
+<p><code>box-sizing</code> determines how a box's size is calculated:</p><!-- propiedades-caja-tamano --><div class="table-wrap"><table><caption>Reference properties and values</caption><thead><tr><th scope="col">Property</th><th scope="col">Values and meaning</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>box-sizing</code></td><td>content-box: width and height measure content; border-box: they include padding and border.</td><td><code>box-sizing: border-box;</code></td></tr><tr><td><code>padding</code></td><td>Padding: non-negative length or percentage. One to four values; also padding-top, -right, -bottom and -left, or logical padding-inline and padding-block.</td><td><code>padding: 1rem 2rem;</code></td></tr><tr><td><code>margin</code></td><td>Margin: auto, length or percentage; may be negative. One to four values; also margin-top, -right, -bottom and -left, or logical margin-inline and margin-block.</td><td><code>margin: 1rem auto;</code></td></tr></tbody></table></div>
+<ul><li><strong><code>content-box</code>:</strong> padding and border <strong>are added</strong> to the specified width. The box becomes wider.</li><li><strong><code>border-box</code>:</strong> padding and border <strong>are included</strong> in the specified width. The box keeps that width.</li></ul>
+<p>In both cases, margins are outside. For a box with <code>width: 280px</code>, <code>padding: 20px</code> and <code>border: 2px solid</code>:</p>
+<div class="table-wrap"><table><caption>Width calculation excluding margins</caption><thead><tr><th scope="col">Model</th><th scope="col">Content width</th><th scope="col">Width to the outside border edge</th></tr></thead><tbody><tr><td><code>content-box</code></td><td>280 px</td><td>280 + 40 + 4 = <strong>324 px</strong></td></tr><tr><td><code>border-box</code></td><td>280 − 40 − 4 = <strong>236 px</strong></td><td>280 px</td></tr></tbody></table></div>
+<h4 id="box-model-reset">3.1.1. Box Model Reset</h4>
+<pre><code>*, *::before, *::after {
+  box-sizing: border-box;
+}</code></pre>
+<p>This rule, common in <strong>CSS resets</strong>, applies <code>border-box</code> to all elements (<code>*</code>) and their pseudo-elements <code>::before</code> and <code>::after</code>.</p>
+<p><strong>Why do this?</strong> So padding and border are included in the specified size.</p>
+<p>For example, with <code>width: 100%</code> and <code>padding: 20px</code>:</p>
+<ul><li><strong>With <code>content-box</code>:</strong> the box occupies 100% of its container's width <strong>plus 40 px</strong> of padding, and may overflow.</li><li><strong>With <code>border-box</code>:</strong> those 40 px stay <strong>within the 100%</strong>; the space available for content shrinks.</li></ul>
+<p>This makes box sizes easier to control when building layouts.</p>
+<aside aria-labelledby="css-reset-more" class="extension-card">
+<p class="card-label">Further reading</p>
+<h4 id="css-reset-more">CSS Reset: a starting point for your styles</h4>
+<p>A <strong>CSS Reset</strong> removes or adjusts default browser styles, such as margins, to provide a common starting point. The <code>box-sizing: border-box</code> is one rule it may include.</p>
+<ul>
+<li><a href="https://www.joshwcomeau.com/css/custom-css-reset/" rel="noopener noreferrer" target="_blank">Josh W. Comeau's modern reset ↗</a>: code explained rule by rule, with interactive examples.</li>
+<li><a href="https://meyerweb.com/eric/tools/css/reset/" rel="noopener noreferrer" target="_blank">Eric Meyer's classic reset ↗</a>: code to copy and adapt; removes many default styles.</li>
+</ul>
+</aside>
+<article aria-labelledby="actividad-css-reset-titulo" class="exercise" id="actividad-css-reset">
+<h3 id="actividad-css-reset-titulo">Activity · Compare a page with and without a CSS reset</h3>
+<ol>
+<li>Create an HTML page with a heading, two paragraphs, a list and a form containing a field and a button.</li>
+<li>Choose one reset from the card above and save it as <code>reset.css</code>. Link it before your <code>estilos.css</code>.</li>
+<li>stylesheet. Compare the page with the reset enabled and disabled. To disable it, temporarily comment out its <code>&lt;link&gt;</code>.</li>
+<li>element. Observe heading and paragraph margins, list markers and form appearance. Record what changes and what stays the same.</li>
+</ol>
+</article>
+<aside aria-labelledby="box-sizing-more" class="extension-card"><p class="card-label">Further reading</p><h4 id="box-sizing-more">More about box-sizing</h4><p>See examples and details of box-size calculations.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/box-sizing" rel="noopener noreferrer" target="_blank">Read about box-sizing on MDN ↗</a></aside>
+<h3 id="caja-dimensiones">3.2. Dimensions, minimums and maximums</h3>
+<p>Setting an exact size and setting a limit are different operations. A card can grow with its text while having a minimum height; an article can adapt to the screen without becoming too wide to read comfortably.</p>
+<div class="table-wrap"><table><caption>Dimension properties</caption><thead><tr><th scope="col">Property</th><th scope="col">Purpose</th><th scope="col">Example</th></tr></thead><tbody>
+<tr><td><code>width</code></td><td>Sets the width, subject to minimum and maximum limits.</td><td><code>width: 80%;</code></td></tr>
+<tr><td><code>height</code></td><td>Sets the height; auto calculates it automatically.</td><td><code>height: auto;</code></td></tr>
+<tr><td><code>min-width</code></td><td>Sets the minimum width.</td><td><code>min-width: 16rem;</code></td></tr>
+<tr><td><code>min-height</code></td><td>Sets the minimum height.</td><td><code>min-height: 12rem;</code></td></tr>
+<tr><td><code>max-width</code></td><td>Limits the maximum width.</td><td><code>max-width: 65ch;</code></td></tr>
+<tr><td><code>max-height</code></td><td>Limits the maximum height; excess content may overflow.</td><td><code>max-height: 30rem;</code></td></tr>
+<tr><td><code>inline-size</code></td><td>Size along the text axis; equivalent to width in horizontal writing.</td><td><code>inline-size: 100%;</code></td></tr>
+<tr><td><code>block-size</code></td><td>Size perpendicular to the text axis; equivalent to height in horizontal writing.</td><td><code>block-size: auto;</code></td></tr>
+<tr><td><code>min-inline-size</code></td><td>Minimum along the text axis; minimum width in horizontal writing.</td><td><code>min-inline-size: 16rem;</code></td></tr>
+<tr><td><code>max-inline-size</code></td><td>Maximum along the text axis; maximum width in horizontal writing.</td><td><code>max-inline-size: 65ch;</code></td></tr>
+<tr><td><code>min-block-size</code></td><td>Minimum perpendicular to the text axis; minimum height in horizontal writing.</td><td><code>min-block-size: 12rem;</code></td></tr>
+<tr><td><code>max-block-size</code></td><td>Maximum perpendicular to the text axis; maximum height in horizontal writing.</td><td><code>max-block-size: 30rem;</code></td></tr>
+<tr><td><code>aspect-ratio</code></td><td>Defines the preferred width-to-height ratio. At least one dimension must be automatic to calculate it from the other.</td><td><code>aspect-ratio: 16 / 9;</code></td></tr>
+</tbody></table></div>
+<aside aria-labelledby="valor-auto" class="extension-card">
+<p class="card-label">Further reading</p><h4 id="valor-auto">What does auto mean?</h4>
+<p><code>auto</code> lets the browser calculate a value according to the property and context. <strong>It does not always mean “use 100%”.</strong></p>
+<ul>
+<li><code>width: auto</code>: for a normal block, width usually uses available space while accounting for margins, padding and border.</li>
+<li><code>height: auto</code>: for a normal text block, height adapts to the content.</li>
+<li>On an image, <code>height: auto</code> preserves its proportions as width changes.</li>
+</ul>
+<pre><code>.texto { height: auto; }
+img {
+  max-width: 100%;
+  height: auto;
+}</code></pre>
+<p>Minimum and maximum limits still apply. Other layout modes may calculate <code>auto</code> differently.</p>
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/width" rel="noopener noreferrer" target="_blank">Read about width and auto on MDN ↗</a>
+</aside>
+<aside aria-labelledby="centrado-horizontal" class="extension-card">
+<p class="card-label">Further reading</p><h4 id="centrado-horizontal">Centring a box horizontally</h4>
+<p>To centre a block in normal flow, give it a width smaller than its container and use <code>margin-inline: auto</code>. In horizontal writing, the left and right margins share the remaining space equally.</p>
+<pre><code>.caja-centrada {
+  box-sizing: border-box;
+  width: 80%;
+  max-width: 40rem;
+  margin-inline: auto;
+}</code></pre>
+<p>If the container is <strong>500 px</strong> and the box occupies <strong>400 px</strong>, 100 px remain: <strong>50 px on each side</strong>. If the box occupies the full width, there is no remaining space to distribute.</p>
+<p><code>text-align: center</code> centres text and inline content inside the box; <code>margin-inline: auto</code> centres the box itself. This example does not centre vertically.</p>
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/margin" rel="noopener noreferrer" target="_blank">Read about automatic margins on MDN ↗</a>
+</aside>
+<pre><code>/* Adapts to the screen and limits reading width. */
+.articulo {
+  width: calc(100% - 2rem);
+  max-width: 65ch;
+  margin-inline: auto;
+}
+
+/* Can grow when text is added. */
+.tarjeta { min-height: 12rem; height: auto; }
+
+/* The image shrinks when needed, preserving its proportions. */
+img { max-width: 100%; height: auto; }
+
+/* A 16:9 box with a calculated height. */
+.portada { width: 100%; height: auto; aspect-ratio: 16 / 9; }</code></pre>
+<h4>Common values and conflicts</h4>
+<ul><li><code>auto</code> lets the browser calculate size according to context. <code>height: auto</code> usually allows growth with content; it is not a fixed height.</li><li>Percentages need a reference: <code>width: 100%</code> usually uses the containing block's width. A <code>height: 100%</code> does not mean “the whole screen” and, in normal flow, needs a definite reference height to work as expected.</li><li><code>min-content</code>, <code>max-content</code> and <code>fit-content</code> allow sizes based on content needs instead of a fixed measurement.</li><li>A maximum can limit a declared size and a minimum can enlarge it. If the minimum exceeds the maximum, the minimum wins. Avoid a <code>min-width</code> larger than the screen.</li><li>In Flexbox or Grid items, the automatic minimum may stop a box shrinking. Where the design requires it, <code>min-width: 0</code> or <code>min-inline-size: 0</code> allows it to give up space; you must then decide how to handle its content.</li></ul>
+<p>Test dimensions with long text, zoom and different image sizes. Do not fix a height simply because it fits the sample text: this restricts the design's adaptability.</p>
+<aside aria-labelledby="ampliacion-min-width-consulta" class="extension-card"><p class="card-label">Further reading</p><h4 id="ampliacion-min-width-consulta">Minimum dimensions</h4><p>See min-width values and examples of minimum-width limits.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/min-width" rel="noopener noreferrer" target="_blank">Read about min-width on MDN ↗</a></aside>
+<h3 id="caja-overflow">3.3. Overflow: content that does not fit</h3>
+<p><code>overflow</code> determines what happens when content exceeds the available area. It is separate from setting size: to observe vertical overflow in a text block, first limit its height or maximum height.</p><!-- propiedades-caja-overflow --><div class="table-wrap"><table><caption>Reference properties and values</caption><thead><tr><th scope="col">Property</th><th scope="col">Values and meaning</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>overflow</code></td><td>visible, hidden, clip, scroll or auto. One value for both axes or two values: horizontal and vertical.</td><td><code>overflow: auto;</code></td></tr><tr><td><code>overflow-x</code></td><td>Controls horizontal overflow using the same five values.</td><td><code>overflow-x: auto;</code></td></tr><tr><td><code>overflow-y</code></td><td>Controls vertical overflow using the same five values.</td><td><code>overflow-y: auto;</code></td></tr><tr><td><code>overflow-wrap</code></td><td>Word wrapping: normal, break-word or anywhere.</td><td><code>overflow-wrap: anywhere;</code></td></tr><tr><td><code>text-overflow</code></td><td>Marks clipped inline text: clip or ellipsis; overflow must be clipped.</td><td><code>text-overflow: ellipsis;</code></td></tr><tr><td><code>white-space</code></td><td>Preserves spaces and controls wrapping: normal, nowrap, pre, pre-wrap, pre-line or break-spaces; modern syntax also combines preservation and wrapping rules.</td><td><code>white-space: nowrap;</code></td></tr></tbody></table></div>
+<div class="table-wrap"><table><caption>Overflow values</caption><thead><tr><th scope="col">Value</th><th scope="col">Result</th></tr></thead><tbody>
+<tr><td><code>visible</code></td><td>Content may extend outside the box. This is the initial value; it may overlap other elements.</td></tr>
+<tr><td><code>hidden</code></td><td>Clips excess content without scrollbars. Programmatic scrolling may still be possible.</td></tr>
+<tr><td><code>clip</code></td><td>Clips content without creating a scroll container, even for JavaScript scrolling.</td></tr>
+<tr><td><code>scroll</code></td><td>Creates a scroll area and requests scrollbars even without overflow; their appearance depends on the system.</td></tr>
+<tr><td><code>auto</code></td><td>Allows scrolling when the content requires it.</td></tr>
+</tbody></table></div>
+<pre><code>.panel {
+  max-height: 15rem;
+  overflow: auto;
+}
+
+/* A wide table can scroll inside its container. */
+.tabla-scroll { overflow-x: auto; }
+
+/* Two values: horizontal axis first, then vertical. */
+.panel-ejes { overflow: hidden auto; }</code></pre>
+<p><code>overflow-x</code> and <code>overflow-y</code> control each axis. Not every combination behaves independently: if one axis uses <code>visible</code> and the other a value other than <code>visible</code> or <code>clip</code>, that <code>visible</code> computes to <code>auto</code>.</p>
+<p>For URLs or long words, consider <code>overflow-wrap: anywhere</code>. To show an ellipsis on one line, combine <code>text-overflow</code> with a limited width, clipping and no wrapping:</p>
+<pre><code>.titulo-breve {
+  max-width: 20rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}</code></pre>
+<p>Do not hide overflow on the whole page to disguise a width problem. Find the cause and keep information accessible. If you create a scrollable region, test keyboard access; where it needs its own focus, add <code>tabindex="0"</code> and an accessible name, for example through <code>role="region"</code> and <code>aria-labelledby</code>.</p>
+<aside aria-labelledby="ampliacion-overflow-consulta" class="extension-card"><p class="card-label">Further reading</p><h4 id="ampliacion-overflow-consulta">Controlling overflow</h4><p>See overflow values and examples of content that does not fit.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/overflow" rel="noopener noreferrer" target="_blank">Read about overflow on MDN ↗</a></aside>
+<h3 id="medidas">3.4. Units</h3>
+<p>A measurement combines a number and a unit without spaces: <code>16px</code> or <code>1.5rem</code>. Units can be <strong>absolute</strong>, such as <code>px</code>, with fixed relationships to each other, or <strong>relative</strong> , depending on another measurement such as font size. Our first exercises use these four options.</p><div class="table-wrap"><table><caption>Basic units and percentages</caption><thead><tr><th scope="col">Unit or value</th><th scope="col">Reference and use</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>px</code></td><td>CSS pixel. Useful for details such as borders; not necessarily a physical pixel.</td><td><code>border-width: 2px;</code></td></tr><tr><td><code>%</code></td><td>Percentage of a reference that depends on the property. A normal block's width is relative to its containing block's width.</td><td><code>width: 80%;</code></td></tr><tr><td><code>rem</code></td><td>Root element's font size. Useful for a shared scale of text and spacing.</td><td><code>padding: 1rem;</code></td></tr><tr><td><code>em</code></td><td>Element's own font size; in font-size it uses the parent's size. Useful for spacing that scales with text.</td><td><code>padding: .5em;</code></td></tr></tbody></table></div><p>If the root font size is 16 px, <code>1.5rem</code> equals 24 px. If a button's font size is 20 px, <code>.5em</code> equals 10 px. In contrast, <code>width: 80%</code> changes when the container's width changes.</p><pre><code>body { font-size: 1rem; }
+.tarjeta {
+  width: 80%;
+  margin-inline: auto;
+  padding: 1rem;
+  border: 2px solid navy;
+}</code></pre><p>Start with <code>rem</code> for text and spacing, percentages for flexible widths and <code>px</code> for borders. Later we will add viewport and container units and calculation functions.</p><aside aria-labelledby="ampliacion-units" class="extension-card"><p class="card-label">Further reading</p><h4 id="ampliacion-units">Units: full reference</h4><p>The material above is enough for the first exercise. Consult this full explanation when you need more options.</p><details class="full-reference"><summary>Show full explanation and tables</summary>
+<p>A measurement combines a number and a unit without spaces: <code>16px</code>, <code>1.5rem</code> or <code>50vw</code>. The unit tells us how to interpret the number. <strong>absolute</strong> units have fixed relationships to each other; <strong>relative</strong> units are calculated from a font, viewport or container.</p>
+<p>To start, use <code>rem</code> for text and spacing, <code>%</code> for adaptable widths and <code>px</code> for details such as borders. The following tables collect length-unit families; less common units are provided for reference.</p>
+<h4>Absolute units</h4><p>A CSS pixel is a reference unit and need not match a physical pixel. Physical units are especially useful for printing; on screen they do not guarantee an actual ruler measurement.</p><div class="table-wrap"><table><caption>Absolute length units</caption><thead><tr><th scope="col">Unit</th><th scope="col">CSS equivalent</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>px</code></td><td>1/96 of an inch</td><td><code>border-width: 2px</code></td></tr><tr><td><code>in</code></td><td>96 px</td><td><code>width: 1in</code></td></tr><tr><td><code>cm</code></td><td>1/2.54 of an inch</td><td><code>width: 10cm</code></td></tr><tr><td><code>mm</code></td><td>1/10 of a centimetre</td><td><code>margin: 15mm</code></td></tr><tr><td><code>Q</code></td><td>1/4 of a millimetre</td><td><code>width: 40Q</code></td></tr><tr><td><code>pt</code></td><td>1/72 of an inch</td><td><code>font-size: 12pt</code></td></tr><tr><td><code>pc</code></td><td>12 points</td><td><code>margin: 1pc</code></td></tr></tbody></table></div>
+<h4>Font-relative units</h4><p><code>em</code> follows the element's font size; in <code>font-size</code> it uses the parent's size. <code>rem</code> uses the document root's size. Other units use character or line-height metrics.</p><div class="table-wrap"><table><caption>Font units</caption><thead><tr><th scope="col">Unit</th><th scope="col">Reference</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>em</code></td><td>Element font size</td><td><code>padding: 1em</code></td></tr><tr><td><code>rem</code></td><td>Root font size</td><td><code>font-size: 1.2rem</code></td></tr><tr><td><code>ex</code></td><td>x-height</td><td><code>height: 2ex</code></td></tr><tr><td><code>rex</code></td><td>Root x-height</td><td><code>height: 2rex</code></td></tr><tr><td><code>cap</code></td><td>Cap height</td><td><code>height: 1cap</code></td></tr><tr><td><code>rcap</code></td><td>Root cap height</td><td><code>height: 1rcap</code></td></tr><tr><td><code>ch</code></td><td>Advance width of the 0 character</td><td><code>max-width: 65ch</code></td></tr><tr><td><code>rch</code></td><td>Root 0 advance width</td><td><code>width: 20rch</code></td></tr><tr><td><code>ic</code></td><td>Advance width of the 水 character</td><td><code>width: 10ic</code></td></tr><tr><td><code>ric</code></td><td>Root 水 advance width</td><td><code>width: 10ric</code></td></tr><tr><td><code>lh</code></td><td>Element line height</td><td><code>margin-block: 1lh</code></td></tr><tr><td><code>rlh</code></td><td>Root line height</td><td><code>margin-block: 1rlh</code></td></tr></tbody></table></div>
+<p>If the root font size is 16 px, <code>1.5rem</code> equals 24 px. If a button uses a 20 px font, its <code>padding: .5em</code> equals 10 px. <code>65ch</code> is a reading-width guide, not a guarantee of exactly 65 letters per line.</p><h4>Viewport-relative units</h4><p>Each unit represents 1% of its reference dimension. The prefix <code>s</code> uses the small viewport, <code>l</code> the large viewport and <code>d</code> the dynamic dimension, which may change as mobile browser bars disappear. Unprefixed units correspond to the large viewport.</p><div class="table-wrap"><table><caption>Viewport: traditional units</caption><thead><tr><th scope="col">Unit</th><th scope="col">1% of…</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>vw</code></td><td>Width</td><td><code>width: 50vw</code></td></tr><tr><td><code>vh</code></td><td>Height</td><td><code>width: 50vh</code></td></tr><tr><td><code>vi</code></td><td>Inline axis</td><td><code>width: 50vi</code></td></tr><tr><td><code>vb</code></td><td>Block axis</td><td><code>width: 50vb</code></td></tr><tr><td><code>vmin</code></td><td>Smaller of width and height</td><td><code>width: 50vmin</code></td></tr><tr><td><code>vmax</code></td><td>Larger of width and height</td><td><code>width: 50vmax</code></td></tr></tbody></table></div>
+<div class="table-wrap"><table><caption>Small viewport</caption><thead><tr><th scope="col">Unit</th><th scope="col">1% of…</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>svw</code></td><td>Width</td><td><code>width: 50svw</code></td></tr><tr><td><code>svh</code></td><td>Height</td><td><code>width: 50svh</code></td></tr><tr><td><code>svi</code></td><td>Inline axis</td><td><code>width: 50svi</code></td></tr><tr><td><code>svb</code></td><td>Block axis</td><td><code>width: 50svb</code></td></tr><tr><td><code>svmin</code></td><td>Smaller of width and height</td><td><code>width: 50svmin</code></td></tr><tr><td><code>svmax</code></td><td>Larger of width and height</td><td><code>width: 50svmax</code></td></tr></tbody></table></div>
+<div class="table-wrap"><table><caption>Large viewport</caption><thead><tr><th scope="col">Unit</th><th scope="col">1% of…</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>lvw</code></td><td>Width</td><td><code>width: 50lvw</code></td></tr><tr><td><code>lvh</code></td><td>Height</td><td><code>width: 50lvh</code></td></tr><tr><td><code>lvi</code></td><td>Inline axis</td><td><code>width: 50lvi</code></td></tr><tr><td><code>lvb</code></td><td>Block axis</td><td><code>width: 50lvb</code></td></tr><tr><td><code>lvmin</code></td><td>Smaller of width and height</td><td><code>width: 50lvmin</code></td></tr><tr><td><code>lvmax</code></td><td>Larger of width and height</td><td><code>width: 50lvmax</code></td></tr></tbody></table></div>
+<div class="table-wrap"><table><caption>Dynamic viewport</caption><thead><tr><th scope="col">Unit</th><th scope="col">1% of…</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>dvw</code></td><td>Width</td><td><code>width: 50dvw</code></td></tr><tr><td><code>dvh</code></td><td>Height</td><td><code>width: 50dvh</code></td></tr><tr><td><code>dvi</code></td><td>Inline axis</td><td><code>width: 50dvi</code></td></tr><tr><td><code>dvb</code></td><td>Block axis</td><td><code>width: 50dvb</code></td></tr><tr><td><code>dvmin</code></td><td>Smaller of width and height</td><td><code>width: 50dvmin</code></td></tr><tr><td><code>dvmax</code></td><td>Larger of width and height</td><td><code>width: 50dvmax</code></td></tr></tbody></table></div>
+<p>In horizontal writing, the inline axis is width. For a cover that follows the visible height, use <code>min-height: 100dvh</code>; <code>100svh</code> provides a stable height based on the small viewport.</p><h4>Container-relative units</h4><p>These measurements use an ancestor eligible for size queries. They suit components that adapt to their allocated space rather than the entire viewport.</p><div class="table-wrap"><table><caption>Container units</caption><thead><tr><th scope="col">Unit</th><th scope="col">1% of…</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>cqw</code></td><td>Container width</td><td><code>padding: 2cqw</code></td></tr><tr><td><code>cqh</code></td><td>Container height</td><td><code>padding: 2cqh</code></td></tr><tr><td><code>cqi</code></td><td>Container inline axis</td><td><code>padding: 2cqi</code></td></tr><tr><td><code>cqb</code></td><td>Container block axis</td><td><code>padding: 2cqb</code></td></tr><tr><td><code>cqmin</code></td><td>Smaller of cqi and cqb</td><td><code>padding: 2cqmin</code></td></tr><tr><td><code>cqmax</code></td><td>Larger of cqi and cqb</td><td><code>padding: 2cqmax</code></td></tr></tbody></table></div>
+<p>An ancestor with <code>container-type: inline-size</code> allows queries on its inline axis; <code>size</code>allows both axes. Without an eligible container for the queried axis, the equivalent small-viewport unit is used.</p><div class="table-wrap"><table><caption>Setting up a size container</caption><thead><tr><th scope="col">Property</th><th scope="col">What it controls</th><th scope="col">Values and options</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>container-type</code></td><td>Query type</td><td><code>normal | inline-size | size</code></td><td><code>container-type: inline-size;</code></td></tr></tbody></table></div>
+<h4>Percentages and other quantities</h4><p><code>%</code> depends on the property: it does not always mean “percentage of the parent”. In <code>font-size</code> it refers to the parent's font size; for a normal width, to the containing block's width.</p><div class="table-wrap"><table><caption>Other measurements and numerical values</caption><thead><tr><th scope="col">Notation</th><th scope="col">Use</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>%</code></td><td>Percentage of a reference</td><td><code>width: 80%</code></td></tr><tr><td><code>fr</code></td><td>Fraction of available space in Grid tracks</td><td><code>grid-template-columns: 1fr 2fr</code></td></tr><tr><td><code>deg</code></td><td>Degrees: a full turn is 360</td><td><code>rotate(45deg)</code></td></tr><tr><td><code>grad</code></td><td>Gradians: a full turn is 400</td><td><code>rotate(50grad)</code></td></tr><tr><td><code>rad</code></td><td>Radians: a full turn is 2π</td><td><code>rotate(1rad)</code></td></tr><tr><td><code>turn</code></td><td>Full turns</td><td><code>rotate(.25turn)</code></td></tr><tr><td><code>s</code></td><td>Seconds</td><td><code>transition-duration: .2s</code></td></tr><tr><td><code>ms</code></td><td>Milliseconds</td><td><code>transition-duration: 200ms</code></td></tr><tr><td><code>dpi</code></td><td>Dots per inch</td><td><code>(resolution: 192dpi)</code></td></tr><tr><td><code>dpcm</code></td><td>Dots per centimetre</td><td><code>(resolution: 40dpcm)</code></td></tr><tr><td><code>dppx</code></td><td>Dots per CSS pixel</td><td><code>(resolution: 2dppx)</code></td></tr><tr><td><code>x</code></td><td>Alias for dppx</td><td><code>image-set(url("foto.png") 1x)</code></td></tr><tr><td><code>Hz</code></td><td>Frequency; specialised contexts</td><td><code>440Hz</code></td></tr><tr><td><code>kHz</code></td><td>Thousand hertz</td><td><code>1kHz</code></td></tr><tr><td><code>Sin unidad</code></td><td>Number, factor or zero length</td><td><code>line-height: 1.6</code></td></tr></tbody></table></div>
+<p><code>auto</code>, <code>min-content</code>, <code>max-content</code> and <code>fit-content</code> are keywords, not units. Functions combine measurements:</p><div class="table-wrap"><table><caption>Calculations with measurements</caption><thead><tr><th scope="col">Purpose</th><th scope="col">Result</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>calc()</code></td><td>Calculates with compatible measurements</td><td><code>calc(100% - 2rem)</code></td></tr><tr><td><code>min()</code></td><td>Chooses the smallest value</td><td><code>min(90%, 65ch)</code></td></tr><tr><td><code>max()</code></td><td>Chooses the largest value</td><td><code>max(1rem, 2vw)</code></td></tr><tr><td><code>clamp()</code></td><td>Clamps a value between a minimum and maximum</td><td><code>clamp(1rem, 2vw, 2rem)</code></td></tr></tbody></table></div>
+<pre><code>.articulo {
+  width: min(100% - 2rem, 65ch);
+  margin-inline: auto;
+  padding: 1rem;
+}
+h1 { font-size: clamp(2rem, 1.5rem + 2vw, 3.5rem); }</code></pre>
+<p>Try resizing the viewport and changing the root font size. The article retains side margins and limits its width; the heading grows within its limits. Also test zoom: a flexible measurement must still allow the page to be read and used.</p><aside aria-labelledby="unidades-recursos" class="extension-card"><p class="card-label">Further reading</p><h4 id="unidades-recursos">Check units and compatibility</h4><a href="https://www.w3.org/TR/css-values-4/" rel="noopener noreferrer" target="_blank">CSS units · W3C ↗</a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/length" rel="noopener noreferrer" target="_blank">Lengths · MDN ↗</a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Containment/Container_queries" rel="noopener noreferrer" target="_blank">Containers · MDN ↗</a></aside>
+</details></aside><h3 id="caja-colores">3.5. Colours and backgrounds</h3><p>First distinguish text colour from the colour painted behind it. <code>color</code> is normally inherited; <code>background-color</code> colours the box background and is not inherited. Choose both to keep text readable.</p><div class="table-wrap"><table><caption>Properties to start with</caption><thead><tr><th scope="col">Property</th><th scope="col">Purpose</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>color</code></td><td>Text colour.</td><td><code>color: navy;</code></td></tr><tr><td><code>background-color</code></td><td>Box background colour.</td><td><code>background-color: #eff6ff;</code></td></tr></tbody></table></div><div class="table-wrap"><table><caption>Basic ways to write colours</caption><thead><tr><th scope="col">Format</th><th scope="col">Meaning</th><th scope="col">Example</th></tr></thead><tbody><tr><td>Name</td><td>A named colour defined by CSS.</td><td><code>navy</code>, <code>white</code></td></tr><tr><td>Hexadecimal</td><td>Red, green and blue components in hexadecimal.</td><td><code>#1e3a8a</code></td></tr><tr><td>RGB</td><td>Red, green and blue components, usually from 0 to 255.</td><td><code>rgb(30 58 138)</code></td></tr><tr><td>RGBA</td><td>Red, green and blue plus an alpha channel: 0 is transparent and 1 is opaque.</td><td><code>rgba(30, 58, 138, 0.25)</code></td></tr></tbody></table></div><p><code>rgba(30, 58, 138, 0.25)</code> is equivalent to <code>rgb(30 58 138 / 25%)</code>: both apply 25% opacity to the colour. On a background, text keeps its own opacity; with <code>opacity</code>, transparency affects the whole element and its descendants.</p><pre><code>.aviso {
+  color: #1e3a8a;
+  background-color: #eff6ff;
+  padding: 1rem;
+}</code></pre><p>Do not communicate a notice using colour alone: include text. Later we will cover images, gradients and layered backgrounds.</p><aside aria-labelledby="ampliacion-colors" class="extension-card"><p class="card-label">Further reading</p><h4 id="ampliacion-colors">Colours and backgrounds: more options</h4><p>The material above is enough for the first exercise. Consult this full explanation when you need more options.</p><details class="full-reference"><summary>Show full explanation and tables</summary>
+<p>A box can have text, a background colour and several overlapping images. <code>color</code> sets text colour and is inherited; <code>background-color</code> paints that box's background. A transparent background reveals what is behind it, but does not mean it inherited the parent's background.</p>
+<h4>Ways to write a colour</h4><p>One colour can use different notations. Start with hexadecimal, RGB or HSL; perceptual colour-space functions allow more uniform palette adjustments.</p><div class="table-wrap"><table><caption>Colour notations</caption><thead><tr><th scope="col">Form</th><th scope="col">What it expresses</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>Name</code></td><td>Predefined colour</td><td><code>navy</code></td></tr><tr><td><code>#RGB / #RRGGBB</code></td><td>Red, green and blue channels in hexadecimal</td><td><code>#1e3a8a</code></td></tr><tr><td><code>#RGBA / #RRGGBBAA</code></td><td>Hexadecimal with an alpha channel</td><td><code>#1e3a8a80</code></td></tr><tr><td><code>rgb() / rgba()</code></td><td>RGB channels and optional alpha</td><td><code>rgb(30 58 138 / .5)</code></td></tr><tr><td><code>hsl() / hsla()</code></td><td>Hue, saturation and lightness</td><td><code>hsl(224 64% 33% / .5)</code></td></tr><tr><td><code>hwb()</code></td><td>Hue, whiteness and blackness</td><td><code>hwb(224 12% 46%)</code></td></tr><tr><td><code>lab()</code></td><td>Lightness and chromatic axes</td><td><code>lab(50% 20 -30)</code></td></tr><tr><td><code>lch()</code></td><td>Lightness, chroma and hue</td><td><code>lch(50% 40 280)</code></td></tr><tr><td><code>oklab()</code></td><td>Oklab perceptual space</td><td><code>oklab(60% .05 -.1)</code></td></tr><tr><td><code>oklch()</code></td><td>Oklab in polar form</td><td><code>oklch(60% .15 260)</code></td></tr><tr><td><code>color()</code></td><td>Channels in a specified colour space</td><td><code>color(display-p3 .2 .4 .8)</code></td></tr><tr><td><code>transparent</code></td><td>Full transparency</td><td><code>transparent</code></td></tr><tr><td><code>currentColor</code></td><td>Element's computed text colour</td><td><code>border-color: currentColor</code></td></tr><tr><td><code>System colours</code></td><td>Colours associated with the system interface</td><td><code>CanvasText</code></td></tr></tbody></table></div>
+<p>Modern syntax separates channels with spaces and alpha with <code>/</code>. An alpha of 0 is transparent and 1 is opaque. In hexadecimal, <code>00</code> and <code>ff</code> represent those extremes. <code>rgba()</code> and <code>hsla()</code> are aliases; you will also encounter the older comma notation.</p><div class="table-wrap"><table><caption>Colour and transparency</caption><thead><tr><th scope="col">Property</th><th scope="col">What it controls</th><th scope="col">Values and options</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>color</code></td><td>Text</td><td><code>Color en cualquiera de las notaciones anteriores</code></td><td><code>color: var(--marca);</code></td></tr><tr><td><code>background-color</code></td><td>Background</td><td><code>Color; transparent</code></td><td><code>background-color: rgb(30 58 138 / .15);</code></td></tr><tr><td><code>opacity</code></td><td>Composition of the entire element</td><td><code>Número de 0 a 1 o porcentaje de 0% a 100%</code></td><td><code>opacity: .5;</code></td></tr></tbody></table></div>
+<h4>Alpha and opacity: two different results</h4><p>To soften only the background, use alpha in its colour. <code>opacity</code> also fades text and descendants: setting <code>opacity: 1</code> on a child does not restore opacity lost through its parent.</p><pre><code>.fondo-suave {
+  background-color: rgb(30 58 138 / .15);
+  color: #172033;
+}
+.todo-atenuado {
+  background-color: #1e3a8a;
+  color: white;
+  opacity: .5;
+}</code></pre>
+<h4>Reusing a palette</h4><p>Name colours using custom properties. A change then applies wherever that variable is used. <code>var(--marca, navy)</code> includes a fallback value if the variable is undefined.</p><pre><code>:root {
+  --marca: #1e3a8a;
+  --superficie: #eff6ff;
+  --texto: #172033;
+}
+.tarjeta { color: var(--texto); background-color: var(--superficie); }
+a { color: var(--marca); }</code></pre>
+<h4>Background images</h4><p>A background decorates a box without setting its size. Reserve space through content, padding or dimensions. If the image conveys information, use HTML with <code>&lt;img&gt;</code> and suitable alternative text.</p><div class="table-wrap"><table><caption>Background properties</caption><thead><tr><th scope="col">Property</th><th scope="col">What it controls</th><th scope="col">Values and options</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>background-image</code></td><td>Image or layers</td><td><code>none | url() | gradiente | image-set(); capas separadas por comas</code></td><td><code>background-image: url("fondo.jpg");</code></td></tr><tr><td><code>background-position</code></td><td>Position</td><td><code>left | center | right; top | center | bottom; longitudes y porcentajes</code></td><td><code>background-position: center top;</code></td></tr><tr><td><code>background-size</code></td><td>Size of each image</td><td><code>auto | cover | contain | ancho [alto] en longitud o porcentaje</code></td><td><code>background-size: cover;</code></td></tr><tr><td><code>background-repeat</code></td><td>Repeat</td><td><code>repeat | no-repeat | repeat-x | repeat-y | space | round; uno o dos ejes</code></td><td><code>background-repeat: no-repeat;</code></td></tr><tr><td><code>background-attachment</code></td><td>Relationship to scrolling</td><td><code>scroll | fixed | local</code></td><td><code>background-attachment: scroll;</code></td></tr><tr><td><code>background-origin</code></td><td>Image reference box</td><td><code>border-box | padding-box | content-box</code></td><td><code>background-origin: padding-box;</code></td></tr><tr><td><code>background-clip</code></td><td>Area where the background is painted</td><td><code>border-box | padding-box | content-box | text</code></td><td><code>background-clip: padding-box;</code></td></tr><tr><td><code>background</code></td><td>Background property shorthand</td><td><code>Color, imagen, posición / tamaño, repetición, fijación y cajas</code></td><td><code>background: url("fondo.jpg") center / cover no-repeat #172033;</code></td></tr></tbody></table></div>
+<p><code>cover</code> fills the area while preserving proportions, even if the image is cropped. <code>contain</code> shows the entire image and may leave empty space. <code>scroll</code> moves with the box; <code>local</code> scrolls with its content; <code>fixed</code> normally uses the viewport as its reference.</p><p><code>background-origin</code> chooses the box used to position the image; <code>background-clip</code> chooses the painting area. The shorthand <code>background</code> resets omitted subproperties: to change only the colour, use <code>background-color</code>.</p><h4>Gradients and layered backgrounds</h4><div class="table-wrap"><table><caption>Gradient types</caption><thead><tr><th scope="col">Purpose</th><th scope="col">Form</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>linear-gradient()</code></td><td>Transition along a direction</td><td><code>linear-gradient(135deg, #1e3a8a, #0f766e)</code></td></tr><tr><td><code>radial-gradient()</code></td><td>Transition from a centre</td><td><code>radial-gradient(circle, white, navy)</code></td></tr><tr><td><code>conic-gradient()</code></td><td>Transition around a centre</td><td><code>conic-gradient(red, gold, red)</code></td></tr><tr><td><code>repeating-linear-gradient()</code></td><td>Repeating bands</td><td><code>repeating-linear-gradient(90deg, white 0 10px, #ddd 10px 20px)</code></td></tr><tr><td><code>repeating-radial-gradient()</code></td><td>Repeating rings</td><td><code>repeating-radial-gradient(white 0 10px, #ddd 10px 20px)</code></td></tr><tr><td><code>repeating-conic-gradient()</code></td><td>Repeating sectors</td><td><code>repeating-conic-gradient(white 0deg 30deg, #ddd 30deg 60deg)</code></td></tr></tbody></table></div>
+<p>Colour stops control where transitions start and end. In a background list, the first image is on top; the background colour sits below them all. This example darkens a photograph with an overlaid gradient without fading the text:</p><pre><code>.portada {
+  color: white;
+  background-color: #172033;
+  background-image:
+    linear-gradient(rgb(0 0 0 / .65), rgb(0 0 0 / .65)),
+    url("patio.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  padding: 3rem 1rem;
+}</code></pre>
+<p>Replace <code>patio.jpg</code> with an image from your project. Check contrast over the lightest areas and keep a background colour for when the image fails to load. Do not communicate an error or selection through colour alone.</p><aside aria-labelledby="colores-recursos" class="extension-card"><p class="card-label">Further reading</p><h4 id="colores-recursos">Explore colours and backgrounds</h4><a href="https://www.w3.org/TR/css-color-4/" rel="noopener noreferrer" target="_blank">CSS colours · W3C ↗</a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/background" rel="noopener noreferrer" target="_blank">Backgrounds · MDN ↗</a><a href="https://www.w3.org/TR/css-backgrounds-3/" rel="noopener noreferrer" target="_blank">Backgrounds and borders · W3C ↗</a></aside>
+</details></aside><h3 id="caja-bordes">3.6. Borders and shadows</h3><p>A border outlines the box and takes up space; a shadow is drawn around or inside it without reserving layout space. We will start with a simple border, rounded corners and one shadow.</p><div class="table-wrap"><table><caption>Properties to start with</caption><thead><tr><th scope="col">Property</th><th scope="col">Purpose</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>border</code></td><td>Combines width, style and colour. Start with solid; none removes the border.</td><td><code>border: 2px solid #1e3a8a;</code></td></tr><tr><td><code>border-radius</code></td><td>Rounds corners; zero leaves them square.</td><td><code>border-radius: .5rem;</code></td></tr><tr><td><code>box-shadow</code></td><td>Draws a shadow; none removes it.</td><td><code>box-shadow: 0 4px 12px rgb(0 0 0 / .15);</code></td></tr></tbody></table></div><pre><code>.tarjeta {
+  padding: 1rem;
+  border: 2px solid #1e3a8a;
+  border-radius: .5rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / .15);
+}</code></pre><p>In this shadow, <code>0</code> is the horizontal offset, <code>4px</code> the vertical offset and <code>12px</code> the blur. The colour is black at 15% opacity. Change one value at a time to observe its effect. Further reading covers other border styles and multiple shadows.</p><aside aria-labelledby="ampliacion-borders" class="extension-card"><p class="card-label">Further reading</p><h4 id="ampliacion-borders">Borders and shadows: full reference</h4><p>The material above is enough for the first exercise. Consult this full explanation when you need more options.</p><details class="full-reference"><summary>Show full explanation and tables</summary>
+<p>The border outlines a box and contributes to its size. A shadow adds visual depth without reserving layout space. An <code>outline</code> outline also takes no space and is useful for indicating keyboard focus.</p>
+<h4>Border width, style and colour</h4><p>The declaration <code>border: 2px solid #1e3a8a</code> applies these three components to all four sides. Without a visible style, no border appears even if width and colour are set.</p><div class="table-wrap"><table><caption>Border properties</caption><thead><tr><th scope="col">Property</th><th scope="col">What it controls</th><th scope="col">Values and options</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>border</code></td><td>Full border</td><td><code>Grosor + estilo + color</code></td><td><code>border: 2px solid #1e3a8a;</code></td></tr><tr><td><code>border-width</code></td><td>Width</td><td><code>Longitud no negativa | thin | medium | thick; 1–4 valores</code></td><td><code>border-width: 1px 2px;</code></td></tr><tr><td><code>border-style</code></td><td>Style</td><td><code>none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset; 1–4 valores</code></td><td><code>border-style: solid;</code></td></tr><tr><td><code>border-color</code></td><td>Colour</td><td><code>Color; 1–4 valores</code></td><td><code>border-color: currentColor;</code></td></tr><tr><td><code>border-top</code></td><td>Top side</td><td><code>Grosor + estilo + color</code></td><td><code>border-top: 2px solid navy;</code></td></tr><tr><td><code>border-right</code></td><td>Right side</td><td><code>Grosor + estilo + color</code></td><td><code>border-right: 1px dashed teal;</code></td></tr><tr><td><code>border-bottom</code></td><td>Bottom side</td><td><code>Grosor + estilo + color</code></td><td><code>border-bottom: 3px double navy;</code></td></tr><tr><td><code>border-left</code></td><td>Left side</td><td><code>Grosor + estilo + color</code></td><td><code>border-left: 4px solid teal;</code></td></tr><tr><td><code>border-inline</code></td><td>Inline-axis sides</td><td><code>Grosor + estilo + color</code></td><td><code>border-inline: 1px solid #ccc;</code></td></tr><tr><td><code>border-block</code></td><td>Block-axis sides</td><td><code>Grosor + estilo + color</code></td><td><code>border-block: 2px solid #ccc;</code></td></tr><tr><td><code>border-radius</code></td><td>Corner rounding</td><td><code>Longitudes o porcentajes; 1–4 radios; / separa radios elípticos</code></td><td><code>border-radius: .75rem;</code></td></tr></tbody></table></div>
+<p>With four values, the order is top, right, bottom, left. With two: vertical, horizontal; with three: top, horizontal, bottom. Side properties also support separate components, such as <code>border-top-color</code>.</p><div class="table-wrap"><table><caption>Appearance of border-style</caption><thead><tr><th scope="col">Value</th><th scope="col">Result</th></tr></thead><tbody><tr><td><code>none</code></td><td>No border</td></tr><tr><td><code>hidden</code></td><td>Hidden; takes precedence in collapsed-border tables</td></tr><tr><td><code>dotted</code></td><td>Dots</td></tr><tr><td><code>dashed</code></td><td>Dashes</td></tr><tr><td><code>solid</code></td><td>Solid line</td></tr><tr><td><code>double</code></td><td>Two lines</td></tr><tr><td><code>groove</code></td><td>Groove</td></tr><tr><td><code>ridge</code></td><td>Ridge</td></tr><tr><td><code>inset</code></td><td>Inset appearance</td></tr><tr><td><code>outset</code></td><td>Outset appearance</td></tr></tbody></table></div>
+<h4>Rounded corners</h4><p>The four radii start at the top-left corner and proceed clockwise. For a circle, combine a square box with <code>50%</code>. Rounding the parent does not automatically clip all its content.</p><pre><code>.avatar {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+}
+.tarjeta { border-radius: 1rem 1rem 0 0; }
+.elipse { border-radius: 50% / 30%; }</code></pre>
+<h4>Box shadows</h4><p>In <code>box-shadow</code>, the first two numbers are required. Blur and spread are optional. Multiple shadows can be layered using commas.</p><div class="table-wrap"><table><caption>Parts of a shadow</caption><thead><tr><th scope="col">Component</th><th scope="col">Meaning</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>offset-x</code></td><td>Horizontal offset; negative moves left</td><td><code>0</code></td></tr><tr><td><code>offset-y</code></td><td>Vertical offset; negative moves up</td><td><code>4px</code></td></tr><tr><td><code>blur</code></td><td>Non-negative blur; 0 leaves a sharp edge</td><td><code>12px</code></td></tr><tr><td><code>spread</code></td><td>Expands; negative contracts</td><td><code>2px</code></td></tr><tr><td><code>color</code></td><td>Shadow colour; supports alpha</td><td><code>rgb(0 0 0 / .2)</code></td></tr><tr><td><code>inset</code></td><td>Draws the shadow inside</td><td><code>inset</code></td></tr></tbody></table></div>
+<div class="table-wrap"><table><caption>Shadow and outline</caption><thead><tr><th scope="col">Property</th><th scope="col">What it controls</th><th scope="col">Values and options</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>box-shadow</code></td><td>Box shadow</td><td><code>none | lista de sombras; inset opcional</code></td><td><code>box-shadow: 0 4px 12px 2px rgb(0 0 0 / .2);</code></td></tr><tr><td><code>outline</code></td><td>Outline without reserved space</td><td><code>Grosor + estilo + color; auto para estilo del navegador</code></td><td><code>outline: 3px solid #1e3a8a;</code></td></tr><tr><td><code>outline-offset</code></td><td>Outline offset</td><td><code>Longitud positiva, cero o negativa</code></td><td><code>outline-offset: 3px;</code></td></tr></tbody></table></div>
+<pre><code>.tarjeta {
+  border: 1px solid #cbd5e1;
+  border-radius: .75rem;
+  box-shadow: 0 4px 12px rgb(15 23 42 / .15);
+}
+.campo { box-shadow: inset 0 2px 4px rgb(0 0 0 / .15); }
+.boton:focus-visible {
+  outline: 3px solid #1e3a8a;
+  outline-offset: 3px;
+}</code></pre>
+<p>Try changing each value separately. An outer shadow may be clipped by a container with <code>overflow: hidden</code>. Avoid changing border width on hover if it shifts content; reserve it from the start with a transparent border.</p><aside aria-labelledby="bordes-recursos" class="extension-card"><p class="card-label">Further reading</p><h4 id="bordes-recursos">Read about borders and shadows</h4><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/border" rel="noopener noreferrer" target="_blank">Borders · MDN ↗</a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/box-shadow" rel="noopener noreferrer" target="_blank">Shadows · MDN ↗</a></aside>
+</details></aside><h3 id="caja-tipografia">3.7. Typography</h3><p>Typography should support reading and distinguish headings from paragraphs. Start with a readable family, comfortable text size and enough line spacing. Keep appropriate HTML heading elements: changing text size does not change its meaning.</p><div class="table-wrap"><table><caption>Properties to start with</caption><thead><tr><th scope="col">Property</th><th scope="col">Purpose</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>font-family</code></td><td>Fonts in order of preference; end with a generic fallback family.</td><td><code>font-family: system-ui, sans-serif;</code></td></tr><tr><td><code>font-size</code></td><td>Font size; we will start with rem.</td><td><code>font-size: 1rem;</code></td></tr><tr><td><code>font-weight</code></td><td>Weight: start with normal or bold.</td><td><code>font-weight: bold;</code></td></tr><tr><td><code>line-height</code></td><td>Line height. A unitless number multiplies the font size.</td><td><code>line-height: 1.6;</code></td></tr><tr><td><code>text-align</code></td><td>Inline content alignment: start, end, left, right, center or justify.</td><td><code>text-align: start;</code></td></tr></tbody></table></div><pre><code>body {
+  font-family: system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}</code></pre><p>With a 16 px font, <code>line-height: 1.6</code> gives a 25.6 px line height. Check readability when text is enlarged and avoid fixed container heights. Later we will cover more decoration, spacing and wrapping options.</p><h4 id="fontface-basico">Loading a custom font with @font-face</h4>
+<p>To use a font that may not be installed on the user's device, we can provide its file with <code>@font-face</code>. This rule registers a named font; we must then apply that same name through <code>font-family</code>.</p>
+<pre><code>/* In css/estilos.css; the file is in the fuentes folder. */
+@font-face {
+  font-family: "Mi Fuente";
+  src: url("../fuentes/mi-fuente-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  font-family: "Mi Fuente", system-ui, sans-serif;
+}</code></pre>
+<div class="table-wrap"><table><caption>Basic @font-face descriptors</caption><thead><tr><th scope="col">Descriptor</th><th scope="col">Purpose</th><th scope="col">Example</th></tr></thead><tbody>
+<tr><td><code>font-family</code></td><td>Name used to identify the font in our rules.</td><td><code>"Mi Fuente"</code></td></tr>
+<tr><td><code>src</code></td><td>File path and format. In an external stylesheet, the path is relative to the CSS file.</td><td><code>url("../fuentes/mi-fuente-regular.woff2") format("woff2")</code></td></tr>
+<tr><td><code>font-weight</code></td><td>Weight contained in the file; 400 is normal and 700 is bold.</td><td><code>400</code></td></tr>
+<tr><td><code>font-style</code></td><td>Style contained in the file: normal, italic or oblique.</td><td><code>normal</code></td></tr>
+<tr><td><code>font-display</code></td><td>Controls display during loading. swap displays a fallback until the custom font arrives.</td><td><code>swap</code></td></tr>
+</tbody></table></div>
+<p>Replace the example path with a real WOFF2 file you are permitted to use on the web. For bold or italic in separate files, declare another <code>@font-face</code> block with the same family name and the appropriate weight or style. Keep fallbacks in case the file fails to load.</p>
+<aside aria-labelledby="ampliacion-typography" class="extension-card"><p class="card-label">Further reading</p><h4 id="ampliacion-typography">Typography: full reference</h4><p>The material above is enough for the first exercise. Consult this full explanation when you need more options.</p><details class="full-reference"><summary>Show full explanation and tables</summary>
+<p>Typography organises reading through font family, size, weight and line spacing. Start with body text and build a heading hierarchy from it. A large heading still needs an HTML heading element: appearance does not replace meaning.</p>
+<h4>Choosing a family and providing alternatives</h4><p><code>font-family</code> is an ordered list: the browser tries each font until it finds one available, including for specific characters. End with a generic family. Quote names containing spaces.</p><div class="table-wrap"><table><caption>Generic families</caption><thead><tr><th scope="col">Family</th><th scope="col">Typical use</th></tr></thead><tbody><tr><td><code>serif</code></td><td>Letters with serifs</td></tr><tr><td><code>sans-serif</code></td><td>Without serifs</td></tr><tr><td><code>monospace</code></td><td>Fixed width; code</td></tr><tr><td><code>system-ui</code></td><td>System interface font</td></tr><tr><td><code>cursive</code></td><td>Handwritten style</td></tr><tr><td><code>fantasy</code></td><td>Decorative style</td></tr><tr><td><code>ui-serif</code></td><td>Interface serif</td></tr><tr><td><code>ui-sans-serif</code></td><td>Interface sans serif</td></tr><tr><td><code>ui-monospace</code></td><td>Interface monospace</td></tr><tr><td><code>ui-rounded</code></td><td>Rounded interface shapes</td></tr><tr><td><code>emoji</code></td><td>Emoji symbols</td></tr><tr><td><code>math</code></td><td>Mathematical notation</td></tr><tr><td><code>fangsong</code></td><td>Chinese typographic style</td></tr></tbody></table></div>
+<pre><code>body { font-family: "Noto Sans", system-ui, sans-serif; }
+code { font-family: ui-monospace, monospace; }</code></pre>
+<h4>Size, weight and line height</h4><div class="table-wrap"><table><caption>Font properties</caption><thead><tr><th scope="col">Property</th><th scope="col">What it controls</th><th scope="col">Values and options</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>font-family</code></td><td>Family and fallbacks</td><td><code>Lista de nombres y familias genéricas</code></td><td><code>font-family: system-ui, sans-serif;</code></td></tr><tr><td><code>font-size</code></td><td>Size</td><td><code>Longitud | % | xx-small…xxx-large | smaller | larger</code></td><td><code>font-size: 1rem;</code></td></tr><tr><td><code>font-weight</code></td><td>Weight</td><td><code>normal | bold | bolder | lighter | número 1–1000</code></td><td><code>font-weight: 600;</code></td></tr><tr><td><code>font-style</code></td><td>Slant</td><td><code>normal | italic | oblique [ángulo]</code></td><td><code>font-style: italic;</code></td></tr><tr><td><code>font-stretch</code></td><td>Character width</td><td><code>normal | ultra-condensed…ultra-expanded | porcentaje</code></td><td><code>font-stretch: condensed;</code></td></tr><tr><td><code>font-variant-caps</code></td><td>Capital variants</td><td><code>normal | small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps</code></td><td><code>font-variant-caps: small-caps;</code></td></tr><tr><td><code>line-height</code></td><td>Line height</td><td><code>normal | número sin unidad | longitud | porcentaje</code></td><td><code>line-height: 1.6;</code></td></tr><tr><td><code>font</code></td><td>Shorthand</td><td><code>Estilo, variante, peso y anchura opcionales; tamaño[/interlineado] familia</code></td><td><code>font: italic 600 1rem/1.6 system-ui;</code></td></tr></tbody></table></div>
+<p><code>normal</code> and <code>bold</code> correspond to weights 400 and 700. Available weights and variants depend on the font. <code>font-stretch</code> selects a width variant; it is not equivalent to deforming text with a transform.</p><p>A <code>line-height: 1.6</code> multiplies each element's font size: at 20 px it produces a 32 px line height. The unitless value is inherited as a factor and usually adapts better to descendants with different sizes. In <code>font</code>, size and family are required; omitted subproperties are reset.</p><h4>Aligning, spacing and decorating text</h4><div class="table-wrap"><table><caption>Text presentation</caption><thead><tr><th scope="col">Property</th><th scope="col">What it controls</th><th scope="col">Values and options</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>text-align</code></td><td>Alignment inside the block</td><td><code>start | end | left | right | center | justify | match-parent</code></td><td><code>text-align: start;</code></td></tr><tr><td><code>text-indent</code></td><td>First-line indent</td><td><code>Longitud | porcentaje</code></td><td><code>text-indent: 1.5em;</code></td></tr><tr><td><code>letter-spacing</code></td><td>Letter spacing</td><td><code>normal | longitud</code></td><td><code>letter-spacing: .02em;</code></td></tr><tr><td><code>word-spacing</code></td><td>Word spacing</td><td><code>normal | longitud</code></td><td><code>word-spacing: .1em;</code></td></tr><tr><td><code>text-transform</code></td><td>Visual case transformation</td><td><code>none | capitalize | uppercase | lowercase | full-width | full-size-kana</code></td><td><code>text-transform: uppercase;</code></td></tr><tr><td><code>text-decoration-line</code></td><td>Decoration lines</td><td><code>none | underline | overline | line-through; combinables</code></td><td><code>text-decoration-line: underline;</code></td></tr><tr><td><code>text-decoration-style</code></td><td>Decoration style</td><td><code>solid | double | dotted | dashed | wavy</code></td><td><code>text-decoration-style: solid;</code></td></tr><tr><td><code>text-decoration-color</code></td><td>Decoration colour</td><td><code>Color</code></td><td><code>text-decoration-color: currentColor;</code></td></tr><tr><td><code>text-decoration-thickness</code></td><td>Decoration thickness</td><td><code>auto | from-font | longitud | porcentaje</code></td><td><code>text-decoration-thickness: .1em;</code></td></tr><tr><td><code>text-underline-offset</code></td><td>Underline offset</td><td><code>auto | longitud | porcentaje</code></td><td><code>text-underline-offset: .2em;</code></td></tr><tr><td><code>text-decoration</code></td><td>Decoration shorthand</td><td><code>Línea + estilo + color + grosor</code></td><td><code>text-decoration: underline solid currentColor .1em;</code></td></tr><tr><td><code>text-shadow</code></td><td>Text shadow</td><td><code>none | lista de desplazamientos, desenfoque y color</code></td><td><code>text-shadow: 0 1px 2px rgb(0 0 0 / .2);</code></td></tr><tr><td><code>white-space</code></td><td>Whitespace and wrapping</td><td><code>normal | nowrap | pre | pre-wrap | pre-line | break-spaces</code></td><td><code>white-space: normal;</code></td></tr><tr><td><code>overflow-wrap</code></td><td>Breaking long words</td><td><code>normal | break-word | anywhere</code></td><td><code>overflow-wrap: anywhere;</code></td></tr><tr><td><code>hyphens</code></td><td>Hyphenation</td><td><code>none | manual | auto</code></td><td><code>hyphens: auto;</code></td></tr></tbody></table></div>
+<p>Use <code>start</code> to follow writing direction. Justifying narrow paragraphs may create awkward gaps. Do not remove link underlines without another clear cue. For <code>hyphens: auto</code>, declare the document language, for example <code>&lt;html lang="en"&gt;</code>; hyphenation depends on the available dictionary.</p><pre><code>body {
+  font-family: system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #172033;
+}
+.articulo { max-width: 65ch; margin-inline: auto; }
+h1 { font-size: clamp(2rem, 1.5rem + 2vw, 3.5rem); line-height: 1.15; }
+h2 { font-size: 1.5rem; }
+p { margin-block: 0 1em; }
+a { text-underline-offset: .2em; }</code></pre>
+<h4>Loading a custom font</h4><p><code>@font-face</code> registers a file and associates it with a name. You can then use it in <code>font-family</code>. The example file must exist and its licence must permit web use.</p><pre><code>@font-face {
+  font-family: "Aula Sans";
+  src: url("../fuentes/aula-regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+body { font-family: "Aula Sans", system-ui, sans-serif; }</code></pre>
+<div class="table-wrap"><table><caption>Descriptors used inside @font-face</caption><thead><tr><th scope="col">Descriptor</th><th scope="col">What it specifies</th><th scope="col">Values</th></tr></thead><tbody><tr><td><code>font-family</code></td><td>Name used to select the font</td><td><code>"Aula Sans"</code></td></tr><tr><td><code>src</code></td><td>File or local font</td><td><code>url() con format(); local(); lista de alternativas</code></td></tr><tr><td><code>font-style</code></td><td>File style</td><td><code>normal | italic | oblique</code></td></tr><tr><td><code>font-weight</code></td><td>Weight or variable range</td><td><code>normal | bold | 1–1000; intervalo</code></td></tr><tr><td><code>font-display</code></td><td>Loading behaviour</td><td><code>auto | block | swap | fallback | optional</code></td></tr></tbody></table></div>
+<p><code>swap</code> shows a fallback first, replacing it when the web font arrives. <code>fallback</code> limits the replacement window; <code>optional</code> may keep the fallback. Load only the necessary styles and check that text is not clipped when fonts change.</p><p>Before finishing the design, enlarge text, try long words and review headings, lists and tables. Boxes must be able to grow: a rigid height can clip content even when the font is readable.</p><aside aria-labelledby="tipografia-recursos" class="extension-card"><p class="card-label">Further reading</p><h4 id="tipografia-recursos">Typography references</h4><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/font" rel="noopener noreferrer" target="_blank">Fonts · MDN ↗</a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/line-height" rel="noopener noreferrer" target="_blank">Line height · MDN ↗</a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@font-face" rel="noopener noreferrer" target="_blank">Web fonts · MDN ↗</a></aside>
+</details></aside><article class="exercise" id="act-02-02"><h3>Activity 02-02 · Article and visual system</h3><p>Create an article with a title, two subheadings, three paragraphs, a list and a table with headers. Define a palette in <code>:root</code>, a typographic scale and two different backgrounds. Compare a background using alpha with a container using <code>opacity</code>. Include the code and explain the observed difference. Check readability when text is enlarged.</p></article></section><section id="selectores-avanzados"><h2>4. Advanced selectors</h2>
+<p>We can refine selection using relationships between elements, attributes, interaction states and positions in the document. The aim is to select what we need without unnecessary classes or rules that are hard to maintain.</p>
+<h4>Relationships between elements: combinators</h4>
+<div class="table-wrap"><table><caption>CSS combinators</caption><thead><tr><th scope="col">Relationship</th><th scope="col">Example</th><th scope="col">What it selects</th></tr></thead><tbody>
+<tr><td>Descendant: space</td><td><code>nav a</code></td><td>Links inside <code>nav</code>, even with intermediate elements.</td></tr>
+<tr><td>Direct child: <code>&gt;</code></td><td><code>nav &gt; a</code></td><td>Only links whose parent is <code>nav</code>.</td></tr>
+<tr><td>Next sibling: <code>+</code></td><td><code>h2 + p</code></td><td>The paragraph immediately after an <code>h2</code>, sharing the same parent.</td></tr>
+<tr><td>Subsequent siblings: <code>~</code></td><td><code>h2 ~ p</code></td><td>All paragraphs after the <code>h2</code> that share its parent.</td></tr>
+</tbody></table></div>
+<pre><code>&lt;nav&gt;
+  &lt;a href="inicio.html"&gt;Home&lt;/a&gt;
+  &lt;div&gt;&lt;a href="contacto.html"&gt;Contact&lt;/a&gt;&lt;/div&gt;
+&lt;/nav&gt;
+
+nav a { color: #1e3a8a; }       /* Both links. */
+nav &gt; a { font-weight: bold; } /* Home only. */</code></pre>
+<p>Combinators describe relationships but add no specificity. Avoid very long chains dependent on every intermediate container: a small HTML change could stop the rule matching.</p>
+<h4>Attribute selectors</h4>
+<p>Square brackets select by attribute presence or value. They are useful for distinguishing form fields and link types.</p>
+<pre><code>/* Elements with the required attribute. */
+[required] { border-left: 3px solid #b45309; }
+
+/* Fields whose type is exactly email. */
+input[type="email"] { background-color: #eff6ff; }
+
+/* Links whose href starts with https://. */
+a[href^="https://"] { text-decoration: underline; }
+
+/* Links whose href ends in .pdf. */
+a[href$=".pdf"] { font-weight: bold; }
+
+/* Links whose href contains /recursos/. */
+a[href*="/recursos/"] { color: #0f766e; }</code></pre>
+<p><code>=</code> compares the whole value; <code>^=</code>, its beginning; <code>$=</code>, its end; and <code>*=</code>, part of the value. These selectors compare the attribute: <code>[href$=".pdf"]</code> will not match a link ending in <code>.pdf?descarga=1</code>.</p>
+<h4>Pseudo-classes: state and position</h4>
+<p>Pseudo-classes use <strong>a colon</strong>. They select elements meeting a condition, such as being under the pointer, having visible focus or occupying a particular sibling position.</p>
+<div class="table-wrap"><table><caption>Common pseudo-classes and their meaning</caption><thead><tr><th scope="col">Pseudo-class</th><th scope="col">Meaning</th><th scope="col">Selector example</th></tr></thead><tbody>
+<tr><td><code>:hover</code></td><td>Pointer over the element.</td><td><code>button:hover</code></td></tr>
+<tr><td><code>:active</code></td><td>During activation.</td><td><code>a:active</code></td></tr>
+<tr><td><code>:focus</code></td><td>Focused element.</td><td><code>input:focus</code></td></tr>
+<tr><td><code>:focus-visible</code></td><td>Focused, with an indicator the browser considers necessary.</td><td><code>button:focus-visible</code></td></tr>
+<tr><td><code>:focus-within</code></td><td>The element or a descendant has focus.</td><td><code>form:focus-within</code></td></tr>
+<tr><td><code>:checked</code></td><td>Checked checkbox or radio; selected option.</td><td><code>input:checked</code></td></tr>
+<tr><td><code>:disabled</code></td><td>Disabled control.</td><td><code>button:disabled</code></td></tr>
+<tr><td><code>:required</code></td><td>Required field.</td><td><code>input:required</code></td></tr>
+<tr><td><code>:valid</code></td><td>Passes validation.</td><td><code>input:valid</code></td></tr>
+<tr><td><code>:invalid</code></td><td>Fails validation.</td><td><code>input:invalid</code></td></tr>
+<tr><td><code>:first-child</code></td><td>First element among siblings.</td><td><code>li:first-child</code></td></tr>
+<tr><td><code>:last-child</code></td><td>Last element among siblings.</td><td><code>li:last-child</code></td></tr>
+<tr><td><code>:nth-child(n)</code></td><td>Specified position among siblings.</td><td><code>li:nth-child(2n)</code></td></tr>
+<tr><td><code>:nth-of-type(n)</code></td><td>Position among siblings of the same element type.</td><td><code>p:nth-of-type(2)</code></td></tr>
+<tr><td><code>:not()</code></td><td>Does not match the listed selectors.</td><td><code>p:not(.aviso)</code></td></tr>
+<tr><td><code>:is()</code></td><td>Matches one of the selectors.</td><td><code>:is(h1, h2)</code></td></tr>
+<tr><td><code>:where()</code></td><td>Like :is(), but contributes no specificity.</td><td><code>:where(h1, h2)</code></td></tr>
+<tr><td><code>:has()</code></td><td>Matches the specified relationship.</td><td><code>article:has(img)</code></td></tr>
+</tbody></table></div>
+<pre><code>button:hover { background-color: #ccfbf1; }
+button:focus-visible { outline: 3px solid #1e3a8a; }
+input:checked { accent-color: #0f766e; }
+button:disabled { opacity: .6; }
+
+li:first-child { font-weight: bold; }
+li:last-child { border-bottom: 0; }
+li:nth-child(2n) { background-color: #eff6ff; }
+li:not(.destacado) { color: #475569; }</code></pre>
+<p><code>:nth-child(2n)</code> selects even positions. Positions start at 1 and count <strong>all element siblings</strong>; the rule above applies only if the element at that position is an <code>li</code>. <code>:not(.destacado)</code> excludes elements with that class.</p>
+<article aria-labelledby="boton-wcag-titulo" class="exercise" id="actividad-boton-wcag">
+<h3 id="boton-wcag-titulo">Activity · Design the states of an accessible button</h3>
+<p>Create a <code>&lt;button type="button"&gt;Guardar&lt;/button&gt;</code> and define its six states using CSS. Use Unit 1's diagram as a visual reference: WCAG sets accessibility requirements, not a mandatory list of six states for every button.</p>
+<figure><div aria-label="Button-state diagram; horizontally scrollable" class="table-wrap" role="region" tabindex="0"><svg aria-labelledby="estados-boton-title estados-boton-desc" height="160" role="img" style="min-width:760px" viewbox="0 0 760 160" width="100%" xmlns="http://www.w3.org/2000/svg"><title id="estados-boton-title">Button states: Unit 1 diagram</title><desc id="estados-boton-desc">Default, hover, keyboard focus, active, disabled and loading.</desc>
+<rect fill="#f8fafc" height="160" rx="8" width="760" x="0" y="0"></rect>
+<g transform="translate(15, 40)">
+<rect fill="#2563eb" height="45" rx="6" width="105" x="0" y="0"></rect>
+<text fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" x="52" y="27">Default</text>
+<text fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle" x="52" y="75">Default state</text>
+</g>
+<g transform="translate(138, 40)">
+<rect fill="#1d4ed8" height="45" rx="6" width="105" x="0" y="0"></rect>
+<text fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" x="52" y="27">Hover</text>
+<text fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle" x="52" y="75">Pointer over</text>
+</g>
+<g transform="translate(261, 40)">
+<rect fill="#2563eb" height="45" rx="6" stroke="#f59e0b" stroke-width="4" width="105" x="0" y="0"></rect>
+<text fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" x="52" y="27">Focus</text>
+<text fill="#d97706" font-family="Inter, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" x="52" y="75">Tab key (2.4.7)</text>
+</g>
+<g transform="translate(384, 40)">
+<rect fill="#1e40af" height="45" rx="6" width="105" x="0" y="0"></rect>
+<text fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" x="52" y="27">Active</text>
+<text fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle" x="52" y="75">Click / Pressed</text>
+</g>
+<g transform="translate(507, 40)">
+<rect fill="#94a3b8" height="45" rx="6" width="105" x="0" y="0"></rect>
+<text fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" x="52" y="27">Disabled</text>
+<text fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle" x="52" y="75">Disabled</text>
+</g>
+<g transform="translate(630, 40)">
+<rect fill="#60a5fa" height="45" rx="6" width="105" x="0" y="0"></rect>
+<circle cx="52" cy="22" fill="none" r="7" stroke="#ffffff" stroke-dasharray="10 5" stroke-width="2"></circle>
+<text fill="#64748b" font-family="Inter, sans-serif" font-size="10" text-anchor="middle" x="52" y="75">Loading data</text>
+</g>
+</svg></div><figcaption>Unit 1 diagram: six interaction states. Check the contrast of your own design.</figcaption></figure>
+<div class="table-wrap"><table><caption>States to implement</caption><thead><tr><th scope="col">State</th><th scope="col">Selector</th><th scope="col">What to check</th></tr></thead><tbody>
+<tr><td>Default</td><td><code>.boton</code></td><td>Clear text and recognisable button appearance.</td></tr>
+<tr><td>Hover</td><td><code>.boton:hover</code></td><td>Visual response without requiring a mouse to use it.</td></tr>
+<tr><td>Focus</td><td><code>.boton:focus-visible</code></td><td>Visible outline when reached with Tab, including while hovered or active.</td></tr>
+<tr><td>Pressed</td><td><code>.boton:active</code></td><td>Response during the press; not a permanent selection.</td></tr>
+<tr><td>Disabled</td><td><code>.boton:disabled</code></td><td>Use the HTML disabled attribute; changing the colour does not disable the button.</td></tr>
+<tr><td>Loading</td><td><code>.boton[aria-busy="true"]</code></td><td>Show “Saving…”. There is no :loading; simulate the state in HTML or activate it with JavaScript.</td></tr>
+</tbody></table></div>
+<p>Prepare a sample of each state and a button for real interaction testing. If JavaScript simulates an operation, prevent repeated submissions while loading and communicate the result in a message with <code>role="status"</code>. <code>aria-busy</code> does not block clicks by itself.</p>
+<h4>WCAG 2.2 checks</h4>
+<ul>
+<li><strong>Keyboard (2.1.1):</strong> reach it with Tab and activate it with Enter and Space. Use a native HTML button.</li>
+<li><strong>Focus (2.4.7 and 2.4.11):</strong> keep a visible indicator and check that the focused element is not completely hidden.</li>
+<li><strong>Contrast (1.4.3 and 1.4.11):</strong> at least 4.5:1 for normal text; 3:1 against adjacent colours for visual information needed to identify the control and its states. Inactive controls are exempt but should remain recognisable.</li>
+<li><strong>Colour (1.4.1):</strong> indicate loading with text, not just a colour change.</li>
+<li><strong>Size (2.5.8):</strong> the AA minimum is 24 × 24 CSS pixels, with spacing and other exceptions. Use at least 44 × 44 in this exercise to make activation easier.</li>
+<li><strong>Name and messages (4.1.2 and 4.1.3):</strong> an understandable label and an operation result perceivable through assistive technology.</li>
+</ul>
+<p><strong>Submit:</strong> HTML, commented CSS and JavaScript if used. Include six-state samples and a short keyboard check with measured contrast ratios.</p>
+<a aria-label="Submit the accessible button activity (opens a new tab)" class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" rel="noopener noreferrer" target="_blank"><svg aria-hidden="true" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M12 16V3m-5 5 5-5 5 5M4 16v5h16v-5"></path></svg> Submit</a>
+</article>
+<aside aria-labelledby="boton-wcag-recursos" class="extension-card"><p class="card-label">Further reading</p><h4 id="boton-wcag-recursos">Checking an accessible button</h4><p><a href="https://www.w3.org/WAI/WCAG22/quickref/" rel="noopener noreferrer" target="_blank">WCAG 2.2 criteria ↗</a> · <a href="https://www.w3.org/WAI/ARIA/apg/patterns/button/" rel="noopener noreferrer" target="_blank">Button interaction and states · WAI ↗</a></p></aside>
+<h4>Pseudo-elements: parts of an element</h4>
+<p>They use <strong>two consecutive colons</strong> (<code>::</code>) and style parts of an element or generate decorative content. They do not add real HTML elements.</p>
+<div class="table-wrap"><table><caption>Common pseudo-elements and their meaning</caption><thead><tr><th scope="col">Pseudo-element</th><th scope="col">Meaning</th><th scope="col">Selector example</th></tr></thead><tbody>
+<tr><td><code>::before</code></td><td>Generates content at the beginning of the element; uses content.</td><td><code>.etiqueta::before</code></td></tr>
+<tr><td><code>::after</code></td><td>Generates content at the end of the element; uses content.</td><td><code>.etiqueta::after</code></td></tr>
+<tr><td><code>::first-letter</code></td><td>First letter of a block's first line.</td><td><code>p::first-letter</code></td></tr>
+<tr><td><code>::first-line</code></td><td>First line of a block; changes with width.</td><td><code>p::first-line</code></td></tr>
+<tr><td><code>::marker</code></td><td>Bullet or number of a list item.</td><td><code>li::marker</code></td></tr>
+<tr><td><code>::selection</code></td><td>Text selected by the user.</td><td><code>p::selection</code></td></tr>
+<tr><td><code>::placeholder</code></td><td>Placeholder text in a field.</td><td><code>input::placeholder</code></td></tr>
+<tr><td><code>::file-selector-button</code></td><td>Button in a file-upload field.</td><td><code>input::file-selector-button</code></td></tr>
+<tr><td><code>::backdrop</code></td><td>Backdrop behind a top-layer element, such as a modal dialog.</td><td><code>dialog::backdrop</code></td></tr>
+</tbody></table></div>
+<pre><code>.articulo::first-letter { font-size: 2em; }
+.articulo::first-line { font-weight: bold; }
+li::marker { color: #0f766e; }
+
+.etiqueta::before {
+  content: "";
+  display: inline-block;
+  width: .5em;
+  height: .5em;
+  margin-right: .4em;
+  border-radius: 50%;
+  background-color: #0f766e;
+}</code></pre>
+<p><code>::before</code> and <code>::after</code> usually need <code>content</code> to generate their boxes. Use them for decoration; put instructions, labels and essential information in HTML. Remember: a pseudo-class selects by condition; a pseudo-element styles a part.</p>
+<article class="exercise" id="act-02-01"><h3>Activity 02-01 · Investigate selectors</h3><p>Complete as many levels of <a href="https://flukeout.github.io/">CSS Diner</a> as you can.</p><p><strong>Submit:</strong> a screenshot showing the last level reached.</p><a aria-label="Submit the CSS Diner activity (opens the form in a new tab)" class="delivery-trigger" href="https://docs.google.com/forms/d/e/1FAIpQLSdVX2Ci6UrDbSFx9W63KT5Yks5shY7iEcLaq8p3Us4e9w4o3A/viewform?usp=publish-editor" rel="noopener noreferrer" target="_blank"><svg aria-hidden="true" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M12 16V3m-5 5 5-5 5 5M4 16v5h16v-5"></path></svg> Submit</a></article></section><section id="posicion"><h2>5. Positioning</h2><h3 id="caja-display">5.1. The display property</h3><aside class="extension-card" id="laboratorio-display"><p class="card-label">Interactive laboratory</p><h4>Experiment with display</h4><p>Compare block, inline, inline-block and none. Change width and height to discover when they apply.</p><a href="../../labs/diw-display.html" rel="noopener noreferrer" target="_blank">Open the display laboratory ↗</a></aside>
+<p>By default, many HTML elements are displayed <strong>as blocks</strong> or <strong>inline</strong>. The browser applies this behaviour through its initial styles.</p><!-- propiedades-caja-display --><div class="table-wrap"><table><caption>Reference properties and values</caption><thead><tr><th scope="col">Property</th><th scope="col">Values and meaning</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>display</code></td><td>Common values: block, inline, inline-block, flow-root, list-item, flex, inline-flex, grid, inline-grid, table, inline-table, table-row-group, table-header-group, table-footer-group, table-row, table-cell, table-column-group, table-column, table-caption, contents and none. Outer and inner combinations such as inline flex are also supported. Flexbox and Grid are covered later.</td><td><code>display: block;</code></td></tr><tr><td><code>visibility</code></td><td>visible shows the box; hidden hides it while preserving space; collapse behaves specifically in tables and other contexts.</td><td><code>visibility: hidden;</code></td></tr><tr><td><code>opacity</code></td><td>Opacity of the whole element: 0 to 1, or 0% to 100%.</td><td><code>opacity: 0.5;</code></td></tr></tbody></table></div>
+<div class="table-wrap"><table><caption>Examples of default behaviour</caption><thead><tr><th scope="col">Type</th><th scope="col">How it is displayed</th><th scope="col">Common elements</th></tr></thead><tbody>
+<tr><td><strong>Block</strong></td><td>Starts on a new line and, with automatic width, uses the available container width.</td><td><code>&lt;div&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;header&gt;</code>, <code>&lt;footer&gt;</code>.</td></tr>
+<tr><td><strong>Inline</strong></td><td>Sits alongside text and other inline elements while space remains.</td><td><code>&lt;span&gt;</code>, <code>&lt;a&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;label&gt;</code>, <code>&lt;code&gt;</code>.</td></tr>
+</tbody></table></div>
+<p>For example, two <code>&lt;div&gt;</code> appear one below the other; two <code>&lt;span&gt;</code> can appear on the same line. <strong>The property <code>display</code> changes this behaviour.</strong></p>
+<pre><code>/* A link occupies a line as a block. */
+a.enlace-bloque {
+  display: block;
+}
+
+/* A div participates in the text line. */
+div.texto-en-linea {
+  display: inline;
+}</code></pre>
+<p>The change is visual: the link remains a link and the <code>div</code> remains a container. <code>display</code> does not change the HTML element's meaning.</p>
+<p>Besides <code>block</code> and <code>inline</code>, we can use <code>inline-block</code> to give an inline box dimensions and <code>none</code> to hide it. Let us compare them.</p>
+<h4>Block, inline and inline-block</h4>
+<div class="table-wrap"><table><caption>Behaviour in normal flow</caption><thead><tr><th scope="col">Value</th><th scope="col">Layout</th><th scope="col">Dimensions and spacing</th></tr></thead><tbody>
+<tr><td><code>block</code></td><td>Starts on a new line. With automatic width, it normally uses available horizontal space.</td><td>Supports width, height, padding, borders and margins. A smaller width does not automatically place the next block beside it.</td></tr>
+<tr><td><code>inline</code></td><td>Participates in text lines and may split across several lines.</td><td>On non-replaced elements, such as a <code>span</code>, <code>width</code> and <code>height</code> do not set its size. Vertical margins do not separate lines; vertical padding and borders may extend beyond the line without increasing its height.</td></tr>
+<tr><td><code>inline-block</code></td><td>Participates in a line as one unit, without splitting across lines.</td><td>Supports dimensions and vertical margins. HTML whitespace may leave gaps between boxes; <code>vertical-align</code> adjusts their alignment within the line.</td></tr>
+</tbody></table></div>
+<pre><code>&lt;div class="prueba"&gt;
+  Before &lt;span class="pieza"&gt;A box&lt;/span&gt; after
+&lt;/div&gt;
+
+.pieza {
+  display: inline-block; /* Also try inline and block. */
+  width: 10rem;
+  min-height: 3rem;
+  padding: .5rem;
+  border: 2px solid #0f766e;
+  vertical-align: middle;
+}</code></pre>
+<p>With <code>inline</code> observe how text determines width; with <code>block</code>, how line breaks appear; with <code>inline-block</code>, how dimensions remain within the line. Images are replaced elements: they can have width and height even when displayed inline.</p>
+<h4>Other display values</h4>
+<p>The values <code>display: flex</code> and <code>display: inline-flex</code> will be covered later in the <a href="#flexbox">Flexbox section</a>.</p>
+<ul><li><code>flow-root</code> creates a new block formatting context. Useful for containing floats and preventing child margins from collapsing with container margins.</li><li><code>list-item</code> generates a list-item box with a marker. <code>table</code>, <code>table-row</code> and <code>table-cell</code> enable table behaviour; use semantic table HTML for tabular data.</li><li><code>contents</code> removes the element's box and lets its children participate directly. Do not use it as a general container replacement: check its accessibility effects and the element's own styles.</li></ul>
+<h4>Hiding can mean different things</h4>
+<ul><li><code>display: none</code> removes the element's and descendants' boxes from layout and normally from the accessibility tree. The HTML remains in the DOM.</li><li><code>visibility: hidden</code> hides the element while preserving space. It does not remove it from the flow.</li><li><code>opacity: 0</code> makes it transparent but preserves space and may retain clicks and focus. It is not enough on its own to hide an interactive control.</li></ul>
+<aside aria-labelledby="display-more" class="extension-card"><p class="card-label">Further reading</p><h4 id="display-more">More about display</h4><p>See this property's values and usage examples.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/display" rel="noopener noreferrer" target="_blank">Read about display on MDN ↗</a></aside>
+<h3 id="caja-position">5.2. The position property</h3><aside class="extension-card" id="laboratorio-position"><p class="card-label">Interactive laboratory</p><h4>Experiment with position</h4><p>Compare static, relative, absolute, fixed and sticky. Change offsets and the container reference, and observe stacking.</p><a href="../../labs/diw-posicionamiento.html" rel="noopener noreferrer" target="_blank">Open the position laboratory ↗</a></aside>
+<p><code>position</code> determines how a box is positioned. <strong>Preserving its space</strong> means other elements still leave its original space, even when the box moves.</p>
+<div class="table-wrap"><table><caption>Position values</caption><thead><tr><th scope="col">Value</th><th scope="col">Does it preserve its space?</th><th scope="col">How it is positioned</th></tr></thead><tbody>
+<tr><td><code>static</code></td><td>Yes.</td><td>Initial value. Follows normal flow; top, right, bottom and left do not move it.</td></tr>
+<tr><td><code>relative</code></td><td>Yes, at its original position.</td><td>Moves from where it would normally be.</td></tr>
+<tr><td><code>absolute</code></td><td>No.</td><td>Usually positioned relative to the closest ancestor whose position is not static.</td></tr>
+<tr><td><code>fixed</code></td><td>No.</td><td>Usually fixed to the viewport, remaining visible as the page scrolls.</td></tr>
+<tr><td><code>sticky</code></td><td>Yes.</td><td>Scrolls with content until reaching a threshold such as top: 0, then sticks within its container.</td></tr>
+</tbody></table></div>
+<h4>Specifying position</h4>
+<p><code>top</code>, <code>right</code>, <code>bottom</code> and <code>left</code> specify distances. <code>inset</code> combines all four. Their reference depends on <code>position</code>:</p>
+<!-- tabla-desplazamientos --><div class="table-wrap"><table><caption>Offsets and stacking</caption><thead><tr><th scope="col">Property</th><th scope="col">Purpose and values</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>top</code></td><td>Offsets or sets the corresponding inset on positioned boxes: auto, length or percentage.</td><td><code>top: 0;</code></td></tr><tr><td><code>right</code></td><td>Offsets or sets the corresponding inset on positioned boxes: auto, length or percentage.</td><td><code>right: 1rem;</code></td></tr><tr><td><code>bottom</code></td><td>Offsets or sets the corresponding inset on positioned boxes: auto, length or percentage.</td><td><code>bottom: 0;</code></td></tr><tr><td><code>left</code></td><td>Offsets or sets the corresponding inset on positioned boxes: auto, length or percentage.</td><td><code>left: 1rem;</code></td></tr><tr><td><code>inset</code></td><td>Shorthand for top, right, bottom and left; accepts one to four values.</td><td><code>inset: 0;</code></td></tr><tr><td><code>z-index</code></td><td>Stack level: auto or an integer. Interpreted within the stacking context, not across the whole page.</td><td><code>z-index: 10;</code></td></tr></tbody></table></div><pre><code>/* Moves down 12 px from its original position; preserves the space. */
+.aviso {
+  position: relative;
+  top: 12px;
+}
+
+/* Stays 16 px from the viewport bottom-right corner. */
+.ayuda {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+}</code></pre>
+<h4>Absolute: place a label inside a card</h4>
+<pre><code>&lt;div class="tarjeta"&gt;
+  &lt;span class="insignia"&gt;New&lt;/span&gt;
+  &lt;p&gt;Card content&lt;/p&gt;
+&lt;/div&gt;
+
+.tarjeta {
+  position: relative;
+  padding: 3rem 1rem 1rem;
+}
+.insignia {
+  position: absolute;
+  top: .5rem;
+  right: .5rem;
+}</code></pre>
+<p>The card provides a reference without moving. The label occupies its top-right corner; top padding reserves room so it does not cover text. Without an ancestor establishing a reference, <code>absolute</code> uses the document's initial containing block.</p>
+<h4>Sticky: keep navigation visible</h4>
+<pre><code>.navegacion {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: white;
+}</code></pre>
+<p>Sticks to the top edge of its scrolling area and stops at its container's boundary. It needs a threshold such as <code>top: 0</code> and room to move. Check ancestors with <code>overflow: auto</code>, <code>scroll</code> or <code>hidden</code>: they may change that reference area.</p>
+<p>An ancestor with <code>transform</code> other than <code>none</code> can also become the reference for <code>absolute</code> and <code>fixed</code>; in the latter case, the box is no longer fixed to the viewport.</p>
+<h4>Overlapping: z-index</h4>
+<p><code>z-index</code> controls which box appears in front when boxes overlap. In the same stacking context, a higher value is drawn above. Contexts group elements: a child cannot escape its group simply by using a huge number.</p>
+<aside aria-labelledby="position-more" class="extension-card"><p class="card-label">Further reading</p><h4 id="position-more">Practise positioning</h4><p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position" rel="noopener noreferrer" target="_blank">Position examples on MDN ↗</a> · <a href="https://www.w3.org/TR/css-position-3/" rel="noopener noreferrer" target="_blank">W3C positioning reference ↗</a></p></aside>
+<article class="exercise" id="act-02-04"><h3>Activity 02-04 · Compare positions</h3><p>Create three boxes and try <code>relative</code>, <code>absolute</code> and <code>fixed</code> on the second. Record what happens to its space and its reference in each case. Add <code>sticky</code> navigation and enough text to test it. Submit the three variants and your conclusions.</p></article><aside aria-labelledby="ampliacion-parallax" class="extension-card">
+<p class="card-label">Further reading</p><h4 id="ampliacion-parallax">A simple parallax effect</h4>
+<p>The <strong>parallax</strong> effect creates depth when background and content move differently. A simple approximation fixes a background image to the viewport while text scrolls above it.</p>
+<pre><code>&lt;section class="parallax"&gt;
+  &lt;h2&gt;Discover our surroundings&lt;/h2&gt;
+&lt;/section&gt;
+
+.parallax {
+  min-height: 20rem;
+  padding: 3rem 1rem;
+  color: white;
+  background-image: linear-gradient(rgb(0 0 0 / .65), rgb(0 0 0 / .65)),
+                    url("imagenes/paisaje.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+}
+
+/* Enable on wide screens when reduced motion is not requested. */
+@media (min-width: 48rem) and (prefers-reduced-motion: no-preference) {
+  .parallax { background-attachment: fixed; }
+}</code></pre>
+<p>Replace the path with your own image and add content before and after it so the page can scroll. The dark overlay helps the heading remain readable: check contrast with your photograph. Mobile keeps the normal background; some mobile browsers limit <code>fixed</code>.</p>
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/background-attachment" rel="noopener noreferrer" target="_blank">Read about background-attachment on MDN ↗</a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion" rel="noopener noreferrer" target="_blank">Read about reduced motion on MDN ↗</a>
+</aside>
+</section><section id="flexbox"><h2>6. Flexbox: layout along one axis</h2><p>Flexbox arranges a container's direct children along a main axis. <code>flex-direction</code> defines that axis; <code>justify-content</code> distributes space along it and <code>align-items</code> aligns along the cross axis. With <code>flex-wrap</code> , new lines appear. Items can grow or shrink through <code>flex</code>.</p><!-- tabla-flexbox --><div class="table-wrap"><table><caption>Flexbox properties</caption><thead><tr><th scope="col">Property</th><th scope="col">Purpose and values</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>flex-direction</code></td><td>Main axis: row, row-reverse, column or column-reverse.</td><td><code>flex-direction: row;</code></td></tr><tr><td><code>flex-wrap</code></td><td>One or several lines: nowrap, wrap or wrap-reverse.</td><td><code>flex-wrap: wrap;</code></td></tr><tr><td><code>flex-flow</code></td><td>Shorthand for direction and line wrapping.</td><td><code>flex-flow: row wrap;</code></td></tr><tr><td><code>justify-content</code></td><td>Distributes space on the main axis: normal, start, end, flex-start, flex-end, center, left, right, space-between, space-around, space-evenly or stretch. In flex, stretch behaves as flex-start.</td><td><code>justify-content: space-between;</code></td></tr><tr><td><code>align-items</code></td><td>Aligns items on the cross axis: normal, stretch, start, end, self-start, self-end, flex-start, flex-end, center, baseline, first baseline or last baseline.</td><td><code>align-items: center;</code></td></tr><tr><td><code>align-content</code></td><td>Distributes lines when cross-axis space is available: normal, stretch, start, end, flex-start, flex-end, center, baseline, first baseline, last baseline, space-between, space-around or space-evenly. Has no effect in a single-line container.</td><td><code>align-content: space-between;</code></td></tr><tr><td><code>align-self</code></td><td>Individual alignment: auto or align-items values.</td><td><code>align-self: stretch;</code></td></tr><tr><td><code>flex-grow</code></td><td>Non-negative factor for distributing free space.</td><td><code>flex-grow: 1;</code></td></tr><tr><td><code>flex-shrink</code></td><td>Non-negative shrink factor; the base size also matters.</td><td><code>flex-shrink: 1;</code></td></tr><tr><td><code>flex-basis</code></td><td>Base size: auto, content, length, percentage or intrinsic sizes.</td><td><code>flex-basis: 15rem;</code></td></tr><tr><td><code>flex</code></td><td>Shorthand for grow, shrink and basis; also auto, initial or none.</td><td><code>flex: 1 1 15rem;</code></td></tr><tr><td><code>order</code></td><td>Integer for visual order; does not change reading or tab order.</td><td><code>order: 0;</code></td></tr><tr><td><code>gap</code></td><td>Spacing between rows and columns; one or two non-negative values.</td><td><code>gap: 1rem;</code></td></tr><tr><td><code>row-gap</code></td><td>Row spacing: normal, length or percentage.</td><td><code>row-gap: 1rem;</code></td></tr><tr><td><code>column-gap</code></td><td>Column spacing: normal, length or percentage.</td><td><code>column-gap: 1rem;</code></td></tr></tbody></table></div><pre><code>.galeria { display: flex; flex-wrap: wrap; gap: 1rem; }
+.galeria &gt; article { flex: 1 1 15rem; min-width: 0; }
+.barra { display: flex; align-items: center; justify-content: space-between; }</code></pre><div class="demo"><h3>Try the axes</h3><label>Direction <select id="flex-direction"><option>row</option><option>column</option></select></label><label>Distribution <select id="flex-justify"><option>flex-start</option><option>center</option><option>space-between</option><option>space-around</option></select></label><div class="demo-stage" id="flex-stage" style="display:flex;gap:.5rem;min-height:240px"><span>A</span><span>B</span><span>C</span></div><p aria-live="polite" id="flex-output">flex-direction: row; justify-content: flex-start;</p></div><p>Changing visual order does not automatically change DOM order or keyboard navigation. Keep a logical HTML order.</p><article class="exercise" id="act-02-06"><h3>Activity 02-06 · Flexbox gallery</h3><p>Practise with <a href="https://flexboxfroggy.com/#es">Flexbox Froggy</a>. Then build a six-card gallery using Flexbox and explain <code>flex-basis</code>, <code>flex-grow</code> and <code>flex-wrap</code> with examples from your code. Provide narrow and wide screenshots; the gallery must not overflow horizontally.</p></article></section><section id="grid"><h2>7. Grid: rows and columns</h2><p>Grid defines rows and columns together. <code>fr</code> distributes available space; <code>minmax()</code> sets a range. <code>repeat()</code> avoids repeating tracks and <code>auto-fit</code> adjusts the number of columns that fit. In designs with long text, <code>minmax(0, 1fr)</code> prevents a track's intrinsic minimum from forcing overflow.</p><!-- tabla-grid --><div class="table-wrap"><table><caption>Grid properties</caption><thead><tr><th scope="col">Property</th><th scope="col">Purpose and values</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>grid-template-columns</code></td><td>Explicit columns: none, a size list, repeat() or subgrid. Combine lengths, percentages, fr, auto, min-content, max-content, minmax() and fit-content().</td><td><code>grid-template-columns: repeat(3, 1fr);</code></td></tr><tr><td><code>grid-template-rows</code></td><td>Explicit rows with the same sizing options.</td><td><code>grid-template-rows: auto 1fr auto;</code></td></tr><tr><td><code>grid-template-areas</code></td><td>Names rectangular areas using strings; a dot leaves a cell unnamed; none removes areas.</td><td><code>grid-template-areas: "cabecera cabecera" "menu principal";</code></td></tr><tr><td><code>grid-auto-columns</code></td><td>Size of implicit columns created outside the template.</td><td><code>grid-auto-columns: 1fr;</code></td></tr><tr><td><code>grid-auto-rows</code></td><td>Size of implicit rows.</td><td><code>grid-auto-rows: minmax(8rem, auto);</code></td></tr><tr><td><code>grid-auto-flow</code></td><td>Automatic placement: row or column, optionally dense. Dense may change visual order.</td><td><code>grid-auto-flow: row;</code></td></tr><tr><td><code>grid-column</code></td><td>Column start and end: auto, line number or name, span and a / separator.</td><td><code>grid-column: 1 / span 2;</code></td></tr><tr><td><code>grid-row</code></td><td>Row start and end.</td><td><code>grid-row: 2 / 4;</code></td></tr><tr><td><code>grid-area</code></td><td>Area name or four boundaries: row start / column start / row end / column end.</td><td><code>grid-area: principal;</code></td></tr><tr><td><code>gap</code></td><td>Row and column spacing; one or two values.</td><td><code>gap: 1rem 2rem;</code></td></tr><tr><td><code>justify-items</code></td><td>Item alignment along the inline axis: normal, stretch, start, end, center, self-start, self-end, left, right or baseline alignment.</td><td><code>justify-items: stretch;</code></td></tr><tr><td><code>align-items</code></td><td>Block-axis alignment: normal, stretch, start, end, center, self-start, self-end or baseline alignment.</td><td><code>align-items: start;</code></td></tr><tr><td><code>justify-self</code></td><td>Individual inline alignment: auto or justify-items values.</td><td><code>justify-self: center;</code></td></tr><tr><td><code>align-self</code></td><td>Individual block alignment: auto or align-items values.</td><td><code>align-self: center;</code></td></tr><tr><td><code>justify-content</code></td><td>Grid distribution along the inline axis: normal, stretch, start, end, center, left, right, space-between, space-around or space-evenly.</td><td><code>justify-content: center;</code></td></tr><tr><td><code>align-content</code></td><td>Grid distribution along the block axis: normal, stretch, start, end, center, baseline or space-between, space-around, space-evenly.</td><td><code>align-content: start;</code></td></tr></tbody></table></div><pre><code>.rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1rem;
+}
+@media (min-width: 48rem) {
+  .destacada { grid-column: span 2; }
+}</code></pre><p>Use Grid for overall layout and Flexbox inside a card. Choose according to element relationships: a row of controls often suits Flexbox; aligned rows and columns suit Grid.</p><article class="exercise" id="act-02-07"><h3>Activity 02-07 · Twelve boxes with Grid</h3><p>Practise with <a href="https://cssgridgarden.com/#es">Grid Garden</a>. Then create twelve numbered boxes: one column below 480 px, two from 480 to 640 px, and four above 640 px. In the wide view, box 12 must span two columns with a 10 px gap. Keep a coherent reading order. Compare a row of cards built with Flexbox and with Grid.</p></article></section><section id="preferencias"><h2>8. Preferences and interface checks</h2><p>Define colours through variables to create consistent themes. <code>prefers-color-scheme</code> respects the system preference; if you add a button, it must communicate its state and allow a return to automatic mode. Check every component in both themes, including forms and focus.</p><!-- propiedades-preferencias --><div class="table-wrap"><table><caption>Reference properties and values</caption><thead><tr><th scope="col">Property</th><th scope="col">Values and meaning</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>color-scheme</code></td><td>Specifies schemes available to native browser UI: normal, light, dark or combinations such as light dark; only prevents automatic replacement of the specified scheme. It does not set every page colour on its own.</td><td><code>color-scheme: light dark;</code></td></tr></tbody></table></div><pre><code>:root { --fondo: #fff; --texto: #172033; color-scheme: light; }
+@media (prefers-color-scheme: dark) {
+  :root { --fondo: #172033; --texto: #f8fafc; color-scheme: dark; }
+}
+body { background: var(--fondo); color: var(--texto); }
+@media (prefers-reduced-motion: reduce) {
+  .parallax { background-attachment: scroll; }
+}</code></pre><p>A parallax effect is decorative and needs a stable alternative. For accessibility, review semantic HTML, control names, reading order and keyboard navigation. Check that the interface retains a clear reading order and every control works with a keyboard.</p><article class="exercise" id="act-02-08"><h3>Activity 02-08 · Band website</h3><p>Create Home, Band, Events, Gallery and Contact sections. Combine Flexbox and Grid, explaining each choice. Add light, dark and automatic themes and a decorative effect that respects reduced motion. Check keyboard use, focus, labels, zoom and overflow. Submit a ZIP, screenshots at three widths and a table of issues found and fixed.</p></article></section><section id="responsive"><h2>9. Responsive design and media</h2><p>Responsive design combines flexible measurements, adaptable resources and layout changes. Mobile first begins with a narrow screen and adds rules using <code>min-width</code> when the content needs them. Breakpoints are design decisions, not a universal device list.</p><pre><code>&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+
+/* CSS: start with one column */
+.contenido { display: grid; gap: 1rem; }
+@media (min-width: 48rem) {
+  .contenido { grid-template-columns: 2fr 1fr; }
+}
+@media print {
+  nav, .decoracion { display: none; }
+  body { color: #000; background: #fff; }
+}</code></pre><p>Test intermediate widths, orientation, zoom and long text. A mobile menu must open with a button and keyboard, communicate its state and keep links reachable. Hide decoration where appropriate but retain necessary information. Also check print preview.</p><article class="exercise" id="act-02-05"><h3>Activity 02-05 · Bar Ramón: foundation and adaptation</h3><p>Design the Bar Ramón homepage with a header, sticky navigation, introduction, nine cards about Úbeda and a booking form with visible labels. Use external CSS, variables, shadows and a gradient. The form is a mockup: it must not claim a booking was sent without a submission service.</p><p>Adapt the cards to one, two and three columns as space allows; retain all nine at every size. Centre the form on mobile and remove only decorative images. Do not let a fixed footer cover content. Prepare a printable contact-information view. Submit the project and screenshots at 360, 768 and 1280 px, explaining your breakpoints.</p></article></section><section id="repaso"><h2>10. Review and submission</h2><details><summary>What is the difference between margin and padding?</summary><p>Padding separates content from the border; margin separates the box from its surroundings.</p></details><details><summary>Why is a scaled-down desktop interface not necessarily responsive?</summary><p>Layout, reading and interaction must also adapt, and the content must remain usable.</p></details><details><summary>Does Flexbox replace Grid?</summary><p>They complement each other and can be combined for different layout relationships.</p></details><div class="checks"><p>Before submitting: check relative paths, semantic HTML, organised CSS, included resources, usable links, visible focus, and mobile and desktop behaviour. Identify each activity with its new code. The submission channel and deadline will be announced in class.</p></div></section><section id="fuentes"><h2>11. Reference resources</h2><ul><li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Flexible_box_layout">MDN · Flexbox</a>.</li></ul></section><footer><p>DIW · Ignacio García.</p></footer></main></div><script>document.documentElement.classList.add('js');
+const toggle=document.querySelector('.toc-toggle'),toc=document.querySelector('.sidebar-toc');
+function setToc(open){toggle.setAttribute('aria-expanded',String(open));toc.classList.toggle('is-open',open);toggle.textContent=open?'Close contents':'Contents';}
+toggle.addEventListener('click',()=>setToc(toggle.getAttribute('aria-expanded')!=='true'));
+toc.addEventListener('click',e=>{const link=e.target.closest('a');if(!link)return;setToc(false);const heading=document.getElementById(link.hash.slice(1));if(heading){heading.setAttribute('tabindex','-1');heading.focus({preventScroll:true});}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&toc.classList.contains('is-open')){setToc(false);toggle.focus();}});
+document.addEventListener('click',e=>{if(!toc.contains(e.target)&&!toggle.contains(e.target))setToc(false);});
+const languageLink=document.querySelector('.language-switch');
+function syncLanguageLink(){languageLink.href=languageLink.getAttribute('href').split('#')[0]+location.hash;}
+window.addEventListener('hashchange',syncLanguageLink);syncLanguageLink();
+const fd=document.querySelector('#flex-direction'),fj=document.querySelector('#flex-justify'),fs=document.querySelector('#flex-stage');function flexUpdate(){fs.style.flexDirection=fd.value;fs.style.justifyContent=fj.value;document.querySelector('#flex-output').textContent=`flex-direction: ${fd.value}; justify-content: ${fj.value};`}fd.addEventListener('change',flexUpdate);fj.addEventListener('change',flexUpdate);</script><script>// Prueba de concepto del modelo de caja: estado independiente de las actividades.
+(()=>{
+ const root=document.querySelector('#laboratorio-caja'); if(!root)return;
+ const ids=['width','height','padding','border','margin'];
+ const fields=Object.fromEntries(ids.map(id=>[id,root.querySelector('#box-lab-'+id)]));
+ const sizing=root.querySelector('#box-lab-sizing'),box=root.querySelector('#box-lab-box');
+ const content=root.querySelector('#box-lab-content'),code=root.querySelector('#box-lab-code');
+ const defaults={width:280,height:140,padding:20,border:2,margin:20};
+ const px=n=>Math.round(n*100)/100;
+ function update(){
+  const v=Object.fromEntries(ids.map(id=>[id,Number(fields[id].value)]));
+  for(const id of ids){root.querySelector('#box-lab-'+id+'-value').textContent=v[id]+' px';fields[id].setAttribute('aria-valuetext',v[id]+' pixels');}
+  box.style.boxSizing=sizing.value;
+  for(const id of ['width','height','padding','margin'])box.style[id]=v[id]+'px';
+  box.style.borderWidth=v.border+'px';
+  code.textContent=`.caja {\n  box-sizing: ${sizing.value};\n  width: ${v.width}px;\n  height: ${v.height}px;\n  padding: ${v.padding}px;\n  border: ${v.border}px solid #6d28d9;\n  margin: ${v.margin}px;\n}`;
+  const b=box.getBoundingClientRect(),c=content.getBoundingClientRect();
+  root.querySelector('#box-lab-measures').textContent=`Content: ${px(c.width)} × ${px(c.height)} px · Box including border: ${px(b.width)} × ${px(b.height)} px · Including margins: ${px(b.width+2*v.margin)} × ${px(b.height+2*v.margin)} px.`;
+  root.querySelector('#box-lab-formula').textContent=sizing.value==='content-box'
+   ?`Box width: ${v.width} + ${2*v.padding} padding + ${2*v.border} border = ${px(b.width)} px.`
+   :(v.width<2*(v.padding+v.border)||v.height<2*(v.padding+v.border))
+    ?'Padding and border exceed a specified dimension: content cannot be smaller than 0 px, so the box grows as needed.'
+    :`Box width: ${v.width} px. Content: ${v.width} − ${2*v.padding} padding − ${2*v.border} border = ${px(c.width)} px.`;
+ }
+ for(const f of Object.values(fields))f.addEventListener('input',update);
+ sizing.addEventListener('change',update);
+ root.querySelector('#box-lab-reset').addEventListener('click',()=>{for(const id of ids)fields[id].value=defaults[id];sizing.value='content-box';update();});
+ update();
+})();
+</script></body></html>
