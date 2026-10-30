@@ -365,6 +365,20 @@ a { color: var(--marca); }</code></pre>
 <tr><td><code>min-height</code></td><td>Sets the minimum height.</td><td><code>min-height: 12rem;</code></td></tr>
 <tr><td><code>max-width</code></td><td>Limits the maximum width.</td><td><code>max-width: 65ch;</code></td></tr>
 <tr><td><code>max-height</code></td><td>Limits the maximum height; excess content may overflow.</td><td><code>max-height: 30rem;</code></td></tr>
+
+
+
+
+
+
+
+</tbody></table></div><aside aria-labelledby="ampliacion-dimensiones" class="extension-card"><p class="card-label">Further reading</p><h4 id="ampliacion-dimensiones">Dimensions: full reference</h4><p>Start with the six properties above. Expand this reference to adapt dimensions to writing mode, content and aspect ratios.</p><details class="full-reference"><summary>Show full explanation, examples and tables</summary><h5>Dimensions and writing direction</h5><p>Logical properties let a layout work with different writing modes. The <em>inline</em> axis follows the line of text; the <em>block</em> axis follows successive lines. With <code>writing-mode: horizontal-tb</code>, <code>inline-size</code> corresponds to <code>width</code> and <code>block-size</code> to <code>height</code>; with <code>vertical-rl</code>, they swap. Switching between left-to-right and right-to-left text does not swap the axes.</p><div class="table-wrap"><table><caption>Logical dimensions and proportions</caption><thead><tr><th scope="col">Property</th><th scope="col">Purpose</th><th scope="col">Example</th></tr></thead><tbody>
+
+
+
+
+
+
 <tr><td><code>inline-size</code></td><td>Size along the text axis; equivalent to width in horizontal writing.</td><td><code>inline-size: 100%;</code></td></tr>
 <tr><td><code>block-size</code></td><td>Size perpendicular to the text axis; equivalent to height in horizontal writing.</td><td><code>block-size: auto;</code></td></tr>
 <tr><td><code>min-inline-size</code></td><td>Minimum along the text axis; minimum width in horizontal writing.</td><td><code>min-inline-size: 16rem;</code></td></tr>
@@ -372,9 +386,16 @@ a { color: var(--marca); }</code></pre>
 <tr><td><code>min-block-size</code></td><td>Minimum perpendicular to the text axis; minimum height in horizontal writing.</td><td><code>min-block-size: 12rem;</code></td></tr>
 <tr><td><code>max-block-size</code></td><td>Maximum perpendicular to the text axis; maximum height in horizontal writing.</td><td><code>max-block-size: 30rem;</code></td></tr>
 <tr><td><code>aspect-ratio</code></td><td>Defines the preferred width-to-height ratio. At least one dimension must be automatic to calculate it from the other.</td><td><code>aspect-ratio: 16 / 9;</code></td></tr>
-</tbody></table></div>
-<aside aria-labelledby="valor-auto" class="extension-card">
-<p class="card-label">Further reading</p><h4 id="valor-auto">What does auto mean?</h4>
+</tbody></table></div><pre><code>.panel {
+  box-sizing: border-box;
+  inline-size: 100%;
+  max-inline-size: 40rem;
+  block-size: auto;
+  margin-inline: auto;
+}
+.vertical { writing-mode: vertical-rl; }</code></pre><p>Try the <code>vertical</code> class on the same panel: its logical dimensions follow the text. Avoid declaring physical and logical sizes for the same axis unless you intend an override.</p><h5>Keeping an aspect ratio</h5><p><code>aspect-ratio: 16 / 9</code> means width divided by height: a 320 px wide box has a preferred height of 180 px. Leave at least one dimension as <code>auto</code>; fixing both prevents the ratio from calculating either. Content and minimum or maximum constraints may change the result. To crop an image inside a proportioned box, use <code>object-fit: cover</code>; use <code>contain</code> to show the whole image.</p>
+<section aria-labelledby="valor-auto">
+<h5 id="valor-auto">What does auto mean?</h5>
 <p><code>auto</code> lets the browser calculate a value according to the property and context. <strong>It does not always mean “use 100%”.</strong></p>
 <ul>
 <li><code>width: auto</code>: for a normal block, width usually uses available space while accounting for margins, padding and border.</li>
@@ -388,9 +409,9 @@ img {
 }</code></pre>
 <p>Minimum and maximum limits still apply. Other layout modes may calculate <code>auto</code> differently.</p>
 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/width" rel="noopener noreferrer" target="_blank">Read about width and auto on MDN ↗</a>
-</aside>
-<aside aria-labelledby="centrado-horizontal" class="extension-card">
-<p class="card-label">Further reading</p><h4 id="centrado-horizontal">Centring a box horizontally</h4>
+</section>
+<section aria-labelledby="centrado-horizontal">
+<h5 id="centrado-horizontal">Centring a box horizontally</h5>
 <p>To centre a block in normal flow, give it a width smaller than its container and use <code>margin-inline: auto</code>. In horizontal writing, the left and right margins share the remaining space equally.</p>
 <pre><code>.caja-centrada {
   box-sizing: border-box;
@@ -401,7 +422,7 @@ img {
 <p>If the container is <strong>500 px</strong> and the box occupies <strong>400 px</strong>, 100 px remain: <strong>50 px on each side</strong>. If the box occupies the full width, there is no remaining space to distribute.</p>
 <p><code>text-align: center</code> centres text and inline content inside the box; <code>margin-inline: auto</code> centres the box itself. This example does not centre vertically.</p>
 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/margin" rel="noopener noreferrer" target="_blank">Read about automatic margins on MDN ↗</a>
-</aside>
+</section>
 <pre><code>/* Adapts to the screen and limits reading width. */
 .articulo {
   width: calc(100% - 2rem);
@@ -417,11 +438,11 @@ img { max-width: 100%; height: auto; }
 
 /* A 16:9 box with a calculated height. */
 .portada { width: 100%; height: auto; aspect-ratio: 16 / 9; }</code></pre>
-<h4>Common values and conflicts</h4>
+<h5>Common values and conflicts</h5>
 <ul><li><code>auto</code> lets the browser calculate size according to context. <code>height: auto</code> usually allows growth with content; it is not a fixed height.</li><li>Percentages need a reference: <code>width: 100%</code> usually uses the containing block's width. A <code>height: 100%</code> does not mean “the whole screen” and, in normal flow, needs a definite reference height to work as expected.</li><li><code>min-content</code>, <code>max-content</code> and <code>fit-content</code> allow sizes based on content needs instead of a fixed measurement.</li><li>A maximum can limit a declared size and a minimum can enlarge it. If the minimum exceeds the maximum, the minimum wins. Avoid a <code>min-width</code> larger than the screen.</li><li>In Flexbox or Grid items, the automatic minimum may stop a box shrinking. Where the design requires it, <code>min-width: 0</code> or <code>min-inline-size: 0</code> allows it to give up space; you must then decide how to handle its content.</li></ul>
 <p>Test dimensions with long text, zoom and different image sizes. Do not fix a height simply because it fits the sample text: this restricts the design's adaptability.</p>
-<aside aria-labelledby="ampliacion-min-width-consulta" class="extension-card"><p class="card-label">Further reading</p><h4 id="ampliacion-min-width-consulta">Minimum dimensions</h4><p>See min-width values and examples of minimum-width limits.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/min-width" rel="noopener noreferrer" target="_blank">Read about min-width on MDN ↗</a></aside>
-<h3 id="caja-overflow">3.5. Overflow: content that does not fit</h3>
+<section aria-labelledby="ampliacion-min-width-consulta"><h5 id="ampliacion-min-width-consulta">Minimum dimensions</h5><p>See min-width values and examples of minimum-width limits.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/min-width" rel="noopener noreferrer" target="_blank">Read about min-width on MDN ↗</a></section>
+<h5>Content-based sizes</h5><ul><li><code>min-content</code>: minimum intrinsic size; text uses all available line-breaking opportunities.</li><li><code>max-content</code>: maximum intrinsic size; text takes no optional line breaks and may overflow.</li><li><code>fit-content</code>: fits the available space within those intrinsic limits. An unbreakable word may still overflow.</li></ul><pre><code>.etiqueta { width: fit-content; max-width: 100%; overflow-wrap: anywhere; }</code></pre><p class="source">MDN: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/inline-size">inline-size</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/aspect-ratio">aspect-ratio</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/fit-content">fit-content</a>.</p></details></aside><h3 id="caja-overflow">3.5. Overflow: content that does not fit</h3>
 <p><code>overflow</code> determines what happens when content exceeds the available area. It is separate from setting size: to observe vertical overflow in a text block, first limit its height or maximum height.</p><!-- propiedades-caja-overflow --><div class="table-wrap"><table><caption>Reference properties and values</caption><thead><tr><th scope="col">Property</th><th scope="col">Values and meaning</th><th scope="col">Example</th></tr></thead><tbody><tr><td><code>overflow</code></td><td>visible, hidden, clip, scroll or auto. One value for both axes or two values: horizontal and vertical.</td><td><code>overflow: auto;</code></td></tr><tr><td><code>overflow-x</code></td><td>Controls horizontal overflow using the same five values.</td><td><code>overflow-x: auto;</code></td></tr><tr><td><code>overflow-y</code></td><td>Controls vertical overflow using the same five values.</td><td><code>overflow-y: auto;</code></td></tr><tr><td><code>overflow-wrap</code></td><td>Word wrapping: normal, break-word or anywhere.</td><td><code>overflow-wrap: anywhere;</code></td></tr><tr><td><code>text-overflow</code></td><td>Marks clipped inline text: clip or ellipsis; overflow must be clipped.</td><td><code>text-overflow: ellipsis;</code></td></tr><tr><td><code>white-space</code></td><td>Preserves spaces and controls wrapping: normal, nowrap, pre, pre-wrap, pre-line or break-spaces; modern syntax also combines preservation and wrapping rules.</td><td><code>white-space: nowrap;</code></td></tr></tbody></table></div>
 <div class="table-wrap"><table><caption>Overflow values</caption><thead><tr><th scope="col">Value</th><th scope="col">Result</th></tr></thead><tbody>
 <tr><td><code>visible</code></td><td>Content may extend outside the box. This is the initial value; it may overlap other elements.</td></tr>

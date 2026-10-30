@@ -365,6 +365,20 @@ a { color: var(--marca); }</code></pre>
 <tr><td><code>min-height</code></td><td>Fija el alto mínimo.</td><td><code>min-height: 12rem;</code></td></tr>
 <tr><td><code>max-width</code></td><td>Limita el ancho máximo.</td><td><code>max-width: 65ch;</code></td></tr>
 <tr><td><code>max-height</code></td><td>Limita el alto máximo; el contenido sobrante puede desbordarse.</td><td><code>max-height: 30rem;</code></td></tr>
+
+
+
+
+
+
+
+</tbody></table></div><aside aria-labelledby="ampliacion-dimensiones" class="extension-card"><p class="card-label">Ampliación</p><h4 id="ampliacion-dimensiones">Dimensiones: referencia completa</h4><p>Para empezar, basta con las seis propiedades anteriores. Despliega esta referencia para adaptar las dimensiones al sentido de escritura, al contenido y a las proporciones.</p><details class="full-reference"><summary>Ver explicación, ejemplos y tablas completas</summary><h5>Dimensiones según el sentido de escritura</h5><p>Las propiedades lógicas permiten reutilizar un diseño con distintos modos de escritura. El eje <em>inline</em> sigue la línea de texto y el eje <em>block</em> sigue la sucesión de líneas. Con <code>writing-mode: horizontal-tb</code>, <code>inline-size</code> equivale a <code>width</code> y <code>block-size</code> a <code>height</code>; con <code>vertical-rl</code> se intercambian. Cambiar de izquierda a derecha por derecha a izquierda no intercambia los ejes.</p><div class="table-wrap"><table><caption>Dimensiones lógicas y proporciones</caption><thead><tr><th scope="col">Propiedad</th><th scope="col">Función</th><th scope="col">Ejemplo</th></tr></thead><tbody>
+
+
+
+
+
+
 <tr><td><code>inline-size</code></td><td>Tamaño en el eje del texto; en escritura horizontal equivale al ancho.</td><td><code>inline-size: 100%;</code></td></tr>
 <tr><td><code>block-size</code></td><td>Tamaño en el eje perpendicular al texto; en escritura horizontal equivale al alto.</td><td><code>block-size: auto;</code></td></tr>
 <tr><td><code>min-inline-size</code></td><td>Mínimo en el eje del texto; en escritura horizontal, ancho mínimo.</td><td><code>min-inline-size: 16rem;</code></td></tr>
@@ -372,9 +386,16 @@ a { color: var(--marca); }</code></pre>
 <tr><td><code>min-block-size</code></td><td>Mínimo en el eje perpendicular al texto; en escritura horizontal, alto mínimo.</td><td><code>min-block-size: 12rem;</code></td></tr>
 <tr><td><code>max-block-size</code></td><td>Máximo en el eje perpendicular al texto; en escritura horizontal, alto máximo.</td><td><code>max-block-size: 30rem;</code></td></tr>
 <tr><td><code>aspect-ratio</code></td><td>Define la proporción preferida entre ancho y alto. Al menos una dimensión debe ser automática para calcularla a partir de la otra.</td><td><code>aspect-ratio: 16 / 9;</code></td></tr>
-</tbody></table></div>
-<aside aria-labelledby="valor-auto" class="extension-card">
-<p class="card-label">Ampliación</p><h4 id="valor-auto">¿Qué significa auto?</h4>
+</tbody></table></div><pre><code>.panel {
+  box-sizing: border-box;
+  inline-size: 100%;
+  max-inline-size: 40rem;
+  block-size: auto;
+  margin-inline: auto;
+}
+.vertical { writing-mode: vertical-rl; }</code></pre><p>Prueba la clase <code>vertical</code> en el mismo panel: sus dimensiones lógicas siguen el texto. Evita declarar a la vez tamaños físicos y lógicos que controlen el mismo eje si no necesitas una sobrescritura.</p><h5>Mantener una proporción</h5><p><code>aspect-ratio: 16 / 9</code> expresa ancho dividido entre alto: una caja de 320 px de ancho tendrá una altura preferida de 180 px. Deja al menos una dimensión en <code>auto</code>; si fijas ambas, la proporción no calcula ninguna. El contenido y los límites mínimos o máximos pueden modificar el resultado. Para recortar una imagen dentro de una caja proporcionada, usa <code>object-fit: cover</code>; para mostrarla entera, <code>contain</code>.</p>
+<section aria-labelledby="valor-auto">
+<h5 id="valor-auto">¿Qué significa auto?</h5>
 <p><code>auto</code> deja que el navegador calcule el valor según la propiedad y el contexto. <strong>No significa siempre «ocupar el 100 %».</strong></p>
 <ul>
 <li><code>width: auto</code>: en un bloque normal, el ancho suele aprovechar el espacio disponible, teniendo en cuenta márgenes, relleno y borde.</li>
@@ -388,9 +409,9 @@ img {
 }</code></pre>
 <p>Los límites mínimos y máximos siguen aplicándose. Otros modos de distribución pueden calcular <code>auto</code> de otra manera.</p>
 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/width" rel="noopener noreferrer" target="_blank">Consultar width y auto en MDN ↗</a>
-</aside>
-<aside aria-labelledby="centrado-horizontal" class="extension-card">
-<p class="card-label">Ampliación</p><h4 id="centrado-horizontal">Centrar una caja horizontalmente</h4>
+</section>
+<section aria-labelledby="centrado-horizontal">
+<h5 id="centrado-horizontal">Centrar una caja horizontalmente</h5>
 <p>Para centrar un bloque en el flujo normal, dale un ancho menor que su contenedor y usa <code>margin-inline: auto</code>. En escritura horizontal, los márgenes izquierdo y derecho se reparten por igual el espacio sobrante.</p>
 <pre><code>.caja-centrada {
   box-sizing: border-box;
@@ -401,7 +422,7 @@ img {
 <p>Si el contenedor mide <strong>500 px</strong> y la caja ocupa <strong>400 px</strong>, sobran 100 px: quedan <strong>50 px a cada lado</strong>. Si la caja ocupa todo el ancho, no habrá espacio sobrante que repartir.</p>
 <p><code>text-align: center</code> centra el texto y el contenido en línea dentro de la caja; <code>margin-inline: auto</code> centra la propia caja. Este ejemplo no realiza centrado vertical.</p>
 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/margin" rel="noopener noreferrer" target="_blank">Consultar márgenes automáticos en MDN ↗</a>
-</aside>
+</section>
 <pre><code>/* Se adapta a la pantalla y limita el ancho de lectura. */
 .articulo {
   width: calc(100% - 2rem);
@@ -417,11 +438,11 @@ img { max-width: 100%; height: auto; }
 
 /* Caja de proporción 16:9, cuya altura se calcula. */
 .portada { width: 100%; height: auto; aspect-ratio: 16 / 9; }</code></pre>
-<h4>Valores y conflictos habituales</h4>
+<h5>Valores y conflictos habituales</h5>
 <ul><li><code>auto</code> deja que el navegador calcule el tamaño según el contexto. <code>height: auto</code> suele permitir crecer con el contenido; no equivale a una altura fija.</li><li>Los porcentajes necesitan una referencia: <code>width: 100%</code> suele tomar el ancho del bloque contenedor. Un <code>height: 100%</code> no significa «toda la pantalla» y, en el flujo normal, necesita una altura de referencia definida para funcionar como esperas.</li><li><code>min-content</code>, <code>max-content</code> y <code>fit-content</code> permiten tamaños relacionados con las necesidades del contenido, en lugar de una medida fija.</li><li>Un máximo puede limitar el tamaño declarado y un mínimo puede ampliarlo. Si el mínimo supera al máximo, prevalece el mínimo. Evita un <code>min-width</code> mayor que la pantalla.</li><li>En elementos Flexbox o Grid, el mínimo automático puede impedir que una caja se reduzca. Cuando el diseño lo necesite, <code>min-width: 0</code> o <code>min-inline-size: 0</code> permite que ceda espacio; después debes decidir cómo tratar su contenido.</li></ul>
 <p>Prueba las dimensiones con texto largo, zoom e imágenes de distintos tamaños. No fijes una altura solo porque encaja con el texto de ejemplo: limita la capacidad del diseño para adaptarse.</p>
-<aside aria-labelledby="ampliacion-min-width-consulta" class="extension-card"><p class="card-label">Ampliación</p><h4 id="ampliacion-min-width-consulta">Dimensiones mínimas</h4><p>Consulta los valores de min-width y ejemplos para limitar el ancho mínimo.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/min-width" rel="noopener noreferrer" target="_blank">Consultar min-width en MDN ↗</a></aside>
-<h3 id="caja-overflow">3.5. Overflow: contenido que no cabe</h3>
+<section aria-labelledby="ampliacion-min-width-consulta"><h5 id="ampliacion-min-width-consulta">Dimensiones mínimas</h5><p>Consulta los valores de min-width y ejemplos para limitar el ancho mínimo.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/min-width" rel="noopener noreferrer" target="_blank">Consultar min-width en MDN ↗</a></section>
+<h5>Tamaños basados en el contenido</h5><ul><li><code>min-content</code>: tamaño intrínseco mínimo; en texto, permite todos los saltos de línea posibles.</li><li><code>max-content</code>: tamaño intrínseco máximo; el texto no realiza saltos opcionales y puede desbordarse.</li><li><code>fit-content</code>: se ajusta al espacio disponible entre esos límites intrínsecos. Una palabra indivisible todavía puede desbordarse.</li></ul><pre><code>.etiqueta { width: fit-content; max-width: 100%; overflow-wrap: anywhere; }</code></pre><p class="source">MDN: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/inline-size">inline-size</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/aspect-ratio">aspect-ratio</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/fit-content">fit-content</a>.</p></details></aside><h3 id="caja-overflow">3.5. Overflow: contenido que no cabe</h3>
 <p><code>overflow</code> decide qué ocurre cuando el contenido rebasa el área disponible. Es independiente de definir el tamaño: para observar desbordamiento vertical en un bloque de texto, limita primero su altura o altura máxima.</p><!-- propiedades-caja-overflow --><div class="table-wrap"><table><caption>Propiedades y valores de referencia</caption><thead><tr><th scope="col">Propiedad</th><th scope="col">Valores y significado</th><th scope="col">Ejemplo</th></tr></thead><tbody><tr><td><code>overflow</code></td><td>visible, hidden, clip, scroll o auto. Un valor para ambos ejes o dos valores: horizontal y vertical.</td><td><code>overflow: auto;</code></td></tr><tr><td><code>overflow-x</code></td><td>Controla el desbordamiento horizontal con los mismos cinco valores.</td><td><code>overflow-x: auto;</code></td></tr><tr><td><code>overflow-y</code></td><td>Controla el desbordamiento vertical con los mismos cinco valores.</td><td><code>overflow-y: auto;</code></td></tr><tr><td><code>overflow-wrap</code></td><td>Corte de palabras: normal, break-word o anywhere.</td><td><code>overflow-wrap: anywhere;</code></td></tr><tr><td><code>text-overflow</code></td><td>Marca texto recortado en línea: clip o ellipsis; necesita que el desbordamiento se recorte.</td><td><code>text-overflow: ellipsis;</code></td></tr><tr><td><code>white-space</code></td><td>Conserva espacios y permite saltos: normal, nowrap, pre, pre-wrap, pre-line o break-spaces; la sintaxis moderna también combina reglas de conservación y ajuste.</td><td><code>white-space: nowrap;</code></td></tr></tbody></table></div>
 <div class="table-wrap"><table><caption>Valores de overflow</caption><thead><tr><th scope="col">Valor</th><th scope="col">Resultado</th></tr></thead><tbody>
 <tr><td><code>visible</code></td><td>El contenido puede salir de la caja. Es el valor inicial; puede solaparse con otros elementos.</td></tr>
