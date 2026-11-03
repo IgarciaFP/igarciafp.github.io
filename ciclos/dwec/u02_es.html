@@ -34,6 +34,8 @@
         .sidebar-toc:focus-within { transform: translateX(0); }
         .operators-table table { min-width: 0; }
         .operators-table th, .operators-table td { padding: 10px; }
+        .event-methods table { min-width: 0; table-layout: fixed; }
+        .event-methods th, .event-methods td { padding: 6px 10px; line-height: 1.35; vertical-align: top; overflow-wrap: anywhere; }
         .roles-table table { min-width: 0; }
         .roles-table th:first-child { width: 22%; }
         .history-timeline { list-style: none; margin: 24px 0 24px 10px; padding: 0 0 0 24px; border-left: 3px solid #c7d2fe; }
@@ -2375,7 +2377,7 @@ if (mensaje !== null) {
                 
 
             <div class="activity-card activity-callout" id="actividad-repaso-dom-estudio">
-<p><strong>2.43. Repaso del DOM: modo lectura en 10 minutos</strong></p>
+<p><strong>2.43. Crear un Snippet</strong></p>
 <p>Mejora la lectura de una web de apuntes o noticias aplicando tus propios estilos desde Chrome. Crearás un pequeño script reutilizable sobre la página que tengas abierta.</p>
 <p><strong>Configuración de lectura:</strong> este CSS define los estilos que aplicarás desde JavaScript para obtener letra grande, líneas separadas y buen contraste.</p>
 <pre><code class="language-css">body, body * {
@@ -2413,11 +2415,16 @@ if (mensaje !== null) {
 
                 <h4 class="content-subtitle" id="formas-gestionar-eventos">Formas de gestionar eventos</h4>
 <p>Las tres formas preparan una respuesta que se ejecutará cuando ocurra el evento. Cambian cómo se registra y qué sucede al añadir otra. En los ejemplos, <code>boton</code> es un botón seleccionado y <code>saludar</code> una función ya definida.</p>
-<div class="table-scroll"><table><thead><tr><th>Forma</th><th>Ejemplo</th><th>Funcionamiento y uso</th></tr></thead><tbody>
-<tr><td>Atributo en el HTML</td><td><code>&lt;button onclick="saludar()"&gt;Saludar&lt;/button&gt;</code></td><td>El atributo contiene código como texto. El navegador lo ejecuta al hacer clic; <code>saludar()</code> no se ejecuta al leer el HTML. La función debe estar accesible desde ese código. Se desaconseja porque mezcla estructura y comportamiento.</td></tr>
-<tr><td>Propiedad del elemento</td><td><code>boton.onclick = saludar;</code></td><td>Guarda una referencia a la función en la propiedad <code>onclick</code>. Al hacer clic la invoca. Hay un único espacio: otra asignación sustituye el manejador anterior. Es válida para casos sencillos.</td></tr>
-<tr><td><code>addEventListener()</code></td><td><code>boton.addEventListener("click", saludar);</code></td><td>Añade la función a los manejadores de ese evento. Puedes registrar otras funciones y se ejecutarán también, sin sustituir la anterior. Es la opción recomendada para las prácticas y permite retirarlas individualmente.</td></tr>
-</tbody></table></div>
+<div class="table-scroll event-methods">
+<table>
+    <thead><tr><th scope="col">Forma de registro</th><th scope="col">Qué ocurre al hacer clic</th></tr></thead>
+    <tbody>
+        <tr><td>Atributo HTML<br><code>onclick="saludar()"</code></td><td>El navegador ejecuta el código del atributo. Mezcla HTML y JavaScript.</td></tr>
+        <tr><td>Propiedad del botón<br><code>boton.onclick = saludar;</code></td><td>Se ejecuta la última función asignada a <code>onclick</code>.</td></tr>
+        <tr><td>Escucha del evento<br><code>boton.addEventListener("click", saludar);</code></td><td>Se ejecuta cada función registrada para ese clic. Es la opción recomendada y permite retirar cada manejador por separado.</td></tr>
+    </tbody>
+</table>
+</div>
 <div class="didactic-note"><p><strong>Sustituir frente a añadir.</strong> El atributo HTML <code>onclick</code> y la propiedad <code>boton.onclick</code> usan el mismo espacio: asignar la propiedad sustituye lo indicado en el atributo. Los manejadores de <code>addEventListener()</code> son independientes.</p></div>
 <pre><code>// Supón que saludar y despedir ya están definidas.
 boton.onclick = saludar;
@@ -2480,8 +2487,13 @@ boton.addEventListener("click", mostrarSaludo);</code></pre>
 
                 <div class="activity-card activity-callout" id="actividad-complementaria-8-2">
                     <p><strong>2.45. Dos manejadores en el mismo botón</strong></p>
-                    <p>Registra con <code>addEventListener()</code> dos manejadores para un botón: uno incrementa un contador y otro muestra un aviso en un párrafo. Regístralos una sola vez, fuera de los manejadores.</p>
-                    <p><strong>Comprobación:</strong> Cada clic debe aumentar el contador exactamente en uno y ejecutar ambos efectos. Compara con <code>boton.onclick = primerManejador;</code> seguido de <code>boton.onclick = segundoManejador;</code>: la segunda asignación sustituye a la primera, mientras que los dos registros con <code>addEventListener()</code> se conservan.</p>
+                    <p>Un clic en «Votar» debe sumar un voto y mostrar «¡Gracias por votar!». Vas a comprobar cómo responde un mismo botón a dos funciones.</p>
+                    <ol>
+                        <li>Crea el botón, un contador visible que empiece en 0 y un párrafo vacío para el mensaje.</li>
+                        <li>Escribe dos funciones. <code>contarVoto</code> suma un voto y actualiza el contador. <code>agradecer</code> escribe el mensaje en el párrafo.</li>
+                        <li>Al cargar la página, registra ambas funciones en el mismo botón. Usa una llamada a <code>addEventListener()</code> por función y escucha el evento <code>click</code> en las dos. Pulsa dos veces. Debes ver 2 votos y el mensaje.</li>
+                    </ol>
+                    <p><strong>Prueba el cambio.</strong> Sustituye los dos registros por <code>boton.onclick = contarVoto;</code> y después <code>boton.onclick = agradecer;</code>. Recarga y pulsa una vez. ¿Por qué aparece el agradecimiento y el contador sigue en 0?</p>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
