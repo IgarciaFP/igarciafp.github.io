@@ -350,14 +350,31 @@ nav &gt; a { font-weight: bold; } /* Solo Inicio. */</code></pre>
 <ul><li><strong><code>content-box</code>:</strong> el relleno y el borde <strong>se suman</strong> al ancho indicado. La caja acaba siendo más ancha.</li><li><strong><code>border-box</code>:</strong> el relleno y el borde <strong>están incluidos</strong> en el ancho indicado. La caja mantiene ese ancho.</li></ul>
 <p>En ambos casos, el margen queda fuera. Para una caja de <code>width: 280px</code>, <code>padding: 20px</code> y <code>border: 2px solid</code>:</p>
 <div class="table-wrap"><table><caption>Cálculo del ancho sin contar márgenes</caption><thead><tr><th scope="col">Modelo</th><th scope="col">Ancho del contenido</th><th scope="col">Ancho hasta el borde exterior</th></tr></thead><tbody><tr><td><code>content-box</code></td><td>280 px</td><td>280 + 40 + 4 = <strong>324 px</strong></td></tr><tr><td><code>border-box</code></td><td>280 − 40 − 4 = <strong>236 px</strong></td><td>280 px</td></tr></tbody></table></div>
-<h4>¿Por qué dos márgenes de 24 y 16 px dejan solo 24 px?</h4>
-<p>Prueba con dos párrafos consecutivos en un mismo contenedor de bloques. Cuando sus márgenes verticales se tocan en el flujo normal, pueden <strong>colapsar</strong>. Si ambos son positivos, la separación es el mayor de los dos.</p>
-<pre><code>&lt;p class="primero"&gt;Primer bloque&lt;/p&gt;
-&lt;p class="segundo"&gt;Segundo bloque&lt;/p&gt;
-
-.primero { margin-bottom: 24px; }
-.segundo { margin-top: 16px; }</code></pre>
-<p>Comprueba la separación en el inspector. Cambia el margen superior a 32 px y predice el resultado antes de medirlo. Después cambia el contenedor a <code>display: grid</code>. Los márgenes de estos dos elementos de Grid se mantienen separados y ahora suman 56 px.</p>
+<article class="didactic-note activity-callout" id="actividad-colapso-margenes" aria-labelledby="titulo-colapso-margenes">
+<h4 class="exercise-title" id="titulo-colapso-margenes"><i class="fa-solid fa-pen" aria-hidden="true"></i> Actividad · ¿Qué distancia separa estos dos bloques?</h4>
+<p>El primer párrafo tiene 24 px de margen inferior y el segundo tiene 16 px de margen superior. Antes de abrir el navegador, dibuja los dos bloques y anota cuántos píxeles esperas encontrar entre sus bordes.</p>
+<ol>
+<li><strong>Prepara la prueba.</strong> Copia este fragmento en un archivo HTML y ábrelo en el navegador. Los bordes azules marcan los extremos de la distancia que vas a medir.
+<pre><code>&lt;style&gt;
+  .prueba p {
+    margin: 0;
+    border: 1px solid #2455a4;
+  }
+  .prueba .primero { margin-bottom: 24px; }
+  .prueba .segundo { margin-top: 16px; }
+&lt;/style&gt;
+&lt;div class="prueba"&gt;
+  &lt;p class="primero"&gt;Primer bloque&lt;/p&gt;
+  &lt;p class="segundo"&gt;Segundo bloque&lt;/p&gt;
+&lt;/div&gt;</code></pre></li>
+<li><strong>Mide el hueco.</strong> En la consola del inspector, resta la posición del borde inferior del primer párrafo a la del borde superior del segundo. Compara el resultado en píxeles con tu predicción.
+<pre><code>document.querySelector('.segundo').getBoundingClientRect().top -
+  document.querySelector('.primero').getBoundingClientRect().bottom</code></pre></li>
+<li><strong>Cambia una cosa cada vez.</strong> En el inspector, cambia el margen superior del segundo párrafo de 16 a 32 px. Predice y vuelve a medir. Después conserva esos 32 px y aplica <code>display: grid</code> al contenedor <code>.prueba</code>. Repite la medición.</li>
+<li><strong>Explica la diferencia.</strong> Anota los tres resultados. ¿En qué pruebas coincide la separación con el margen mayor? ¿En cuál coincide con la suma?</li>
+</ol>
+<details><summary>Contrastar mis resultados</summary><p>En el flujo normal, los márgenes verticales contiguos de estos dos párrafos <strong>colapsan</strong>. Como ambos son positivos, prevalece el mayor. Por eso mides <strong>24 px</strong> en la primera prueba y <strong>32 px</strong> en la segunda. En Grid, los márgenes de los dos elementos se mantienen separados y mides <strong>56 px</strong> (24 + 32).</p></details>
+</article>
 <h4 id="box-model-reset">3.1.2. Box Model Reset</h4>
 <pre><code>*, *::before, *::after {
   box-sizing: border-box;
