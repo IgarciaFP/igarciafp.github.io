@@ -497,7 +497,7 @@ a[href*="/recursos/"] { color: #0f766e; }</code></pre>
 <p>En el inspector, alterna los tres valores y comprueba en cuáles se respeta el ancho de 10 rem. Las imágenes también pueden tener dimensiones propias cuando participan en una línea.</p>
 <h5>Otros valores de display</h5>
 <p>Los valores <code>display: flex</code> y <code>display: inline-flex</code> se estudiarán más adelante, en el <a href="#flexbox">apartado de Flexbox</a>.</p>
-<ul><li><code>flow-root</code> crea un nuevo contexto de formato de bloque. Evita que los márgenes de los hijos colapsen con los del contenedor.</li><li><code>list-item</code> genera una caja de lista con marcador. <code>table</code>, <code>table-row</code> y <code>table-cell</code> permiten comportamientos de tabla; para datos tabulares, utiliza HTML de tabla semántico.</li><li><code>contents</code> elimina la caja del elemento y deja participar a sus hijos. No lo uses como sustituto general de un contenedor: comprueba su efecto en la accesibilidad y en los estilos del propio elemento.</li></ul>
+<ul><li><a href="#display-flow-root"><code>flow-root</code></a> crea un contexto de formato de bloque; se explica con un esquema en el subapartado siguiente.</li><li><code>list-item</code> genera una caja de lista con marcador. <code>table</code>, <code>table-row</code> y <code>table-cell</code> permiten comportamientos de tabla; para datos tabulares, utiliza HTML de tabla semántico.</li><li><code>contents</code> elimina la caja del elemento y deja participar a sus hijos. No lo uses como sustituto general de un contenedor: comprueba su efecto en la accesibilidad y en los estilos del propio elemento.</li></ul>
 <aside class="didactic-note curiosity-card" aria-labelledby="ocultar-curiosidad"><p class="card-label">Curiosidad</p><h5 id="ocultar-curiosidad">Ocultar no siempre significa lo mismo</h5>
 <ul><li><code>display: none</code> elimina las cajas del elemento y sus descendientes del diseño y, normalmente, del árbol de accesibilidad. El HTML permanece en el DOM.</li><li><code>visibility: hidden</code> oculta el elemento conservando su espacio. El valor inicial es <code>visible</code>. En filas y columnas de tabla, <code>collapse</code> también permite retirar el espacio que ocupan.</li><li><code>opacity: 0</code> lo hace transparente, pero conserva su espacio y puede mantener clics y foco. No basta por sí solo para ocultar un control interactivo.</li></ul>
 </aside>
@@ -537,18 +537,43 @@ a[href*="/recursos/"] { color: #0f766e; }</code></pre>
 <li><strong>Inspecciona:</strong> busca <code>#b</code> en el panel de elementos. Comprueba si permanece en el DOM en las tres pruebas.</li></ol>
 <p><strong>Entrega:</strong> una tabla con una fila por propiedad y estas columnas: espacio reservado, foco con Tab, respuesta al clic, presencia en el DOM y evidencia. Añade una captura de cada prueba y explica qué usarías para retirar un botón del diseño y por qué la transparencia no basta para desactivarlo.</p>
 </article>
-<h5>Texto alrededor de una imagen con float, clear y flow-root</h5>
-<p>En una noticia, <code>float: left</code> sitúa la foto a la izquierda y permite que las líneas de texto la rodeen. <code>clear: left</code> hace que el siguiente bloque empiece por debajo de esa foto. Aplica <code>display: flow-root</code> al artículo para que su altura incluya la foto aunque el texto sea corto.</p>
-<pre><code>&lt;article class="noticia"&gt;
-  &lt;img src="hogaza.jpg" alt="Hogaza de masa madre"&gt;
-  &lt;p&gt;Hoy sale del horno nuestra primera hogaza de centeno.&lt;/p&gt;
-  &lt;p class="detalle"&gt;Ingredientes y alérgenos&lt;/p&gt;
-&lt;/article&gt;
-
-.noticia { display: flow-root; }
-.noticia img { float: left; width: 6rem; margin-right: 1rem; }
-.detalle { clear: left; }</code></pre>
-<p>Desactiva <code>clear</code> y observa dónde empieza el segundo párrafo. Con ambos párrafos cortos, desactiva también <code>flow-root</code> e inspecciona hasta dónde llega la caja del artículo.</p>
+<h5 id="display-flow-root">3.3.1.1. Display: flow-root</h5>
+<p>¿Por qué el fondo de un contenedor puede quedarse más bajo que su imagen flotante? Un <code>float</code> sale del flujo normal y no siempre cuenta para la altura automática de su padre. <code>display: flow-root</code> crea un <strong>contexto de formato de bloque (BFC)</strong>: una zona con su propio flujo de bloques y flotantes.</p>
+<figure class="image-container"><div style="overflow-x:auto" role="region" tabindex="0" aria-label="Comparación de block y flow-root">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 330" role="img" aria-labelledby="flow-root-svg-title flow-root-svg-desc" style="display:block;width:100%;min-width:640px;height:auto;font-family:system-ui,sans-serif">
+<title id="flow-root-svg-title">El mismo flotante, dos alturas del contenedor</title><desc id="flow-root-svg-desc">A la izquierda, un bloque con un único hijo flotante tiene altura de contenido cero; solo se ve su borde. A la derecha, flow-root incluye los cien píxeles del flotante en su altura automática. No hay relleno ni márgenes.</desc>
+<rect x="5" y="5" width="385" height="320" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+<rect x="410" y="5" width="385" height="320" rx="14" fill="#f0fdf4" stroke="#86efac"/>
+<g fill="#172033" font-size="20" font-weight="700"><text x="30" y="42">display: block</text><text x="435" y="42">display: flow-root</text></g>
+<g fill="#475569" font-size="16"><text x="30" y="72">Solo un hijo flotante · height: auto</text><text x="435" y="72">Mismo HTML · height: auto</text></g>
+<rect x="30" y="100" width="335" height="4" fill="#1e3a8a"/>
+<rect x="435" y="100" width="335" height="104" fill="#dbeafe" stroke="#1e3a8a" stroke-width="4"/>
+<rect x="32" y="102" width="100" height="100" fill="#fb923c" stroke="#9a3412"/>
+<rect x="437" y="102" width="100" height="100" fill="#fb923c" stroke="#9a3412"/>
+<g fill="#431407" font-size="17" text-anchor="middle"><text x="82" y="144">float: left</text><text x="82" y="169">100 × 100</text><text x="487" y="144">float: left</text><text x="487" y="169">100 × 100</text></g>
+<g fill="#172033" font-size="17"><text x="30" y="240">Contenido del padre: 0 px de alto</text><text x="30" y="268">El flotante sobresale del borde.</text><text x="435" y="240">Contenido del padre: 100 px de alto</text><text x="435" y="268">El fondo y el borde lo envuelven.</text></g>
+<g fill="#475569" font-size="15"><text x="30" y="300">El flotante no desaparece.</text><text x="435" y="300">El borde se suma a esa altura.</text></g>
+</svg></div><figcaption>Sin otros contenidos, relleno ni márgenes. El azul representa el contenedor y el naranja, su hijo flotante.</figcaption></figure>
+<ul><li><strong>Contiene flotantes internos:</strong> los incluye al calcular su altura automática. Una altura fija puede seguir provocando desbordamiento.</li><li><strong>Separa márgenes:</strong> impide el colapso entre el contenedor y sus hijos. Los márgenes de hermanos dentro de él todavía pueden colapsar.</li><li><strong>Evita solaparse con flotantes externos:</strong> su caja se coloca a su lado si cabe o debajo si no cabe.</li></ul>
+<h6>Ejemplo: contener un flotante</h6>
+<pre><code>&lt;div class="contenedor"&gt;
+  &lt;div class="hijo-flotante"&gt;Soy un float&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+<pre><code>.contenedor {
+  display: flow-root;
+  background-color: lightblue;
+  border: 2px solid navy;
+}
+.hijo-flotante {
+  float: left;
+  width: 100px;
+  height: 100px;
+  background-color: coral;
+}</code></pre>
+<p><strong>Compruébalo:</strong> cambia <code>flow-root</code> por <code>block</code> y observa el fondo y el borde. Después restaura <code>flow-root</code>.</p>
+<h6>¿Por qué no usar overflow: hidden?</h6>
+<p><code>overflow: hidden</code> también crea un BFC en un bloque, pero recorta lo que sobresale; <code>overflow: auto</code> puede añadir barras. <code>flow-root</code> crea el contexto <strong>sin imponer recorte ni desplazamiento</strong>. No sustituye a <code>clear</code>: este indica que un bloque debe comenzar por debajo de los flotantes del lado señalado.</p>
+<p class="source">Referencia: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Display/Block_formatting_context" target="_blank" rel="noopener noreferrer">Contexto de formato de bloque · MDN</a>.</p>
 <aside aria-labelledby="display-more" class="extension-card"><p class="card-label">Ampliación</p><h5 id="display-more">Más sobre display</h5><p>Consulta los valores de esta propiedad y sus ejemplos de uso.</p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/display" rel="noopener noreferrer" target="_blank">Consultar display en MDN ↗</a></aside>
 <h4 id="caja-position">3.3.2. Position y apilamiento</h4><aside class="extension-card" id="laboratorio-position"><p class="card-label">Laboratorio interactivo</p><h5>Experimenta con position</h5><p>Compara static, relative, absolute, fixed y sticky. Cambia los desplazamientos y la referencia del contenedor, y observa el apilamiento.</p><a href="../../labs/diw-posicionamiento.html" rel="noopener noreferrer" target="_blank">Abrir laboratorio de position ↗</a></aside>
 <p><code>position</code> decide cómo se coloca una caja. <strong>Conservar su espacio</strong> significa que los demás elementos siguen dejando su hueco, aunque la caja se desplace.</p>
