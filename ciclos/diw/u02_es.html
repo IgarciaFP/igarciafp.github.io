@@ -605,8 +605,8 @@ a[href*="/recursos/"] { color: #0f766e; }</code></pre>
 <figure class="image-container"><div style="overflow-x:auto" role="region" tabindex="0" aria-label="Del fondo incompleto al clearfix y flow-root"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" role="img" aria-labelledby="historia-clearfix-title historia-clearfix-desc" style="display:block;width:100%;min-width:660px;height:auto;font-family:system-ui,sans-serif"><title id="historia-clearfix-title">Del fondo incompleto al clearfix y flow-root</title><desc id="historia-clearfix-desc">Con una foto flotante más alta que el texto, el fondo de un bloque ordinario queda corto. Clearfix genera una caja final debajo de la foto. Flow-root permite contener el flotante sin esa caja generada.</desc><g transform="translate(0 0)"><rect x="5" y="5" width="290" height="290" rx="12" fill="#f8fafc" stroke="#cbd5e1"/><text x="150" y="34" text-anchor="middle" font-size="17" font-weight="700" fill="#1e3a8a">Sin contención</text><rect x="22" y="78" width="256" height="45" fill="#dbeafe" stroke="#1e3a8a" stroke-width="3"/><rect x="26" y="82" width="90" height="120" rx="4" fill="#fed7aa" stroke="#9a3412" stroke-width="2"/><text x="71.0" y="147.0" text-anchor="middle" font-size="16" fill="#431407">Foto</text><path d="M130 95H264 M130 112H245" stroke="#475569" stroke-width="5"/><g fill="#172033" font-size="15" text-anchor="middle"><text x="150" y="251">El fondo termina con el texto.</text><text x="150" y="277">La foto sobresale.</text></g></g><g transform="translate(300 0)"><rect x="5" y="5" width="290" height="290" rx="12" fill="#f8fafc" stroke="#cbd5e1"/><text x="150" y="34" text-anchor="middle" font-size="17" font-weight="700" fill="#1e3a8a">Con clearfix</text><rect x="22" y="78" width="256" height="132" fill="#dbeafe" stroke="#1e3a8a" stroke-width="3"/><rect x="26" y="82" width="90" height="120" rx="4" fill="#fed7aa" stroke="#9a3412" stroke-width="2"/><text x="71.0" y="147.0" text-anchor="middle" font-size="16" fill="#431407">Foto</text><path d="M130 95H264 M130 112H245" stroke="#475569" stroke-width="5"/><path d="M25 207H275" stroke="#7c3aed" stroke-width="4" stroke-dasharray="7 4"/><g fill="#172033" font-size="15" text-anchor="middle"><text x="150" y="251">::after + clear: both</text><text x="150" y="277">Caja final bajo el flotante.</text></g></g><g transform="translate(600 0)"><rect x="5" y="5" width="290" height="290" rx="12" fill="#f8fafc" stroke="#cbd5e1"/><text x="150" y="34" text-anchor="middle" font-size="17" font-weight="700" fill="#1e3a8a">Con flow-root</text><rect x="22" y="78" width="256" height="132" fill="#dbeafe" stroke="#1e3a8a" stroke-width="3"/><rect x="26" y="82" width="90" height="120" rx="4" fill="#fed7aa" stroke="#9a3412" stroke-width="2"/><text x="71.0" y="147.0" text-anchor="middle" font-size="16" fill="#431407">Foto</text><path d="M130 95H264 M130 112H245" stroke="#475569" stroke-width="5"/><g fill="#172033" font-size="15" text-anchor="middle"><text x="150" y="251">El padre contiene el flotante.</text><text x="150" y="277">No necesita ::after.</text></g></g></svg></div><figcaption>Azul: fondo del padre. Naranja: foto flotante. Trazo morado: posición del pseudoelemento del clearfix. Esquema sin márgenes ni relleno.</figcaption></figure>
 <h5 id="display-flow-root">3.3.2.1. De los trucos a las herramientas actuales</h5>
 <p>La evolución abre dos caminos según el problema: <strong>organizar y centrar componentes</strong> o <strong>mantener texto alrededor de un flotante y contenerlo</strong>. Flexbox y <code>flow-root</code> responden a necesidades distintas.</p>
-<h6>Flexbox: el contenedor organiza a sus hijos</h6>
-<p>Para centrar una tarjeta ya no necesitamos calcular su mitad ni simular celdas. El padre reparte el espacio. En escritura horizontal y con la dirección inicial <code>row</code>, <code>justify-content</code> actúa en horizontal y <code>align-items</code> en vertical.</p>
+<h6>Flexbox: lo imprescindible para centrar</h6>
+<p>Aplica estas tres propiedades al padre: <code>display: flex</code> activa Flexbox; <code>justify-content: center</code> centra en horizontal y <code>align-items: center</code>, en vertical. Esto corresponde a la dirección predeterminada de Flexbox y a la escritura horizontal del ejemplo.</p>
 <pre><code>&lt;div class="panel"&gt;
   &lt;article class="tarjeta"&gt;Tu pedido está preparado.&lt;/article&gt;
 &lt;/div&gt;</code></pre>
@@ -617,7 +617,7 @@ a[href*="/recursos/"] { color: #0f766e; }</code></pre>
   min-height: 16rem;
   padding: 1rem;
 }</code></pre>
-<p>La altura mínima deja sitio para centrar y permite que el panel crezca si aumenta el contenido. Para un único elemento, Grid ofrece otra solución directa: <code>display: grid; place-items: center;</code>. Si pasas una antigua distribución a Flexbox, retira los flotantes y el clearfix: <code>float</code> no actúa sobre los elementos flex.</p>
+<p>La altura mínima deja espacio para centrar y permite que el panel crezca si aumenta el texto. Para este ejemplo basta con estas reglas; estudiaremos la distribución, los ejes y las demás opciones en el <a href="#flexbox">apartado de Flexbox</a>.</p>
 <h6>Flow-root: conservar el flotante, contener su altura</h6>
 <p>Si queremos que el texto siga rodeando la foto, mantenemos <code>float</code> en la imagen y aplicamos <code>display: flow-root</code> al artículo. Crea un <strong>contexto de formato de bloque (BFC)</strong>, una región que organiza sus bloques y flotantes. El padre incluye los flotantes internos al calcular su altura automática.</p>
 <pre><code>.noticia {
@@ -755,22 +755,8 @@ a[href*="/recursos/"] { color: #0f766e; }</code></pre>
 }
 .panel-centrado p { margin: 0; }</code></pre>
 <p>Para una portada que ocupe al menos la altura visible de la ventana, puedes sustituir <code>16rem</code> por <code>100dvh</code>. No fijes una altura rígida si el contenido puede crecer.</p>
-<h5>Flexbox: centrar un grupo</h5>
-<p>Para centrar varios botones, usa Flexbox. Con <code>flex-direction: row</code> y escritura horizontal, <code>justify-content</code> centra en horizontal y <code>align-items</code> en vertical. Con <code>column</code>, esos ejes se intercambian.</p>
-<pre><code>&lt;div class="acciones"&gt;
-  &lt;button type="button"&gt;Ver catálogo&lt;/button&gt;
-  &lt;button type="button"&gt;Contactar&lt;/button&gt;
-&lt;/div&gt;</code></pre>
-<pre><code>.acciones {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  min-height: 8rem;
-}</code></pre>
-<p>Si el grupo ocupa varias líneas, <code>align-items</code> alinea los elementos dentro de cada línea. Para centrar el conjunto de líneas en el espacio transversal disponible, añade <code>align-content: center</code>.</p>
+<h5>Flexbox: centrar desde el contenedor</h5>
+<p>Para centrar una tarjeta en ambos ejes, utiliza las tres propiedades del <a href="#display-flow-root">ejemplo anterior</a>: <code>display: flex</code>, <code>justify-content: center</code> y <code>align-items: center</code>. El contenedor debe disponer de espacio libre para que se aprecie el centrado. Las demás opciones se desarrollan más adelante, en <a href="#flexbox">Flexbox</a>.</p>
 <h5>Centrar una superposición</h5>
 <p>Reserva el posicionamiento absoluto para un elemento que deba superponerse, como un distintivo sobre una imagen. El padre establece la referencia con <code>position: relative</code>. El desplazamiento del 50 % se calcula respecto al padre; <code>translate</code> compensa la mitad del tamaño del propio hijo.</p>
 <pre><code>.marco { position: relative; }
