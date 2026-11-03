@@ -482,21 +482,23 @@ a[href*="/recursos/"] { color: #0f766e; }</code></pre>
 <tr><td><code>block</code></td><td>Comienza en una nueva línea. Con ancho automático, normalmente aprovecha el espacio horizontal disponible.</td><td>Admite ancho, alto, relleno, borde y márgenes. Un ancho menor no hace que el bloque siguiente se coloque automáticamente a su lado.</td></tr>
 <tr><td><code>inline</code></td><td>Participa en las líneas de texto y puede fragmentarse entre varias líneas.</td><td>En elementos no reemplazados, como un <code>span</code>, <code>width</code> y <code>height</code> no fijan su tamaño. Los márgenes verticales no separan las líneas; relleno y borde verticales pueden sobresalir sin aumentar su altura.</td></tr>
 <tr><td><code>inline-block</code></td><td>Participa en una línea como una unidad, sin fragmentarse entre líneas.</td><td>Admite dimensiones y márgenes verticales. Los espacios del HTML pueden dejar huecos entre cajas; <code>vertical-align</code> ajusta su alineación en la línea.</td></tr>
+<tr><td><code>none</code></td><td>No genera cajas para el elemento ni para sus descendientes; desaparecen de la distribución.</td><td><strong>No conserva su espacio.</strong> Sus dimensiones, relleno, borde y márgenes no ocupan sitio. El HTML permanece en el DOM.</td></tr>
 </tbody></table></div>
 <pre><code>&lt;div class="prueba"&gt;
   Antes &lt;span class="pieza"&gt;Una caja&lt;/span&gt; después
 &lt;/div&gt;
 
 .pieza {
-  display: inline-block; /* Prueba también inline y block. */
+  display: inline-block; /* Prueba también inline, block y none. */
   width: 10rem;
   min-height: 3rem;
   padding: .5rem;
   border: 2px solid #0f766e;
   vertical-align: middle;
 }</code></pre>
-<p>En el inspector, alterna los tres valores y comprueba en cuáles se respeta el ancho de 10 rem. Las imágenes también pueden tener dimensiones propias cuando participan en una línea.</p>
-<h5>Otros valores de display</h5>
+<p>En el inspector, alterna los cuatro valores y comprueba en cuáles se respeta el ancho de 10 rem y qué ocurre con su espacio al aplicar <code>none</code>. Las imágenes también pueden tener dimensiones propias cuando participan en una línea.</p>
+<aside class="extension-card" aria-labelledby="otros-valores-display"><p class="card-label">Ampliación</p><h5 id="otros-valores-display">Otros valores de display</h5>
+<details class="full-reference"><summary>Ver otros valores y sus usos</summary>
 <p>Los valores <code>display: flex</code> y <code>display: inline-flex</code> se estudiarán más adelante, en el <a href="#flexbox">apartado de Flexbox</a>.</p>
 <ul><li><a href="#display-flow-root"><code>flow-root</code></a> crea un contexto de formato de bloque; se explica con un esquema en el subapartado siguiente.</li><li><code>contents</code> elimina la caja del elemento y deja participar a sus hijos. No lo uses como sustituto general de un contenedor: comprueba su efecto en la accesibilidad y en los estilos del propio elemento.</li></ul>
 <h6>Elementos de lista</h6>
@@ -506,9 +508,10 @@ a[href*="/recursos/"] { color: #0f766e; }</code></pre>
 <li><code>display: table-row</code>: hace que el elemento se comporte visualmente como un <code>&lt;tr&gt;</code>.</li>
 <li><code>display: table-cell</code>: hace que el elemento se comporte visualmente como un <code>&lt;td&gt;</code>.</li></ul>
 <p>Estos valores cambian la presentación, no la semántica HTML. Para listas utiliza <code>ul</code> u <code>ol</code> con <code>li</code>; para datos tabulares, una tabla HTML con sus encabezados.</p>
+</details></aside>
 
 <aside class="didactic-note curiosity-card" aria-labelledby="ocultar-curiosidad"><p class="card-label">Curiosidad</p><h5 id="ocultar-curiosidad">Ocultar no siempre significa lo mismo</h5>
-<ul><li><code>display: none</code> elimina las cajas del elemento y sus descendientes del diseño y, normalmente, del árbol de accesibilidad. El HTML permanece en el DOM.</li><li><code>visibility: hidden</code> oculta el elemento conservando su espacio. El valor inicial es <code>visible</code>. En filas y columnas de tabla, <code>collapse</code> también permite retirar el espacio que ocupan.</li><li><code>opacity: 0</code> lo hace transparente, pero conserva su espacio y puede mantener clics y foco. No basta por sí solo para ocultar un control interactivo.</li></ul>
+<ul><li><code>display: none</code> elimina las cajas del elemento y sus descendientes del diseño y, normalmente, del árbol de accesibilidad. <strong>No conserva su espacio.</strong> El HTML permanece en el DOM.</li><li><code>visibility: hidden</code> oculta el elemento conservando su espacio. El valor inicial es <code>visible</code>. En filas y columnas de tabla, <code>collapse</code> también permite retirar el espacio que ocupan.</li><li><code>opacity: 0</code> lo hace transparente, pero conserva su espacio y puede mantener clics y foco. No basta por sí solo para ocultar un control interactivo.</li></ul>
 </aside>
 <article class="didactic-note activity-callout" id="actividad-ocultar-elementos" aria-labelledby="actividad-ocultar-titulo">
 <p class="card-label">Actividad</p><h5 class="exercise-title" id="actividad-ocultar-titulo"><i class="fa-solid fa-pen" aria-hidden="true"></i> Actividad 02-04 · ¿Invisible significa inactivo?</h5>
