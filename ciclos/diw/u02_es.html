@@ -247,6 +247,31 @@ p { line-height: 1.6; }
 
 nav a { color: #1e3a8a; }       /* Los dos enlaces. */
 nav &gt; a { font-weight: bold; } /* Solo Inicio. */</code></pre>
+<h4 id="selectores-hermanos">Relaciones entre hermanos</h4>
+<div class="table-wrap"><table><caption>Combinadores entre hermanos</caption><thead><tr><th scope="col">Relación</th><th scope="col">Ejemplo</th><th scope="col">Qué selecciona</th></tr></thead><tbody>
+
+<tr><td>Hermano siguiente: <code>+</code></td><td><code>h2 + p</code></td><td>El párrafo inmediatamente posterior a un <code>h2</code>, con el mismo padre.</td></tr>
+<tr><td>Hermanos posteriores: <code>~</code></td><td><code>h2 ~ p</code></td><td>Todos los párrafos posteriores al <code>h2</code> que compartan su padre.</td></tr>
+</tbody></table></div>
+
+<p>Los combinadores describen relaciones, pero no suman especificidad. Evita cadenas excesivamente largas que dependan de cada contenedor intermedio: un pequeño cambio en el HTML podría dejar la regla sin efecto.</p>
+<h4 id="selectores-atributo">Selectores de atributo</h4>
+<p>Los corchetes permiten seleccionar por la presencia de un atributo o por su valor. Son útiles para distinguir campos de formulario y tipos de enlace.</p>
+<pre><code>/* Elementos que tienen el atributo required. */
+[required] { border-left: 3px solid #b45309; }
+
+/* Campos cuyo tipo es exactamente email. */
+input[type="email"] { background-color: #eff6ff; }
+
+/* Enlaces cuyo href empieza por https://. */
+a[href^="https://"] { text-decoration: underline; }
+
+/* Enlaces cuyo href termina en .pdf. */
+a[href$=".pdf"] { font-weight: bold; }
+
+/* Enlaces cuyo href contiene /recursos/. */
+a[href*="/recursos/"] { color: #0f766e; }</code></pre>
+<p><code>=</code> compara el valor completo; <code>^=</code>, su comienzo; <code>$=</code>, su final; y <code>*=</code>, una parte del valor. Estos selectores comparan el atributo: <code>[href$=".pdf"]</code> no coincidirá con un enlace que termine en <code>.pdf?descarga=1</code>.</p>
 <p>Los <a href="#selectores-avanzados">selectores avanzados</a> se estudiarán más adelante, después del modelo de caja.</p>
 </section><section id="cajas"><h2>3. Modelo de caja y flujo</h2><p>Cada caja tiene contenido, relleno, borde y margen. El relleno separa el contenido del borde; el margen establece separación exterior. Los márgenes verticales de algunos bloques en flujo normal pueden colapsar, de modo que no siempre se suman.</p><figure id="modelo-caja-svg" style="margin:2rem 0">
 <svg aria-labelledby="box-model-title box-model-desc" height="500" role="img" style="display:block;width:100%;height:auto" viewbox="0 0 720 500" width="720" xmlns="http://www.w3.org/2000/svg">
@@ -835,7 +860,7 @@ a {
 <p><strong>Compruébalo en el inspector.</strong> Cambia <code>--margen-pagina</code> a 24 px y predice el nuevo ancho disponible. Ensancha la ventana hasta que el artículo deje de crecer. Identifica qué valor lo limita y comprueba que el título sigue siendo legible al ampliar el zoom.</p>
 <aside class="resource-card expansion-card"><h4>Consultar variables y cálculos</h4><div class="flex-wrap-group"><a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascading_variables/Using_custom_properties">Propiedades personalizadas en MDN</a><a class="resource-link-btn" href="https://www.w3.org/TR/css-values-4/#math">Funciones matemáticas en el W3C</a></div></aside>
 </section><section id="selectores-avanzados"><h2>4. Selectores avanzados</h2>
-<p>Podemos afinar la selección utilizando relaciones entre elementos, atributos, estados de interacción y posiciones dentro del documento. El objetivo es expresar qué elementos necesitamos seleccionar sin añadir clases innecesarias ni crear reglas difíciles de mantener.</p>
+<p>Podemos afinar la selección combinando condiciones y seleccionando elementos según su estado de interacción o su posición dentro del documento. El objetivo es expresar qué elementos necesitamos seleccionar sin añadir clases innecesarias ni crear reglas difíciles de mantener.</p>
 <h4>Agrupar selectores y combinar condiciones</h4>
 <p>La <strong>coma</strong> permite compartir declaraciones entre varios selectores. En cambio, escribir selectores juntos y sin espacio exige que un mismo elemento cumpla todas esas condiciones.</p>
 <pre><code>/* Selecciona todos los h1 y todos los h2. */
@@ -888,31 +913,6 @@ p.destacado { font-weight: bold; }
 </aside>
 
 
-<h4>Relaciones entre hermanos</h4>
-<div class="table-wrap"><table><caption>Combinadores entre hermanos</caption><thead><tr><th scope="col">Relación</th><th scope="col">Ejemplo</th><th scope="col">Qué selecciona</th></tr></thead><tbody>
-
-<tr><td>Hermano siguiente: <code>+</code></td><td><code>h2 + p</code></td><td>El párrafo inmediatamente posterior a un <code>h2</code>, con el mismo padre.</td></tr>
-<tr><td>Hermanos posteriores: <code>~</code></td><td><code>h2 ~ p</code></td><td>Todos los párrafos posteriores al <code>h2</code> que compartan su padre.</td></tr>
-</tbody></table></div>
-
-<p>Los combinadores describen relaciones, pero no suman especificidad. Evita cadenas excesivamente largas que dependan de cada contenedor intermedio: un pequeño cambio en el HTML podría dejar la regla sin efecto.</p>
-<h4>Selectores de atributo</h4>
-<p>Los corchetes permiten seleccionar por la presencia de un atributo o por su valor. Son útiles para distinguir campos de formulario y tipos de enlace.</p>
-<pre><code>/* Elementos que tienen el atributo required. */
-[required] { border-left: 3px solid #b45309; }
-
-/* Campos cuyo tipo es exactamente email. */
-input[type="email"] { background-color: #eff6ff; }
-
-/* Enlaces cuyo href empieza por https://. */
-a[href^="https://"] { text-decoration: underline; }
-
-/* Enlaces cuyo href termina en .pdf. */
-a[href$=".pdf"] { font-weight: bold; }
-
-/* Enlaces cuyo href contiene /recursos/. */
-a[href*="/recursos/"] { color: #0f766e; }</code></pre>
-<p><code>=</code> compara el valor completo; <code>^=</code>, su comienzo; <code>$=</code>, su final; y <code>*=</code>, una parte del valor. Estos selectores comparan el atributo: <code>[href$=".pdf"]</code> no coincidirá con un enlace que termine en <code>.pdf?descarga=1</code>.</p>
 <h4>Pseudoclases: estado y posición</h4>
 <p>Las pseudoclases se escriben con <strong>dos puntos</strong>. Seleccionan elementos que cumplen una condición, como estar bajo el puntero, tener foco visible o ocupar una posición determinada entre sus hermanos.</p>
 <div class="table-wrap"><table><caption>Pseudoclases habituales y su significado</caption><thead><tr><th scope="col">Pseudoclase</th><th scope="col">Significado</th><th scope="col">Ejemplo de selector</th></tr></thead><tbody>
