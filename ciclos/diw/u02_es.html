@@ -1090,8 +1090,7 @@ div.texto-en-linea {
 <h4>Superposición: z-index</h4>
 <p><code>z-index</code> controla qué caja aparece delante al solaparse. Dentro del mismo contexto de apilamiento, un valor mayor se dibuja por encima. Los contextos agrupan elementos: un hijo no puede superar otra agrupación solo por tener un número enorme.</p>
 <aside aria-labelledby="position-more" class="extension-card"><p class="card-label">Ampliación</p><h4 id="position-more">Practicar el posicionamiento</h4><p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position" rel="noopener noreferrer" target="_blank">Ejemplos de position en MDN ↗</a> · <a href="https://www.w3.org/TR/css-position-3/" rel="noopener noreferrer" target="_blank">Referencia de posicionamiento del W3C ↗</a></p></aside>
-<article class="didactic-note activity-callout" id="act-02-04"><h3 class="exercise-title"><i class="fa-solid fa-pen" aria-hidden="true"></i> Actividad 02-04 · Comparar posiciones</h3><p>Crea tres cajas y prueba <code>relative</code>, <code>absolute</code> y <code>fixed</code> sobre la segunda. Anota en cada caso qué ocurre con su hueco y cuál es la referencia. Añade una navegación <code>sticky</code> y suficiente texto para comprobarla. Entrega las tres variantes y las conclusiones.</p><a class="delivery-trigger" href="../../labs/entrega-practicas-diw.html?actividad=act-02-04" rel="noopener noreferrer" target="_blank">Entregar actividad</a></article><aside aria-labelledby="ampliacion-parallax" class="extension-card">
-<p class="card-label">Ampliación</p><h4 id="ampliacion-parallax">Un efecto parallax sencillo</h4>
+<article class="didactic-note activity-callout" id="act-02-04"><h3 class="exercise-title"><i class="fa-solid fa-pen" aria-hidden="true"></i> Actividad 02-04 · Comparar posiciones</h3><p>Crea tres cajas y prueba <code>relative</code>, <code>absolute</code> y <code>fixed</code> sobre la segunda. Anota en cada caso qué ocurre con su hueco y cuál es la referencia. Añade una navegación <code>sticky</code> y suficiente texto para comprobarla. Entrega las tres variantes y las conclusiones.</p><a class="delivery-trigger" href="../../labs/entrega-practicas-diw.html?actividad=act-02-04" rel="noopener noreferrer" target="_blank">Entregar actividad</a></article><article class="didactic-note activity-callout" aria-labelledby="ampliacion-parallax"><h3 class="exercise-title" id="ampliacion-parallax"><i class="fa-solid fa-pen" aria-hidden="true"></i> Actividad · Crea y comprueba un efecto parallax</h3>
 <p>El <strong>parallax</strong> crea sensación de profundidad cuando el fondo y el contenido se desplazan de forma distinta. Una aproximación sencilla consiste en fijar una imagen de fondo a la ventana mientras el texto se desplaza por encima.</p>
 <pre><code>&lt;section class="parallax"&gt;
   &lt;h2&gt;Descubre nuestro entorno&lt;/h2&gt;
@@ -1113,10 +1112,14 @@ div.texto-en-linea {
 @media (min-width: 48rem) and (prefers-reduced-motion: no-preference) {
   .parallax { background-attachment: fixed; }
 }</code></pre>
-<p>Sustituye la ruta por una imagen propia y añade contenido antes y después para poder desplazar la página. La capa oscura ayuda a leer el título: comprueba el contraste con tu fotografía. En móviles se conserva el fondo normal; algunos navegadores móviles limitan el comportamiento de <code>fixed</code>.</p>
+<ol>
+<li><strong>Construye la escena.</strong> Usa el ejemplo con una fotografía propia y añade contenido antes y después de la sección para poder desplazarte por la página. Ajusta la capa oscura hasta que el título se lea bien.</li>
+<li><strong>Compara los dos fondos.</strong> En una ventana de al menos <code>48rem</code> de ancho y con la preferencia de movimiento normal, alterna <code>scroll</code> y <code>fixed</code> en la regla de medios. Desplázate por el mismo tramo en ambas pruebas. Elige un detalle reconocible de la foto y describe cómo cambia su posición respecto al título.</li>
+<li><strong>Comprueba la alternativa con menos movimiento.</strong> Deja <code>fixed</code> en la regla de medios y activa la preferencia de movimiento reducido del sistema. Repite la prueba y comprueba en el inspector qué valor de <code>background-attachment</code> se aplica ahora.</li>
+</ol>
 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/background-attachment" rel="noopener noreferrer" target="_blank">Consultar background-attachment en MDN ↗</a>
 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion" rel="noopener noreferrer" target="_blank">Consultar reducción de movimiento en MDN ↗</a>
-</aside>
+</article>
 
 <aside class="extension-card shorthand-card" aria-labelledby="shorthand-posicion"><p class="card-label">Ampliación · Shorthand</p><h4 id="shorthand-posicion">Abreviar top, right, bottom y left con inset</h4><details class="full-reference"><summary>Ver cómo escribir las propiedades abreviadas</summary><p><code>inset</code> sigue el mismo orden de uno a cuatro valores que <code>margin</code>: arriba, derecha, abajo e izquierda. Necesita un elemento posicionado; no cambia <code>position</code> ni <code>z-index</code>.</p><pre><code>.tarjeta { position: relative; }
 .capa {
