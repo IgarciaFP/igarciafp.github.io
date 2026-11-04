@@ -2408,8 +2408,14 @@ mensaje.classList.toggle("destacado"); // La añade de nuevo.</code></pre>
 <pre><code>const cal = document.querySelector("#calendario");
 createCalendar(cal, 2012, 9);</code></pre>
 <div class="didactic-note">
-<p><strong>Ayuda con las fechas.</strong> <code>new Date(year, month - 1, 1)</code> representa el primer día del mes: <code>Date</code> numera los meses de 0 a 11. <code>getDate()</code> devuelve el día del mes y <code>getMonth()</code>, el mes.</p>
-<p><code>getDay()</code> devuelve 0 para domingo y 6 para sábado. Para situar el lunes en la primera columna, utiliza <code>(fecha.getDay() + 6) % 7</code>: lunes será 0 y domingo, 6. <code>fecha.setDate(fecha.getDate() + 1)</code> avanza un día y cambia de mes automáticamente cuando corresponde.</p>
+<p><strong>¿En qué columna empieza el mes?</strong> Para colocar el día 1, primero necesitamos saber qué día de la semana fue en ese año. Crea esa fecha con <code>new Date(year, month - 1, 1)</code>. Restamos 1 al mes porque <code>Date</code> utiliza 0 para enero y 11 para diciembre. El último argumento, 1, indica el primer día del mes.</p>
+<p>El método <code>getDay()</code> calcula su día de la semana y devuelve un número entre 0 (domingo) y 6 (sábado), con 1 para lunes. Nuestro calendario empieza en lunes, así que convertimos ese número en una columna del 0 al 6. Dentro de <code>createCalendar()</code> puedes obtenerla con este código.</p>
+<pre><code class="language-javascript">const primerDia = new Date(year, month - 1, 1);
+const diaSemana = primerDia.getDay();
+const columnaInicial = (diaSemana + 6) % 7;</code></pre>
+<p>La fórmula <code>(diaSemana + 6) % 7</code> suma 6 y obtiene el resto de dividir entre 7. Así, lunes pasa de 1 a 0, sábado de 6 a 5 y domingo de 0 a 6. <code>columnaInicial</code> indica cuántas celdas vacías hay que colocar antes del día 1.</p>
+<p>Por ejemplo, con <code>year = 2012</code> y <code>month = 9</code>, el 1 de septiembre fue sábado. <code>getDay()</code> devuelve 6 y <code>(6 + 6) % 7</code> da 5. Por tanto, quedan cinco celdas vacías, de lunes a viernes, y el día 1 se coloca en la sexta columna.</p>
+<p>Para continuar el calendario, <code>getDate()</code> devuelve el número del día del mes y <code>getMonth()</code> devuelve el mes, de 0 a 11. <code>fecha.setDate(fecha.getDate() + 1)</code> avanza un día y ajusta automáticamente el mes y el año cuando corresponde.</p>
 </div>
 <p><strong>Guía de resolución:</strong></p>
 <ol>
