@@ -2340,6 +2340,42 @@ for (let i = 0; i &lt; elementos.length; i++) {
                 <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
 mensaje.style.backgroundColor = "#e0f2fe";
 mensaje.style.padding = "12px";</code></pre>
+<figure id="ejemplo-cssom" style="margin:1.5rem 0">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 630" role="img" aria-labelledby="cssom-title cssom-desc" style="display:block;width:100%;max-width:720px;height:auto;margin:1rem auto">
+<title id="cssom-title">Del programa a los objetos de estilo del navegador</title>
+<desc id="cssom-desc">Una regla CSS da color azul y tamaño de 20 píxeles al párrafo Hola. JavaScript asigna color rojo a su estilo en línea. La regla de la hoja sigue azul; el estilo calculado combina rojo y 20 píxeles.</desc>
+<defs><marker id="cssom-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="#64748b"/></marker></defs>
+<rect x="1" y="1" width="618" height="628" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+<text x="20" y="30" font-size="19" fill="#0f172a" font-family="Arial, sans-serif">1. Un programa pequeño</text>
+<rect x="16" y="44" width="588" height="207" rx="10" fill="#0f172a" stroke="#0f172a"/>
+<text x="30" y="70" font-size="15" fill="#e2e8f0" font-family="monospace">HTML  &lt;p id="saludo"&gt;Hola&lt;/p&gt;</text>
+<text x="30" y="104" font-size="15" fill="#e2e8f0" font-family="monospace">CSS   #saludo { color: blue; font-size: 20px; }</text>
+<text x="30" y="140" font-size="15" fill="#93c5fd" font-family="Arial, sans-serif">JavaScript (con defer)</text>
+<text x="30" y="168" font-size="15" fill="#e2e8f0" font-family="monospace">const p = document.querySelector("#saludo");</text>
+<text x="30" y="196" font-size="15" fill="#e2e8f0" font-family="monospace">p.style.color = "red";</text>
+<text x="30" y="229" font-size="15" fill="#e2e8f0" font-family="Arial, sans-serif">Antes: Hola azul  →  Después: Hola rojo</text>
+<text x="20" y="283" font-size="19" fill="#0f172a" font-family="Arial, sans-serif">2. Representación simplificada en el navegador</text>
+<rect x="16" y="300" width="285" height="177" rx="10" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="30" y="326" font-size="17" fill="#0f172a" font-family="Arial, sans-serif">CSSOM · hoja de estilos</text>
+<text x="30" y="353" font-size="15" fill="#4338ca" font-family="monospace">CSSStyleSheet</text>
+<path d="M40 361 V395 H54 M60 403 V438 H74" fill="none" stroke="#818cf8" stroke-width="2"/>
+<text x="56" y="393" font-size="14" fill="#4338ca" font-family="monospace">CSSStyleRule: #saludo</text>
+<text x="76" y="423" font-size="14" fill="#1d4ed8" font-family="monospace">color: blue</text>
+<text x="76" y="449" font-size="14" fill="#4338ca" font-family="monospace">font-size: 20px</text>
+<rect x="319" y="300" width="285" height="177" rx="10" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="333" y="326" font-size="17" fill="#0f172a" font-family="Arial, sans-serif">DOM · elemento p#saludo</text>
+<text x="333" y="353" font-size="15" fill="#065f46" font-family="monospace">Texto: "Hola"</text>
+<text x="333" y="389" font-size="14" fill="#065f46" font-family="monospace">p.style → estilo en línea</text>
+<text x="349" y="421" font-size="15" fill="#b91c1c" font-family="monospace">color: red</text>
+<text x="333" y="452" font-size="14" fill="#065f46" font-family="Arial, sans-serif">Lo modifica JavaScript.</text>
+<path d="M158 477 V495 H285 V514" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#cssom-arrow)"/><path d="M462 477 V495 H335 V514" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#cssom-arrow)"/>
+<rect x="16" y="522" width="588" height="89" rx="10" fill="#fff" stroke="#94a3b8"/>
+<text x="30" y="549" font-size="17" fill="#0f172a" font-family="Arial, sans-serif">3. Estilo calculado → resultado visible</text>
+<text x="30" y="580" font-size="14" fill="#475569" font-family="monospace">color: rgb(255, 0, 0) · font-size: 20px</text>
+<text x="533" y="581" font-size="20" fill="#ff0000" font-family="Arial, sans-serif">Hola</text>
+</svg>
+<figcaption>El <strong>CSSOM</strong> (modelo de objetos de CSS) permite consultar y modificar estilos desde JavaScript. En este ejemplo, la hoja conserva <code>color: blue</code>; <code>p.style.color = "red"</code> añade un estilo en línea. El navegador aplica el rojo y mantiene los <code>20px</code> de la hoja. <code>getComputedStyle(p)</code> permite consultar ese resultado.</figcaption>
+</figure>
                 
                                 
                 <div class="didactic-note">
