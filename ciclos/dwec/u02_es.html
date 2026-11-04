@@ -2295,12 +2295,29 @@ for (let i = 0; i &lt; elementos.length; i++) {
 
 
                 <h3 id="sec8_6">8.6. Estilos y clases CSS</h3>
-                <p><code>style</code> modifica estilos en línea. Las propiedades con guiones en CSS se escriben en <em>camelCase</em> al acceder mediante un punto:</p>
+                <p><code>style</code> es una propiedad de <strong>cada elemento HTML</strong> y permite modificar sus estilos en línea. Puedes usarla sobre el elemento devuelto por <code>querySelector()</code> o <code>getElementById()</code>. Si no hay coincidencias, ambos devuelven <code>null</code>: comprueba que el elemento existe antes de acceder a su <code>style</code>.</p>
+                <p>Las propiedades con guiones en CSS se escriben en <em>camelCase</em> al acceder mediante un punto:</p>
                 <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
 mensaje.style.backgroundColor = "#e0f2fe";
 mensaje.style.padding = "12px";</code></pre>
                 
                                 
+                <div class="didactic-note">
+                    <p><strong>¿Y si selecciono varios elementos?</strong> Una <code>HTMLCollection</code> (como la devuelta por <code>getElementsByClassName()</code>) o una <code>NodeList</code> (como la devuelta por <code>querySelectorAll()</code>) es una colección y <strong>no tiene una propiedad <code>style</code> propia</strong>. Accede a un elemento por su índice o recorre la colección para modificar cada elemento.</p>
+                </div>
+                <pre data-example="dom-js"><code>const avisos = document.getElementsByClassName("aviso");
+
+// Un solo elemento: comprobamos que exista.
+if (avisos.length &gt; 0) {
+    avisos[0].style.color = "navy";
+}
+
+// Todos los elementos de la colección.
+for (const aviso of avisos) {
+    aviso.style.backgroundColor = "#e0f2fe";
+}</code></pre>
+                <p>El mismo recorrido con <code>for...of</code> sirve si obtienes la colección con <code>document.querySelectorAll(".aviso")</code>. Escribir <code>avisos.style.backgroundColor</code> daría un error: el estilo pertenece a cada <code>aviso</code>, no a la colección.</p>
+
                 <h4>Aplicar y retirar propiedades CSS</h4>
                 <p>Un aviso puede necesitar un estilo temporal. <code>style.setProperty()</code> permite aplicar una propiedad y <code>style.removeProperty()</code> retirarla después. Ambos reciben el nombre tal como se escribe en CSS, por ejemplo <code>"background-color"</code>.</p>
                 <aside class="function-card" id="ficha-metodo-setProperty">
