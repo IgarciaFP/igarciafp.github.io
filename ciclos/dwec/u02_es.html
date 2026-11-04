@@ -2399,35 +2399,7 @@ mensaje.classList.toggle("destacado"); // La añade de nuevo.</code></pre>
 <div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
 </div>
 
-<div class="activity-card activity-callout" id="actividad-jsinfo-calendario">
-<p><strong>2.43. Crea un calendario</strong></p>
-<p>Programa <code>createCalendar(elem, year, month)</code> para mostrar el mes indicado dentro de <code>elem</code>. Recibirá el año y un mes del 1 al 12. La tabla tendrá siete columnas, de lunes a domingo: utiliza <code>th</code> para sus encabezados, <code>tr</code> para cada semana y <code>td</code> para los días. No necesita responder a clics.</p>
-<p><strong>HTML de partida:</strong> descarga <code>index.html</code> y guárdalo junto al archivo <code>calendario.js</code> que vas a programar.</p>
-<div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/calendario/index.html" download="index.html">Descargar HTML del calendario</a></div>
-<p>Después de definir tu función en <code>calendario.js</code>, llámala así:</p>
-<pre><code>const cal = document.querySelector("#calendario");
-createCalendar(cal, 2012, 9);</code></pre>
-<div class="didactic-note">
-<p><strong>¿En qué columna empieza el mes?</strong> Para colocar el día 1, primero necesitamos saber qué día de la semana fue en ese año. Crea esa fecha con <code>new Date(year, month - 1, 1)</code>. Restamos 1 al mes porque <code>Date</code> utiliza 0 para enero y 11 para diciembre. El último argumento, 1, indica el primer día del mes.</p>
-<p>El método <code>getDay()</code> calcula su día de la semana y devuelve un número entre 0 (domingo) y 6 (sábado), con 1 para lunes. Nuestro calendario empieza en lunes, así que convertimos ese número en una columna del 0 al 6. Dentro de <code>createCalendar()</code> puedes obtenerla con este código.</p>
-<pre><code class="language-javascript">const primerDia = new Date(year, month - 1, 1);
-const diaSemana = primerDia.getDay();
-const columnaInicial = (diaSemana + 6) % 7;</code></pre>
-<p>La fórmula <code>(diaSemana + 6) % 7</code> suma 6 y obtiene el resto de dividir entre 7. Así, lunes pasa de 1 a 0, sábado de 6 a 5 y domingo de 0 a 6. <code>columnaInicial</code> indica cuántas celdas vacías hay que colocar antes del día 1.</p>
-<p>Por ejemplo, con <code>year = 2012</code> y <code>month = 9</code>, el 1 de septiembre fue sábado. <code>getDay()</code> devuelve 6 y <code>(6 + 6) % 7</code> da 5. Por tanto, quedan cinco celdas vacías, de lunes a viernes, y el día 1 se coloca en la sexta columna.</p>
-<p>Para continuar el calendario, <code>getDate()</code> devuelve el número del día del mes y <code>getMonth()</code> devuelve el mes, de 0 a 11. <code>fecha.setDate(fecha.getDate() + 1)</code> avanza un día y ajusta automáticamente el mes y el año cuando corresponde.</p>
-</div>
-<p><strong>Guía de resolución:</strong></p>
-<ol>
-<li>Construye una cadena con la apertura de la tabla y la fila de encabezados.</li>
-<li>Abre la primera semana. Añade celdas vacías antes del día 1 según su columna.</li>
-<li>Mientras la fecha pertenezca al mes solicitado, añade su día a una celda y avanza la fecha. Después de cada domingo cierra la fila; abre otra solo si quedan días del mes.</li>
-<li>Completa la última semana con celdas vacías hasta tener siete columnas y cierra la tabla.</li>
-<li>Asigna la cadena terminada a <code>elem.innerHTML</code>. Aquí el HTML lo construye tu programa.</li>
-</ol>
-<p><strong>Comprobación:</strong> septiembre de 2012 empieza en sábado y termina en domingo: debe tener cinco semanas, sin una sexta fila vacía. Prueba también febrero de 2024 (29 días) y febrero de 2025 (28 días).</p>
-<div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
-</div>
+
 
                 
 
@@ -2454,7 +2426,7 @@ if (mensaje !== null) {
                 
 
             <div class="activity-card activity-callout" id="actividad-repaso-dom-estudio">
-<p><strong>2.44. Crear un Snippet</strong></p>
+<p><strong>2.43. Crear un Snippet</strong></p>
 <p>Mejora la lectura de una web de apuntes o noticias aplicando tus propios estilos desde Chrome. Crearás un pequeño script reutilizable sobre la página que tengas abierta.</p>
 <p><strong>Configuración de lectura:</strong> este CSS define los estilos que aplicarás desde JavaScript para obtener letra grande, líneas separadas y buen contraste.</p>
 <pre><code class="language-css">body, body * {
@@ -2482,6 +2454,36 @@ if (mensaje !== null) {
 </ol>
 <p>El script modifica el HTML visible en tu navegador; no cambia la web original. <strong>Recarga para recuperar su aspecto.</strong> Funciona con los elementos del documento seleccionado; el contenido de marcos y componentes encapsulados puede conservar sus estilos.</p>
 <p><strong>Entrega:</strong> el script terminado. <a href="https://developer.chrome.com/docs/devtools/javascript/snippets?hl=es" target="_blank" rel="noopener noreferrer">Ayuda de Chrome: ejecutar snippets</a>.</p>
+<div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
+</div>
+
+<div class="activity-card activity-callout" id="actividad-jsinfo-calendario">
+<p><strong>2.44. Repaso del DOM. Crea un calendario</strong></p>
+<p>Programa <code>createCalendar(elem, year, month)</code> para mostrar el mes indicado dentro de <code>elem</code>. Recibirá el año y un mes del 1 al 12. La tabla tendrá siete columnas, de lunes a domingo: utiliza <code>th</code> para sus encabezados, <code>tr</code> para cada semana y <code>td</code> para los días. No necesita responder a clics.</p>
+<p><strong>HTML de partida:</strong> descarga <code>index.html</code> y guárdalo junto al archivo <code>calendario.js</code> que vas a programar.</p>
+<div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/calendario/index.html" download="index.html">Descargar HTML del calendario</a></div>
+<p>Después de definir tu función en <code>calendario.js</code>, llámala así:</p>
+<pre><code>const cal = document.querySelector("#calendario");
+createCalendar(cal, 2012, 9);</code></pre>
+<div class="didactic-note">
+<p><strong>¿En qué columna empieza el mes?</strong> Para colocar el día 1, primero necesitamos saber qué día de la semana fue en ese año. Crea esa fecha con <code>new Date(year, month - 1, 1)</code>. Restamos 1 al mes porque <code>Date</code> utiliza 0 para enero y 11 para diciembre. El último argumento, 1, indica el primer día del mes.</p>
+<p>El método <code>getDay()</code> calcula su día de la semana y devuelve un número entre 0 (domingo) y 6 (sábado), con 1 para lunes. Nuestro calendario empieza en lunes, así que convertimos ese número en una columna del 0 al 6. Dentro de <code>createCalendar()</code> puedes obtenerla con este código.</p>
+<pre><code class="language-javascript">const primerDia = new Date(year, month - 1, 1);
+const diaSemana = primerDia.getDay();
+const columnaInicial = (diaSemana + 6) % 7;</code></pre>
+<p>La fórmula <code>(diaSemana + 6) % 7</code> suma 6 y obtiene el resto de dividir entre 7. Así, lunes pasa de 1 a 0, sábado de 6 a 5 y domingo de 0 a 6. <code>columnaInicial</code> indica cuántas celdas vacías hay que colocar antes del día 1.</p>
+<p>Por ejemplo, con <code>year = 2012</code> y <code>month = 9</code>, el 1 de septiembre fue sábado. <code>getDay()</code> devuelve 6 y <code>(6 + 6) % 7</code> da 5. Por tanto, quedan cinco celdas vacías, de lunes a viernes, y el día 1 se coloca en la sexta columna.</p>
+<p>Para continuar el calendario, <code>getDate()</code> devuelve el número del día del mes y <code>getMonth()</code> devuelve el mes, de 0 a 11. <code>fecha.setDate(fecha.getDate() + 1)</code> avanza un día y ajusta automáticamente el mes y el año cuando corresponde.</p>
+</div>
+<p><strong>Guía de resolución:</strong></p>
+<ol>
+<li>Construye una cadena con la apertura de la tabla y la fila de encabezados.</li>
+<li>Abre la primera semana. Añade celdas vacías antes del día 1 según su columna.</li>
+<li>Mientras la fecha pertenezca al mes solicitado, añade su día a una celda y avanza la fecha. Después de cada domingo cierra la fila; abre otra solo si quedan días del mes.</li>
+<li>Completa la última semana con celdas vacías hasta tener siete columnas y cierra la tabla.</li>
+<li>Asigna la cadena terminada a <code>elem.innerHTML</code>. Aquí el HTML lo construye tu programa.</li>
+</ol>
+<p><strong>Comprobación:</strong> septiembre de 2012 empieza en sábado y termina en domingo: debe tener cinco semanas, sin una sexta fila vacía. Prueba también febrero de 2024 (29 días) y febrero de 2025 (28 días).</p>
 <div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
 </div>
 </section>
