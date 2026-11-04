@@ -2601,6 +2601,37 @@ boton.addEventListener("click", mostrarSaludo);</code></pre>
                 <p>El navegador ejecuta <code>mostrarSaludo</code> cada vez que se activa el botón. Un botón HTML puede activarse tanto con el ratón como con el teclado.</p>
                 <div class="didactic-note"><p><strong>Pasar la función, no ejecutarla.</strong> Escribe <code>mostrarSaludo</code> como segundo argumento. Si escribes <code>mostrarSaludo()</code>, la función se ejecuta durante el registro y se pasa su resultado en lugar del manejador.</p></div>
                 <p>Registra los manejadores cuando los elementos ya existan, como ocurre al usar <code>defer</code>. <code>addEventListener()</code> permite asociar varias funciones a un mismo evento y mantiene el comportamiento en el archivo JavaScript.</p>
+                <aside class="function-card" id="ficha-addeventlistener-completa">
+                    <p class="function-label">Ficha de método</p>
+                    <p class="function-signature"><code>destino.addEventListener(tipo, manejador, opciones)</code></p>
+                    <p>Registra una respuesta a un evento en un elemento, <code>document</code> o <code>window</code>.</p>
+                    <ul>
+                        <li><strong>tipo:</strong> nombre del evento, como <code>"click"</code> o <code>"keydown"</code>, sin <code>on</code>. Distingue mayúsculas y minúsculas.</li>
+                        <li><strong>manejador:</strong> función sin ejecutarla. El navegador le pasa automáticamente el objeto del evento como primer argumento. También admite un objeto con método <code>handleEvent()</code>; <code>null</code> no registra nada.</li>
+                        <li><strong>opciones:</strong> objeto opcional para configurar el registro. También admite un booleano como abreviatura de <code>capture</code>.</li>
+                    </ul>
+                    <p><strong>Devuelve:</strong> <code>undefined</code>. El valor devuelto por el manejador se ignora.</p>
+                    <p><strong>Opciones:</strong></p>
+                    <ul>
+                        <li><code>capture</code>: por defecto, <code>false</code>. Con <code>true</code>, escucha durante la captura: el evento recorre los antecesores hacia su destino. Con <code>false</code>, escucha en el destino o cuando el evento asciende por sus antecesores, si tiene propagación por burbujeo.</li>
+                        <li><code>once</code>: por defecto, <code>false</code>. Con <code>true</code>, el manejador se ejecuta como máximo una vez y se retira automáticamente.</li>
+                        <li><code>passive</code>: con <code>true</code>, el manejador no puede cancelar la acción predeterminada mediante <code>preventDefault()</code>. Permite al navegador iniciar el desplazamiento sin esperar al manejador. Normalmente es <code>false</code>, pero puede ser <code>true</code> por defecto para eventos de rueda o táctiles en destinos como <code>document</code> y <code>window</code>. Si necesitas cancelar una acción cancelable, indica <code>passive: false</code>.</li>
+                        <li><code>signal</code>: recibe la señal de un <code>AbortController</code>. Al llamar a <code>abort()</code>, se retiran los manejadores asociados. Por defecto no hay señal; si ya está cancelada, el manejador no se registra.</li>
+                    </ul>
+                    <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener" target="_blank" rel="noopener noreferrer">Referencia: MDN · addEventListener()</a></p>
+                </aside>
+                <p><strong>Ejemplo: responder solo al primer clic.</strong> Sustituye el registro del ejemplo anterior por:</p>
+                <pre><code>boton.addEventListener("click", mostrarSaludo, { once: true });</code></pre>
+                <p><strong>Ejemplo: poder retirar el manejador.</strong> Como alternativa, registra la función con una señal:</p>
+                <pre><code>const controlador = new AbortController();
+boton.addEventListener("click", mostrarSaludo, {
+    signal: controlador.signal
+});
+
+// Ejecuta esta línea cuando quieras dejar de escuchar:
+controlador.abort();</code></pre>
+                <p>Si ejecutas <code>abort()</code> inmediatamente, el manejador se retira antes de que puedas pulsar el botón.</p>
+
                 
 
                 <div class="activity-card activity-callout" id="actividad-jsinfo-ocultar"><p><strong>2.47. Panel de ayuda desplegable</strong></p><p>Construye una ayuda que pueda consultarse sin abandonar la página de entrega.</p><ol><li>Antes de programar, identifica el botón, el evento <code>click</code> y el cambio que hará el manejador.</li><li>Conserva un booleano que indique si la ayuda está abierta. Registra el manejador una sola vez con <code>addEventListener()</code>.</li><li>En cada clic, cambia el estado y añade o retira la clase <code>oculto</code>. Alterna el texto entre «Mostrar ayuda» y «Ocultar ayuda».</li></ol><p><strong>Pruebas:</strong> al cargar está cerrado; tras un clic se abre; tras cuatro vuelve al inicio. Prueba Tab para enfocar el botón y Espacio o Intro para activarlo.</p><p>Inspiración: <a href="https://github.com/bradtraversy/50projects50days/tree/master/faq-collapse">FAQ Collapse</a>, reducido a una tarjeta.</p><p><strong>Material facilitado:</strong> descarga estos archivos juntos en una carpeta llamada <code>ayuda</code>. El HTML y el CSS están preparados; completa <code>app.js</code>. La personalización visual es opcional.</p><div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/proyectos/ayuda/index.html" download="index.html">index.html</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/ayuda/estilos.css" download="estilos.css">estilos.css</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/ayuda/app.js" download="app.js">app.js</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/ayuda/LEEME.txt" download="LEEME.txt">LEEME.txt</a></div><p><strong>Entrega:</strong> incluye los archivos del proyecto y <code>pruebas.txt</code> con los resultados esperados y observados. Se evalúa el comportamiento de JavaScript; no necesitas ampliar el CSS.</p><div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div></div>
