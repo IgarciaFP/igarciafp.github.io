@@ -2467,8 +2467,8 @@ mensaje.classList.toggle("destacado"); // La añade de nuevo.</code></pre>
     background: #FFF8E7 !important;
 }</code></pre>
 <ol>
-<li><strong>Abre el editor (2 minutos).</strong> En Chrome, abre un artículo y pulsa <kbd>F12</kbd>. En DevTools entra en <strong>Sources → Snippets</strong> (puede estar dentro de <strong>»</strong>). Pulsa <strong>New snippet</strong> y llámalo <code>lectura</code>. Un snippet guarda código para ejecutarlo sobre la web abierta.</li>
-<li><strong>Completa el script (5 minutos).</strong> Escribe esta plantilla en el editor, sin etiquetas <code>&lt;script&gt;</code>. Añade dentro del bucle cuatro llamadas a <code>setProperty()</code>, siguiendo la primera y usando los valores del bloque CSS.</li>
+<li><strong>Abre el editor.</strong> En Chrome, abre un artículo y pulsa <kbd>F12</kbd>. En DevTools entra en <strong>Sources → Snippets</strong> (puede estar dentro de <strong>»</strong>). Pulsa <strong>New snippet</strong> y llámalo <code>lectura</code>. Un snippet guarda código para ejecutarlo sobre la web abierta.</li>
+<li><strong>Completa el script.</strong> Escribe esta plantilla en el editor, sin etiquetas <code>&lt;script&gt;</code>. Añade dentro del bucle cuatro llamadas a <code>setProperty()</code>, siguiendo la primera y usando los valores del bloque CSS.</li>
 </ol>
 <pre><code class="language-javascript">{
     const elementos = document.querySelectorAll("body, body *");
@@ -2480,7 +2480,7 @@ mensaje.classList.toggle("destacado"); // La añade de nuevo.</code></pre>
 }</code></pre>
 <p><code>body, body *</code> selecciona el cuerpo y sus elementos: no necesitas conocer los identificadores de cada web. <code>setProperty(propiedad, valor, "important")</code> aplica el estilo con prioridad sobre las reglas habituales de la página.</p>
 <ol start="3">
-<li><strong>Ejecuta y comprueba (3 minutos).</strong> Guarda con <kbd>Ctrl + S</kbd> y ejecuta con <kbd>Ctrl + Intro</kbd> o el botón ▶ del editor. En Mac utiliza <kbd>⌘</kbd> en lugar de <kbd>Ctrl</kbd>. Abre otra web y ejecuta el mismo snippet desde sus DevTools. Comprueba los cambios de fuente, tamaño, separación y colores.</li>
+<li><strong>Ejecuta y comprueba.</strong> Guarda con <kbd>Ctrl + S</kbd> y ejecuta con <kbd>Ctrl + Intro</kbd> o el botón ▶ del editor. En Mac utiliza <kbd>⌘</kbd> en lugar de <kbd>Ctrl</kbd>. Abre otra web y ejecuta el mismo snippet desde sus DevTools. Comprueba los cambios de fuente, tamaño, separación y colores.</li>
 </ol>
 <p>El script modifica el HTML visible en tu navegador; no cambia la web original. <strong>Recarga para recuperar su aspecto.</strong> Funciona con los elementos del documento seleccionado; el contenido de marcos y componentes encapsulados puede conservar sus estilos.</p>
 <p><strong>Entrega:</strong> el script terminado. <a href="https://developer.chrome.com/docs/devtools/javascript/snippets?hl=es" target="_blank" rel="noopener noreferrer">Ayuda de Chrome: ejecutar snippets</a>.</p>
@@ -2490,60 +2490,8 @@ mensaje.classList.toggle("destacado"); // La añade de nuevo.</code></pre>
 <div class="activity-card activity-callout" id="actividad-jsinfo-menu">
                     <p><strong>2.44. Mostrar y ocultar un menú</strong></p>
                     <p>Utiliza el HTML y el CSS de partida. La lista de enlaces está inicialmente oculta mediante la clase <code>oculto</code>. En <code>menu.js</code>, alterna esa clase con <code>classList.toggle()</code> al pulsar el botón. Mantén el registro del evento fuera del manejador y prueba varias aperturas y cierres seguidos. Actualiza también <code>aria-expanded</code> del botón: <code>"true"</code> cuando el menú esté visible y <code>"false"</code> cuando esté oculto.</p>
-                    <p>Guarda estos tres archivos en la misma carpeta: <code>index.html</code>, <code>estilos.css</code> y <code>menu.js</code>. El JavaScript lo programas tú.</p>
-                    <p><strong>HTML de partida — index.html</strong></p>
-                    <pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="es"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-    &lt;title&gt;Menú desplegable&lt;/title&gt;
-    &lt;link rel="stylesheet" href="estilos.css"&gt;
-    &lt;script src="menu.js" defer&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;nav aria-label="Menú principal"&gt;
-        &lt;button id="boton-menu" type="button"
-                aria-controls="menu" aria-expanded="false"&gt;Menú&lt;/button&gt;
-        &lt;ul id="menu" class="oculto"&gt;
-            &lt;li&gt;&lt;a href="#inicio"&gt;Inicio&lt;/a&gt;&lt;/li&gt;
-            &lt;li&gt;&lt;a href="#servicios"&gt;Servicios&lt;/a&gt;&lt;/li&gt;
-            &lt;li&gt;&lt;a href="#contacto"&gt;Contacto&lt;/a&gt;&lt;/li&gt;
-        &lt;/ul&gt;
-    &lt;/nav&gt;
-    &lt;main&gt;
-        &lt;h1 id="inicio"&gt;Inicio&lt;/h1&gt;
-        &lt;p&gt;Bienvenido a nuestra página.&lt;/p&gt;
-        &lt;h2 id="servicios"&gt;Servicios&lt;/h2&gt;
-        &lt;p&gt;Consulta lo que ofrecemos.&lt;/p&gt;
-        &lt;h2 id="contacto"&gt;Contacto&lt;/h2&gt;
-        &lt;p&gt;Escríbenos para saber más.&lt;/p&gt;
-    &lt;/main&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-                    <p><strong>CSS de partida — estilos.css</strong></p>
-                    <pre><code>body {
-    font-family: sans-serif;
-    max-width: 640px;
-    margin: 24px auto;
-    padding: 0 16px;
-}
-button {
-    padding: 8px 16px;
-    cursor: pointer;
-}
-#menu {
-    list-style: none;
-    padding: 12px;
-    background-color: #eef2ff;
-}
-#menu li {
-    margin: 8px 0;
-}
-.oculto {
-    display: none;
-}</code></pre>
-                    
+                    <p>Descarga <code>index.html</code> y <code>estilos.css</code> y guárdalos en la misma carpeta. Crea junto a ellos <code>menu.js</code>: el JavaScript lo programas tú.</p>
+                    <div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/proyectos/menu/index.html" download="index.html">Descargar HTML</a> <a class="resource-link-btn" href="alumnado/u02/proyectos/menu/estilos.css" download="estilos.css">Descargar CSS</a></div>
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
 
