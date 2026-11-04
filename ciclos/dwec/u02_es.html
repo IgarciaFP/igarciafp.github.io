@@ -2240,6 +2240,25 @@ mensaje.outerHTML = '&lt;div id="mensaje" class="aviso"&gt;Nuevo elemento&lt;/di
 
                 
 
+                <h4>Leer y modificar campos con <code>value</code></h4>
+                <p>Cuando el usuario escribe en un campo, necesitamos recuperar su valor actual para utilizarlo en el programa. En un <code>input</code> ese dato se consulta con <code>value</code>. Al asignarle otro valor, también cambia lo que aparece dentro del campo.</p>
+                <aside class="function-card" id="ficha-propiedad-value">
+                    <p class="function-label">Ficha de propiedad</p>
+                    <p class="function-signature"><code>campo.value</code></p>
+                    <p><strong>Lectura.</strong> Devuelve el valor actual como una cadena, incluso en un <code>input type="number"</code>.</p>
+                    <p><strong>Escritura.</strong> <code>campo.value = "5"</code> escribe ese valor en el campo. Para vaciarlo, asigna <code>""</code>.</p>
+                </aside>
+                <p>En el HTML de prueba, el campo <code>#unidades</code> empieza con 3. Este fragmento guarda ese valor, escribe 5 en el campo y muestra ambos valores en el párrafo de resultado.</p>
+                <pre data-example="dom-value"><code class="language-javascript">const campoUnidades = document.querySelector("#unidades");
+const resultado = document.querySelector("#resultado");
+
+const valorAnterior = campoUnidades.value;
+campoUnidades.value = "5";
+
+resultado.textContent =
+    "Antes: " + valorAnterior + " | Ahora: " + campoUnidades.value;</code></pre>
+                <p>Al cargar, el campo muestra 5 y el párrafo muestra «Antes: 3 | Ahora: 5». <code>value</code> permite acceder al valor del campo y <code>textContent</code> escribe el mensaje en el párrafo. Para hacer cálculos, convierte el texto con <code>Number(campoUnidades.value)</code> después de comprobar que el campo tenga un valor válido. Si necesitas leer un cambio posterior del usuario, consulta <code>value</code> dentro del manejador del evento correspondiente.</p>
+
                 <div class="activity-card activity-callout" id="actividad-complementaria-6-3">
                     <p><strong>2.39. Texto literal frente a marcado</strong></p>
                     <p>Prepara dos párrafos. Asigna la cadena controlada <code>&lt;strong&gt;Importante&lt;/strong&gt;</code> a uno mediante <code>textContent</code> y al otro mediante <code>innerHTML</code>. Añade un <code>pre</code> y muestra en él, mediante <code>textContent</code>, el <code>outerHTML</code> de los dos párrafos. Después pide un mensaje con <code>prompt()</code> y muéstralo exclusivamente como texto. Si se cancela, muestra «Entrada cancelada» en lugar del mensaje.</p>
