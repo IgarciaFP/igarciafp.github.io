@@ -2488,7 +2488,60 @@ if (mensaje !== null) {
                 </div>
                 <div class="activity-card activity-callout" id="actividad-jsinfo-menu">
                     <p><strong>2.44. Mostrar y ocultar un menú</strong></p>
-                    <p>Crea un botón y una lista de enlaces inicialmente oculta mediante CSS. Alterna su visibilidad con <code>classList.toggle()</code> al pulsar el botón. Mantén el registro del evento fuera del manejador y prueba varias aperturas y cierres seguidos.</p>
+                    <p>Utiliza el HTML y el CSS de partida. La lista de enlaces está inicialmente oculta mediante la clase <code>oculto</code>. En <code>menu.js</code>, alterna esa clase con <code>classList.toggle()</code> al pulsar el botón. Mantén el registro del evento fuera del manejador y prueba varias aperturas y cierres seguidos. Actualiza también <code>aria-expanded</code> del botón: <code>"true"</code> cuando el menú esté visible y <code>"false"</code> cuando esté oculto.</p>
+                    <p>Guarda estos tres archivos en la misma carpeta: <code>index.html</code>, <code>estilos.css</code> y <code>menu.js</code>. El JavaScript lo programas tú.</p>
+                    <p><strong>HTML de partida — index.html</strong></p>
+                    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+    &lt;title&gt;Menú desplegable&lt;/title&gt;
+    &lt;link rel="stylesheet" href="estilos.css"&gt;
+    &lt;script src="menu.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;nav aria-label="Menú principal"&gt;
+        &lt;button id="boton-menu" type="button"
+                aria-controls="menu" aria-expanded="false"&gt;Menú&lt;/button&gt;
+        &lt;ul id="menu" class="oculto"&gt;
+            &lt;li&gt;&lt;a href="#inicio"&gt;Inicio&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="#servicios"&gt;Servicios&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="#contacto"&gt;Contacto&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/nav&gt;
+    &lt;main&gt;
+        &lt;h1 id="inicio"&gt;Inicio&lt;/h1&gt;
+        &lt;p&gt;Bienvenido a nuestra página.&lt;/p&gt;
+        &lt;h2 id="servicios"&gt;Servicios&lt;/h2&gt;
+        &lt;p&gt;Consulta lo que ofrecemos.&lt;/p&gt;
+        &lt;h2 id="contacto"&gt;Contacto&lt;/h2&gt;
+        &lt;p&gt;Escríbenos para saber más.&lt;/p&gt;
+    &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                    <p><strong>CSS de partida — estilos.css</strong></p>
+                    <pre><code>body {
+    font-family: sans-serif;
+    max-width: 640px;
+    margin: 24px auto;
+    padding: 0 16px;
+}
+button {
+    padding: 8px 16px;
+    cursor: pointer;
+}
+#menu {
+    list-style: none;
+    padding: 12px;
+    background-color: #eef2ff;
+}
+#menu li {
+    margin: 8px 0;
+}
+.oculto {
+    display: none;
+}</code></pre>
                     
                     <div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" target="_blank" rel="noopener noreferrer" aria-label="Entregar actividad (abre la página de entrega en una pestaña nueva)"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> <span>Entrega</span></a></div>
                 </div>
@@ -2497,7 +2550,7 @@ if (mensaje !== null) {
 
                 
 <div class="activity-card activity-callout" id="actividad-jsinfo-calendario">
-<p><strong>2.46. Repaso del DOM. Crea un calendario</strong></p>
+<p><strong>2.46. Repaso del DOM. Crea un calendario — Actividad voluntaria</strong></p>
 <p>Programa <code>createCalendar(elem, year, month)</code> para mostrar el mes indicado dentro de <code>elem</code>. Recibirá el año y un mes del 1 al 12. La tabla tendrá siete columnas, de lunes a domingo: utiliza <code>th</code> para sus encabezados, <code>tr</code> para cada semana y <code>td</code> para los días. No necesita responder a clics.</p>
 <p><strong>HTML de partida:</strong> descarga <code>index.html</code> y guárdalo junto al archivo <code>calendario.js</code> que vas a programar.</p>
 <div class="resource-links"><a class="resource-link-btn" href="alumnado/u02/calendario/index.html" download="index.html">Descargar HTML del calendario</a></div>
