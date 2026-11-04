@@ -2283,6 +2283,34 @@ mensaje.style.backgroundColor = "#e0f2fe";
 mensaje.style.padding = "12px";</code></pre>
                 
                                 
+                <h4>Aplicar y retirar propiedades CSS</h4>
+                <p>Un aviso puede necesitar un estilo temporal. <code>style.setProperty()</code> permite aplicar una propiedad y <code>style.removeProperty()</code> retirarla después. Ambos reciben el nombre tal como se escribe en CSS, por ejemplo <code>"background-color"</code>.</p>
+                <aside class="function-card" id="ficha-metodo-setProperty">
+                    <p class="function-label">Ficha de método</p>
+                    <p class="function-signature"><code>elemento.style.setProperty(nombre, valor, prioridad)</code></p>
+                    <p>Añade o actualiza una propiedad en línea. El nombre y el valor son cadenas. Incluye la unidad cuando corresponda, como <code>"16px"</code>.</p>
+                    <p>La prioridad es opcional. Para aplicar <code>!important</code>, pasa <code>"important"</code> como tercer argumento, por ejemplo <code>mensaje.style.setProperty("color", "#1f2937", "important")</code>.</p>
+                </aside>
+                <aside class="function-card" id="ficha-metodo-removeProperty">
+                    <p class="function-label">Ficha de método</p>
+                    <p class="function-signature"><code>elemento.style.removeProperty(nombre)</code></p>
+                    <p>Elimina esa propiedad del estilo en línea y devuelve su valor anterior como cadena. Al retirarla, el navegador vuelve a resolver esa propiedad según las reglas CSS aplicables.</p>
+                </aside>
+                <p>Con el HTML de prueba del apartado 8.5, este fragmento aplica un fondo amarillo y un relleno al mensaje. Después retira el relleno y muestra su valor anterior en el párrafo de resultado.</p>
+                <pre data-example="dom-style-properties"><code class="language-javascript">const mensaje = document.querySelector("#mensaje");
+const resultado = document.querySelector("#resultado");
+
+mensaje.style.setProperty("background-color", "#fef3c7");
+mensaje.style.setProperty("padding", "16px");
+
+const rellenoRetirado = mensaje.style.removeProperty("padding");
+resultado.textContent = "Relleno retirado: " + rellenoRetirado;</code></pre>
+                <p>El mensaje conserva el fondo amarillo y el resultado muestra «Relleno retirado: 16px». El relleno final depende de las reglas CSS de la página. Estos métodos resultan útiles para cambiar propiedades concretas, especialmente cuando su nombre o valor se guarda en una variable.</p>
+                <div class="resource-links">
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration/setProperty" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · setProperty()</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration/removeProperty" target="_blank" rel="noopener noreferrer" class="resource-link-btn">MDN · removeProperty()</a>
+                </div>
+
                 <p>Para mantener la presentación en CSS, es preferible definir clases y activarlas desde JavaScript. Añade este CSS en un elemento <code>&lt;style&gt;</code> dentro de <code>&lt;head&gt;</code> de la página de prueba:</p>
                 <pre data-example="dom-css"><code>.destacado {
     background-color: #e0f2fe;
