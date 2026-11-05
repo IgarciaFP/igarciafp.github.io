@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import { analizarEntregaDetallada as analizarEntrega, seleccionarLenguajes } from './analizador-entregas.mjs';
 
 const regla = (r, id) => r.resultados.find(x => x.id === id);
-test('selección explícita y predeterminado sin lenguajes', () => {
+test('selección explícita y predeterminado con tipos detectados', () => {
   for (const s of ['JS Css', 'jscss']) assert.deepEqual(seleccionarLenguajes(s), ['js', 'css']);
   assert.deepEqual(seleccionarLenguajes('HTML+css'), ['html', 'css']);
-  assert.equal(analizarEntrega('const x = 1;').puntuacion, null);
+  assert.deepEqual(analizarEntrega('const x = 1;').lenguajes, ['js']);
   assert.throws(() => seleccionarLenguajes('json'));
 });
 test('cadenas y expresiones regulares no son comentarios', () => {
