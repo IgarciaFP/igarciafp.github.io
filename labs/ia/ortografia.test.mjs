@@ -13,7 +13,7 @@ test('sin faltas suma exactamente 50 puntos y solo envía comentarios',async()=>
  assert.equal(r.fragmentosOrtografia,undefined);
 });
 test('falta detectada impide sumar y muestra evidencia',async()=>{
- const r=await analizarEntregaAsync(texto,'js',{...config,revisorOrtografico:async()=>({matches:[{offset:5,length:10,message:'Posible falta',rule:{issueType:'misspelling'},replacements:[{value:'comentarios'}]}]})});
+ const r=await analizarEntregaAsync(texto,'js',{...config,revisorOrtografico:async t=>({matches:[{offset:t.indexOf('comentario'),length:10,message:'Posible falta',rule:{issueType:'misspelling'},replacements:[{value:'comentarios'}]}]})});
  assert.equal(regla(r).aplicable,true);assert.equal(regla(r).cumple,false);assert.equal(regla(r).valor.faltas,1);assert.match(regla(r).evidencias[0].detalle,/Posible falta/);
 });
 test('fallo del servicio y respuesta incompleta nunca significan ausencia de faltas',async()=>{
