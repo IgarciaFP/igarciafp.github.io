@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {analizarEntrega} from './analizador-entregas.mjs';
+import {analizarEntregaDetallada as analizarEntrega} from './analizador-entregas.mjs';
 const ejemplo=await readFile(new URL('./fixtures/presupuesto-incompleto.txt',import.meta.url),'utf8');
 const porId=(r,id)=>r.resultados.find(x=>x.lenguaje==='js'&&x.id===id);
 test('ejemplo real: HTML seguido de JS incompleto conserva sus cuatro comentarios',()=>{
@@ -40,3 +40,4 @@ test('un cierre HTML dentro de una cadena de script no divide el documento',()=>
  const r=analizarEntrega('<html><body><script>const t="</html>"; // Texto\n</script></body></html>','htmljs');
  assert.equal(r.errores.length,0);assert.ok(!r.avisos.some(a=>a.mensaje.includes('después de </html>')));
 });
+
