@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { analizarEntrega } from './analizador-entregas.mjs';
+import { analizarEntregaDetallada as analizarEntrega } from './analizador-entregas.mjs';
 
 const regla = r => r.resultados.find(x => x.id === 'sin_comentarios');
 const lineas = (n, lenguaje) => Array.from({length:n}, (_, i) =>
@@ -51,3 +51,4 @@ test('sin código o con errores sintácticos la regla no aplica', () => {
     assert.equal(r.aplicable,false);assert.equal(r.cumple,false);
   }
 });
+
