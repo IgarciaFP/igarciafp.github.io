@@ -12,7 +12,8 @@ test('selección explícita y predeterminado sin lenguajes', () => {
 test('cadenas y expresiones regulares no son comentarios', () => {
   const r = analizarEntrega('const url = "https://example.com"; const re = /abc\\/\\/def/;', 'js');
   assert.equal(r.errores.length, 0);
-  assert.equal(regla(r, 'sin_comentarios').cumple, true);
+  assert.equal(regla(r, 'sin_comentarios').valor.comentarios, 0);
+  assert.equal(regla(r, 'sin_comentarios').cumple, false);
 });
 test('sangría mixta entre líneas no aplica', () => {
   const r = analizarEntrega('function f() {\n  let a = 1;\n\tlet b = 2;\n  return a+b;\n}', 'js');
@@ -44,9 +45,10 @@ test('error de sintaxis no implica ausencia de comentarios', () => {
   assert.equal(regla(r, 'sin_comentarios').cumple, false);
 });
 test('pesos configurables y reglas desactivadas', () => {
-  const r = analizarEntrega('let x=1;', 'js', {pesos: {sin_comentarios: 17}});
+  const codigo=Array.from({length:10},(_,i)=>`let x${i}=${i};`).join('\n');
+  const r = analizarEntrega(codigo, 'js', {pesos: {sin_comentarios: 17}});
   assert.equal(r.puntuacion, 17);
-  const r2 = analizarEntrega('let x=1;', 'js', {desactivadas: ['sin_comentarios']});
+  const r2 = analizarEntrega(codigo, 'js', {desactivadas: ['sin_comentarios']});
   assert.equal(r2.puntuacion, 0);
 });
 test('letras españolas no cuentan como caracteres especiales', () => {
