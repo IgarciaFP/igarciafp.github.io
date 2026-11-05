@@ -13,7 +13,7 @@ test('contrato público: vector JSON de tres elementos y complemento del resulta
 test('densidad: cero comentarios activa a aunque tenga peso cero; exactamente 1/10 no',()=>{
  const codigo=Array.from({length:10},(_,i)=>`let v${i} = ${i};`).join('\n');
  const sin=analizarEntrega({js:codigo},'js',{pesos:{sin_comentarios:0}});
- assert.equal(sin[0],true);assert.ok(!sin[2].some(r=>r.id==='sin_comentarios'));
+ assert.equal(sin[0],true);assert.equal(sin[2].find(r=>r.id==='sin_comentarios').mensaje,'No se admite código sin comentar');
  assert.equal(analizarEntrega({js:'// Comentario\n'+codigo},'js')[0],false);
 });
 test('sin entrada calculable no inventa humanidad del cien por cien',()=>{
@@ -25,7 +25,7 @@ test('solo reglas detectadas con peso y agrupación sin duplicar; peso especial 
  const v=analizarEntrega({texto:'“”',js:'const x = "“”";'},'texto js',{pesos:{sin_comentarios:0}});
  const especial=v[2].filter(r=>r.id==='caracteres_especiales');
  assert.equal(especial.length,1);assert.equal(especial[0].peso,60);assert.equal(especial[0].coincidencias.length,2);
- assert.ok(v[2].every(r=>r.peso>0&&r.coincidencias.every(c=>c.cumple&&c.aplicable)));
+ assert.ok(v[2].filter(r=>r.peso>0).every(r=>r.coincidencias.every(c=>c.cumple&&c.aplicable)));
  assert.ok(!v[2].some(r=>r.id==='ausencia_faltas'));
 });
 test('humanidad incorpora reducción por faltas y fallo no suma ausencia de faltas',async()=>{
@@ -36,4 +36,19 @@ test('humanidad incorpora reducción por faltas y fallo no suma ausencia de falt
  assert.equal((await analizarEntregaAsync(entrada,'texto',opciones))[1],Math.round((100-r.puntuacion)*100)/100);
  const fallido=await analizarEntregaAsync(entrada,'texto',{revisorOrtografico:async()=>{throw Error('fallo');}});
  assert.ok(!fallido[2].some(r=>r.id==='ausencia_faltas'));
+});
+
+test('JS solicitado ausente activa a e informa exactamente el motivo',async()=>{
+ for(const entrada of ['', 'Explicación del alumno.', '<p>Hola</p>', '<script src="app.js"></script>', '<script type="application/json">{}</script>']) {
+  const v=await analizarEntregaAsync(entrada,'js',limpio);
+  assert.equal(v[0],true);assert.equal(v[1],null);
+  assert.equal(v[2].find(r=>r.lenguaje==='js').mensaje,'Código/texto no detectado');
+ }
+});
+test('cada tipo solicitado ausente informa; JS presente insuficientemente comentado informa rechazo',()=>{
+ const v=analizarEntrega('const x=1;','js css html texto');
+ assert.equal(v[0],true);
+ assert.deepEqual(v[2].filter(r=>r.id==='contenido_no_detectado').map(r=>r.lenguaje),['css','html','texto']);
+ assert.equal(v[2].find(r=>r.id==='sin_comentarios').mensaje,'No se admite código sin comentar');
+ assert.ok(!v[2].some(r=>r.id==='contenido_no_detectado'&&r.lenguaje==='js'));
 });
