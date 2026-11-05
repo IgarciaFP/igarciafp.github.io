@@ -332,8 +332,15 @@ function prepararUnidades(preparada, seleccion) {
   });
 }
 
-export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {}) {
+function resolverSeleccion(preparacion, lenguajes) {
   const seleccion = seleccionarLenguajes(lenguajes);
+  return seleccion.length ? seleccion : Object.entries(preparacion.bloques)
+    .filter(([, fragmentos]) => fragmentos.some(f => f.texto.trim()))
+    .map(([tipo]) => tipo === 'javascript' ? 'js' : tipo);
+}
+export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {}) {
+  const preparacion = prepararEntrega(contenido);
+  const seleccion = resolverSeleccion(preparacion, lenguajes);
   const pesos = { ...PESOS, ...opciones.pesos };
   const u = { ...UMBRALES, ...opciones.umbrales };
   const desactivadas = new Set(opciones.desactivadas || []);
@@ -345,9 +352,8 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
   const resultados = [], errores = [], avisos = [], fragmentosOrtografia = [];
   const lineasCodigoEntrega = new Set(), densidadPorUnidad = [];
   let totalComentarios = 0, comentariosExtraidosCompletos = true;
-  const preparacion = prepararEntrega(contenido);
   avisos.push(...preparacion.avisos);
-  if (!seleccion.length) return { preparacion, lenguajes: [], puntuacion: null, resultados, errores, avisos, estado: "sin_lenguajes" };
+  if (!seleccion.length) return { preparacion, lenguajes: [], puntuacion: null, resultados, errores, avisos, estado: "sin_contenido_seleccionado" };
   if (!seleccion.includes("js") && preparacion.bloques.javascript.some(f => (f.nombre.endsWith("#js-posterior") || f.nombre.includes("#despues-html")))) {
     avisos.push({ archivo: "contenido.html", mensaje: "El JS posterior se ha separado, pero JS no está seleccionado y no se analiza." });
   }
@@ -918,7 +924,7 @@ async function revisarProsa(resultado, opciones) {
  */
 /** Recuento previo para decidir qué patrones requieren más código. */
 export function comprobarCodigoBreve(contenido, lenguajes = '') {
-  const preparacion = prepararEntrega(contenido), seleccion = seleccionarLenguajes(lenguajes);
+  const preparacion = prepararEntrega(contenido), seleccion = resolverSeleccion(preparacion, lenguajes);
   const unidades = prepararUnidades(preparacion, seleccion);
   const lineas = new Set(); let numeroComentarios = 0;
   for (const u of unidades.filter(u => u.lenguaje !== 'texto')) {
