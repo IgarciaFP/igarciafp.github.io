@@ -46,9 +46,16 @@ test('JS solicitado ausente activa a e informa exactamente el motivo',async()=>{
  }
 });
 test('cada tipo solicitado ausente informa; JS presente insuficientemente comentado informa rechazo',()=>{
- const v=analizarEntrega('const x=1;','js css html texto');
+ const v=analizarEntrega(Array.from({length:10},(_,i)=>`const x${i}=${i};`).join('\n'),'js css html texto');
  assert.equal(v[0],true);
  assert.deepEqual(v[2].filter(r=>r.id==='contenido_no_detectado').map(r=>r.lenguaje),['css','html','texto']);
  assert.equal(v[2].find(r=>r.id==='sin_comentarios').mensaje,'No se admite código sin comentar');
  assert.ok(!v[2].some(r=>r.id==='contenido_no_detectado'&&r.lenguaje==='js'));
+});
+
+test('código breve no bloquea por comentarios ni incluye mensaje de rechazo',()=>{
+ for(const n of [1,9]) {
+  const v=analizarEntrega(Array.from({length:n},(_,i)=>`let x${i}=${i};`).join('\n'),'js');
+  assert.equal(v[0],false);assert.ok(!v[2].some(r=>r.id==='sin_comentarios'));
+ }
 });
