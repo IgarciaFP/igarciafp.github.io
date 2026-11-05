@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { analizarEntrega, analizarEntregaAsync, prepararProsa } from './analizador-entregas.mjs';
+import { analizarEntregaDetallada as analizarEntrega, analizarEntregaDetalladaAsync as analizarEntregaAsync, prepararProsa } from './analizador-entregas.mjs';
 test('se eliminan antes de enviar cortas, glosario, camelCase y puntos internos',async()=>{
  let enviado='';const original='Hola browser miVariable nombre.js archivo.largo.js numero.\nExplicación extensa';
  const r=await analizarEntregaAsync({texto:original},'texto',{revisorOrtografico:async t=>{enviado=t;return {matches:[]};}});
