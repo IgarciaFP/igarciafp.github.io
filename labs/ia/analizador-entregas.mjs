@@ -27,7 +27,7 @@ export const PESOS = Object.freeze({
   comentarios_pasos: 10, comentarios_etiquetas: 10,
   comentarios_jsdoc: 10, comentarios_repetidos: 10,
   comentarios_conversacionales: 10, comentarios_instrucciones: 10,
-  menciones_ia: 10, ausencia_faltas: 50,
+  menciones_ia: 10, ausencia_faltas: 25,
   espacios_invisibles: 10, emojis_comentarios: 10,
   lineas_largas: 10, sangria_uniforme: 10, espaciado_uniforme: 10, comillas_uniformes: 10,
   bloques_markdown: 10, encabezados_markdown: 10,
@@ -714,8 +714,11 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
   // Cada ID suma una sola vez aunque aparezca en varios archivos o lenguajes.
   const activadas = [...new Set(resultados.filter(r => r.cumple).map(r => r.id))];
   const suma = activadas.reduce((total, id) => total + pesos[id], 0);
-  return { preparacion, lenguajes: seleccion, puntuacion: unidades.length ? Math.min(100, suma) : null,
-    sumaSinLimitar: suma, reglasActivadas: activadas, resultados, errores, avisos,
+  const multiplicadorPenalizaciones = 2 ** Math.min(1023, Math.floor(lineasCodigo / 25));
+  const sumaPonderada = suma === 0 ? 0 : suma * multiplicadorPenalizaciones;
+  return { preparacion, lenguajes: seleccion, puntuacion: unidades.length ? Math.min(100, sumaPonderada) : null,
+    lineasCodigoAnalizadas: lineasCodigo, multiplicadorPenalizaciones,
+    sumaPesosBase: suma, sumaSinLimitar: sumaPonderada, reglasActivadas: activadas, resultados, errores, avisos,
     estado: errores.length ? "analisis_parcial" : unidades.length ? "analizado" : "sin_contenido_seleccionado",
     significado: "Índice de prioridad de revisión; no es probabilidad calibrada de IA.",
     ...(opciones.incluirComentarios ? { fragmentosOrtografia, comentariosExtraidosCompletos } : {}) };
@@ -800,7 +803,8 @@ export async function analizarEntregaDetalladaAsync(contenido, lenguajes = "", o
   for (const evaluar of evaluaciones) evaluar();
   const regla = resultado.resultados.find(r => r.id === "ausencia_faltas");
   resultado.reglasActivadas = [...new Set(resultado.resultados.filter(r => r.cumple).map(r => r.id))];
-  resultado.sumaSinLimitar = resultado.reglasActivadas.reduce((suma, id) => suma + (opciones.pesos?.[id] ?? PESOS[id]), 0);
+  resultado.sumaPesosBase = resultado.reglasActivadas.reduce((suma, id) => suma + (opciones.pesos?.[id] ?? PESOS[id]), 0);
+  resultado.sumaSinLimitar = resultado.sumaPesosBase === 0 ? 0 : resultado.sumaPesosBase * resultado.multiplicadorPenalizaciones;
   resultado.puntuacionAntesReduccion = resultado.puntuacion === null ? null : Math.min(100, resultado.sumaSinLimitar);
   const lineasRevisadas = regla?.valor?.lineasRevisadas || 0;
   resultado.reduccionOrtografica = regla?.aplicable && lineasRevisadas > 0
