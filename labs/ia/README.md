@@ -4,7 +4,7 @@ Abre index.html o visita https://igarciafp.github.io/labs/ia/. Pega la entrega: 
 
 El texto y los comentarios seleccionados se envían a LanguageTool al pulsar Analizar entrega. El ejemplo muestra las faltas y sus sugerencias; en producción `ortografia.mostrarDetalle=false` conserva únicamente el recuento. Solo cuentan palabras originales de más de 4 letras cuya sugerencia sustituya, añada o elimine un único carácter (longitud ±1, normalización Unicode NFC). Dos cambios, transposiciones, palabras idénticas y avisos de estilo quedan excluidos. Cada falta reduce el índice inicial un 10 %, hasta un máximo del 100 %. Una falta con varias sugerencias solo cuenta una vez. Sin faltas se suman 50 puntos. Si la API falla, no se asume cero faltas.
 
-Las reglas universales exigen un 90 % de coincidencia. Longitud similar requiere que el 80 % de los comentarios esté dentro de ±25 % de la media. Pesos: comentarios escasos 100, caracteres especiales 75, ausencia de faltas 50, restantes 10. La puntuación es un índice docente configurable, no una probabilidad calibrada de uso de IA.
+Las reglas universales exigen un 95 % de coincidencia. Longitud similar requiere que el 95 % de los comentarios esté dentro de ±25 % de la media. Pesos: comentarios escasos 100, caracteres especiales 75, ausencia de faltas 50, restantes 10. La puntuación es un índice docente configurable, no una probabilidad calibrada de uso de IA.
 
 ## Desarrollo
 

@@ -46,7 +46,7 @@ export const PESOS = Object.freeze({
 export const CARACTERES_ESPECIALES = "“”‘’«»‹›„‚—–…→←↑↓↔⇒⇐⇔✓✔✗✘•‣⁃";
 export const UMBRALES = Object.freeze({
   minComentarios: 2, minSangrias: 3, minCadenas: 5,
-  proporcionUniversal: 0.9, proporcionLongitudSimilar: 0.8,
+  proporcionUniversal: 0.95, proporcionLongitudSimilar: 0.95,
   minComentariosLongitud: 3, toleranciaLongitud: 0.25,
   minComentariosEspaciado: 3, proporcionEspaciado: 0.8,
   minSeparadores: 2, densidadComentarios: 0.2,
@@ -503,7 +503,7 @@ export function analizarEntrega(contenido, lenguajes = "", opciones = {}) {
     registrar("comentarios_largos", suficiente,
       activos.filter(c => c.text.length > u.longitudComentario).length / (activos.length || 1) > u.proporcionComentariosLargos,
       activos.filter(c => c.text.length > u.longitudComentario).length, evComentarios(activos.filter(c => c.text.length > u.longitudComentario)));
-      // ID conservado; compara intros previos con el umbral general del 90 %.
+      // ID conservado; compara intros previos con el umbral general del 95 %.
     // Ignora espacios/tabuladores entre saltos, pero no cuenta un inicio de archivo sin salto.
     const intros = comentarios.map(c => (s.slice(0, c.start).match(/[ \t\r\n]*$/)[0].match(/\n/g) || []).length);
       const patronIntros = predominio(intros, u.proporcionUniversal);
