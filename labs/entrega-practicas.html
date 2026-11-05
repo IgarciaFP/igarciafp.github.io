@@ -36,6 +36,8 @@ input[readonly],textarea[readonly]{background:#f7f9fb;color:#53647a}
 button:focus-visible,a:focus-visible{outline:3px solid #67a8a4;outline-offset:4px}
 small,.muted{color:var(--muted)}
 small{display:block;font-size:.75rem;margin-top:8px}
+#zero-confirmation{display:flex;align-items:flex-start;gap:10px;margin-top:20px;line-height:1.6}
+#zero-acknowledged{padding:0;width:20px;height:20px;flex:0 0 20px;margin-top:3px;accent-color:var(--accent)}
 #count{text-align:right;font-variant-numeric:tabular-nums}
 .actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:24px}
 #form>.actions{border-top:1px solid #edf0f5;padding-top:24px;margin-top:24px;justify-content:flex-end}
@@ -77,7 +79,7 @@ dialog::backdrop{background:#12243a80;backdrop-filter:blur(4px)}
 </style>
 </head>
 <body><main>
-<header><span class="header-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></span><div class="heading-row"><h1 id="title">Entrega de prácticas</h1><span class="page-version">version: <time datetime="2026-11-05T19:32:56.510Z">05/11/2026 20:32</time> (Madrid)</span></div><p>Completa el formulario y guarda el justificante de entrega.</p></header>
+<header><span class="header-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></span><div class="heading-row"><h1 id="title">Entrega de prácticas</h1><span class="page-version">version: <time datetime="2026-11-05T20:50:00+01:00">05/11/2026 20:50</time> (Madrid)</span></div><p>Completa el formulario y guarda el justificante de entrega.</p></header>
 <p id="setup" class="notice" hidden>El docente debe conectar esta página con Google Sheets antes de recibir entregas.</p>
 <form id="form" class="card">
 <div class="identity"><div><label for="email">Email</label><input id="email" type="email" required maxlength="254" autocomplete="email" placeholder="nombre@g.educaand.es" aria-describedby="email-help"><small id="email-help">Usa tu dirección terminada en @g.educaand.es.</small></div><div><label for="practice-name">Nombre de la práctica</label><input id="practice-name" required maxlength="100" placeholder="Ej.: Práctica 4 · Flexbox" autocomplete="off"></div></div>
@@ -93,6 +95,7 @@ dialog::backdrop{background:#12243a80;backdrop-filter:blur(4px)}
 <h2 id="document-check-title">Comprobación del documento</h2>
 <p id="document-check-message" role="status" aria-live="polite" style="white-space:pre-line;overflow-wrap:anywhere;margin:0"></p>
 </section>
+<label id="zero-confirmation" hidden><input id="zero-acknowledged" type="checkbox">Entiendo que, si entrego ahora, no podré volver a entregar esta misma práctica más adelante.</label>
 <div id="verification-actions" class="actions" hidden>
 <button id="verification-continue" type="button">Continuar con la entrega</button>
 <button id="verification-cancel" type="button" class="secondary">Cancelar entrega</button>
@@ -235,12 +238,14 @@ function showDeliveryError(message){
 }
 function decideVerification(proceed){
  if(!verificationDecision)return;
+ if(proceed&&!$('zero-confirmation').hidden&&!$('zero-acknowledged').checked)return;
  const resolve=verificationDecision;verificationDecision=null;
  $('verification-actions').hidden=true;
  if(!proceed)$('receipt').close();
  resolve(proceed);
 }
 $('verification-continue').addEventListener('click',()=>decideVerification(true));
+$('zero-acknowledged').addEventListener('change',()=>{if(!$('zero-confirmation').hidden)$('verification-continue').disabled=!$('zero-acknowledged').checked;});
 $('verification-cancel').addEventListener('click',()=>decideVerification(false));
 $('receipt').addEventListener('cancel',event=>{
  if(verificationDecision){event.preventDefault();decideVerification(false);}
@@ -272,25 +277,37 @@ async function comprobarEntrega(lenguaje,documento){
  const {analizarEntregaAsync}=await import('./ia/analizador-entregas.browser.mjs?v=45ab09a1');
  return analizarEntregaAsync(documento,lenguaje,{ortografia:{mostrarDetalle:false}});
 }
-function confirmVerification(text,label='Continuar con la entrega',delay=0){
+function confirmVerification(text,label='Entregar de todas formas',requireFinal=false){
  $('document-check-message').textContent=text;
  $('document-check-progress').hidden=true;
  $('receipt-progress').hidden=true;
  $('document-check').hidden=false;
  $('verification-actions').hidden=false;
+ $('zero-confirmation').hidden=!requireFinal;
+ $('zero-acknowledged').checked=false;
  const button=$('verification-continue');
- button.textContent=label;button.disabled=delay>0;
- let timer;
+ button.textContent=label;button.disabled=requireFinal;
  return new Promise(resolve=>{
   verificationDecision=resolve;
   $('verification-cancel').focus();
-  // Evitar que un doble clic acepte las dos confirmaciones.
-  if(delay>0)timer=setTimeout(()=>{button.disabled=false;},delay);
- }).finally(()=>{clearTimeout(timer);button.disabled=false;});
+ }).finally(()=>{$('zero-confirmation').hidden=true;button.disabled=false;});
 }
-async function checkDocument(documentText){
+async function confirmDocumentScore(percent,verificationDetails){
+ if(percent===0){
+  const accepted=await confirmVerification('No se ha detectado Inteligencia humana. La entrega será inicialmente clasificada como "desarrollada con IA" y tendrá una puntuación de 0. Es obligatorio revisarla junto al profesor para modificar la nota. Te recomendamos no entregar el documento y revisarlo antes. Si lo entregas ahora, no podrás volver a entregar esta misma práctica más adelante.','Entregar de todas formas',true);
+  return accepted?{percent,verificationDetails,zeroFinalConfirmation:true}:false;
+ }
+ if(percent<=51){
+  const accepted=await confirmVerification('El documento no se ha podido verificar. Tras la entrega será revisado.');
+  return accepted?{percent,verificationDetails}:false;
+ }
+ $('document-check-message').textContent='Inteligencia humana detectada';
+ return {percent,verificationDetails};
+}
+async function checkDocument(documentText,pendingPercent){
  const panel=$('document-check'),message=$('document-check-message');
  panel.hidden=true;message.textContent='';
+ $('zero-confirmation').hidden=true;
  $('verification-actions').hidden=true;
  $('status').hidden=true;
  $('receipt-title').textContent='Comprobación del documento';
@@ -323,28 +340,13 @@ async function checkDocument(documentText){
    return false;
   }
   if(typeof b!=='number'||!Number.isFinite(b)||b<0||b>100)throw Error('La comprobación del documento ha devuelto un porcentaje no válido.');
-  // Excepción provisional: los valores inferiores a 50 requieren dos decisiones.
-  if(b<50){
-   if(!await confirmVerification(
-    'Primera advertencia: Inteligencia Humana no detectada. La entrega se permite provisionalmente y será revisada.',
-    'Continuar a la segunda confirmación'
-   ))return false;
-   allowed=await confirmVerification(
-    'Segunda advertencia: Inteligencia Humana no detectada. Si confirmas, el documento se enviará para su revisión.',
-    'Confirmar y entregar',500
-   );
-   return allowed?{percent:b,verificationDetails:c}:false;
-  }
-  if(b<=80){
-   allowed=await confirmVerification('El documento no se ha podido verificar. Tras la entrega será revisado.');
-   return allowed?{percent:b,verificationDetails:c}:false;
-  }
-  message.textContent='Inteligencia humana detectada';
-  allowed=true;
-  return {percent:b,verificationDetails:c};
+  const decision=await confirmDocumentScore(Number.isFinite(pendingPercent)?pendingPercent:b,c);
+  allowed=!!decision;
+  return decision;
  }catch(error){
-  allowed=await confirmVerification('El documento no se ha podido verificar. Tras la entrega será revisado.');
-  return allowed?{percent:51,verificationDetails:'El documento no se ha podido verificar. Tras la entrega será revisado.'}:false;
+  const decision=await confirmDocumentScore(Number.isFinite(pendingPercent)?pendingPercent:51,'El documento no se ha podido verificar. Tras la entrega será revisado.');
+  allowed=!!decision;
+  return decision;
  }finally{
   clearTimeout(analysisTimer);
   $('document-check-progress').hidden=true;
@@ -368,13 +370,13 @@ $('form').addEventListener('submit',async event=>{
  let verified=false;
  try{
   const documentText=current?JSON.parse(current.envelope.payload).answers[0].answer:$('text').value;
-  verified=await checkDocument(documentText);
+  verified=await checkDocument(documentText,current?JSON.parse(current.envelope.payload).incidents:undefined);
  }catch{showDeliveryError('No se ha podido verificar el documento');}
  if(!verified){busy=false;refresh();return;}
  showSaving();
  try{
   if(!current){
-   const data={exam:CONFIG.id,activityVersion:CONFIG.version,version:3,language:'es',name:'',email,practiceName,group:'',module:'DWEC',notes:'',incidents:verified.percent,verificationDetails:verified.verificationDetails,finishedAt:new Date().toISOString(),seconds:0,answers:[{question:practiceName,answer:$('text').value,status:'teacher-review'}],url:location.href};
+   const data={exam:CONFIG.id,activityVersion:CONFIG.version,version:3,language:'es',name:'',email,practiceName,group:'',module:'DWEC',notes:'',incidents:verified.percent,verificationDetails:verified.verificationDetails,zeroFinalConfirmation:verified.zeroFinalConfirmation===true,finishedAt:new Date().toISOString(),seconds:0,answers:[{question:practiceName,answer:$('text').value,status:'teacher-review'}],url:location.href};
    const payload=JSON.stringify(data);
    current={envelope:{protocol:1,submissionId:await hash(payload),practiceId:CONFIG.id,practiceVersion:CONFIG.version,payload}};save();
   }
@@ -385,11 +387,14 @@ $('form').addEventListener('submit',async event=>{
   if(!Object.prototype.hasOwnProperty.call(JSON.parse(current.envelope.payload),'verificationDetails')){
    current.envelope.verificationDetails=verified.verificationDetails;save();
   }
+  current.envelope.zeroFinalConfirmation=verified.zeroFinalConfirmation===true;save();
   await backup();
   current.receipt=await LabDelivery.send(delivery,current.envelope);save();
   await showReceipt();
  }catch(error){
   if(current?.receipt){showDeliveryError('Google Sheets ha guardado la entrega, pero no se pudo preparar el justificante. Recarga para volver a generarlo. ID: '+current.receipt.submissionId);}
+  else if(error.message==='FINAL_DELIVERY')showDeliveryError('No se permite otra entrega de esta práctica: ya confirmaste una entrega definitiva sin Inteligencia humana detectada.');
+  else if(error.message==='ZERO_CONFIRMATION')showDeliveryError('Debes aceptar la casilla de entrega definitiva antes de enviar este documento.');
   else showDeliveryError('No se ha podido confirmar la recepción. Reintenta el envío: se conservará el mismo identificador para evitar duplicados. Puedes descargar una copia pendiente; esa copia no confirma la entrega.'+(storageOK?'':' No se pudo guardar la copia en este navegador. Descárgala antes de cerrar.'));
  }finally{busy=false;refresh();}
 });
@@ -441,6 +446,4 @@ $('form').addEventListener('focusin',()=>{
  if(!busy&&!current?.receipt)void LabDelivery.prepare(delivery,CONFIG.id);
 });
 </script></body></html>
-
-
 
