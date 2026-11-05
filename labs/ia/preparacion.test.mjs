@@ -80,3 +80,23 @@ test('script HTML se extrae aun pegado en entrada marcada JS o tras introducció
   assert.equal(analizarEntrega(p,'js').errores.length,0);
  }
 });
+
+test('el fragmento JS acaba en el último cierre o punto y coma y conserva el texto posterior',()=>{
+ for(const codigo of ['const x=1;', 'function saludo() { return 1; }','function saludo() { return 1; };']) {
+  for(const entrada of [codigo+'\nConclusión del alumno.', '<script>'+codigo+'\nConclusión del alumno.</script>', {js:codigo+'\nConclusión del alumno.'}]) {
+   const p=prepararEntrega(entrada);
+   assert.equal(p.bloques.javascript[0].texto,codigo);
+   assert.equal(p.bloques.texto[0].texto,'\nConclusión del alumno.');
+   assert.equal(p.bloques.texto[0].base,0);
+   assert.equal(analizarEntrega(p,'js').errores.length,0);
+  }
+ }
+});
+test('se usa el último delimitador, no el primer cierre; se conservan líneas y original',()=>{
+ const codigo='function f() {\n if (true) { return 1; }\n}\nconst resultado=f();';
+ const original=codigo+'\nTexto posterior';
+ const p=prepararEntrega(original);
+ assert.equal(p.bloques.javascript[0].texto,codigo);
+ assert.equal(p.bloques.texto[0].base,3);
+ assert.equal(p.original,original);
+});
