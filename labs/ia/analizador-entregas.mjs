@@ -273,7 +273,7 @@ export function prepararEntrega(contenido) {
     if (!texto.trim()) return;
     // Extraer primero el documento completo evita absorber HTML dentro del JS previo.
     if (separarDocumentoHTML(texto, base, nombre)) return;
-    const tipo = detectarTipo(texto);
+    const tipo = /^(?:`{3,}|~{3,})/.test(texto.trimStart()) ? "texto" : detectarTipo(texto);
     // No interpretar fences que estén dentro de cadenas/comentarios de código.
     if (tipo !== "texto") { agregar(tipo, texto, base, nombre); return; }
     const fence = /^[ \t]*(`{3,}|~{3,})([\w-]*)[^\S\n]*\r?\n/gm;
