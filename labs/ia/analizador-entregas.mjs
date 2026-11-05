@@ -358,6 +358,12 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
     const linea = posicion => base + 1 + (s.slice(0, posicion).match(/\n/g) || []).length;
     const evidencia = (start, detalle) => ({ linea: linea(start), detalle });
     function registrar(id, aplicable, cumple, valor, evidencias = [], motivo = null) {
+      if (opciones.codigoBreve && PATRONES_REPETICION.includes(id)) {
+        resultados.push({ id, lenguaje, archivo: nombre, aplicable: false, cumple: false,
+          peso: pesos[id], valor: null, evidencias: [], evidenciasTotales: 0,
+          motivo: 'Patrón de repetición o uniformidad omitido: menos de 10 líneas de código.' });
+        return;
+      }
       const habilitada = !desactivadas.has(id);
       resultados.push({ id, lenguaje, archivo: nombre,
         aplicable: Boolean(aplicable && habilitada),
@@ -678,7 +684,7 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
   // Se conserva el ID y el peso para mantener compatibles las configuraciones.
   // El umbral es estricto: 1 comentario / 10 líneas NO activa esta regla.
   const lineasCodigo = lineasCodigoEntrega.size;
-  const densidadAplicable = !desactivadas.has("sin_comentarios") && !errores.length && lineasCodigo >= 10;
+  const densidadAplicable = !desactivadas.has("sin_comentarios") && !errores.length && (opciones.codigoBreve ? lineasCodigo > 0 : lineasCodigo >= 10);
   resultados.push({ id: "sin_comentarios", lenguaje: seleccion.join("+"), archivo: "Conjunto de lenguajes seleccionados",
     aplicable: densidadAplicable,
     cumple: densidadAplicable && totalComentarios * 10 < lineasCodigo,
@@ -686,14 +692,14 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
     valor: { comentarios: totalComentarios, lineasCodigo,
       comentariosPor10Lineas: lineasCodigo ? totalComentarios * 10 / lineasCodigo : null,
       umbral: "Menos de 1 comentario por cada 10 líneas de código (solo desde 10 líneas)",
-      minLineasExigidas: 10,
+      minLineasExigidas: opciones.codigoBreve ? 1 : 10,
       desglose: densidadPorUnidad },
     evidencias: densidadPorUnidad.slice(0, 30).map(d => ({ linea: d.primeraLinea,
       archivo: d.archivo, detalle: d.archivo + " · " + d.comentarios + " comentarios / " + d.lineasCodigo + " líneas de código" })),
     evidenciasTotales: densidadPorUnidad.length,
     motivo: desactivadas.has("sin_comentarios") ? "desactivada" : errores.length ? "Hay errores de sintaxis; no se puede calcular la densidad completa."
       : !lineasCodigo ? "No hay líneas de código en los lenguajes seleccionados."
-      : lineasCodigo < 10 ? "Código breve: con menos de 10 líneas no se exigen comentarios." : null });
+      : lineasCodigo < 10 && !opciones.codigoBreve ? "Código breve: aplicar el análisis público para exigir un comentario." : null });
   resultados.push({ id: "ausencia_faltas", lenguaje: seleccion.join("+"), archivo: "Texto y comentarios seleccionados",
     aplicable: false, cumple: false, valor: null, peso: 0, pesoConfigurado: pesos.ausencia_faltas,
     estadoRevision: "no_realizada", puntosAplicados: 0,
@@ -885,7 +891,7 @@ async function revisarProsa(resultado, opciones) {
  * Humanidad es el complemento del índice heurístico, no una prueba de autoría.
  * Sin puntuación calculable se devuelve null, nunca un 100 ficticio.
  */
-/** Salida anticipada pública: solo cuenta código y comentarios, sin evaluar reglas. */
+/** Recuento previo para decidir qué patrones requieren más código. */
 export function comprobarCodigoBreve(contenido, lenguajes = '') {
   const preparacion = prepararEntrega(contenido), seleccion = seleccionarLenguajes(lenguajes);
   const unidades = prepararUnidades(preparacion, seleccion);
@@ -912,16 +918,10 @@ export function comprobarCodigoBreve(contenido, lenguajes = '') {
     });
   }
   if (lineas.size === 0 || lineas.size >= 10) return null;
-  const aceptado = numeroComentarios >= 1;
-  return { preparacion, lenguajes: seleccion, resultados: [], errores: [], avisos: preparacion.avisos,
-    estado: 'analizado', puntuacion: aceptado ? 50 : 100, sumaSinLimitar: 0, reglasActivadas: [],
-    salidaDirecta: aceptado ? [false, 50, ''] : [true, 0, 'No se admite código sin comentar'],
-    codigoBreve: { lineas: lineas.size, comentarios: numeroComentarios },
-    fases: ['separacion', 'recuento_codigo_y_comentarios', 'salida_directa'] };
+  return { lineas: lineas.size, comentarios: numeroComentarios };
 }
 
 export function crearVectorResultado(informe) {
-  if (informe.salidaDirecta) return informe.salidaDirecta;
   const escasos = informe.resultados.find(r => r.id === 'sin_comentarios');
   const noDetectados = informe.lenguajes.filter(tipo =>
     !informe.preparacion.bloques[tipo === 'js' ? 'javascript' : tipo].some(f => f.texto.trim()));
@@ -944,9 +944,25 @@ export function crearVectorResultado(informe) {
     informe.puntuacion === null ? null : Math.round((100 - informe.puntuacion) * 100) / 100,
     detalles];
 }
+export const PATRONES_REPETICION = Object.freeze([
+  'comentarios_mayuscula', 'comentarios_sin_puntos', 'comentarios_punto_final',
+  'comentarios_longitud_similar', 'comentarios_antes_funciones', 'comentarios_separadores',
+  'comentarios_repetidos', 'indentacion_par', 'sangria_uniforme', 'espaciado_uniforme',
+  'comillas_uniformes', 'validaciones_repetidas'
+]);
+function opcionesParaEntrega(contenido, lenguajes, opciones) {
+  const codigoBreve = comprobarCodigoBreve(contenido, lenguajes);
+  return { ...opciones, codigoBreve };
+}
+export async function analizarEntregaInformeAsync(contenido, lenguajes = '', opciones = {}) {
+  const config = opcionesParaEntrega(contenido, lenguajes, opciones);
+  const informe = await analizarEntregaDetalladaAsync(contenido, lenguajes, config);
+  if (config.codigoBreve) informe.codigoBreve = config.codigoBreve;
+  return informe;
+}
 export function analizarEntrega(contenido, lenguajes = '', opciones = {}) {
-  return crearVectorResultado(comprobarCodigoBreve(contenido, lenguajes) || analizarEntregaDetallada(contenido, lenguajes, opciones));
+  return crearVectorResultado(analizarEntregaDetallada(contenido, lenguajes, opcionesParaEntrega(contenido, lenguajes, opciones)));
 }
 export async function analizarEntregaAsync(contenido, lenguajes = '', opciones = {}) {
-  return crearVectorResultado(comprobarCodigoBreve(contenido, lenguajes) || await analizarEntregaDetalladaAsync(contenido, lenguajes, opciones));
+  return crearVectorResultado(await analizarEntregaInformeAsync(contenido, lenguajes, opciones));
 }
