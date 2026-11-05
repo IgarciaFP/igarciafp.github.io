@@ -4,7 +4,7 @@ Abre index.html o visita https://igarciafp.github.io/labs/ia/. Pega la entrega: 
 
 El texto y los comentarios seleccionados se envían a LanguageTool al pulsar Analizar entrega. El ejemplo muestra las faltas y sus sugerencias; en producción `ortografia.mostrarDetalle=false` conserva únicamente el recuento. Solo cuentan palabras originales de más de 4 letras cuya sugerencia sustituya, añada o elimine un único carácter (longitud ±1, normalización Unicode NFC). Dos cambios, transposiciones, palabras idénticas y avisos de estilo quedan excluidos. Cada falta reduce el índice inicial un 10 %, hasta un máximo del 100 %. Una falta con varias sugerencias solo cuenta una vez. Sin faltas se suman 50 puntos. Si la API falla, no se asume cero faltas.
 
-Las reglas universales exigen un 95 % de coincidencia. Longitud similar requiere que el 95 % de los comentarios esté dentro de ±25 % de la media. Pesos: comentarios escasos 100, caracteres especiales 75, ausencia de faltas 50, restantes 10. La puntuación es un índice docente configurable, no una probabilidad calibrada de uso de IA.
+Las reglas universales exigen un 95 % de coincidencia. Longitud similar requiere que el 95 % de los comentarios esté dentro de ±25 % de la media. Pesos: comentarios escasos 100, caracteres especiales 60, ausencia de faltas 50, restantes 10. La puntuación es un índice docente configurable, no una probabilidad calibrada de uso de IA.
 
 ## Desarrollo
 
@@ -20,7 +20,7 @@ import { prepararEntrega, analizarEntregaAsync } from './analizador-entregas.mjs
 const preparada = prepararEntrega(entradaDelAlumno);
 // preparada.bloques: { texto: [...], html: [...], css: [...], javascript: [...] }
 // Cada fragmento: { texto, nombre, base } (base = líneas anteriores).
-const resultado = await analizarEntregaAsync(preparada, 'texto + javascript');
+const [comentariosEscasos, humanidad, reglas] = await analizarEntregaAsync(preparada, 'texto + javascript');
 ```
 
 También se puede llamar directamente con un string o con `{texto, html, css, javascript}`; `js` sigue siendo un alias válido. La preparación es independiente de la selección y puede reutilizarse para otras llamadas. Sin selección no se analiza nada. El informe JSON incluye `preparacion` con el original y los cuatro depósitos, también los no analizados. La interfaz conserva estos datos en memoria; no usa almacenamiento permanente.
@@ -53,3 +53,13 @@ El JSON conserva `preparacionProsa` con originales, fragmentos filtrados y exclu
 La regla `ausencia_faltas` distingue `estadoRevision`: `no_realizada`, `fallida` y `completada`. Sin comprobación completa, `peso` y `puntosAplicados` son 0; `pesoConfigurado` conserva 50 (o el peso configurado). Una comprobación completa sin faltas activa la regla y aporta 50 por defecto. Una respuesta vacía, incompleta, fallida o la ausencia de palabras analizables no se interpreta como cero faltas.
 
 La interfaz muestra siempre los bloques TXT, JS, HTML y CSS, en ese orden, con el contenido separado o «Vacío», incluso antes de introducir una entrega y después de limpiar.
+
+## Salida pública: vector de tres elementos
+
+`analizarEntregaAsync` (flujo completo) y `analizarEntrega` (solo local, sin ortografía externa) devuelven `[a, b, c]`:
+
+- `a`: booleano que indica si se activa la regla de menos de un comentario por diez líneas de código seleccionado. Exactamente 1/10 no la activa. No se aplica a texto libre ni a código que no permite calcular la densidad completa.
+- `b`: `100 - puntuacion`, después del límite de 100 y de la reducción ortográfica; se redondea a dos decimales. Se denomina humanidad como índice heurístico, no como probabilidad ni prueba de autoría. Sin contenido seleccionado o sin lenguajes es `null`.
+- `c`: array con las reglas aplicables, detectadas y con peso positivo. Cada objeto contiene `id`, `peso` y `coincidencias` (lenguaje, archivo, valor, evidencias y demás detalles). Cada ID aparece una sola vez; sus coincidencias se agrupan para no duplicar el peso. El peso es el configurado antes de la reducción global por faltas.
+
+Para obtener el informe completo usa `analizarEntregaDetalladaAsync` o `analizarEntregaDetallada`. La página usa este informe para mostrar la clasificación, incidencias y reglas, y muestra además su vector mediante `crearVectorResultado(informe)`. Descargar JSON conserva el informe detallado. Las llamadas que antes leían `.puntuacion` deben migrar a las funciones detalladas o desestructurar el vector.
