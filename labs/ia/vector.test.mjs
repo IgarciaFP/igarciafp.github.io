@@ -85,3 +85,19 @@ test('tipos ausentes no impiden aplicar la política de código breve al código
  assert.equal(r.resultados.find(r=>r.id==='comentarios_mayuscula').aplicable,false);
  assert.ok(crearVectorResultado(r)[2].some(r=>r.id==='contenido_no_detectado'&&r.lenguaje==='css'));
 });
+
+test('sin tipo se analizan todos los bloques no vacíos y se respeta selección explícita',async()=>{
+ const entrada={texto:'Explicación detallada.',html:'<p>Hola</p>',css:'   ',js:'// Comentario\nconst x=1;'};
+ const r=await analizarEntregaInformeAsync(entrada,undefined,limpio);
+ assert.deepEqual(r.lenguajes,['texto','html','js']);
+ const explicita=await analizarEntregaInformeAsync(entrada,'js',limpio);
+ assert.deepEqual(explicita.lenguajes,['js']);
+ const v=await analizarEntregaAsync(entrada,'   ',limpio);
+ assert.deepEqual(v,crearVectorResultado(r));
+ assert.ok(!v[2].some(r=>r.id==='contenido_no_detectado'));
+});
+test('HTML con script y style se analiza completo por defecto',async()=>{
+ const r=await analizarEntregaInformeAsync('<!DOCTYPE html><html><style>p{color:red}</style><script>const x=1;</script><p>Hola</p></html>',undefined,limpio);
+ assert.deepEqual(r.lenguajes,['html','css','js']);
+ assert.equal(r.errores.length,0);
+});
