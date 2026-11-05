@@ -895,8 +895,6 @@ async function revisarProsa(resultado, opciones) {
 export function comprobarCodigoBreve(contenido, lenguajes = '') {
   const preparacion = prepararEntrega(contenido), seleccion = seleccionarLenguajes(lenguajes);
   const unidades = prepararUnidades(preparacion, seleccion);
-  // Los tipos ausentes conservan su diagnóstico habitual.
-  if (seleccion.some(tipo => !unidades.some(u => u.lenguaje === tipo))) return null;
   const lineas = new Set(); let numeroComentarios = 0;
   for (const u of unidades.filter(u => u.lenguaje !== 'texto')) {
     const comentarios = [];
