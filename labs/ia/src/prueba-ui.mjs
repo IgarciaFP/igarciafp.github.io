@@ -30,14 +30,16 @@ let entregaPreparada=null;
 function prepararVista() {
   entregaPreparada=null;
   const contenedor=$('preparacion');contenedor.replaceChildren();
-  if(!$('codigo').value.trim())return;
-  if($('codigo').value.length>100000){contenedor.append(nodo('p','La entrega supera los 100.000 caracteres.','hint'));return;}
+  const excedida=$('codigo').value.length>100000;
   const tipo=$('origen').value;
-  const preparada=prepararEntrega(tipo==='auto'?$('codigo').value:{[tipo]:$('codigo').value});
+  const preparada=prepararEntrega(excedida?'':tipo==='auto'?$('codigo').value:{[tipo]:$('codigo').value});
+  if(excedida)contenedor.append(nodo('p','La entrega supera los 100.000 caracteres. Reduce la entrada para clasificarla.','hint'));
   entregaPreparada=preparada;
-  for(const [tipo,fragmentos] of Object.entries(preparada.bloques)){
-    const detalle=nodo('details');
-    detalle.append(nodo('summary',tipo.toUpperCase()+' · '+fragmentos.length+(fragmentos.length===1?' fragmento · ':' fragmentos · ')+fragmentos.reduce((n,f)=>n+f.texto.length,0)+' caracteres'));
+  for(const [tipo,etiqueta] of [['texto','TXT'],['javascript','JS'],['html','HTML'],['css','CSS']]){
+    const fragmentos=preparada.bloques[tipo];
+    const detalle=nodo('section');detalle.dataset.tipo=tipo;detalle.setAttribute('aria-label','Clasificación '+etiqueta);
+    detalle.append(nodo('h4',etiqueta+' · '+fragmentos.length+(fragmentos.length===1?' fragmento · ':' fragmentos · ')+fragmentos.reduce((n,f)=>n+f.texto.length,0)+' caracteres'));
+    if(!fragmentos.length)detalle.append(nodo('pre','Vacío'));
     for(const f of fragmentos){detalle.append(nodo('p',f.nombre+' · línea '+(f.base+1),'hint'),nodo('pre',f.texto));}
     contenedor.append(detalle);
   }
@@ -45,14 +47,13 @@ function prepararVista() {
 }
 $('codigo').addEventListener('input',prepararVista);
 $('form').addEventListener('input',e=>{if(e.target===$('form'))prepararVista();});
-$('limpiar').addEventListener('click',()=>{entregaPreparada=null;$('preparacion').replaceChildren();});
 document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>{
   let seleccion=[];try{seleccion=seleccionarLenguajes($('lenguajes').value);}catch{}
   seleccion=seleccion.includes(b.dataset.lang)?seleccion.filter(x=>x!==b.dataset.lang):[...seleccion,b.dataset.lang];
   $('lenguajes').value=seleccion.map(x=>x.toUpperCase()).join(' ');actualizarLenguajes();invalidar();
 }));
 $('restaurar').addEventListener('click',()=>{for(const [id,input] of weightInputs)input.value=PESOS[id];$('umbral').value=60;invalidar();});
-$('limpiar').addEventListener('click',()=>{invalidar();$('codigo').value='';$('contador').textContent='0 caracteres';$('estado').textContent='Sin analizar';$('mensaje').textContent='';$('codigo').focus();});
+$('limpiar').addEventListener('click',()=>{invalidar();$('codigo').value='';$('contador').textContent='0 caracteres';$('estado').textContent='Sin analizar';$('mensaje').textContent='';prepararVista();$('codigo').focus();});
 $('ejemplo').addEventListener('click',()=>{
   invalidar();$('origen').value='html';$('lenguajes').value='HTML JS CSS';
   $('codigo').value=`<!doctype html>
@@ -143,9 +144,9 @@ function mostrar(r,umbral){
   $('ortografia-resumen').dataset.estado=revisada?(faltas?'faltas':'correcto'):'sin-analisis';
   $('ortografia-resultado').textContent=revisada
     ?faltas+' '+(faltas===1?'falta detectada':'faltas detectadas')
-    :'No ha sido posible analizar';
+    :(ortografia?.estadoRevision==='fallida'?'Comprobación fallida · 0 puntos':'Comprobación no realizada · 0 puntos');
   $('ortografia-motivo').textContent=revisada
-    ?'Revisión completada: solo cuentan palabras de más de 4 letras con una única sustitución, inserción o eliminación (longitud ±1).'
+    ?'Revisión completada · '+(ortografia.puntosAplicados||0)+' puntos: solo cuentan palabras de más de 4 letras con una única sustitución, inserción o eliminación (longitud ±1).'
     :ortografia?.motivo||'No hay una revisión lingüística completada para esta entrega.';
 
   $('faltas-detalle').replaceChildren();
@@ -190,3 +191,5 @@ $('descargar').addEventListener('click',()=>{
 });
 
 
+
+prepararVista();
