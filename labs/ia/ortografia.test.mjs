@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { analizarEntregaDetallada as analizarEntrega, analizarEntregaDetalladaAsync as analizarEntregaAsync, PESOS } from './analizador-entregas.mjs';
-const texto = '// Este comentario explica cómo se prepara la lista de tareas antes de mostrar todos los elementos que ha introducido el usuario.\nconst secreto = "NO_ENVIAR_CODIGO";';
+const texto = '// Este comentario explica como se prepara la lista de tareas antes de mostrar todos los elementos que ha introducido el usuario.\nconst secreto = "NO_ENVIAR_CODIGO";';
 const regla=r=>r.resultados.find(x=>x.id==='ausencia_faltas');
 const config = {ortografia:{activa:true,idioma:'es'}};
 test('sin faltas suma exactamente 50 puntos y solo envía comentarios',async()=>{
@@ -13,7 +13,7 @@ test('sin faltas suma exactamente 50 puntos y solo envía comentarios',async()=>
  assert.equal(r.fragmentosOrtografia,undefined);
 });
 test('falta detectada impide sumar y muestra evidencia',async()=>{
- const r=await analizarEntregaAsync(texto,'js',{...config,revisorOrtografico:async t=>({matches:[{offset:t.indexOf('comentario'),length:10,message:'Posible falta',rule:{issueType:'misspelling'},replacements:[{value:'comentarios'}]}]})});
+ const r=await analizarEntregaAsync(texto,'js',{...config,revisorOrtografico:async t=>({matches:[{offset:t.indexOf('como'),length:4,message:'Posible falta',rule:{issueType:'misspelling'},replacements:[{value:'cómo'}]}]})});
  assert.equal(regla(r).aplicable,true);assert.equal(regla(r).cumple,false);assert.equal(regla(r).valor.faltas,1);assert.match(regla(r).evidencias[0].detalle,/Posible falta/);
 });
 test('fallo del servicio y respuesta incompleta nunca significan ausencia de faltas',async()=>{
