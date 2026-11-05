@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {analizarEntregaAsync} from './analizador-entregas.mjs';
+import {analizarEntregaDetalladaAsync as analizarEntregaAsync} from './analizador-entregas.mjs';
 const entrada='// Este comentario explica cómo se prepara la lista de tareas antes de mostrar todos los elementos que ha introducido el usuario.\nconst x=1;';
 test('una falta de igual longitud reduce el índice un 10 % y conserva el detalle',async()=>{
  const r=await analizarEntregaAsync(entrada,'js',{revisorOrtografico:async t=>({matches:[{offset:t.indexOf('comentario'),length:10,message:'Falta de prueba',replacements:[{value:'comentarios'}]}]})});
