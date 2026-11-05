@@ -651,7 +651,8 @@ export function analizarEntrega(contenido, lenguajes = "", opciones = {}) {
     motivo: desactivadas.has("sin_comentarios") ? "desactivada" : errores.length ? "Hay errores de sintaxis; no se puede calcular la densidad completa."
       : !lineasCodigo ? "No hay líneas de código en los lenguajes seleccionados." : null });
   resultados.push({ id: "ausencia_faltas", lenguaje: seleccion.join("+"), archivo: "Texto y comentarios seleccionados",
-    aplicable: false, cumple: false, valor: null, peso: pesos.ausencia_faltas,
+    aplicable: false, cumple: false, valor: null, peso: 0, pesoConfigurado: pesos.ausencia_faltas,
+    estadoRevision: "no_realizada", puntosAplicados: 0,
     evidencias: [], evidenciasTotales: 0,
     motivo: "Revisión ortográfica pendiente del análisis asíncrono." });
   // Cada ID suma una sola vez aunque aparezca en varios archivos o lenguajes.
@@ -809,7 +810,10 @@ async function revisarProsa(resultado, opciones) {
       return replacements.length ? [{ ...m, replacements }] : [];
     });
     regla.aplicable = true;
+    regla.estadoRevision = "completada";
+    regla.peso = regla.pesoConfigurado;
     regla.cumple = faltas.length === 0 && !(opciones.desactivadas || []).includes("ausencia_faltas");
+    regla.puntosAplicados = regla.cumple ? regla.peso : 0;
     regla.motivo = null;
     regla.valor = { ...regla.valor, faltas: faltas.length, avisosDescartados: data.matches.length - faltas.length,
       sugerenciasEstilo: data.matches.filter(m => m.rule?.issueType === "style" || m.rule?.category?.id === "STYLE").length,
@@ -827,6 +831,9 @@ async function revisarProsa(resultado, opciones) {
     regla.evidencias = config.mostrarDetalle === false ? [] : evidencias.slice(0, 30);
     regla.evidenciasTotales = config.mostrarDetalle === false ? 0 : evidencias.length;
   } catch (error) {
+    regla.estadoRevision = "fallida";
+    regla.peso = 0;
+    regla.puntosAplicados = 0;
     regla.motivo = "No se pudo completar la revisión ortográfica: " + error.message;
     resultado.errores.push({ archivo: "Revisión ortográfica", lenguaje: "texto", linea: null, mensaje: regla.motivo });
     resultado.estado = "analisis_parcial";
