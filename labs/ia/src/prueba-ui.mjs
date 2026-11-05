@@ -1,4 +1,4 @@
-import { analizarEntregaDetalladaAsync, crearVectorResultado, prepararEntrega, PESOS, seleccionarLenguajes } from '../analizador-entregas.mjs';
+import { comprobarCodigoBreve, analizarEntregaDetalladaAsync, crearVectorResultado, prepararEntrega, PESOS, seleccionarLenguajes } from '../analizador-entregas.mjs';
 import ejemploPresupuesto from '../fixtures/presupuesto-incompleto.txt';
 const $ = id => document.getElementById(id);
 const nombres = {
@@ -158,6 +158,12 @@ function mostrar(r,umbral){
   $('reduccion-ortografica').textContent=r.reduccionOrtografica
     ?'Reducción por '+faltas+' falta(s): −'+Math.round(r.reduccionOrtografica*100)+' % · '+r.puntuacionAntesReduccion+' → '+r.puntuacion+' puntos'
     :'Sin reducción por faltas'+(!revisada?' (revisión no completada)':'');
+  if(r.codigoBreve){
+    $('decision').textContent=r.salidaDirecta[0]?'No se admite código sin comentar':'Código breve: comentario presente';
+    $('decision-detalle').textContent=r.codigoBreve.lineas+' líneas · '+r.codigoBreve.comentarios+' comentario(s). Salida directa, sin evaluar otras reglas.';
+    $('ortografia-resultado').textContent='No realizada: salida directa por código breve';
+    $('ortografia-motivo').textContent='Con menos de 10 líneas solo se exige al menos un comentario.';
+  }
   mostrarLista();
 }
 $('form').addEventListener('submit',async e=>{
@@ -177,7 +183,7 @@ $('form').addEventListener('submit',async e=>{
     $('analizar').disabled=true;$('analizar').textContent='Analizando…';
     if(true)$('mensaje').textContent='Analizando los tipos seleccionados y solicitando la revisión del texto y los comentarios seleccionados a LanguageTool…';
     await new Promise(resolve=>setTimeout(resolve,30));
-    const resultado=await analizarEntregaDetalladaAsync(entrada,lenguajes,{pesos,ortografia,umbrales});
+    const resultado=comprobarCodigoBreve(entrada,lenguajes) || await analizarEntregaDetalladaAsync(entrada,lenguajes,{pesos,ortografia,umbrales});
     if(revision!==version){$('mensaje').textContent='La entrada cambió durante el análisis. Vuelve a analizar para obtener un resultado actualizado.';return;}
     mostrar(resultado,umbral);$('mensaje').textContent='Análisis terminado. Consulta los resultados y abre las reglas para ver sus evidencias.';
   }catch(error){$('mensaje').textContent=error.message;}
