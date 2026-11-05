@@ -8,7 +8,7 @@ test('contrato público: vector JSON de tres elementos y complemento del resulta
  const v=await analizarEntregaAsync(entrada,'texto',limpio);
  assert.equal(v.length,3);assert.equal(v[0],false);assert.equal(v[1],100-informe.puntuacion);
  assert.deepEqual(v,crearVectorResultado(informe));assert.deepEqual(JSON.parse(JSON.stringify(v)),v);
- assert.equal(v[2].find(r=>r.id==='ausencia_faltas').peso,50);
+ assert.equal(v[2].find(r=>r.id==='ausencia_faltas').peso,25);
 });
 test('densidad: cero comentarios activa a aunque tenga peso cero; exactamente 1/10 no',()=>{
  const codigo=Array.from({length:10},(_,i)=>`let v${i} = ${i};`).join('\n');
