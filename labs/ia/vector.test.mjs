@@ -32,7 +32,7 @@ test('humanidad incorpora reducción por faltas y fallo no suma ausencia de falt
  const entrada={texto:'“” numero'};
  const opciones={revisorOrtografico:async texto=>({matches:[{offset:texto.indexOf('numero'),length:6,message:'Tilde',rule:{issueType:'misspelling'},replacements:[{value:'número'}]}]})};
  const r=await analizarEntregaDetalladaAsync(entrada,'texto',opciones);
- assert.equal(r.reduccionOrtografica,.1);
+ assert.equal(r.reduccionOrtografica,1);
  assert.equal((await analizarEntregaAsync(entrada,'texto',opciones))[1],Math.round((100-r.puntuacion)*100)/100);
  const fallido=await analizarEntregaAsync(entrada,'texto',{revisorOrtografico:async()=>{throw Error('fallo');}});
  assert.ok(!fallido[2].some(r=>r.id==='ausencia_faltas'));
