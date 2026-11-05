@@ -738,18 +738,17 @@ export const TERMINOS_INGLES = Object.freeze(["abstract", "accessibility", "acce
 export const TERMINOS_TECNICOS = Object.freeze([...new Set(Object.values(glosarioTecnico.grupos).flat())]);
 const glosarioTecnicoSet = new Set(TERMINOS_TECNICOS);
 
-// Distancia de edición exactamente 1: sustituir, insertar o eliminar una letra.
-function cambiaUnCaracter(original, sugerida) {
-  const a = [...original.normalize("NFC")], b = [...sugerida.normalize("NFC")];
-  if (Math.abs(a.length - b.length) > 1) return false;
-  let i = 0, j = 0, cambios = 0;
-  while (i < a.length && j < b.length) {
-    if (a[i] === b[j]) { i++; j++; continue; }
-    if (++cambios > 1) return false;
-    if (a.length >= b.length) i++;
-    if (b.length >= a.length) j++;
+// Solo cuenta una tilde omitida en una vocal minúscula; el resto debe coincidir.
+function faltaTildeMinuscula(original, sugerida) {
+  const a = [...original.normalize('NFC')], b = [...sugerida.normalize('NFC')];
+  if (a.length !== b.length) return false;
+  const tildes = { a:'á', e:'é', i:'í', o:'ó', u:'ú' };
+  let cambios = 0;
+  for (let i=0; i<a.length; i++) {
+    if (a[i] === b[i]) continue;
+    if (tildes[a[i]] !== b[i] || ++cambios > 1) return false;
   }
-  return cambios + (a.length - i) + (b.length - j) === 1;
+  return cambios === 1;
 }
 
 /** Prepara la prosa ANTES de llamar al servicio. Los espacios conservan los
@@ -764,9 +763,8 @@ export function prepararProsa(fragmentos, config = {}) {
   const preparados = fragmentos.map(f => {
     let limpio = f.texto.replace(/```[\s\S]*?```|`[^`]*`|https?:\/\/\S+|^\s*\*?\s*@\w+.*$/gm, borrar);
     limpio = limpio.replace(/[$_\p{L}\p{N}][$_\p{L}\p{M}\p{N}]*(?:[.\-’'][$_\p{L}\p{M}\p{N}]+)*/gu, (token, inicio) => {
-      const letras = (token.normalize('NFC').match(/\p{L}/gu) || []).length;
       const normal = token.normalize('NFC').toLowerCase();
-      const motivo = letras < 5 ? 'menos_de_cinco_letras' : token.includes('.') ? 'punto_interno'
+      const motivo = token.includes('.') ? 'punto_interno'
         : /\p{Ll}[\p{M}\p{N}]*\p{Lu}/u.test(token) ? 'camelCase'
         : glosarioTecnicoSet.has(normal) ? 'glosario_tecnico'
         : exclusionIngles && ingles.has(normal) ? 'glosario_ingles' : null;
@@ -826,7 +824,7 @@ async function revisarProsa(resultado, opciones) {
     puntosInternosExcluidos: excluidos('punto_interno'),
     terminosExcluidos: [...excluidos('glosario_tecnico'), ...excluidos('glosario_ingles')] };
   if (palabras < minimo) {
-    regla.motivo = "No quedan palabras de cinco o más letras tras aplicar las exclusiones. No se ha solicitado revisión ortográfica.";
+    regla.motivo = "No quedan palabras tras aplicar las exclusiones. No se ha solicitado revisión ortográfica.";
     return resultado;
   }
   try {
@@ -836,21 +834,18 @@ async function revisarProsa(resultado, opciones) {
     if (data.matches.some(m => !Number.isInteger(m.offset) || m.offset < 0 || m.offset >= texto.length || !Number.isInteger(m.length) || m.length < 0 || m.offset + m.length > texto.length)) {
       throw new Error("El servicio devolvió posiciones de errores inválidas.");
     }
-    // Palabras originales de más de cuatro letras y una única edición.
+    // Se cuentan únicamente tildes omitidas en vocales minúsculas.
     // Se excluyen términos del glosario inglés, salvo al revisar en inglés.
     // NFC hace que una vocal con tilde descompuesta se cuente como un carácter.
     const palabra = /^[\p{L}\p{M}]+$/u;
     const caracterPalabra = /[\p{L}\p{M}\p{N}_]/u;
-    const longitud = t => [...t.normalize("NFC")].length;
     const faltas = data.matches.flatMap(m => {
       if (m.rule?.issueType === "style" || m.rule?.category?.id === "STYLE") return [];
       const original = texto.slice(m.offset, m.offset + m.length);
       if (!palabra.test(original) || caracterPalabra.test(texto.slice(0, m.offset).slice(-1)) ||
           caracterPalabra.test(texto.slice(m.offset + m.length, m.offset + m.length + 1))) return [];
-      if (longitud(original) <= 4) return [];
       const replacements = (m.replacements || []).filter(r => typeof r.value === "string" &&
-        palabra.test(r.value) && Math.abs(longitud(r.value) - longitud(original)) <= 1 &&
-        cambiaUnCaracter(original, r.value));
+        palabra.test(r.value) && faltaTildeMinuscula(original, r.value));
       return replacements.length ? [{ ...m, replacements }] : [];
     });
     regla.aplicable = true;
@@ -861,7 +856,7 @@ async function revisarProsa(resultado, opciones) {
     regla.motivo = null;
     regla.valor = { ...regla.valor, faltas: faltas.length, avisosDescartados: data.matches.length - faltas.length,
       sugerenciasEstilo: data.matches.filter(m => m.rule?.issueType === "style" || m.rule?.category?.id === "STYLE").length,
-      filtro: "Palabra original de más de 4 letras; longitud ±1 y exactamente una sustitución, inserción o eliminación",
+      filtro: "Solo una tilde omitida en vocal minúscula; sin límite mínimo de longitud",
       servicio: "LanguageTool", version: data.software?.version || null };
     const evidencias = faltas.length ? faltas.map(m => {
       const f = seleccionados.find(f => m.offset >= f.offset && m.offset < f.offset + f.texto.length) || seleccionados[0];
