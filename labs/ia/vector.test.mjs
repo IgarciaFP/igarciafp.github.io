@@ -78,3 +78,10 @@ test('desde diez líneas vuelven a evaluarse los patrones',async()=>{
  assert.equal(r.resultados.find(r=>r.id==='comentarios_repetidos').cumple,true);
  assert.equal(r.codigoBreve,undefined);
 });
+
+test('tipos ausentes no impiden aplicar la política de código breve al código presente',async()=>{
+ const r=await analizarEntregaInformeAsync('// Comentario de prueba.\nlet x=1;','js css',limpio);
+ assert.equal(r.codigoBreve.lineas,1);
+ assert.equal(r.resultados.find(r=>r.id==='comentarios_mayuscula').aplicable,false);
+ assert.ok(crearVectorResultado(r)[2].some(r=>r.id==='contenido_no_detectado'&&r.lenguaje==='css'));
+});
