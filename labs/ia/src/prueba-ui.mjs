@@ -156,7 +156,7 @@ function mostrar(r,umbral){
     }
   }
   $('reduccion-ortografica').textContent=r.reduccionOrtografica
-    ?'Reducción por '+faltas+' falta(s): −'+Math.round(r.reduccionOrtografica*100)+' % · '+r.puntuacionAntesReduccion+' → '+r.puntuacion+' puntos'
+    ?'Reducción por '+faltas+' falta(s) en '+(r.descuentoOrtografico?.lineasRevisadas||0)+' línea(s) revisada(s): −'+Math.round(r.reduccionOrtografica*10000)/100+' % · '+r.puntuacionAntesReduccion+' → '+r.puntuacion+' puntos'
     :'Sin reducción por faltas'+(!revisada?' (revisión no completada)':'');
   if(r.codigoBreve){
     $('decision-detalle').textContent+=' Código breve: se analizan las reglas individuales y las tildes; se omiten patrones de repetición y uniformidad.';
