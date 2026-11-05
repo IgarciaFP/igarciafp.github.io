@@ -678,6 +678,42 @@ export async function consultarLanguageTool(texto, opciones = {}) {
   } finally { clearTimeout(timeout); }
 }
 
+// Glosario conservador y ampliable: no es un detector universal del idioma.
+export const TERMINOS_INGLES = Object.freeze(`
+abstract accessible accessibility algorithm application argument array async await
+backend background boolean border bottom branch breakpoint browser buffer build button
+cache callback camelcase checkbox child class client closure cluster commit component
+console constant constructor container content cookie credentials database dataset
+debug debugger default delete deployment desktop disabled display document dropdown
+endpoint error event exception export expression extends fallback fetch field filename
+filter finally firewall framework frontend function getter handler header height hidden
+hostname hover import index inline input interface iterator javascript jquery json
+keyword layout length library listener loading local localhost location localstorage
+login logout loop margin markdown middleware module namespace network node null number
+object offset online operator output overflow package padding parameter parent parser
+password payload placeholder pointer polling promise property prototype query readonly
+redirect refactor regular release render request required resize resolve response return
+router runtime scope screen script scroll selector server session setter shadow sibling
+socket source split spread stack statement storage stream strict string stylesheet
+submit substring switch syntax target template testing thread throw timeout toggle token
+toolbar tooltip transform transition undefined username validation value variable viewport
+warning websocket widget width window wrapper yield
+`.trim().split(/\s+/));
+
+// Distancia de edición exactamente 1: sustituir, insertar o eliminar una letra.
+function cambiaUnCaracter(original, sugerida) {
+  const a = [...original.normalize("NFC")], b = [...sugerida.normalize("NFC")];
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0, j = 0, cambios = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { i++; j++; continue; }
+    if (++cambios > 1) return false;
+    if (a.length >= b.length) i++;
+    if (b.length >= a.length) j++;
+  }
+  return cambios + (a.length - i) + (b.length - j) === 1;
+}
+
 /** La entrada asíncrona revisa siempre la prosa de los comentarios disponible.
  * opciones.ortografia: { idioma:'es', mostrarDetalle:true, endpoint?:URL }
  * opciones.revisorOrtografico: proveedor inyectable para integración/pruebas.
@@ -721,19 +757,29 @@ export async function analizarEntregaAsync(contenido, lenguajes = "", opciones =
     if (data.matches.some(m => !Number.isInteger(m.offset) || m.offset < 0 || m.offset >= texto.length || !Number.isInteger(m.length) || m.length < 0 || m.offset + m.length > texto.length)) {
       throw new Error("El servicio devolvió posiciones de errores inválidas.");
     }
-    // Solo sustituciones de una palabra completa por otra de igual longitud.
+    // Palabras originales de más de cuatro letras y una única edición.
+    // Se excluyen términos del glosario inglés, salvo al revisar en inglés.
     // NFC hace que una vocal con tilde descompuesta se cuente como un carácter.
     const palabra = /^[\p{L}\p{M}]+$/u;
     const caracterPalabra = /[\p{L}\p{M}\p{N}_]/u;
     const longitud = t => [...t.normalize("NFC")].length;
+    const excluirIngles = config.excluirIngles !== false && !/^en(?:-|$)/i.test(config.idioma || "es");
+    const adicionales = Array.isArray(config.terminosIgnorados) ? config.terminosIgnorados : [];
+    const ignorados = new Set([...TERMINOS_INGLES, ...adicionales].map(t => String(t).normalize("NFC").toLowerCase()));
+    const terminosExcluidos = new Set();
     const faltas = data.matches.flatMap(m => {
       if (m.rule?.issueType === "style" || m.rule?.category?.id === "STYLE") return [];
       const original = texto.slice(m.offset, m.offset + m.length);
       if (!palabra.test(original) || caracterPalabra.test(texto.slice(0, m.offset).slice(-1)) ||
           caracterPalabra.test(texto.slice(m.offset + m.length, m.offset + m.length + 1))) return [];
+      if (longitud(original) <= 4) return [];
+      if (excluirIngles && ignorados.has(original.normalize("NFC").toLowerCase())) {
+        terminosExcluidos.add(original);
+        return [];
+      }
       const replacements = (m.replacements || []).filter(r => typeof r.value === "string" &&
-        palabra.test(r.value) && longitud(r.value) === longitud(original) &&
-        r.value.normalize("NFC") !== original.normalize("NFC"));
+        palabra.test(r.value) && Math.abs(longitud(r.value) - longitud(original)) <= 1 &&
+        cambiaUnCaracter(original, r.value));
       return replacements.length ? [{ ...m, replacements }] : [];
     });
     regla.aplicable = true;
@@ -741,7 +787,8 @@ export async function analizarEntregaAsync(contenido, lenguajes = "", opciones =
     regla.motivo = null;
     regla.valor = { ...regla.valor, faltas: faltas.length, avisosDescartados: data.matches.length - faltas.length,
       sugerenciasEstilo: data.matches.filter(m => m.rule?.issueType === "style" || m.rule?.category?.id === "STYLE").length,
-      filtro: "Sustitución de palabra completa por otra distinta de igual longitud",
+      filtro: "Palabra original de más de 4 letras; longitud ±1 y exactamente una sustitución, inserción o eliminación",
+      exclusionIngles: excluirIngles, terminosExcluidos: [...terminosExcluidos],
       servicio: "LanguageTool", version: data.software?.version || null };
     const evidencias = faltas.length ? faltas.map(m => {
       const f = seleccionados.find(f => m.offset >= f.offset && m.offset < f.offset + f.texto.length) || seleccionados[0];

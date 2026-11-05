@@ -145,7 +145,7 @@ function mostrar(r,umbral){
     ?faltas+' '+(faltas===1?'falta detectada':'faltas detectadas')
     :'No ha sido posible analizar';
   $('ortografia-motivo').textContent=revisada
-    ?'Revisión completada: solo cuentan sustituciones de una palabra por otra distinta de igual longitud.'
+    ?'Revisión completada: solo cuentan palabras de más de 4 letras con una única sustitución, inserción o eliminación (longitud ±1).'
     :ortografia?.motivo||'No hay una revisión lingüística completada para esta entrega.';
 
   $('faltas-detalle').replaceChildren();
@@ -171,7 +171,7 @@ $('form').addEventListener('submit',async e=>{
     const version=revision;
     prepararVista();
     const entrada=entregaPreparada, lenguajes=$('lenguajes').value;
-    const ortografia={idioma:$('idioma').value,mostrarDetalle:true};
+    const ortografia={idioma:$('idioma').value,mostrarDetalle:true,excluirIngles:$('ignorar-ingles').value==='si',terminosIgnorados:$('terminos-ignorados').value.split(/[\s,;]+/).filter(Boolean)};
     const umbrales={minComentarios:Number($('min-comentarios').value),toleranciaLongitud:Number($('tolerancia-longitud').value)/100};
     $('analizar').disabled=true;$('analizar').textContent='Analizando…';
     if(true)$('mensaje').textContent='Analizando los tipos seleccionados y solicitando la revisión del texto y los comentarios seleccionados a LanguageTool…';

@@ -13,7 +13,7 @@ test('sin faltas suma exactamente 50 puntos y solo envía comentarios',async()=>
  assert.equal(r.fragmentosOrtografia,undefined);
 });
 test('falta detectada impide sumar y muestra evidencia',async()=>{
- const r=await analizarEntregaAsync(texto,'js',{...config,revisorOrtografico:async()=>({matches:[{offset:0,length:4,message:'Posible falta',rule:{issueType:'misspelling'},replacements:[{value:'Esta'}]}]})});
+ const r=await analizarEntregaAsync(texto,'js',{...config,revisorOrtografico:async()=>({matches:[{offset:5,length:10,message:'Posible falta',rule:{issueType:'misspelling'},replacements:[{value:'comentarios'}]}]})});
  assert.equal(regla(r).aplicable,true);assert.equal(regla(r).cumple,false);assert.equal(regla(r).valor.faltas,1);assert.match(regla(r).evidencias[0].detalle,/Posible falta/);
 });
 test('fallo del servicio y respuesta incompleta nunca significan ausencia de faltas',async()=>{
@@ -41,3 +41,4 @@ test('si los comentarios se extraen completos pueden revisarse aunque falte una 
  let llamadas=0;const r=await analizarEntregaAsync('function f(){\n'+texto,'js',{...config,revisorOrtografico:async()=>{llamadas++;return {matches:[]};}});
  assert.equal(llamadas,1);assert.equal(regla(r).cumple,true);assert.equal(r.estado,'analisis_parcial');
 });
+
