@@ -796,7 +796,15 @@ export async function analizarEntregaDetalladaAsync(contenido, lenguajes = "", o
   resultado.reglasActivadas = [...new Set(resultado.resultados.filter(r => r.cumple).map(r => r.id))];
   resultado.sumaSinLimitar = resultado.reglasActivadas.reduce((suma, id) => suma + (opciones.pesos?.[id] ?? PESOS[id]), 0);
   resultado.puntuacionAntesReduccion = resultado.puntuacion === null ? null : Math.min(100, resultado.sumaSinLimitar);
-  resultado.reduccionOrtografica = regla?.aplicable ? Math.min(100, regla.valor.faltas * 10) / 100 : 0;
+  const lineasRevisadas = regla?.valor?.lineasRevisadas || 0;
+  resultado.reduccionOrtografica = regla?.aplicable && lineasRevisadas > 0
+    ? Math.min(1, regla.valor.faltas / lineasRevisadas) : 0;
+  resultado.descuentoOrtografico = {
+    faltas: regla?.aplicable ? regla.valor.faltas : null,
+    lineasRevisadas: regla?.aplicable ? lineasRevisadas : 0,
+    porcentaje: Math.round(resultado.reduccionOrtografica * 10000) / 100,
+    formula: 'min(100, faltas / lineasRevisadas * 100)'
+  };
   resultado.puntuacion = resultado.puntuacionAntesReduccion === null ? null
     : Math.round(resultado.puntuacionAntesReduccion * (1 - resultado.reduccionOrtografica) * 100) / 100;
   resultado.fases = ["separacion", "extraccion_comentarios", "analisis_codigo_seleccionado", "preparacion_prosa", "revision_ortografica", "reglas_prosa_y_puntuacion"];
@@ -820,12 +828,19 @@ async function revisarProsa(resultado, opciones) {
   const preparacionProsa = prepararProsa(fragmentos, config);
   resultado.preparacionProsa = preparacionProsa;
   const seleccionados = preparacionProsa.fragmentos.filter(f => /\p{L}/u.test(f.texto));
+  const lineasElegibles = new Set();
+  for (const f of seleccionados) {
+    f.texto.split('\n').forEach((linea, i) => {
+      if (/\p{L}/u.test(linea)) lineasElegibles.add(JSON.stringify([f.archivo, f.linea + i]));
+    });
+  }
+  const lineasRevisadas = lineasElegibles.size;
   let texto = "";
   for (const f of seleccionados) { f.offset = texto.length; texto += f.texto + "\n\n"; }
   const palabras = (texto.match(/\p{L}+(?:['’-]\p{L}+)*/gu) || []).length;
   const minimo = 1;
   const excluidos = motivo => [...new Set(preparacionProsa.exclusiones.filter(e => e.motivo === motivo).map(e => e.token))];
-  regla.valor = { palabras, minimo, idioma: config.idioma || "es", exclusionIngles: preparacionProsa.exclusionIngles,
+  regla.valor = { palabras, lineasRevisadas, minimo, idioma: config.idioma || "es", exclusionIngles: preparacionProsa.exclusionIngles,
     tecnicosExcluidos: excluidos('glosario_tecnico'), camelCaseExcluidos: excluidos('camelCase'),
     puntosInternosExcluidos: excluidos('punto_interno'),
     terminosExcluidos: [...excluidos('glosario_tecnico'), ...excluidos('glosario_ingles')] };
