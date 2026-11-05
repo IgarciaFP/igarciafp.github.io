@@ -22,7 +22,7 @@ test('sin entrada calculable no inventa humanidad del cien por cien',()=>{
 });
 test('solo reglas detectadas con peso y agrupación sin duplicar; peso especial 60',()=>{
  assert.equal(PESOS.caracteres_especiales,60);
- const v=analizarEntrega({texto:'“”',js:'const x = "“”";'},'texto js',{pesos:{sin_comentarios:0}});
+ const v=analizarEntrega({texto:'“”',js:'const x = "“”";\n'+Array.from({length:9},(_,i)=>`let z${i}=${i};`).join('\n')},'texto js',{pesos:{sin_comentarios:0}});
  const especial=v[2].filter(r=>r.id==='caracteres_especiales');
  assert.equal(especial.length,1);assert.equal(especial[0].peso,60);assert.equal(especial[0].coincidencias.length,2);
  assert.ok(v[2].filter(r=>r.peso>0).every(r=>r.coincidencias.every(c=>c.cumple&&c.aplicable)));
@@ -53,9 +53,17 @@ test('cada tipo solicitado ausente informa; JS presente insuficientemente coment
  assert.ok(!v[2].some(r=>r.id==='contenido_no_detectado'&&r.lenguaje==='js'));
 });
 
-test('código breve no bloquea por comentarios ni incluye mensaje de rechazo',()=>{
+test('código breve exige comentario, devuelve literal exacto y no consulta ortografía',async()=>{
  for(const n of [1,9]) {
-  const v=analizarEntrega(Array.from({length:n},(_,i)=>`let x${i}=${i};`).join('\n'),'js');
-  assert.equal(v[0],false);assert.ok(!v[2].some(r=>r.id==='sin_comentarios'));
+  const codigo=Array.from({length:n},(_,i)=>`let x${i}=${i};`).join('\n');
+  let llamadas=0;
+  const opciones={revisorOrtografico:async()=>{llamadas++;throw Error('No debe llamarse');},pesos:{caracteres_especiales:100}};
+  assert.deepEqual(await analizarEntregaAsync('// “Comentario” con erratas\n'+codigo,'js',opciones),[false,50,'']);
+  assert.deepEqual(analizarEntrega('// Comentario\n'+codigo,'js'),[false,50,'']);
+  assert.deepEqual(await analizarEntregaAsync(codigo,'js',opciones),[true,0,'No se admite código sin comentar']);
+  assert.equal(llamadas,0);
  }
+});
+test('comentarios falsos dentro de cadenas no cumplen la exigencia breve',()=>{
+ assert.deepEqual(analizarEntrega('const x="// comentario";','js'),[true,0,'No se admite código sin comentar']);
 });
