@@ -678,20 +678,22 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
   // Se conserva el ID y el peso para mantener compatibles las configuraciones.
   // El umbral es estricto: 1 comentario / 10 líneas NO activa esta regla.
   const lineasCodigo = lineasCodigoEntrega.size;
-  const densidadAplicable = !desactivadas.has("sin_comentarios") && !errores.length && lineasCodigo > 0;
+  const densidadAplicable = !desactivadas.has("sin_comentarios") && !errores.length && lineasCodigo >= 10;
   resultados.push({ id: "sin_comentarios", lenguaje: seleccion.join("+"), archivo: "Conjunto de lenguajes seleccionados",
     aplicable: densidadAplicable,
     cumple: densidadAplicable && totalComentarios * 10 < lineasCodigo,
     peso: pesos.sin_comentarios,
     valor: { comentarios: totalComentarios, lineasCodigo,
       comentariosPor10Lineas: lineasCodigo ? totalComentarios * 10 / lineasCodigo : null,
-      umbral: "Menos de 1 comentario por cada 10 líneas de código",
+      umbral: "Menos de 1 comentario por cada 10 líneas de código (solo desde 10 líneas)",
+      minLineasExigidas: 10,
       desglose: densidadPorUnidad },
     evidencias: densidadPorUnidad.slice(0, 30).map(d => ({ linea: d.primeraLinea,
       archivo: d.archivo, detalle: d.archivo + " · " + d.comentarios + " comentarios / " + d.lineasCodigo + " líneas de código" })),
     evidenciasTotales: densidadPorUnidad.length,
     motivo: desactivadas.has("sin_comentarios") ? "desactivada" : errores.length ? "Hay errores de sintaxis; no se puede calcular la densidad completa."
-      : !lineasCodigo ? "No hay líneas de código en los lenguajes seleccionados." : null });
+      : !lineasCodigo ? "No hay líneas de código en los lenguajes seleccionados."
+      : lineasCodigo < 10 ? "Código breve: con menos de 10 líneas no se exigen comentarios." : null });
   resultados.push({ id: "ausencia_faltas", lenguaje: seleccion.join("+"), archivo: "Texto y comentarios seleccionados",
     aplicable: false, cumple: false, valor: null, peso: 0, pesoConfigurado: pesos.ausencia_faltas,
     estadoRevision: "no_realizada", puntosAplicados: 0,
@@ -758,24 +760,9 @@ export function prepararProsa(fragmentos, config = {}) {
   const ingles = new Set([...TERMINOS_INGLES, ...adicionales].map(t => String(t).normalize('NFC').toLowerCase())
     .filter(t => (t.match(/\p{L}/gu) || []).length > 4));
   const exclusiones = [];
-  const terminosTecnicos = [...glosarioTecnicoSet];
-  const terminosIngleses = [...ingles];
   const borrar = t => t.replace(/[^\r\n]/g, ' ');
   const preparados = fragmentos.map(f => {
-    const inicioExclusiones = exclusiones.length;
     let limpio = f.texto.replace(/```[\s\S]*?```|`[^`]*`|https?:\/\/\S+|^\s*\*?\s*@\w+.*$/gm, borrar);
-    // Un término del glosario excluye toda la palabra compuesta que lo contiene.
-    // Punto, coma y espacio en blanco delimitan la expansión; los offsets se conservan.
-    limpio = limpio.replace(/[^.,\s]+/gu, (token, inicio) => {
-      const normal = token.normalize('NFC').toLowerCase();
-      const tecnico = terminosTecnicos.some(termino => normal.includes(termino));
-      const extranjero = exclusionIngles && terminosIngleses.some(termino => normal.includes(termino));
-      if (!tecnico && !extranjero) return token;
-      const motivo = /\p{Ll}[\p{M}\p{N}]*\p{Lu}/u.test(token) ? 'camelCase'
-        : tecnico ? 'glosario_tecnico' : 'glosario_ingles';
-      exclusiones.push({ token, motivo, archivo: f.archivo, linea: f.linea + (f.texto.slice(0, inicio).match(/\n/g) || []).length, inicio });
-      return borrar(token);
-    });
     limpio = limpio.replace(/[$_\p{L}\p{N}][$_\p{L}\p{M}\p{N}]*(?:[.\-’'][$_\p{L}\p{M}\p{N}]+)*/gu, (token, inicio) => {
       const letras = (token.normalize('NFC').match(/\p{L}/gu) || []).length;
       const normal = token.normalize('NFC').toLowerCase();
@@ -787,7 +774,6 @@ export function prepararProsa(fragmentos, config = {}) {
       exclusiones.push({ token, motivo, archivo: f.archivo, linea: f.linea + (f.texto.slice(0, inicio).match(/\n/g) || []).length, inicio });
       return borrar(token);
     });
-    exclusiones.push(...exclusiones.splice(inicioExclusiones).sort((a, b) => a.inicio - b.inicio));
     return { ...f, texto: limpio, original: f.texto };
   });
   return { fragmentos: preparados, exclusiones, exclusionIngles };
