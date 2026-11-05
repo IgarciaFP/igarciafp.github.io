@@ -26,7 +26,7 @@ test('comentarios de bloque cuentan como uno; líneas vacías o solo comentarios
   assert.equal(r.valor.comentarios,1);assert.equal(r.valor.lineasCodigo,10);assert.equal(r.cumple,false);
 });
 test('un comentario al final de una línea no elimina el código de esa línea', () => {
-  const r=regla(analizarEntrega(lineas(10,'js')+' // comentario\n','js'));
+  const r=regla(analizarEntrega(lineas(10,'js').replace('\n',' // comentario\n'),'js'));
   assert.equal(r.valor.comentarios,1);assert.equal(r.valor.lineasCodigo,10);assert.equal(r.cumple,false);
 });
 test('se suman los lenguajes seleccionados y se produce un único resultado', () => {
