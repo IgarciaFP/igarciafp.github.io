@@ -4,11 +4,11 @@ import { analizarEntregaDetallada as analizarEntrega, analizarEntregaDetalladaAs
 const texto = '// Este comentario explica como se prepara la lista de tareas antes de mostrar todos los elementos que ha introducido el usuario.\nconst secreto = "NO_ENVIAR_CODIGO";';
 const regla=r=>r.resultados.find(x=>x.id==='ausencia_faltas');
 const config = {ortografia:{activa:true,idioma:'es'}};
-test('sin faltas suma exactamente 50 puntos y solo envía comentarios',async()=>{
+test('sin faltas suma exactamente 25 puntos y solo envía comentarios',async()=>{
  let enviado='';const previo=analizarEntrega(texto,'js');
  const r=await analizarEntregaAsync(texto,'js',{...config,revisorOrtografico:async t=>{enviado=t;return {matches:[]};}});
- assert.equal(PESOS.ausencia_faltas,50);assert.equal(regla(r).cumple,true);
- assert.equal(r.sumaSinLimitar-previo.sumaSinLimitar,50);
+ assert.equal(PESOS.ausencia_faltas,25);assert.equal(regla(r).cumple,true);
+ assert.equal(r.sumaSinLimitar-previo.sumaSinLimitar,25);
  assert.ok(!enviado.includes('NO_ENVIAR_CODIGO'));assert.ok(!enviado.includes('const secreto'));
  assert.equal(r.fragmentosOrtografia,undefined);
 });
