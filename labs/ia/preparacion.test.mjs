@@ -34,7 +34,7 @@ test('ortografía envía únicamente los tipos seleccionados',async()=>{
   const entrada={texto:'Explicación del alumno.',javascript:'// Comentario reservado\nconst x=1;'};
   let recibido='';
   const r=await analizarEntregaAsync(entrada,'texto',{revisorOrtografico:async t=>{recibido=t;return {matches:[]};}});
-  assert.equal(recibido.trim(),'Explicación     alumno.');
+  assert.equal(recibido.trim(),'Explicación del alumno.');
   assert.equal(r.puntuacion,50);
   assert.equal(r.resultados.find(x=>x.id==='sin_comentarios').valor.lineasCodigo,0);
 });
