@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { analizarEntrega, analizarEntregaAsync, PESOS } from './analizador-entregas.mjs';
+import { analizarEntregaDetallada as analizarEntrega, analizarEntregaDetalladaAsync as analizarEntregaAsync, PESOS } from './analizador-entregas.mjs';
 const texto = '// Este comentario explica cómo se prepara la lista de tareas antes de mostrar todos los elementos que ha introducido el usuario.\nconst secreto = "NO_ENVIAR_CODIGO";';
 const regla=r=>r.resultados.find(x=>x.id==='ausencia_faltas');
 const config = {ortografia:{activa:true,idioma:'es'}};
