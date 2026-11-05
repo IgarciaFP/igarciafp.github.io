@@ -19,7 +19,7 @@ import * as parse5 from "parse5";
 const EVALUACIONES_PROSA = Symbol("evaluacionesProsa");
 
 export const PESOS = Object.freeze({
-  sin_comentarios: 100, caracteres_especiales: 75,
+  sin_comentarios: 100, caracteres_especiales: 60,
   comentarios_mayuscula: 10, indentacion_par: 10,
   comentarios_abundantes: 10, comentarios_sin_puntos: 10,
   comentarios_punto_final: 10, comentarios_largos: 10, comentarios_longitud_similar: 10,
@@ -290,7 +290,7 @@ function prepararUnidades(preparada, seleccion) {
   });
 }
 
-export function analizarEntrega(contenido, lenguajes = "", opciones = {}) {
+export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {}) {
   const seleccion = seleccionarLenguajes(lenguajes);
   const pesos = { ...PESOS, ...opciones.pesos };
   const u = { ...UMBRALES, ...opciones.umbrales };
@@ -739,9 +739,9 @@ export function prepararProsa(fragmentos, config = {}) {
  * opciones.ortografia: { idioma:'es', mostrarDetalle:true, endpoint?:URL }
  * opciones.revisorOrtografico: proveedor inyectable para integración/pruebas.
  */
-export async function analizarEntregaAsync(contenido, lenguajes = "", opciones = {}) {
+export async function analizarEntregaDetalladaAsync(contenido, lenguajes = "", opciones = {}) {
   const evaluaciones = [];
-  const resultado = analizarEntrega(contenido, lenguajes, { ...opciones, incluirComentarios: true, [EVALUACIONES_PROSA]: evaluaciones });
+  const resultado = analizarEntregaDetallada(contenido, lenguajes, { ...opciones, incluirComentarios: true, [EVALUACIONES_PROSA]: evaluaciones });
   await revisarProsa(resultado, opciones);
   for (const evaluar of evaluaciones) evaluar();
   const regla = resultado.resultados.find(r => r.id === "ausencia_faltas");
@@ -841,3 +841,26 @@ async function revisarProsa(resultado, opciones) {
   return resultado;
 }
 
+
+/** Contrato público: [comentariosEscasos, humanidad, reglasDetectadas].
+ * Humanidad es el complemento del índice heurístico, no una prueba de autoría.
+ * Sin puntuación calculable se devuelve null, nunca un 100 ficticio.
+ */
+export function crearVectorResultado(informe) {
+  const escasos = informe.resultados.find(r => r.id === 'sin_comentarios');
+  const grupos = new Map();
+  for (const r of informe.resultados) {
+    if (!r.aplicable || !r.cumple || !(r.peso > 0)) continue;
+    if (!grupos.has(r.id)) grupos.set(r.id, { id: r.id, peso: r.peso, coincidencias: [] });
+    grupos.get(r.id).coincidencias.push(r);
+  }
+  return [escasos?.cumple === true,
+    informe.puntuacion === null ? null : Math.round((100 - informe.puntuacion) * 100) / 100,
+    [...grupos.values()]];
+}
+export function analizarEntrega(contenido, lenguajes = '', opciones = {}) {
+  return crearVectorResultado(analizarEntregaDetallada(contenido, lenguajes, opciones));
+}
+export async function analizarEntregaAsync(contenido, lenguajes = '', opciones = {}) {
+  return crearVectorResultado(await analizarEntregaDetalladaAsync(contenido, lenguajes, opciones));
+}
