@@ -51,7 +51,7 @@ test('separaciones diferentes no se convierten en patrón uniforme',()=>{
  assert.equal(regla(analizarEntrega(codigo,'js'),'espaciado_uniforme').cumple,false);
 });
 test('errores léxicos muestran por qué no se analizaron los comentarios',()=>{
- const r=analizarEntrega(ejemplo()+'\nconst a = "cadena sin cerrar','js');
+ const r=analizarEntrega(ejemplo()+'\nconst a = "cadena sin cerrar;','js');
  assert.equal(regla(r,'comentarios_mayuscula').aplicable,false);
  assert.match(regla(r,'comentarios_mayuscula').motivo,/error de sintaxis/);
 });
