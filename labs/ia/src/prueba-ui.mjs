@@ -1,4 +1,4 @@
-import { analizarEntregaAsync, prepararEntrega, PESOS, seleccionarLenguajes } from '../analizador-entregas.mjs';
+import { analizarEntregaDetalladaAsync, crearVectorResultado, prepararEntrega, PESOS, seleccionarLenguajes } from '../analizador-entregas.mjs';
 import ejemploPresupuesto from '../fixtures/presupuesto-incompleto.txt';
 const $ = id => document.getElementById(id);
 const nombres = {
@@ -113,10 +113,10 @@ function mostrarLista(){
 }
 document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{filtro=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));mostrarLista();}));
 function mostrar(r,umbral){
-  ultimo=r;$('vacio').hidden=true;$('resultado').hidden=false;
+  ultimo=r;$('vector-salida').textContent=JSON.stringify(crearVectorResultado(r),null,2);$('vacio').hidden=true;$('resultado').hidden=false;
   const parcial=r.estado==='analisis_parcial';const sinDatos=r.puntuacion===null;
   $('estado').textContent=parcial?'Análisis parcial':sinDatos?'Sin contenido':'Análisis completado';
-  $('puntuacion').textContent=sinDatos?'—':r.puntuacion;$('anillo').style.setProperty('--score',r.puntuacion||0);
+  const humanidad=crearVectorResultado(r)[1];$('puntuacion').textContent=sinDatos?'—':humanidad;$('anillo').style.setProperty('--score',humanidad||0);
   $('decision').textContent=parcial?'Revisar incidencias del análisis':sinDatos?'No hay contenido seleccionado':r.puntuacion>=umbral?'Propuesta de entrevista':'Por debajo del umbral';
   $('decision-detalle').textContent=parcial?'La puntuación es incompleta. Revisa los errores antes de interpretar el resultado.':sinDatos?'Comprueba el formato de entrada y los lenguajes.':'Umbral configurado: '+umbral+' puntos. La decisión final corresponde al profesor.';
   $('activadas').textContent=r.reglasActivadas?.length||0;$('evaluadas').textContent=new Set(r.resultados.filter(x=>x.aplicable).map(x=>x.id)).size;$('suma').textContent=r.sumaSinLimitar||0;
@@ -177,7 +177,7 @@ $('form').addEventListener('submit',async e=>{
     $('analizar').disabled=true;$('analizar').textContent='Analizando…';
     if(true)$('mensaje').textContent='Analizando los tipos seleccionados y solicitando la revisión del texto y los comentarios seleccionados a LanguageTool…';
     await new Promise(resolve=>setTimeout(resolve,30));
-    const resultado=await analizarEntregaAsync(entrada,lenguajes,{pesos,ortografia,umbrales});
+    const resultado=await analizarEntregaDetalladaAsync(entrada,lenguajes,{pesos,ortografia,umbrales});
     if(revision!==version){$('mensaje').textContent='La entrada cambió durante el análisis. Vuelve a analizar para obtener un resultado actualizado.';return;}
     mostrar(resultado,umbral);$('mensaje').textContent='Análisis terminado. Consulta los resultados y abre las reglas para ver sus evidencias.';
   }catch(error){$('mensaje').textContent=error.message;}
