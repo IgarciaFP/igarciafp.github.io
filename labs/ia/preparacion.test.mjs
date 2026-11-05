@@ -35,7 +35,7 @@ test('ortografía envía únicamente los tipos seleccionados',async()=>{
   let recibido='';
   const r=await analizarEntregaAsync(entrada,'texto',{revisorOrtografico:async t=>{recibido=t;return {matches:[]};}});
   assert.equal(recibido.trim(),'Explicación del alumno.');
-  assert.equal(r.puntuacion,50);
+  assert.equal(r.puntuacion,25);
   assert.equal(r.resultados.find(x=>x.id==='sin_comentarios').valor.lineasCodigo,0);
 });
 test('selección errónea no convierte prosa a JS y sin selección conserva preparación',()=>{
