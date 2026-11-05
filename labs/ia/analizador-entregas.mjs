@@ -890,7 +890,43 @@ async function revisarProsa(resultado, opciones) {
  * Humanidad es el complemento del índice heurístico, no una prueba de autoría.
  * Sin puntuación calculable se devuelve null, nunca un 100 ficticio.
  */
+/** Salida anticipada pública: solo cuenta código y comentarios, sin evaluar reglas. */
+export function comprobarCodigoBreve(contenido, lenguajes = '') {
+  const preparacion = prepararEntrega(contenido), seleccion = seleccionarLenguajes(lenguajes);
+  const unidades = prepararUnidades(preparacion, seleccion);
+  // Los tipos ausentes conservan su diagnóstico habitual.
+  if (seleccion.some(tipo => !unidades.some(u => u.lenguaje === tipo))) return null;
+  const lineas = new Set(); let numeroComentarios = 0;
+  for (const u of unidades.filter(u => u.lenguaje !== 'texto')) {
+    const comentarios = [];
+    try {
+      if (u.lenguaje === 'js') {
+        const lector = acorn.tokenizer(u.texto, { ecmaVersion: 'latest', onComment: comentarios });
+        while (lector.getToken().type.label !== 'eof') {}
+      } else if (u.lenguaje === 'css') {
+        postcss.parse(u.texto).walkComments(c => comentarios.push({ start: c.source.start.offset, end: c.source.end.offset + 1 }));
+      } else comentarios.push(...u.html.comentarios);
+    } catch { return null; }
+    numeroComentarios += comentarios.length;
+    let codigo = u.texto;
+    for (const c of comentarios.sort((a,b)=>b.start-a.start)) {
+      codigo = codigo.slice(0,c.start) + codigo.slice(c.start,c.end).replace(/[^\r\n]/g,' ') + codigo.slice(c.end);
+    }
+    codigo.split('\n').forEach((linea,i)=>{
+      if (linea.trim()) lineas.add(JSON.stringify([u.nombre.split('#')[0], u.base+i+1]));
+    });
+  }
+  if (lineas.size === 0 || lineas.size >= 10) return null;
+  const aceptado = numeroComentarios >= 1;
+  return { preparacion, lenguajes: seleccion, resultados: [], errores: [], avisos: preparacion.avisos,
+    estado: 'analizado', puntuacion: aceptado ? 50 : 100, sumaSinLimitar: 0, reglasActivadas: [],
+    salidaDirecta: aceptado ? [false, 50, ''] : [true, 0, 'No se admite código sin comentar'],
+    codigoBreve: { lineas: lineas.size, comentarios: numeroComentarios },
+    fases: ['separacion', 'recuento_codigo_y_comentarios', 'salida_directa'] };
+}
+
 export function crearVectorResultado(informe) {
+  if (informe.salidaDirecta) return informe.salidaDirecta;
   const escasos = informe.resultados.find(r => r.id === 'sin_comentarios');
   const noDetectados = informe.lenguajes.filter(tipo =>
     !informe.preparacion.bloques[tipo === 'js' ? 'javascript' : tipo].some(f => f.texto.trim()));
@@ -914,8 +950,8 @@ export function crearVectorResultado(informe) {
     detalles];
 }
 export function analizarEntrega(contenido, lenguajes = '', opciones = {}) {
-  return crearVectorResultado(analizarEntregaDetallada(contenido, lenguajes, opciones));
+  return crearVectorResultado(comprobarCodigoBreve(contenido, lenguajes) || analizarEntregaDetallada(contenido, lenguajes, opciones));
 }
 export async function analizarEntregaAsync(contenido, lenguajes = '', opciones = {}) {
-  return crearVectorResultado(await analizarEntregaDetalladaAsync(contenido, lenguajes, opciones));
+  return crearVectorResultado(comprobarCodigoBreve(contenido, lenguajes) || await analizarEntregaDetalladaAsync(contenido, lenguajes, opciones));
 }
