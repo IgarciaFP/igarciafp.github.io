@@ -37,3 +37,21 @@ test('sin revisión completa no hay descuento ni líneas afirmadas como revisada
  const r=await analizarEntregaAsync({texto:'El numero calculado.'},'texto',{revisorOrtografico:async()=>{throw Error('Servicio caído');}});
  assert.equal(r.reduccionOrtografica,0);assert.equal(r.descuentoOrtografico.lineasRevisadas,0);assert.equal(r.descuentoOrtografico.faltas,null);
 });
+
+ test('las penalizaciones se duplican por cada 25 líneas de código seleccionadas',async()=>{
+  const {analizarEntregaDetallada,PESOS}=await import('./analizador-entregas.mjs');
+  const pesos=Object.fromEntries(Object.keys(PESOS).map(id=>[id,id==='sin_comentarios'?3:0]));
+  for(const [lineas,factor] of [[24,1],[25,2],[49,2],[50,4],[74,4],[75,8]]) {
+   const js=Array.from({length:lineas},(_,i)=>`let x${i}=1;`).join('\n');
+   const entrada={js,css:'p { color: red; }'};
+   const r=analizarEntregaDetallada(entrada,'js',{pesos});
+   assert.equal(r.lineasCodigoAnalizadas,lineas);assert.equal(r.multiplicadorPenalizaciones,factor);
+   assert.equal(r.puntuacion,3*factor);
+   const a=await analizarEntregaAsync(entrada,'js',{pesos});
+   assert.equal(a.puntuacion,3*factor);
+  }
+ });
+ test('texto, blancos y comentarios no incrementan el multiplicador',async()=>{
+  const r=await analizarEntregaAsync({js:'// Comentario.\n\nlet x=1;',texto:'Contenido.\n'.repeat(60)},'',{revisorOrtografico:async()=>({matches:[]})});
+  assert.equal(r.lineasCodigoAnalizadas,1);assert.equal(r.multiplicadorPenalizaciones,1);
+ });
