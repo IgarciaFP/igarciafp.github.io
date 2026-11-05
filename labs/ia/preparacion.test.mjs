@@ -100,3 +100,36 @@ test('se usa el último delimitador, no el primer cierre; se conservan líneas y
  assert.equal(p.bloques.texto[0].base,3);
  assert.equal(p.original,original);
 });
+
+test('separa primero documento HTML y clasifica JS antes y después',()=>{
+ const html='<!DOCTYPE html>\n<html><body><script>const dentro=2;</script><p>Hola</p></body></html>';
+ const entrada='"use strict";\nlet antes=1;\n'+html+'\nfunction despues(){ return 3; }\nExplicación final.';
+ for(const valor of [entrada,{js:entrada},{html:entrada}]) {
+  const p=prepararEntrega(valor);
+  assert.equal(p.bloques.html.length,1);
+  assert.equal(p.bloques.html[0].base,2);
+  assert.equal(p.bloques.javascript.length,3);
+  assert.ok(p.bloques.javascript.every(f=>!f.texto.includes('<!DOCTYPE')&&!f.texto.includes('</html>')));
+  assert.ok(p.bloques.javascript[0].texto.includes('let antes=1;'));
+  assert.equal(p.bloques.javascript[2].texto.trim(),'function despues(){ return 3; }');
+  assert.equal(p.bloques.texto.at(-1).texto.trim(),'Explicación final.');
+  assert.equal(analizarEntrega(p,'js').errores.length,0);
+ }
+});
+test('HTML aislado primero y resto no JS se conserva como texto',()=>{
+ const p=prepararEntrega('Presentación.\n<!DOCTYPE html><html><body>Hola</body></html>\nConclusión.');
+ assert.equal(p.bloques.html.length,1);assert.equal(p.bloques.javascript.length,0);
+ assert.deepEqual(p.bloques.texto.map(f=>f.texto.trim()),['Presentación.','Conclusión.']);
+});
+test('documento HTML dentro de cadena JS no se extrae',()=>{
+ const codigo='const plantilla = `<!DOCTYPE html><html><body>Hola</body></html>`;';
+ const p=prepararEntrega(codigo);
+ assert.equal(p.bloques.html.length,0);assert.equal(p.bloques.javascript[0].texto,codigo);
+});
+
+test('documento HTML delimitado por Markdown conserva el siguiente bloque JS',()=>{
+ const p=prepararEntrega('```html\n<!DOCTYPE html><html><body>Hola</body></html>\n```\n```js\nconst x=1;\n```');
+ assert.equal(p.bloques.html.length,1);assert.equal(p.bloques.javascript.length,1);
+ assert.equal(p.bloques.javascript[0].texto,'const x=1;');
+ assert.equal(p.bloques.texto.length,0);
+});
