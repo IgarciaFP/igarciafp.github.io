@@ -62,3 +62,21 @@ test('fences dentro de cadenas JS y scripts JSON no se reclasifican',()=>{
   assert.equal(prepararEntrega('const s = "```html";').bloques.html.length,0);
   assert.equal(prepararEntrega('<script type="application/json">{"x":1}</script>').bloques.javascript.length,0);
 });
+
+test('JS suelto con los cuatro inicios, incluso tras presentación y con errores',()=>{
+ for(const codigo of ['"use strict";\nlet x=1;', "'use strict';\nconst x=1;",'let x=1;','const x=1;','function saludo() {}','const = ;']) {
+  for(const prefijo of ['', '\n\t','Mi entrega:\n']) {
+   const p=prepararEntrega(prefijo+codigo);
+   assert.equal(p.bloques.javascript.length,1,prefijo+codigo);
+   assert.ok(p.bloques.javascript[0].texto.includes(codigo));
+  }
+ }
+});
+test('script HTML se extrae aun pegado en entrada marcada JS o tras introducción',()=>{
+ for(const entrada of ['<html><body><script>let x=1;</script></body></html>', '<SCRIPT type="module">const x=1;</SCRIPT>', 'Mi entrega:\n<script>function f(){}</script>',{js:'<script>"use strict"; let x=1;</script>'}]) {
+  const p=prepararEntrega(entrada);
+  assert.equal(p.bloques.javascript.length,1);
+  assert.ok(!p.bloques.javascript[0].texto.includes('<script>'));
+  assert.equal(analizarEntrega(p,'js').errores.length,0);
+ }
+});
