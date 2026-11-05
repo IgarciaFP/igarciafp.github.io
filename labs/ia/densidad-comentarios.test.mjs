@@ -10,10 +10,10 @@ const comentario = lenguaje => lenguaje === 'js' ? '// Comentario' : lenguaje ==
 
 for (const lenguaje of ['js', 'css', 'html']) {
   test(`${lenguaje}: umbral estricto y comentarios excluidos del denominador`, () => {
-    for (const [cantidad, numeroComentarios, activa] of [[9,1,false],[10,1,false],[11,1,true],[20,2,false],[21,2,true],[1,0,true]]) {
+    for (const [cantidad, numeroComentarios, activa] of [[9,1,false],[10,1,false],[11,1,true],[20,2,false],[21,2,true],[1,0,false],[9,0,false],[10,0,true]]) {
       const codigo = [Array(numeroComentarios).fill(comentario(lenguaje)).join('\n'), '', lineas(cantidad,lenguaje), ''].join('\n');
       const r = regla(analizarEntrega(codigo,lenguaje));
-      assert.equal(r.aplicable,true);
+      assert.equal(r.aplicable,cantidad>=10);
       assert.equal(r.cumple,activa,`${numeroComentarios} comentarios / ${cantidad} líneas`);
       assert.equal(r.valor.lineasCodigo,cantidad);
       assert.equal(r.valor.comentarios,numeroComentarios);
