@@ -1,10 +1,10 @@
-import { analizarEntregaAsync, PESOS, seleccionarLenguajes } from '../analizador-entregas.mjs';
+import { analizarEntregaAsync, prepararEntrega, PESOS, seleccionarLenguajes } from '../analizador-entregas.mjs';
 import ejemploPresupuesto from '../fixtures/presupuesto-incompleto.txt';
 const $ = id => document.getElementById(id);
 const nombres = {
 sin_comentarios:'Menos de un comentario por cada 10 líneas de código', caracteres_especiales:'Caracteres especiales de la lista de vigilancia', comentarios_mayuscula:'Al menos el 90 % de los comentarios empieza con mayúscula', indentacion_par:'Sangría con espacios pares en al menos el 90 % de las líneas', comentarios_abundantes:'Más de un comentario por cada cinco líneas', comentarios_sin_puntos:'Al menos el 90 % de los comentarios no contiene puntos', comentarios_punto_final:'Al menos el 90 % de los comentarios termina con punto', comentarios_largos:'Proporción elevada de comentarios largos', comentarios_antes_funciones:'Mismos saltos previos en al menos el 90 % de los comentarios', comentarios_separadores:'Al menos el 90 % de los separadores tiene la misma longitud', comentarios_pasos:'Comentarios con pasos numerados', comentarios_etiquetas:'Etiquetas explicativas en comentarios', comentarios_jsdoc:'Documentación JSDoc abundante', comentarios_repetidos:'Comentarios repetidos', comentarios_conversacionales:'Frases conversacionales', comentarios_instrucciones:'Instrucciones de sustitución pendientes', menciones_ia:'Menciones a herramientas de IA', espacios_invisibles:'Espacios invisibles y controles Unicode', emojis_comentarios:'Emojis en comentarios', lineas_largas:'Líneas de más de 120 caracteres', sangria_uniforme:'Unidad de sangría uniforme en al menos el 90 % de las líneas', comillas_uniformes:'Comillas uniformes en al menos el 90 % de las cadenas', bloques_markdown:'Restos de bloques Markdown', encabezados_markdown:'Encabezados Markdown en comentarios', sintaxis_configurable:'Construcciones JavaScript seleccionadas', metodos_configurables:'Métodos JavaScript seleccionados', estructuras_configurables:'Estructuras y API seleccionadas', validaciones_repetidas:'Validaciones defensivas frecuentes', muchos_try_catch:'Proporción elevada de try/catch', envoltorio_iife:'Función autoejecutable', mensajes_prefijados:'Mensajes de consola con prefijos', identificadores_largos:'Identificadores largos', nombres_pendientes:'Identificadores provisionales', urls_ejemplo:'Direcciones o claves de ejemplo', html_comentarios_secciones:'Secciones HTML rotuladas', html_textos_provisionales:'Textos de plantilla en HTML', html_atributos_configurables:'Atributos HTML seleccionados', css_variables:'Propiedades personalizadas CSS', css_funciones_configurables:'Funciones CSS seleccionadas', css_reglas_configurables:'Reglas CSS seleccionadas', css_nombres_bem:'Clases CSS con nomenclatura BEM'
 };
-nombres.ausencia_faltas = 'Comentarios sin faltas ortográficas o gramaticales detectadas';
+nombres.ausencia_faltas = 'Texto y comentarios sin faltas ortográficas o gramaticales detectadas';
 nombres.comentarios_longitud_similar = 'Longitud aproximada similar en al menos el 80 % de los comentarios';
 nombres.espaciado_uniforme = 'Separación uniforme antes de los comentarios';
 const patronesResumen = ['comentarios_mayuscula','comentarios_sin_puntos','comentarios_longitud_similar','espaciado_uniforme','sangria_uniforme','indentacion_par'];
@@ -25,9 +25,27 @@ function actualizarLenguajes(){ let seleccion=[];try{seleccion=seleccionarLengua
   document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',String(seleccion.includes(b.dataset.lang))));
 }
 $('form').addEventListener('input',()=>{invalidar(); $('contador').textContent=$('codigo').value.length.toLocaleString('es-ES')+' caracteres';actualizarLenguajes();});
-$('origen').addEventListener('change',()=>{
-  invalidar(); $('source-hint').textContent=$('origen').value==='html'?'Se analizan únicamente los lenguajes seleccionados: HTML, bloques <script> y/o bloques <style>. No se cargan archivos enlazados.':'Selecciona el lenguaje correspondiente al archivo. Para JS y CSS juntos, pega un HTML con sus bloques.';
-});
+$('origen').addEventListener('change',()=>{ invalidar(); prepararVista(); });
+let entregaPreparada=null;
+function prepararVista() {
+  entregaPreparada=null;
+  const contenedor=$('preparacion');contenedor.replaceChildren();
+  if(!$('codigo').value.trim())return;
+  if($('codigo').value.length>100000){contenedor.append(nodo('p','La entrega supera los 100.000 caracteres.','hint'));return;}
+  const tipo=$('origen').value;
+  const preparada=prepararEntrega(tipo==='auto'?$('codigo').value:{[tipo]:$('codigo').value});
+  entregaPreparada=preparada;
+  for(const [tipo,fragmentos] of Object.entries(preparada.bloques)){
+    const detalle=nodo('details');
+    detalle.append(nodo('summary',tipo.toUpperCase()+' · '+fragmentos.length+(fragmentos.length===1?' fragmento · ':' fragmentos · ')+fragmentos.reduce((n,f)=>n+f.texto.length,0)+' caracteres'));
+    for(const f of fragmentos){detalle.append(nodo('p',f.nombre+' · línea '+(f.base+1),'hint'),nodo('pre',f.texto));}
+    contenedor.append(detalle);
+  }
+  for(const aviso of preparada.avisos)contenedor.append(nodo('p',aviso.mensaje,'hint'));
+}
+$('codigo').addEventListener('input',prepararVista);
+$('form').addEventListener('input',e=>{if(e.target===$('form'))prepararVista();});
+$('limpiar').addEventListener('click',()=>{entregaPreparada=null;$('preparacion').replaceChildren();});
 document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>{
   let seleccion=[];try{seleccion=seleccionarLenguajes($('lenguajes').value);}catch{}
   seleccion=seleccion.includes(b.dataset.lang)?seleccion.filter(x=>x!==b.dataset.lang):[...seleccion,b.dataset.lang];
@@ -144,20 +162,19 @@ function mostrar(r,umbral){
 $('form').addEventListener('submit',async e=>{
   e.preventDefault();$('mensaje').textContent='';
   try{
-    if(!$('codigo').value.trim())throw new Error('Pega el código del alumno antes de analizar.');
+    if(!$('codigo').value.trim())throw new Error('Pega la entrega del alumno antes de analizar.');
     if($('codigo').value.length>100000)throw new Error('La entrega supera los 100.000 caracteres. Analiza un archivo más pequeño, sin bibliotecas ni archivos generados.');
-    const seleccion=seleccionarLenguajes($('lenguajes').value);if(!seleccion.length)throw new Error('Selecciona al menos un lenguaje: JS, HTML o CSS.');
+    const seleccion=seleccionarLenguajes($('lenguajes').value);if(!seleccion.length)throw new Error('Selecciona al menos un tipo: texto, JavaScript, HTML o CSS.');
     const tipo=$('origen').value;
-    if(tipo!=='html'&&/^\s*(?:<!doctype\s+html|<html\b)/i.test($('codigo').value))throw new Error('Has pegado un documento HTML. Selecciona el formato «HTML con script / style o JS posterior» y los lenguajes que quieras revisar.');
-    if(tipo!=='html'&&(seleccion.length!==1||seleccion[0]!==tipo))throw new Error('El formato de entrada es '+tipo.toUpperCase()+'. Selecciona solo ese lenguaje o cambia el formato a HTML con script / style.');
     const pesos=Object.fromEntries([...weightInputs].map(([id,input])=>[id,Number(input.value)]));
     const umbral=Number($('umbral').value);
     const version=revision;
-    const entrada={[tipo]:$('codigo').value}, lenguajes=$('lenguajes').value;
+    prepararVista();
+    const entrada=entregaPreparada, lenguajes=$('lenguajes').value;
     const ortografia={idioma:$('idioma').value,mostrarDetalle:true};
     const umbrales={minComentarios:Number($('min-comentarios').value),toleranciaLongitud:Number($('tolerancia-longitud').value)/100};
     $('analizar').disabled=true;$('analizar').textContent='Analizando…';
-    if(true)$('mensaje').textContent='Analizando el código y solicitando la revisión de los comentarios a LanguageTool…';
+    if(true)$('mensaje').textContent='Analizando los tipos seleccionados y solicitando la revisión del texto y los comentarios seleccionados a LanguageTool…';
     await new Promise(resolve=>setTimeout(resolve,30));
     const resultado=await analizarEntregaAsync(entrada,lenguajes,{pesos,ortografia,umbrales});
     if(revision!==version){$('mensaje').textContent='La entrada cambió durante el análisis. Vuelve a analizar para obtener un resultado actualizado.';return;}
@@ -171,4 +188,5 @@ $('descargar').addEventListener('click',()=>{
   const url=URL.createObjectURL(new Blob([JSON.stringify(informe,null,2)],{type:'application/json'}));
   const a=nodo('a');a.href=url;a.download='revision-entrega.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 });
+
 

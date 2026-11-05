@@ -6,12 +6,12 @@ import * as parse5 from "parse5";
  * Índice heurístico de revisión; NO es una probabilidad calibrada de uso de IA.
  * Nunca ejecuta el código del alumno ni descarga sus recursos.
  *
- * contenido: string (un lenguaje o HTML con bloques incrustados),
- *            o { js: "...", css: "...", html: "..." }.
- * lenguajes: "", "JS Css", "HTML+css", "jscss", etc.
+ * contenido: string clasificado automáticamente, preparación reutilizable,
+ *            o { texto: "...", javascript: "...", css: "...", html: "..." }.
+ * lenguajes: "", "texto + javascript", "JS Css", "HTML+css", etc.
  * opciones: { pesos: {id: numero}, desactivadas: [id], umbrales: {...} }
  *
- * Con varios lenguajes y texto sin HTML, usa el objeto para evitar ambigüedad.
+ * Con contenido mixto usa bloques Markdown etiquetados o un objeto explícito.
  * El HTML solo extrae script/style: no carga src/href ni analiza handlers/style
  * de atributos. No admite JSX ni TypeScript.
  */
@@ -61,10 +61,10 @@ export const UMBRALES = Object.freeze({
 
 export function seleccionarLenguajes(valor = "") {
   if (typeof valor !== "string") throw new TypeError("lenguajes debe ser un string");
-  const normal = valor.toLowerCase().replace(/[\s+,;|/\-]+/g, "");
-  const encontrados = normal.match(/html|css|js/g) || [];
-  if (normal.replace(/html|css|js/g, "")) {
-    throw new TypeError("Usa únicamente js, html y css, juntos o separados");
+  const normal = valor.toLowerCase().replace(/javascript/g, "js").replace(/text(?:o)?|txt/g, "texto").replace(/[\s+,;|/\-]+/g, "");
+  const encontrados = normal.match(/texto|html|css|js/g) || [];
+  if (normal.replace(/texto|html|css|js/g, "")) {
+    throw new TypeError("Usa texto, javascript (o js), html y css, juntos o separados");
   }
   return [...new Set(encontrados)];
 }
@@ -97,7 +97,7 @@ function leerHTML(texto) {
       comentarios.push({ text: n.data, start: p.startOffset, end: p.endOffset });
     }
     if (n.tagName && p) elementos.push(n);
-    if (n.nodeName === "#text" && p) textos.push({ text: n.value, start: p.startOffset });
+    if (n.nodeName === "#text" && p) textos.push({ text: n.value, start: p.startOffset, end: p.endOffset });
     if (["script", "style"].includes(n.tagName) && p?.startTag) {
       const inicio = p.startTag.endOffset;
       const fin = p.endTag?.startOffset ?? p.endOffset;
@@ -117,12 +117,12 @@ function leerHTML(texto) {
   return { comentarios, elementos, bloques, textos };
 }
 
-function prepararUnidades(contenido, seleccion, avisos = []) {
+function extraerUnidades(contenido, seleccion, avisos = []) {
   const unidades = [];
   function agregar(lenguaje, texto, nombre) {
     if (typeof texto !== "string") throw new TypeError(nombre + " debe contener texto");
     if (lenguaje !== "html") {
-      if (seleccion.includes(lenguaje)) unidades.push({ lenguaje, texto, nombre, base: 0 });
+      if (texto.trim() && seleccion.includes(lenguaje)) unidades.push({ lenguaje, texto, nombre, base: 0 });
       return;
     }
     let html = leerHTML(texto);
@@ -138,7 +138,7 @@ function prepararUnidades(contenido, seleccion, avisos = []) {
       texto = texto.slice(0, finHTML);
       html = leerHTML(texto);
       avisos.push({ archivo: nombre, mensaje: seleccion.includes("js")
-        ? "El texto pegado después de </html> se analiza como un fragmento JavaScript separado."
+        ? "El contenido pegado después de </html> se ha separado como un fragmento JavaScript."
         : "Hay un fragmento JavaScript pegado después de </html>; no se analiza porque JS no está seleccionado." });
     }
     if (seleccion.includes("js") && html.elementos.some(el => el.tagName === "script" && el.attrs.some(a => a.name === "src"))) {
@@ -173,12 +173,118 @@ function prepararUnidades(contenido, seleccion, avisos = []) {
     else throw new TypeError("Para JS y CSS separados usa {js: '...', css: '...'}");
   } else if (contenido && typeof contenido === "object" && !Array.isArray(contenido)) {
     for (const [clave, texto] of Object.entries(contenido)) {
-      const lenguaje = clave.toLowerCase();
-      if (!["js", "html", "css"].includes(lenguaje)) throw new TypeError("Clave desconocida: " + clave);
+      const lenguaje = clave.toLowerCase() === "javascript" ? "js" : clave.toLowerCase();
+      if (!["texto", "js", "html", "css"].includes(lenguaje)) throw new TypeError("Clave desconocida: " + clave);
       agregar(lenguaje, texto, "contenido." + lenguaje);
     }
   } else throw new TypeError("contenido debe ser texto o un objeto {js, html, css}");
   return unidades;
+}
+
+
+// La clasificación no depende de los tipos solicitados para el análisis.
+function detectarTipo(texto) {
+  const limpio = texto.replace(/^(?:\s|\/\/[^\n]*(?:\n|$)|\/\*[\s\S]*?\*\/)*/, "");
+  if (/^(?:<!doctype\s+html\b|<!--|<\/?[a-z][\w-]*(?:\s[^<>]*|\s*\/?)>)/i.test(limpio)) return "html";
+  if (/^(?:["']use strict["']\s*;?|(?:async\s+)?function\b|(?:const|let|var|class|import|export|if|for|while|try|switch)\b)/.test(limpio)) return "js";
+  try {
+    const ast = acorn.parse(texto, { ecmaVersion: "latest", sourceType: "module" });
+    // Una palabra aislada también es JS válido, pero no demuestra que sea código.
+    if (ast.body.length && /[;=(){}\[\]]/.test(limpio)) return "js";
+  } catch {}
+  try {
+    const ast = postcss.parse(texto);
+    let declaraciones = 0;
+    ast.walkDecls(() => declaraciones++);
+    if (declaraciones && /[{}:]/.test(limpio)) return "css";
+  } catch {}
+  if (/^(?:[.#:@*][\w-]|[a-z][\w-]*\s*\{)[\s\S]*\{/.test(limpio)) return "css";
+  if (/^\s*\/\//.test(texto)) return "js";
+  return "texto";
+}
+
+/** Devuelve cuatro depósitos de fragmentos serializables, con líneas de origen.
+ * Se conserva el original; no ejecuta código, descarga enlaces ni persiste datos.
+ * Acepta pegado automático o un objeto explícito {texto, html, css, javascript/js}.
+ */
+export function prepararEntrega(contenido) {
+  // Permite reutilizar una preparación serializada sin volver a clasificarla.
+  if (contenido?.version === 1 && contenido.bloques && 'original' in contenido) {
+    for (const tipo of ['texto', 'html', 'css', 'javascript']) {
+      if (!Array.isArray(contenido.bloques[tipo]) || contenido.bloques[tipo].some(f =>
+        typeof f.texto !== 'string' || typeof f.nombre !== 'string' || !Number.isInteger(f.base) || f.base < 0)) {
+        throw new TypeError('Preparación inválida: ' + tipo);
+      }
+    }
+    if (Object.keys(contenido.bloques).length !== 4 || !Array.isArray(contenido.avisos)) throw new TypeError('Preparación inválida');
+    return contenido;
+  }
+  const bloques = { texto: [], html: [], css: [], javascript: [] }, avisos = [];
+  function guardar(unidad) {
+    if (!unidad.texto.trim()) return;
+    const { lenguaje, texto, nombre, base } = unidad;
+    bloques[lenguaje === "js" ? "javascript" : lenguaje].push({ texto, nombre, base });
+  }
+  function agregar(tipo, texto, base = 0, nombre = "contenido") {
+    const extraidas = extraerUnidades({ [tipo]: texto }, ["texto", "html", "css", "js"], avisos);
+    for (const unidad of extraidas) {
+      unidad.base += base;
+      unidad.nombre = unidad.nombre.replace("contenido", nombre);
+      guardar(unidad);
+    }
+  }
+  function automatico(texto, base = 0, nombre = "contenido") {
+    if (!texto.trim()) return;
+    const tipo = detectarTipo(texto);
+    // No interpretar fences que estén dentro de cadenas/comentarios de código.
+    if (tipo !== "texto") { agregar(tipo, texto, base, nombre); return; }
+    const fence = /^[ \t]*(`{3,}|~{3,})([\w-]*)[^\S\n]*\r?\n/gm;
+    let cursor = 0, m;
+    while ((m = fence.exec(texto))) {
+      const cierre = new RegExp("^[ \\t]*" + m[1][0] + "{" + m[1].length + ",}[ \\t]*\\r?$", "gm");
+      cierre.lastIndex = fence.lastIndex;
+      const fin = cierre.exec(texto), hasta = fin ? fin.index : texto.length;
+      if (m.index > cursor) agregar("texto", texto.slice(cursor, m.index), base + (texto.slice(0, cursor).match(/\n/g) || []).length, nombre);
+      const cuerpo = texto.slice(fence.lastIndex, hasta);
+      const alias = { js: "js", javascript: "js", html: "html", css: "css", texto: "texto", text: "texto", txt: "texto" };
+      const etiqueta = m[2].toLowerCase();
+      agregar(alias[etiqueta] || detectarTipo(cuerpo), cuerpo,
+        base + (texto.slice(0, fence.lastIndex).match(/\n/g) || []).length, nombre + "#bloque-" + (m.index + 1));
+      if (etiqueta && !alias[etiqueta]) avisos.push({ archivo: nombre, mensaje: "Etiqueta no admitida: " + etiqueta + ". Se ha clasificado su contenido automáticamente; revisa la separación." });
+      if (!fin) avisos.push({ archivo: nombre, mensaje: "Bloque Markdown sin cierre; se conserva el contenido restante." });
+      cursor = fin ? cierre.lastIndex : texto.length;
+      fence.lastIndex = cursor;
+    }
+    if (!cursor) {
+      // Una introducción en prosa puede preceder a un documento HTML completo.
+      const inicioHTML = /^[ \t]*(?:<!doctype\s+html\b|<html\b)/im.exec(texto);
+      if (inicioHTML && inicioHTML.index > 0) {
+        agregar('texto', texto.slice(0, inicioHTML.index), base, nombre);
+        agregar('html', texto.slice(inicioHTML.index), base + (texto.slice(0, inicioHTML.index).match(/\n/g) || []).length, nombre);
+        return;
+      }
+      agregar("texto", texto, base, nombre);
+      avisos.push({ archivo: nombre, mensaje: "Contenido tratado como texto. Si contiene código ambiguo o mezclado, sepáralo en bloques Markdown con su lenguaje o indica el tipo de entrada." });
+    } else if (cursor < texto.length) agregar("texto", texto.slice(cursor), base + (texto.slice(0, cursor).match(/\n/g) || []).length, nombre);
+  }
+  if (typeof contenido === "string") automatico(contenido);
+  else if (contenido && typeof contenido === "object" && !Array.isArray(contenido)) {
+    for (const [clave, valor] of Object.entries(contenido)) {
+      const tipos = seleccionarLenguajes(clave);
+      if (tipos.length !== 1 || typeof valor !== "string") throw new TypeError("Entrada inválida: " + clave);
+      agregar(tipos[0], valor);
+    }
+  } else throw new TypeError("contenido debe ser un string o un objeto {texto, html, css, javascript}");
+  return { version: 1, original: contenido, bloques, avisos };
+}
+
+function prepararUnidades(preparada, seleccion) {
+  return Object.entries(preparada.bloques).flatMap(([tipo, fragmentos]) => {
+    const lenguaje = tipo === "javascript" ? "js" : tipo;
+    if (!seleccion.includes(lenguaje)) return [];
+    return fragmentos.map(f => ({ ...f, lenguaje,
+      ...(lenguaje === "html" ? { html: leerHTML(f.texto) } : {}) }));
+  });
 }
 
 export function analizarEntrega(contenido, lenguajes = "", opciones = {}) {
@@ -194,8 +300,14 @@ export function analizarEntrega(contenido, lenguajes = "", opciones = {}) {
   const resultados = [], errores = [], avisos = [], fragmentosOrtografia = [];
   const lineasCodigoEntrega = new Set(), densidadPorUnidad = [];
   let totalComentarios = 0, comentariosExtraidosCompletos = true;
-  if (!seleccion.length) return { lenguajes: [], puntuacion: null, resultados, errores, estado: "sin_lenguajes" };
-  const unidades = prepararUnidades(contenido, seleccion, avisos);
+  const preparacion = prepararEntrega(contenido);
+  avisos.push(...preparacion.avisos);
+  if (!seleccion.length) return { preparacion, lenguajes: [], puntuacion: null, resultados, errores, avisos, estado: "sin_lenguajes" };
+  if (!seleccion.includes("js") && preparacion.bloques.javascript.some(f => f.nombre.endsWith("#js-posterior"))) {
+    avisos.push({ archivo: "contenido.html", mensaje: "El JS posterior se ha separado, pero JS no está seleccionado y no se analiza." });
+  }
+  const unidades = prepararUnidades(preparacion, seleccion);
+  for (const tipo of seleccion) if (!unidades.some(u => u.lenguaje === tipo)) avisos.push({ archivo: tipo, mensaje: "No se ha encontrado contenido de este tipo; no se analiza." });
   for (const unidad of unidades) {
     const { texto: s, lenguaje, nombre, base } = unidad;
     const linea = posicion => base + 1 + (s.slice(0, posicion).match(/\n/g) || []).length;
@@ -213,6 +325,16 @@ export function analizarEntrega(contenido, lenguajes = "", opciones = {}) {
       const encontrados = [...fuente.matchAll(new RegExp(re.source, [...new Set(re.flags + "g")].join("")))];
       registrar(id, true, encontrados.length >= minimo, encontrados.length,
         encontrados.map(m => evidencia(m.index, m[0])));
+    }
+    if (lenguaje === "texto") {
+      const caracteres = opciones.caracteresEspeciales ?? CARACTERES_ESPECIALES;
+      const especiales = [...s.matchAll(/./gu)].filter(m => caracteres.includes(m[0]));
+      registrar("caracteres_especiales", true, especiales.length > 0, especiales.length,
+        especiales.map(m => evidencia(m.index, m[0])));
+      coincidencias("espacios_invisibles", s, /[\u00a0\u200b-\u200f\u202a-\u202e\u202f\u2060\u2066-\u2069]|(?<!^)\ufeff/g);
+      coincidencias("menciones_ia", s, /\b(?:ChatGPT|Copilot|OpenAI|Claude|Gemini|generado por (?:una? )?IA)\b/gi);
+      fragmentosOrtografia.push({ texto: s, linea: base + 1, archivo: nombre });
+      continue; // La prosa no contribuye a densidad de comentarios ni reglas de código.
     }
     let comentarios = [], nodos = [], cadenas = [], raiz, valido = true, comentariosCompletos = false;
     try {
@@ -518,14 +640,14 @@ export function analizarEntrega(contenido, lenguajes = "", opciones = {}) {
     evidenciasTotales: densidadPorUnidad.length,
     motivo: desactivadas.has("sin_comentarios") ? "desactivada" : errores.length ? "Hay errores de sintaxis; no se puede calcular la densidad completa."
       : !lineasCodigo ? "No hay líneas de código en los lenguajes seleccionados." : null });
-  resultados.push({ id: "ausencia_faltas", lenguaje: seleccion.join("+"), archivo: "Comentarios de la entrega",
+  resultados.push({ id: "ausencia_faltas", lenguaje: seleccion.join("+"), archivo: "Texto y comentarios seleccionados",
     aplicable: false, cumple: false, valor: null, peso: pesos.ausencia_faltas,
     evidencias: [], evidenciasTotales: 0,
     motivo: "Revisión ortográfica pendiente del análisis asíncrono." });
   // Cada ID suma una sola vez aunque aparezca en varios archivos o lenguajes.
   const activadas = [...new Set(resultados.filter(r => r.cumple).map(r => r.id))];
   const suma = activadas.reduce((total, id) => total + pesos[id], 0);
-  return { lenguajes: seleccion, puntuacion: unidades.length ? Math.min(100, suma) : null,
+  return { preparacion, lenguajes: seleccion, puntuacion: unidades.length ? Math.min(100, suma) : null,
     sumaSinLimitar: suma, reglasActivadas: activadas, resultados, errores, avisos,
     estado: errores.length ? "analisis_parcial" : unidades.length ? "analizado" : "sin_contenido_seleccionado",
     significado: "Índice de prioridad de revisión; no es probabilidad calibrada de IA.",
@@ -589,7 +711,7 @@ export async function analizarEntregaAsync(contenido, lenguajes = "", opciones =
   const minimo = 1;
   regla.valor = { palabras, minimo, idioma: config.idioma || "es" };
   if (palabras < minimo) {
-    regla.motivo = "No hay prosa de comentarios que se pueda enviar a revisión.";
+    regla.motivo = "No hay texto ni comentarios seleccionados que se puedan enviar a revisión.";
     return resultado;
   }
   try {
