@@ -226,6 +226,16 @@ export function prepararEntrega(contenido) {
   function guardar(unidad) {
     if (!unidad.texto.trim()) return;
     const { lenguaje, texto, nombre, base } = unidad;
+    if (lenguaje === "js") {
+      const fin = Math.max(texto.lastIndexOf('}'), texto.lastIndexOf(';')) + 1;
+      if (fin > 0) {
+        bloques.javascript.push({ texto: texto.slice(0, fin), nombre, base });
+        const resto = texto.slice(fin);
+        if (resto.trim()) bloques.texto.push({ texto: resto, nombre: nombre + '#texto-posterior',
+          base: base + (texto.slice(0, fin).match(/\n/g) || []).length });
+        return;
+      }
+    }
     bloques[lenguaje === "js" ? "javascript" : lenguaje].push({ texto, nombre, base });
   }
   function agregar(tipo, texto, base = 0, nombre = "contenido") {
