@@ -168,7 +168,7 @@ $('form').addEventListener('submit',async e=>{
   try{
     if(!$('codigo').value.trim())throw new Error('Pega la entrega del alumno antes de analizar.');
     if($('codigo').value.length>100000)throw new Error('La entrega supera los 100.000 caracteres. Analiza un archivo más pequeño, sin bibliotecas ni archivos generados.');
-    const seleccion=seleccionarLenguajes($('lenguajes').value);if(!seleccion.length)throw new Error('Selecciona al menos un tipo: texto, JavaScript, HTML o CSS.');
+    seleccionarLenguajes($('lenguajes').value); // Valida la selección; vacía significa todos los tipos detectados.
     const tipo=$('origen').value;
     const pesos=Object.fromEntries([...weightInputs].map(([id,input])=>[id,Number(input.value)]));
     const umbral=Number($('umbral').value);
