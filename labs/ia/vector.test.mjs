@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { analizarEntrega, analizarEntregaAsync, analizarEntregaDetalladaAsync, crearVectorResultado, PESOS } from './analizador-entregas.mjs';
+import { analizarEntrega, analizarEntregaAsync, analizarEntregaDetalladaAsync, crearVectorResultado, analizarEntregaInformeAsync, PATRONES_REPETICION, PESOS } from './analizador-entregas.mjs';
 const limpio={revisorOrtografico:async()=>({matches:[]})};
 test('contrato público: vector JSON de tres elementos y complemento del resultado final',async()=>{
  const entrada={texto:'Explicación detallada.'};
@@ -53,17 +53,28 @@ test('cada tipo solicitado ausente informa; JS presente insuficientemente coment
  assert.ok(!v[2].some(r=>r.id==='contenido_no_detectado'&&r.lenguaje==='js'));
 });
 
-test('código breve exige comentario, devuelve literal exacto y no consulta ortografía',async()=>{
- for(const n of [1,9]) {
-  const codigo=Array.from({length:n},(_,i)=>`let x${i}=${i};`).join('\n');
-  let llamadas=0;
-  const opciones={revisorOrtografico:async()=>{llamadas++;throw Error('No debe llamarse');},pesos:{caracteres_especiales:100}};
-  assert.deepEqual(await analizarEntregaAsync('// “Comentario” con erratas\n'+codigo,'js',opciones),[false,50,'']);
-  assert.deepEqual(analizarEntrega('// Comentario\n'+codigo,'js'),[false,50,'']);
-  assert.deepEqual(await analizarEntregaAsync(codigo,'js',opciones),[true,0,'No se admite código sin comentar']);
-  assert.equal(llamadas,0);
+test('código breve se analiza y revisa tildes sin patrones repetidos',async()=>{
+ const codigo='// “numero repetido”\n// “numero repetido”\nconst x="uno";';
+ let llamadas=0;
+ const opciones={revisorOrtografico:async texto=>{llamadas++;return {matches:[{offset:texto.indexOf('numero'),length:6,replacements:[{value:'número'}]}]};}};
+ const informe=await analizarEntregaInformeAsync(codigo,'js',opciones);
+ assert.equal(llamadas,1);assert.equal(informe.codigoBreve.lineas,1);
+ assert.equal(informe.resultados.find(r=>r.id==='ausencia_faltas').valor.faltas,1);
+ assert.equal(informe.resultados.find(r=>r.id==='caracteres_especiales').cumple,true);
+ for(const regla of informe.resultados.filter(r=>PATRONES_REPETICION.includes(r.id))){
+  assert.equal(regla.aplicable,false);assert.equal(regla.valor,null);assert.deepEqual(regla.evidencias,[]);
  }
+ const v=await analizarEntregaAsync(codigo,'js',opciones);
+ assert.equal(v[0],false);assert.ok(Array.isArray(v[2]));assert.notEqual(v[1],50);
+ assert.ok(v[2].some(r=>r.id==='caracteres_especiales'));
 });
-test('comentarios falsos dentro de cadenas no cumplen la exigencia breve',()=>{
- assert.deepEqual(analizarEntrega('const x="// comentario";','js'),[true,0,'No se admite código sin comentar']);
+test('código breve sigue exigiendo comentario real',()=>{
+ const v=analizarEntrega('const x="// comentario";','js');
+ assert.equal(v[0],true);assert.equal(v[2].find(r=>r.id==='sin_comentarios').mensaje,'No se admite código sin comentar');
+});
+test('desde diez líneas vuelven a evaluarse los patrones',async()=>{
+ const codigo='// Comentario repetido suficientemente largo.\n// Comentario repetido suficientemente largo.\n'+Array.from({length:10},(_,i)=>`let x${i}=${i};`).join('\n');
+ const r=await analizarEntregaInformeAsync(codigo,'js',limpio);
+ assert.equal(r.resultados.find(r=>r.id==='comentarios_repetidos').cumple,true);
+ assert.equal(r.codigoBreve,undefined);
 });
