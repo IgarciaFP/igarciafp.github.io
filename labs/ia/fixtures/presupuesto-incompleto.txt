@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="Actividad2_40PresupuestoDeViajeActividadOpcional.js" defer></script>
+    <title>Actividad2_40PresupuestoDeViajeActividadOpcional</title>
+    </head>
+<body>
+
+    <h1>Actividad2_40PresupuestoDeViajeActividadOpcional</h1>
+
+    <p>
+        Alojamiento:
+        <input type="number" id="alojamiento" value="60">
+    </p>
+
+    <p>
+        Comida:
+        <input type="number" id="comida" value="25">
+    </p>
+
+    <p>
+        Ocio:
+        <input type="number" id="ocio" value="15">
+    </p>
+
+    <button id="calcular">Calcular</button>
+
+    <h1 id="resultado"></h1>
+</body>
+</html>
+
+"use strict";
+
+function calcularPresupuesto() {
+
+    // Primero cogemos lo que hemos puesto en los campos
+    let alojamiento = document.getElementById("alojamiento").value;
+    let comida = document.getElementById("comida").value;
+    let ocio = document.getElementById("ocio").value;
+
+    let resultado = document.getElementById("resultado");
+
+    // Miramos que no hayamos dejado ninguno vacío
+    if (alojamiento == "" || comida == "" || ocio == "") {
+        resultado.textContent = "No puedes dejar campos vacíos";
+        return;
+    }
+
+    // Ahora pasamos los valores a números para poder sumarlos
+    alojamiento = Number(alojamiento);
+    comida = Number(comida);
+    ocio = Number(ocio);
+
+    // Comprobamos que sean números válidos
+    if (!Number.isFinite(alojamiento) || !Number.isFinite(comida) || !Number.isFinite(ocio)) {
+        resultado.textContent = "Introduce números válidos";
+        return;
+    }
