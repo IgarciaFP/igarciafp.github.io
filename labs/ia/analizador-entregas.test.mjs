@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { analizarEntrega, seleccionarLenguajes } from './analizador-entregas.mjs';
+import { analizarEntregaDetallada as analizarEntrega, seleccionarLenguajes } from './analizador-entregas.mjs';
 
 const regla = (r, id) => r.resultados.find(x => x.id === id);
 test('selección explícita y predeterminado sin lenguajes', () => {
@@ -53,3 +53,4 @@ test('letras españolas no cuentan como caracteres especiales', () => {
   const r = analizarEntrega('const texto="ñ á é í ó ú ü ¿ ¡ €";', 'js');
   assert.equal(regla(r, 'caracteres_especiales').cumple, false);
 });
+
