@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import glosario from './glosario-tecnico.json' with { type: 'json' };
-import { analizarEntregaAsync, TERMINOS_INGLES, TERMINOS_TECNICOS } from './analizador-entregas.mjs';
+import { analizarEntregaDetalladaAsync as analizarEntregaAsync, TERMINOS_INGLES, TERMINOS_TECNICOS } from './analizador-entregas.mjs';
 const regla=r=>r.resultados.find(x=>x.id==='ausencia_faltas');
 async function revisar(texto,matches,ortografia={excluirIngles:false}) {
  return analizarEntregaAsync({texto},'texto',{ortografia,revisorOrtografico:async t=>({matches:matches.filter(m=>t.slice(m.offset,m.offset+m.length).trim())})});
