@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { prepararEntrega, analizarEntrega, analizarEntregaAsync, seleccionarLenguajes } from './analizador-entregas.mjs';
+import { prepararEntrega, analizarEntregaDetallada as analizarEntrega, analizarEntregaDetalladaAsync as analizarEntregaAsync, seleccionarLenguajes } from './analizador-entregas.mjs';
 
 test('cuatro tipos y alias javascript', () => {
   assert.deepEqual(seleccionarLenguajes('texto+javascript HTML CSS'), ['texto','js','html','css']);
