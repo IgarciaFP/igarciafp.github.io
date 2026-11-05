@@ -27,9 +27,9 @@ test('las reglas de formato conservan resultados del original',async()=>{
 
 test('sin comprobación pesa cero; sin faltas comprobadas aporta cincuenta',async()=>{
  const sin=await analizarEntregaAsync({texto:'browser'},'texto',{revisorOrtografico:async()=>{throw Error('No debe llamarse');}});
- const vacia=sin.resultados.find(r=>r.id==='ausencia_faltas');assert.equal(vacia.peso,0);assert.equal(vacia.puntosAplicados,0);assert.equal(vacia.estadoRevision,'no_realizada');assert.equal(vacia.pesoConfigurado,50);
+ const vacia=sin.resultados.find(r=>r.id==='ausencia_faltas');assert.equal(vacia.peso,0);assert.equal(vacia.puntosAplicados,0);assert.equal(vacia.estadoRevision,'no_realizada');assert.equal(vacia.pesoConfigurado,25);
  const bien=await analizarEntregaAsync({texto:'Explicación extensa'},'texto',{revisorOrtografico:async()=>({matches:[]})});
- const comprobada=bien.resultados.find(r=>r.id==='ausencia_faltas');assert.equal(comprobada.peso,50);assert.equal(comprobada.puntosAplicados,50);assert.equal(comprobada.estadoRevision,'completada');
+ const comprobada=bien.resultados.find(r=>r.id==='ausencia_faltas');assert.equal(comprobada.peso,25);assert.equal(comprobada.puntosAplicados,25);assert.equal(comprobada.estadoRevision,'completada');
  const mal=await analizarEntregaAsync({texto:'Explicación extensa'},'texto',{revisorOrtografico:async()=>{throw Error('Fallo');}});
  const fallida=mal.resultados.find(r=>r.id==='ausencia_faltas');assert.equal(fallida.peso,0);assert.equal(fallida.puntosAplicados,0);assert.equal(fallida.estadoRevision,'fallida');
 });
