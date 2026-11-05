@@ -1,8 +1,38 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import glosario from './glosario-tecnico.json' with { type: 'json' };
-import { analizarEntregaDetalladaAsync as analizarEntregaAsync, TERMINOS_INGLES, TERMINOS_TECNICOS } from './analizador-entregas.mjs';
+import { analizarEntregaDetalladaAsync as analizarEntregaAsync, prepararProsa, TERMINOS_INGLES, TERMINOS_TECNICOS } from './analizador-entregas.mjs';
 const regla=r=>r.resultados.find(x=>x.id==='ausencia_faltas');
+test('un término técnico dentro de una palabra compuesta retira la palabra completa',()=>{
+ const tokens=['mitextareaextra','pre-display','mi_textarea','prefijo/textarea/sufijo','(TEXTAREA_extra)'];
+ const texto=tokens.join(' ');
+ const r=prepararProsa([{texto,archivo:'prueba',linea:1}],{excluirIngles:false});
+ assert.equal(r.fragmentos[0].texto,' '.repeat(texto.length));
+ assert.deepEqual(r.exclusiones.map(x=>x.token),tokens);
+ assert.ok(r.exclusiones.every(x=>x.motivo==='glosario_tecnico'));
+});
+test('la exclusión de compuestos no cruza puntos, comas, espacios ni saltos de línea',()=>{
+ const texto='campo.textareaextra,campo mitextarea\ncampo';
+ const r=prepararProsa([{texto,archivo:'prueba',linea:4}],{excluirIngles:false});
+ assert.equal(r.fragmentos[0].texto,'campo.'+' '.repeat(13)+',campo '+' '.repeat(10)+'\ncampo');
+ assert.equal(r.fragmentos[0].texto.length,texto.length);
+ assert.equal(r.fragmentos[0].original,texto);
+ assert.deepEqual(r.exclusiones.map(x=>x.inicio),[6,26]);
+});
+test('los términos ingleses y personalizados respetan la opción de exclusión',()=>{
+ const texto='zzzfoobarinozzz';
+ const fragmentos=[{texto,archivo:'prueba',linea:1}];
+ assert.equal(prepararProsa(fragmentos,{terminosIgnorados:['foobarino']}).fragmentos[0].texto.trim(),'');
+ assert.equal(prepararProsa(fragmentos,{terminosIgnorados:['foobarino'],excluirIngles:false}).fragmentos[0].texto,texto);
+});
+test('el filtro retira compuestos antes de enviar texto y comentarios al revisor',async()=>{
+ for(const [contenido,lenguaje] of [[{texto:'mitextareaextra campo'},'texto'],[{js:'// mitextareaextra campo\nlet x=1;'},'js']]){
+  let recibido;
+  await analizarEntregaAsync(contenido,lenguaje,{ortografia:{excluirIngles:false},revisorOrtografico:async texto=>{recibido=texto;return {matches:[]};}});
+  assert.ok(recibido.includes('campo'));
+  assert.ok(!recibido.includes('mitextareaextra'));
+ }
+});
 async function revisar(texto,matches,ortografia={excluirIngles:false}) {
  return analizarEntregaAsync({texto},'texto',{ortografia,revisorOrtografico:async t=>({matches:matches.filter(m=>t.slice(m.offset,m.offset+m.length).trim())})});
 }
