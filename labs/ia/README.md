@@ -63,3 +63,9 @@ La interfaz muestra siempre los bloques TXT, JS, HTML y CSS, en ese orden, con e
 - `c`: array con las reglas aplicables, detectadas y con peso positivo. Cada objeto contiene `id`, `peso` y `coincidencias` (lenguaje, archivo, valor, evidencias y demás detalles). Cada ID aparece una sola vez; sus coincidencias se agrupan para no duplicar el peso. El peso es el configurado antes de la reducción global por faltas.
 
 Para obtener el informe completo usa `analizarEntregaDetalladaAsync` o `analizarEntregaDetallada`. La página usa este informe para mostrar la clasificación, incidencias y reglas, y muestra además su vector mediante `crearVectorResultado(informe)`. Descargar JSON conserva el informe detallado. Las llamadas que antes leían `.puntuacion` deben migrar a las funciones detalladas o desestructurar el vector.
+
+## Ausencia de contenido y comentarios
+
+El primer elemento del vector también es `true` si se solicita JS y no hay ningún fragmento JavaScript no vacío. En `c` se incluye un objeto por cada tipo solicitado ausente: `{id: 'contenido_no_detectado', lenguaje, peso: 0, mensaje: 'Código/texto no detectado'}`. Estos diagnósticos no suman puntuación. Si se activa la regla de comentarios escasos, su objeto incluye `mensaje: 'No se admite código sin comentar'`, incluso con peso configurado a cero. Exactamente un comentario por diez líneas no activa esa regla.
+
+JS se reconoce entre etiquetas `script` ejecutables y suelto al comenzar por `"use strict"`, `'use strict'`, `let`, `const` o `function`, también tras una introducción en una línea anterior. Se conserva el código incompleto para informar errores de sintaxis. Si se pega HTML en la entrada marcada JS, se extraen sus scripts. Los scripts externos no se descargan y los bloques JSON no cuentan como JS.
