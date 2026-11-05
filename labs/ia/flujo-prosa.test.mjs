@@ -24,3 +24,12 @@ test('las reglas de formato conservan resultados del original',async()=>{
  const posterior=await analizarEntregaAsync(contenido,'js',{revisorOrtografico:async()=>({matches:[]})});
  for(const id of ['comentarios_mayuscula','comentarios_sin_puntos','comentarios_longitud_similar','espaciado_uniforme'])assert.deepEqual(posterior.resultados.find(r=>r.id===id),previo.resultados.find(r=>r.id===id));
 });
+
+test('sin comprobación pesa cero; sin faltas comprobadas aporta cincuenta',async()=>{
+ const sin=await analizarEntregaAsync({texto:'el CSS'},'texto',{revisorOrtografico:async()=>{throw Error('No debe llamarse');}});
+ const vacia=sin.resultados.find(r=>r.id==='ausencia_faltas');assert.equal(vacia.peso,0);assert.equal(vacia.puntosAplicados,0);assert.equal(vacia.estadoRevision,'no_realizada');assert.equal(vacia.pesoConfigurado,50);
+ const bien=await analizarEntregaAsync({texto:'Explicación extensa'},'texto',{revisorOrtografico:async()=>({matches:[]})});
+ const comprobada=bien.resultados.find(r=>r.id==='ausencia_faltas');assert.equal(comprobada.peso,50);assert.equal(comprobada.puntosAplicados,50);assert.equal(comprobada.estadoRevision,'completada');
+ const mal=await analizarEntregaAsync({texto:'Explicación extensa'},'texto',{revisorOrtografico:async()=>{throw Error('Fallo');}});
+ const fallida=mal.resultados.find(r=>r.id==='ausencia_faltas');assert.equal(fallida.peso,0);assert.equal(fallida.puntosAplicados,0);assert.equal(fallida.estadoRevision,'fallida');
+});
