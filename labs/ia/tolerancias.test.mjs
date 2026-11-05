@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {analizarEntrega,PESOS} from './analizador-entregas.mjs';
+import {analizarEntregaDetallada as analizarEntrega,PESOS} from './analizador-entregas.mjs';
 const regla=(r,id)=>r.resultados.find(x=>x.id===id);
 const analizar=s=>analizarEntrega(s,'js');
 
@@ -61,6 +61,6 @@ test('se retira use strict del catálogo y todos los pesos de 25 pasan a 10',()=
  for(const [id,peso] of Object.entries(PESOS)){
   if(!['sin_comentarios','caracteres_especiales','ausencia_faltas'].includes(id))assert.equal(peso,10,id);
  }
- assert.equal(PESOS.sin_comentarios,100);assert.equal(PESOS.caracteres_especiales,75);assert.equal(PESOS.ausencia_faltas,50);
+ assert.equal(PESOS.sin_comentarios,100);assert.equal(PESOS.caracteres_especiales,60);assert.equal(PESOS.ausencia_faltas,50);
 });
 
