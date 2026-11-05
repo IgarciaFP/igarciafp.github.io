@@ -77,7 +77,7 @@ dialog::backdrop{background:#12243a80;backdrop-filter:blur(4px)}
 </style>
 </head>
 <body><main>
-<header><span class="header-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></span><div class="heading-row"><h1 id="title">Entrega de prácticas</h1><span class="page-version">version: <time datetime="2026-11-05T18:31:14.000Z">05/11/2026 19:31</time> (Madrid)</span></div><p>Completa el formulario y guarda el justificante de entrega.</p></header>
+<header><span class="header-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></span><div class="heading-row"><h1 id="title">Entrega de prácticas</h1><span class="page-version">version: <time datetime="2026-11-05T19:38:06+01:00">05/11/2026 19:38</time> (Madrid)</span></div><p>Completa el formulario y guarda el justificante de entrega.</p></header>
 <p id="setup" class="notice" hidden>El docente debe conectar esta página con Google Sheets antes de recibir entregas.</p>
 <form id="form" class="card">
 <div class="identity"><div><label for="email">Email</label><input id="email" type="email" required maxlength="254" autocomplete="email" placeholder="nombre@g.educaand.es" aria-describedby="email-help"><small id="email-help">Usa tu dirección terminada en @g.educaand.es.</small></div><div><label for="practice-name">Nombre de la práctica</label><input id="practice-name" required maxlength="100" placeholder="Ej.: Práctica 4 · Flexbox" autocomplete="off"></div></div>
@@ -301,18 +301,20 @@ async function checkDocument(documentText){
  $('document-check-progress').hidden=false;
  if(!$('receipt').open)$('receipt').showModal();
  $('receipt-title').focus();
- let allowed=false;
+ let allowed=false,analysisTimer;
  try{
   // Dejar visible el progreso durante un intervalo aleatorio de 2 a 4 segundos.
   const delay=new Promise(resolve=>setTimeout(resolve,2000+Math.random()*2000));
   const analysis=Promise.resolve().then(()=>comprobarEntrega("JS",documentText))
    .then(result=>({result}),error=>({error}));
-  const [outcome]=await Promise.all([analysis,delay]);
+  const timeout=new Promise(resolve=>{analysisTimer=setTimeout(()=>resolve({error:new Error("Tiempo de comprobación agotado")}),15000);});
+  const [outcome]=await Promise.all([Promise.race([analysis,timeout]),delay]);
+  clearTimeout(analysisTimer);
   if(outcome.error)throw outcome.error;
   const result=outcome.result;
   if(!Array.isArray(result)||result.length!==3||typeof result[0]!=='boolean')throw Error('La comprobación del documento ha devuelto una respuesta no válida.');
   const [a,b]=result;
-  if(a){message.textContent='No se ha podido verificar el documento';return false;}
+  if(a)throw Error('El analizador no ha podido verificar el documento.');
   if(typeof b!=='number'||!Number.isFinite(b)||b<0||b>100)throw Error('La comprobación del documento ha devuelto un porcentaje no válido.');
   // Excepción provisional: los valores inferiores a 50 requieren dos decisiones.
   if(b<50){
@@ -334,9 +336,10 @@ async function checkDocument(documentText){
   allowed=true;
   return {percent:b};
  }catch(error){
-  message.textContent='No se ha podido verificar el documento';
-  return false;
+  allowed=await confirmVerification('El documento no se ha podido verificar. Tras la entrega será revisado.');
+  return allowed?{percent:null}:false;
  }finally{
+  clearTimeout(analysisTimer);
   $('document-check-progress').hidden=true;
   $('receipt-progress').hidden=true;
   panel.hidden=false;
@@ -428,5 +431,6 @@ $('form').addEventListener('focusin',()=>{
  if(!busy&&!current?.receipt)void LabDelivery.prepare(delivery,CONFIG.id);
 });
 </script></body></html>
+
 
 
