@@ -118,7 +118,7 @@ function mostrar(r,umbral){
   $('estado').textContent=parcial?'Análisis parcial':sinDatos?'Sin contenido':'Análisis completado';
   const humanidad=crearVectorResultado(r)[1];$('puntuacion').textContent=sinDatos?'—':humanidad;$('anillo').style.setProperty('--score',humanidad||0);
   $('decision').textContent=parcial?'Revisar incidencias del análisis':sinDatos?'No hay contenido seleccionado':r.puntuacion>=umbral?'Propuesta de entrevista':'Por debajo del umbral';
-  $('decision-detalle').textContent=parcial?'La puntuación es incompleta. Revisa los errores antes de interpretar el resultado.':sinDatos?'Comprueba el formato de entrada y los lenguajes.':'Umbral configurado: '+umbral+' puntos. La decisión final corresponde al profesor.';
+  $('decision-detalle').textContent=parcial?'La puntuación es incompleta. Revisa los errores antes de interpretar el resultado.':sinDatos?'Comprueba el formato de entrada y los lenguajes.':'Índice de revisión: '+r.puntuacion+' puntos · umbral: '+umbral+' puntos. La decisión final corresponde al profesor.';
   $('activadas').textContent=r.reglasActivadas?.length||0;$('evaluadas').textContent=new Set(r.resultados.filter(x=>x.aplicable).map(x=>x.id)).size;$('suma').textContent=r.sumaSinLimitar||0;
   $('errores').textContent=r.errores.map(e=>e.archivo+(e.linea?' · línea '+e.linea:'')+': '+e.mensaje).join('\n');
   $('avisos').textContent=(r.avisos||[]).map(a=>a.archivo+': '+a.mensaje).join('\n');
