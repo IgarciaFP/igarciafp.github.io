@@ -1,22 +1,22 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { analizarEntregaDetallada as analizarEntrega, analizarEntregaDetalladaAsync as analizarEntregaAsync, prepararProsa } from './analizador-entregas.mjs';
-test('se eliminan antes de enviar cortas, glosario, camelCase y puntos internos',async()=>{
+test('se conservan cortas y se excluyen glosario, camelCase y puntos internos',async()=>{
  let enviado='';const original='Hola browser miVariable nombre.js archivo.largo.js numero.\nExplicación extensa';
  const r=await analizarEntregaAsync({texto:original},'texto',{revisorOrtografico:async t=>{enviado=t;return {matches:[]};}});
- for(const prohibida of ['Hola','browser','miVariable','nombre.js','archivo.largo.js'])assert.ok(!enviado.includes(prohibida));
- assert.ok(enviado.includes('numero.'));assert.ok(enviado.includes('Explicación extensa'));
+ for(const prohibida of ['browser','miVariable','nombre.js','archivo.largo.js'])assert.ok(!enviado.includes(prohibida));
+ assert.ok(enviado.includes('Hola'));assert.ok(enviado.includes('numero.'));assert.ok(enviado.includes('Explicación extensa'));
  assert.equal(r.preparacionProsa.fragmentos[0].texto.length,original.length);
- assert.deepEqual(r.preparacionProsa.exclusiones.map(e=>e.motivo),['menos_de_cinco_letras','glosario_ingles','camelCase','punto_interno','punto_interno']);
+ assert.deepEqual(r.preparacionProsa.exclusiones.map(e=>e.motivo),['glosario_ingles','camelCase','punto_interno','punto_interno']);
 });
 test('sin palabras elegibles no llama al servicio ni presume ausencia de faltas',async()=>{
- let llamadas=0;const r=await analizarEntregaAsync({texto:'el CSS browser miVariable nombre.js'},'texto',{revisorOrtografico:async()=>{llamadas++;return {matches:[]};}});
+ let llamadas=0;const r=await analizarEntregaAsync({texto:'browser miVariable nombre.js'},'texto',{revisorOrtografico:async()=>{llamadas++;return {matches:[]};}});
  assert.equal(llamadas,0);const regla=r.resultados.find(r=>r.id==='ausencia_faltas');assert.equal(regla.aplicable,false);assert.equal(regla.cumple,false);assert.equal(regla.valor.faltas,undefined);
 });
 test('punto final no elimina la palabra; puntos internos y Unicode conservan posiciones',()=>{
  const original='numero. nombre.js\nnu\u0301mero áéíó';
  const p=prepararProsa([{texto:original,archivo:'texto',linea:8}]);
- assert.ok(p.fragmentos[0].texto.startsWith('numero.'));assert.ok(p.fragmentos[0].texto.includes('nu\u0301mero'));assert.ok(!p.fragmentos[0].texto.includes('áéíó'));assert.equal(p.fragmentos[0].texto.length,original.length);
+ assert.ok(p.fragmentos[0].texto.startsWith('numero.'));assert.ok(p.fragmentos[0].texto.includes('nu\u0301mero'));assert.ok(p.fragmentos[0].texto.includes('áéíó'));assert.equal(p.fragmentos[0].texto.length,original.length);
 });
 test('las reglas de formato conservan resultados del original',async()=>{
  const contenido={js:'// Hola miVariable nombre.js\nlet x=1;\n// Hola otroNombre cosas.css\nx++;\n// Hola tercerNombre datos.html\nx++;'};
@@ -26,7 +26,7 @@ test('las reglas de formato conservan resultados del original',async()=>{
 });
 
 test('sin comprobación pesa cero; sin faltas comprobadas aporta cincuenta',async()=>{
- const sin=await analizarEntregaAsync({texto:'el CSS'},'texto',{revisorOrtografico:async()=>{throw Error('No debe llamarse');}});
+ const sin=await analizarEntregaAsync({texto:'browser'},'texto',{revisorOrtografico:async()=>{throw Error('No debe llamarse');}});
  const vacia=sin.resultados.find(r=>r.id==='ausencia_faltas');assert.equal(vacia.peso,0);assert.equal(vacia.puntosAplicados,0);assert.equal(vacia.estadoRevision,'no_realizada');assert.equal(vacia.pesoConfigurado,50);
  const bien=await analizarEntregaAsync({texto:'Explicación extensa'},'texto',{revisorOrtografico:async()=>({matches:[]})});
  const comprobada=bien.resultados.find(r=>r.id==='ausencia_faltas');assert.equal(comprobada.peso,50);assert.equal(comprobada.puntosAplicados,50);assert.equal(comprobada.estadoRevision,'completada');
