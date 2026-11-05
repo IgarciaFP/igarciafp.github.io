@@ -758,9 +758,24 @@ export function prepararProsa(fragmentos, config = {}) {
   const ingles = new Set([...TERMINOS_INGLES, ...adicionales].map(t => String(t).normalize('NFC').toLowerCase())
     .filter(t => (t.match(/\p{L}/gu) || []).length > 4));
   const exclusiones = [];
+  const terminosTecnicos = [...glosarioTecnicoSet];
+  const terminosIngleses = [...ingles];
   const borrar = t => t.replace(/[^\r\n]/g, ' ');
   const preparados = fragmentos.map(f => {
+    const inicioExclusiones = exclusiones.length;
     let limpio = f.texto.replace(/```[\s\S]*?```|`[^`]*`|https?:\/\/\S+|^\s*\*?\s*@\w+.*$/gm, borrar);
+    // Un término del glosario excluye toda la palabra compuesta que lo contiene.
+    // Punto, coma y espacio en blanco delimitan la expansión; los offsets se conservan.
+    limpio = limpio.replace(/[^.,\s]+/gu, (token, inicio) => {
+      const normal = token.normalize('NFC').toLowerCase();
+      const tecnico = terminosTecnicos.some(termino => normal.includes(termino));
+      const extranjero = exclusionIngles && terminosIngleses.some(termino => normal.includes(termino));
+      if (!tecnico && !extranjero) return token;
+      const motivo = /\p{Ll}[\p{M}\p{N}]*\p{Lu}/u.test(token) ? 'camelCase'
+        : tecnico ? 'glosario_tecnico' : 'glosario_ingles';
+      exclusiones.push({ token, motivo, archivo: f.archivo, linea: f.linea + (f.texto.slice(0, inicio).match(/\n/g) || []).length, inicio });
+      return borrar(token);
+    });
     limpio = limpio.replace(/[$_\p{L}\p{N}][$_\p{L}\p{M}\p{N}]*(?:[.\-’'][$_\p{L}\p{M}\p{N}]+)*/gu, (token, inicio) => {
       const letras = (token.normalize('NFC').match(/\p{L}/gu) || []).length;
       const normal = token.normalize('NFC').toLowerCase();
@@ -772,6 +787,7 @@ export function prepararProsa(fragmentos, config = {}) {
       exclusiones.push({ token, motivo, archivo: f.archivo, linea: f.linea + (f.texto.slice(0, inicio).match(/\n/g) || []).length, inicio });
       return borrar(token);
     });
+    exclusiones.push(...exclusiones.splice(inicioExclusiones).sort((a, b) => a.inicio - b.inicio));
     return { ...f, texto: limpio, original: f.texto };
   });
   return { fragmentos: preparados, exclusiones, exclusionIngles };
