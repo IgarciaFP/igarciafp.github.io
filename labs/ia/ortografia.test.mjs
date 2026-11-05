@@ -34,7 +34,7 @@ test('las sugerencias de estilo no cuentan como faltas',async()=>{
  assert.equal(regla(r).cumple,true);assert.equal(regla(r).valor.sugerenciasEstilo,1);
 });
 test('errores léxicos impiden atribuir una revisión completa',async()=>{
- let llamadas=0;const r=await analizarEntregaAsync(texto+'\nconst a="cadena sin cerrar','js',{...config,revisorOrtografico:async()=>{llamadas++;return {matches:[]};}});
+ let llamadas=0;const r=await analizarEntregaAsync(texto+'\nconst a="cadena sin cerrar;','js',{...config,revisorOrtografico:async()=>{llamadas++;return {matches:[]};}});
  assert.equal(llamadas,0);assert.equal(regla(r).aplicable,false);
 });
 test('si los comentarios se extraen completos pueden revisarse aunque falte una llave',async()=>{
