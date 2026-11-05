@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {analizarEntrega} from './analizador-entregas.mjs';
+import {analizarEntregaDetallada as analizarEntrega} from './analizador-entregas.mjs';
 const regla=(r,id)=>r.resultados.find(x=>x.id===id);
 const comentarios=['Leer los datos del viaje','Sumar los gastos del viaje','Calcular el total del viaje','Mostrar el coste del viaje'];
 const ejemplo=(sangria='\t')=>'function calcular() {\n'+comentarios.map((c,i)=>sangria+'// '+c+'\n'+sangria+'const gasto'+i+' = '+i+';').join('\n')+'\n}';
@@ -59,3 +59,4 @@ test('comentarios con numeración y mayúsculas acentuadas',()=>{
  const r=analizarEntrega('// 1) Obtener datos\nlet a=1;\n// 2) Áreas disponibles\na++;','js');
  assert.equal(regla(r,'comentarios_mayuscula').cumple,true);
 });
+
