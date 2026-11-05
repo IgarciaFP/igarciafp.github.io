@@ -28,11 +28,26 @@ test('exclusión configurable, ampliable y desactivada al revisar inglés',async
  }
 });
 
-test('tildes en palabras de una a cuatro letras y vocales mayúsculas excluidas',async()=>{
+test('tildes solo desde cuatro letras y vocales mayúsculas excluidas',async()=>{
  const r=await revisar(['a','el','si','mas','esta','Arbol','ARBOL','Numero','camion'],[['á'],['él'],['sí'],['más'],['está'],['Árbol'],['ÁRBOL'],['Número'],['camión']]);
- assert.equal(regla(r).valor.faltas,7);
+ assert.equal(regla(r).valor.faltas,3);
 });
 test('no cuentan tildes sobrantes, diéresis, eñes ni otras erratas',async()=>{
  const r=await revisar(['ésta','pinguino','ano','cassa','árbol'],[['esta'],['pingüino'],['año'],['casa'],['árbol']]);
  assert.equal(regla(r).valor.faltas,0);
+});
+
+test('misma falta repetida cuenta una vez sin distinguir mayúscula inicial',async()=>{
+ const r=await analizarEntregaAsync({texto:'numero Numero numero'},'texto',{revisorOrtografico:async t=>({matches:[...t.matchAll(/numero/gi)].map(m=>({offset:m.index,length:6,message:'Falta tilde',replacements:[{value:m[0]==='Numero'?'Número':'número'}]}))})});
+ assert.equal(regla(r).valor.faltas,1);assert.equal(regla(r).valor.aparicionesFaltas,3);assert.equal(regla(r).valor.faltasRepetidas,2);
+ assert.equal(regla(r).evidenciasTotales,1);
+});
+test('avisos Si es se excluyen individualmente sin ocultar otras faltas',async()=>{
+ for(const campo of ['message','shortMessage','description']) {
+  const r=await analizarEntregaAsync({texto:'esta arbol'},'texto',{revisorOrtografico:async t=>({matches:[
+   {offset:t.indexOf('esta'),length:4,...(campo==='description'?{rule:{description:'Si es un verbo'}}:{[campo]:'Si es un verbo'}),replacements:[{value:'está'}]},
+   {offset:t.indexOf('arbol'),length:5,message:'Falta tilde',replacements:[{value:'árbol'}]}
+  ]})});
+  assert.equal(regla(r).valor.faltas,1);assert.match(regla(r).evidencias[0].detalle,/arbol/);
+ }
 });
