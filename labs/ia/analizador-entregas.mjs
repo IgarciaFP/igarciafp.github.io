@@ -229,6 +229,8 @@ export function prepararEntrega(contenido) {
     bloques[lenguaje === "js" ? "javascript" : lenguaje].push({ texto, nombre, base });
   }
   function agregar(tipo, texto, base = 0, nombre = "contenido") {
+    // Un pegado marcado como JS puede contener el envoltorio HTML.
+    if (tipo === "js" && detectarTipo(texto) === "html") tipo = "html";
     const extraidas = extraerUnidades({ [tipo]: texto }, ["texto", "html", "css", "js"], avisos);
     for (const unidad of extraidas) {
       unidad.base += base;
@@ -260,10 +262,17 @@ export function prepararEntrega(contenido) {
     }
     if (!cursor) {
       // Una introducción en prosa puede preceder a un documento HTML completo.
-      const inicioHTML = /^[ \t]*(?:<!doctype\s+html\b|<html\b)/im.exec(texto);
+      const inicioHTML = /^[ \t]*(?:<!doctype\s+html\b|<html\b|<script\b)/im.exec(texto);
       if (inicioHTML && inicioHTML.index > 0) {
         agregar('texto', texto.slice(0, inicioHTML.index), base, nombre);
         agregar('html', texto.slice(inicioHTML.index), base + (texto.slice(0, inicioHTML.index).match(/\n/g) || []).length, nombre);
+        return;
+      }
+      // Reconoce un archivo JS tras una introducción, conservando ambas partes.
+      const inicioJS = /^[ \t]*(?:["']use strict["']\s*;?|(?:let|const|function)\b)/m.exec(texto);
+      if (inicioJS && inicioJS.index > 0) {
+        agregar('texto', texto.slice(0, inicioJS.index), base, nombre);
+        agregar('js', texto.slice(inicioJS.index), base + (texto.slice(0, inicioJS.index).match(/\n/g) || []).length, nombre);
         return;
       }
       agregar("texto", texto, base, nombre);
@@ -310,7 +319,7 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
     avisos.push({ archivo: "contenido.html", mensaje: "El JS posterior se ha separado, pero JS no está seleccionado y no se analiza." });
   }
   const unidades = prepararUnidades(preparacion, seleccion);
-  for (const tipo of seleccion) if (!unidades.some(u => u.lenguaje === tipo)) avisos.push({ archivo: tipo, mensaje: "No se ha encontrado contenido de este tipo; no se analiza." });
+  for (const tipo of seleccion) if (!unidades.some(u => u.lenguaje === tipo)) avisos.push({ archivo: tipo, mensaje: "Código/texto no detectado" });
   for (const unidad of unidades) {
     const { texto: s, lenguaje, nombre, base } = unidad;
     const linea = posicion => base + 1 + (s.slice(0, posicion).match(/\n/g) || []).length;
@@ -848,15 +857,26 @@ async function revisarProsa(resultado, opciones) {
  */
 export function crearVectorResultado(informe) {
   const escasos = informe.resultados.find(r => r.id === 'sin_comentarios');
+  const noDetectados = informe.lenguajes.filter(tipo =>
+    !informe.preparacion.bloques[tipo === 'js' ? 'javascript' : tipo].some(f => f.texto.trim()));
   const grupos = new Map();
   for (const r of informe.resultados) {
     if (!r.aplicable || !r.cumple || !(r.peso > 0)) continue;
     if (!grupos.has(r.id)) grupos.set(r.id, { id: r.id, peso: r.peso, coincidencias: [] });
     grupos.get(r.id).coincidencias.push(r);
   }
-  return [escasos?.cumple === true,
+  const detalles = [...grupos.values()];
+  for (const lenguaje of noDetectados) detalles.push({
+    id: 'contenido_no_detectado', lenguaje, peso: 0, mensaje: 'Código/texto no detectado'
+  });
+  if (escasos?.cumple === true) {
+    const regla = grupos.get('sin_comentarios');
+    if (regla) regla.mensaje = 'No se admite código sin comentar';
+    else detalles.push({ id: 'sin_comentarios', peso: 0, mensaje: 'No se admite código sin comentar', coincidencias: [escasos] });
+  }
+  return [escasos?.cumple === true || noDetectados.includes('js'),
     informe.puntuacion === null ? null : Math.round((100 - informe.puntuacion) * 100) / 100,
-    [...grupos.values()]];
+    detalles];
 }
 export function analizarEntrega(contenido, lenguajes = '', opciones = {}) {
   return crearVectorResultado(analizarEntregaDetallada(contenido, lenguajes, opciones));
