@@ -248,8 +248,31 @@ export function prepararEntrega(contenido) {
       guardar(unidad);
     }
   }
+  function separarDocumentoHTML(texto, base = 0, nombre = "contenido") {
+    // Un documento escrito dentro de una cadena JS válida no es HTML independiente.
+    try {
+      acorn.parse(texto, { ecmaVersion: "latest", sourceType: "module" });
+      return false;
+    } catch {}
+    const inicio = texto.indexOf('<!');
+    if (inicio < 0 || /^[ \t]*(?:`{3,}|~{3,})/m.test(texto.slice(0, inicio))) return false;
+    const resto = texto.slice(inicio);
+    const html = leerHTML(resto);
+    const cierre = html.elementos.find(el => el.tagName === 'html')?.sourceCodeLocation?.endTag?.endOffset;
+    if (cierre == null) return false;
+    const fin = inicio + cierre;
+    automatico(texto.slice(0, inicio), base, nombre + '#antes-html');
+    agregar('html', texto.slice(inicio, fin), base + (texto.slice(0, inicio).match(/\n/g) || []).length, nombre);
+    const posterior = texto.slice(fin);
+    if (posterior.trim() && detectarTipo(posterior) === 'js') avisos.push({ archivo: nombre,
+      mensaje: 'El contenido pegado después de </html> se ha separado como un fragmento JavaScript.' });
+    automatico(posterior, base + (texto.slice(0, fin).match(/\n/g) || []).length, nombre + '#despues-html');
+    return true;
+  }
   function automatico(texto, base = 0, nombre = "contenido") {
     if (!texto.trim()) return;
+    // Extraer primero el documento completo evita absorber HTML dentro del JS previo.
+    if (separarDocumentoHTML(texto, base, nombre)) return;
     const tipo = detectarTipo(texto);
     // No interpretar fences que estén dentro de cadenas/comentarios de código.
     if (tipo !== "texto") { agregar(tipo, texto, base, nombre); return; }
@@ -294,7 +317,7 @@ export function prepararEntrega(contenido) {
     for (const [clave, valor] of Object.entries(contenido)) {
       const tipos = seleccionarLenguajes(clave);
       if (tipos.length !== 1 || typeof valor !== "string") throw new TypeError("Entrada inválida: " + clave);
-      agregar(tipos[0], valor);
+      if (!['js', 'html'].includes(tipos[0]) || !separarDocumentoHTML(valor)) agregar(tipos[0], valor);
     }
   } else throw new TypeError("contenido debe ser un string o un objeto {texto, html, css, javascript}");
   return { version: 1, original: contenido, bloques, avisos };
@@ -325,7 +348,7 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
   const preparacion = prepararEntrega(contenido);
   avisos.push(...preparacion.avisos);
   if (!seleccion.length) return { preparacion, lenguajes: [], puntuacion: null, resultados, errores, avisos, estado: "sin_lenguajes" };
-  if (!seleccion.includes("js") && preparacion.bloques.javascript.some(f => f.nombre.endsWith("#js-posterior"))) {
+  if (!seleccion.includes("js") && preparacion.bloques.javascript.some(f => (f.nombre.endsWith("#js-posterior") || f.nombre.includes("#despues-html")))) {
     avisos.push({ archivo: "contenido.html", mensaje: "El JS posterior se ha separado, pero JS no está seleccionado y no se analiza." });
   }
   const unidades = prepararUnidades(preparacion, seleccion);
