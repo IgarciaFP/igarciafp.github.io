@@ -146,7 +146,7 @@ function mostrar(r,umbral){
     ?faltas+' '+(faltas===1?'falta detectada':'faltas detectadas')
     :(ortografia?.estadoRevision==='fallida'?'Comprobación fallida · 0 puntos':'Comprobación no realizada · 0 puntos');
   $('ortografia-motivo').textContent=revisada
-    ?'Revisión completada · '+(ortografia.puntosAplicados||0)+' puntos: solo cuentan tildes omitidas en vocales minúsculas, también en palabras cortas.'
+    ?'Revisión completada · '+(ortografia.puntosAplicados||0)+' puntos: solo cuentan tildes omitidas en vocales minúsculas de palabras de al menos cuatro letras. Cada palabra cuenta una vez; se excluyen avisos que contengan «Si es».'
     :ortografia?.motivo||'No hay una revisión lingüística completada para esta entrega.';
 
   $('faltas-detalle').replaceChildren();
