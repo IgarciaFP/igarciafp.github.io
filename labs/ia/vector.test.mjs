@@ -22,7 +22,7 @@ test('sin entrada calculable no inventa humanidad del cien por cien',()=>{
 });
 test('solo reglas detectadas con peso y agrupación sin duplicar; peso especial 60',()=>{
  assert.equal(PESOS.caracteres_especiales,60);
- const v=analizarEntrega({texto:'“”',js:'const x = "“”";\n'+Array.from({length:9},(_,i)=>`let z${i}=${i};`).join('\n')},'texto js',{pesos:{sin_comentarios:0}});
+ const v=analizarEntrega({texto:'“”',js:'"use strict";\n// Comentario.\n// Otro comentario.\nconst x = "“”";\n'+Array.from({length:9},(_,i)=>`let z${i}=${i};`).join('\n')},'texto js',{pesos:{sin_comentarios:0}});
  const especial=v[2].split('\n').filter(r=>r.startsWith('caracteres_especiales:'));
  assert.deepEqual(especial,['caracteres_especiales: 60%']);
  assert.ok(!v[2].includes('sin_comentarios: 0%'));
@@ -80,7 +80,7 @@ test('código breve se analiza y revisa tildes sin patrones repetidos',async()=>
  }
  const v=await analizarEntregaAsync(codigo,'js',opciones);
  assert.equal(v[0],false);assert.equal(typeof v[2],'string');assert.notEqual(v[1],50);
- assert.ok(v[2].includes('caracteres_especiales: 60%'));
+ assert.equal(v[2],'No se encuentra "use strict" en el código JavaScript');
 });
 test('código breve sigue exigiendo comentario real',()=>{
  const v=analizarEntrega('const x="// comentario";','js');
@@ -127,4 +127,23 @@ test('texto compacto exacto, pesos personalizados, cero excluido y ajustes globa
  {id:'no_aplica',aplicable:false,cumple:true,peso:10}],
  lenguajes:[],preparacion:{bloques:{}},puntuacion:36.25,multiplicadorPenalizaciones:2};
  assert.deepEqual(crearVectorResultado(r),[false,63.75,'primera: 12.5%\nsegunda: 60%']);
+});
+
+test('rechazo por comentarios devuelve solo el mensaje aunque haya más reglas y falte strict',()=>{
+ const v=analizarEntrega({js:'const x="“”";'},'js');
+ assert.equal(v[0],true);assert.equal(v[2],'No se admite código sin comentar');
+});
+test('strict ausente devuelve solo el mensaje; comentarios, cadenas y directivas de función no valen',async()=>{
+ for(const codigo of ['// use strict\nconst x="“”";', '// Comentario.\nconst x="use strict";', '// Comentario.\nfunction f(){"use strict";return 1;}', '// Comentario.\nconst x=1; "use strict";']) {
+  const v=await analizarEntregaAsync({js:codigo},'js',limpio);
+  assert.equal(v[2],'No se encuentra "use strict" en el código JavaScript');
+ }
+});
+test('strict válido permite el resumen y no se exige en lenguajes no seleccionados',()=>{
+ for(const directiva of ['"use strict";', "'use strict';", '"otra directiva"; "use strict";']) {
+  const v=analizarEntrega({js:'// Comentario.\n'+directiva+'const x="“”";'},'js');
+  assert.ok(v[2].includes('caracteres_especiales: 60%'));
+ }
+ const v=analizarEntrega({texto:'“”',js:'const x=1;'},'txt');
+ assert.equal(v[2],'caracteres_especiales: 60%');
 });
