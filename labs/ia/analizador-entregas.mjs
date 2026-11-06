@@ -1048,19 +1048,6 @@ export function crearVectorResultado(informe) {
     !informe.preparacion.bloques[tipo === 'js' ? 'javascript' : tipo].some(f => f.texto.trim()));
   const humanidad = informe.puntuacion === null ? null : Math.round((100 - informe.puntuacion) * 100) / 100;
   if (escasos?.cumple === true) return [true, humanidad, 'No se admite código sin comentar'];
-  const faltaStrict = informe.lenguajes.includes('js') && informe.preparacion.bloques.javascript
-    .filter(f => f.texto.trim()).some(f => {
-      try {
-        const ast = acorn.parse(f.texto, { ecmaVersion: 'latest', sourceType: 'module' });
-        // Solo cuentan las directivas iniciales del programa, no cadenas ni comentarios.
-        for (const nodo of ast.body) {
-          if (typeof nodo.directive !== 'string') break;
-          if (nodo.directive === 'use strict') return false;
-        }
-        return true;
-      } catch { return false; } // Un error sintáctico no demuestra que falte la directiva.
-    });
-  if (faltaStrict) return [false, humanidad, 'No se encuentra "use strict" en el código JavaScript'];
   const reglas = new Map();
   for (const r of informe.resultados) {
     if (r.aplicable && r.cumple && r.peso > 0 && !reglas.has(r.id)) reglas.set(r.id, r.peso);
