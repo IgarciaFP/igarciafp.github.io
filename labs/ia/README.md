@@ -66,7 +66,7 @@ Para obtener el informe completo usa `analizarEntregaDetalladaAsync` o `analizar
 
 ## Ausencia de contenido y comentarios
 
-El primer elemento del vector también es `true` si se solicita JS y no hay ningún fragmento JavaScript no vacío. En `c` se incluye un objeto por cada tipo solicitado ausente: `{id: 'contenido_no_detectado', lenguaje, peso: 0, mensaje: 'Código/texto no detectado'}`. Estos diagnósticos no suman puntuación. Si se activa la regla de comentarios escasos, su objeto incluye `mensaje: 'No se admite código sin comentar'`, incluso con peso configurado a cero. Exactamente un comentario por diez líneas no activa esa regla.
+Los tipos solicitados vacíos se ignoran. Si ninguno de los solicitados tiene datos, se analiza el bloque TXT (`texto`); no se convierte código de otros bloques en texto. Si TXT también está vacío, la puntuación es `null` y se informa `Código/texto no detectado` para texto, sin activar `a`. La ausencia de JS ya no provoca rechazo. Si se activa la regla de comentarios escasos, su objeto incluye `mensaje: 'No se admite código sin comentar'`, incluso con peso configurado a cero. Exactamente un comentario por diez líneas no activa esa regla.
 
 JS se reconoce entre etiquetas `script` ejecutables y suelto al comenzar por `"use strict"`, `'use strict'`, `let`, `const` o `function`, también tras una introducción en una línea anterior. Se conserva el código incompleto para informar errores de sintaxis. Si se pega HTML en la entrada marcada JS, se extraen sus scripts. Los scripts externos no se descargan y los bloques JSON no cuentan como JS.
 
@@ -74,7 +74,7 @@ El final de cada fragmento JS se fija en la última aparición de `}` o `;`, inc
 
 Para pegados mixtos se separa primero el documento desde `<!` hasta su cierre `</html>`. Los fragmentos anteriores y posteriores se clasifican por separado; pueden producir JS y/o TXT. Los scripts internos siguen extrayéndose como JS. También se aplica si la entrada mixta se etiqueta JS o HTML; no se separa un documento escrito dentro de una cadena JavaScript válida.
 
-La exigencia de comentarios solo se aplica a partir de 10 líneas de código seleccionadas. De 1 a 9 líneas, la regla no aplica, no suma puntos y no activa el rechazo por comentarios. Desde 10 líneas se mantiene la proporción mínima de un comentario por cada diez líneas. Las líneas vacías y las que solo contienen comentarios no cuentan. La ausencia de JS solicitado sigue activando el primer parámetro del vector.
+La exigencia de comentarios solo se aplica a partir de 10 líneas de código seleccionadas. De 1 a 9 líneas, la regla no aplica, no suma puntos y no activa el rechazo por comentarios. Desde 10 líneas se mantiene la proporción mínima de un comentario por cada diez líneas. Las líneas vacías y las que solo contienen comentarios no cuentan. La ausencia de JS solicitado no activa por sí sola el primer parámetro del vector.
 
 
 
@@ -86,6 +86,6 @@ El descuento ortográfico aumenta con la densidad de faltas: `reduccion = min(1,
 
 Solo se cuentan palabras de cuatro letras o más. Se conservan palabras más cortas como contexto, pero no generan faltas ni líneas revisables por sí solas. Las faltas se deduplican por palabra original normalizada (NFC, sin distinguir mayúsculas): la misma palabra repetida cuenta una vez en toda la prosa seleccionada. Se excluye cada aviso cuya explicación (`message`, `shortMessage` o descripción de regla) contenga «Si es», sin distinguir mayúsculas; los demás avisos siguen evaluándose. Las evidencias indican las apariciones y el informe distingue faltas únicas y repeticiones. Se mantienen las exclusiones de glosario, camelCase, puntos internos y vocales mayúsculas.
 
-La selección de tipos es opcional: `await analizarEntregaAsync(entrada)` analiza todos los bloques TXT, HTML, CSS y JS que no estén vacíos tras la separación. Una cadena vacía o de espacios tiene el mismo efecto. Si se indica una selección explícita, solo se analizan esos tipos y se mantienen los avisos de tipos solicitados ausentes.
+La selección de tipos es opcional: `await analizarEntregaAsync(entrada)` analiza todos los bloques TXT, HTML, CSS y JS que no estén vacíos tras la separación. Una cadena vacía o de espacios tiene el mismo efecto. Si se indica una selección explícita, se analizan los tipos pedidos que tengan datos; si ninguno tiene datos, se analiza TXT.
 
 Las penalizaciones se multiplican por `2 ** floor(lineasCodigoAnalizadas / 25)`: 0–24 líneas ×1, 25–49 ×2, 50–74 ×4, 75–99 ×8. Solo cuentan líneas con código de los tipos seleccionados; texto, comentarios y líneas vacías no incrementan el factor. Se multiplica la suma de pesos antes de limitarla a 100 y aplicar el descuento por faltas. El informe conserva `sumaPesosBase`, `lineasCodigoAnalizadas` y `multiplicadorPenalizaciones`; los pesos individuales siguen mostrando su valor base.
