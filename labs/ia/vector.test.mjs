@@ -168,7 +168,7 @@ test('selección CSS aísla comentarios, líneas y revisión de una entrega mixt
   assert.ok(!enviado.includes('Mi texto'));assert.equal(r.codigoBreve.lineas,1);
  }
  const inversa=await analizarEntregaAsync({css:'body { color: red; }',js:'// Comentario de JS\nconst x=1;',html:'<!-- Comentario HTML --><p>Texto</p>'},'CSS',limpio);
- assert.equal(inversa[0],false);assert.ok(inversa[2].includes('sin_comentarios: 100%'));
+ assert.equal(inversa[0],false);assert.ok(!inversa[2].includes('sin_comentarios:'));
 });
 
 test('CSS HTML y texto nunca bloquean; comentarios siguen como regla',async()=>{
@@ -177,7 +177,7 @@ test('CSS HTML y texto nunca bloquean; comentarios siguen como regla',async()=>{
   for(const analizar of [analizarEntrega,analizarEntregaAsync]) {
    const v=await analizar(entrada,tipos,limpio);
    assert.equal(v[0],false,tipos);assert.ok(!v[2].includes('No se admite'),tipos);
-   if(tipos!=='txt') assert.ok(v[2].includes('sin_comentarios: 100%'),tipos);
+   assert.ok(!v[2].includes('sin_comentarios:'),tipos);
   }
  }
 });
@@ -189,4 +189,17 @@ test('selección mixta bloquea exclusivamente por la densidad de JS',async()=>{
  assert.equal(crearVectorResultado(r)[0],false);
  const v=await analizarEntregaAsync({js:'const x=1;',css:'/* Uno */ /* Dos */ body{color:red;}'},'js css',limpio);
  assert.equal(v[0],true);assert.equal(v[2],'No se admite código sin comentar');
+});
+
+test('sin comentarios CSS HTML: diez puntos por veinte líneas completas; JS conserva cien',async()=>{
+ for(const tipo of ['css','html','js']) for(const n of [1,19,20,39,40,60]) {
+  const codigo=Array.from({length:n},(_,i)=>tipo==='css'?`.c${i}{color:red;}`:tipo==='html'?'<p>Texto</p>':`const x${i}=${i};`).join('\n');
+  const opciones={...limpio,desactivadas:Object.keys(PESOS).filter(id=>id!=='sin_comentarios')};
+  const informe=await analizarEntregaInformeAsync({[tipo]:codigo},tipo,opciones);
+  const esperado=tipo==='js'?100:10*Math.floor(n/20);
+  assert.equal(informe.resultados.find(r=>r.id==='sin_comentarios').peso,esperado);
+  assert.equal(informe.sumaPesosBase,esperado);
+  assert.equal(analizarEntrega({[tipo]:codigo},tipo,opciones)[1],crearVectorResultado(informe)[1]);
+  assert.equal(crearVectorResultado(informe)[0],tipo==='js');
+ }
 });
