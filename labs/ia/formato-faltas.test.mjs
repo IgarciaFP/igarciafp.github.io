@@ -52,10 +52,10 @@ test('fallo del servicio no se convierte en ausencia de errores',async()=>{
  assert.equal(regla(r).peso,0);assert.equal(regla(r).estadoRevision,'fallida');assert.equal(r.reduccionOrtografica,0);
 });
 
-test('las once expresiones vigiladas cuentan sin avisos de la API',async()=>{
- const texto='de que; hubieron; han habido; habían; sobretodo; mi; tu; a parte; aun; ni si quiera; a ver';
+test('las doce expresiones vigiladas cuentan sin avisos de la API',async()=>{
+ const texto='de que; hubieron; han habido; habían; sobretodo; mi; tu; a parte; aun; ni si quiera; a ver; preveer';
  const r=await revisar(texto,()=>[]);
- assert.equal(regla(r).valor.faltasPorTipo.expresion_vigilada,11);
+ assert.equal(regla(r).valor.faltasPorTipo.expresion_vigilada,12);
  assert.equal(regla(r).cumple,false);assert.equal(r.reduccionOrtografica,1);
 });
 test('mi y tu solos son elegibles, aun no coincide con aún y se respetan límites',async()=>{
