@@ -7,11 +7,11 @@
 
 :root{
  font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
- color:#172b42;background:#f4f6f9;line-height:1.55;color-scheme:light;
+ color:#172b42;background:#fff;line-height:1.55;color-scheme:light;
  --accent:#176b69;--accent-hover:#115654;--muted:#607087;--line:#dce3ec;
 }
 *{box-sizing:border-box}
-body{margin:0;padding:64px 24px 48px;min-height:100vh;background:radial-gradient(ellipse at 50% 0,#e8eef4 0,transparent 65%)}
+body{margin:0;padding:64px 24px 48px;min-height:100vh;background:linear-gradient(to bottom,#fff1a8 0%,#fff 100%)}
 main{max-width:860px;margin:0 auto}
 header{position:relative;margin:0 0 32px;padding-left:72px}
 .header-icon{position:absolute;top:3px;left:0;display:grid;place-items:center;width:48px;height:48px;color:var(--accent);background:#e4efed;border:1px solid #cfe0dc;border-radius:14px}
@@ -79,7 +79,7 @@ dialog::backdrop{background:#12243a80;backdrop-filter:blur(4px)}
 </style>
 </head>
 <body><main>
-<header><span class="header-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></span><div class="heading-row"><h1 id="title">Entrega de prácticas · DIW</h1><span class="page-version">version: <time datetime="2026-11-06T14:33:37.381Z">6/11/26, 15:33</time> (Madrid)</span></div><p>Completa el formulario y guarda el justificante de entrega.</p></header>
+<header><span class="header-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></span><div class="heading-row"><h1 id="title">Entrega de prácticas · DIW</h1><span class="page-version">version: <time datetime="2026-11-06T15:18:00.000Z">6/11/26, 16:18</time> (Madrid)</span></div><p>Completa el formulario y guarda el justificante de entrega.</p></header>
 <p id="setup" class="notice" hidden>El docente debe conectar esta página con Google Sheets antes de recibir entregas.</p>
 <form id="form" class="card">
 <div class="identity"><div><label for="email">Email</label><input id="email" type="email" required maxlength="254" autocomplete="email" placeholder="nombre@g.educaand.es" aria-describedby="email-help"><small id="email-help">Usa tu dirección terminada en @g.educaand.es.</small></div><div><label for="practice-name">Nombre de la práctica</label><input id="practice-name" required maxlength="100" placeholder="Ej.: Práctica 4 · Flexbox" autocomplete="off"></div></div>
@@ -325,7 +325,7 @@ async function checkDocument(documentText,pendingPercent){
  try{
   // Dejar visible el progreso durante un intervalo aleatorio de 2 a 4 segundos.
   const delay=new Promise(resolve=>setTimeout(resolve,2000+Math.random()*2000));
-  const analysis=Promise.resolve().then(()=>comprobarEntrega("HTML CSS",documentText))
+  const analysis=Promise.resolve().then(()=>comprobarEntrega("CSS",documentText))
    .then(result=>({result}),error=>({error}));
   const timeout=new Promise(resolve=>{analysisTimer=setTimeout(()=>resolve({error:new Error("Tiempo de comprobación agotado")}),15000);});
   const [outcome]=await Promise.all([Promise.race([analysis,timeout]),delay]);
