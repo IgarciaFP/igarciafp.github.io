@@ -116,3 +116,35 @@ test('el texto y los lenguajes no seleccionados no se revisan como comentarios',
  const r=await analizar({texto:'//Hola mundo',js:'/*Hola mundo*/\nconst x=1;'},'txt',{revisorOrtografico:async()=>({matches:[]})});
  assert.equal(regla(r).valor.faltasPorTipo.espacio_comentario,0);
 });
+
+test('comentarios tras ; y } con cero, uno o dos espacios en JS/CSS/HTML',async()=>{
+ for(const simbolo of [';','}']) for(const espacios of ['',' ','  ']) for(const tipo of ['js','css','html']) {
+  const aperturas=tipo==='js'?['//','/*','/**']:tipo==='css'?['/*']:['<!--'];
+  for(const apertura of aperturas){
+   const cierre=apertura==='// '||apertura==='//'? '' : apertura==='<!--'?' -->':' */';
+   const prefijo=tipo==='js'?(simbolo===';'?'const x=1;':'function f(){}'):tipo==='css'?(simbolo===';'?'a{color:red;':'a{color:red;}'):simbolo;
+   const final=tipo==='css'&&simbolo===';'?'}':'';
+   const codigo=prefijo+espacios+apertura+' Comentario correcto'+cierre+'\n'+final;
+   const r=await analizar({[tipo]:codigo+(tipo==='js'?'\nconst ultimo=0;':'')},tipo,{revisorOrtografico:async()=>({matches:[]})});
+   assert.equal(regla(r).valor.faltasPorTipo.comentario_tras_codigo,1,codigo);
+   assert.equal(regla(r).evidencias.find(e=>e.tipo==='comentario_tras_codigo').linea,1);
+  }
+ }
+});
+test('no cuenta tres espacios, tabulaciones, saltos, cadenas ni texto libre',async()=>{
+ for(const codigo of ['const x=1;   // Comentario correcto','const x=1;\t// Comentario correcto','const x=1;\n// Comentario correcto','// Comentario correcto\nconst x=";//";']){
+  const r=await analizar({js:codigo+'\nconst ultimo=0;'},'js',{revisorOrtografico:async()=>({matches:[]})});
+  assert.equal(regla(r).valor.faltasPorTipo.comentario_tras_codigo,0);
+ }
+ const r=await analizar({texto:'; // Comentario correcto'},'txt',{revisorOrtografico:async()=>({matches:[]})});
+ assert.equal(regla(r).valor.faltasPorTipo.comentario_tras_codigo,0);
+});
+test('comentarios tras código se deduplican y sobreviven al fallo del servicio',async()=>{
+ const r=await analizar({js:'const a=1;// Comentario correcto\nconst b=2; // Comentario correcto\nconst c=3;  // Comentario correcto\nconst ultimo=0;'},'js',{revisorOrtografico:async()=>{throw Error('sin servicio');}});
+ const v=regla(r);assert.equal(v.estadoRevision,'parcial');assert.equal(v.valor.faltasPorTipo.comentario_tras_codigo,1);
+ assert.equal(v.valor.aparicionesFaltas,3);assert.equal(v.puntosAplicados,0);assert.ok(r.reduccionOrtografica>0);
+});
+test('también cuenta comentario vacío junto al código',async()=>{
+ const r=await analizar({js:'const x=1;//\nconst ultimo=0;'},'js',{revisorOrtografico:async()=>({matches:[]})});
+ assert.equal(regla(r).valor.faltasPorTipo.comentario_tras_codigo,1);
+});
