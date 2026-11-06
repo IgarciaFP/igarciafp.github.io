@@ -112,9 +112,9 @@ test('espacios locales sobreviven al fallo API y conservan línea del cierre',as
  const v=regla(r);assert.equal(v.estadoRevision,'parcial');assert.equal(v.puntosAplicados,0);
  assert.equal(v.valor.faltasPorTipo.espacio_comentario,1);assert.equal(v.evidencias[0].linea,2);
 });
-test('el texto y los lenguajes no seleccionados no se revisan como comentarios',async()=>{
+test('los comentarios no seleccionados se revisan; el texto no se interpreta como comentario',async()=>{
  const r=await analizar({texto:'//Hola mundo',js:'/*Hola mundo*/\nconst x=1;'},'txt',{revisorOrtografico:async()=>({matches:[]})});
- assert.equal(regla(r).valor.faltasPorTipo.espacio_comentario,0);
+ assert.equal(regla(r).valor.faltasPorTipo.espacio_comentario,2);
 });
 
 test('comentarios tras ; y } con cero, uno o dos espacios en JS/CSS/HTML',async()=>{
