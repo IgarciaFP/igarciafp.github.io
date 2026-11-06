@@ -146,7 +146,7 @@ function mostrar(r,umbral){
     ?faltas+' '+(faltas===1?'incidencia detectada':'incidencias detectadas')
     :(ortografia?.estadoRevision==='fallida'?'Comprobación fallida · 0 puntos':'Comprobación no realizada · 0 puntos');
   $('ortografia-motivo').textContent=ortografia?.estadoRevision==='parcial' ? ortografia.motivo : revisada
-    ?'Revisión completada · '+(ortografia.puntosAplicados||0)+' puntos: se cuentan tildes omitidas desde tres letras, inicios de frase en minúscula, espacios ausentes tras puntuación y aperturas ¿/¡ ausentes y expresiones vigiladas (pueden ser correctas según el contexto). Cada error repetido cuenta una vez; se excluyen avisos que contengan «Si es».'
+    ?'Revisión completada · '+(ortografia.puntosAplicados||0)+' puntos: se cuentan tildes omitidas desde tres letras, inicios de frase en minúscula, espacios ausentes tras puntuación y aperturas ¿/¡ ausentes y espacios junto a los delimitadores de comentarios, además de expresiones vigiladas (pueden ser correctas según el contexto). Cada error repetido cuenta una vez; se excluyen avisos que contengan «Si es».'
     :ortografia?.motivo||'No hay una revisión lingüística completada para esta entrega.';
 
   $('faltas-detalle').replaceChildren();
