@@ -39,7 +39,8 @@ test('ortografía envía únicamente los tipos seleccionados',async()=>{
   assert.equal(r.resultados.find(x=>x.id==='sin_comentarios').valor.lineasCodigo,0);
 });
 test('selección errónea no convierte prosa a JS y sin selección conserva preparación',()=>{
-  assert.equal(analizarEntrega('Una explicación normal.','js').puntuacion,null);
+  assert.deepEqual(analizarEntrega('Una explicación normal.','js').lenguajes,['texto']);
+  assert.equal(analizarEntrega('Una explicación normal.','js').puntuacion,0);
   assert.equal(analizarEntrega('Una explicación normal.').preparacion.bloques.texto.length,1);
   assert.equal(prepararEntrega('x').bloques.texto.length,1);
   assert.throws(()=>prepararEntrega({python:'print(1)'}));
