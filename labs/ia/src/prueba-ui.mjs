@@ -4,7 +4,7 @@ const $ = id => document.getElementById(id);
 const nombres = {
 sin_comentarios:'Comentarios insuficientes (solo desde 10 líneas de código)', caracteres_especiales:'Caracteres especiales de la lista de vigilancia', comentarios_mayuscula:'Al menos el 95 % de los comentarios empieza con mayúscula', indentacion_par:'Sangría con espacios pares en al menos el 95 % de las líneas', comentarios_abundantes:'Más de un comentario por cada cinco líneas', comentarios_sin_puntos:'Al menos el 95 % de los comentarios no contiene puntos', comentarios_punto_final:'Al menos el 95 % de los comentarios termina con punto', comentarios_largos:'Proporción elevada de comentarios largos', comentarios_antes_funciones:'Mismos saltos previos en al menos el 95 % de los comentarios', comentarios_separadores:'Al menos el 95 % de los separadores tiene la misma longitud', comentarios_pasos:'Comentarios con pasos numerados', comentarios_etiquetas:'Etiquetas explicativas en comentarios', comentarios_jsdoc:'Documentación JSDoc abundante', comentarios_repetidos:'Comentarios repetidos', comentarios_conversacionales:'Frases conversacionales', comentarios_instrucciones:'Instrucciones de sustitución pendientes', menciones_ia:'Menciones a herramientas de IA', espacios_invisibles:'Espacios invisibles y controles Unicode', emojis_comentarios:'Emojis en comentarios', lineas_largas:'Líneas de más de 120 caracteres', sangria_uniforme:'Unidad de sangría uniforme en al menos el 95 % de las líneas', comillas_uniformes:'Comillas uniformes en al menos el 95 % de las cadenas', bloques_markdown:'Restos de bloques Markdown', encabezados_markdown:'Encabezados Markdown en comentarios', sintaxis_configurable:'Construcciones JavaScript seleccionadas', metodos_configurables:'Métodos JavaScript seleccionados', estructuras_configurables:'Estructuras y API seleccionadas', validaciones_repetidas:'Validaciones defensivas frecuentes', muchos_try_catch:'Proporción elevada de try/catch', envoltorio_iife:'Función autoejecutable', mensajes_prefijados:'Mensajes de consola con prefijos', identificadores_largos:'Identificadores largos', nombres_pendientes:'Identificadores provisionales', urls_ejemplo:'Direcciones o claves de ejemplo', html_comentarios_secciones:'Secciones HTML rotuladas', html_textos_provisionales:'Textos de plantilla en HTML', html_atributos_configurables:'Atributos HTML seleccionados', css_variables:'Propiedades personalizadas CSS', css_funciones_configurables:'Funciones CSS seleccionadas', css_reglas_configurables:'Reglas CSS seleccionadas', css_nombres_bem:'Clases CSS con nomenclatura BEM'
 };
-nombres.ausencia_faltas = 'Texto y comentarios sin errores ortográficos detectados';
+nombres.ausencia_faltas = 'Texto y comentarios sin incidencias lingüísticas detectadas';
 nombres.comentarios_longitud_similar = 'Longitud aproximada similar en al menos el 95 % de los comentarios';
 nombres.espaciado_uniforme = 'Separación uniforme antes de los comentarios';
 const patronesResumen = ['comentarios_mayuscula','comentarios_sin_puntos','comentarios_longitud_similar','espaciado_uniforme','sangria_uniforme','indentacion_par'];
@@ -143,10 +143,10 @@ function mostrar(r,umbral){
   const revisada=ortografia?.aplicable===true&&Number.isInteger(faltas)&&faltas>=0;
   $('ortografia-resumen').dataset.estado=revisada?(faltas?'faltas':'correcto'):'sin-analisis';
   $('ortografia-resultado').textContent=revisada
-    ?faltas+' '+(faltas===1?'falta detectada':'faltas detectadas')
+    ?faltas+' '+(faltas===1?'incidencia detectada':'incidencias detectadas')
     :(ortografia?.estadoRevision==='fallida'?'Comprobación fallida · 0 puntos':'Comprobación no realizada · 0 puntos');
-  $('ortografia-motivo').textContent=revisada
-    ?'Revisión completada · '+(ortografia.puntosAplicados||0)+' puntos: se cuentan tildes omitidas desde tres letras, inicios de frase en minúscula, espacios ausentes tras puntuación y aperturas ¿/¡ ausentes. Cada error repetido cuenta una vez; se excluyen avisos que contengan «Si es».'
+  $('ortografia-motivo').textContent=ortografia?.estadoRevision==='parcial' ? ortografia.motivo : revisada
+    ?'Revisión completada · '+(ortografia.puntosAplicados||0)+' puntos: se cuentan tildes omitidas desde tres letras, inicios de frase en minúscula, espacios ausentes tras puntuación y aperturas ¿/¡ ausentes y expresiones vigiladas (pueden ser correctas según el contexto). Cada error repetido cuenta una vez; se excluyen avisos que contengan «Si es».'
     :ortografia?.motivo||'No hay una revisión lingüística completada para esta entrega.';
 
   $('faltas-detalle').replaceChildren();
@@ -156,7 +156,7 @@ function mostrar(r,umbral){
     }
   }
   $('reduccion-ortografica').textContent=r.reduccionOrtografica
-    ?'Reducción por '+faltas+' falta(s) en '+(r.descuentoOrtografico?.lineasRevisadas||0)+' línea(s) revisada(s): −'+Math.round(r.reduccionOrtografica*10000)/100+' % · '+r.puntuacionAntesReduccion+' → '+r.puntuacion+' puntos'
+    ?'Reducción por '+faltas+' incidencia(s) en '+(r.descuentoOrtografico?.lineasRevisadas||0)+' línea(s) revisada(s): −'+Math.round(r.reduccionOrtografica*10000)/100+' % · '+r.puntuacionAntesReduccion+' → '+r.puntuacion+' puntos'
     :'Sin reducción por faltas'+(!revisada?' (revisión no completada)':'');
   $('decision-detalle').textContent+=' '+r.lineasCodigoAnalizadas+' líneas de código · multiplicador de penalizaciones ×'+r.multiplicadorPenalizaciones+'.';
   if(r.codigoBreve){
