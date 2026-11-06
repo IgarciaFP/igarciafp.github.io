@@ -103,7 +103,7 @@ Se trabaja con la prosa preparada; los tokens con puntos internos (por ejemplo `
 
 ## Expresiones vigiladas
 
-Se detectan localmente las once expresiones de `EXPRESIONES_VIGILADAS`: «de que», «hubieron», «han habido», «habían», «sobretodo», «mi», «tu», «a parte», «aun», «ni si quiera» y «a ver». Se buscan palabras/frases completas en la prosa preparada, sin distinguir mayúsculas y normalizando espacios y Unicode; se conserva la distinción de tilde (`aun` no coincide con `aún`, ni `mi/tu` con `mí/tú`). Las exclusiones y los límites de palabras impiden encontrar trozos de identificadores, URLs o nombres de archivo. No se fabrican frases al borrar términos excluidos.
+Se detectan localmente las doce expresiones de `EXPRESIONES_VIGILADAS`: «de que», «hubieron», «han habido», «habían», «sobretodo», «mi», «tu», «a parte», «aun», «ni si quiera», «a ver» y «preveer». Se buscan palabras/frases completas en la prosa preparada, sin distinguir mayúsculas y normalizando espacios y Unicode; se conserva la distinción de tilde (`aun` no coincide con `aún`, ni `mi/tu` con `mí/tú`). Las exclusiones y los límites de palabras impiden encontrar trozos de identificadores, URLs o nombres de archivo. No se fabrican frases al borrar términos excluidos.
 
 Cada expresión distinta cuenta una vez en el descuento vigente, incluso cuando LanguageTool no la señala. Se identifican como `expresion_vigilada`, no como errores gramaticales confirmados, porque pueden ser correctas según el contexto. `mi` y `tu` son excepciones explícitas al mínimo de tres letras y hacen elegible la línea. Los avisos API que se solapan con una expresión no duplican su recuento; «Si es» sigue excluyendo avisos API, pero no las coincidencias literales de esta lista.
 
