@@ -562,6 +562,7 @@ p.destacado { font-weight: bold; }
 <tr><td><code>:is()</code></td><td>Coincide con alguno de los selectores.</td><td><code>:is(h1, h2)</code></td></tr>
 <tr><td><code>:where()</code></td><td>Como :is(), pero sin aportar especificidad.</td><td><code>:where(h1, h2)</code></td></tr>
 <tr><td><code>:has()</code></td><td>Cumple la relación indicada.</td><td><code>article:has(img)</code></td></tr>
+<tr><td><code>:root</code></td><td>Elemento raíz del documento; en una página HTML, <code>&lt;html&gt;</code>. Se usa para declarar variables globales.</td><td><code>:root { --color-marca: #87452e; }</code></td></tr>
 </tbody></table></div>
 <pre><code>button:hover { background-color: #ccfbf1; }
 button:focus-visible { outline: 3px solid #1e3a8a; }
@@ -573,6 +574,36 @@ li:last-child { border-bottom: 0; }
 li:nth-child(2n) { background-color: #eff6ff; }
 li:not(.destacado) { color: #475569; }</code></pre>
 <p><code>:nth-child(2n)</code> selecciona posiciones pares. Las posiciones empiezan en 1 y se cuentan entre <strong>todos los hermanos que sean elementos</strong>; la regla anterior solo se aplica si el elemento de esa posición es un <code>li</code>. <code>:not(.destacado)</code> excluye los elementos con esa clase.</p>
+<aside aria-labelledby="ampliacion-root" class="extension-card"><p class="card-label">Ampliación</p><h4 id="ampliacion-root"><code>:root</code> frente a <code>html</code>, <code>body</code> y <code>body *</code></h4><p>Las cuatro reglas parecen equivalentes porque todas afectan a la página entera, pero seleccionan elementos distintos y no pesan lo mismo.</p><details class="full-reference"><summary>Ver explicación y ejemplos</summary><h5>¿Cuándo usar <code>:root</code>?</h5>
+<p>Úsalo para lo que pertenece a <strong>todo el documento</strong>: las variables de la guía de estilo (<em>tokens</em>) y, si hace falta, el tamaño de letra de referencia del que dependen las unidades <code>rem</code>. Es la convención más extendida: quien abra la hoja sabrá que ahí están los valores globales.</p>
+<pre><code>:root {
+  --color-bg-page: #faf6ef;
+  --color-text-primary: #352a24;
+  --espacio-m: 1rem;
+}</code></pre>
+<p>Los estilos visuales de la página (fondo, color del texto, tipo de letra) se suelen escribir en <code>body</code>, que es el elemento que contiene el contenido visible.</p>
+<h5>¿Qué selecciona cada uno y cuánto pesa?</h5>
+<div class="table-wrap"><table><caption>Selectores que afectan a toda la página</caption>
+<thead><tr><th scope="col">Selector</th><th scope="col">Qué selecciona</th><th scope="col">Especificidad</th></tr></thead>
+<tbody>
+<tr><td><code>:root</code></td><td>El elemento raíz: <code>&lt;html&gt;</code> en una página web.</td><td>0-1-0 (pseudoclase)</td></tr>
+<tr><td><code>html</code></td><td>El mismo elemento <code>&lt;html&gt;</code>.</td><td>0-0-1 (tipo)</td></tr>
+<tr><td><code>body</code></td><td>El elemento <code>&lt;body&gt;</code>, hijo de <code>&lt;html&gt;</code>.</td><td>0-0-1 (tipo)</td></tr>
+<tr><td><code>body *</code></td><td>Todos los elementos que hay dentro de <code>&lt;body&gt;</code>, uno a uno.</td><td>0-0-1 (el universal no suma)</td></tr>
+</tbody></table></div>
+<h5>¿Cuál gana?</h5>
+<ul>
+<li><strong><code>:root</code> frente a <code>html</code>:</strong> seleccionan el mismo elemento, así que compiten por especificidad. Gana <code>:root</code> (0-1-0 frente a 0-0-1), aunque <code>html</code> esté escrito después.</li>
+<li><strong><code>:root</code> frente a <code>body</code>:</strong> no compiten, porque son elementos distintos. El valor de <code>body</code> se aplica a <code>body</code> y sus descendientes lo heredan de él, que es su antepasado más cercano. La especificidad solo decide entre reglas que se aplican <em>al mismo elemento</em>.</li>
+<li><strong>Cualquiera de ellos frente a <code>body *</code>:</strong> <code>body *</code> declara el valor directamente en cada elemento, y un valor declarado siempre se impone a uno heredado, sea cual sea su especificidad. Por eso <code>body *</code> «gana» a <code>:root</code> aunque pese menos.</li>
+</ul>
+<pre><code>:root  { color: navy; }
+html   { color: green; }   /* pierde: mismo elemento, menos especificidad */
+body   { color: purple; }  /* body y lo que herede de él: morado */
+body * { color: red; }     /* cada elemento dentro de body: rojo */</code></pre>
+<p>Resultado: los títulos, párrafos y demás elementos de la página son <strong>rojos</strong>; el propio <code>&lt;body&gt;</code> es morado y <code>&lt;html&gt;</code>, azul marino. Si quitas la última regla, el texto pasa a ser <strong>morado</strong>; si quitas también <code>body</code>, <strong>azul marino</strong>. Compruébalo en el inspector, en la pestaña <em>Computed</em>.</p>
+<p><code>body *</code> se usa poco precisamente por eso: anula la herencia en todos los elementos y obliga a repetir estilos en cada componente. Para valores comunes es mejor declararlos una vez en <code>body</code> o en <code>:root</code> y dejar que se hereden.</p>
+<p class="source">Referencia: <a href="https://developer.mozilla.org/es/docs/Web/CSS/:root" rel="noopener noreferrer" target="_blank">:root · MDN ↗</a></p></details></aside>
 <h3 id="pseudoelementos">2.6. Pseudoelementos: partes de un elemento</h3>
 <p>Se escriben con <strong>dos puntos consecutivos</strong> (<code>::</code>) y permiten aplicar estilos a partes de un elemento o generar contenido decorativo. No equivalen a añadir elementos HTML reales.</p>
 <div class="table-wrap"><table><caption>Pseudoelementos habituales y su significado</caption><thead><tr><th scope="col">Pseudoelemento</th><th scope="col">Significado</th><th scope="col">Ejemplo de selector</th></tr></thead><tbody>
