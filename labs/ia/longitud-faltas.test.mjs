@@ -28,9 +28,9 @@ test('exclusión configurable, ampliable y desactivada al revisar inglés',async
  }
 });
 
-test('tildes solo desde cuatro letras y vocales mayúsculas excluidas',async()=>{
+test('tildes solo desde tres letras y vocales mayúsculas excluidas',async()=>{
  const r=await revisar(['a','el','si','mas','esta','Arbol','ARBOL','Numero','camion'],[['á'],['él'],['sí'],['más'],['está'],['Árbol'],['ÁRBOL'],['Número'],['camión']]);
- assert.equal(regla(r).valor.faltas,3);
+ assert.equal(regla(r).valor.faltas,4);
 });
 test('no cuentan tildes sobrantes, diéresis, eñes ni otras erratas',async()=>{
  const r=await revisar(['ésta','pinguino','ano','cassa','árbol'],[['esta'],['pingüino'],['año'],['casa'],['árbol']]);
