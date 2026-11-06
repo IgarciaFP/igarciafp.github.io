@@ -826,7 +826,7 @@ export async function analizarEntregaDetalladaAsync(contenido, lenguajes = "", o
 
 export const EXPRESIONES_VIGILADAS = Object.freeze([
   'de que', 'hubieron', 'han habido', 'habían', 'sobretodo', 'mi', 'tu',
-  'a parte', 'aun', 'ni si quiera', 'a ver'
+  'a parte', 'aun', 'ni si quiera', 'a ver', 'preveer'
 ]);
 function detectarExpresionesVigiladas(f) {
   const alternativas = EXPRESIONES_VIGILADAS.map(t => t.replaceAll(' ', '\\s+').replace('í', '(?:í|i\\u0301)')).join('|');
