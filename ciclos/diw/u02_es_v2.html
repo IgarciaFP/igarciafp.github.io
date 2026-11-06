@@ -403,48 +403,6 @@ body {
 └── estilos.css       /* importa los anteriores en este orden */</code></pre>
 <p>Para proyectos pequeños basta con una sola hoja dividida con comentarios en esos mismos bloques. Lo importante es que <strong>los átomos no dependan de dónde se colocan</strong>: un <code>.boton</code> debe verse igual en la cabecera que dentro de una tarjeta.</p>
 <aside class="extension-card" id="laboratorio-atomic"><p class="card-label">Laboratorio interactivo</p><h5>Clasifica componentes con Atomic Design</h5><p>Explora componentes reales, clasifícalos en átomos, moléculas u organismos y construye una plantilla con ellos.</p><a href="../../labs/bootstrap-atomic-design.html" rel="noopener noreferrer" target="_blank">Abrir laboratorio de Atomic Design ↗</a></aside>
-<aside aria-labelledby="ampliacion-formato" class="extension-card"><p class="card-label">Ampliación</p><h4 id="ampliacion-formato">Formatear y revisar el código automáticamente</h4><p>Las herramientas aplican las convenciones por ti y avisan de errores antes de que lleguen al navegador.</p><details class="full-reference"><summary>Ver herramientas</summary>
-<ul><li><strong>Prettier:</strong> formatea la indentación, los espacios y los saltos de línea al guardar. En VS Code, instala la extensión y activa <em>Format On Save</em>.</li>
-<li><strong>Stylelint:</strong> detecta propiedades mal escritas, valores no válidos, selectores duplicados o nombres que no siguen tu convención.</li>
-<li><strong>EditorConfig:</strong> un archivo <code>.editorconfig</code> en el proyecto fija los espacios de indentación para todo el equipo, use el editor que use.</li></ul>
-<pre><code># .editorconfig
-root = true
-
-[*.{html,css,js}]
-indent_style = space
-indent_size = 2
-charset = utf-8</code></pre>
-</details></aside>
-<aside aria-labelledby="ampliacion-ofuscadores" class="extension-card"><p class="card-label">Ampliación</p><h4 id="ampliacion-ofuscadores">Minificadores, ofuscadores y embellecedores</h4><p>El código legible es para las personas; el que se publica en producción a menudo se transforma para que pese menos o sea más difícil de copiar. Conviene distinguir tres tipos de herramientas.</p><details class="full-reference"><summary>Ver herramientas y prueba</summary>
-<div class="table-wrap"><table><caption>Qué hace cada herramienta</caption>
-<thead><tr><th scope="col">Herramienta</th><th scope="col">Qué hace</th><th scope="col">Ejemplos</th></tr></thead>
-<tbody>
-<tr><td><strong>Minificador</strong></td><td>Elimina espacios, saltos de línea y comentarios, y acorta valores (<code>#ffffff</code> → <code>#fff</code>, <code>0px</code> → <code>0</code>). El resultado funciona igual y pesa menos.</td><td>cssnano, Lightning CSS, clean-css; los empaquetadores como Vite lo aplican al publicar.</td></tr>
-<tr><td><strong>Ofuscador</strong></td><td>Además de minificar, renombra lo que tiene significado para que el código sea difícil de entender: <code>.producto__precio</code> pasa a <code>.a3f</code>. En CSS hay que cambiar también el HTML; es mucho más habitual en JavaScript.</td><td>CSS Modules (nombres con <em>hash</em>), javascript-obfuscator.</td></tr>
-<tr><td><strong>Embellecedor</strong> (<em>beautifier</em>)</td><td>Hace lo contrario: vuelve a indentar y separar en líneas un código compactado para poder leerlo.</td><td>Prettier, js-beautify, el botón <strong>{ }</strong> («Pretty print») del panel Sources de Chrome DevTools.</td></tr>
-</tbody></table></div>
-<pre><code>/* Original: 93 bytes */
-.producto__precio {
-  /* Precio destacado */
-  color: #ffffff;
-  margin: 0px 0px 16px 0px;
-}
-
-/* Minificado: 45 bytes (−52 %) */
-.producto__precio{color:#fff;margin:0 0 16px}
-
-/* Ofuscado: 32 bytes */
-.a3f{color:#fff;margin:0 0 16px}</code></pre>
-<p>Ten en cuenta dos límites. Un embellecedor recupera la indentación, pero <strong>no los comentarios ni los nombres originales</strong>: lo que se pierde al ofuscar no vuelve. Y ofuscar no protege de verdad: el navegador necesita el código para pintarlo, así que cualquiera puede leerlo. Por eso trabajas siempre sobre el código fuente legible y dejas que una herramienta genere la versión de producción.</p>
-<div class="checks"><p><strong>Haz la prueba</strong></p><ol>
-<li>Copia la hoja de ejemplo de «Comentarios y orden de la hoja» (más arriba) o una hoja tuya con comentarios.</li>
-<li>Minifícala con un minificador en línea, como el <a href="https://www.toptal.com/developers/cssminifier" rel="noopener noreferrer" target="_blank">CSS Minifier de Toptal ↗</a>. Anota el tamaño en bytes antes y después y calcula el porcentaje de ahorro.</li>
-<li>Pega el resultado minificado en un embellecedor, como <a href="https://beautifier.io/" rel="noopener noreferrer" target="_blank">beautifier.io ↗</a>. Compara con el original: ¿qué se ha recuperado y qué se ha perdido para siempre?</li>
-<li>Abre una web real que conozcas, busca su CSS en el panel <strong>Sources</strong> de DevTools y pulsa <strong>{ }</strong>. ¿Está minificada? ¿Reconoces alguna convención de nombres (BEM, nombres con <em>hash</em>…)?</li>
-<li>Responde en dos líneas: ¿qué versión subirías a tu repositorio y cuál al servidor? ¿Por qué?</li>
-</ol></div>
-<p class="source">Referencias: <a href="https://developer.mozilla.org/es/docs/Glossary/Minification" rel="noopener noreferrer" target="_blank">Minificación · MDN ↗</a> · <a href="https://developer.chrome.com/docs/devtools/javascript/reference#format" rel="noopener noreferrer" target="_blank">Formatear código minificado · Chrome DevTools ↗</a></p>
-</details></aside>
 <aside class="resource-card expansion-card"><h5>Convenciones de código</h5><div class="flex-wrap-group"><a class="resource-link-btn" href="https://getbem.com/introduction/" rel="noopener noreferrer" target="_blank">Introducción a BEM ↗</a> <a class="resource-link-btn" href="https://atomicdesign.bradfrost.com/chapter-2/" rel="noopener noreferrer" target="_blank">Atomic Design · Brad Frost ↗</a> <a class="resource-link-btn" href="migas-amigas-guia-estilo.html#apartado-9">Tokens y Atomic Design · Migas Amigas</a></div></aside>
 <article aria-labelledby="ejercicio-02-1-titulo" class="didactic-note activity-callout" id="u02v2-act-02"><h3 class="exercise-title" id="ejercicio-02-1-titulo"><i aria-hidden="true" class="fa-solid fa-pen"></i> Actividad 02-02 · Detective de la cascada</h3><p class="activity-concepts"><strong>Practicas:</strong> cascada, herencia, especificidad, <code>!important</code> y legibilidad del código (1.3–1.8).</p><p>En la ficha de un producto de Migas Amigas, el precio no sale del color que esperaba quien escribió la hoja. Antes de abrir el inspector, razona qué ocurre.</p><pre><code>&lt;article class="producto" id="oferta"&gt;
   &lt;h3 class="producto__nombre"&gt;Hogaza de masa madre&lt;/h3&gt;
