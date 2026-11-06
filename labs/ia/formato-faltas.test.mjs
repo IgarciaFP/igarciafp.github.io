@@ -51,3 +51,37 @@ test('fallo del servicio no se convierte en ausencia de errores',async()=>{
  const r=await analizar({texto:'hola,mundo!'},'txt',{revisorOrtografico:async()=>{throw Error('Fallo');}});
  assert.equal(regla(r).peso,0);assert.equal(regla(r).estadoRevision,'fallida');assert.equal(r.reduccionOrtografica,0);
 });
+
+test('las once expresiones vigiladas cuentan sin avisos de la API',async()=>{
+ const texto='de que; hubieron; han habido; habían; sobretodo; mi; tu; a parte; aun; ni si quiera; a ver';
+ const r=await revisar(texto,()=>[]);
+ assert.equal(regla(r).valor.faltasPorTipo.expresion_vigilada,11);
+ assert.equal(regla(r).cumple,false);assert.equal(r.reduccionOrtografica,1);
+});
+test('mi y tu solos son elegibles, aun no coincide con aún y se respetan límites',async()=>{
+ const r=await revisar('mi\ntu\nmí tú aún miremos turno aunado hubieronAlgo mi.js',()=>[]);
+ assert.equal(regla(r).valor.faltas,2);assert.deepEqual(regla(r).valor.expresionesVigiladas.map(v=>v.expresion),['mi','tu']);
+ const solo=await revisar('mi tu',()=>[]);assert.equal(regla(solo).valor.lineasRevisadas,1);assert.equal(regla(solo).valor.faltas,2);
+});
+test('expresiones repetidas no duplican descuento; case, espacios y NFC equivalen',async()=>{
+ const r=await revisar('DE QUE; de   que; habían; habi\u0301an; MI mi',()=>[]);
+ assert.equal(regla(r).valor.faltas,3);assert.equal(regla(r).valor.aparicionesFaltas,6);
+});
+test('la eliminación de glosario no crea expresiones artificiales',async()=>{
+ const r=await revisar('de browser que; han browser habido; a browser parte',()=>[]);
+ assert.equal(regla(r).valor.faltas,0);
+});
+test('un aviso API sobre una expresión vigilada no la cuenta por segunda vez',async()=>{
+ const r=await revisar('aun hay cosas',t=>[match(t,'aun','aún','AUN','Si es temporal')]);
+ assert.equal(regla(r).valor.faltas,1);assert.equal(regla(r).valor.faltasPorTipo.expresion_vigilada,1);
+ assert.equal(regla(r).valor.faltasPorTipo.tilde_omitida,0);
+});
+test('las expresiones sobreviven al fallo API sin afirmar revisión completada',async()=>{
+ const r=await analizar({texto:'mi tu'},'txt',{revisorOrtografico:async()=>{throw Error('Fallo');}});
+ assert.equal(regla(r).estadoRevision,'parcial');assert.equal(regla(r).valor.faltas,2);
+ assert.equal(regla(r).peso,0);assert.equal(regla(r).cumple,false);assert.equal(r.reduccionOrtografica,1);
+});
+test('solo se detectan expresiones en prosa, no en código ejecutable',async()=>{
+ const r=await analizarEntregaInformeAsync('const mi = "a ver";\n// Tu texto\nlet x=1;','js',{revisorOrtografico:async()=>({matches:[]})});
+ assert.deepEqual(regla(r).valor.expresionesVigiladas.map(v=>v.expresion),['tu']);
+});
