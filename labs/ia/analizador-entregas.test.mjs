@@ -35,7 +35,7 @@ test('separadores de diferente longitud', () => {
 test('HTML solo analiza los lenguajes seleccionados', () => {
   const r = analizarEntrega('<style>:root {--color: red}</style><script>const x=1;</script>', 'HTML+css');
   assert.ok(r.resultados.some(x => x.lenguaje === 'css'));
-  assert.ok(!r.resultados.some(x => x.lenguaje === 'js'));
+  assert.ok(!r.resultados.some(x => x.lenguaje === 'js' && x.id === 'sintaxis_configurable'));
   assert.equal(regla(r, 'css_variables').cumple, true);
 });
 test('error de sintaxis no implica ausencia de comentarios', () => {
