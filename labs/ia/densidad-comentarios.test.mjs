@@ -17,7 +17,7 @@ for (const lenguaje of ['js', 'css', 'html']) {
       assert.equal(r.cumple,activa,`${numeroComentarios} comentarios / ${cantidad} líneas`);
       assert.equal(r.valor.lineasCodigo,cantidad);
       assert.equal(r.valor.comentarios,numeroComentarios);
-      assert.equal(r.peso,100);
+      assert.equal(r.peso,lenguaje==='js'?100:10*Math.floor(cantidad/20));
     }
   });
 }
