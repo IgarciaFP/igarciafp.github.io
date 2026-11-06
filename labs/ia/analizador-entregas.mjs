@@ -840,7 +840,7 @@ async function revisarProsa(resultado, opciones) {
   }
   const preparacionProsa = prepararProsa(fragmentos, config);
   resultado.preparacionProsa = preparacionProsa;
-  const tienePalabrasRevisables = t => (t.normalize('NFC').match(/\p{L}+/gu) || []).some(p => [...p].length >= 4);
+  const tienePalabrasRevisables = t => (t.normalize('NFC').match(/\p{L}+/gu) || []).some(p => [...p].length >= 3);
   const seleccionados = preparacionProsa.fragmentos.filter(f => tienePalabrasRevisables(f.texto));
   const lineasElegibles = new Set();
   for (const f of seleccionados) {
@@ -851,7 +851,7 @@ async function revisarProsa(resultado, opciones) {
   const lineasRevisadas = lineasElegibles.size;
   let texto = "";
   for (const f of seleccionados) { f.offset = texto.length; texto += f.texto + "\n\n"; }
-  const palabras = (texto.normalize('NFC').match(/\p{L}+/gu) || []).filter(p => [...p].length >= 4).length;
+  const palabras = (texto.normalize('NFC').match(/\p{L}+/gu) || []).filter(p => [...p].length >= 3).length;
   const minimo = 1;
   const excluidos = motivo => [...new Set(preparacionProsa.exclusiones.filter(e => e.motivo === motivo).map(e => e.token))];
   regla.valor = { palabras, lineasRevisadas, minimo, idioma: config.idioma || "es", exclusionIngles: preparacionProsa.exclusionIngles,
@@ -859,7 +859,7 @@ async function revisarProsa(resultado, opciones) {
     puntosInternosExcluidos: excluidos('punto_interno'),
     terminosExcluidos: [...excluidos('glosario_tecnico'), ...excluidos('glosario_ingles')] };
   if (palabras < minimo) {
-    regla.motivo = "No quedan palabras de cuatro o más letras tras aplicar las exclusiones. No se ha solicitado revisión ortográfica.";
+    regla.motivo = "No quedan palabras de tres o más letras tras aplicar las exclusiones. No se ha solicitado revisión ortográfica.";
     return resultado;
   }
   try {
@@ -869,24 +869,44 @@ async function revisarProsa(resultado, opciones) {
     if (data.matches.some(m => !Number.isInteger(m.offset) || m.offset < 0 || m.offset >= texto.length || !Number.isInteger(m.length) || m.length < 0 || m.offset + m.length > texto.length)) {
       throw new Error("El servicio devolvió posiciones de errores inválidas.");
     }
-    // Se cuentan únicamente tildes omitidas en vocales minúsculas.
-    // Se excluyen términos del glosario inglés, salvo al revisar en inglés.
-    // NFC hace que una vocal con tilde descompuesta se cuente como un carácter.
+    // Cada categoría acepta solo la transformación concreta solicitada.
     const palabra = /^[\p{L}\p{M}]+$/u;
     const caracterPalabra = /[\p{L}\p{M}\p{N}_]/u;
     const candidatas = data.matches.flatMap(m => {
       if ([m.message, m.shortMessage, m.rule?.description].some(t => typeof t === "string" && /si\s+es/i.test(t))) return [];
       if (m.rule?.issueType === "style" || m.rule?.category?.id === "STYLE") return [];
       const original = texto.slice(m.offset, m.offset + m.length);
-      if ([...original.normalize("NFC")].length < 4 || !palabra.test(original) || caracterPalabra.test(texto.slice(0, m.offset).slice(-1)) ||
-          caracterPalabra.test(texto.slice(m.offset + m.length, m.offset + m.length + 1))) return [];
-      const replacements = (m.replacements || []).filter(r => typeof r.value === "string" &&
-        palabra.test(r.value) && faltaTildeMinuscula(original, r.value));
-      return replacements.length ? [{ ...m, replacements }] : [];
+      const sugerencias = (m.replacements || []).filter(r => typeof r.value === "string");
+      const f = seleccionados.find(f => m.offset >= f.offset && m.offset + m.length <= f.offset + f.texto.length);
+      if (!f || !original) return [];
+      const inicio = m.offset - f.offset;
+      // No aceptar un comienzo de frase creado al borrar términos excluidos.
+      const prefijo = f.original.slice(0, inicio).split(/[.!?\n]/u).at(-1);
+      let tipo, replacements;
+      if (m.rule?.id === 'UPPERCASE_SENTENCE_START' && /^\p{Ll}/u.test(original) &&
+          /^[\s¿¡«»"'“”‘’()*\-–—]*$/u.test(prefijo)) {
+        tipo = 'inicio_minuscula';
+        replacements = sugerencias.filter(r => r.value === original[0].toUpperCase() + original.slice(1));
+      } else if (['COMMA_PARENTHESIS_WHITESPACE','INCORRECT_SPACES','ESPACIO_DESPUES_DE_PUNTO','SENTENCE_WHITESPACE'].includes(m.rule?.id)) {
+        tipo = 'espacio_puntuacion';
+        const corregida = original.replace(/([.,;:!?])(?=\p{L})/gu, '$1 ');
+        replacements = sugerencias.filter(r => corregida !== original && r.value === corregida);
+      } else if (m.rule?.id === 'ES_QUESTION_MARK') {
+        tipo = 'apertura_ausente';
+        replacements = sugerencias.filter(r => r.value === '¿' + original || r.value === '¡' + original);
+      } else {
+        tipo = 'tilde_omitida';
+        if ([...original.normalize("NFC")].length < 3 || !palabra.test(original) || caracterPalabra.test(texto.slice(0, m.offset).slice(-1)) ||
+            caracterPalabra.test(texto.slice(m.offset + m.length, m.offset + m.length + 1))) return [];
+        replacements = sugerencias.filter(r => palabra.test(r.value) && faltaTildeMinuscula(original, r.value));
+      }
+      return replacements.length ? [{ ...m, tipo, replacements }] : [];
     });
     const unicas = new Map();
     for (const m of candidatas) {
-      const clave = texto.slice(m.offset, m.offset + m.length).normalize('NFC').toLowerCase();
+      const contexto = m.tipo === 'tilde_omitida' ? texto.slice(m.offset, m.offset + m.length)
+        : texto.slice(m.offset, m.offset + m.length) + '|' + texto.slice(m.offset + m.length).split(/[.!?\n]/u)[0];
+      const clave = m.tipo + ':' + contexto.normalize('NFC').toLowerCase().replace(/\s+/g, ' ').trim();
       if (unicas.has(clave)) unicas.get(clave).apariciones++;
       else unicas.set(clave, { ...m, apariciones: 1 });
     }
@@ -897,15 +917,16 @@ async function revisarProsa(resultado, opciones) {
     regla.cumple = faltas.length === 0 && !(opciones.desactivadas || []).includes("ausencia_faltas");
     regla.puntosAplicados = regla.cumple ? regla.peso : 0;
     regla.motivo = null;
-    regla.valor = { ...regla.valor, faltas: faltas.length, aparicionesFaltas: candidatas.length, faltasRepetidas: candidatas.length - faltas.length, avisosDescartados: data.matches.length - faltas.length,
+    regla.valor = { ...regla.valor, faltas: faltas.length, aparicionesFaltas: candidatas.length, faltasRepetidas: candidatas.length - faltas.length, avisosDescartados: data.matches.length - candidatas.length,
+      faltasPorTipo: Object.fromEntries(["tilde_omitida", "inicio_minuscula", "espacio_puntuacion", "apertura_ausente"].map(tipo => [tipo, faltas.filter(f => f.tipo === tipo).length])),
       sugerenciasEstilo: data.matches.filter(m => m.rule?.issueType === "style" || m.rule?.category?.id === "STYLE").length,
-      filtro: "Solo tildes omitidas en vocal minúscula, palabras de al menos 4 letras, sin repetir palabra y sin avisos Si es",
+      filtro: "Tildes omitidas desde 3 letras, inicio de frase en minúscula, espacio tras puntuación y apertura ¿/¡ ausente; sin repetir error ni avisos Si es",
       servicio: "LanguageTool", version: data.software?.version || null };
     const evidencias = faltas.length ? faltas.map(m => {
       const f = seleccionados.find(f => m.offset >= f.offset && m.offset < f.offset + f.texto.length) || seleccionados[0];
       const sugerencias = (m.replacements || []).slice(0, 3).map(r => r.value).join(", ");
-      return { linea: f.linea, archivo: f.archivo,
-        detalle: "Inicio del comentario · " + f.archivo + "\n" + (m.message || "Posible falta") +
+      return { tipo: m.tipo, linea: f.linea + (f.texto.slice(0, m.offset - f.offset).match(/\n/g) || []).length, archivo: f.archivo,
+        detalle: m.tipo + ' · ' + "Inicio del comentario · " + f.archivo + "\n" + (m.message || "Posible falta") +
           "\nFragmento: " + texto.slice(m.offset, m.offset + m.length) +
           "\nApariciones: " + m.apariciones + " (cuenta una sola falta)" +
           (sugerencias ? "\nSugerencias: " + sugerencias : "") };
