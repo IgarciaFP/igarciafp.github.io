@@ -80,7 +80,7 @@ test('código breve se analiza y revisa tildes sin patrones repetidos',async()=>
  }
  const v=await analizarEntregaAsync(codigo,'js',opciones);
  assert.equal(v[0],false);assert.equal(typeof v[2],'string');assert.notEqual(v[1],50);
- assert.equal(v[2],'No se encuentra "use strict" en el código JavaScript');
+ assert.ok(!v[2].includes('use strict'));
 });
 test('código breve sigue exigiendo comentario real',()=>{
  const v=analizarEntrega('const x="// comentario";','js');
@@ -133,10 +133,10 @@ test('rechazo por comentarios devuelve solo el mensaje aunque haya más reglas y
  const v=analizarEntrega({js:'const x="“”";'},'js');
  assert.equal(v[0],true);assert.equal(v[2],'No se admite código sin comentar');
 });
-test('strict ausente devuelve solo el mensaje; comentarios, cadenas y directivas de función no valen',async()=>{
+test('la ausencia de strict o su aparición como cadena no añade mensajes',async()=>{
  for(const codigo of ['// use strict\nconst x="“”";', '// Comentario.\nconst x="use strict";', '// Comentario.\nfunction f(){"use strict";return 1;}', '// Comentario.\nconst x=1; "use strict";']) {
   const v=await analizarEntregaAsync({js:codigo},'js',limpio);
-  assert.equal(v[2],'No se encuentra "use strict" en el código JavaScript');
+  assert.ok(!v[2].includes('use strict'));
  }
 });
 test('strict válido permite el resumen y no se exige en lenguajes no seleccionados',()=>{
@@ -146,4 +146,10 @@ test('strict válido permite el resumen y no se exige en lenguajes no selecciona
  }
  const v=analizarEntrega({texto:'“”',js:'const x=1;'},'txt');
  assert.equal(v[2],'caracteres_especiales: 60%');
+});
+
+test('JavaScript sin strict continúa con su resumen normal de reglas',()=>{
+ const v=analizarEntrega({js:'// Comentario.\nconst x="“”";'},'js');
+ assert.equal(v[0],false);assert.ok(v[2].includes('caracteres_especiales: 60%'));
+ assert.ok(!v[2].includes('use strict'));
 });
