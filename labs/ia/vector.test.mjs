@@ -38,19 +38,32 @@ test('humanidad incorpora reducción por faltas y fallo no suma ausencia de falt
  assert.ok(!fallido[2].some(r=>r.id==='ausencia_faltas'));
 });
 
-test('JS solicitado ausente activa a e informa exactamente el motivo',async()=>{
- for(const entrada of ['', 'Explicación del alumno.', '<p>Hola</p>', '<script src="app.js"></script>', '<script type="application/json">{}</script>']) {
-  const v=await analizarEntregaAsync(entrada,'js',limpio);
-  assert.equal(v[0],true);assert.equal(v[1],null);
-  assert.equal(v[2].find(r=>r.lenguaje==='js').mensaje,'Código/texto no detectado');
+test('tipos pedidos vacíos recurren a TXT y no provocan rechazo por JS ausente',async()=>{
+ for(const tipos of ['js','html css','txt js css']) {
+  const entrada={texto:'Explicación del alumno.',js:'  ',css:'\n'};
+  const r=await analizarEntregaInformeAsync(entrada,tipos,limpio);
+  assert.deepEqual(r.lenguajes,['texto']);
+  assert.deepEqual(crearVectorResultado(r),await analizarEntregaAsync(entrada,'txt',limpio));
+  assert.equal(crearVectorResultado(r)[0],false);
  }
 });
-test('cada tipo solicitado ausente informa; JS presente insuficientemente comentado informa rechazo',()=>{
+test('solo se analizan tipos pedidos con datos, sin incluir TXT si hay código pedido',async()=>{
+ const entrada={texto:'Explicación del alumno.',js:'// Comentario.\nconst x=1;',html:'<p>Hola</p>',css:'  '};
+ const r=await analizarEntregaInformeAsync(entrada,'js css',limpio);
+ assert.deepEqual(r.lenguajes,['js']);
+ assert.deepEqual(crearVectorResultado(r),await analizarEntregaAsync(entrada,'js',limpio));
+ assert.ok(!crearVectorResultado(r)[2].some(r=>r.id==='contenido_no_detectado'));
+});
+test('sin tipos pedidos disponibles ni TXT no se inventa puntuación',async()=>{
+ const v=await analizarEntregaAsync({html:'<p>Hola</p>'},'js css',limpio);
+ assert.equal(v[0],false);assert.equal(v[1],null);
+ assert.deepEqual(v[2],[{id:'contenido_no_detectado',lenguaje:'texto',peso:0,mensaje:'Código/texto no detectado'}]);
+});
+test('tipos vacíos no impiden detectar código sin comentar',()=>{
  const v=analizarEntrega(Array.from({length:10},(_,i)=>`const x${i}=${i};`).join('\n'),'js css html texto');
  assert.equal(v[0],true);
- assert.deepEqual(v[2].filter(r=>r.id==='contenido_no_detectado').map(r=>r.lenguaje),['css','html','texto']);
+ assert.ok(!v[2].some(r=>r.id==='contenido_no_detectado'));
  assert.equal(v[2].find(r=>r.id==='sin_comentarios').mensaje,'No se admite código sin comentar');
- assert.ok(!v[2].some(r=>r.id==='contenido_no_detectado'&&r.lenguaje==='js'));
 });
 
 test('código breve se analiza y revisa tildes sin patrones repetidos',async()=>{
@@ -83,7 +96,8 @@ test('tipos ausentes no impiden aplicar la política de código breve al código
  const r=await analizarEntregaInformeAsync('// Comentario de prueba.\nlet x=1;','js css',limpio);
  assert.equal(r.codigoBreve.lineas,1);
  assert.equal(r.resultados.find(r=>r.id==='comentarios_mayuscula').aplicable,false);
- assert.ok(crearVectorResultado(r)[2].some(r=>r.id==='contenido_no_detectado'&&r.lenguaje==='css'));
+ assert.ok(!crearVectorResultado(r)[2].some(r=>r.id==='contenido_no_detectado'));
+ assert.deepEqual(r.lenguajes,['js']);
 });
 
 test('sin tipo se analizan todos los bloques no vacíos y se respeta selección explícita',async()=>{
