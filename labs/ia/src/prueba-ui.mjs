@@ -113,7 +113,7 @@ function mostrarLista(){
 }
 document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{filtro=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));mostrarLista();}));
 function mostrar(r,umbral){
-  ultimo=r;$('vector-salida').textContent=JSON.stringify(crearVectorResultado(r),null,2);$('vacio').hidden=true;$('resultado').hidden=false;
+  ultimo=r;$('vacio').hidden=true;$('resultado').hidden=false;
   const parcial=r.estado==='analisis_parcial';const sinDatos=r.puntuacion===null;
   $('estado').textContent=parcial?'Análisis parcial':sinDatos?'Sin contenido':'Análisis completado';
   const humanidad=crearVectorResultado(r)[1];$('puntuacion').textContent=sinDatos?'—':humanidad;$('anillo').style.setProperty('--score',humanidad||0);
