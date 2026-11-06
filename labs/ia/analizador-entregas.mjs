@@ -1054,7 +1054,13 @@ export function crearVectorResultado(informe) {
   const noDetectados = informe.lenguajes.filter(tipo =>
     !informe.preparacion.bloques[tipo === 'js' ? 'javascript' : tipo].some(f => f.texto.trim()));
   const humanidad = informe.puntuacion === null ? null : Math.round((100 - informe.puntuacion) * 100) / 100;
-  if (escasos?.cumple === true) return [true, humanidad, 'No se admite código sin comentar'];
+  // La densidad global sigue siendo una regla, pero solo JS puede bloquear.
+  const bloquesJS = (escasos?.valor?.desglose || []).filter(d => d.lenguaje === 'js');
+  const lineasJS = bloquesJS.reduce((total, d) => total + d.lineasCodigo, 0);
+  const comentariosJS = bloquesJS.reduce((total, d) => total + d.comentarios, 0);
+  const rechazar = informe.lenguajes.includes('js') && escasos?.aplicable === true &&
+    lineasJS > 0 && comentariosJS * 10 < lineasJS;
+  if (rechazar) return [true, humanidad, 'No se admite código sin comentar'];
   const reglas = new Map();
   for (const r of informe.resultados) {
     if (r.aplicable && r.cumple && r.peso > 0 && !reglas.has(r.id)) reglas.set(r.id, r.peso);
@@ -1062,7 +1068,7 @@ export function crearVectorResultado(informe) {
   // El porcentaje conserva el peso configurado; los ajustes globales se reflejan en b.
   const lineas = [...reglas].map(([id, peso]) => `${id}: ${peso}%`);
   if (noDetectados.length) lineas.push('Código/texto no detectado');
-  return [escasos?.cumple === true,
+  return [false,
     informe.puntuacion === null ? null : Math.round((100 - informe.puntuacion) * 100) / 100,
     lineas.join('\n')];
 }
