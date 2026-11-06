@@ -211,68 +211,35 @@ p { color: red !important; }</code></pre>
 }</code></pre>
 <p>Ambas reglas dibujan el mismo borde. Lee los valores de la segunda de izquierda a derecha. <code>2px</code> indica el grosor, <code>solid</code> dibuja una línea continua y <code>blue</code> le da color azul. Si después solo quieres cambiar el color, basta con escribir <code>border-color: red;</code>.</p>
 <h3 id="css-legibilidad">1.7. Legibilidad del código</h3>
-<p>Escribir CSS que funcione es solo la mitad del trabajo; escribir CSS que tú o tu equipo podáis mantener, escalar y comprender dentro de seis meses es el verdadero reto. A medida que un proyecto crece, la hoja de estilos corre el riesgo de convertirse en un código espagueti lleno de reglas duplicadas, nombres ambiguos y especificidades descontroladas.</p>
-<p>La legibilidad del código no es un lujo estético, sino una necesidad arquitectónica. En este apartado exploraremos las herramientas y convenciones que transforman CSS en un lenguaje claro, estructurado y mantenible.</p>
+<p>Una hoja CSS debe poder entenderse y modificarse cuando el proyecto crezca. Los comentarios útiles, los nombres claros y unas convenciones comunes ayudan a localizar las reglas y evitan duplicaciones.</p>
 <h4 id="legibilidad-comentarios">1.7.1. El uso de comentarios: documentar con propósito</h4>
-<p>Los comentarios en CSS (<code>/* ... */</code>) sirven para guiar a los desarrolladores a través de la hoja de estilos. El navegador ignora su contenido y pueden ocupar una línea o varias. Sin embargo, abusar de ellos o escribir comentarios triviales genera ruido visual.</p>
-<h5>Buenas prácticas de documentación</h5>
-<ul>
-<li><strong>Estructura modular:</strong> utiliza bloques de comentarios visibles para dividir el archivo en secciones principales, como reset, tipografía, componentes y utilidades.</li>
-<li><strong>Explicar el «por qué», no el «qué»:</strong> no detalles lo que la propiedad ya dice; explica la razón de una decisión no trivial, como la solución a un error en un navegador concreto o un cálculo necesario.</li>
-<li><strong>Marcadores de tareas:</strong> usa convenciones habituales como <code>TODO:</code> para tareas pendientes o <code>FIXME:</code> para problemas que necesitan corregirse. Son anotaciones para el equipo, no instrucciones que ejecute CSS.</li>
-</ul>
-<pre><code class="language-css">/* =====================================================
-   COMPONENTES: Tarjeta de producto (Card)
-   ===================================================== */
-
-.card {
-  display: flex;
-  flex-direction: column;
-
-  /*
-    Creamos un contexto de apilamiento para que las capas
-    internas de la tarjeta se ordenen como un conjunto.
-  */
-  position: relative;
-  z-index: 1;
+<p>Los comentarios se escriben entre <code>/*</code> y <code>*/</code>, en una línea o varias. El navegador los ignora. Utilízalos para separar secciones y explicar decisiones que no resulten evidentes; evita repetir lo que ya indica la propiedad. Las marcas <code>TODO:</code> y <code>FIXME:</code> señalan tareas pendientes y problemas por corregir.</p>
+<pre><code class="language-css">/* COMPONENTES: avisos */
+.aviso {
+  /* El borde permite reconocer el aviso sin color de fondo. */
+  border: 2px solid navy;
 }
 
-/* TODO: Comprobar el recorte con las fotos del catálogo. */
-.card__image {
-  aspect-ratio: 16 / 9;
-}</code></pre>
-<p>En este ejemplo, <code>position: relative</code> junto con un <code>z-index</code> distinto de <code>auto</code> crea el contexto de apilamiento. Ser un contenedor <code>flex</code> no basta para que <code>z-index</code> actúe sobre la propia tarjeta. Estudiaremos estas propiedades en los apartados de posicionamiento y Flexbox; aquí interesa cómo los comentarios explican la decisión.</p>
+/* TODO: Revisar los avisos de todas las páginas. */</code></pre>
 <h4 id="legibilidad-bem">1.7.2. Metodología BEM (Bloque, Elemento, Modificador)</h4>
-<p>BEM es una metodología cuya convención de nombres para clases CSS permite reconocer a qué componente pertenece cada regla. Favorece la reutilización y reduce la dependencia entre componentes: al mirar una clase nombrada con BEM, puedes identificar su función dentro de la interfaz.</p>
-<p><strong>BEM aconseja utilizar siempre clases para aplicar los estilos, evitando los selectores por ID.</strong> Reserva <code>id</code> para identificar elementos concretos, por ejemplo al localizarlos en interacciones con JavaScript. Los identificadores también tienen usos propios en HTML, como los destinos de enlaces y la asociación entre <code>label</code> e <code>input</code>. JavaScript puede seleccionar clases; lo importante es que los estilos BEM se definan mediante clases, sin depender de <code>#id</code>.</p>
-<h5>Estructura básica</h5>
-<p>En la convención que utilizaremos, el patrón completo es <code>.bloque__elemento--modificador</code>. Las partes de elemento y modificador son opcionales: un bloque puede tener una clase base y una variante sin incluir un elemento.</p>
+<p>BEM organiza los nombres de clase para reconocer cada componente, sus partes y sus variantes. <strong>Utiliza clases para los estilos y evita selectores por ID.</strong> Reserva <code>id</code> para identificar elementos concretos, por ejemplo en interacciones con JavaScript, destinos de enlaces o asociaciones entre <code>label</code> e <code>input</code>. JavaScript también puede seleccionar clases.</p>
 <div class="table-wrap"><table>
-<caption>Bloques, elementos y modificadores en BEM</caption>
-<thead><tr><th scope="col">Concepto</th><th scope="col">Descripción</th><th scope="col">Ejemplo de sintaxis</th></tr></thead>
+<caption>Nombres de clase con BEM</caption>
+<thead><tr><th scope="col">Concepto</th><th scope="col">Función</th><th scope="col">Ejemplo</th></tr></thead>
 <tbody>
-<tr><th scope="row">Bloque (<em>Block</em>)</th><td>Componente autónomo y reutilizable que tiene sentido por sí mismo.</td><td><code>.btn</code>, <code>.card</code>, <code>.nav</code></td></tr>
-<tr><th scope="row">Elemento (<em>Element</em>)</th><td>Parte ligada funcionalmente a un bloque. Su nombre se une al bloque con dos guiones bajos (<code>__</code>).</td><td><code>.card__title</code>, <code>.nav__item</code></td></tr>
-<tr><th scope="row">Modificador (<em>Modifier</em>)</th><td>Variante de apariencia o estado de un bloque o elemento. Se añade con dos guiones medios (<code>--</code>).</td><td><code>.btn--accent</code>, <code>.card__title--large</code></td></tr>
+<tr><th scope="row">Bloque</th><td>Componente reutilizable.</td><td><code>.card</code></td></tr>
+<tr><th scope="row">Elemento</th><td>Parte del bloque, separada con <code>__</code>.</td><td><code>.card__title</code></td></tr>
+<tr><th scope="row">Modificador</th><td>Variante de un bloque o elemento, separada con <code>--</code>.</td><td><code>.card--featured</code></td></tr>
 </tbody></table></div>
-<pre><code class="language-html">&lt;!-- Ejemplo de estructura HTML con BEM --&gt;
-&lt;article class="card card--featured"&gt;
-  &lt;h2 class="card__title card__title--highlight"&gt;Título de la entrada&lt;/h2&gt;
-  &lt;p class="card__text"&gt;Resumen del contenido...&lt;/p&gt;
-  &lt;button class="btn btn--primary"&gt;Leer más&lt;/button&gt;
+<pre><code class="language-html">&lt;article class="card card--featured"&gt;
+  &lt;h2 class="card__title"&gt;Pan de masa madre&lt;/h2&gt;
 &lt;/article&gt;</code></pre>
-<pre><code class="language-css">/* Reglas CSS siguiendo BEM */
-.card { /* Estilos base del bloque */ }
-.card--featured { /* Modificador del bloque */ }
-
-.card__title { /* Elemento interno */ }
-.card__title--highlight { /* Modificador del elemento */ }
-
-.card__text { /* Elemento interno */ }</code></pre>
-<p>El modificador <strong>acompaña a la clase base</strong>: <code>card card--featured</code> conserva los estilos comunes de la tarjeta y añade su variante. La clase no incorpora comportamiento por sí sola; los estilos o el código que la utilicen determinan su efecto.</p>
-<p><strong>Regla de oro BEM:</strong> evita encadenar elementos en el nombre de la clase, como <code>.card__header__title</code>. Mantén la estructura plana, por ejemplo <code>.card__title</code>, aunque el elemento HTML esté dentro de varios contenedores.</p>
+<pre><code class="language-css">.card { border: 1px solid navy; }
+.card__title { color: navy; }
+.card--featured { border-color: teal; }</code></pre>
+<p>El modificador acompaña a la clase base: la tarjeta conserva su borde y cambia el color. Mantén los nombres de los elementos planos: <code>.card__title</code>, aunque el título esté dentro de otros contenedores, en lugar de <code>.card__header__title</code>.</p>
 <h4 id="legibilidad-atomic">1.7.3. Aplicación de BEM a Atomic Design</h4>
-<p>Atomic Design, propuesto por Brad Frost, es una metodología de diseño que organiza las interfaces en cinco niveles: <strong>átomos, moléculas, organismos, plantillas y páginas</strong>. Combinar este modelo de composición con BEM permite describir tanto cómo se construye la interfaz como los nombres de sus clases.</p>
+<p>Atomic Design organiza la interfaz en <strong>átomos, moléculas, organismos, plantillas y páginas</strong>. BEM aporta nombres para sus componentes, sin exigir una correspondencia fija: un bloque puede representar un botón o un encabezado completo.</p>
 <figure class="image-container" id="bem-atomic-diagrama">
 <div style="overflow-x:auto" role="region" tabindex="0" aria-label="Composición de átomos, moléculas y organismos">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 280" role="img" aria-labelledby="bem-atomic-title bem-atomic-desc" style="display:block;width:100%;min-width:650px;height:auto">
@@ -300,71 +267,36 @@ p { color: red !important; }</code></pre>
 </div>
 <figcaption>Los componentes se combinan para construir otros más complejos y conservan sus clases reutilizables.</figcaption>
 </figure>
-<h5>Mapeo de BEM en la jerarquía atómica</h5>
-<p><strong>Átomos:</strong> son las piezas básicas de la interfaz, como un botón o un campo de entrada. Pueden representarse mediante bloques BEM simples e independientes: <code>.btn</code>, <code>.input</code> o <code>.avatar</code>.</p>
-<p><strong>Moléculas:</strong> combinan piezas para formar una unidad funcional. Un buscador puede ser el bloque <code>.search-box</code>, con elementos como <code>.search-box__input</code> y <code>.search-box__button</code>. Una misma etiqueta HTML puede conservar, además, la clase del átomo reutilizable.</p>
-<p><strong>Organismos:</strong> agrupan moléculas y átomos en estructuras más complejas. El bloque <code>.header</code> puede contener los bloques <code>.logo</code>, <code>.nav</code> y <code>.search-box</code>. No hay una correspondencia obligatoria entre los niveles de Atomic Design y las partes de BEM: un bloque BEM puede representar tanto un átomo como un organismo.</p>
-<p>La combinación de clases de entidades BEM diferentes en un mismo nodo se llama <strong><em>mix</em></strong>. Permite que un buscador conserve sus estilos propios y participe a la vez en la composición del encabezado:</p>
-<pre><code class="language-html">&lt;!-- Organismo que reúne bloques reutilizables --&gt;
-&lt;header class="header"&gt;
-  &lt;a href="/" class="logo logo--small"&gt;AppLogo&lt;/a&gt;
-
-  &lt;!-- Buscador integrado en el encabezado --&gt;
+<p>Una misma etiqueta puede combinar clases de componentes distintos; en BEM se denomina <em>mix</em>. Por ejemplo, el buscador conserva sus estilos y añade una clase para colocarse dentro del encabezado:</p>
+<pre><code class="language-html">&lt;header class="header"&gt;
   &lt;form class="search-box header__search"&gt;
-    &lt;label class="search-box__label" for="header-search"&gt;Buscar&lt;/label&gt;
+    &lt;label for="header-search"&gt;Buscar&lt;/label&gt;
     &lt;input id="header-search" name="q" type="search"
-           class="input search-box__input" placeholder="Buscar..."&gt;
-    &lt;button class="btn btn--secondary search-box__button"&gt;Buscar&lt;/button&gt;
+           class="input search-box__input"&gt;
+    &lt;button class="btn search-box__button"&gt;Buscar&lt;/button&gt;
   &lt;/form&gt;
 &lt;/header&gt;</code></pre>
-<p><code>search-box</code> identifica el bloque buscador y <code>header__search</code> permite ajustar su colocación dentro del encabezado. En el botón, <code>btn</code> aporta los estilos reutilizables y <code>search-box__button</code> identifica su función en el buscador. El <code>id</code> del campo relaciona su etiqueta visible mediante <code>for</code>; las clases siguen encargándose de los estilos.</p>
+<p><code>search-box</code> identifica el buscador y <code>header__search</code> su función dentro del encabezado. El botón y el campo conservan también sus clases reutilizables.</p>
 <h4 id="legibilidad-kebab">1.7.4. Convención de nomenclatura: kebab-case</h4>
-<p>Existen múltiples formas de nombrar identificadores en programación, como <code>camelCase</code>, <code>PascalCase</code> o <code>snake_case</code>. En nuestras clases CSS adoptaremos <strong>kebab-case</strong>: escribir las palabras en minúsculas y separarlas mediante un guion medio (<code>-</code>).</p>
-<p>Por esta convención, preferiremos <code>.card-title</code> o <code>.main-navigation-wrapper</code> frente a <code>.cardTitle</code> o <code>.card_title</code>. Estas últimas formas pueden ser válidas en CSS; lo que cambia es el criterio de nombres acordado para el proyecto.</p>
-<h5>Por qué usar kebab-case en CSS</h5>
-<p>Muchas propiedades de CSS utilizan palabras separadas por guiones, como <code>font-family</code>, <code>background-color</code> y <code>flex-direction</code>. Mantener ese criterio en nuestros nombres facilita reconocer sus palabras. Además, en los documentos HTML en modo estándar los nombres de clase distinguen mayúsculas y minúsculas: <code>.cardTitle</code> y <code>.cardtitle</code> no seleccionan la misma clase. Utilizar minúsculas de forma uniforme reduce estas confusiones.</p>
-<p>Kebab-case también se aplica <strong>dentro de cada parte de un nombre BEM</strong>: <code>.product-card__main-title--featured</code>. Los guiones simples separan palabras; <code>__</code> y <code>--</code> conservan su función de separar el elemento y el modificador.</p>
+<p>En nuestras clases escribiremos las palabras en minúsculas, separadas por guiones: <code>.product-card</code>. Este criterio, llamado <strong>kebab-case</strong>, facilita leer los nombres y evita confusiones entre mayúsculas y minúsculas. Otras formas, como <code>.productCard</code>, son válidas, pero conviene mantener una misma convención.</p>
+<p>En BEM, los guiones simples separan palabras y los separadores especiales mantienen su función: <code>.product-card__main-title--featured</code>.</p>
 <h4 id="legibilidad-nombres">1.7.5. Reglas para nombrar clases y variables (Custom Properties)</h4>
-<p>El nombre de una clase o de una variable debe ser explícito y predecible. Antes de elegirlo, piensa si seguirá teniendo sentido cuando cambien los colores o la distribución de la página.</p>
-<h5>Nomenclatura de clases</h5>
-<p><strong>Nombres semánticos:</strong> describe qué es o qué hace el componente. <code>.btn--danger</code> expresa una función que puede seguir siendo válida si cambia el color del botón; <code>.red-button</code> depende de su apariencia actual. Del mismo modo, <code>.article-summary</code> describe el contenido mejor que <code>.text-left-bold</code>.</p>
-<p><strong>Estilos mediante clases:</strong> mantén el criterio de BEM y evita <code>#header</code> en las reglas de presentación. Los selectores por ID tienen más especificidad que los de clase y dificultan las modificaciones posteriores. Un identificador que utilice JavaScript no necesita aparecer también en el CSS.</p>
-<p><strong>Prefijos opcionales:</strong> en proyectos grandes se pueden acordar prefijos para distinguir clases con otro propósito. Por ejemplo, <code>u-</code> para utilidades de una sola tarea (<code>.u-text-center</code>) y <code>js-</code> para localizar elementos desde JavaScript sin asociarles estilos (<code>.js-modal-open</code>). Las utilidades describen deliberadamente una tarea visual; no sustituyen los nombres semánticos de los componentes.</p>
-<h5>Nomenclatura de variables CSS (Custom Properties)</h5>
-<p>Las <strong>propiedades personalizadas</strong>, también llamadas variables CSS, permiten dar nombre a valores reutilizables. Se declaran con dos guiones iniciales, como <code>--color-primary</code>, y se utilizan mediante <code>var(--color-primary)</code>. Aquí veremos cómo nombrarlas; su funcionamiento se desarrolla en el apartado 5.1.</p>
-<p>Podemos distinguir <strong>valores base</strong>, como una paleta o una escala de espaciados; <strong>nombres semánticos</strong>, que asignan un valor a una función; y <strong>variables de componente</strong>, que permiten ajustar una pieza concreta. Un valor con nombre reutilizable se suele llamar <em>token</em> de diseño.</p>
-<p>La función del nombre y su alcance son decisiones diferentes. Una variable semántica puede declararse globalmente en <code>:root</code>, que selecciona el elemento raíz. Una variable declarada en <code>.card</code> se aplica a ese componente y se hereda normalmente a sus descendientes; no queda encapsulada de forma privada.</p>
+<p><strong>Nombra los componentes por su función:</strong> <code>.btn--danger</code> seguirá teniendo sentido si cambia su color; <code>.red-button</code> puede dejar de describirlo. Opcionalmente, el equipo puede reservar <code>u-</code> para utilidades visuales, como <code>.u-text-center</code>, y <code>js-</code> para clases utilizadas por JavaScript sin estilos asociados.</p>
+<p>Las variables CSS se declaran con <code>--nombre</code> y se utilizan mediante <code>var()</code>. Distingue los <strong>valores base</strong> de los nombres que expresan una <strong>función</strong> o pertenecen a un <strong>componente</strong>:</p>
 <pre><code class="language-css">:root {
-  /* 1. Valores base de la paleta y las escalas */
-  --color-blue-500: #1e88e5;
-  --color-neutral-100: #f5f5f5;
-  --spacing-md: 1rem;
-  --font-size-base: 1rem;
-
-  /* 2. Nombres semánticos: el propósito de cada valor */
-  --color-primary: var(--color-blue-500);
-  --bg-body: var(--color-neutral-100);
+  --color-blue-500: #1e88e5; /* Valor base */
+  --color-primary: var(--color-blue-500); /* Función */
 }
 
-/* 3. Variables específicas del componente */
 .card {
-  --card-padding: var(--spacing-md);
-  --card-bg: #ffffff;
-  --card-text-color: #212121;
-  --card-border-color: var(--color-neutral-100);
-
-  padding: var(--card-padding);
-  background-color: var(--card-bg);
-  color: var(--card-text-color);
+  --card-border-color: var(--color-primary);
   border: 1px solid var(--card-border-color);
 }
 
-.card--dark {
-  --card-bg: #212121;
-  --card-text-color: #ffffff;
-  --card-border-color: #424242;
+.card--featured {
+  --card-border-color: teal;
 }</code></pre>
-<p>Para utilizar la variante oscura, el elemento debe llevar <code>class="card card--dark"</code>. El modificador redefine los valores y la regla base sigue aplicándolos, por lo que no necesitamos repetir las declaraciones de fondo, texto y borde. Esta separación permite cambiar una decisión compartida o ajustar un componente sin duplicar todas sus reglas.</p>
+<p><code>:root</code> declara los valores en el elemento raíz. La variable de <code>.card</code> se aplica al componente y se hereda normalmente a sus descendientes. El modificador cambia el valor sin repetir la declaración del borde. El apartado 5.1 desarrolla su funcionamiento.</p>
 <aside class="resource-card expansion-card" aria-labelledby="recurso-legibilidad">
 <h4 id="recurso-legibilidad">Documentación sobre organización del CSS</h4>
 <p>Amplía las convenciones de BEM, la composición de interfaces y el uso de propiedades personalizadas.</p>
