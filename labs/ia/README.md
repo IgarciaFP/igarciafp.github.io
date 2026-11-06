@@ -60,9 +60,11 @@ La interfaz muestra siempre los bloques TXT, JS, HTML y CSS, en ese orden, con e
 
 - `a`: booleano que indica si se activa la regla de menos de un comentario por diez líneas de código seleccionado. Exactamente 1/10 no la activa. No se aplica a texto libre ni a código que no permite calcular la densidad completa.
 - `b`: `100 - puntuacion`, después del límite de 100 y de la reducción ortográfica; se redondea a dos decimales. Se denomina humanidad como índice heurístico, no como probabilidad ni prueba de autoría. Sin contenido evaluable es `null`.
-- `c`: array con las reglas aplicables, detectadas y con peso positivo. Cada objeto contiene `id`, `peso` y `coincidencias` (lenguaje, archivo, valor, evidencias y demás detalles). Cada ID aparece una sola vez; sus coincidencias se agrupan para no duplicar el peso. El peso es el configurado antes de la reducción global por faltas.
+- `c`: string con una regla aplicable, detectada y de peso positivo por línea: `nombre_de_la_regla: porcentaje%`. Cada ID aparece una sola vez; los pesos cero se omiten. El porcentaje corresponde al peso configurado antes del multiplicador y la reducción global por faltas, cuyos efectos se reflejan en `b`. Si no hay reglas ni mensajes, devuelve `""`. Se conservan los mensajes «Código/texto no detectado» y «No se admite código sin comentar» cuando procedan.
 
-Para obtener el informe completo usa `analizarEntregaDetalladaAsync` o `analizarEntregaDetallada`. La página usa este informe para mostrar la clasificación, incidencias y reglas, y muestra además su vector mediante `crearVectorResultado(informe)`. Descargar JSON conserva el informe detallado. Las llamadas que antes leían `.puntuacion` deben migrar a las funciones detalladas o desestructurar el vector.
+Ejemplo: `"caracteres_especiales: 60%\nausencia_faltas: 25%"`.
+
+Para obtener el informe completo usa `analizarEntregaDetalladaAsync` o `analizarEntregaDetallada`. La página usa este informe para mostrar la clasificación, incidencias y reglas, sin mostrar el vector en pantalla. Descargar JSON conserva el informe detallado. Las llamadas que antes leían `.puntuacion` deben migrar a las funciones detalladas o desestructurar el vector.
 
 ## Ausencia de contenido y comentarios
 
