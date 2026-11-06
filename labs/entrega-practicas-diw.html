@@ -2,21 +2,24 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Entrega de prácticas</title>
+<title>Entrega de prácticas · DIW</title>
 <style>
 
 :root{
  font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
- color:#172b42;background:#fff;line-height:1.55;color-scheme:light;
+ color:#172b42;background:#f4f6f9;line-height:1.55;color-scheme:light;
  --accent:#176b69;--accent-hover:#115654;--muted:#607087;--line:#dce3ec;
 }
 *{box-sizing:border-box}
-body{margin:0;padding:64px 24px 48px;min-height:100vh;background:linear-gradient(180deg,#fff4c2 0%,#fff 100%)}
+body{margin:0;padding:64px 24px 48px;min-height:100vh;background:radial-gradient(ellipse at 50% 0,#e8eef4 0,transparent 65%)}
 main{max-width:860px;margin:0 auto}
 header{position:relative;margin:0 0 32px;padding-left:72px}
 .header-icon{position:absolute;top:3px;left:0;display:grid;place-items:center;width:48px;height:48px;color:var(--accent);background:#e4efed;border:1px solid #cfe0dc;border-radius:14px}
 .header-icon svg{width:25px;height:25px}
 h1{font-size:clamp(1.8rem,4vw,2.25rem);font-weight:700;line-height:1.2;letter-spacing:-.04em;margin:0 0 12px}
+.heading-row{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 18px;margin-bottom:12px}
+.heading-row h1{margin:0}
+.page-version{font-size:.75rem;font-weight:400;color:var(--muted);white-space:nowrap}
 header p{max-width:650px;margin:0;color:var(--muted);font-size:.96rem;line-height:1.7}
 p{margin:0 0 20px}
 .card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:0 4px 6px #162b4203,0 18px 48px #162b4207}
@@ -33,6 +36,8 @@ input[readonly],textarea[readonly]{background:#f7f9fb;color:#53647a}
 button:focus-visible,a:focus-visible{outline:3px solid #67a8a4;outline-offset:4px}
 small,.muted{color:var(--muted)}
 small{display:block;font-size:.75rem;margin-top:8px}
+#zero-confirmation{display:flex;align-items:flex-start;gap:10px;margin-top:20px;line-height:1.6}
+#zero-acknowledged{padding:0;width:20px;height:20px;flex:0 0 20px;margin-top:3px;accent-color:var(--accent)}
 #count{text-align:right;font-variant-numeric:tabular-nums}
 .actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:24px}
 #form>.actions{border-top:1px solid #edf0f5;padding-top:24px;margin-top:24px;justify-content:flex-end}
@@ -57,7 +62,7 @@ dialog::backdrop{background:#12243a80;backdrop-filter:blur(4px)}
 #receipt .actions>*{flex:1}
 #receipt-progress{color:var(--muted);font-size:.95rem;line-height:1.7;margin-bottom:0}
 #receipt-back{margin-top:24px}
-#receipt:has(#receipt-back[hidden]):has(#receipt-result[hidden]) #receipt-progress::before{content:"";display:block;width:30px;height:30px;margin:24px 0;border:3px solid #deebe9;border-top-color:var(--accent);border-radius:50%;animation:spin .85s linear infinite}
+#receipt:has(#receipt-back[hidden]):has(#receipt-result[hidden]):has(#document-check-progress[hidden]) #receipt-progress::before{content:"";display:block;width:30px;height:30px;margin:24px 0;border:3px solid #deebe9;border-top-color:var(--accent);border-radius:50%;animation:spin .85s linear infinite}
 #receipt:has(#receipt-result:not([hidden])) #receipt-title::before{content:"✓";display:grid;place-items:center;width:42px;height:42px;margin-bottom:20px;border-radius:50%;background:#e5f3ec;color:#277253;font-size:1.3rem}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:600px){
@@ -74,7 +79,7 @@ dialog::backdrop{background:#12243a80;backdrop-filter:blur(4px)}
 </style>
 </head>
 <body><main>
-<header><span class="header-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></span><h1 id="title">Entrega de prácticas · DIW</h1><p>Completa el formulario y guarda el justificante de entrega.</p></header>
+<header><span class="header-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></span><div class="heading-row"><h1 id="title">Entrega de prácticas · DIW</h1><span class="page-version">version: <time datetime="2026-11-06T14:33:37.381Z">6/11/26, 15:33</time> (Madrid)</span></div><p>Completa el formulario y guarda el justificante de entrega.</p></header>
 <p id="setup" class="notice" hidden>El docente debe conectar esta página con Google Sheets antes de recibir entregas.</p>
 <form id="form" class="card">
 <div class="identity"><div><label for="email">Email</label><input id="email" type="email" required maxlength="254" autocomplete="email" placeholder="nombre@g.educaand.es" aria-describedby="email-help"><small id="email-help">Usa tu dirección terminada en @g.educaand.es.</small></div><div><label for="practice-name">Nombre de la práctica</label><input id="practice-name" required maxlength="100" placeholder="Ej.: Práctica 4 · Flexbox" autocomplete="off"></div></div>
@@ -85,6 +90,16 @@ dialog::backdrop{background:#12243a80;backdrop-filter:blur(4px)}
 <dialog id="receipt" aria-labelledby="receipt-title" aria-describedby="receipt-progress receipt-description">
 <h2 id="receipt-title" tabindex="-1">Justificante de entrega</h2>
 <p id="receipt-progress" role="status" aria-live="polite" hidden></p>
+<progress id="document-check-progress" aria-label="Verificando documento..." style="width:100%;height:18px;margin:16px 0" hidden></progress>
+<section id="document-check" class="notice" aria-labelledby="document-check-title" hidden>
+<h2 id="document-check-title">Comprobación del documento</h2>
+<p id="document-check-message" role="status" aria-live="polite" style="white-space:pre-line;overflow-wrap:anywhere;margin:0"></p>
+</section>
+<label id="zero-confirmation" hidden><input id="zero-acknowledged" type="checkbox">Entiendo que, si entrego ahora, no podré volver a entregar esta misma práctica más adelante.</label>
+<div id="verification-actions" class="actions" hidden>
+<button id="verification-continue" type="button">Continuar con la entrega</button>
+<button id="verification-cancel" type="button" class="secondary">Cancelar entrega</button>
+</div>
 <div id="receipt-result" hidden>
 <p id="receipt-description">La entrega ha sido registrada correctamente</p>
 <p id="receipt-details" class="notice success"></p>
@@ -181,6 +196,7 @@ const selectedName=Object.hasOwn(activityNames,selectedActivity)?activityNames[s
 const key='entrega-diw-v1:'+CONFIG.id+':'+CONFIG.version+':'+(selectedName?selectedActivity:'general');
 const emailKey=key+':email';
 let current=null,busy=false,storageOK=true;
+let verificationDecision=null;
 const urls={};
 const validEmail=value=>/^[^\s@]+@g\.educaand\.es$/i.test(value);
 async function hash(text){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text))),b=>b.toString(16).padStart(2,'0')).join('');}
@@ -223,7 +239,21 @@ function showDeliveryError(message){
  if(!$('receipt').open)$('receipt').showModal();
  $('receipt-back').focus();
 }
-$('receipt').addEventListener('cancel',event=>{if(busy)event.preventDefault();});
+function decideVerification(proceed){
+ if(!verificationDecision)return;
+ if(proceed&&!$('zero-confirmation').hidden&&!$('zero-acknowledged').checked)return;
+ const resolve=verificationDecision;verificationDecision=null;
+ $('verification-actions').hidden=true;
+ if(!proceed)$('receipt').close();
+ resolve(proceed);
+}
+$('verification-continue').addEventListener('click',()=>decideVerification(true));
+$('zero-acknowledged').addEventListener('change',()=>{if(!$('zero-confirmation').hidden)$('verification-continue').disabled=!$('zero-acknowledged').checked;});
+$('verification-cancel').addEventListener('click',()=>decideVerification(false));
+$('receipt').addEventListener('cancel',event=>{
+ if(verificationDecision){event.preventDefault();decideVerification(false);}
+ else if(busy)event.preventDefault();
+});
 $('receipt-back').addEventListener('click',()=>{$('receipt').close();});
 async function showReceipt(){
  const data=JSON.parse(current.envelope.payload);
@@ -245,6 +275,90 @@ async function backup(){
  const code=await token({...data,deliveryStatus:'pending',submissionId:current.envelope.submissionId});
  link('backup',code,'copia-pendiente-'+current.envelope.submissionId.slice(0,16)+'.txt');
 }
+// Adaptador del contrato del analizador compartido de labs/ia.
+async function comprobarEntrega(lenguaje,documento){
+ const {analizarEntregaAsync}=await import('./ia/analizador-entregas.browser.mjs?v=45ab09a1');
+ return analizarEntregaAsync(documento,lenguaje,{ortografia:{mostrarDetalle:false}});
+}
+function confirmVerification(text,label='Entregar de todas formas',requireFinal=false){
+ $('document-check-message').textContent=text;
+ $('document-check-progress').hidden=true;
+ $('receipt-progress').hidden=true;
+ $('document-check').hidden=false;
+ $('verification-actions').hidden=false;
+ $('zero-confirmation').hidden=!requireFinal;
+ $('zero-acknowledged').checked=false;
+ const button=$('verification-continue');
+ button.textContent=label;button.disabled=requireFinal;
+ return new Promise(resolve=>{
+  verificationDecision=resolve;
+  $('verification-cancel').focus();
+ }).finally(()=>{$('zero-confirmation').hidden=true;button.disabled=false;});
+}
+async function confirmDocumentScore(percent,verificationDetails){
+ if(percent===0){
+  const accepted=await confirmVerification('No se ha detectado Inteligencia humana. La entrega será inicialmente clasificada como "desarrollada con IA" y tendrá una puntuación de 0. Es obligatorio revisarla junto al profesor para modificar la nota. Te recomendamos no entregar el documento y revisarlo antes. Si lo entregas ahora, no podrás volver a entregar esta misma práctica más adelante.','Entregar de todas formas',true);
+  return accepted?{percent,verificationDetails,zeroFinalConfirmation:true}:false;
+ }
+ if(percent<=51){
+  const accepted=await confirmVerification('El documento no se ha podido verificar. Tras la entrega será revisado.');
+  return accepted?{percent,verificationDetails}:false;
+ }
+ $('document-check-message').textContent='Inteligencia humana detectada';
+ return {percent,verificationDetails};
+}
+async function checkDocument(documentText,pendingPercent){
+ const panel=$('document-check'),message=$('document-check-message');
+ panel.hidden=true;message.textContent='';
+ $('zero-confirmation').hidden=true;
+ $('verification-actions').hidden=true;
+ $('status').hidden=true;
+ $('receipt-title').textContent='Comprobación del documento';
+ $('receipt-progress').textContent='Verificando documento...';
+ $('receipt-progress').hidden=false;
+ $('receipt-result').hidden=true;
+ $('receipt-back').hidden=true;
+ $('document-check-progress').hidden=false;
+ if(!$('receipt').open)$('receipt').showModal();
+ $('receipt-title').focus();
+ let allowed=false,analysisTimer;
+ try{
+  // Dejar visible el progreso durante un intervalo aleatorio de 2 a 4 segundos.
+  const delay=new Promise(resolve=>setTimeout(resolve,2000+Math.random()*2000));
+  const analysis=Promise.resolve().then(()=>comprobarEntrega("HTML CSS",documentText))
+   .then(result=>({result}),error=>({error}));
+  const timeout=new Promise(resolve=>{analysisTimer=setTimeout(()=>resolve({error:new Error("Tiempo de comprobación agotado")}),15000);});
+  const [outcome]=await Promise.all([Promise.race([analysis,timeout]),delay]);
+  clearTimeout(analysisTimer);
+  if(outcome.error)throw outcome.error;
+  const result=outcome.result;
+  if(!Array.isArray(result)||result.length!==3||typeof result[0]!=='boolean')throw Error('La comprobación del documento ha devuelto una respuesta no válida.');
+  const [a,b,c]=result;
+  if(a){
+   // El analizador puede devolver un mensaje o una lista de incidencias.
+   const messages=(Array.isArray(c)?c:[c])
+    .map(item=>typeof item==='string'?item:item?.mensaje||item?.message||'')
+    .filter(Boolean);
+   message.textContent=messages.join('\n')||'No se ha podido verificar el documento';
+   return false;
+  }
+  if(typeof b!=='number'||!Number.isFinite(b)||b<0||b>100)throw Error('La comprobación del documento ha devuelto un porcentaje no válido.');
+  const decision=await confirmDocumentScore(Number.isFinite(pendingPercent)?pendingPercent:b,c);
+  allowed=!!decision;
+  return decision;
+ }catch(error){
+  const decision=await confirmDocumentScore(Number.isFinite(pendingPercent)?pendingPercent:51,'El documento no se ha podido verificar. Tras la entrega será revisado.');
+  allowed=!!decision;
+  return decision;
+ }finally{
+  clearTimeout(analysisTimer);
+  $('document-check-progress').hidden=true;
+  $('receipt-progress').hidden=true;
+  panel.hidden=false;
+  $('verification-actions').hidden=true;
+  if(!allowed&&$('receipt').open){$('receipt-back').hidden=false;$('receipt-back').focus();}
+ }
+}
 $('form').addEventListener('submit',async event=>{
  event.preventDefault();if(busy||current?.receipt)return;
  const email=$('email').value.trim().toLowerCase();
@@ -254,24 +368,42 @@ $('form').addEventListener('submit',async event=>{
  $('text').setCustomValidity($('text').value.trim()?'':'Pega el texto de tu práctica.');
  if(!$('form').reportValidity())return;
  if(!LabDelivery.configured(delivery)){notice('El receptor de Google Sheets todavía no está configurado.');return;}
- busy=true;refresh();showSaving();
+ busy=true;refresh();
+ // En los reintentos se comprueba exactamente el texto del envío pendiente.
+ let verified=false;
+ try{
+  const documentText=current?JSON.parse(current.envelope.payload).answers[0].answer:$('text').value;
+  verified=await checkDocument(documentText,current?JSON.parse(current.envelope.payload).incidents:undefined);
+ }catch{showDeliveryError('No se ha podido verificar el documento');}
+ if(!verified){busy=false;refresh();return;}
+ showSaving();
  try{
   if(!current){
-   const data={exam:CONFIG.id,activityVersion:CONFIG.version,version:3,language:'es',name:'',email,practiceName,group:'',notes:'',finishedAt:new Date().toISOString(),seconds:0,answers:[{question:practiceName,answer:$('text').value,status:'teacher-review'}],url:location.href};
+   const data={exam:CONFIG.id,activityVersion:CONFIG.version,version:3,language:'es',name:'',email,practiceName,group:'',module:'DIW',notes:'',incidents:verified.percent,verificationDetails:verified.verificationDetails,zeroFinalConfirmation:verified.zeroFinalConfirmation===true,finishedAt:new Date().toISOString(),seconds:0,answers:[{question:practiceName,answer:$('text').value,status:'teacher-review'}],url:location.href};
    const payload=JSON.stringify(data);
    current={envelope:{protocol:1,submissionId:await hash(payload),practiceId:CONFIG.id,practiceVersion:CONFIG.version,payload}};save();
   }
+  // Compatibilidad con entregas pendientes anteriores, sin cambiar su ID ni su payload.
+  if(!Number.isFinite(JSON.parse(current.envelope.payload).incidents)){
+   current.envelope.incidents=verified.percent;save();
+  }
+  if(!Object.prototype.hasOwnProperty.call(JSON.parse(current.envelope.payload),'verificationDetails')){
+   current.envelope.verificationDetails=verified.verificationDetails;save();
+  }
+  current.envelope.zeroFinalConfirmation=verified.zeroFinalConfirmation===true;save();
   await backup();
   current.receipt=await LabDelivery.send(delivery,current.envelope);save();
   await showReceipt();
  }catch(error){
   if(current?.receipt){showDeliveryError('Google Sheets ha guardado la entrega, pero no se pudo preparar el justificante. Recarga para volver a generarlo. ID: '+current.receipt.submissionId);}
+  else if(error.message==='FINAL_DELIVERY')showDeliveryError('No se permite otra entrega de esta práctica: ya confirmaste una entrega definitiva sin Inteligencia humana detectada.');
+  else if(error.message==='ZERO_CONFIRMATION')showDeliveryError('Debes aceptar la casilla de entrega definitiva antes de enviar este documento.');
   else showDeliveryError('No se ha podido confirmar la recepción. Reintenta el envío: se conservará el mismo identificador para evitar duplicados. Puedes descargar una copia pendiente; esa copia no confirma la entrega.'+(storageOK?'':' No se pudo guardar la copia en este navegador. Descárgala antes de cerrar.'));
  }finally{busy=false;refresh();}
 });
 $('practice-name').addEventListener('input',()=>{$('practice-name').setCustomValidity('');});
 $('email').addEventListener('input',()=>{$('email').setCustomValidity('');});
-$('text').addEventListener('input',()=>{$('text').setCustomValidity('');refresh();});
+$('text').addEventListener('input',()=>{$('text').setCustomValidity('');$('document-check').hidden=true;refresh();});
 function anotherDelivery(){
  if(busy)return;
  if(current&&!current.receipt&&!confirm('La recepción está pendiente. Si continúas, ya no podrás reintentar esta misma entrega desde aquí. Descarga antes la copia pendiente. ¿Continuar?'))return;
@@ -281,7 +413,7 @@ function anotherDelivery(){
  if($('receipt').open)$('receipt').close();
  $('text').value='';$('practice-name').value=selectedName;$('practice-name').setCustomValidity('');$('email').value=email;
  $('text').setCustomValidity('');$('email').setCustomValidity('');
- $('backup').hidden=true;$('status').hidden=true;
+ $('backup').hidden=true;$('status').hidden=true;$('document-check').hidden=true;
  for(const id of Object.keys(urls)){URL.revokeObjectURL(urls[id]);delete urls[id];$(id).removeAttribute('href');}
  void LabDelivery.prepare(delivery,CONFIG.id);
  refresh();window.scrollTo({top:0,behavior:'instant'});$('email').focus({preventScroll:true});
