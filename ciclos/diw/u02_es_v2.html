@@ -412,11 +412,7 @@ body {
 p.destacado { color: orange; }
 #oferta .producto__precio { color: navy; }
 .producto__nombre { color: purple; }
-h3 { color: black !important; }</code></pre><ol><li>Calcula la especificidad de los cuatro selectores que dan color al párrafo o al título.</li><li>¿De qué color se ve el precio? ¿Y si borras la regla <code>#oferta .producto__precio</code>?</li><li>¿De qué color se ve el título? ¿Qué cambiaría si quitases <code>!important</code>?</li><li>¿Qué tipo de letra tienen el título y el precio? ¿Tiene borde el párrafo?</li><li>Reescribe esta regla con buen formato, kebab-case y nomenclatura BEM: <code>.ProductoOferta{Color:RED;padding:10px}</code>.</li><li>Comprueba tus respuestas en el navegador con el inspector.</li></ol><details class="activity-solution"><summary>Ver solución comentada</summary><div class="table-wrap"><table><caption>Pesos de los selectores</caption><thead><tr><th scope="col">Selector</th><th scope="col">Especificidad</th></tr></thead><tbody><tr><td><code>.producto p</code></td><td>0-1-1</td></tr><tr><td><code>p.destacado</code></td><td>0-1-1</td></tr><tr><td><code>#oferta .producto__precio</code></td><td>1-1-0</td></tr><tr><td><code>.producto__nombre</code></td><td>0-1-0</td></tr></tbody></table></div><ol><li>—</li><li>El precio es <strong>azul marino</strong>: el selector con ID pesa más que cualquiera sin ID. Sin esa regla, empatan <code>.producto p</code> y <code>p.destacado</code> (0-1-1) y gana la que está escrita después: <strong>naranja</strong>.</li><li>El título es <strong>negro</strong>: una declaración importante vence a las normales aunque su selector sea menos específico. Sin <code>!important</code>, la clase (0-1-0) vence al tipo (0-0-1) y sería <strong>morado</strong>.</li><li>Ambos usan <strong>Georgia</strong>: <code>font-family</code> se hereda de <code>article</code>. El párrafo <strong>no tiene borde</strong>, porque <code>border</code> no se hereda.</li></ol><pre><code>/* Variante de oferta del bloque producto. */
-.producto--oferta {
-  color: red;
-  padding: 10px;
-}</code></pre><p>El modificador se usa junto a la clase del bloque: <code>class="producto producto--oferta"</code>.</p></details></article></section>
+h3 { color: black !important; }</code></pre><ol><li>Calcula la especificidad de los cuatro selectores que dan color al párrafo o al título.</li><li>¿De qué color se ve el precio? ¿Y si borras la regla <code>#oferta .producto__precio</code>?</li><li>¿De qué color se ve el título? ¿Qué cambiaría si quitases <code>!important</code>?</li><li>¿Qué tipo de letra tienen el título y el precio? ¿Tiene borde el párrafo?</li><li>Reescribe esta regla con buen formato, kebab-case y nomenclatura BEM: <code>.ProductoOferta{Color:RED;padding:10px}</code>.</li><li>Comprueba tus respuestas en el navegador con el inspector.</li></ol><a class="delivery-trigger" href="../../labs/entrega-practicas-diw.html?actividad=u02v2-act-02" rel="noopener noreferrer" target="_blank">Entregar actividad</a></article></section>
 <section id="selectores"><h2>2. Selectores</h2>
 <p>El selector es la parte de la regla que decide <strong>a qué elementos</strong> se aplican las declaraciones. Empezaremos por los selectores simples y después combinaremos condiciones, estados y partes de un elemento. El objetivo es seleccionar con precisión sin añadir clases innecesarias ni crear reglas difíciles de mantener.</p>
 <h3 id="selectores-basicos">2.1. Selectores básicos</h3>
@@ -597,13 +593,7 @@ li::marker { color: #0f766e; }
   &lt;input id="tel" type="tel"&gt;
   &lt;p class="nota"&gt;Recogida en tienda.&lt;/p&gt;
   &lt;p&gt;Pago al recoger.&lt;/p&gt;
-&lt;/form&gt;</code></pre><ol><li>El enlace de la página actual, para subrayarlo con más grosor.</li><li>Los enlaces que llevan a otro sitio web.</li><li>El enlace a un PDF, para añadir detrás el texto « (PDF)» sin escribirlo en el HTML.</li><li>Los campos obligatorios, para marcarlos con un borde izquierdo.</li><li>El campo que tiene el foco cuando se llega con el teclado.</li><li>El párrafo que va justo después de <code>.nota</code>.</li><li>Todos los enlaces del menú excepto el de la página actual.</li><li>Calcula la especificidad de los selectores 1, 3, 6 y 7.</li></ol><details class="activity-solution"><summary>Ver solución comentada</summary><pre><code>/* 1 */ .menu a[aria-current="page"] { text-decoration-thickness: 3px; }
-/* 2 */ .menu a[href^="https://"] { font-style: italic; }
-/* 3 */ a[href$=".pdf"]::after { content: " (PDF)"; }
-/* 4 */ .pedido [required] { border-inline-start: 4px solid #87452e; }
-/* 5 */ .pedido input:focus-visible { outline: 3px solid #46523b; outline-offset: 2px; }
-/* 6 */ .nota + p { font-weight: 700; }
-/* 7 */ .menu a:not([aria-current]) { color: #69584c; }</code></pre><ul><li><strong>1:</strong> 0-2-1 (una clase, un atributo y un tipo).</li><li><strong>3:</strong> 0-1-2: el atributo cuenta como una clase; <code>a</code> y el pseudoelemento <code>::after</code>, como tipos.</li><li><strong>6:</strong> 0-1-1: el combinador <code>+</code> no suma.</li><li><strong>7:</strong> 0-2-1: <code>:not()</code> no cuenta por sí misma, pero aporta la especificidad de su argumento (<code>[aria-current]</code>).</li></ul><p>En el caso 4 también vale <code>input:required</code>. En el 3, el texto generado es decorativo: si la información fuera imprescindible, debería estar en el HTML.</p></details></article></section>
+&lt;/form&gt;</code></pre><ol><li>El enlace de la página actual, para subrayarlo con más grosor.</li><li>Los enlaces que llevan a otro sitio web.</li><li>El enlace a un PDF, para añadir detrás el texto « (PDF)» sin escribirlo en el HTML.</li><li>Los campos obligatorios, para marcarlos con un borde izquierdo.</li><li>El campo que tiene el foco cuando se llega con el teclado.</li><li>El párrafo que va justo después de <code>.nota</code>.</li><li>Todos los enlaces del menú excepto el de la página actual.</li><li>Calcula la especificidad de los selectores 1, 3, 6 y 7.</li></ol><a class="delivery-trigger" href="../../labs/entrega-practicas-diw.html?actividad=u02v2-act-04" rel="noopener noreferrer" target="_blank">Entregar actividad</a></article></section>
 <section id="cajas"><h2>3. El modelo de caja</h2>
 <p>Cada caja tiene contenido, relleno, borde y margen. El relleno separa el contenido del borde; el margen establece separación exterior. Los márgenes verticales de algunos bloques en flujo normal pueden colapsar, de modo que no siempre se suman.</p>
 <figure id="modelo-caja-svg" style="margin:2rem 0">
@@ -710,7 +700,7 @@ li::marker { color: #0f766e; }
   margin-left: auto;
   margin-right: auto;
 }</code></pre>
-<ol><li>Predice cuánto medirá cada margen lateral. Selecciona la tarjeta en el inspector y comprueba las medidas en el modelo de caja.</li><li>Cambia solo <code>margin-right</code> a cero. ¿En qué lado quedan ahora los 160 px libres?</li><li>Añade una segunda línea de texto. Observa qué dimensión crece y si cambian los márgenes laterales.</li></ol><p class="activity-criteria"><strong>Se valorará:</strong> predicción anotada, medidas comprobadas en el inspector y respuesta razonada a cada pregunta.</p></article>
+<ol><li>Predice cuánto medirá cada margen lateral. Selecciona la tarjeta en el inspector y comprueba las medidas en el modelo de caja.</li><li>Cambia solo <code>margin-right</code> a cero. ¿En qué lado quedan ahora los 160 px libres?</li><li>Añade una segunda línea de texto. Observa qué dimensión crece y si cambian los márgenes laterales.</li></ol><p class="activity-criteria"><strong>Se valorará:</strong> predicción anotada, medidas comprobadas en el inspector y respuesta razonada a cada pregunta.</p><a class="delivery-trigger" href="../../labs/entrega-practicas-diw.html?actividad=u02v2-act-05" rel="noopener noreferrer" target="_blank">Entregar actividad</a></article>
 <aside class="resource-card expansion-card"><h5>Márgenes, relleno y dimensiones en MDN</h5><div class="flex-wrap-group"><a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/margin">Consultar <code>margin</code></a> <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/padding">Consultar <code>padding</code></a> <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/width">Consultar <code>width</code></a></div></aside>
 <h3 id="margenes-negativos">3.3. Colapso de márgenes y márgenes negativos</h3>
 <p>En el flujo normal, los márgenes verticales de dos bloques consecutivos pueden <strong>colapsar</strong>: en lugar de sumarse, se aplica el mayor.</p>
@@ -867,9 +857,7 @@ img { max-width: 100%; height: auto; }
 .tarjeta { width: 100%; padding: 20px; border: 2px solid #ede2d2; }
 .tarjeta h3 { margin-bottom: 16px; }
 .tarjeta p { margin-top: 12px; }
-.tarjeta__descripcion { height: 6rem; }</code></pre><ol><li>¿Cuánto mide de ancho la tarjeta con el <code>box-sizing</code> inicial? ¿Cuántos píxeles sobresale de la columna?</li><li>Aplica <code>border-box</code>. ¿Cuánto mide ahora la tarjeta? ¿Y su área de contenido?</li><li>Añade <code>max-width: 320px</code> y céntrala en la columna. ¿Qué declaración usas y cuánto mide cada margen lateral?</li><li>¿Qué separación queda entre el título y el primer párrafo? Explica por qué no es la suma.</li><li>La descripción tiene mucho texto y se monta sobre lo que hay debajo. Propón dos soluciones: una que mantenga la altura y otra que no.</li></ol><details class="activity-solution"><summary>Ver solución comentada</summary><ol><li>360 + 40 de relleno + 4 de borde = <strong>404 px</strong>; sobresale <strong>44 px</strong>.</li><li>La caja mide <strong>360 px</strong> y el contenido 360 − 44 = <strong>316 px</strong>.</li><li><code>margin-inline: auto</code>. La tarjeta mide 320 px y sobran 40 px: <strong>20 px por lado</strong>.</li><li><strong>16 px</strong>: los márgenes verticales de dos bloques hermanos colapsan y se aplica el mayor.</li><li>Mantener la altura: <code>overflow-y: auto</code> (aparece una barra si hace falta). Sin fijar la altura: sustituir <code>height</code> por <code>min-height</code> o <code>max-height</code> con <code>overflow-y: auto</code>. Fijar una altura exacta para texto casi siempre causa problemas al ampliar la letra.</li></ol><pre><code>*, *::before, *::after { box-sizing: border-box; }
-.tarjeta { max-width: 320px; margin-inline: auto; }
-.tarjeta__descripcion { max-height: 6rem; overflow-y: auto; }</code></pre></details></article></section>
+.tarjeta__descripcion { height: 6rem; }</code></pre><ol><li>¿Cuánto mide de ancho la tarjeta con el <code>box-sizing</code> inicial? ¿Cuántos píxeles sobresale de la columna?</li><li>Aplica <code>border-box</code>. ¿Cuánto mide ahora la tarjeta? ¿Y su área de contenido?</li><li>Añade <code>max-width: 320px</code> y céntrala en la columna. ¿Qué declaración usas y cuánto mide cada margen lateral?</li><li>¿Qué separación queda entre el título y el primer párrafo? Explica por qué no es la suma.</li><li>La descripción tiene mucho texto y se monta sobre lo que hay debajo. Propón dos soluciones: una que mantenga la altura y otra que no.</li></ol><a class="delivery-trigger" href="../../labs/entrega-practicas-diw.html?actividad=u02v2-act-07" rel="noopener noreferrer" target="_blank">Entregar actividad</a></article></section>
 <section id="valores"><h2>4. Valores: unidades, colores y variables</h2>
 <p>Cada declaración termina en un valor. Elegir bien las unidades decide si la interfaz se adapta al tamaño de letra o a la pantalla; elegir bien los colores decide si se lee. Las variables permiten nombrar esas decisiones y reutilizarlas en toda la hoja.</p>
 <h3 id="medidas">4.1. Unidades</h3>
@@ -964,20 +952,7 @@ img { max-width: 100%; height: auto; }
 .boton  { background: #87452e; color: #fff; font-size: 20px; padding: 8px 16px; border-radius: 8px; }
 .aviso  { background: #87452e; opacity: .15; padding: 16px; }
 .pagina { width: 90%; max-width: 700px; margin: 0 auto; }
-h1      { font-size: 40px; }</code></pre><ol><li>Declara en <code>:root</code> variables para los tres colores, dos espacios y un radio. Usa los nombres de la guía (<code>--color-bg-page</code>, <code>--color-text-primary</code>, <code>--color-action-primary</code>).</li><li>Pasa los tamaños de letra a <code>rem</code> y el relleno del botón a <code>em</code>, de modo que crezca con su texto. ¿Qué valores en <code>em</code> dan los mismos 8 px y 16 px?</li><li>El aviso se ve con el texto casi invisible. Explica por qué y corrígelo sin perder el fondo suave.</li><li>Haz que <code>.pagina</code> ocupe el ancho disponible menos 1 rem por lado, sin superar 65 caracteres de ancho. ¿Cuánto mide en una pantalla de 360 px?</li><li>Sustituye el tamaño del <code>h1</code> por <code>clamp(1.75rem, 1rem + 3vw, 3rem)</code>. ¿Cuánto mide con ventanas de 360, 800 y 1280 px?</li></ol><details class="activity-solution"><summary>Ver solución comentada</summary><pre><code>:root {
-  --color-bg-page: #faf6ef;
-  --color-text-primary: #352a24;
-  --color-action-primary: #87452e;
-  --espacio-s: .5rem;
-  --espacio-m: 1rem;
-  --radio: .5rem;
-}
-body    { background: var(--color-bg-page); color: var(--color-text-primary); }
-.boton  { background: var(--color-action-primary); color: #fff;
-          font-size: 1.25rem; padding: .4em .8em; border-radius: var(--radio); }
-.aviso  { background: rgb(135 69 46 / 15%); padding: var(--espacio-m); }
-.pagina { width: min(100% - 2 * var(--espacio-m), 65ch); margin-inline: auto; }
-h1      { font-size: clamp(1.75rem, 1rem + 3vw, 3rem); }</code></pre><ul><li>No hace falta declarar <code>font-size</code> en <code>body</code>: si no se toca, respeta la preferencia de la persona (16 px por defecto).</li><li>Con letra de 20 px, <code>.4em</code> = 8 px y <code>.8em</code> = 16 px.</li><li><code>opacity</code> atenúa toda la caja, texto incluido. <code>#87452e</code> es <code>rgb(135 69 46)</code>; con alfa solo se aclara el fondo.</li><li>En 360 px: 360 − 32 = <strong>328 px</strong>, menor que 65 ch, que con una letra de 16 px son unos 500 px (depende de la fuente).</li><li>360 px: 16 + 10,8 = 26,8 px, por debajo del mínimo, así que queda en <strong>28 px</strong>. 800 px: 16 + 24 = <strong>40 px</strong>. 1280 px: 16 + 38,4 = 54,4 px, por encima del máximo, así que queda en <strong>48 px</strong>.</li></ul></details></article></section>
+h1      { font-size: 40px; }</code></pre><ol><li>Declara en <code>:root</code> variables para los tres colores, dos espacios y un radio. Usa los nombres de la guía (<code>--color-bg-page</code>, <code>--color-text-primary</code>, <code>--color-action-primary</code>).</li><li>Pasa los tamaños de letra a <code>rem</code> y el relleno del botón a <code>em</code>, de modo que crezca con su texto. ¿Qué valores en <code>em</code> dan los mismos 8 px y 16 px?</li><li>El aviso se ve con el texto casi invisible. Explica por qué y corrígelo sin perder el fondo suave.</li><li>Haz que <code>.pagina</code> ocupe el ancho disponible menos 1 rem por lado, sin superar 65 caracteres de ancho. ¿Cuánto mide en una pantalla de 360 px?</li><li>Sustituye el tamaño del <code>h1</code> por <code>clamp(1.75rem, 1rem + 3vw, 3rem)</code>. ¿Cuánto mide con ventanas de 360, 800 y 1280 px?</li></ol><a class="delivery-trigger" href="../../labs/entrega-practicas-diw.html?actividad=u02v2-act-08" rel="noopener noreferrer" target="_blank">Entregar actividad</a></article></section>
 <section id="decoracion"><h2>5. Fondos, bordes y sombras</h2>
 <p>Con la caja ya definida, decidimos cómo se pinta: qué hay detrás del contenido, cómo se delimita la caja y qué profundidad sugiere. Ninguno de estos recursos debe ser el único portador de información.</p>
 <h3 id="imagenes-fondo">5.1. Fondos e imágenes de fondo</h3>
@@ -1090,7 +1065,7 @@ h1      { font-size: clamp(1.75rem, 1rem + 3vw, 3rem); }</code></pre><ul><li>No 
 <li><strong>Prepara las cajas:</strong> da a la exterior un ancho de 240 px, un <code>padding</code> de 16 px en los cuatro lados y un <code>border-radius</code> de 32 px. Dentro, coloca una caja de bloque de 100 px de alto que ocupe todo el ancho disponible. Usa fondos que contrasten y deja ambas cajas sin bordes ni márgenes.</li>
 <li><strong>Compara:</strong> crea cinco copias. Cambia solo el <code>border-radius</code> de la caja interior: prueba 4, 8, 16, 24 y 32 px. Escribe el valor debajo de cada copia y observa dónde la franja parece ensancharse o estrecharse al girar.</li>
 <li><strong>Saca tu conclusión:</strong> elige la versión que mantiene mejor la separación. Divide su radio interior entre el exterior y expresa la proporción como fracción o porcentaje. Justifica tu elección comparándola con una de las otras versiones.</li>
-</ol><p class="activity-criteria"><strong>Se valorará:</strong> cinco variantes correctamente rotuladas, proporción calculada y conclusión justificada.</p></article>
+</ol><p class="activity-criteria"><strong>Se valorará:</strong> cinco variantes correctamente rotuladas, proporción calculada y conclusión justificada.</p><a class="delivery-trigger" href="../../labs/entrega-practicas-diw.html?actividad=u02v2-act-09" rel="noopener noreferrer" target="_blank">Entregar actividad</a></article>
 <article aria-labelledby="boton-wcag-titulo" class="didactic-note activity-callout" id="u02v2-act-10">
 <h3 class="exercise-title" id="boton-wcag-titulo"><i aria-hidden="true" class="fa-solid fa-pen"></i> Actividad 02-10 · Diseñar los estados de un botón accesible</h3><p class="activity-goal"><strong>Objetivo:</strong> combinar pseudoclases, color, bordes y contorno para diseñar todos los estados de un botón que se pueda usar con teclado.</p>
 <p>Crea un <code>&lt;button type="button"&gt;Guardar&lt;/button&gt;</code> y define sus seis estados con CSS. Usa el esquema del tema 1 como referencia visual: WCAG establece requisitos de accesibilidad, no una lista obligatoria de seis estados para todos los botones.</p>
@@ -1154,39 +1129,7 @@ h1      { font-size: clamp(1.75rem, 1rem + 3vw, 3rem); }</code></pre><ul><li>No 
     &lt;h3 class="producto__nombre"&gt;Hogaza de masa madre&lt;/h3&gt;
   &lt;/div&gt;
   &lt;p class="producto__precio"&gt;3,20 €&lt;/p&gt;
-&lt;/article&gt;</code></pre><ol><li>La tarjeta tiene fondo blanco, borde de 1 px del color <code>#ede2d2</code>, esquinas de 12 px y una sombra suave hecha con el color del texto al 15 %.</li><li>La cabecera muestra la foto ajustada a su caja y, encima, un degradado oscuro que garantiza que el nombre blanco se lea. Si la foto no carga, debe verse un color marrón.</li><li>La insignia es un círculo de 3 rem con el texto centrado.</li><li>Al pasar el puntero o al recibir el foco algo de su interior, la sombra se hace más amplia. La tarjeta no debe moverse ni cambiar de tamaño.</li><li>Explica por qué un borde más grueso en <code>:hover</code> movería el contenido y una sombra no.</li></ol><details class="activity-solution"><summary>Ver solución comentada</summary><pre><code>.producto {
-  background-color: #fff;
-  border: 1px solid #ede2d2;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgb(53 42 36 / 15%);
-  overflow: hidden;              /* la cabecera respeta las esquinas */
-}
-
-.producto:hover,
-.producto:focus-within {
-  box-shadow: 0 8px 20px rgb(53 42 36 / 15%);
-}
-
-.producto__cabecera {
-  min-height: 10rem;
-  padding: 1rem;
-  color: #fff;
-  /* Primera capa encima; el color de reserva va en la última. */
-  background:
-    linear-gradient(rgb(53 42 36 / 70%), rgb(53 42 36 / 0%)),
-    url("hogaza.jpg") center / cover #69584c;
-}
-
-.producto__insignia {
-  display: inline-block;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  background-color: #46523b;
-  line-height: 3rem;
-  text-align: center;
-  font-size: .75rem;
-}</code></pre><p>El borde forma parte del tamaño de la caja: si crece, empuja el contenido. La sombra se dibuja fuera de la distribución y no ocupa espacio. Comprueba el contraste del nombre sobre la zona más clara de la foto.</p></details></article></section>
+&lt;/article&gt;</code></pre><ol><li>La tarjeta tiene fondo blanco, borde de 1 px del color <code>#ede2d2</code>, esquinas de 12 px y una sombra suave hecha con el color del texto al 15 %.</li><li>La cabecera muestra la foto ajustada a su caja y, encima, un degradado oscuro que garantiza que el nombre blanco se lea. Si la foto no carga, debe verse un color marrón.</li><li>La insignia es un círculo de 3 rem con el texto centrado.</li><li>Al pasar el puntero o al recibir el foco algo de su interior, la sombra se hace más amplia. La tarjeta no debe moverse ni cambiar de tamaño.</li><li>Explica por qué un borde más grueso en <code>:hover</code> movería el contenido y una sombra no.</li></ol><a class="delivery-trigger" href="../../labs/entrega-practicas-diw.html?actividad=u02v2-act-11" rel="noopener noreferrer" target="_blank">Entregar actividad</a></article></section>
 <section id="caja-tipografia"><h2>6. Tipografía</h2>
 <p>Empieza por elegir una letra legible y un interlineado cómodo. Después decide qué debe ocurrir cuando el texto ya no cabe. Conserva los encabezados HTML adecuados para que la jerarquía también se entienda al navegar con un lector de pantalla.</p>
 <h3 id="ampliacion-typography">6.1. Fuente y presentación del texto</h3>
@@ -1285,33 +1228,7 @@ body {
   &lt;h2&gt;Preparación&lt;/h2&gt;
   &lt;ol&gt;…&lt;/ol&gt;
   &lt;p class="receta__archivo"&gt;receta-hogaza-masa-madre-version-final-revisada-2026.pdf&lt;/p&gt;
-&lt;/article&gt;</code></pre><ol><li>Registra Lora desde <code>fuentes/lora.woff2</code> (pesos 400 a 700) y úsala en los títulos con dos alternativas. El cuerpo usa la fuente del sistema.</li><li>Fija un interlineado de 1,6 para todo el texto y limita el artículo a 65 caracteres de ancho, centrado.</li><li>La URL larga desborda en móvil. Haz que pueda partirse.</li><li>El nombre del archivo debe ocupar una sola línea y terminar en puntos suspensivos si no cabe.</li><li>¿Por qué conviene escribir <code>line-height: 1.6</code> y no <code>line-height: 1.6rem</code>? Calcula el interlineado de un <code>h2</code> de 1,5 rem en cada caso.</li></ol><details class="activity-solution"><summary>Ver solución comentada</summary><pre><code>@font-face {
-  font-family: "Lora";
-  src: url("../fuentes/lora.woff2") format("woff2");
-  font-weight: 400 700;
-  font-display: swap;
-}
-
-body {
-  font-family: system-ui, sans-serif;
-  line-height: 1.6;
-}
-
-h1, h2 { font-family: "Lora", Georgia, serif; }
-h2 { font-size: 1.5rem; }
-
-.receta {
-  max-width: 65ch;
-  margin-inline: auto;
-}
-
-.receta__meta { overflow-wrap: anywhere; }
-
-.receta__archivo {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}</code></pre><p>Con <code>1.6</code>, cada elemento hereda el <em>factor</em>: el <code>h2</code> de 24 px tiene 24 × 1,6 = <strong>38,4 px</strong>. Con <code>1.6rem</code>, se hereda la medida ya calculada, 25,6 px, y las líneas del título quedan casi pegadas. La ruta de la fuente es relativa al archivo CSS. Si el nombre completo del archivo es importante, muéstralo también en otro lugar o en el enlace de descarga.</p></details></article></section>
+&lt;/article&gt;</code></pre><ol><li>Registra Lora desde <code>fuentes/lora.woff2</code> (pesos 400 a 700) y úsala en los títulos con dos alternativas. El cuerpo usa la fuente del sistema.</li><li>Fija un interlineado de 1,6 para todo el texto y limita el artículo a 65 caracteres de ancho, centrado.</li><li>La URL larga desborda en móvil. Haz que pueda partirse.</li><li>El nombre del archivo debe ocupar una sola línea y terminar en puntos suspensivos si no cabe.</li><li>¿Por qué conviene escribir <code>line-height: 1.6</code> y no <code>line-height: 1.6rem</code>? Calcula el interlineado de un <code>h2</code> de 1,5 rem en cada caso.</li></ol><a class="delivery-trigger" href="../../labs/entrega-practicas-diw.html?actividad=u02v2-act-12" rel="noopener noreferrer" target="_blank">Entregar actividad</a></article></section>
 <section id="proyecto"><h2>7. Proyecto de la unidad</h2>
 <p>El proyecto reúne todo lo trabajado: cascada, selectores, cajas, valores, decoración y tipografía. Ve construyéndolo a medida que avances por los apartados.</p>
 <article aria-labelledby="proyecto-u02-titulo" class="case-study-box project-card" id="proyecto-u02">
