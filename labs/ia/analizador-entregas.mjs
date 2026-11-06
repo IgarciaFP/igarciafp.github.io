@@ -697,8 +697,10 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
   resultados.push({ id: "sin_comentarios", lenguaje: seleccion.join("+"), archivo: "Conjunto de lenguajes seleccionados",
     aplicable: densidadAplicable,
     cumple: densidadAplicable && totalComentarios * 10 < lineasCodigo,
-    peso: pesos.sin_comentarios,
+    peso: seleccion.includes('js') ? pesos.sin_comentarios : 10 * Math.floor(lineasCodigo / 20),
     valor: { comentarios: totalComentarios, lineasCodigo,
+      puntosPor20Lineas: seleccion.includes('js') ? null : 10,
+      bloquesDe20Lineas: seleccion.includes('js') ? null : Math.floor(lineasCodigo / 20),
       comentariosPor10Lineas: lineasCodigo ? totalComentarios * 10 / lineasCodigo : null,
       umbral: "Menos de 1 comentario por cada 10 líneas de código (solo desde 10 líneas)",
       minLineasExigidas: opciones.codigoBreve ? 1 : 10,
@@ -716,7 +718,7 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
     motivo: "Revisión ortográfica pendiente del análisis asíncrono." });
   // Cada ID suma una sola vez aunque aparezca en varios archivos o lenguajes.
   const activadas = [...new Set(resultados.filter(r => r.cumple).map(r => r.id))];
-  const suma = activadas.reduce((total, id) => total + pesos[id], 0);
+  const suma = activadas.reduce((total, id) => total + resultados.find(r => r.id === id && r.cumple).peso, 0);
   const multiplicadorPenalizaciones = 2 ** Math.min(1023, Math.floor(lineasCodigo / 25));
   const sumaPonderada = suma === 0 ? 0 : suma * multiplicadorPenalizaciones;
   return { preparacion, lenguajes: seleccion, puntuacion: unidades.length ? Math.min(100, sumaPonderada) : null,
@@ -806,7 +808,7 @@ export async function analizarEntregaDetalladaAsync(contenido, lenguajes = "", o
   for (const evaluar of evaluaciones) evaluar();
   const regla = resultado.resultados.find(r => r.id === "ausencia_faltas");
   resultado.reglasActivadas = [...new Set(resultado.resultados.filter(r => r.cumple).map(r => r.id))];
-  resultado.sumaPesosBase = resultado.reglasActivadas.reduce((suma, id) => suma + (opciones.pesos?.[id] ?? PESOS[id]), 0);
+  resultado.sumaPesosBase = resultado.reglasActivadas.reduce((suma, id) => suma + resultado.resultados.find(r => r.id === id && r.cumple).peso, 0);
   resultado.sumaSinLimitar = resultado.sumaPesosBase === 0 ? 0 : resultado.sumaPesosBase * resultado.multiplicadorPenalizaciones;
   resultado.puntuacionAntesReduccion = resultado.puntuacion === null ? null : Math.min(100, resultado.sumaSinLimitar);
   const lineasRevisadas = regla?.valor?.lineasRevisadas || 0;
