@@ -21,7 +21,7 @@ test('Markdown mixto conserva bloques y líneas sin ejecutar código', () => {
   const r=analizarEntrega(JSON.parse(JSON.stringify(p)),'texto');
   assert.equal(r.errores.length,0);
   assert.equal(r.resultados.find(x=>x.id==='sin_comentarios').aplicable,false);
-  assert.ok(!r.resultados.some(x=>['js','html','css'].includes(x.lenguaje)));
+  assert.ok(!r.resultados.some(x=>['sintaxis_configurable','css_variables','html_atributos_configurables'].includes(x.id)));
 });
 test('HTML extrae script/style aun seleccionando solo texto y no descarga src',()=>{
   const p=prepararEntrega('<html><style>.x {color:red}</style><script>const secreto=1;</script><script src="/privado.js"></script><p>Hola</p></html>');
@@ -30,12 +30,13 @@ test('HTML extrae script/style aun seleccionando solo texto y no descarga src',(
   assert.ok(!p.bloques.html[0].texto.includes('const secreto'));
   assert.equal(analizarEntrega(p,'texto').puntuacion,null);
 });
-test('ortografía envía únicamente los tipos seleccionados',async()=>{
+test('ortografía envía todo el texto y comentarios aunque no estén seleccionados',async()=>{
   const entrada={texto:'Explicación del alumno.',javascript:'// Comentario reservado\nconst x=1;'};
   let recibido='';
   const r=await analizarEntregaAsync(entrada,'texto',{revisorOrtografico:async t=>{recibido=t;return {matches:[]};}});
-  assert.equal(recibido.trim(),'Explicación del alumno.');
-  assert.equal(r.puntuacion,25);
+  assert.ok(recibido.includes('Explicación del alumno.'));
+  assert.ok(recibido.includes('Comentario reservado'));
+  assert.equal(r.puntuacion,35);
   assert.equal(r.resultados.find(x=>x.id==='sin_comentarios').valor.lineasCodigo,0);
 });
 test('selección errónea no convierte prosa a JS y sin selección conserva preparación',()=>{
