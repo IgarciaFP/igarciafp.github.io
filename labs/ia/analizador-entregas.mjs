@@ -338,12 +338,28 @@ function resolverSeleccion(preparacion, lenguajes) {
     .filter(([, fragmentos]) => fragmentos.some(f => f.texto.trim()))
     .map(([tipo]) => tipo === 'javascript' ? 'js' : tipo);
   if (!seleccion.length) return disponibles;
+  if (seleccion.length === 1 && seleccion[0] === 'css') seleccion.push('html');
   const presentes = seleccion.filter(tipo => disponibles.includes(tipo));
   return presentes.length ? presentes : ['texto'];
+}
+// El HTML añadido a CSS aporta la mitad; los demás ámbitos conservan la
+// deduplicación por ID. Se suma el HTML sin perder reglas compartidas con CSS.
+function pesosActivados(resultados) {
+  const grupos = new Map();
+  for (const r of resultados.filter(r => r.aplicable && r.cumple)) {
+    const clave = (r.htmlComplementario ? 'html:' : 'principal:') + r.id;
+    const previo = grupos.get(clave);
+    if (!previo || r.peso > previo.peso) grupos.set(clave, r);
+  }
+  const pesos = new Map();
+  for (const r of grupos.values()) pesos.set(r.id, (pesos.get(r.id) || 0) + r.peso);
+  return pesos;
 }
 export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {}) {
   const preparacion = prepararEntrega(contenido);
   const seleccion = resolverSeleccion(preparacion, lenguajes);
+  const pedidos = seleccionarLenguajes(lenguajes);
+  const htmlComplementario = pedidos.length === 1 && pedidos[0] === 'css';
   const pesos = { ...PESOS, ...opciones.pesos };
   const u = { ...UMBRALES, ...opciones.umbrales };
   const desactivadas = new Set(opciones.desactivadas || []);
@@ -360,16 +376,21 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
   if (!seleccion.includes("js") && preparacion.bloques.javascript.some(f => (f.nombre.endsWith("#js-posterior") || f.nombre.includes("#despues-html")))) {
     avisos.push({ archivo: "contenido.html", mensaje: "El JS posterior se ha separado, pero JS no está seleccionado y no se analiza." });
   }
-  const unidades = prepararUnidades(preparacion, seleccion);
+  const unidadesSeleccionadas = prepararUnidades(preparacion, seleccion);
+  const unidades = prepararUnidades(preparacion, ["texto", "js", "html", "css"]);
   for (const tipo of seleccion) if (!unidades.some(u => u.lenguaje === tipo)) avisos.push({ archivo: tipo, mensaje: "Código/texto no detectado" });
   for (const unidad of unidades) {
     const { texto: s, lenguaje, nombre, base } = unidad;
+    const seleccionado = seleccion.includes(lenguaje);
+    const htmlReducido = htmlComplementario && lenguaje === 'html';
+    let evaluandoProsa = lenguaje === 'texto';
     const linea = posicion => base + 1 + (s.slice(0, posicion).match(/\n/g) || []).length;
     const evidencia = (start, detalle) => ({ linea: linea(start), detalle });
     function registrar(id, aplicable, cumple, valor, evidencias = [], motivo = null) {
+      if (!seleccionado && !evaluandoProsa) return;
       if (opciones.codigoBreve && PATRONES_REPETICION.includes(id)) {
         resultados.push({ id, lenguaje, archivo: nombre, aplicable: false, cumple: false,
-          peso: pesos[id], valor: null, evidencias: [], evidenciasTotales: 0,
+          peso: pesos[id] * (htmlReducido ? 0.5 : 1), htmlComplementario: htmlReducido, valor: null, evidencias: [], evidenciasTotales: 0,
           motivo: 'Patrón de repetición o uniformidad omitido: menos de 10 líneas de código.' });
         return;
       }
@@ -377,7 +398,7 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
       resultados.push({ id, lenguaje, archivo: nombre,
         aplicable: Boolean(aplicable && habilitada),
         cumple: Boolean(aplicable && habilitada && cumple), valor,
-        peso: pesos[id], evidencias: evidencias.slice(0, 30),
+        peso: pesos[id] * (htmlReducido ? 0.5 : 1), htmlComplementario: htmlReducido, evidencias: evidencias.slice(0, 30),
         evidenciasTotales: evidencias.length,
         motivo: !habilitada ? "desactivada" : !aplicable ? motivo || "muestra insuficiente o condición no aplicable" : null });
     }
@@ -437,7 +458,7 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
       }
     } catch (e) {
       valido = false;
-      errores.push({ archivo: nombre, lenguaje, mensaje: e.message,
+      (seleccionado ? errores : avisos).push({ archivo: nombre, lenguaje, mensaje: e.message,
         linea: e.loc?.line ? base + e.loc.line : e.line ? base + e.line : null });
       if (lenguaje === "js") {
         // Un bloque sin cerrar puede impedir construir el AST, aunque todos los
@@ -525,16 +546,25 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
       .filter(l => l.texto.trim());
     // Una línea del mismo HTML puede contener marcado, JS y CSS. Solo cuenta una
     // vez en el total, aunque sus fragmentos pertenezcan a unidades diferentes.
+    if (seleccionado) {
     for (const l of lineasConCodigo) lineasCodigoEntrega.add(JSON.stringify([archivoOrigen, l.numero]));
     totalComentarios += comentarios.length;
     densidadPorUnidad.push({ archivo: nombre, lenguaje, comentarios: comentarios.length,
       lineasCodigo: lineasConCodigo.length, primeraLinea: lineasConCodigo[0]?.numero ?? base + 1 });
+    }
     if (opciones.incluirComentarios) {
       fragmentosOrtografia.push(...comentarios.map(c => ({ texto: c.text,
         archivo: nombre, lenguaje, linea: linea(c.start), comentarioOriginal: s.slice(c.start, c.end), prefijoComentario: s.slice(Math.max(0, c.start - 3), c.start) })));
     }
     const evComentarios = cs => cs.map(c => evidencia(c.start, c.text.slice(0, 160)));
     const evaluarProsa = () => {
+    evaluandoProsa = true;
+    if (!seleccionado) {
+      const prosa = comentarios.map(c => c.text).join('\n');
+      const especialesProsa = [...prosa].filter(c => (opciones.caracteresEspeciales ?? CARACTERES_ESPECIALES).includes(c));
+      registrar('caracteres_especiales', !!prosa.trim(), especialesProsa.length > 0, especialesProsa.length, evComentarios(comentarios));
+      coincidencias('espacios_invisibles', prosa, /[\u00a0\u200b-\u200f\u202a-\u202e\u202f\u2060\u2066-\u2069]/g);
+    }
     const textos = comentarios.map(c => c.text.replace(/^\s*\* ?/gm, "").trim());
     const activos = comentarios.map((c, i) => ({ ...c, text: textos[i] })).filter(c => /\p{L}/u.test(c.text));
     const suficiente = activos.length >= u.minComentarios;
@@ -612,6 +642,7 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
     buscarComentarios("emojis_comentarios", /\p{Extended_Pictographic}/u);
     buscarComentarios("encabezados_markdown", /^\s*#{2,6}\s/m);
     if (lenguaje === "html") buscarComentarios("html_comentarios_secciones", /\b(header|navigation|main|footer|inicio|fin)\b/i);
+    evaluandoProsa = false;
     };
     if (opciones[EVALUACIONES_PROSA]) opciones[EVALUACIONES_PROSA].push(evaluarProsa);
     else evaluarProsa();
@@ -693,38 +724,47 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
   // Se conserva el ID y el peso para mantener compatibles las configuraciones.
   // El umbral es estricto: 1 comentario / 10 líneas NO activa esta regla.
   const lineasCodigo = lineasCodigoEntrega.size;
-  const densidadAplicable = !desactivadas.has("sin_comentarios") && !errores.length && (opciones.codigoBreve ? lineasCodigo > 0 : lineasCodigo >= 10);
-  resultados.push({ id: "sin_comentarios", lenguaje: seleccion.join("+"), archivo: "Conjunto de lenguajes seleccionados",
+  const gruposDensidad = htmlComplementario
+    ? [densidadPorUnidad.filter(d => d.lenguaje !== 'html'), densidadPorUnidad.filter(d => d.lenguaje === 'html')].filter(g => g.length)
+    : [densidadPorUnidad];
+  for (const desglose of gruposDensidad) {
+    const htmlReducido = htmlComplementario && desglose[0]?.lenguaje === 'html';
+    const lineasCodigo = htmlComplementario ? desglose.reduce((n, d) => n + d.lineasCodigo, 0) : lineasCodigoEntrega.size;
+    const totalComentarios = desglose.reduce((n, d) => n + d.comentarios, 0);
+    const densidadAplicable = !desactivadas.has('sin_comentarios') && !errores.length && (opciones.codigoBreve ? lineasCodigo > 0 : lineasCodigo >= 10);
+  resultados.push({ id: "sin_comentarios", lenguaje: htmlComplementario ? (htmlReducido ? "html" : "css") : seleccion.join("+"), archivo: "Conjunto de lenguajes seleccionados",
     aplicable: densidadAplicable,
     cumple: densidadAplicable && totalComentarios * 10 < lineasCodigo,
-    peso: seleccion.includes('js') ? pesos.sin_comentarios : 10 * Math.floor(lineasCodigo / 20),
+    peso: (seleccion.includes('js') ? pesos.sin_comentarios : 10 * Math.floor(lineasCodigo / 20)) * (htmlReducido ? 0.5 : 1),
+    htmlComplementario: htmlReducido,
     valor: { comentarios: totalComentarios, lineasCodigo,
       puntosPor20Lineas: seleccion.includes('js') ? null : 10,
       bloquesDe20Lineas: seleccion.includes('js') ? null : Math.floor(lineasCodigo / 20),
       comentariosPor10Lineas: lineasCodigo ? totalComentarios * 10 / lineasCodigo : null,
       umbral: "Menos de 1 comentario por cada 10 líneas de código (solo desde 10 líneas)",
       minLineasExigidas: opciones.codigoBreve ? 1 : 10,
-      desglose: densidadPorUnidad },
-    evidencias: densidadPorUnidad.slice(0, 30).map(d => ({ linea: d.primeraLinea,
+      desglose },
+    evidencias: desglose.slice(0, 30).map(d => ({ linea: d.primeraLinea,
       archivo: d.archivo, detalle: d.archivo + " · " + d.comentarios + " comentarios / " + d.lineasCodigo + " líneas de código" })),
-    evidenciasTotales: densidadPorUnidad.length,
+    evidenciasTotales: desglose.length,
     motivo: desactivadas.has("sin_comentarios") ? "desactivada" : errores.length ? "Hay errores de sintaxis; no se puede calcular la densidad completa."
       : !lineasCodigo ? "No hay líneas de código en los lenguajes seleccionados."
       : lineasCodigo < 10 && !opciones.codigoBreve ? "Código breve: aplicar el análisis público para exigir un comentario." : null });
-  resultados.push({ id: "ausencia_faltas", lenguaje: seleccion.join("+"), archivo: "Texto y comentarios seleccionados",
+  }
+  resultados.push({ id: "ausencia_faltas", lenguaje: seleccion.join("+"), archivo: "Todo el texto y los comentarios incluidos",
     aplicable: false, cumple: false, valor: null, peso: 0, pesoConfigurado: pesos.ausencia_faltas,
     estadoRevision: "no_realizada", puntosAplicados: 0,
     evidencias: [], evidenciasTotales: 0,
     motivo: "Revisión ortográfica pendiente del análisis asíncrono." });
   // Cada ID suma una sola vez aunque aparezca en varios archivos o lenguajes.
   const activadas = [...new Set(resultados.filter(r => r.cumple).map(r => r.id))];
-  const suma = activadas.reduce((total, id) => total + resultados.find(r => r.id === id && r.cumple).peso, 0);
+  const suma = [...pesosActivados(resultados).values()].reduce((a, b) => a + b, 0);
   const multiplicadorPenalizaciones = 2 ** Math.min(1023, Math.floor(lineasCodigo / 25));
   const sumaPonderada = suma === 0 ? 0 : suma * multiplicadorPenalizaciones;
-  return { preparacion, lenguajes: seleccion, puntuacion: unidades.length ? Math.min(100, sumaPonderada) : null,
+  return { preparacion, lenguajes: seleccion, puntuacion: unidadesSeleccionadas.length ? Math.min(100, sumaPonderada) : null,
     lineasCodigoAnalizadas: lineasCodigo, multiplicadorPenalizaciones,
     sumaPesosBase: suma, sumaSinLimitar: sumaPonderada, reglasActivadas: activadas, resultados, errores, avisos,
-    estado: errores.length ? "analisis_parcial" : unidades.length ? "analizado" : "sin_contenido_seleccionado",
+    estado: errores.length ? "analisis_parcial" : unidadesSeleccionadas.length ? "analizado" : "sin_contenido_seleccionado",
     significado: "Índice de prioridad de revisión; no es probabilidad calibrada de IA.",
     ...(opciones.incluirComentarios ? { fragmentosOrtografia, comentariosExtraidosCompletos } : {}) };
 }
@@ -808,7 +848,7 @@ export async function analizarEntregaDetalladaAsync(contenido, lenguajes = "", o
   for (const evaluar of evaluaciones) evaluar();
   const regla = resultado.resultados.find(r => r.id === "ausencia_faltas");
   resultado.reglasActivadas = [...new Set(resultado.resultados.filter(r => r.cumple).map(r => r.id))];
-  resultado.sumaPesosBase = resultado.reglasActivadas.reduce((suma, id) => suma + resultado.resultados.find(r => r.id === id && r.cumple).peso, 0);
+  resultado.sumaPesosBase = [...pesosActivados(resultado.resultados).values()].reduce((a, b) => a + b, 0);
   resultado.sumaSinLimitar = resultado.sumaPesosBase === 0 ? 0 : resultado.sumaPesosBase * resultado.multiplicadorPenalizaciones;
   resultado.puntuacionAntesReduccion = resultado.puntuacion === null ? null : Math.min(100, resultado.sumaSinLimitar);
   const lineasRevisadas = regla?.valor?.lineasRevisadas || 0;
@@ -1063,10 +1103,7 @@ export function crearVectorResultado(informe) {
   const rechazar = informe.lenguajes.includes('js') && escasos?.aplicable === true &&
     lineasJS > 0 && comentariosJS * 10 < lineasJS;
   if (rechazar) return [true, humanidad, 'No se admite código sin comentar'];
-  const reglas = new Map();
-  for (const r of informe.resultados) {
-    if (r.aplicable && r.cumple && r.peso > 0 && !reglas.has(r.id)) reglas.set(r.id, r.peso);
-  }
+  const reglas = new Map([...pesosActivados(informe.resultados)].filter(([, peso]) => peso > 0));
   // El porcentaje conserva el peso configurado; los ajustes globales se reflejan en b.
   const lineas = [...reglas].map(([id, peso]) => `${id}: ${peso}%`);
   if (noDetectados.length) lineas.push('Código/texto no detectado');
