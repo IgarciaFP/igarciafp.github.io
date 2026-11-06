@@ -85,3 +85,34 @@ test('solo se detectan expresiones en prosa, no en código ejecutable',async()=>
  const r=await analizarEntregaInformeAsync('const mi = "a ver";\n// Tu texto\nlet x=1;','js',{revisorOrtografico:async()=>({matches:[]})});
  assert.deepEqual(regla(r).valor.expresionesVigiladas.map(v=>v.expresion),['tu']);
 });
+
+test('espacios en delimitadores reales JS, CSS y HTML; repetidos una vez',async()=>{
+ for(const [tipo,codigo,n] of [
+ ['js','//Hola mundo\n//Hola mundo\n/*Otra frase*/\nconst x=1;',3],
+ ['css','/*Hola mundo*/\na { color: red; }',2],
+ ['html','<!--Hola mundo--><p>Texto</p>',2],
+ ['js','//x\nconst x=1;',1],
+ ['js','/**Hola mundo*/\nconst x=1;',2]]){
+  const r=await analizar({[tipo]:codigo},tipo,{revisorOrtografico:async()=>({matches:[]})});
+  assert.equal(regla(r).valor.faltasPorTipo.espacio_comentario,n,tipo+codigo);
+  assert.ok(r.reduccionOrtografica>0);
+ }
+});
+test('separadores correctos, saltos, JSDoc, vacíos y cadenas no dan faltas',async()=>{
+ for(const [tipo,codigo] of [
+ ['js','// Hola mundo\n/*\nOtra frase\n*/\n/** Documentación correcta */\n//\n/**/\nconst x="//sin espacio";'],
+ ['css','/* Hola mundo */\na { content: "/*texto*/"; }'],
+ ['html','<!-- Hola mundo --><!--\nOtra frase\n--><p>Texto</p>']]){
+  const r=await analizar({[tipo]:codigo},tipo,{revisorOrtografico:async()=>({matches:[]})});
+  assert.equal(regla(r).valor.faltasPorTipo.espacio_comentario,0);
+ }
+});
+test('espacios locales sobreviven al fallo API y conservan línea del cierre',async()=>{
+ const r=await analizar({js:'/*\nHola mundo*/\nconst x=1;'},'js',{revisorOrtografico:async()=>{throw Error('sin servicio');}});
+ const v=regla(r);assert.equal(v.estadoRevision,'parcial');assert.equal(v.puntosAplicados,0);
+ assert.equal(v.valor.faltasPorTipo.espacio_comentario,1);assert.equal(v.evidencias[0].linea,2);
+});
+test('el texto y los lenguajes no seleccionados no se revisan como comentarios',async()=>{
+ const r=await analizar({texto:'//Hola mundo',js:'/*Hola mundo*/\nconst x=1;'},'txt',{revisorOrtografico:async()=>({matches:[]})});
+ assert.equal(regla(r).valor.faltasPorTipo.espacio_comentario,0);
+});
