@@ -418,7 +418,7 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
       } else if (lenguaje === "css") {
         raiz = postcss.parse(s, { from: undefined });
         raiz.walkComments(c => comentarios.push({ text: c.text,
-          start: c.source.start.offset, end: c.source.end.offset + 1 }));
+          start: c.source.start.offset, end: c.source.end.offset }));
         let sinComentarios = s.split("");
         comentarios.forEach(c => { for (let i = c.start; i < c.end; i++) if (!/[\r\n]/.test(s[i])) sinComentarios[i] = " "; });
         for (const m of sinComentarios.join("").matchAll(/"(?:\\[\s\S]|[^"\\])*"|'(?:\\[\s\S]|[^'\\])*'/g)) {
@@ -531,7 +531,7 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
       lineasCodigo: lineasConCodigo.length, primeraLinea: lineasConCodigo[0]?.numero ?? base + 1 });
     if (opciones.incluirComentarios) {
       fragmentosOrtografia.push(...comentarios.map(c => ({ texto: c.text,
-        archivo: nombre, lenguaje, linea: linea(c.start) })));
+        archivo: nombre, lenguaje, linea: linea(c.start), comentarioOriginal: s.slice(c.start, c.end) })));
     }
     const evComentarios = cs => cs.map(c => evidencia(c.start, c.text.slice(0, 160)));
     const evaluarProsa = () => {
@@ -839,6 +839,26 @@ function detectarExpresionesVigiladas(f) {
   }));
 }
 
+// Solo recibe comentarios reconocidos por el parser, nunca cadenas del código.
+function detectarEspaciosComentario(f) {
+  const raw = f.comentarioOriginal;
+  if (!raw) return [];
+  const apertura = raw.startsWith('<!--') ? '<!--' : raw.startsWith('//') ? '//'
+    : raw.startsWith('/**') && raw !== '/**/' ? '/**' : '/*';
+  const cierre = apertura === '<!--' ? '-->' : apertura === '//' ? '' : '*/';
+  const cuerpo = raw.slice(apertura.length, cierre ? -cierre.length : undefined);
+  if (!cuerpo.trim()) return [];
+  const errores = [];
+  const agregar = (lado, simbolo, linea) => errores.push({
+    offset: f.offset || 0, length: 0, tipo: 'espacio_comentario',
+    claveLocal: lado + ':' + raw, fragmentoLocal: raw, archivoLocal: f.archivo, lineaLocal: linea,
+    replacements: [], message: 'Falta un espacio ' + (lado === 'apertura' ? 'tras ' : 'antes de ') + simbolo
+  });
+  if (!/^\s/u.test(cuerpo)) agregar('apertura', apertura, f.linea);
+  if (cierre && !/\s$/u.test(cuerpo)) agregar('cierre', cierre, f.linea + (raw.match(/\n/g) || []).length);
+  return errores;
+}
+
 async function revisarProsa(resultado, opciones) {
   const fragmentos = resultado.fragmentosOrtografia || [];
   const comentariosDisponibles = resultado.comentariosExtraidosCompletos === true;
@@ -856,9 +876,10 @@ async function revisarProsa(resultado, opciones) {
   const preparacionProsa = prepararProsa(fragmentos, config);
   resultado.preparacionProsa = preparacionProsa;
   const tienePalabrasRevisables = t => (t.normalize('NFC').match(/\p{L}+/gu) || []).some(p => [...p].length >= 3);
-  const seleccionados = preparacionProsa.fragmentos.filter(f => tienePalabrasRevisables(f.texto) || detectarExpresionesVigiladas(f).length);
+  const seleccionados = preparacionProsa.fragmentos.filter(f => tienePalabrasRevisables(f.texto) || detectarExpresionesVigiladas(f).length || detectarEspaciosComentario(f).length);
   const lineasElegibles = new Set();
   for (const f of seleccionados) {
+    for (const falta of detectarEspaciosComentario(f)) lineasElegibles.add(JSON.stringify([f.archivo, falta.lineaLocal]));
     f.texto.split('\n').forEach((linea, i) => {
       if (tienePalabrasRevisables(linea) || detectarExpresionesVigiladas({texto:linea,original:f.original.split('\n')[i]}).length) lineasElegibles.add(JSON.stringify([f.archivo, f.linea + i]));
     });
@@ -868,13 +889,14 @@ async function revisarProsa(resultado, opciones) {
   for (const f of seleccionados) { f.offset = texto.length; texto += f.texto + "\n\n"; }
   const palabras = (texto.normalize('NFC').match(/\p{L}+/gu) || []).filter(p => [...p].length >= 3).length;
   const vigiladas = seleccionados.flatMap(detectarExpresionesVigiladas);
+  const localesDetectadas = [...vigiladas, ...seleccionados.flatMap(detectarEspaciosComentario)];
   const minimo = 1;
   const excluidos = motivo => [...new Set(preparacionProsa.exclusiones.filter(e => e.motivo === motivo).map(e => e.token))];
   regla.valor = { palabras, lineasRevisadas, minimo, idioma: config.idioma || "es", exclusionIngles: preparacionProsa.exclusionIngles,
     tecnicosExcluidos: excluidos('glosario_tecnico'), camelCaseExcluidos: excluidos('camelCase'),
     puntosInternosExcluidos: excluidos('punto_interno'),
     terminosExcluidos: [...excluidos('glosario_tecnico'), ...excluidos('glosario_ingles')] };
-  if (palabras < minimo && !vigiladas.length) {
+  if (palabras < minimo && !localesDetectadas.length) {
     regla.motivo = "No quedan palabras de tres o más letras ni expresiones vigiladas tras aplicar las exclusiones. No se ha solicitado revisión ortográfica.";
     return resultado;
   }
@@ -919,11 +941,11 @@ async function revisarProsa(resultado, opciones) {
       }
       return replacements.length ? [{ ...m, tipo, replacements }] : [];
     });
-    const candidatas = [...vigiladas, ...candidatasAPI];
+    const candidatas = [...localesDetectadas, ...candidatasAPI];
     const unicas = new Map();
     for (const m of candidatas) {
-      const contexto = ['tilde_omitida','expresion_vigilada'].includes(m.tipo) ? texto.slice(m.offset, m.offset + m.length)
-        : texto.slice(m.offset, m.offset + m.length) + '|' + texto.slice(m.offset + m.length).split(/[.!?\n]/u)[0];
+      const contexto = m.claveLocal ?? (['tilde_omitida','expresion_vigilada'].includes(m.tipo) ? texto.slice(m.offset, m.offset + m.length)
+        : texto.slice(m.offset, m.offset + m.length) + '|' + texto.slice(m.offset + m.length).split(/[.!?\n]/u)[0]);
       const clave = m.tipo + ':' + contexto.normalize('NFC').toLowerCase().replace(/\s+/g, ' ').trim();
       if (unicas.has(clave)) unicas.get(clave).apariciones++;
       else unicas.set(clave, { ...m, apariciones: 1 });
@@ -936,17 +958,17 @@ async function revisarProsa(resultado, opciones) {
     regla.puntosAplicados = regla.cumple ? regla.peso : 0;
     regla.motivo = null;
     regla.valor = { ...regla.valor, faltas: faltas.length, aparicionesFaltas: candidatas.length, faltasRepetidas: candidatas.length - faltas.length, avisosDescartados: data.matches.length - candidatasAPI.length,
-      faltasPorTipo: Object.fromEntries(["tilde_omitida", "inicio_minuscula", "espacio_puntuacion", "apertura_ausente", "expresion_vigilada"].map(tipo => [tipo, faltas.filter(f => f.tipo === tipo).length])),
+      faltasPorTipo: Object.fromEntries(["tilde_omitida", "inicio_minuscula", "espacio_puntuacion", "apertura_ausente", "expresion_vigilada", "espacio_comentario"].map(tipo => [tipo, faltas.filter(f => f.tipo === tipo).length])),
       expresionesVigiladas: faltas.filter(f => f.tipo === 'expresion_vigilada').map(f => ({expresion:f.expresion,apariciones:f.apariciones})),
       sugerenciasEstilo: data.matches.filter(m => m.rule?.issueType === "style" || m.rule?.category?.id === "STYLE").length,
-      filtro: "Tildes omitidas desde 3 letras, inicio de frase en minúscula, espacio tras puntuación y apertura ¿/¡ ausente y lista de expresiones vigiladas; sin repetir error; avisos API Si es excluidos",
+      filtro: "Tildes omitidas desde 3 letras, inicio de frase en minúscula, espacio tras puntuación y apertura ¿/¡ ausente y lista de expresiones vigiladas, espacios junto a delimitadores de comentarios; sin repetir error; avisos API Si es excluidos",
       servicio: "LanguageTool", version: data.software?.version || null };
     const evidencias = faltas.length ? faltas.map(m => {
       const f = seleccionados.find(f => m.offset >= f.offset && m.offset < f.offset + f.texto.length) || seleccionados[0];
       const sugerencias = (m.replacements || []).slice(0, 3).map(r => r.value).join(", ");
-      return { tipo: m.tipo, linea: f.linea + (f.texto.slice(0, m.offset - f.offset).match(/\n/g) || []).length, archivo: f.archivo,
+      return { tipo: m.tipo, linea: m.lineaLocal ?? f.linea + (f.texto.slice(0, m.offset - f.offset).match(/\n/g) || []).length, archivo: m.archivoLocal ?? f.archivo,
         detalle: m.tipo + ' · ' + "Inicio del comentario · " + f.archivo + "\n" + (m.message || "Posible falta") +
-          "\nFragmento: " + texto.slice(m.offset, m.offset + m.length) +
+          "\nFragmento: " + (m.fragmentoLocal ?? texto.slice(m.offset, m.offset + m.length)) +
           "\nApariciones: " + m.apariciones + " (cuenta una sola falta)" +
           (sugerencias ? "\nSugerencias: " + sugerencias : "") };
     }) : seleccionados.map(f => ({ linea: f.linea, archivo: f.archivo,
@@ -961,24 +983,25 @@ async function revisarProsa(resultado, opciones) {
     resultado.errores.push({ archivo: "Revisión ortográfica", lenguaje: "texto", linea: null, mensaje: regla.motivo });
     resultado.estado = "analisis_parcial";
     // El fallo externo no elimina las coincidencias literales comprobadas localmente.
-    if (vigiladas.length) {
+    if (localesDetectadas.length) {
       const unicas = new Map();
-      for (const v of vigiladas) {
-        if (unicas.has(v.expresion)) unicas.get(v.expresion).apariciones++;
-        else unicas.set(v.expresion, {...v,apariciones:1});
+      for (const v of localesDetectadas) {
+        const clave = v.tipo + ':' + (v.claveLocal ?? v.expresion).normalize('NFC').toLowerCase().replace(/\s+/g, ' ').trim();
+        if (unicas.has(clave)) unicas.get(clave).apariciones++;
+        else unicas.set(clave, {...v,apariciones:1});
       }
       const locales = [...unicas.values()];
       regla.aplicable = true;
       regla.estadoRevision = 'parcial';
-      regla.valor = {...regla.valor, faltas:locales.length, aparicionesFaltas:vigiladas.length,
-        faltasRepetidas:vigiladas.length-locales.length,
-        faltasPorTipo:{expresion_vigilada:locales.length},
-        expresionesVigiladas:locales.map(v=>({expresion:v.expresion,apariciones:v.apariciones}))};
-      regla.motivo += ' Solo se contabilizan las expresiones vigiladas detectadas localmente.';
+      regla.valor = {...regla.valor, faltas:locales.length, aparicionesFaltas:localesDetectadas.length,
+        faltasRepetidas:localesDetectadas.length-locales.length,
+        faltasPorTipo:Object.fromEntries(['expresion_vigilada','espacio_comentario'].map(tipo=>[tipo,locales.filter(v=>v.tipo===tipo).length])),
+        expresionesVigiladas:locales.filter(v=>v.tipo==='expresion_vigilada').map(v=>({expresion:v.expresion,apariciones:v.apariciones}))};
+      regla.motivo += ' Solo se contabilizan las incidencias detectadas localmente.';
       regla.evidencias = config.mostrarDetalle === false ? [] : locales.slice(0,30).map(v=>{
-        const f=seleccionados.find(f=>v.offset>=f.offset&&v.offset<f.offset+f.texto.length);
-        return {tipo:v.tipo,archivo:f.archivo,linea:f.linea+(f.texto.slice(0,v.offset-f.offset).match(/\n/g)||[]).length,
-          detalle:v.message+'\nFragmento: '+v.expresion+'\nApariciones: '+v.apariciones+' (cuenta una sola coincidencia)'};
+        const f=seleccionados.find(f=>v.offset>=f.offset&&v.offset<=f.offset+f.texto.length);
+        return {tipo:v.tipo,archivo:v.archivoLocal ?? f.archivo,linea:v.lineaLocal ?? f.linea+(f.texto.slice(0,v.offset-f.offset).match(/\n/g)||[]).length,
+          detalle:v.message+'\nFragmento: '+(v.fragmentoLocal ?? v.expresion)+'\nApariciones: '+v.apariciones+' (cuenta una sola coincidencia)'};
       });
       regla.evidenciasTotales = config.mostrarDetalle === false ? 0 : locales.length;
     }
@@ -1003,7 +1026,7 @@ export function comprobarCodigoBreve(contenido, lenguajes = '') {
         const lector = acorn.tokenizer(u.texto, { ecmaVersion: 'latest', onComment: comentarios });
         while (lector.getToken().type.label !== 'eof') {}
       } else if (u.lenguaje === 'css') {
-        postcss.parse(u.texto).walkComments(c => comentarios.push({ start: c.source.start.offset, end: c.source.end.offset + 1 }));
+        postcss.parse(u.texto).walkComments(c => comentarios.push({ start: c.source.start.offset, end: c.source.end.offset }));
       } else comentarios.push(...u.html.comentarios);
     } catch { return null; }
     numeroComentarios += comentarios.length;
