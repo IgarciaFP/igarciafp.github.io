@@ -334,9 +334,12 @@ function prepararUnidades(preparada, seleccion) {
 
 function resolverSeleccion(preparacion, lenguajes) {
   const seleccion = seleccionarLenguajes(lenguajes);
-  return seleccion.length ? seleccion : Object.entries(preparacion.bloques)
+  const disponibles = Object.entries(preparacion.bloques)
     .filter(([, fragmentos]) => fragmentos.some(f => f.texto.trim()))
     .map(([tipo]) => tipo === 'javascript' ? 'js' : tipo);
+  if (!seleccion.length) return disponibles;
+  const presentes = seleccion.filter(tipo => disponibles.includes(tipo));
+  return presentes.length ? presentes : ['texto'];
 }
 export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {}) {
   const preparacion = prepararEntrega(contenido);
@@ -973,7 +976,7 @@ export function crearVectorResultado(informe) {
     if (regla) regla.mensaje = 'No se admite código sin comentar';
     else detalles.push({ id: 'sin_comentarios', peso: 0, mensaje: 'No se admite código sin comentar', coincidencias: [escasos] });
   }
-  return [escasos?.cumple === true || noDetectados.includes('js'),
+  return [escasos?.cumple === true,
     informe.puntuacion === null ? null : Math.round((100 - informe.puntuacion) * 100) / 100,
     detalles];
 }
