@@ -531,7 +531,7 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
       lineasCodigo: lineasConCodigo.length, primeraLinea: lineasConCodigo[0]?.numero ?? base + 1 });
     if (opciones.incluirComentarios) {
       fragmentosOrtografia.push(...comentarios.map(c => ({ texto: c.text,
-        archivo: nombre, lenguaje, linea: linea(c.start), comentarioOriginal: s.slice(c.start, c.end) })));
+        archivo: nombre, lenguaje, linea: linea(c.start), comentarioOriginal: s.slice(c.start, c.end), prefijoComentario: s.slice(Math.max(0, c.start - 3), c.start) })));
     }
     const evComentarios = cs => cs.map(c => evidencia(c.start, c.text.slice(0, 160)));
     const evaluarProsa = () => {
@@ -847,8 +847,15 @@ function detectarEspaciosComentario(f) {
     : raw.startsWith('/**') && raw !== '/**/' ? '/**' : '/*';
   const cierre = apertura === '<!--' ? '-->' : apertura === '//' ? '' : '*/';
   const cuerpo = raw.slice(apertura.length, cierre ? -cierre.length : undefined);
-  if (!cuerpo.trim()) return [];
   const errores = [];
+  const juntoACodigo = /[;}] {0,2}$/.exec(f.prefijoComentario || '');
+  if (juntoACodigo) errores.push({
+    offset: f.offset || 0, length: 0, tipo: 'comentario_tras_codigo',
+    claveLocal: juntoACodigo[0].trim() + ':' + raw,
+    fragmentoLocal: juntoACodigo[0] + raw, archivoLocal: f.archivo, lineaLocal: f.linea,
+    replacements: [], message: 'Comentario tras ' + juntoACodigo[0].trim() + ' con cero, uno o dos espacios.'
+  });
+  if (!cuerpo.trim()) return errores;
   const agregar = (lado, simbolo, linea) => errores.push({
     offset: f.offset || 0, length: 0, tipo: 'espacio_comentario',
     claveLocal: lado + ':' + raw, fragmentoLocal: raw, archivoLocal: f.archivo, lineaLocal: linea,
@@ -958,10 +965,10 @@ async function revisarProsa(resultado, opciones) {
     regla.puntosAplicados = regla.cumple ? regla.peso : 0;
     regla.motivo = null;
     regla.valor = { ...regla.valor, faltas: faltas.length, aparicionesFaltas: candidatas.length, faltasRepetidas: candidatas.length - faltas.length, avisosDescartados: data.matches.length - candidatasAPI.length,
-      faltasPorTipo: Object.fromEntries(["tilde_omitida", "inicio_minuscula", "espacio_puntuacion", "apertura_ausente", "expresion_vigilada", "espacio_comentario"].map(tipo => [tipo, faltas.filter(f => f.tipo === tipo).length])),
+      faltasPorTipo: Object.fromEntries(["tilde_omitida", "inicio_minuscula", "espacio_puntuacion", "apertura_ausente", "expresion_vigilada", "espacio_comentario", "comentario_tras_codigo"].map(tipo => [tipo, faltas.filter(f => f.tipo === tipo).length])),
       expresionesVigiladas: faltas.filter(f => f.tipo === 'expresion_vigilada').map(f => ({expresion:f.expresion,apariciones:f.apariciones})),
       sugerenciasEstilo: data.matches.filter(m => m.rule?.issueType === "style" || m.rule?.category?.id === "STYLE").length,
-      filtro: "Tildes omitidas desde 3 letras, inicio de frase en minúscula, espacio tras puntuación y apertura ¿/¡ ausente y lista de expresiones vigiladas, espacios junto a delimitadores de comentarios; sin repetir error; avisos API Si es excluidos",
+      filtro: "Tildes omitidas desde 3 letras, inicio de frase en minúscula, espacio tras puntuación y apertura ¿/¡ ausente y lista de expresiones vigiladas, espacios junto a delimitadores de comentarios y comentarios tras ; o } con hasta dos espacios; sin repetir error; avisos API Si es excluidos",
       servicio: "LanguageTool", version: data.software?.version || null };
     const evidencias = faltas.length ? faltas.map(m => {
       const f = seleccionados.find(f => m.offset >= f.offset && m.offset < f.offset + f.texto.length) || seleccionados[0];
@@ -995,7 +1002,7 @@ async function revisarProsa(resultado, opciones) {
       regla.estadoRevision = 'parcial';
       regla.valor = {...regla.valor, faltas:locales.length, aparicionesFaltas:localesDetectadas.length,
         faltasRepetidas:localesDetectadas.length-locales.length,
-        faltasPorTipo:Object.fromEntries(['expresion_vigilada','espacio_comentario'].map(tipo=>[tipo,locales.filter(v=>v.tipo===tipo).length])),
+        faltasPorTipo:Object.fromEntries(['expresion_vigilada','espacio_comentario','comentario_tras_codigo'].map(tipo=>[tipo,locales.filter(v=>v.tipo===tipo).length])),
         expresionesVigiladas:locales.filter(v=>v.tipo==='expresion_vigilada').map(v=>({expresion:v.expresion,apariciones:v.apariciones}))};
       regla.motivo += ' Solo se contabilizan las incidencias detectadas localmente.';
       regla.evidencias = config.mostrarDetalle === false ? [] : locales.slice(0,30).map(v=>{
