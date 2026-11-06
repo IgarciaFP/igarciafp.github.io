@@ -441,6 +441,7 @@ h3 { color: black !important; }</code></pre><ol><li>Calcula la especificidad de 
 <div class="table-wrap"><table><caption>Selectores básicos y elementos seleccionados</caption><thead><tr><th scope="col">Selector</th><th scope="col">Ejemplo</th><th scope="col">Qué selecciona</th></tr></thead><tbody>
 <tr><td>De tipo o etiqueta</td><td><code>p</code></td><td>Todos los elementos <code>&lt;p&gt;</code>.</td></tr>
 <tr><td>De clase</td><td><code>.tarjeta</code></td><td>Los elementos cuyo atributo <code>class</code> contiene la clase <code>tarjeta</code>.</td></tr>
+<tr><td>De tipo y clase</td><td><code>p.destacado</code></td><td>Solo los <code>&lt;p&gt;</code> que tienen la clase <code>destacado</code>. Otros elementos con esa clase no se seleccionan.</td></tr>
 <tr><td>De identificador</td><td><code>#cabecera</code></td><td>El elemento con <code>id="cabecera"</code>. Ese identificador debe ser único en el documento.</td></tr>
 <tr><td>Universal</td><td><code>*</code></td><td>Todos los elementos. No añade especificidad.</td></tr>
 <tr><td>De atributo: presencia</td><td><code>[required]</code></td><td>Los elementos que tienen el atributo <code>required</code>.</td></tr>
@@ -458,7 +459,20 @@ p { line-height: 1.6; }
 .destacado { color: #0f766e; }
 #cabecera { background-color: #eff6ff; }
 * { box-sizing: border-box; }</code></pre>
-<p>En este ejemplo, <code>.destacado</code> selecciona tanto el segundo párrafo como el artículo. Una clase puede reutilizarse en varios elementos y un elemento puede tener varias clases, separadas por espacios en el HTML. Utiliza clases para estilos reutilizables y reserva los identificadores para elementos concretos.</p>
+<p>En este ejemplo, <code>.destacado</code> selecciona tanto el segundo párrafo como el artículo. Una clase puede reutilizarse en tantos elementos como quieras y, a la vez, <strong>un elemento puede tener todas las clases que necesites</strong>, separadas por espacios en el atributo <code>class</code>. El artículo del ejemplo tiene dos: <code>tarjeta</code> y <code>destacado</code>, y recibe los estilos de ambas. Utiliza clases para estilos reutilizables y reserva los identificadores para elementos concretos.</p>
+<pre><code>&lt;p class="aviso"&gt;Horario de verano.&lt;/p&gt;
+&lt;p class="aviso destacado"&gt;Cerrado el lunes.&lt;/p&gt;
+&lt;div class="aviso destacado"&gt;Encargos hasta las 20:00.&lt;/div&gt;
+&lt;article class="tarjeta producto producto--nuevo destacado"&gt;…&lt;/article&gt;</code></pre>
+<pre><code>.aviso       { padding: .5rem; }        /* los tres avisos */
+.destacado   { color: #87452e; }        /* el segundo, el tercero y el artículo */
+p.destacado  { font-weight: 700; }      /* solo el segundo: es un p con esa clase */
+p .destacado { font-style: italic; }    /* ¡con espacio! un .destacado DENTRO de un p: ninguno */</code></pre>
+<ul>
+<li><strong>Sin espacio</strong> (<code>p.destacado</code>), las dos condiciones se aplican <strong>al mismo elemento</strong>: es un párrafo <em>y</em> tiene la clase. Su especificidad es 0-1-1.</li>
+<li><strong>Con espacio</strong> (<code>p .destacado</code>), es un combinador descendiente: busca un elemento con la clase <em>dentro</em> de un párrafo (<a href="#selectores-hermanos">2.2</a>).</li>
+<li>El orden de las clases en el atributo no cambia nada: <code>class="aviso destacado"</code> y <code>class="destacado aviso"</code> son equivalentes. Si dos clases dan valores distintos a una misma propiedad, decide la cascada (<a href="#css-cascada">1.3</a>), no el orden en el HTML.</li>
+</ul>
 <pre><code>&lt;nav&gt;
   &lt;a href="inicio.html"&gt;Inicio&lt;/a&gt;
   &lt;div&gt;&lt;a href="contacto.html"&gt;Contacto&lt;/a&gt;&lt;/div&gt;
