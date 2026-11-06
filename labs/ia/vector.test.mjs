@@ -153,3 +153,20 @@ test('JavaScript sin strict continúa con su resumen normal de reglas',()=>{
  assert.equal(v[0],false);assert.ok(v[2].includes('caracteres_especiales: 60%'));
  assert.ok(!v[2].includes('use strict'));
 });
+
+test('selección CSS aísla comentarios, líneas y revisión de una entrega mixta',async()=>{
+ const css='/* Estilo general */\nbody { color: red; }';
+ const js=Array.from({length:50},(_,i)=>`const valor${i}=${i};`).join('\n');
+ const html='<!DOCTYPE html><html><head><style>'+css+'</style></head><body>\n'+Array.from({length:30},()=>'<p>Texto</p>').join('\n')+'\n<script>'+js+'</script></body></html>';
+ for(const entrada of [{texto:'Mi texto ajeno al CSS.',css,html:'<p>Texto</p>',js},'Mi texto ajeno al CSS.\n'+html]){
+  let enviado='';
+  const r=await analizarEntregaInformeAsync(entrada,'CSS',{revisorOrtografico:async t=>{enviado=t;return {matches:[]};}});
+  const densidad=r.resultados.find(x=>x.id==='sin_comentarios');
+  assert.deepEqual(r.lenguajes,['css']);assert.equal(densidad.valor.comentarios,1);assert.equal(densidad.valor.lineasCodigo,1);
+  assert.ok(densidad.valor.desglose.every(x=>x.lenguaje==='css'));
+  assert.equal(crearVectorResultado(r)[0],false);assert.ok(!crearVectorResultado(r)[2].includes('No se admite'));
+  assert.ok(!enviado.includes('Mi texto'));assert.equal(r.codigoBreve.lineas,1);
+ }
+ const inversa=await analizarEntregaAsync({css:'body { color: red; }',js:'// Comentario de JS\nconst x=1;',html:'<!-- Comentario HTML --><p>Texto</p>'},'CSS',limpio);
+ assert.equal(inversa[0],true);assert.equal(inversa[2],'No se admite código sin comentar');
+});
