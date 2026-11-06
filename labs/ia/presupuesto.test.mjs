@@ -17,9 +17,9 @@ test('ejemplo real: HTML seguido de JS incompleto conserva sus cuatro comentario
  const reales=ejemplo.split('\n').flatMap((l,i)=>l.trim().startsWith('//')?[i+1]:[]);
  assert.deepEqual(ubicaciones,reales);
 });
-test('sin JS seleccionado no se incluyen sus comentarios ni sus líneas en HTML',()=>{
+test('sin JS seleccionado se revisa su prosa pero no aporta densidad ni reglas de código',()=>{
  const r=analizarEntrega(ejemplo,'html');
- assert.equal(r.errores.length,0);assert.ok(!r.resultados.some(x=>x.lenguaje==='js'));
+ assert.equal(r.errores.length,0);assert.ok(!r.resultados.some(x=>x.lenguaje==='js' && x.id==='sintaxis_configurable'));
  assert.equal(r.resultados.find(x=>x.id==='sin_comentarios').valor.comentarios,0);
  assert.ok(r.avisos.some(a=>a.mensaje.includes('JS no está seleccionado')));
  assert.ok(r.resultados.find(x=>x.id==='sin_comentarios').valor.lineasCodigo<32);
@@ -34,7 +34,7 @@ test('con la función cerrada también se evalúa el AST',()=>{
 });
 test('texto normal después del HTML no se reclasifica como JS',()=>{
  const r=analizarEntrega('<html><body>Hola</body></html>Texto de despedida','htmljs');
- assert.ok(!r.resultados.some(x=>x.lenguaje==='js'));
+ assert.ok(!r.resultados.some(x=>x.lenguaje==='js' && x.id==='sintaxis_configurable'));
 });
 test('un cierre HTML dentro de una cadena de script no divide el documento',()=>{
  const r=analizarEntrega('<html><body><script>const t="</html>"; // Texto\n</script></body></html>','htmljs');
