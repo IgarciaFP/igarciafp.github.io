@@ -154,7 +154,7 @@ test('JavaScript sin strict continúa con su resumen normal de reglas',()=>{
  assert.ok(!v[2].includes('use strict'));
 });
 
-test('selección CSS aísla comentarios, líneas y revisión de una entrega mixta',async()=>{
+test('selección CSS incluye HTML y toda la prosa sin añadir líneas JS',async()=>{
  const css='/* Estilo general */\nbody { color: red; }';
  const js=Array.from({length:50},(_,i)=>`const valor${i}=${i};`).join('\n');
  const html='<!DOCTYPE html><html><head><style>'+css+'</style></head><body>\n'+Array.from({length:30},()=>'<p>Texto</p>').join('\n')+'\n<script>'+js+'</script></body></html>';
@@ -162,10 +162,11 @@ test('selección CSS aísla comentarios, líneas y revisión de una entrega mixt
   let enviado='';
   const r=await analizarEntregaInformeAsync(entrada,'CSS',{revisorOrtografico:async t=>{enviado=t;return {matches:[]};}});
   const densidad=r.resultados.find(x=>x.id==='sin_comentarios');
-  assert.deepEqual(r.lenguajes,['css']);assert.equal(densidad.valor.comentarios,1);assert.equal(densidad.valor.lineasCodigo,1);
+  assert.deepEqual(r.lenguajes,['css','html']);assert.equal(densidad.valor.comentarios,1);assert.equal(densidad.valor.lineasCodigo,1);
   assert.ok(densidad.valor.desglose.every(x=>x.lenguaje==='css'));
   assert.equal(crearVectorResultado(r)[0],false);assert.ok(!crearVectorResultado(r)[2].includes('No se admite'));
-  assert.ok(!enviado.includes('Mi texto'));assert.equal(r.codigoBreve.lineas,1);
+  assert.ok(enviado.includes('Mi texto'));
+  assert.ok(r.resultados.filter(x=>x.id==='sin_comentarios').every(x=>x.valor.desglose.every(d=>d.lenguaje!=='js')));
  }
  const inversa=await analizarEntregaAsync({css:'body { color: red; }',js:'// Comentario de JS\nconst x=1;',html:'<!-- Comentario HTML --><p>Texto</p>'},'CSS',limpio);
  assert.equal(inversa[0],false);assert.ok(!inversa[2].includes('sin_comentarios:'));
@@ -202,4 +203,41 @@ test('sin comentarios CSS HTML: diez puntos por veinte líneas completas; JS con
   assert.equal(analizarEntrega({[tipo]:codigo},tipo,opciones)[1],crearVectorResultado(informe)[1]);
   assert.equal(crearVectorResultado(informe)[0],tipo==='js');
  }
+});
+
+const soloReglas = (...ids) => ({desactivadas:Object.keys(PESOS).filter(id=>!ids.includes(id)),...limpio});
+test('solo CSS suma HTML al 50%, incluso reglas compartidas, con resumen coherente',async()=>{
+ const entrada={css:'a::before { content: "“”"; }',html:'<p>“”</p>'};
+ for(const analizar of [analizarEntrega,analizarEntregaAsync]) {
+  assert.deepEqual(await analizar(entrada,'CSS',soloReglas('caracteres_especiales')),[false,10,'caracteres_especiales: 90%']);
+  assert.deepEqual(await analizar(entrada,'CSS HTML',soloReglas('caracteres_especiales')),[false,40,'caracteres_especiales: 60%']);
+  assert.deepEqual(await analizar({css:'a {color:red}',html:entrada.html},'CSS',soloReglas('caracteres_especiales')),[false,70,'caracteres_especiales: 30%']);
+ }
+});
+test('CSS y HTML calculan su propia densidad; HTML aporta la mitad',async()=>{
+ const entrada={css:'/* Comentario correcto */\na { color:red; }',html:Array.from({length:20},()=>'<p>Hola</p>').join('\n')};
+ const r=await analizarEntregaInformeAsync(entrada,'css',soloReglas('sin_comentarios'));
+ assert.equal(r.lineasCodigoAnalizadas,21);
+ assert.equal(r.sumaPesosBase,5);assert.equal(r.puntuacion,5);
+ assert.deepEqual(crearVectorResultado(r),[false,95,'sin_comentarios: 5%']);
+});
+test('CSS vacío también incluye HTML con peso reducido; sin ambos conserva TXT',async()=>{
+ assert.deepEqual(await analizarEntregaAsync({html:'<p>“”</p>'},'CSS',soloReglas('caracteres_especiales')),[false,70,'caracteres_especiales: 30%']);
+ assert.deepEqual(await analizarEntregaAsync({texto:'“”'},'CSS',soloReglas('caracteres_especiales')),[false,40,'caracteres_especiales: 60%']);
+});
+test('toda la prosa se revisa una vez; código JS no seleccionado no puntúa ni bloquea',async()=>{
+ const entrada={texto:'Explicación externa.',css:'/* Estilo externo */\na{color:red}',html:'<!-- Marcado externo --><p>Hola</p>',js:'// Algoritmo externo\nconst x = ()=> "“”";'};
+ for(const tipo of ['css','html','txt','js']) {
+  let enviado='',llamadas=0;
+  const r=await analizarEntregaInformeAsync(entrada,tipo,{...soloReglas('ausencia_faltas','caracteres_especiales'),revisorOrtografico:async t=>{llamadas++;enviado=t;return {matches:[]};}});
+  assert.equal(llamadas,1);
+  for(const palabra of ['Explicación','Estilo','Marcado','Algoritmo']) assert.equal(enviado.split(palabra).length-1,1);
+  assert.equal(r.resultados.find(x=>x.id==='ausencia_faltas').peso,25);
+  if(tipo!=='js') {assert.equal(r.sumaPesosBase,25);assert.equal(crearVectorResultado(r)[0],false);}
+ }
+});
+test('faltas en prosa no seleccionada descuentan también el análisis CSS',async()=>{
+ const r=await analizarEntregaInformeAsync({css:'a{color:red}',js:'/*Hola mundo*/\nconst x=1;'},'css',limpio);
+ assert.equal(r.resultados.find(x=>x.id==='ausencia_faltas').valor.faltasPorTipo.espacio_comentario,2);
+ assert.equal(r.puntuacion,0);assert.equal(crearVectorResultado(r)[0],false);
 });
