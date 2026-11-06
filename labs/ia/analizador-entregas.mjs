@@ -1046,25 +1046,19 @@ export function crearVectorResultado(informe) {
   const escasos = informe.resultados.find(r => r.id === 'sin_comentarios');
   const noDetectados = informe.lenguajes.filter(tipo =>
     !informe.preparacion.bloques[tipo === 'js' ? 'javascript' : tipo].some(f => f.texto.trim()));
-  const grupos = new Map();
+  const reglas = new Map();
   for (const r of informe.resultados) {
-    if (!r.aplicable || !r.cumple || !(r.peso > 0)) continue;
-    if (!grupos.has(r.id)) grupos.set(r.id, { id: r.id, peso: r.peso, coincidencias: [] });
-    grupos.get(r.id).coincidencias.push(r);
+    if (r.aplicable && r.cumple && r.peso > 0 && !reglas.has(r.id)) reglas.set(r.id, r.peso);
   }
-  const detalles = [...grupos.values()];
-  for (const lenguaje of noDetectados) detalles.push({
-    id: 'contenido_no_detectado', lenguaje, peso: 0, mensaje: 'Código/texto no detectado'
-  });
-  if (escasos?.cumple === true) {
-    const regla = grupos.get('sin_comentarios');
-    if (regla) regla.mensaje = 'No se admite código sin comentar';
-    else detalles.push({ id: 'sin_comentarios', peso: 0, mensaje: 'No se admite código sin comentar', coincidencias: [escasos] });
-  }
+  // El porcentaje conserva el peso configurado; los ajustes globales se reflejan en b.
+  const lineas = [...reglas].map(([id, peso]) => `${id}: ${peso}%`);
+  if (noDetectados.length) lineas.push('Código/texto no detectado');
+  if (escasos?.cumple === true) lineas.push('No se admite código sin comentar');
   return [escasos?.cumple === true,
     informe.puntuacion === null ? null : Math.round((100 - informe.puntuacion) * 100) / 100,
-    detalles];
+    lineas.join('\n')];
 }
+
 export const PATRONES_REPETICION = Object.freeze([
   'comentarios_mayuscula', 'comentarios_sin_puntos', 'comentarios_punto_final',
   'comentarios_longitud_similar', 'comentarios_antes_funciones', 'comentarios_separadores',
