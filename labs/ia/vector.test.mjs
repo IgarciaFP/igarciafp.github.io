@@ -168,5 +168,25 @@ test('selección CSS aísla comentarios, líneas y revisión de una entrega mixt
   assert.ok(!enviado.includes('Mi texto'));assert.equal(r.codigoBreve.lineas,1);
  }
  const inversa=await analizarEntregaAsync({css:'body { color: red; }',js:'// Comentario de JS\nconst x=1;',html:'<!-- Comentario HTML --><p>Texto</p>'},'CSS',limpio);
- assert.equal(inversa[0],true);assert.equal(inversa[2],'No se admite código sin comentar');
+ assert.equal(inversa[0],false);assert.ok(inversa[2].includes('sin_comentarios: 100%'));
+});
+
+test('CSS HTML y texto nunca bloquean; comentarios siguen como regla',async()=>{
+ const entrada={css:'body { color: red; }',html:'<p>Texto</p>',texto:'Explicación.',js:'const x=1;'};
+ for(const tipos of ['css','html','txt','css html texto']) {
+  for(const analizar of [analizarEntrega,analizarEntregaAsync]) {
+   const v=await analizar(entrada,tipos,limpio);
+   assert.equal(v[0],false,tipos);assert.ok(!v[2].includes('No se admite'),tipos);
+   if(tipos!=='txt') assert.ok(v[2].includes('sin_comentarios: 100%'),tipos);
+  }
+ }
+});
+test('selección mixta bloquea exclusivamente por la densidad de JS',async()=>{
+ const html=Array.from({length:50},()=>'<p>Texto</p>').join('\n');
+ const css=Array.from({length:50},(_,i)=>`.c${i}{color:red;}`).join('\n');
+ const r=await analizarEntregaInformeAsync({js:'// Comentario JS\nconst x=1;',html,css},'js html css',limpio);
+ assert.equal(r.resultados.find(x=>x.id==='sin_comentarios').cumple,true);
+ assert.equal(crearVectorResultado(r)[0],false);
+ const v=await analizarEntregaAsync({js:'const x=1;',css:'/* Uno */ /* Dos */ body{color:red;}'},'js css',limpio);
+ assert.equal(v[0],true);assert.equal(v[2],'No se admite código sin comentar');
 });
