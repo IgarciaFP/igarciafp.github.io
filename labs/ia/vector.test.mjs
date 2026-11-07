@@ -8,7 +8,7 @@ test('contrato público: vector JSON de tres elementos y complemento del resulta
  const v=await analizarEntregaAsync(entrada,'texto',limpio);
  assert.equal(v.length,3);assert.equal(v[0],false);assert.equal(v[1],100-informe.puntuacion);
  assert.deepEqual(v,crearVectorResultado(informe));assert.deepEqual(JSON.parse(JSON.stringify(v)),v);
- assert.equal(v[2],'ausencia_faltas: 25%');
+ assert.equal(v[2],'ausencia_faltas: 25%\nfaltas_detectadas: 0');
 });
 test('densidad: cero comentarios activa a aunque tenga peso cero; exactamente 1/10 no',()=>{
  const codigo=Array.from({length:10},(_,i)=>`let v${i} = ${i};`).join('\n');
@@ -219,7 +219,7 @@ test('CSS y HTML calculan su propia densidad; HTML aporta la mitad',async()=>{
  const r=await analizarEntregaInformeAsync(entrada,'css',soloReglas('sin_comentarios'));
  assert.equal(r.lineasCodigoAnalizadas,21);
  assert.equal(r.sumaPesosBase,5);assert.equal(r.puntuacion,5);
- assert.deepEqual(crearVectorResultado(r),[false,95,'sin_comentarios: 5%']);
+ assert.deepEqual(crearVectorResultado(r),[false,95,'sin_comentarios: 5%\nfaltas_detectadas: 0']);
 });
 test('CSS vacío también incluye HTML con peso reducido; sin ambos conserva TXT',async()=>{
  assert.deepEqual(await analizarEntregaAsync({html:'<p>“”</p>'},'CSS',soloReglas('caracteres_especiales')),[false,70,'caracteres_especiales: 30%']);
@@ -240,4 +240,21 @@ test('faltas en prosa no seleccionada descuentan también el análisis CSS',asyn
  const r=await analizarEntregaInformeAsync({css:'a{color:red}',js:'/*Hola mundo*/\nconst x=1;'},'css',limpio);
  assert.equal(r.resultados.find(x=>x.id==='ausencia_faltas').valor.faltasPorTipo.espacio_comentario,2);
  assert.equal(r.puntuacion,0);assert.equal(crearVectorResultado(r)[0],false);
+});
+
+test('el resumen incluye faltas distintas, también sin mostrar detalle',async()=>{
+ const entrada={texto:'numero numero'};
+ const revisar=async texto=>({matches:[...texto.matchAll(/numero/g)].map(m=>({offset:m.index,length:6,replacements:[{value:'número'}]}))});
+ const v=await analizarEntregaAsync(entrada,'txt',{revisorOrtografico:revisar,ortografia:{mostrarDetalle:false}});
+ assert.equal(v[2],'faltas_detectadas: 1');
+});
+test('el resumen distingue revisión parcial y no inventa cero si no se comprueba',async()=>{
+ const fallo={revisorOrtografico:async()=>{throw Error('Sin servicio');}};
+ const parcial=await analizarEntregaAsync({css:'/*Hola mundo*/\na{color:red}'},'css',fallo);
+ assert.ok(parcial[2].includes('faltas_detectadas: 2 (revisión parcial)'));
+ const fallida=await analizarEntregaAsync({texto:'Explicación completa.'},'txt',fallo);
+ assert.ok(!fallida[2].includes('faltas_detectadas:'));
+ assert.ok(!analizarEntrega({texto:'Explicación completa.'},'txt')[2].includes('faltas_detectadas:'));
+ const bloqueada=await analizarEntregaAsync({js:'const x=1;',texto:'Explicación completa.'},'js',limpio);
+ assert.equal(bloqueada[2],'No se admite código sin comentar');
 });
