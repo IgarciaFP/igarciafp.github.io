@@ -128,3 +128,5 @@ Siempre se analizan las reglas de prosa y la ortografía de todo el texto libre 
 El tercer elemento incluye `faltas_detectadas: N` tras el resumen de reglas cuando hay recuento ortográfico. N cuenta faltas distintas, aunque se oculte el detalle. Una revisión completada sin faltas muestra 0; una revisión parcial añade `(revisión parcial)`. Una revisión no realizada o fallida sin recuento no inventa un cero. El rechazo de JavaScript sigue devolviendo exclusivamente `No se admite código sin comentar`.
 
 El primer elemento del vector de retorno es siempre `false`, con cualquier tipo de contenido, incluso si está vacío o la revisión no se completa. Los elementos segundo y tercero conservan su cálculo y mensajes anteriores. Este booleano ya no indica insuficiencia de comentarios.
+
+Las entradas marcadas como CSS que comienzan con HTML (incluido `<style>`) se separan como documento HTML: el cuerpo de cada `style` pasa a CSS y se conserva íntegro el marcado posterior a `</style>`. La detección automática admite también texto explicativo antes de `<style>`. Se conservan los saltos de línea y los comentarios posteriores.
