@@ -135,3 +135,34 @@ test('documento HTML delimitado por Markdown conserva el siguiente bloque JS',()
  assert.equal(p.bloques.javascript[0].texto,'const x=1;');
  assert.equal(p.bloques.texto.length,0);
 });
+
+
+test('style conserva íntegro el HTML posterior en automático, entrada CSS y bloque CSS',async()=>{
+ const fuente='<style media="screen">\nbody { color: red; }\n</style>\n<!-- Comentario posterior -->\n<main><p>Contenido posterior</p></main>';
+ for(const entrada of [fuente,{css:fuente},{html:fuente},'```css\n'+fuente+'\n```','Explicación previa.\n'+fuente]) {
+  const p=prepararEntrega(entrada);
+  assert.equal(p.bloques.css.length,1);
+  assert.equal(p.bloques.css[0].texto,'\nbody { color: red; }\n');
+  const html=p.bloques.html.map(f=>f.texto).join('\n');
+  assert.ok(html.includes('</style>\n<!-- Comentario posterior -->\n<main><p>Contenido posterior</p></main>'));
+  assert.ok(!html.includes('color: red'));
+  let enviado='';
+  const r=await analizarEntregaAsync(p,'CSS',{revisorOrtografico:async t=>{enviado=t;return {matches:[]};}});
+  assert.deepEqual(r.lenguajes,['css','html']);assert.equal(r.errores.length,0);
+  assert.ok(enviado.includes('Comentario posterior'));
+ }
+});
+test('varios style y script conservan el marcado intermedio y posterior y las líneas',()=>{
+ const fuente='<STYLE>\n.a{color:red}\n</STYLE>\n<section>Primero</section>\n<style>\n.b{color:blue}\n</style>\n<footer>Último</footer>\n<script>const x=1;</script>';
+ const p=prepararEntrega({css:fuente});
+ assert.deepEqual(p.bloques.css.map(f=>f.base),[0,4]);
+ assert.equal(p.bloques.javascript[0].texto,'const x=1;');
+ assert.ok(p.bloques.html[0].texto.includes('<section>Primero</section>'));
+ assert.ok(p.bloques.html[0].texto.includes('<footer>Último</footer>'));
+ assert.equal(p.bloques.html[0].texto.split('\n').length,fuente.split('\n').length);
+});
+test('style literal dentro de CSS puro no se convierte en documento HTML',()=>{
+ const css='a::before { content: "<style>ejemplo</style><p>texto</p>"; }';
+ const p=prepararEntrega({css});
+ assert.equal(p.bloques.html.length,0);assert.equal(p.bloques.css[0].texto,css);
+});
