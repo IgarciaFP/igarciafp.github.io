@@ -239,8 +239,8 @@ export function prepararEntrega(contenido) {
     bloques[lenguaje === "js" ? "javascript" : lenguaje].push({ texto, nombre, base });
   }
   function agregar(tipo, texto, base = 0, nombre = "contenido") {
-    // Un pegado marcado como JS puede contener el envoltorio HTML.
-    if (tipo === "js" && detectarTipo(texto) === "html") tipo = "html";
+    // Un pegado marcado como JS o CSS puede contener el envoltorio HTML.
+    if (["js", "css"].includes(tipo) && detectarTipo(texto) === "html") tipo = "html";
     const extraidas = extraerUnidades({ [tipo]: texto }, ["texto", "html", "css", "js"], avisos);
     for (const unidad of extraidas) {
       unidad.base += base;
@@ -295,7 +295,7 @@ export function prepararEntrega(contenido) {
     }
     if (!cursor) {
       // Una introducción en prosa puede preceder a un documento HTML completo.
-      const inicioHTML = /^[ \t]*(?:<!doctype\s+html\b|<html\b|<script\b)/im.exec(texto);
+      const inicioHTML = /^[ \t]*(?:<!doctype\s+html\b|<html\b|<script\b|<style\b)/im.exec(texto);
       if (inicioHTML && inicioHTML.index > 0) {
         agregar('texto', texto.slice(0, inicioHTML.index), base, nombre);
         agregar('html', texto.slice(inicioHTML.index), base + (texto.slice(0, inicioHTML.index).match(/\n/g) || []).length, nombre);
