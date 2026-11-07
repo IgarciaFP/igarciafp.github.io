@@ -1106,6 +1106,10 @@ export function crearVectorResultado(informe) {
   const reglas = new Map([...pesosActivados(informe.resultados)].filter(([, peso]) => peso > 0));
   // El porcentaje conserva el peso configurado; los ajustes globales se reflejan en b.
   const lineas = [...reglas].map(([id, peso]) => `${id}: ${peso}%`);
+  const revision = informe.resultados.find(r => r.id === 'ausencia_faltas');
+  if (Number.isInteger(revision?.valor?.faltas) && ['completada', 'parcial'].includes(revision.estadoRevision)) {
+    lineas.push(`faltas_detectadas: ${revision.valor.faltas}${revision.estadoRevision === 'parcial' ? ' (revisión parcial)' : ''}`);
+  }
   if (noDetectados.length) lineas.push('Código/texto no detectado');
   return [false,
     informe.puntuacion === null ? null : Math.round((100 - informe.puntuacion) * 100) / 100,
