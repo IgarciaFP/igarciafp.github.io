@@ -1059,7 +1059,7 @@ async function revisarProsa(resultado, opciones) {
 }
 
 
-/** Contrato público: [comentariosEscasos, humanidad, reglasDetectadas].
+/** Contrato público: [false, humanidad, reglasDetectadas].
  * Humanidad es el complemento del índice heurístico, no una prueba de autoría.
  * Sin puntuación calculable se devuelve null, nunca un 100 ficticio.
  */
@@ -1096,13 +1096,13 @@ export function crearVectorResultado(informe) {
   const noDetectados = informe.lenguajes.filter(tipo =>
     !informe.preparacion.bloques[tipo === 'js' ? 'javascript' : tipo].some(f => f.texto.trim()));
   const humanidad = informe.puntuacion === null ? null : Math.round((100 - informe.puntuacion) * 100) / 100;
-  // La densidad global sigue siendo una regla, pero solo JS puede bloquear.
+  // Solo la insuficiencia de comentarios JS sustituye el resumen por el aviso.
   const bloquesJS = (escasos?.valor?.desglose || []).filter(d => d.lenguaje === 'js');
   const lineasJS = bloquesJS.reduce((total, d) => total + d.lineasCodigo, 0);
   const comentariosJS = bloquesJS.reduce((total, d) => total + d.comentarios, 0);
   const rechazar = informe.lenguajes.includes('js') && escasos?.aplicable === true &&
     lineasJS > 0 && comentariosJS * 10 < lineasJS;
-  if (rechazar) return [true, humanidad, 'No se admite código sin comentar'];
+  if (rechazar) return [false, humanidad, 'No se admite código sin comentar'];
   const reglas = new Map([...pesosActivados(informe.resultados)].filter(([, peso]) => peso > 0));
   // El porcentaje conserva el peso configurado; los ajustes globales se reflejan en b.
   const lineas = [...reglas].map(([id, peso]) => `${id}: ${peso}%`);
