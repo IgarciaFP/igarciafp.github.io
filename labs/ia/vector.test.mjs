@@ -13,7 +13,7 @@ test('contrato público: vector JSON de tres elementos y complemento del resulta
 test('densidad: cero comentarios activa a aunque tenga peso cero; exactamente 1/10 no',()=>{
  const codigo=Array.from({length:10},(_,i)=>`let v${i} = ${i};`).join('\n');
  const sin=analizarEntrega({js:codigo},'js',{pesos:{sin_comentarios:0}});
- assert.equal(sin[0],true);assert.equal(sin[2].split('\n').at(-1),'No se admite código sin comentar');
+ assert.equal(sin[0],false);assert.equal(sin[2].split('\n').at(-1),'No se admite código sin comentar');
  assert.equal(analizarEntrega({js:'// Comentario\n'+codigo},'js')[0],false);
 });
 test('sin entrada calculable no inventa humanidad del cien por cien',()=>{
@@ -62,7 +62,7 @@ test('sin tipos pedidos disponibles ni TXT no se inventa puntuación',async()=>{
 });
 test('tipos vacíos no impiden detectar código sin comentar',()=>{
  const v=analizarEntrega(Array.from({length:10},(_,i)=>`const x${i}=${i};`).join('\n'),'js css html texto');
- assert.equal(v[0],true);
+ assert.equal(v[0],false);
  assert.ok(!v[2].includes('Código/texto no detectado'));
  assert.equal(v[2].split('\n').at(-1),'No se admite código sin comentar');
 });
@@ -84,7 +84,7 @@ test('código breve se analiza y revisa tildes sin patrones repetidos',async()=>
 });
 test('código breve sigue exigiendo comentario real',()=>{
  const v=analizarEntrega('const x="// comentario";','js');
- assert.equal(v[0],true);assert.equal(v[2].split('\n').at(-1),'No se admite código sin comentar');
+ assert.equal(v[0],false);assert.equal(v[2].split('\n').at(-1),'No se admite código sin comentar');
 });
 test('desde diez líneas vuelven a evaluarse los patrones',async()=>{
  const codigo='// Comentario repetido suficientemente largo.\n// Comentario repetido suficientemente largo.\n'+Array.from({length:10},(_,i)=>`let x${i}=${i};`).join('\n');
@@ -131,7 +131,7 @@ test('texto compacto exacto, pesos personalizados, cero excluido y ajustes globa
 
 test('rechazo por comentarios devuelve solo el mensaje aunque haya más reglas y falte strict',()=>{
  const v=analizarEntrega({js:'const x="“”";'},'js');
- assert.equal(v[0],true);assert.equal(v[2],'No se admite código sin comentar');
+ assert.equal(v[0],false);assert.equal(v[2],'No se admite código sin comentar');
 });
 test('la ausencia de strict o su aparición como cadena no añade mensajes',async()=>{
  for(const codigo of ['// use strict\nconst x="“”";', '// Comentario.\nconst x="use strict";', '// Comentario.\nfunction f(){"use strict";return 1;}', '// Comentario.\nconst x=1; "use strict";']) {
@@ -172,7 +172,7 @@ test('selección CSS incluye HTML y toda la prosa sin añadir líneas JS',async(
  assert.equal(inversa[0],false);assert.ok(!inversa[2].includes('sin_comentarios:'));
 });
 
-test('CSS HTML y texto nunca bloquean; comentarios siguen como regla',async()=>{
+test('CSS HTML y texto devuelven false sin aviso de código sin comentar',async()=>{
  const entrada={css:'body { color: red; }',html:'<p>Texto</p>',texto:'Explicación.',js:'const x=1;'};
  for(const tipos of ['css','html','txt','css html texto']) {
   for(const analizar of [analizarEntrega,analizarEntregaAsync]) {
@@ -182,14 +182,14 @@ test('CSS HTML y texto nunca bloquean; comentarios siguen como regla',async()=>{
   }
  }
 });
-test('selección mixta bloquea exclusivamente por la densidad de JS',async()=>{
+test('selección mixta solo sustituye el resumen por la densidad de JS',async()=>{
  const html=Array.from({length:50},()=>'<p>Texto</p>').join('\n');
  const css=Array.from({length:50},(_,i)=>`.c${i}{color:red;}`).join('\n');
  const r=await analizarEntregaInformeAsync({js:'// Comentario JS\nconst x=1;',html,css},'js html css',limpio);
  assert.equal(r.resultados.find(x=>x.id==='sin_comentarios').cumple,true);
  assert.equal(crearVectorResultado(r)[0],false);
  const v=await analizarEntregaAsync({js:'const x=1;',css:'/* Uno */ /* Dos */ body{color:red;}'},'js css',limpio);
- assert.equal(v[0],true);assert.equal(v[2],'No se admite código sin comentar');
+ assert.equal(v[0],false);assert.equal(v[2],'No se admite código sin comentar');
 });
 
 test('sin comentarios CSS HTML: diez puntos por veinte líneas completas; JS conserva cien',async()=>{
@@ -201,7 +201,7 @@ test('sin comentarios CSS HTML: diez puntos por veinte líneas completas; JS con
   assert.equal(informe.resultados.find(r=>r.id==='sin_comentarios').peso,esperado);
   assert.equal(informe.sumaPesosBase,esperado);
   assert.equal(analizarEntrega({[tipo]:codigo},tipo,opciones)[1],crearVectorResultado(informe)[1]);
-  assert.equal(crearVectorResultado(informe)[0],tipo==='js');
+  assert.equal(crearVectorResultado(informe)[0],false);
  }
 });
 
