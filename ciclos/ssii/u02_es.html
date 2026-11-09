@@ -1443,7 +1443,7 @@
 </section>
 <section class="learning-section" aria-labelledby="arquitecturas">
 <h2 id="arquitecturas">6. Arquitecturas de red: OSI y TCP/IP</h2>
-<div class="activity-card activity-callout" id="curso-udemy"><h4>Recurso: modelos OSI y TCP/IP</h4><p>Lección de Josep Ricard: Cisco, fundamentos de networking para redes IP. Utilízala para acompañar el estudio de las capas. El acceso depende de tu cuenta y de la disponibilidad del curso.</p><div class="card-actions"><a class="resource-link-btn" href="https://www.udemy.com/course/cisco-fundamentos-de-networking-para-redes-ip-ccna/learn/lecture/11193240#overview" target="_blank" rel="noopener noreferrer">Abrir la lección de Udemy · Cisco: fundamentos de networking para redes IP</a></div><div class="card-actions activity-submit"><a class="resource-link-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSfeD0nYyiE2bhmtoDXCIGh-ZNNQyJN4Vi6YXZrRD9cLuaJMSQ/viewform?usp=sf_link" target="_blank" rel="noopener noreferrer">Entregar actividad</a></div></div>
+<div class="resource-card" id="curso-udemy"><h4>Recurso: modelos OSI y TCP/IP</h4><p>Lección de Josep Ricard: Cisco, fundamentos de networking para redes IP. Utilízala para acompañar el estudio de las capas. El acceso depende de tu cuenta y de la disponibilidad del curso.</p><div class="card-actions"><a class="resource-link-btn" href="https://www.udemy.com/course/cisco-fundamentos-de-networking-para-redes-ip-ccna/learn/lecture/11193240#overview" target="_blank" rel="noopener noreferrer">Abrir la lección de Udemy · Cisco: fundamentos de networking para redes IP</a></div></div>
 <h3 id="capas">6.1. Por qué se utilizan capas</h3>
 <p>Una arquitectura define reglas, funciones y relaciones para que distintos sistemas puedan comunicarse. Dividir el trabajo en capas permite abordar la complejidad: cada nivel ofrece servicios al superior y utiliza los del inferior mediante interfaces definidas.</p>
 <p>Las capas equivalentes de dos equipos siguen un protocolo común. Esa comunicación es <strong>lógica</strong>: los datos reales atraviesan la pila del emisor, el medio y la pila del receptor. Un cambio en una implementación puede mantenerse independiente de otras capas si se conservan las interfaces y los comportamientos esperados.</p>
@@ -1491,22 +1491,36 @@
 </ul>
 <h4>TCP vs. UDP — Capa de Transporte</h4>
 <p>Dentro de la capa de transporte, las aplicaciones eligen entre dos filosofías de transmisión según sus requisitos de rendimiento o fiabilidad:</p>
-<pre tabindex="0" role="img" aria-label="Esquema de transporte. Desde la capa de aplicación, los datos pasan por TCP, orientado a conexión, o por UDP, sin conexión. Ambos caminos llegan a IP en la capa de Internet." style="line-height:1.15">                  ┌──────────────────────────────┐
-                  │      Capa de Aplicación      │
-                  └──────────────┬───────────────┘
-                                 │
-           ┌─────────────────────┴─────────────────────┐
-           ▼                                           ▼
-┌──────────────────────┐                    ┌──────────────────────┐
-│         TCP          │                    │         UDP          │
-│ Orientado a Conexión │                    │ Sin Conexión (Fast)  │
-└──────────┬───────────┘                    └──────────┬───────────┘
-           │                                           │
-           └─────────────────────┬─────────────────────┘
-                                 ▼
-                  ┌──────────────────────────────┐
-                  │     IP (Capa de Internet)    │
-                  └──────────────────────────────┘</pre>
+<figure class="wireless-diagram">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 212" role="img" aria-labelledby="transporte-tcp-udp-titulo transporte-tcp-udp-desc" style="max-width:32rem;min-width:0;margin-inline:auto">
+    <title id="transporte-tcp-udp-titulo">Dos caminos desde la aplicación hasta IP</title>
+    <desc id="transporte-tcp-udp-desc">En el emisor, la aplicación entrega datos a TCP o a UDP. TCP forma segmentos y UDP forma datagramas. Ambos se transportan en paquetes IP.</desc>
+    <defs>
+      <marker id="transporte-tcp-udp-flecha" viewBox="0 0 8 8" markerWidth="5" markerHeight="5" refX="7" refY="4" orient="auto">
+        <path d="M0 0 L8 4 L0 8 Z" fill="#475569"/>
+      </marker>
+    </defs>
+    <g fill="none" stroke="#475569" stroke-width="2.5" stroke-linejoin="round">
+      <path d="M200 43 V57"/>
+      <path d="M200 57 H100 V77" marker-end="url(#transporte-tcp-udp-flecha)"/>
+      <path d="M200 57 H300 V77" marker-end="url(#transporte-tcp-udp-flecha)"/>
+      <path d="M100 134 V150 H300 V134"/>
+      <path d="M200 150 V169" marker-end="url(#transporte-tcp-udp-flecha)"/>
+    </g>
+    <g font-family="system-ui,sans-serif" text-anchor="middle">
+      <rect x="105" y="5" width="190" height="38" rx="8" fill="#eff6ff" stroke="#1e3a8a"/>
+      <text x="200" y="30" font-size="18" font-weight="700" fill="#1e3a8a">Aplicación</text>
+      <rect x="15" y="78" width="170" height="56" rx="8" fill="#ecfdf5" stroke="#0f766e"/>
+      <text x="100" y="100" font-size="18" font-weight="700" fill="#115e59">TCP</text>
+      <text x="100" y="122" font-size="15" fill="#134e4a">Con conexión</text>
+      <rect x="215" y="78" width="170" height="56" rx="8" fill="#ecfdf5" stroke="#0f766e"/>
+      <text x="300" y="100" font-size="18" font-weight="700" fill="#115e59">UDP</text>
+      <text x="300" y="122" font-size="15" fill="#134e4a">Sin conexión</text>
+      <rect x="105" y="171" width="190" height="36" rx="8" fill="#eff6ff" stroke="#1e3a8a"/>
+      <text x="200" y="195" font-size="17" font-weight="700" fill="#1e3a8a">IP · paquetes</text>
+    </g>
+  </svg>
+</figure>
 <ul>
   <li><strong>TCP (Transmission Control Protocol):</strong>
     <ul>
