@@ -1479,7 +1479,7 @@ h1 { font-size: clamp(1.5rem, 1rem + 2vw, 3rem); }</code></pre>
   background-position: center;
 }</code></pre>
 <p class="example-note">Alterna <code>cover</code> y <code>contain</code> y observa cuándo aparece el color de base. Cambia después <code>background-position</code> para recuperar otros detalles de la foto.</p>
-<p><code>background-origin</code> decide desde qué caja se coloca la imagen; <code>background-clip</code> decide hasta dónde se pinta. Si solo quieres cambiar el color, usa <code>background-color</code>.</p>
+<p>Si solo quieres cambiar el color, usa <code>background-color</code>. El control del área de origen y recorte del fondo queda en la <a href="#ampliacion-origen-recorte">ampliación final de este apartado</a>.</p>
 <aside aria-labelledby="shorthand-fondos" class="extension-card shorthand-card"><p class="card-label">Shorthand</p><details class="card-disclosure"><summary><h4 id="shorthand-fondos">Abreviar los fondos con <code>background</code></h4></summary>
 <p><strong>Qué agrupa:</strong> <code>background-color</code>, <code>background-image</code>, <code>background-position</code>, <code>background-size</code>, <code>background-repeat</code>, <code>background-attachment</code>, <code>background-origin</code> y <code>background-clip</code>.</p>
 <p><strong>Orden de los valores:</strong> casi libre, con tres reglas: el tamaño va justo después de la posición, separado por <code>/</code>; el color solo puede aparecer en la última capa; y las capas se separan con comas, de modo que la primera se dibuja encima. Una palabra de caja, como <code>padding-box</code>, fija origen y recorte; con dos, la primera es <code>background-origin</code> y la segunda, <code>background-clip</code>.</p>
@@ -1694,7 +1694,29 @@ a:focus-visible {
     &lt;h3 class="producto__nombre"&gt;Hogaza de masa madre&lt;/h3&gt;
   &lt;/div&gt;
   &lt;p class="producto__precio"&gt;3,20 €&lt;/p&gt;
-&lt;/article&gt;</code></pre><ol><li>La tarjeta tiene fondo blanco, borde de 1 px del color <code>#ede2d2</code>, esquinas de 12 px y una sombra suave hecha con el color del texto al 15 %.</li><li>La cabecera muestra la foto ajustada a su caja y, encima, un degradado oscuro que garantiza que el nombre blanco se lea. Si la foto no carga, debe verse un color marrón.</li><li>La insignia es un círculo de 3 rem con el texto centrado.</li><li>Al pasar el puntero o al recibir el foco algo de su interior, la sombra se hace más amplia. La tarjeta no debe moverse ni cambiar de tamaño.</li><li>Explica por qué un borde más grueso en <code>:hover</code> movería el contenido y una sombra no.</li></ol><a class="delivery-trigger" href="../../labs/entrega-practicas-diw.html?actividad=u02v2-act-17" rel="noopener noreferrer" target="_blank">Entregar actividad</a></details></article></section>
+&lt;/article&gt;</code></pre><ol><li>La tarjeta tiene fondo blanco, borde de 1 px del color <code>#ede2d2</code>, esquinas de 12 px y una sombra suave hecha con el color del texto al 15 %.</li><li>La cabecera muestra la foto ajustada a su caja y, encima, un degradado oscuro que garantiza que el nombre blanco se lea. Si la foto no carga, debe verse un color marrón.</li><li>La insignia es un círculo de 3 rem con el texto centrado.</li><li>Al pasar el puntero o al recibir el foco algo de su interior, la sombra se hace más amplia. La tarjeta no debe moverse ni cambiar de tamaño.</li><li>Explica por qué un borde más grueso en <code>:hover</code> movería el contenido y una sombra no.</li></ol><a class="delivery-trigger" href="../../labs/entrega-practicas-diw.html?actividad=u02v2-act-17" rel="noopener noreferrer" target="_blank">Entregar actividad</a></details></article><aside class="extension-card" aria-labelledby="ampliacion-origen-recorte"><p class="card-label">Ampliación</p><h4 id="ampliacion-origen-recorte">Origen y recorte del fondo: background-origin y background-clip</h4>
+<p>Una imagen de fondo puede colocarse respecto a una caja y pintarse hasta el límite de otra. Estas propiedades permiten controlar ambos aspectos por separado; no cambian el tamaño del elemento ni recortan su texto.</p>
+<div class="table-wrap"><table><caption>Colocar el fondo y limitar dónde se pinta</caption><thead><tr><th scope="col">Propiedad</th><th scope="col">Qué controla</th><th scope="col">Valor inicial</th></tr></thead><tbody>
+<tr><th scope="row"><code>background-origin</code></th><td>La caja de referencia para colocar y dimensionar la imagen de fondo con <code>background-position</code> y <code>background-size</code>. No afecta al color de fondo.</td><td><code>padding-box</code></td></tr>
+<tr><th scope="row"><code>background-clip</code></th><td>El límite hasta el que se pinta el fondo, tanto la imagen como el color.</td><td><code>border-box</code></td></tr>
+</tbody></table></div>
+<p>Ambas admiten <code>border-box</code> (hasta el borde exterior), <code>padding-box</code> (hasta el límite del relleno, sin el borde) y <code>content-box</code> (solo la caja de contenido). Aquí estos nombres se refieren a áreas del fondo; no sustituyen a <code>box-sizing</code>.</p>
+<pre><code>.tarjeta {
+  padding: 24px;
+  border: 12px dashed #24534b;
+  background-color: #e2f3ec;
+  background-image: radial-gradient(circle, #509888 18%, transparent 20%);
+  background-size: 32px 32px;
+  background-repeat: no-repeat;
+  background-position: left top;
+  background-origin: content-box;
+  background-clip: padding-box;
+}</code></pre>
+<p><strong>Comprueba el origen:</strong> mantén <code>background-clip: padding-box</code> y alterna <code>background-origin</code> entre <code>padding-box</code> y <code>content-box</code>. El punto se desplaza 24 px hacia dentro porque cambia la referencia desde la que se coloca.</p>
+<p><strong>Comprueba el recorte:</strong> mantén <code>background-origin: content-box</code> y alterna <code>background-clip</code>. Con <code>border-box</code>, el color se ve entre los trazos del borde; con <code>padding-box</code>, deja de pintarse debajo del borde; con <code>content-box</code>, tampoco se pinta en el relleno. El punto conserva su posición.</p>
+<p>En la abreviatura <code>background</code>, si aparecen dos valores de caja, el primero fija el origen y el segundo el recorte. Si aparece uno solo, se utiliza para ambos. Para estudiar su efecto sin reiniciar otros valores del fondo, empieza usando las propiedades individuales.</p>
+</aside>
+</section>
 <section id="caja-tipografia"><h2>6. Tipografía</h2>
 <p>Empieza por elegir una letra legible y un interlineado cómodo. Después decide qué debe ocurrir cuando el texto ya no cabe. Conserva los encabezados HTML adecuados para que la jerarquía también se entienda al navegar con un lector de pantalla.</p>
 <h3 id="ampliacion-typography">6.1. Fuente y presentación del texto</h3>
