@@ -1526,7 +1526,7 @@ h1 { font-size: clamp(1.5rem, 1rem + 2vw, 3rem); }</code></pre>
 }</code></pre>
 <p>Cambia <code>dir="ltr"</code> por <code>dir="rtl"</code> en el contenedor del aviso: el borde pasa de izquierda a derecha. Es el mismo diseño expresado por intención, sin duplicar reglas para cada idioma.</p>
 </section>
-<section id="decoracion"><h2>5. Fondos, bordes y sombras</h2>
+<section id="decoracion"><h2>5. Fondos, bordes, sombras y contornos</h2>
 <aside class="extension-card inline-card" data-display-inline id="laboratorio-fondos-bordes"><p class="card-label">Laboratorio interactivo</p><h4>Prueba los fondos, bordes y sombras de una tarjeta</h4><p>Cambia el patrón del fondo, el radio de las esquinas, la sombra y el contorno. Compara la vista previa con la regla CSS que produce cada cambio.</p><a href="../../labs/diw-fondos-bordes.html" rel="noopener noreferrer" target="_blank">Abrir laboratorio de fondos, bordes y sombras ↗</a></aside>
 <p>Con la caja ya definida, decidimos cómo se pinta: qué hay detrás del contenido, cómo se delimita la caja y qué profundidad sugiere. Ninguno de estos recursos debe ser el único portador de información.</p>
 <h3 id="imagenes-fondo">5.1. Fondos e imágenes de fondo</h3>
@@ -1643,7 +1643,7 @@ h1 { font-size: clamp(1.5rem, 1rem + 2vw, 3rem); }</code></pre>
 <p class="example-note">Cambia cada valor por separado. Prueba también <code>box-shadow: 0 1px 3px #0004, 0 8px 20px #0002</code> y elimina una de las dos sombras: la primera marca el borde cercano y la segunda añade una sombra más amplia.</p>
 <p>Una sombra exterior puede quedar recortada por un contenedor con <code>overflow: hidden</code>. Evita cambiar el grosor del borde en <code>:hover</code> si eso desplaza el contenido; puedes reservarlo desde el principio con un borde transparente.</p>
 <p>Repasa las formas abreviadas y la referencia de bordes y sombras, y ponlas en práctica:</p>
-<aside aria-labelledby="shorthand-bordes" class="extension-card shorthand-card"><p class="card-label">Shorthand</p><details class="card-disclosure"><summary><h4 id="shorthand-bordes" data-glossary="outline-style outline-width outline-color border-top-width border-top-color border-left-style border-inline-start border-top-left-radius border-top-right-radius border-bottom-left-radius border-bottom-right-radius">Abreviar bordes, esquinas y contornos</h4></summary>
+<aside aria-labelledby="shorthand-bordes" class="extension-card shorthand-card"><p class="card-label">Shorthand</p><details class="card-disclosure"><summary><h4 id="shorthand-bordes" data-glossary="outline-style outline-width outline-color border-top-width border-top-color border-left-style border-inline-start border-top-left-radius border-top-right-radius border-bottom-left-radius border-bottom-right-radius">Abreviar bordes y esquinas</h4></summary>
 <h5><code>border</code></h5>
 <p><strong>Qué agrupa:</strong> <code>border-width</code>, <code>border-style</code> y <code>border-color</code> de los cuatro lados. <code>border-top</code>, <code>border-right</code>, <code>border-bottom</code> y <code>border-left</code> reúnen los mismos tres valores para un solo lado; <code>border-inline</code> y <code>border-block</code>, para los dos extremos de un eje lógico.</p>
 <p><strong>Orden de los valores:</strong> grosor, estilo y color, en cualquier orden. Por separado, <code>border-width</code>, <code>border-style</code> y <code>border-color</code> admiten de uno a cuatro valores en el orden de <code>margin</code>: arriba, derecha, abajo e izquierda.</p>
@@ -1672,7 +1672,19 @@ h1 { font-size: clamp(1.5rem, 1rem + 2vw, 3rem); }</code></pre>
   border-bottom-left-radius: 0;
 }</code></pre>
 <p><strong>Cuidado:</strong> el redondeo no recorta el contenido de la caja.</p>
-<h5><code>outline</code></h5>
+<p class="source">Referencia: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/border" rel="noopener noreferrer" target="_blank">border · MDN ↗</a> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/border-radius" rel="noopener noreferrer" target="_blank">border-radius · MDN ↗</a> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/outline" rel="noopener noreferrer" target="_blank">outline · MDN ↗</a></p>
+</details></aside>
+
+<h3 id="contorno-outline">5.3. Contorno y foco con outline</h3>
+<p>Al recorrer un formulario con Tab, necesitas reconocer qué control está activo. <code>outline</code> dibuja un contorno sin reservar espacio: puede destacar el foco sin desplazar las cajas vecinas. <code>border</code>, en cambio, forma parte del modelo de caja. Ambos pueden aparecer a la vez.</p>
+<details class="table-disclosure"><summary>Propiedades del contorno</summary><div class="table-wrap"><table><caption>Propiedades del contorno</caption><thead><tr><th scope="col">Propiedad</th><th scope="col">Uso</th><th scope="col">Ejemplo</th></tr></thead><tbody>
+<tr><th scope="row"><code>outline-width</code></th><td>Grosor no negativo; también admite thin, medium y thick.</td><td><code>outline-width: 3px;</code></td></tr>
+<tr><th scope="row"><code>outline-style</code></th><td>Trazo, por ejemplo solid, dashed o dotted. none elimina el contorno; auto deja su aspecto al navegador.</td><td><code>outline-style: solid;</code></td></tr>
+<tr><th scope="row"><code>outline-color</code></th><td>Color del contorno.</td><td><code>outline-color: #1e3a8a;</code></td></tr>
+<tr><th scope="row"><code>outline-offset</code></th><td>Separación respecto al borde: positiva hacia fuera y negativa hacia dentro.</td><td><code>outline-offset: 3px;</code></td></tr>
+</tbody></table></div></details>
+<p>El contorno rodea el elemento; no tiene propiedades independientes para cada lado como <code>border-top</code>. Su separación tampoco añade margen.</p>
+<aside class="extension-card shorthand-card" aria-labelledby="shorthand-outline"><p class="card-label">Shorthand</p><details class="card-disclosure"><summary><h4 id="shorthand-outline">Abreviar el contorno con outline</h4></summary>
 <p><strong>Qué agrupa:</strong> <code>outline-width</code>, <code>outline-style</code> y <code>outline-color</code>.</p>
 <p><strong>Orden de los valores:</strong> grosor, estilo y color, en cualquier orden.</p>
 <p><strong>Equivalencia:</strong> las dos reglas producen el mismo resultado.</p>
@@ -1683,10 +1695,23 @@ a:focus-visible {
   outline-style: solid;
   outline-color: #6d28d9;
 }</code></pre>
-<p><strong>Cuidado:</strong> <code>outline-offset</code> no forma parte de la abreviatura y se declara aparte. Tampoco <code>box-shadow</code> es una abreviatura.</p>
-<p class="source">Referencia: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/border" rel="noopener noreferrer" target="_blank">border · MDN ↗</a> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/border-radius" rel="noopener noreferrer" target="_blank">border-radius · MDN ↗</a> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/outline" rel="noopener noreferrer" target="_blank">outline · MDN ↗</a></p>
+<p><strong>Cuidado:</strong> <code>outline-offset</code> no forma parte de la abreviatura y se declara aparte.</p>
 </details></aside>
+<pre data-example-title="Un botón con borde y foco visible"><code>&lt;button class="accion" type="button"&gt;Calcular&lt;/button&gt;
 
+.accion {
+  border: 1px solid #64748b;
+  border-radius: .5rem;
+  padding: .75rem 1rem;
+  background: white;
+  color: #172033;
+}
+.accion:focus-visible {
+  outline: 3px solid #1e3a8a;
+  outline-offset: 3px;
+}</code></pre>
+<p><strong>Comprueba:</strong> llega al botón con Tab y cambia el grosor y la separación. El contorno cambia, pero el botón conserva su tamaño. Mantén un foco visible: no uses <code>outline: none</code> sin una alternativa que permita localizarlo.</p>
+<p class="source"><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/outline">outline · MDN</a></p>
 <aside aria-labelledby="bordes-recursos" class="extension-card"><p class="card-label">Referencia</p><details class="card-disclosure"><summary><h4 id="bordes-recursos">Consultar bordes y sombras</h4></summary><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/border" rel="noopener noreferrer" target="_blank">Bordes · MDN ↗</a><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/box-shadow" rel="noopener noreferrer" target="_blank">Sombras · MDN ↗</a></details></aside>
 <aside aria-labelledby="boton-wcag-recursos" class="extension-card"><p class="card-label">Referencia</p><details class="card-disclosure"><summary><h4 id="boton-wcag-recursos">Consultar la accesibilidad de un botón</h4></summary><p><a href="https://www.w3.org/WAI/WCAG22/quickref/" rel="noopener noreferrer" target="_blank">Criterios WCAG 2.2 ↗</a> · <a href="https://www.w3.org/WAI/ARIA/apg/patterns/button/" rel="noopener noreferrer" target="_blank">Interacción y estados de botones · WAI ↗</a></p></details></aside>
 <article aria-labelledby="esquinas-anidadas-titulo" class="didactic-note activity-callout" id="u02v2-act-15">
