@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fondos, bordes y sombras · Laboratorio DIW</title>
+<link rel="stylesheet" href="../base/motor/estilos.css">
+<style>
+.workspace { display:grid; grid-template-columns:minmax(16rem, 2fr) minmax(0, 3fr); gap:1.25rem; align-items:start; margin-block:1.5rem 3rem }
+.hero h1 { font-size:clamp(2rem,5vw,3.5rem) }
+.hero .wrap { padding-bottom:1rem }
+.workspace > * { min-width:0 }
+.preview { grid-column:2; grid-row:1; position:sticky; top:1rem }
+.settings { grid-column:1; grid-row:1 }
+.stage { display:grid; place-items:center; min-height:13rem; padding:2.25rem; background:#edf0f5; border-radius:.75rem }
+#sample { display:grid; place-items:center; width:100%; max-width:20rem; min-height:8rem; padding:1rem }
+#sample span { background:#fff; color:#172033; padding:.25rem .65rem; border-radius:.35rem; font-weight:700 }
+.controls { display:grid; gap:.75rem; margin-block:.75rem }
+.controls label { display:block; margin:0 }
+.controls input,.controls select { display:block; width:100%; margin-top:.2rem }
+.controls input[type=color] { height:2.3rem; padding:.15rem }
+.controls input[type=range] { padding:0 }
+.controls output { float:right; font-variant-numeric:tabular-nums }
+.settings details { border-bottom:1px solid var(--line); padding-block:.6rem }
+summary { cursor:pointer; font-weight:700 }
+pre { white-space:pre-wrap; overflow-wrap:anywhere; padding:1rem; background:#111a2c; color:#eef3ff; border-radius:.65rem }
+@media(max-width:46rem) {
+ .workspace { display:flex; flex-direction:column; gap:.75rem }
+ .workspace > * { width:100% }
+ .preview { top:0; z-index:1; padding:.75rem }
+ .preview h2 { font-size:1rem; margin:0 0 .35rem }
+ .stage { min-height:0; padding:1.2rem }
+ #sample { min-height:4rem }
+ .preview:has(details[open]) { position:static }
+}
+</style></head>
+<body>
+<a class="skip" href="#lab">Saltar al laboratorio</a>
+<header class="hero"><div class="wrap"><div class="top"><span class="brand">DIW · LABORATORIO</span><a href="../ciclos/diw/u02_es.html#decoracion">Volver al apartado 5</a></div>
+<h1>Fondos, bordes y sombras</h1>
+<p>Diseña una tarjeta para «Pan del día». Cambia una propiedad cada vez y compara el resultado con la regla CSS.</p></div></header>
+<main id="lab" class="wrap workspace">
+<section class="card preview"><h2>Vista previa</h2><div class="stage"><div id="sample" class="tarjeta"><span>Pan del día</span></div></div>
+<details><summary>Ver el CSS de la tarjeta</summary><pre><code id="css"></code></pre></details></section>
+<form class="card settings" id="settings"><h2>Propiedades</h2>
+<details open><summary>Fondo</summary><div class="controls">
+<label>background-color<input name="background-color" type="color" value="#e2f3ec"></label>
+<label>background-image<select name="image"><option value="none">Sin imagen</option><option value="dots" selected>Puntos</option><option value="gradient">Degradado</option></select></label>
+<label>background-size<select name="background-size"><option>16px 16px</option><option selected>32px 32px</option><option>50% 50%</option><option>cover</option></select></label>
+<label>background-repeat<select name="background-repeat"><option selected>repeat</option><option>no-repeat</option><option>repeat-x</option><option>repeat-y</option></select></label>
+<label>background-position<select name="background-position"><option>left top</option><option selected>center</option><option>right bottom</option></select></label>
+<label>background-origin<select name="background-origin"><option>border-box</option><option selected>padding-box</option><option>content-box</option></select></label>
+<label>background-clip<select name="background-clip"><option selected>border-box</option><option>padding-box</option><option>content-box</option></select></label>
+</div></details>
+<details><summary>Borde y esquinas</summary><div class="controls">
+<label>border-width <output for="border-width">3px</output><input id="border-width" name="border-width" type="range" min="0" max="16" value="3"></label>
+<label>border-style<select name="border-style"><option>none</option><option selected>solid</option><option>dashed</option><option>dotted</option><option>double</option></select></label>
+<label>border-color<input name="border-color" type="color" value="#24534b"></label>
+<label>border-radius <output for="border-radius">16px</output><input id="border-radius" name="border-radius" type="range" min="0" max="64" value="16"></label>
+</div></details>
+<details><summary>Sombra</summary><div class="controls">
+<label>box-shadow<select name="shadow"><option value="outer">Exterior</option><option value="inset">Interior</option><option value="none">Sin sombra</option></select></label>
+<label>Desplazamiento horizontal <output for="sx">2px</output><input id="sx" name="sx" type="range" min="-20" max="20" value="2"></label>
+<label>Desplazamiento vertical <output for="sy">6px</output><input id="sy" name="sy" type="range" min="-20" max="20" value="6"></label>
+<label>Desenfoque <output for="blur">12px</output><input id="blur" name="blur" type="range" min="0" max="32" value="12"></label>
+<label>Expansión <output for="spread">0px</output><input id="spread" name="spread" type="range" min="-10" max="12" value="0"></label>
+<label>shadow-color<input name="shadow-color" type="color" value="#84938f"></label>
+</div></details>
+<details><summary>Contorno</summary><div class="controls">
+<label>outline-width <output for="outline-width">0px</output><input id="outline-width" name="outline-width" type="range" min="0" max="8" value="0"></label>
+<label>outline-style<select name="outline-style"><option selected>solid</option><option>dashed</option><option>dotted</option></select></label>
+<label>outline-color<input name="outline-color" type="color" value="#a53f17"></label>
+<label>outline-offset <output for="outline-offset">3px</output><input id="outline-offset" name="outline-offset" type="range" min="-8" max="12" value="3"></label>
+</div></details>
+<p>Prueba los puntos con <code>no-repeat</code> y cambia su posición. Después aumenta el grosor del borde y compara <code>background-clip: padding-box</code> con <code>content-box</code>.</p>
+<button type="reset">Restablecer valores</button></form></main>
+<script>
+const form = document.getElementById('settings');
+const sample = document.getElementById('sample');
+const images = {
+  none: 'none',
+  dots: 'radial-gradient(circle, #509888 18%, transparent 20%)',
+  gradient: 'linear-gradient(135deg, transparent, #59b9dc)'
+};
+function render() {
+  const values = Object.fromEntries(new FormData(form));
+  const px = name => values[name] + 'px';
+  const rules = {};
+  for (const name of ['background-color', 'background-size', 'background-position', 'background-repeat', 'background-origin', 'background-clip']) {
+    rules[name] = values[name];
+  }
+  rules['background-image'] = images[values.image];
+  rules.border = [px('border-width'), values['border-style'], values['border-color']].join(' ');
+  rules['border-radius'] = px('border-radius');
+  rules.outline = [px('outline-width'), values['outline-style'], values['outline-color']].join(' ');
+  rules['outline-offset'] = px('outline-offset');
+  const shadow = [px('sx'), px('sy'), px('blur'), px('spread'), values['shadow-color']];
+  if (values.shadow === 'inset') shadow.unshift('inset');
+  rules['box-shadow'] = values.shadow === 'none' ? 'none' : shadow.join(' ');
+  const lines = [];
+  for (const [property, value] of Object.entries(rules)) {
+    sample.style.setProperty(property, value);
+    lines.push('  ' + property + ': ' + value + ';');
+  }
+  document.getElementById('css').textContent = '.tarjeta {\n' + lines.join('\n') + '\n}';
+  for (const output of form.querySelectorAll('output')) output.value = px(output.htmlFor.value);
+}
+form.addEventListener('input', render);
+form.addEventListener('reset', () => requestAnimationFrame(render));
+render();
+</script></body></html>
