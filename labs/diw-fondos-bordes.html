@@ -49,8 +49,6 @@ pre { white-space:pre-wrap; overflow-wrap:anywhere; padding:1rem; background:#11
 <label>background-size<select name="background-size"><option>16px 16px</option><option selected>32px 32px</option><option>50% 50%</option><option>cover</option></select></label>
 <label>background-repeat<select name="background-repeat"><option selected>repeat</option><option>no-repeat</option><option>repeat-x</option><option>repeat-y</option></select></label>
 <label>background-position<select name="background-position"><option>left top</option><option selected>center</option><option>right bottom</option></select></label>
-<label>background-origin<select name="background-origin"><option>border-box</option><option selected>padding-box</option><option>content-box</option></select></label>
-<label>background-clip<select name="background-clip"><option selected>border-box</option><option>padding-box</option><option>content-box</option></select></label>
 </div></details>
 <details><summary>Borde y esquinas</summary><div class="controls">
 <label>border-width <output for="border-width">3px</output><input id="border-width" name="border-width" type="range" min="0" max="16" value="3"></label>
@@ -72,7 +70,7 @@ pre { white-space:pre-wrap; overflow-wrap:anywhere; padding:1rem; background:#11
 <label>outline-color<input name="outline-color" type="color" value="#a53f17"></label>
 <label>outline-offset <output for="outline-offset">3px</output><input id="outline-offset" name="outline-offset" type="range" min="-8" max="12" value="3"></label>
 </div></details>
-<p>Prueba los puntos con <code>no-repeat</code> y cambia su posición. Después aumenta el grosor del borde y compara <code>background-clip: padding-box</code> con <code>content-box</code>.</p>
+<p>Prueba los puntos con <code>no-repeat</code> y cambia su posición. Después cambia el borde, las esquinas y la sombra, observando una propiedad cada vez. Las áreas de origen y recorte del fondo se explican en la <a href="../ciclos/diw/u02_es.html#ampliacion-origen-recorte">ampliación al final del apartado 5</a>.</p>
 <button type="reset">Restablecer valores</button></form></main>
 <script>
 const form = document.getElementById('settings');
@@ -86,7 +84,7 @@ function render() {
   const values = Object.fromEntries(new FormData(form));
   const px = name => values[name] + 'px';
   const rules = {};
-  for (const name of ['background-color', 'background-size', 'background-position', 'background-repeat', 'background-origin', 'background-clip']) {
+  for (const name of ['background-color', 'background-size', 'background-position', 'background-repeat']) {
     rules[name] = values[name];
   }
   rules['background-image'] = images[values.image];
