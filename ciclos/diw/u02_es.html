@@ -1237,11 +1237,35 @@ li::marker { color: #0f766e; }
 
 <h4 id="borde-de-la-caja">4.2.1. Dibujar el borde con <code>border</code></h4>
 <p>Para distinguir una tarjeta del fondo de la página, puedes dibujar una línea alrededor de su contenido y su <code>padding</code>. Esa línea es el borde de la caja. El <code>margin</code> comienza justo por fuera de ella.</p>
-<p class="example-intro">Prueba esta regla en una tarjeta para dibujar una línea azul continua en sus cuatro lados.</p>
-<pre data-example-title="Dibujar el borde de una tarjeta"><code>.tarjeta {
+<p>Elige primero qué lado quieres cambiar. En la fila correspondiente encontrarás una propiedad para el grosor, otra para el estilo y otra para el color. La última columna reúne las tres decisiones en una declaración. Los cuatro lados físicos son fijos. Los lados lógicos siguen el sentido de la escritura.</p>
+<details class="table-disclosure"><summary>Propiedades de la línea del borde</summary><div class="table-wrap"><table><caption>Propiedades de la línea del borde</caption><thead><tr><th scope="col">Dónde se aplica</th><th scope="col">Grosor</th><th scope="col">Estilo</th><th scope="col">Color</th><th scope="col">Forma abreviada</th></tr></thead><tbody>
+<tr><th scope="row">Los cuatro lados</th><td><code>border-width</code></td><td><code>border-style</code></td><td><code>border-color</code></td><td><code>border</code></td></tr>
+<tr><th scope="row">Superior</th><td><code>border-top-width</code></td><td><code>border-top-style</code></td><td><code>border-top-color</code></td><td><code>border-top</code></td></tr>
+<tr><th scope="row">Derecho</th><td><code>border-right-width</code></td><td><code>border-right-style</code></td><td><code>border-right-color</code></td><td><code>border-right</code></td></tr>
+<tr><th scope="row">Inferior</th><td><code>border-bottom-width</code></td><td><code>border-bottom-style</code></td><td><code>border-bottom-color</code></td><td><code>border-bottom</code></td></tr>
+<tr><th scope="row">Izquierdo</th><td><code>border-left-width</code></td><td><code>border-left-style</code></td><td><code>border-left-color</code></td><td><code>border-left</code></td></tr>
+<tr><th scope="row">Ambos extremos del eje de bloque</th><td><code>border-block-width</code></td><td><code>border-block-style</code></td><td><code>border-block-color</code></td><td><code>border-block</code></td></tr>
+<tr><th scope="row">Ambos extremos del eje de línea</th><td><code>border-inline-width</code></td><td><code>border-inline-style</code></td><td><code>border-inline-color</code></td><td><code>border-inline</code></td></tr>
+<tr><th scope="row">Inicio del bloque</th><td><code>border-block-start-width</code></td><td><code>border-block-start-style</code></td><td><code>border-block-start-color</code></td><td><code>border-block-start</code></td></tr>
+<tr><th scope="row">Final del bloque</th><td><code>border-block-end-width</code></td><td><code>border-block-end-style</code></td><td><code>border-block-end-color</code></td><td><code>border-block-end</code></td></tr>
+<tr><th scope="row">Inicio de la línea</th><td><code>border-inline-start-width</code></td><td><code>border-inline-start-style</code></td><td><code>border-inline-start-color</code></td><td><code>border-inline-start</code></td></tr>
+<tr><th scope="row">Final de la línea</th><td><code>border-inline-end-width</code></td><td><code>border-inline-end-style</code></td><td><code>border-inline-end-color</code></td><td><code>border-inline-end</code></td></tr>
+</tbody></table></div></details>
+<h5>Cómo se forma la abreviatura <code>border</code></h5>
+<p class="example-intro">Para dibujar la misma línea en los cuatro lados de una tarjeta, empieza por decidir cuánto mide, qué trazo tiene y de qué color es. Compara estas dos maneras de escribir la regla.</p>
+<pre data-example-title="De tres declaraciones a border"><code>/* Una declaración para cada decisión */
+.tarjeta {
+  border-width: 3px;
+  border-style: solid;
+  border-color: navy;
+}
+
+/* El mismo borde en una sola declaración */
+.tarjeta {
   border: 3px solid navy;
 }</code></pre>
-<p class="example-note">La propiedad abreviada <code>border</code> reúne el grosor (<code>3px</code>), el estilo (<code>solid</code>) y el color (<code>navy</code>). Cambia <code>solid</code> por <code>dashed</code> para ver una línea discontinua con el mismo grosor. Si omites el estilo, se aplica <code>none</code> y la línea desaparece.</p>
+<p class="example-note">Para formar la abreviatura, escribe <code>border</code> y reúne los tres valores separados por espacios. El orden habitual es grosor, estilo y color. Si omites el estilo, toma su valor inicial, <code>none</code>, y la línea desaparece. Si después quieres cambiar solo el color, usa <code>border-color</code> para conservar el grosor y el trazo.</p>
+<p>La misma lectura sirve para un solo lado. Por ejemplo, <code>border-bottom: 2px dashed navy</code> dibuja una línea discontinua bajo la tarjeta. Los otros tres lados conservan su aspecto.</p>
 <p>El grosor cuenta en el modelo de caja. Con <code>box-sizing: content-box</code>, esos 3 px se añaden a cada lado del contenido y del <code>padding</code>. Con <code>box-sizing: border-box</code>, quedan incluidos en el ancho declarado. Puedes comprobarlo en la actividad que sigue.</p>
 <article aria-labelledby="ejercicio-02-3a-titulo" class="didactic-note activity-callout" id="u02v2-act-08"><details class="card-disclosure"><summary><h3 class="exercise-title" id="ejercicio-02-3a-titulo"><i aria-hidden="true" class="fa-solid fa-pen"></i> Actividad 02-09 · Repasa el modelo de caja con una etiqueta de precio</h3></summary><p><strong>Tiempo estimado</strong> · 8 minutos.</p><p>Diseña una etiqueta para una hogaza con su nombre y su precio. Debe medir 240 px de borde a borde. Reserva 16 px de padding a cada lado y dibuja un borde de 2 px.</p>
 <p>Usa un <code>&lt;p&gt;</code> para la etiqueta y un <code>&lt;strong&gt;</code> para el precio. Elige un fondo amarillo claro, un borde marrón y texto oscuro. Observa hasta dónde llega el fondo cuando cambias el padding.</p><p>Compara los dos modelos de <code>box-sizing</code> manteniendo el ancho declarado en 240 px. Predice cuánto medirá la etiqueta con cada uno y compruébalo en el inspector. Entrega la etiqueta que cumple el encargo y anota, para cada modelo, el ancho del contenido y el ancho de borde a borde.</p><a class="delivery-trigger" href="../../labs/entrega-practicas-diw.html?actividad=u02v2-act-08" rel="noopener noreferrer" target="_blank">Entregar actividad</a></details></article>
