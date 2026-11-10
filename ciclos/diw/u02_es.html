@@ -1280,6 +1280,24 @@ h1 { font-size: clamp(1.5rem, 1rem + 2vw, 3rem); }</code></pre>
 <p class="source">Referencia: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/padding" rel="noopener noreferrer" target="_blank">padding · MDN ↗</a> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/margin" rel="noopener noreferrer" target="_blank">margin · MDN ↗</a></p>
 </details></aside>
 
+<aside class="extension-card" aria-labelledby="margenes-logicos"><p class="card-label">Ampliación</p><h4 id="margenes-logicos">Márgenes que siguen la escritura: margin-inline y margin-block</h4>
+<p>Los márgenes físicos (<code>margin-left</code>, <code>margin-top</code>…) siempre señalan el mismo lado. Los <strong>márgenes lógicos</strong> siguen los ejes de escritura: <code>inline</code> recorre la línea de texto y <code>block</code> sigue la sucesión de líneas. Así puedes reutilizar el diseño cuando cambia el idioma o el modo de escritura.</p>
+<div class="table-wrap"><table><caption>Márgenes lógicos en escritura horizontal de izquierda a derecha</caption><thead><tr><th scope="col">Propiedad</th><th scope="col">Lados que modifica</th><th scope="col">Ejemplo</th></tr></thead><tbody>
+<tr><th scope="row"><code>margin-inline</code></th><td>Inicio y final de la línea: izquierda y derecha.</td><td><code>margin-inline: 1rem 2rem;</code></td></tr>
+<tr><th scope="row"><code>margin-block</code></th><td>Antes y después del bloque: arriba y abajo.</td><td><code>margin-block: .5rem 1rem;</code></td></tr>
+</tbody></table></div>
+<p><strong>Un valor</strong> se aplica a ambos extremos del eje; <strong>dos valores</strong> indican primero el inicio (<code>start</code>) y después el final (<code>end</code>). Cada abreviatura modifica solo su eje. Para un único extremo usa <code>margin-inline-start</code>, <code>margin-inline-end</code>, <code>margin-block-start</code> o <code>margin-block-end</code>.</p>
+<pre><code>.articulo {
+  width: 80%;
+  margin-inline: auto;
+  margin-block: 1rem 2rem;
+}
+.aviso { margin-inline-start: 1rem; }</code></pre>
+<p>En el flujo normal horizontal, el artículo es un bloque más estrecho que su contenedor: <code>margin-inline: auto</code> reparte el espacio sobrante a izquierda y derecha y lo centra. <code>margin-block</code> deja 1 rem arriba y 2 rem abajo. No centra verticalmente la caja: en este contexto, los márgenes automáticos verticales no reparten el espacio libre.</p>
+<p><strong>Comprueba la dirección:</strong> aplica <code>.aviso</code> a un párrafo y cambia el atributo HTML entre <code>dir="ltr"</code> y <code>dir="rtl"</code>. Su margen de inicio pasa de la izquierda a la derecha. Con escritura vertical, el eje <code>inline</code> también pasa a ser vertical; por eso no conviene memorizar <code>inline = horizontal</code> como una regla universal. <code>writing-mode</code> establece el modo de escritura y <code>direction</code> su dirección.</p>
+<p>Estas propiedades siguen siendo márgenes: no evitan el <a href="#margenes-negativos">colapso de márgenes</a> ni hacen que un <code>span</code> de texto acepte separación vertical entre líneas. Evita mezclar propiedades físicas y lógicas para el mismo lado sin necesidad: si coinciden, la cascada decide cuál se aplica.</p>
+</aside>
+
 <h4 id="borde-de-la-caja">4.2.1. Dibujar el borde con <code>border</code></h4>
 <p>Para distinguir una tarjeta del fondo de la página, puedes dibujar una línea alrededor de su contenido y su <code>padding</code>. Esa línea es el borde de la caja. El <code>margin</code> comienza justo por fuera de ella.</p>
 <p>Elige primero qué lado quieres cambiar. En la fila correspondiente encontrarás una propiedad para el grosor, otra para el estilo y otra para el color. La última columna reúne las tres decisiones en una declaración. Los cuatro lados físicos son fijos. Los lados lógicos siguen el sentido de la escritura.</p>
