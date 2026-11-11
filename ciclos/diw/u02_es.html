@@ -533,7 +533,7 @@ body .document-container .section-toggle {
 <li><strong>Facilitar la lectura:</strong> podemos ajustar el contraste, el tamaño del texto y la separación entre elementos.</li>
 </ul>
 <p>CSS aplica reglas a los elementos del HTML. Cuando varias reglas afectan al mismo elemento, el navegador necesita decidir cuáles usar. Por eso estudiaremos la <strong>cascada</strong>, la <strong>herencia</strong> y la <strong>especificidad</strong>. Primero veremos cómo incorporar esas reglas a una página.</p>
-<article aria-labelledby="primera-hoja-titulo" class="didactic-note curiosity-card" id="actividad-primera-hoja">
+<article aria-labelledby="primera-hoja-titulo" class="didactic-note curiosity-card inline-card" data-display-inline id="actividad-primera-hoja">
 <h3 id="primera-hoja-titulo"><i aria-hidden="true" class="fa-solid fa-lightbulb"></i> ¿Cuál es la primera hoja de estilo que se aplica a nuestro código HTML?</h3>
 <p>Incluso en una página HTML sin CSS propio, los títulos suelen verse más grandes que los párrafos y los enlaces aparecen subrayados. ¿De dónde salen esos estilos? Puedes descubrirlo si inspeccionas un título y buscas el origen de la regla que fija su tamaño.</p>
 <details><summary>Comprobar la explicación</summary>
@@ -1190,23 +1190,34 @@ li::marker { color: #0f766e; }
 <h3 id="caja-y-display">Antes de medir: ¿a qué afecta el modelo de caja?</h3>
 <p>El modelo de caja describe <strong>contenido, relleno, borde y margen</strong> de las cajas que genera el navegador. <code>display</code> determina cómo participan en el flujo y qué medidas tienen efecto.</p>
 <figure id="modelo-caja-svg" style="margin:2rem 0">
-<svg aria-labelledby="box-model-title box-model-desc" height="500" role="img" style="display:block;width:100%;height:auto" viewbox="0 0 720 500" width="720" xmlns="http://www.w3.org/2000/svg">
-<title id="box-model-title">Modelo de caja CSS: del contenido al margen</title>
-<desc id="box-model-desc">Cuatro rectángulos concéntricos. Desde fuera hacia dentro: margen naranja, borde violeta, relleno verde y contenido azul. El margen queda fuera del borde. El relleno separa el contenido del borde.</desc>
-<rect fill="#fff7ed" height="476" rx="16" stroke="#c2410c" stroke-dasharray="9 6" stroke-width="2" width="696" x="12" y="12"></rect>
-<rect fill="#ede9fe" height="344" rx="10" stroke="#6d28d9" stroke-width="3" width="580" x="70" y="84"></rect>
-<rect fill="#d1fae5" height="223" rx="6" stroke="#047857" stroke-width="2" width="476" x="122" y="151"></rect>
-<rect fill="#dbeafe" height="93" rx="4" stroke="#1d4ed8" stroke-width="2" width="356" x="182" y="222"></rect>
-<g font-family="system-ui,sans-serif" font-size="26" font-weight="700" text-anchor="middle">
-<text fill="#9a3412" x="360" y="54">margin · margen</text>
-<text fill="#5b21b6" x="360" y="125">border · borde</text>
-<text fill="#065f46" x="360" y="192">padding · relleno</text>
-<text fill="#1e3a8a" x="360" y="260">contenido</text>
-</g>
-<text fill="#1e3a8a" font-family="system-ui,sans-serif" font-size="21" text-anchor="middle" x="360" y="292">texto, imágenes…</text>
-<g fill="none" stroke-width="2"><path d="M28 452H692M28 445V459M692 445V459" stroke="#c2410c"></path><path d="M86 401H634M86 394V408M634 394V408" stroke="#6d28d9"></path><path d="M138 346H582M138 339V353M582 339V353" stroke="#047857"></path></g>
-</svg>
-<figcaption style="margin-top:.75rem;color:#475569;text-align:left"><strong>De dentro hacia fuera:</strong> el contenido está rodeado por el relleno (<code>padding</code>), el borde (<code>border</code>) y el margen exterior (<code>margin</code>). Los colores distinguen las zonas del esquema; el margen real es transparente.</figcaption>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:1rem;align-items:center">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 308" role="img" aria-labelledby="box-model-title box-model-desc" style="display:block;width:100%;height:auto">
+<title id="box-model-title">Modelo de caja CSS</title>
+<desc id="box-model-desc">El contenido mide 300 por 150 píxeles. En cada lado se añaden 15 píxeles de padding, 10 de border y 20 de margin. Las flechas indican el grosor de cada capa. Esquema sin escala.</desc>
+<defs><marker id="box-arrow-tip" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0 6 3 0 6z" fill="#243249"/></marker></defs>
+<rect x="3" y="5" width="454" height="298" fill="#fff1d9" stroke="#a44c13" stroke-width="2" stroke-dasharray="6 4"/>
+<rect x="33" y="51" width="394" height="228" fill="#dff2cf" stroke="#408044" stroke-width="2"/>
+<rect x="54" y="89" width="352" height="171" fill="#dceeff" stroke="#377da0" stroke-width="2"/>
+<rect x="82" y="135" width="296" height="100" fill="#faf9ff" stroke="#665493" stroke-width="2"/>
+<g stroke="#243249" stroke-width="1.5" marker-start="url(#box-arrow-tip)" marker-end="url(#box-arrow-tip)"><path d="M258 9v38"/><path d="M258 55v30"/><path d="M258 93v38"/></g>
+<g fill="#18273a" font-family="system-ui,sans-serif" font-size="18">
+<text x="91" y="35">margin</text><text x="269" y="35">20 px</text>
+<text x="91" y="77">border</text><text x="269" y="77">10 px</text>
+<text x="91" y="119">padding</text><text x="269" y="119">15 px</text>
+<text x="230" y="179" text-anchor="middle" font-weight="700">Contenido</text><text x="230" y="207" text-anchor="middle">300 × 150 px</text></g></svg>
+<div><p><strong>Contenido.</strong> Con <code>box-sizing: content-box</code>, <code>width</code> y <code>height</code> fijan el tamaño de esta zona.</p>
+<p><strong><code>padding</code>.</strong> Separa el contenido del borde. El fondo de la caja cubre ese espacio.</p>
+<p><strong><code>border</code>.</strong> Rodea el contenido y el <code>padding</code>. Su grosor cuenta al medir la caja de borde a borde.</p>
+<p><strong><code>margin</code>.</strong> Deja espacio transparente por fuera del borde.</p></div></div>
+<pre data-example-title="Medir las capas de una caja"><code>.caja {
+  box-sizing: content-box;
+  width: 300px;
+  height: 150px;
+  padding: 15px;
+  border: 10px solid #408044;
+  margin: 20px;
+}</code></pre>
+<figcaption><strong>De borde a borde, la caja mide 350 px de ancho.</strong> A los 300 px de contenido se suman 15 px de <code>padding</code> y 10 px de <code>border</code> a cada lado. Con ambos márgenes horizontales ocupa <strong>390 px</strong> (20 + 350 + 20).</figcaption>
 </figure>
 <div aria-labelledby="box-lab-title" class="box-lab" id="laboratorio-caja">
 <p class="card-label">Laboratorio · Prueba de concepto</p><details class="card-disclosure"><summary><h3 id="box-lab-title">Cambia la caja y observa su CSS</h3></summary>
@@ -1239,7 +1250,6 @@ li::marker { color: #0f766e; }
 <h3 id="padding-margin">4.1. Espaciado con <code>padding</code> y <code>margin</code></h3>
 <p>Piensa en dos tarjetas de productos. Si el precio queda pegado al borde de su tarjeta, aumenta el <code>padding</code>: aparecerá espacio entre el texto y el borde, y el fondo de la tarjeta cubrirá esa zona. Si las dos tarjetas se tocan, ajusta el <code>margin</code>: el espacio quedará fuera del borde y se verá el fondo del contenedor.</p>
 <div data-tabla-propiedades data-props="padding,padding-top,padding-right,padding-bottom,padding-left,margin,margin-top,margin-right,margin-bottom,margin-left" data-titulo="Propiedades de padding y margin"></div>
-<p>Las propiedades de cada lado permiten ajustar por separado la parte superior (<code>top</code>), derecha (<code>right</code>), inferior (<code>bottom</code>) e izquierda (<code>left</code>).</p>
 <aside aria-labelledby="shorthand-espacios" class="extension-card shorthand-card"><p class="card-label">Shorthand</p><details class="card-disclosure"><summary><h4 id="shorthand-espacios" data-glossary="padding margin">Abreviar el espaciado con <code>padding</code> y <code>margin</code></h4></summary>
 <p><strong>Qué agrupa:</strong> <code>padding</code> reúne <code>padding-top</code>, <code>padding-right</code>, <code>padding-bottom</code> y <code>padding-left</code>, el relleno interior. <code>margin</code> reúne los cuatro márgenes exteriores equivalentes.</p>
 <p><strong>Orden de los valores:</strong> de uno a cuatro, en el sentido de las agujas del reloj: <strong>arriba → derecha → abajo → izquierda</strong>. Con un valor se repiten los cuatro lados; con dos, se reparten entre el eje vertical y el horizontal; con tres, los laterales comparten el segundo valor.</p>
@@ -1273,6 +1283,7 @@ li::marker { color: #0f766e; }
 <p><strong>Cuidado:</strong> la abreviatura fija siempre los cuatro lados. Para modificar solo el relleno izquierdo, escribe <code>padding-left</code> <em>después</em> de <code>padding</code> en la misma regla; si inviertes el orden, la abreviatura lo vuelve a sobrescribir.</p>
 <p class="source">Referencia: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/padding" rel="noopener noreferrer" target="_blank">padding · MDN ↗</a> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/margin" rel="noopener noreferrer" target="_blank">margin · MDN ↗</a></p>
 </details></aside>
+<p>Las propiedades de cada lado permiten ajustar por separado la parte superior (<code>top</code>), derecha (<code>right</code>), inferior (<code>bottom</code>) e izquierda (<code>left</code>).</p>
 
 
 
