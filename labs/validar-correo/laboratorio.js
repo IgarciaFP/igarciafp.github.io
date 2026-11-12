@@ -53,7 +53,7 @@ function mostrarVista() {
     vista.srcdoc = "<!doctype html>\n" + pagina.documentElement.outerHTML;
     estado.textContent = editor.value.trim()
         ? "Prueba el formulario con «Aceptar» y con Intro."
-        : "El formulario está listo. Escribe tu JavaScript y pulsa «Actualizar / reiniciar vista previa».";
+        : "El formulario está listo. Escribe tu JavaScript y pulsa el icono de actualizar.";
 }
 
 window.addEventListener("message", evento => {
