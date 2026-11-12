@@ -1677,7 +1677,34 @@
 <div class="example-box"><h4>Ejemplo resuelto: 192.168.10.34/24</h4><ul><li><strong>Red:</strong> <code>192.168.10.0</code>. Se obtiene aplicando AND bit a bit entre IP y máscara.</li><li><strong>Broadcast:</strong> <code>192.168.10.255</code>, con todos los bits de host a uno.</li><li><strong>Direcciones asignables:</strong> de <code>192.168.10.1</code> a <code>192.168.10.254</code>.</li><li><strong>Capacidad:</strong> 2<sup>8</sup> = 256 direcciones; 254 asignables en esta subred convencional.</li></ul><p><code>192.168.10.200/24</code> pertenece a la misma subred; <code>192.168.11.20/24</code> pertenece a otra. Compartir switch no cambia ese cálculo.</p></div>
 <h4 id="numero-hosts-red">Número de hosts de una red</h4>
 <p>Si quedan <em>n</em> bits para los hosts, hay 2<sup>n</sup> direcciones posibles. En una subred IPv4 convencional se reservan dos, una para identificar la red y otra para enviar a todos sus equipos (<em>broadcast</em>). Por eso quedan <strong>2<sup>n</sup> − 2 direcciones asignables</strong>. En el ejemplo anterior, los 8 bits de host permiten asignar 2<sup>8</sup> − 2 = <strong>254 direcciones</strong>.</p>
+<figure id="formula-hosts-ipv4" style="margin:1.5rem auto;max-width:640px">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 270" role="img" aria-labelledby="formula-hosts-title formula-hosts-desc" style="display:block;width:100%;height:auto">
+<title id="formula-hosts-title">Direcciones asignables: dos elevado a n menos dos</title>
+<desc id="formula-hosts-desc">n es el número de bits de host. Se resta una dirección de red y una de broadcast. Con ocho bits: 256 menos 2, igual a 254 direcciones asignables. Fórmula para subredes IPv4 convencionales; los prefijos 31 y 32 son casos especiales.</desc>
+<rect x="2" y="2" width="636" height="266" rx="20" fill="#eff6ff" stroke="#1e40af" stroke-width="2"/>
+<g font-family="Arial,sans-serif" text-anchor="middle">
+<text x="320" y="39" font-size="24" fill="#1e3a8a" font-weight="700">Direcciones IPv4 asignables</text>
+<text x="320" y="127" font-size="80" font-weight="700" fill="#0f766e">2<tspan baseline-shift="super" font-size="42">n</tspan><tspan baseline-shift="baseline" font-size="80"> − 2</tspan></text>
+<text x="320" y="165" font-size="22" fill="#183153">n = número de bits de host</text>
+<text x="320" y="199" font-size="21" fill="#183153">Restamos: 1 de red + 1 de broadcast</text>
+<text x="320" y="239" font-size="23" font-weight="700" fill="#1e3a8a">Ejemplo: n = 8 → 256 − 2 = 254</text>
+</g></svg>
+</figure>
+
 <p>Hay dos casos especiales. En un enlace punto a punto con prefijo <code>/31</code>, cada extremo puede usar una de las dos direcciones. Un prefijo <code>/32</code> identifica una única dirección IPv4.</p>
+<h4 id="direccionamiento-classful">Direccionamiento por clases (<em lang="en">classful</em>)</h4>
+<p>Originalmente, IPv4 agrupaba las redes en <strong>clases con tamaños fijos</strong>. Los primeros bits de la dirección identificaban la clase y su máscara predeterminada, antes de subdividir la red:</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Clases históricas de direccionamiento IPv4"><table><caption>Clases A, B y C: máscaras predeterminadas históricas</caption><thead><tr><th scope="col">Clase</th><th scope="col">Primer octeto</th><th scope="col">Máscara predeterminada</th><th scope="col">Bits de host</th></tr></thead><tbody>
+<tr><th scope="row">A</th><td>1–126*</td><td><code>255.0.0.0</code> · /8</td><td>24</td></tr>
+<tr><th scope="row">B</th><td>128–191</td><td><code>255.255.0.0</code> · /16</td><td>16</td></tr>
+<tr><th scope="row">C</th><td>192–223</td><td><code>255.255.255.0</code> · /24</td><td>8</td></tr>
+</tbody></table></div>
+<p><small>*Se excluyen 0 y 127 por sus usos especiales. La clase no indica si una dirección es pública o privada.</small></p>
+<p><strong>El problema:</strong> estos tamaños eran poco flexibles. Una red de clase C ofrecía 254 direcciones asignables; una B, 65.534. Muchas organizaciones necesitaban un tamaño intermedio.</p>
+<h4 id="direccionamiento-classless">Direccionamiento sin clases (<em lang="en">classless</em>)</h4>
+<p>El direccionamiento actual utiliza un <strong>prefijo explícito</strong> para indicar qué bits identifican la red, sin deducirlo de la antigua clase. Permite ajustar los bloques a las necesidades y agrupar rutas.</p>
+<p>Por ejemplo, <code>192.168.10.0/26</code> deja 6 bits de host: 64 direcciones, de las cuales 62 son asignables en una subred convencional. Aunque empiece por 192, su máscara es <code>255.255.255.192</code>, no la antigua máscara de clase C. La notación CIDR expresa ese prefijo.</p>
+<p class="media-caption">Referencia: <a href="https://www.rfc-editor.org/rfc/rfc4632.html" target="_blank" rel="noopener noreferrer">RFC 4632: del direccionamiento por clases a CIDR</a>.</p>
 <h4 id="notacion-cidr">Notación CIDR</h4>
 <p>La notación <strong>CIDR</strong> (<em lang="en">Classless Inter-Domain Routing</em>) escribe la longitud del prefijo después de una barra. En <code>192.168.10.34/24</code>, el <code>/24</code> indica que los primeros 24 de los 32 bits identifican la red. Los 8 restantes corresponden al host. Las clases históricas A, B y C utilizaban máscaras predeterminadas. Con CIDR, la máscara se obtiene del prefijo indicado.</p>
 <div class="activity-card activity-callout" id="recursos-ipv4"><h4>Material de apoyo: interpretar una IPv4</h4><p>Revisa la parte de direcciones y máscaras de la presentación y reproduce un ejercicio del vídeo antes de consultar su resolución. Anota IP, prefijo, red, broadcast y rango asignable.</p><p>La presentación contiene material histórico: trabaja con CIDR y con los rangos corregidos de este tema. La lección de Udemy requiere acceso al curso.</p><div class="card-actions"><a class="resource-link-btn" href="https://docs.google.com/presentation/d/1vcbL8pq3uuzJO2bG9kD01-cI4yPFEHuT/edit" target="_blank" rel="noopener noreferrer">Abrir presentación de IPv4</a><a class="resource-link-btn" href="https://youtu.be/xyXQjZ7w_No" target="_blank" rel="noopener noreferrer">Ver ejercicio de direccionamiento</a><a class="resource-link-btn" href="https://www.udemy.com/course/cisco-curso-de-direccionamiento-ip-y-subnetting-ccna/learn/lecture/9359860#overview" target="_blank" rel="noopener noreferrer">Abrir lección de IP y subnetting</a></div><div class="card-actions activity-submit"><a class="resource-link-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSfeD0nYyiE2bhmtoDXCIGh-ZNNQyJN4Vi6YXZrRD9cLuaJMSQ/viewform?usp=sf_link" target="_blank" rel="noopener noreferrer">Entregar actividad</a></div></div>
