@@ -12,6 +12,28 @@
 (() => {
   'use strict';
 
+  window.installPracticeInputGuards = function installPracticeInputGuards(doc, blockAction, blockClipboard) {
+    for (const type of ['keydown','keypress','keyup']) doc.addEventListener(type, e => {
+      const k = e.key.toLowerCase();
+      const previousShortcut = blockClipboard && (
+        (e.metaKey && ['c','x','v'].includes(k))
+        || (e.shiftKey && ['insert','delete'].includes(k)));
+      const functionKey = /^f(?:[1-9]|1\d|2[0-4])$/i;
+      if (e.ctrlKey || k === 'control' || previousShortcut || functionKey.test(k) || functionKey.test(e.code || '')) blockAction(e);
+    }, true);
+    doc.addEventListener('contextmenu', blockAction, true);
+    for (const type of ['pointerdown','pointerup','mousedown','mouseup','click','auxclick','dblclick']) {
+      doc.addEventListener(type, e => {
+        if (e.button === 2 || e.ctrlKey) blockAction(e);
+      }, true);
+    }
+    if (blockClipboard) {
+      for (const type of ['copy','cut','paste','dragstart','drop','dragover']) {
+        doc.addEventListener(type, blockAction, true);
+      }
+    }
+  };
+
   window.createPracticeGuard = function createPracticeGuard(adapter) {
     // 1. POLÍTICA. Esta clave es exclusiva de este laboratorio. No usar clear():
     // borraría también borradores de otros laboratorios del mismo dominio.
@@ -139,14 +161,15 @@
     const previous=load();
     // Opening the lab always starts at identification. Preserve the previous
     // browser snapshot separately; resumption is explicit through a document.
-    if(lastRaw!==null&&problem!=='io'&&(previous.attempt>0||problem==='invalid')){
+    if(!adapter.config.resumeInBrowser&&lastRaw!==null&&problem!=='io'&&(previous.attempt>0||problem==='invalid')){
       try{
         localStorage.setItem(CONFIG.key+'-previous',lastRaw);
         if(problem==='invalid'){problem='';problemText='';}
       }catch{problem='io';problemText='No se pudo conservar el guardado anterior.';}
     }
-    let state = fresh();
-    restoring = false;
+    let state = adapter.config.resumeInBrowser ? previous : fresh();
+    restoring = !!adapter.config.resumeInBrowser && state.phase === 'active';
+    if (restoring) state.pending = state.pending || 'resume';
 
     // 3. PERSISTENCIA. Cada edición aceptada y cada transición se guardan.
     // No se confía únicamente en unload/pagehide: pueden no llegar a emitirse.
@@ -211,8 +234,10 @@
         : state.savedAt ? 'Respuestas guardadas: ' + new Date(state.savedAt).toLocaleTimeString('es-ES') : 'Guardado local preparado.';
       const canExport = !problem && state.phase === 'submitted';
       $('report').disabled = true;
-      $('download').disabled = !canExport || !$('report').value;
-      $('download').hidden = state.phase !== 'submitted';
+      if ($('download')) {
+        $('download').disabled = !canExport || !$('report').value;
+        $('download').hidden = state.phase !== 'submitted';
+      }
       $('guard-finish').disabled = !enabled;
       $('reset').disabled = state.phase === 'active' || !!problem || busy;
       // textContent: nunca insertar datos del alumno o del almacenamiento como HTML.
@@ -530,7 +555,7 @@
         adapter.stopClock(finishedAt);state.attemptAudit.finishedAt=finishedAt;
         state.phase = 'submitted'; state.pending = null; state.episode = null;
         adapter.setReport(report);
-        state.data = adapter.snapshot(); log('Intento finalizado. Exportación del informe habilitada.');
+        state.data = adapter.snapshot(); log('Intento finalizado. Informe preparado.');
         if (!persist()) return;
         await adapter.downloadReport();
         if (document.fullscreenElement === root) {
@@ -597,25 +622,7 @@
     for (const type of ['beforeinput','input','change']) $('lab').addEventListener(type, inputGuard, true);
     // Control y botón derecho: durante toda la página, incluso tras finalizar.
     // Solo se pueden cancelar los eventos que el navegador entrega al documento.
-    for (const type of ['keydown','keypress','keyup']) document.addEventListener(type, e => {
-      const k = e.key.toLowerCase();
-      const previousShortcut = CONFIG.blockClipboard && (
-        (e.metaKey && ['c','x','v'].includes(k))
-        || (e.shiftKey && ['insert','delete'].includes(k)));
-      const functionKey = /^f(?:[1-9]|1\d|2[0-4])$/i;
-      if (e.ctrlKey || k === 'control' || previousShortcut || functionKey.test(k) || functionKey.test(e.code || '')) blockAction(e);
-    }, true);
-    document.addEventListener('contextmenu', blockAction, true);
-    for (const type of ['pointerdown','pointerup','mousedown','mouseup','click','auxclick','dblclick']) {
-      document.addEventListener(type, e => {
-        if (e.button === 2 || e.ctrlKey) blockAction(e);
-      }, true);
-    }
-    if (CONFIG.blockClipboard) {
-      for (const type of ['copy','cut','paste','dragstart','drop','dragover']) {
-        document.addEventListener(type, blockAction, true);
-      }
-    }
+    window.installPracticeInputGuards(document, blockAction, CONFIG.blockClipboard);
     $('guard-start').addEventListener('click', () => startOrResume(false));
     $('guard-continue').addEventListener('click', () => {
       if (state.phase === 'active') startOrResume(true);
@@ -646,7 +653,7 @@
     $('guard-boot').hidden = true;
     render();
     if (state.phase === 'closing') setTimeout(() => void finalizeForced(), 0);
-    return Object.freeze({ canEdit, canDownloadReport, saveEdit, metadata, render, resetProcess, finalizeForced, pausePractice, recoverPractice, exportPractice, importPractice, beginFileRecovery, endFileRecovery, ask });
+    return Object.freeze({ canEdit, canDownloadReport, auditAction, saveEdit, metadata, render, resetProcess, finalizeForced, pausePractice, recoverPractice, exportPractice, importPractice, beginFileRecovery, endFileRecovery, ask });
   };
 })();
 

@@ -75,6 +75,17 @@ const CONFIG = Object.freeze({
   window.LabDelivery=Object.freeze({configured,prepare,send});
 })();
 
+
+async function hash(text){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text))),b=>b.toString(16).padStart(2,'0')).join('');}
+
+async function comprobarEntrega(lenguaje,documento){
+ const {analizarEntregaAsync}=await import('./ia/analizador-entregas.browser.mjs?v=1f155267');
+ return analizarEntregaAsync(documento,lenguaje,{ortografia:{mostrarDetalle:false}});
+}
+
+// El laboratorio protegido comparte el receptor y el analizador con el formulario ordinario.
+if (!document.documentElement.hasAttribute('data-entrega-protegida')) iniciarFormularioDeEntrega();
+function iniciarFormularioDeEntrega(){
 'use strict';
 const $=id=>document.getElementById(id);
 const delivery={type:'apps-script',endpoint:CONFIG.endpoint};
@@ -85,7 +96,7 @@ const key = fixedPractice ? baseKey + ':' + fixedPractice : baseKey;
 let current=null,busy=false,storageOK=true;
 const urls={};
 const validEmail=value=>/^[^\s@]+@g\.educaand\.es$/i.test(value);
-async function hash(text){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text))),b=>b.toString(16).padStart(2,'0')).join('');}
+
 async function encode(text){
  const stream=new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'));
  const bytes=new Uint8Array(await new Response(stream).arrayBuffer());
@@ -160,10 +171,7 @@ async function backup(){
  link('backup',code,'copia-pendiente-'+current.envelope.submissionId.slice(0,16)+'.txt');
 }
 // Adaptador del contrato del analizador compartido de labs/ia.
-async function comprobarEntrega(lenguaje,documento){
- const {analizarEntregaAsync}=await import('./ia/analizador-entregas.browser.mjs?v=1f155267');
- return analizarEntregaAsync(documento,lenguaje,{ortografia:{mostrarDetalle:false}});
-}
+
 async function confirmDocumentScore(percent,verificationDetails){
  // Compatibilidad con el receptor existente: el cero se guarda sin pedir confirmación.
  return {percent,verificationDetails,zeroFinalConfirmation:percent===0};
@@ -309,3 +317,4 @@ document.addEventListener('visibilitychange',()=>{
 $('form').addEventListener('focusin',()=>{
  if(!busy&&!current?.receipt)void LabDelivery.prepare(delivery,CONFIG.id);
 });
+}

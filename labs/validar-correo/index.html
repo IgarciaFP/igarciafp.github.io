@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-entrega-protegida>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>2.52. Validar el correo del centro</title>
     <link rel="stylesheet" href="../../base/motor/estilos.css">
     <link rel="stylesheet" href="laboratorio.css">
+    <script defer src="../../base/motor/seguridad.js"></script>
     <script defer src="../entrega-practicas.js"></script>
     <script type="module" src="laboratorio.js"></script>
 </head>
@@ -17,7 +18,28 @@
             <p>Un alumno quiere inscribirse con su correo del centro. Tu formulario debe decirle si puede usar la dirección que ha escrito y permitirle corregirla en la misma página.</p>
         </div>
     </header>
+    <dialog id="guard-warning" class="guard-dialog" aria-labelledby="guard-warning-title" aria-describedby="guard-warning-text"><h2 id="guard-warning-title"></h2><p id="guard-warning-text"></p><p id="guard-warning-count"></p><p id="guard-warning-error"></p><button id="guard-continue" type="button"></button></dialog>
+<dialog id="guard-confirm" class="guard-dialog" aria-labelledby="guard-confirm-title" aria-describedby="guard-confirm-text"><h2 id="guard-confirm-title"></h2><p id="guard-confirm-text"></p><div class="actions"><button id="guard-confirm-cancel" class="secondary" type="button" autofocus>Seguir editando</button><button id="guard-confirm-ok" type="button">Entregar</button></div></dialog>
     <main class="wrap">
+        <p id="guard-boot" class="card"><span id="guard-boot-detail">Preparando el laboratorio protegido. Si este mensaje permanece, comprueba que JavaScript está activado y recarga la página.</span></p>
+        <section id="guard-panel" class="card" hidden inert>
+            <h2>Sesión de trabajo</h2>
+            <div id="guard-start-box">
+                <p>Escribe tu nombre y tu correo del centro. Trabajarás en pantalla completa. La plantilla bloquea el portapapeles y registra las salidas de la sesión. La tercera incidencia cierra el intento y envía lo que hayas escrito.</p>
+                <div class="identity">
+                    <div><label for="fullname">Nombre y apellidos</label><input id="fullname" maxlength="120" autocomplete="name" required></div>
+                    <div><label for="student">Correo de entrega</label><input type="email" id="student" maxlength="254" autocomplete="email" placeholder="nombre@g.educaand.es" required></div>
+                </div>
+                <button id="guard-start" type="button" disabled>Comenzar</button>
+            </div>
+            <p><strong id="guard-state"></strong> · Incidencias <span id="guard-count"></span></p>
+            <p id="guard-conditions"></p>
+            <p id="guard-action-status" role="status"></p>
+            <button id="reanudar" type="button" hidden>Reanudar en pantalla completa</button>
+            <div id="guard-problem" hidden><p id="guard-problem-text"></p><button id="guard-retry" type="button" hidden>Reintentar guardado</button></div>
+            <details><summary>Registro de la sesión</summary><ul id="guard-log"></ul></details>
+        </section>
+        <div id="cuaderno" hidden inert>
         <section class="card">
             <h2>Qué debe hacer el formulario</h2>
             <ol>
@@ -27,25 +49,27 @@
                 <li>Al recibir <code>input</code>, quita ambas clases y borra el mensaje. Este evento llega al formulario cuando se edita el campo. La siguiente comprobación se hará al pulsar «Aceptar» o Intro.</li>
             </ol>
             <details>
-                <summary>Ver y descargar el HTML y el CSS de partida</summary>
+                <summary>Consultar el HTML y el CSS de partida</summary>
                 <p>La vista previa ya utiliza estos dos archivos. El formulario incluye <code>novalidate</code> para que puedas mostrar tu propio mensaje incluso cuando el campo está vacío.</p>
-                <h3><a href="material/index.html" download="index.html">Descargar index.html</a></h3>
+                <h3>index.html</h3>
                 <pre><code id="fuente-html"></code></pre>
-                <h3><a href="material/estilos.css" download="estilos.css">Descargar estilos.css</a></h3>
+                <h3>estilos.css</h3>
                 <pre><code id="fuente-css"></code></pre>
             </details>
         </section>
-        <section class="card">
+        <section id="lab" class="card">
             <h2>Escribe y prueba tu JavaScript</h2>
             <div class="banco">
                 <div>
                     <label for="text">Tu código · app.js</label>
-                    <textarea id="text" form="form" required maxlength="10000" spellcheck="false" autocapitalize="off" autocorrect="off" aria-describedby="count"></textarea>
+                    <textarea id="text" disabled maxlength="10000" spellcheck="false" autocapitalize="off" autocorrect="off" aria-describedby="count"></textarea>
                     <small id="count">0 / 10 000 caracteres</small>
-                    <div class="actions"><button id="ejecutar" type="button" disabled>Ejecutar código</button></div>
+                    <small id="saveStatus"></small>
                 </div>
                 <div>
                     <h3>Vista previa</h3>
+                    <button id="ejecutar" type="button" disabled>Actualizar / reiniciar vista previa</button>
+                    <p>Vuelve al formulario vacío y ejecuta el código actual del editor.</p>
                     <iframe id="vista" title="Formulario de prueba del correo" sandbox="allow-scripts allow-forms"></iframe>
                     <p id="estado-vista" role="status">Preparando el formulario…</p>
                 </div>
@@ -54,34 +78,18 @@
         </section>
         <section class="card">
             <h2>Entrega de la práctica</h2>
-            <p>Escribe tu correo institucional y pulsa «Entregar práctica». Se enviará el JavaScript que figura en el editor y recibirás el justificante habitual de DWEC.</p>
-            <p id="setup" class="notice" hidden>El receptor de entregas está pendiente de configuración.</p>
-            <form id="form">
-                <div class="identity">
-                    <div><label for="email">Tu correo de entrega</label><input id="email" type="email" required maxlength="254" autocomplete="email" placeholder="nombre@g.educaand.es"></div>
-                    <div><label for="practice-name">Nombre de la práctica</label><input id="practice-name" value="2.52. Validar el correo del centro" readonly></div>
-                </div>
-                <div class="actions"><button id="submit" type="submit">Entregar práctica</button><button id="edit" type="button" class="secondary" hidden>Preparar otra entrega</button></div>
-            </form>
-            <p id="status" class="notice" role="status" hidden></p>
-            <dialog id="receipt" aria-labelledby="receipt-title" aria-describedby="receipt-progress receipt-description">
-<h2 id="receipt-title" tabindex="-1">Justificante de entrega</h2>
-<p id="receipt-progress" role="status" aria-live="polite" hidden></p>
-<progress id="document-check-progress" aria-label="Verificando documento..." style="width:100%;height:18px;margin:16px 0" hidden></progress>
-<section id="document-check" class="notice" aria-labelledby="document-check-title" hidden>
-<h2 id="document-check-title">Comprobación del documento</h2>
-<p id="document-check-message" role="status" aria-live="polite" style="white-space:pre-line;overflow-wrap:anywhere;margin:0"></p>
-</section>
-<div id="receipt-result" hidden>
-<p id="receipt-description">La entrega ha sido registrada correctamente</p>
-<p id="receipt-details" class="notice success"></p>
-<div class="actions"><a id="download" class="button" download>Descargar justificante TXT</a><button id="another" type="button" class="secondary" autofocus>Realizar otra entrega</button></div>
-</div>
-<button id="receipt-back" type="button" class="secondary" hidden>Volver al formulario</button>
-</dialog>
-<div class="actions"><a id="backup" class="button secondary" hidden download>Descargar copia pendiente</a></div>
-<noscript>Activa JavaScript para realizar la entrega.</noscript>
+            <p>Envía el JavaScript del editor al registro habitual de DWEC. El justificante aparecerá en esta página.</p>
+            <button id="guard-finish" type="button" disabled>Entregar práctica</button>
         </section>
+        </div>
+        <section class="card" id="panel-resultado" hidden>
+            <h2>Estado de la entrega</h2>
+            <p id="reportStatus" role="status"></p>
+            <button id="reintentar-entrega" type="button" hidden>Reintentar entrega</button>
+            <button id="nuevo-intento" class="secondary" type="button" hidden>Comenzar otra práctica</button>
+        </section>
+        <textarea id="report" hidden disabled></textarea>
+        <button id="reset" type="button" hidden disabled></button>
     </main>
 </body>
 </html>

@@ -1,19 +1,12 @@
+import { protegerIntento } from "./intento.js";
+
 const editor = document.querySelector("#text");
 const vista = document.querySelector("#vista");
 const ejecutar = document.querySelector("#ejecutar");
 const estado = document.querySelector("#estado-vista");
-const claveBorrador = "dwec-validar-correo:app.js";
 let htmlInicial;
 let cssInicial;
-
-try {
-    if (!editor.value) editor.value = sessionStorage.getItem(claveBorrador) || "";
-} catch { /* La práctica también funciona sin almacenamiento local. */ }
-editor.dispatchEvent(new Event("input"));
-
-editor.addEventListener("input", () => {
-    try { sessionStorage.setItem(claveBorrador, editor.value); } catch { /* Almacenamiento desactivado. */ }
-});
+let intento;
 
 async function leerArchivo(ruta) {
     const respuesta = await fetch(ruta);
@@ -26,6 +19,7 @@ function archivoJS(texto) {
 }
 
 function mostrarVista() {
+    if (!intento?.canEdit()) return;
     const pagina = new DOMParser().parseFromString(htmlInicial, "text/html");
     const seguridad = pagina.createElement("meta");
     seguridad.httpEquiv = "Content-Security-Policy";
@@ -40,7 +34,18 @@ function mostrarVista() {
     const script = pagina.querySelector("script[src]");
     script.src = archivoJS(editor.value);
     const errores = pagina.createElement("script");
-    errores.src = archivoJS(`window.addEventListener("error", e => {
+    errores.src = archivoJS(`const instalar = ${window.installPracticeInputGuards.toString()};
+    function bloquear(evento) {
+        evento.preventDefault();
+        evento.stopImmediatePropagation();
+        const {type, key, code, ctrlKey, metaKey, shiftKey, repeat, button, inputType} = evento;
+        parent.postMessage({tipo: "accion-bloqueada", accion: {type, key, code, ctrlKey, metaKey, shiftKey, repeat, button, inputType}}, "*");
+    }
+    instalar(document, bloquear, true);
+    document.addEventListener("beforeinput", evento => {
+        if (["insertFromPaste","insertFromPasteAsQuotation","insertFromDrop","deleteByCut","deleteByDrag"].includes(evento.inputType)) bloquear(evento);
+    }, true);
+    window.addEventListener("error", e => {
         parent.postMessage({ tipo: "error-app-js", mensaje: e.message }, "*");
     });`);
     script.before(errores);
@@ -48,11 +53,16 @@ function mostrarVista() {
     vista.srcdoc = "<!doctype html>\n" + pagina.documentElement.outerHTML;
     estado.textContent = editor.value.trim()
         ? "Prueba el formulario con «Aceptar» y con Intro."
-        : "El formulario está listo. Escribe tu JavaScript y pulsa «Ejecutar código».";
+        : "El formulario está listo. Escribe tu JavaScript y pulsa «Actualizar / reiniciar vista previa».";
 }
 
 window.addEventListener("message", evento => {
-    if (evento.source === vista.contentWindow && evento.data?.tipo === "error-app-js"
+    if (evento.source !== vista.contentWindow) return;
+    if (evento.data?.tipo === "accion-bloqueada") {
+        const accion = evento.data.accion;
+        if (accion && ["keydown","contextmenu","copy","cut","paste","dragstart","dragover","drop","beforeinput","click","auxclick","dblclick","mousedown","mouseup","pointerdown","pointerup"].includes(accion.type)) intento?.auditAction(accion);
+    }
+    if (evento.data?.tipo === "error-app-js"
             && typeof evento.data.mensaje === "string") {
         estado.textContent = "Revisa app.js. " + evento.data.mensaje;
     }
@@ -64,9 +74,18 @@ try {
     ]);
     document.querySelector("#fuente-html").textContent = htmlInicial;
     document.querySelector("#fuente-css").textContent = cssInicial;
-    mostrarVista();
-    ejecutar.disabled = false;
+    let vistaPreparada = false;
+    intento = protegerIntento((fase, habilitado) => {
+        if (habilitado && !vistaPreparada) {
+            mostrarVista();
+            vistaPreparada = true;
+        } else if (fase !== "active" && vistaPreparada) {
+            vista.removeAttribute("srcdoc");
+            vistaPreparada = false;
+        }
+    });
     ejecutar.addEventListener("click", mostrarVista);
 } catch {
-    estado.textContent = "No se han podido cargar los archivos de partida. Recarga la página para volver a intentarlo.";
+    document.querySelector("#guard-boot").hidden = false;
+    document.querySelector("#guard-boot-detail").textContent = "No se pudo iniciar el laboratorio. Comprueba la conexión y el almacenamiento de este navegador y recarga la página.";
 }
