@@ -1,4 +1,4 @@
-import { protegerIntento } from "./intento.js?v=edad-v1";
+import { protegerIntento } from "./intento.js?v=reinicio-v2";
 
 const editor = document.querySelector("#text");
 const vista = document.querySelector("#vista");
