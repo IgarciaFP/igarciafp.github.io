@@ -16,7 +16,18 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
 <link href="u01.css" rel="stylesheet"/>
 <style>
-        .activity-callout.activity-optional::before { content: "\f303  ACTIVITY OPCIONAL"; }
+        .activity-callout.activity-optional::before {
+            content: "\f303  ACTIVITY VOLUNTARIA";
+            color: #166534;
+            background: #dcfce7;
+            border: 1px solid #86efac;
+        }
+        .document-footer.unit-credits { text-align:left; }
+        .unit-credits h2 { margin:0 0 .5rem; padding:0; border:0; font-size:1.15rem; }
+        .unit-credits p, .unit-credits li { margin:.35rem 0; text-align:left; }
+        .unit-credits ul { margin:.6rem 0; padding-left:1.4rem; }
+        .unit-credits .unit-signature { margin-top:1.25rem; }
+        .unit-credits nav { display:flex; flex-wrap:wrap; gap:.4rem 1.5rem; margin-top:.5rem; }
         /* Escribir los ejemplos forma parte de la práctica de esta unidad. */
         .document-container { -webkit-user-select: none; user-select: none; }
         .document-container input, .document-container textarea,
@@ -110,7 +121,7 @@ body { padding-top:60px; }
 </head>
 <body>
 <button aria-controls="unit-toc" aria-expanded="false" class="toc-toggle" type="button">Contents</button>
-<nav aria-label="Unit index" class="sidebar-toc" id="unit-toc"><h4>Contents</h4><ul><li><details class="toc-group"><summary><a href="#sec1">1. Introduction to JavaScript</a></summary><ul><li><a class="subsection-link" href="#sec1_1">1.1. Origin and evolution</a></li><li><a class="subsection-link" href="#sec1_2">1.2. JavaScript and ECMASScript</a></li><li><a class="subsection-link" href="#sec1_3">1.3. Language characteristics</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec2">2. Working environment and first programme</a></summary><ul><li><a class="subsection-link" href="#sec2_1">2.1. Tools and organization</a></li><li><a class="subsection-link" href="#sec2_2">2.2. Show and collect information</a></li><li><a class="subsection-link" href="#sec2_3">2.3. First contact with debugging</a></li><li><a class="subsection-link" href="#sec2_4">2.4. Include JavaScript</a></li><li><a class="subsection-link" href="#sec2_5">2.5. Burden and execution</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec3">3. Syntax and good practices</a></summary><ul><li><a class="subsection-link" href="#sec3_1">3.1. Values, expressions and blocks</a></li><li><a class="subsection-link" href="#sec3_2">3.2. Shifts and delimiters</a></li><li><a class="subsection-link" href="#sec3_3">3.3. Comments on JavaScript</a></li><li><a class="subsection-link" href="#sec3_4">3.4. Strict mode: use strict</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec4">4. Variables and types of data</a></summary><ul><li><a class="subsection-link" href="#sec4_1">4.1. Declaration and reassignment</a></li><li><a class="subsection-link" href="#sec4_2">4.2. Identifiers and names</a></li><li><a class="subsection-link" href="#sec4_3">4.3. Choosing between Const and Let</a></li><li><a class="subsection-link" href="#sec4_4">4.4. Types of data</a></li><li><a class="subsection-link" href="#sec4_5">4.5. Dynamic typing and typeof</a></li><li><a class="subsection-link" href="#sec4_6">4.6. Chains and interpolation</a></li><li><a class="subsection-link" href="#sec4_7">4.7. Vectors and arrangements (arrays)</a></li><li><a class="subsection-link" href="#sec4_8">4.8. Block scope</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec5">5. Operators, expressions and conversions</a></summary><ul><li><a class="subsection-link" href="#sec5_1">5.1. Arithmetic, logical, comparative and assignment operators</a></li><li><a class="subsection-link" href="#sec5_2">5.2. Comparisons, strict equality and nullity</a></li><li><a class="subsection-link" href="#sec5_3">5.3. Logical operators</a></li><li><a class="subsection-link" href="#sec5_4">5.4 Precedence and parentheses</a></li><li><a class="subsection-link" href="#sec5_5">5.5. Explicit conversion of types</a></li><li><a class="subsection-link" href="#sec5_6">5.6. Usual errors when dealing with data</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec6">6. Control structures</a></summary><ul><li><a class="subsection-link" href="#sec6_1">6.1. Conditions and values of trusty and falsey</a></li><li><a class="subsection-link" href="#sec6_2">6.2. if, else if and else</a></li><li><a class="subsection-link" href="#sec6_3">6.3. switch: alternatives by value</a></li><li><a class="subsection-link" href="#sec6_4">6.4. External operator</a></li><li><a class="subsection-link" href="#sec6_5">6.5. Repeats with for, while and do...while</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec7">7. Functions: organize and reuse code</a></summary><ul><li><a class="subsection-link" href="#sec7_1">7.1. Definition and invocation</a></li><li><a class="subsection-link" href="#sec7_2">7.2. Default parameters, arguments and values</a></li><li><a class="subsection-link" href="#sec7_3">7.3 Return results with return</a></li><li><a class="subsection-link" href="#sec7_4">7.4. Local scope and external variables</a></li><li><a class="subsection-link" href="#sec7_5">7.5. Functions with a variable number of arguments</a></li><li><details class="toc-group"><summary><a class="subsection-link" href="#sec7_6">7.6. Callbacks and function expressions</a></summary><ul><li><a class="subsection-link" href="#sec7_6_1">7.6.1. Function Expressions</a></li><li><a class="subsection-link" href="#sec7_6_2">7.6.2 Callbacks</a></li></ul></details></li><li><a class="subsection-link" href="#sec7_7">7.7. Arrow Functions</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec8">8. The DOM: access and modify the page</a></summary><ul><li><a class="subsection-link" href="#sec8_1">8.1. Hello World (now yes)</a></li><li><a class="subsection-link" href="#sec8_2">8.2. Hello world with events</a></li><li><a class="subsection-link" href="#sec8_3">8.3. Document as an object tree</a></li><li><a class="subsection-link" href="#sec8_4">8.4. Selection of elements</a></li><li><a class="subsection-link" href="#sec8_5">8.5. Read and modify content</a></li><li><a class="subsection-link" href="#sec8_6">8.6. CSS Styles and Classes</a></li><li><a class="subsection-link" href="#sec8_7">8.7. Check that an item exists</a></li><li><a class="subsection-link" href="#sec8_8">8.8. Organize interaction</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec9">9. Events and user interaction</a></summary><ul><li><a class="subsection-link" href="#sec9_1">9.1. Events and handlers</a></li><li><a class="subsection-link" href="#sec9_2">9.2. Register handlers with addEventListener()</a></li><li><a class="subsection-link" href="#sec9_3">9.3. Basic events: click, input, change and submit</a></li><li><a class="subsection-link" href="#sec9_4">9.4. The object of the event and currentTarget</a></li><li><a class="subsection-link" href="#sec9_5">9.5. Default behavior and preventDefault()</a></li><li><a class="subsection-link" href="#sec9_6">9.6. Tour DOM elements with for...of</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec10">10. Project 1: Calculator</a></summary><ul><li><a class="subsection-link" href="#sec10_1">10.1. Interface and operation</a></li><li><a class="subsection-link" href="#sec10_2">10.2. Verification and organization</a></li><li><a class="subsection-link" href="#sec10_3">10.3. Testing and delivery</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec11">11. Project 2: review questionnaire</a></summary><ul><li><a class="subsection-link" href="#sec11_1">11.1. Starting material</a></li><li><a class="subsection-link" href="#sec11_2">11.2. Behaviour required</a></li><li><a class="subsection-link" href="#sec11_3">11.3. Phased development</a></li><li><a class="subsection-link" href="#sec11_4">11.4 Performance tests</a></li><li><a class="subsection-link" href="#sec11_5">11.5. Delivery and review criteria</a></li></ul></details></li></ul></nav>
+<nav aria-label="Unit index" class="sidebar-toc" id="unit-toc"><h4>Contents</h4><ul><li><details class="toc-group"><summary><a href="#sec1">1. Introduction to JavaScript</a></summary><ul><li><a class="subsection-link" href="#sec1_1">1.1. Origin and evolution</a></li><li><a class="subsection-link" href="#sec1_2">1.2. JavaScript and ECMASScript</a></li><li><a class="subsection-link" href="#sec1_3">1.3. Language characteristics</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec2">2. Working environment and first programme</a></summary><ul><li><a class="subsection-link" href="#sec2_1">2.1. Tools and organization</a></li><li><a class="subsection-link" href="#sec2_2">2.2. Show and collect information</a></li><li><a class="subsection-link" href="#sec2_3">2.3. First contact with debugging</a></li><li><a class="subsection-link" href="#sec2_4">2.4. Include JavaScript</a></li><li><a class="subsection-link" href="#sec2_5">2.5. Burden and execution</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec3">3. Syntax and good practices</a></summary><ul><li><a class="subsection-link" href="#sec3_1">3.1. Values, expressions and blocks</a></li><li><a class="subsection-link" href="#sec3_2">3.2. Shifts and delimiters</a></li><li><a class="subsection-link" href="#sec3_3">3.3. Comments on JavaScript</a></li><li><a class="subsection-link" href="#sec3_4">3.4. Strict mode: use strict</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec4">4. Variables and types of data</a></summary><ul><li><a class="subsection-link" href="#sec4_1">4.1. Declaration and reassignment</a></li><li><a class="subsection-link" href="#sec4_2">4.2. Identifiers and names</a></li><li><a class="subsection-link" href="#sec4_3">4.3. Choosing between Const and Let</a></li><li><a class="subsection-link" href="#sec4_4">4.4. Types of data</a></li><li><a class="subsection-link" href="#sec4_5">4.5. Dynamic typing and typeof</a></li><li><a class="subsection-link" href="#sec4_6">4.6. Chains and interpolation</a></li><li><a class="subsection-link" href="#sec4_7">4.7. Vectors and arrangements (arrays)</a></li><li><a class="subsection-link" href="#sec4_8">4.8. Block scope</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec5">5. Operators, expressions and conversions</a></summary><ul><li><a class="subsection-link" href="#sec5_1">5.1. Arithmetic, logical, comparative and assignment operators</a></li><li><a class="subsection-link" href="#sec5_2">5.2. Comparisons, strict equality and nullity</a></li><li><a class="subsection-link" href="#sec5_3">5.3. Logical operators</a></li><li><a class="subsection-link" href="#sec5_4">5.4 Precedence and parentheses</a></li><li><a class="subsection-link" href="#sec5_5">5.5. Explicit conversion of types</a></li><li><a class="subsection-link" href="#sec5_6">5.6. Usual errors when dealing with data</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec6">6. Control structures</a></summary><ul><li><a class="subsection-link" href="#sec6_1">6.1. Conditions and values of trusty and falsey</a></li><li><a class="subsection-link" href="#sec6_2">6.2. if, else if and else</a></li><li><a class="subsection-link" href="#sec6_3">6.3. switch: alternatives by value</a></li><li><a class="subsection-link" href="#sec6_4">6.4. External operator</a></li><li><a class="subsection-link" href="#sec6_5">6.5. Repeats with for, while and do...while</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec7">7. Functions: organize and reuse code</a></summary><ul><li><a class="subsection-link" href="#sec7_1">7.1. Definition and invocation</a></li><li><a class="subsection-link" href="#sec7_2">7.2. Default parameters, arguments and values</a></li><li><a class="subsection-link" href="#sec7_3">7.3 Return results with return</a></li><li><a class="subsection-link" href="#sec7_4">7.4. Local scope and external variables</a></li><li><a class="subsection-link" href="#sec7_5">7.5. Functions with a variable number of arguments</a></li><li><details class="toc-group"><summary><a class="subsection-link" href="#sec7_6">7.6. Callbacks and function expressions</a></summary><ul><li><a class="subsection-link" href="#sec7_6_1">7.6.1. Function Expressions</a></li><li><a class="subsection-link" href="#sec7_6_2">7.6.2 Callbacks</a></li></ul></details></li><li><a class="subsection-link" href="#sec7_7">7.7. Arrow Functions</a></li><li><a class="subsection-link" href="#sec7_8">7.8. Check that an item exists</a></li><li><a class="subsection-link" href="#sec7_9">7.9. Organize interaction</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec8">8. The DOM: access and modify the page</a></summary><ul><li><a class="subsection-link" href="#sec8_1">8.1. Hello World (now yes)</a></li><li><a class="subsection-link" href="#sec8_2">8.2. Hello world with events</a></li><li><a class="subsection-link" href="#sec8_3">8.3. Document as an object tree</a></li><li><a class="subsection-link" href="#sec8_4">8.4. Selection of elements</a></li><li><a class="subsection-link" href="#sec8_5">8.5. Read and modify content</a></li><li><a class="subsection-link" href="#sec8_6">8.6. CSS Styles and Classes</a></li><li><a class="subsection-link" href="#sec8_7">8.7. Tour DOM elements with for...of</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec9">9. Events and user interaction</a></summary><ul><li><a class="subsection-link" href="#sec9_1">9.1. Events and handlers</a></li><li><a class="subsection-link" href="#sec9_2">9.2. Register handlers with addEventListener()</a></li><li><a class="subsection-link" href="#sec9_3">9.3. Most common types of events</a></li><li><a class="subsection-link" href="#sec9_4">9.4. The object of the event and currentTarget</a></li><li><a class="subsection-link" href="#sec9_5">9.5. Default behavior and preventDefault()</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec10">10. Project 1: Calculator</a></summary><ul><li><a class="subsection-link" href="#sec10_1">10.1. Interface and operation</a></li><li><a class="subsection-link" href="#sec10_2">10.2. Verification and organization</a></li><li><a class="subsection-link" href="#sec10_3">10.3. Testing and delivery</a></li></ul></details></li><li><details class="toc-group"><summary><a href="#sec11">11. Project 2: review questionnaire</a></summary><ul><li><a class="subsection-link" href="#sec11_1">11.1. Starting material</a></li><li><a class="subsection-link" href="#sec11_2">11.2. Behaviour required</a></li><li><a class="subsection-link" href="#sec11_3">11.3. Phased development</a></li><li><a class="subsection-link" href="#sec11_4">11.4 Performance tests</a></li><li><a class="subsection-link" href="#sec11_5">11.5. Delivery and review criteria</a></li></ul></details></li></ul></nav>
 <div class="document-wrapper">
 <main class="document-container">
 <header class="header-banner">
@@ -282,7 +293,7 @@ body { padding-top:60px; }
 <p>In DevTools will be used mainly <strong>Console (Console)</strong>, to execute instructions and consult messages; <strong>Sources (Sources)</strong>, to examine and debug the code; and <strong>Network (Network)</strong>, to check the load of the files.</p>
 <div class="resource-card expansion-card expansion-purple" id="ampliacion-emmet">
 <div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-wand-magic-sparkles"></i> Emmet: writing HTML and CSS with abbreviations</span><span class="resource-badge badge-reading">Enlargement</span></div>
-<p>In class it will be necessary to use <strong>Emmet</strong>, first called <strong>Zen Coding</strong>, when working with VS Code. Allows to expand abbreviations to write HTML and CSS quickly; it is integrated into the editor and does not require to install an extension.</p>
+<p>In class it will be necessary to use <strong>Emmet</strong>, first called <strong>Zen Coding</strong>, when working with VS Code. Allows to expand abbreviations to write HTML and CSS quickly; it is integrated into the editor and does not require installing an extension.</p>
 <p>For example, <code>ul&gt;li*3</code> generates a list with three elements. Write the abbreviation in an HTML file and accept Emmet's suggestion.</p>
 <div class="resource-links"><a class="resource-link-btn" href="https://docs.emmet.io/cheat-sheet/" rel="noopener noreferrer" target="_blank">Emmet · Reference sheet</a>
 <a class="resource-link-btn" href="https://code.visualstudio.com/docs/languages/emmet" rel="noopener noreferrer" target="_blank">Emmet in VS Code</a></div>
@@ -1614,6 +1625,35 @@ console.log(crearAviso());   // Operación completada</code></pre>
 <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions" rel="noopener noreferrer" target="_blank">MDN · Function guide</a>
 <a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions" rel="noopener noreferrer" target="_blank">MDN · Arrow functions</a></div>
 </div>
+<h3 id="sec7_8">7.8. Check that an item exists</h3>
+<p>A search with <code>querySelector()</code> o <code>getElementById()</code> no matches returns <code>null</code>. The methods that return collections produce an empty collection, with <code>length === 0</code>. Try to use a property of that value, such as <code>null.textContent</code>, causes a <code>TypeError</code>. Check the selector, HTML and time of execution.</p>
+<pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
+
+if (mensaje !== null) {
+    mensaje.textContent = "Elemento encontrado";
+}</code></pre>
+<p>The structure <code>if</code>, studied in paragraph 6, executes the block only if the element exists. If the element should be present, the cause of its absence should be corrected, in addition to avoiding error.</p>
+<div class="resource-card expansion-card">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Consult and modify the DOM</span><span class="resource-badge badge-reading">Enlargement</span></div>
+<p class="resource-description">References about selection, content, fields and classes. The "Create a list" activity introduces the creation of elements; the detailed path of the tree will be addressed later.</p>
+<div class="resource-links"><a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector" rel="noopener noreferrer" target="_blank">MDN · querySelector()</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent" rel="noopener noreferrer" target="_blank">MDN · textContent</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML" rel="noopener noreferrer" target="_blank">MDN · innerHTML</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/value" rel="noopener noreferrer" target="_blank">MDN · value</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Element/classList" rel="noopener noreferrer" target="_blank">MDN · classList</a></div>
+</div>
+<h3 id="sec7_9">7.9. Organize interaction</h3>
+<p>A simple interaction can be organized in three steps: <strong>read current data</strong>, <strong>check or process them</strong> y <strong>update the DOM</strong>. Reading from <code>value</code> must be performed within the handler when the value of the field is needed at that time.</p>
+<p>Select items and register handlers once when preparing the page. Keep each handler brief, use <code>textContent</code> to display user data and use CSS classes to change the presentation. It is not necessary to repeat a query continuously to detect the user's actions.</p>
+<div class="resource-card expansion-card">
+<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Events and forms</span><span class="resource-badge badge-reading">Enlargement</span></div>
+<p class="resource-description">References to consult the driver's log, the event object and the behavior of the forms.</p>
+<div class="resource-links"><a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener" rel="noopener noreferrer" target="_blank">MDN · addEventListener()</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Event/currentTarget" rel="noopener noreferrer" target="_blank">MDN · currentTarget</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event" rel="noopener noreferrer" target="_blank">MDN · change</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event" rel="noopener noreferrer" target="_blank">MDN · submission</a>
+<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault" rel="noopener noreferrer" target="_blank">MDN · preventDefault()</a></div>
+</div>
 </section>
 <section aria-labelledby="sec8">
 <h2 id="sec8"><i aria-hidden="true" class="fa-solid fa-sitemap"></i> 8. The DOM: access and modify the page</h2>
@@ -1688,7 +1728,7 @@ boton.addEventListener("click", saludar);</code></pre>
 </div>
 <h3 id="sec8_3">8.3. Document as an object tree</h3>
 <p>The object <code>document</code> represents the document loaded. HTML elements, such as a paragraph or input field, are tree nodes and have properties and methods. For example, <code>textContent</code> is a property that contains text and <code>querySelector()</code> It's a search method.</p>
-<p>Use this test page with a file <code>dom.js</code> in the same folder. It will be the basis of the examples of content, fields and styles from 8.5 to 8.7. The selection examples of 8.4 indicate their own HTML. Try each fragment by replacing the content of <code>dom.js</code> and reloading, without accumulating repeated statements:</p>
+<p>Use this test page with a file <code>dom.js</code> in the same folder. It will be the basis of the examples of content, fields and styles of 8.5 and 8.6. The selection examples of 8.4 indicate their own HTML. Try each fragment by replacing the content of <code>dom.js</code> and reloading, without accumulating repeated statements:</p>
 <pre data-example="dom-html"><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="es"&gt;
 &lt;head&gt;
@@ -2043,12 +2083,12 @@ resultado.textContent =
 <p>When loading, the field shows 5 and the paragraph shows "Before: 3  Now: 5". <code>value</code> allows access to the field value and <code>textContent</code> type the message into the paragraph. To do calculations, convert the text with <code>Number(campoUnidades.value)</code> after checking that the field has a valid value. If you need to read a later user change, see <code>value</code> within the handler of the relevant event.</p>
 <div class="activity-card activity-callout" id="actividad-complementaria-6-3">
 <p><strong>2.39. Text literal vs. marking</strong></p>
-<p>Prepares two paragraphs. Assigns the controlled chain <code>&lt;strong&gt;Importante&lt;/strong&gt;</code> to one through <code>textContent</code> and to the other through <code>innerHTML</code>Adds a <code>pre</code> and shows in it, through <code>textContent</code>, <code>outerHTML</code> of the two paragraphs. Then ask for a message with <code>prompt()</code> and show it exclusively as text. If cancelled, display "Cancelled Entry" instead of the message.</p>
+<p>Prepares two paragraphs. Assigns the controlled chain <code>&lt;strong&gt;Importante&lt;/strong&gt;</code> to one through <code>textContent</code> and to the other through <code>innerHTML</code>. Adds an element in HTML <code>&lt;pre&gt;&lt;/pre&gt;</code>: the label <code>&lt;pre&gt;</code> shows preformatted text and preserves the spaces and line breaks. Shows in it, by means of <code>textContent</code>, <code>outerHTML</code> of the two paragraphs. Then ask for a message with <code>prompt()</code> and show it exclusively as text. If cancelled, display "Cancelled Entry" instead of the message.</p>
 <p><strong>Check:</strong> It explains why only one of the first paragraphs shows boldness and what happens when you cancel the dialog.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (opens the delivery page in a new tab)" class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
-<div class="activity-card activity-callout" id="extra-eniun-viaje">
-<p><strong>2.40. Travel budget</strong></p>
+<div class="activity-card activity-callout activity-optional" id="extra-eniun-viaje">
+<p><strong>2.40. Travel budget — Optional activity</strong></p>
 <p>The property <code>value</code> returns text, even in a field <code>type="number"</code>. Before adding the expenses, converts each value with <code>Number( )</code>; otherwise, <code>+</code> concatenates the chains: <code>"60" + "25"</code> produces <code>"6025"</code>, no <code>85</code>. Check first that the fields are not empty, because <code>Number("")</code> returns <code>0</code>. After converting, use <code>Number.isFinite()</code> to reject non-numeric or infinite values.</p>
 <p>Prepares three fields with accommodation, food and leisure expenses. Use numeric fields with initial values. When loading, it rejects empty fields or negative expenses, converts their values and displays the sum by using <code>textContent</code>. Test 60, 25 and 15: total 100.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (opens the delivery page in a new tab)" class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
@@ -2065,15 +2105,72 @@ resultado.textContent =
 for (let i = 0; i &lt; elementos.length; i++) {
     elementos[i].outerHTML = '&lt;p class="nuevo"&gt;Editado&lt;/p&gt;';
 }</code></pre>
-<p>Explain in detailed comments what happens on each loop round and why the result differs from the expected one. Propose a solution, justify why it works and check that all three blocks are replaced when running the program from the initial HTML.</p>
-<p>Deliver the HTML and a JavaScript file with the original commented code, your explanation, and the corrected version ready to run.</p>
+<p>Analyze what happens on each loop round and why the result differs from the expected one. Propose a solution, justify why it works and check that all three blocks are replaced when running the program from the initial HTML.</p>
+<p><strong>Don't deliver code in this practice.</strong> Delivers a text document with:</p>
+<ol type="a">
+<li>A table of loop steps, indicating for each step the value of each variable.</li>
+<li>The problem found.</li>
+<li>The cause and the solution.</li>
+</ol>
 <div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <h3 id="sec8_6">8.6. CSS Styles and Classes</h3>
-<p><code>style</code> modifies online styles. Properties with CSS scripts are written in <em>camelCase</em> when accessing by a point:</p>
+<p><code>style</code> is a property of <strong>each HTML element</strong> and allows you to modify their online styles. You can use it on the item returned by <code>querySelector()</code> o <code>getElementById()</code>. If there are no matches, both return <code>null</code>: checks that the item exists before accessing your <code>style</code>.</p>
+<p>Properties with CSS scripts are written in <em>camelCase</em> when accessing by a point:</p>
 <pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
 mensaje.style.backgroundColor = "#e0f2fe";
 mensaje.style.padding = "12px";</code></pre>
+<figure id="ejemplo-cssom" style="margin:1.5rem 0">
+<svg aria-labelledby="cssom-title cssom-desc" role="img" style="display:block;width:100%;max-width:720px;height:auto;margin:1rem auto" viewbox="0 0 620 630" xmlns="http://www.w3.org/2000/svg">
+<title id="cssom-title">From program to browser style objects</title>
+<desc id="cssom-desc">A CSS rule gives blue color and size of 20 pixels to the paragraph Hello. JavaScript assigns red color to your online style. The leaf rule follows blue; the calculated style combines red and 20 pixels.</desc>
+<defs><marker id="cssom-arrow" markerheight="8" markerwidth="8" orient="auto" refx="7" refy="4"><path d="M0 0 L8 4 L0 8" fill="#64748b"></path></marker></defs>
+<rect fill="#f8fafc" height="628" rx="10" stroke="#cbd5e1" width="618" x="1" y="1"></rect>
+<text fill="#0f172a" font-family="Arial, sans-serif" font-size="19" x="20" y="30">1. A small programme</text>
+<rect fill="#0f172a" height="207" rx="10" stroke="#0f172a" width="588" x="16" y="44"></rect>
+<text fill="#e2e8f0" font-family="monospace" font-size="15" x="30" y="70">HTML &lt;p id="saludo"&gt;Hello&lt;/p&gt;</text>
+<text fill="#e2e8f0" font-family="monospace" font-size="15" x="30" y="104">CSS # saludo {color: blue; font-size: 20px; }</text>
+<text fill="#93c5fd" font-family="Arial, sans-serif" font-size="15" x="30" y="140">JavaScript (with defer)</text>
+<text fill="#e2e8f0" font-family="monospace" font-size="15" x="30" y="168">const p = document.querySelector("#saludo");</text>
+<text fill="#e2e8f0" font-family="monospace" font-size="15" x="30" y="196">p.style.color = "net";</text>
+<text fill="#e2e8f0" font-family="Arial, sans-serif" font-size="15" x="30" y="229">Before: Hello blue → After: Hello red</text>
+<text fill="#0f172a" font-family="Arial, sans-serif" font-size="19" x="20" y="283">2. Simplified representation in the browser</text>
+<rect fill="#eef2ff" height="177" rx="10" stroke="#a5b4fc" width="285" x="16" y="300"></rect>
+<text fill="#0f172a" font-family="Arial, sans-serif" font-size="17" x="30" y="326">CSSOM · stylesheet</text>
+<text fill="#4338ca" font-family="monospace" font-size="15" x="30" y="353">CSSStyleSheet</text>
+<path d="M40 361 V395 H54 M60 403 V438 H74" fill="none" stroke="#818cf8" stroke-width="2"></path>
+<text fill="#4338ca" font-family="monospace" font-size="14" x="56" y="393">CSSTyleRule: #Salute</text>
+<text fill="#1d4ed8" font-family="monospace" font-size="14" x="76" y="423">color: blue</text>
+<text fill="#4338ca" font-family="monospace" font-size="14" x="76" y="449">font-size: 20px</text>
+<rect fill="#ecfdf5" height="177" rx="10" stroke="#6ee7b7" width="285" x="319" y="300"></rect>
+<text fill="#0f172a" font-family="Arial, sans-serif" font-size="17" x="333" y="326">DOM · element p# saludo</text>
+<text fill="#065f46" font-family="monospace" font-size="15" x="333" y="353">Text: "Hello"</text>
+<text fill="#065f46" font-family="monospace" font-size="14" x="333" y="389">p.style → online style</text>
+<text fill="#b91c1c" font-family="monospace" font-size="15" x="349" y="421">colour: net</text>
+<text fill="#065f46" font-family="Arial, sans-serif" font-size="14" x="333" y="452">JavaScript modifies it.</text>
+<path d="M158 477 V495 H285 V514" fill="none" marker-end="url(#cssom-arrow)" stroke="#64748b" stroke-width="2"></path><path d="M462 477 V495 H335 V514" fill="none" marker-end="url(#cssom-arrow)" stroke="#64748b" stroke-width="2"></path>
+<rect fill="#fff" height="89" rx="10" stroke="#94a3b8" width="588" x="16" y="522"></rect>
+<text fill="#0f172a" font-family="Arial, sans-serif" font-size="17" x="30" y="549">3. Calculated Style → visible result</text>
+<text fill="#475569" font-family="monospace" font-size="14" x="30" y="580">colour: rgb(255, 0, 0) · font-size: 20px</text>
+<text fill="#ff0000" font-family="Arial, sans-serif" font-size="20" x="533" y="581">Hello.</text>
+</svg>
+<figcaption>The <strong>CSSOM</strong> (CSS object model) allows you to query and modify styles from JavaScript. In this example, the sheet retains <code>color: blue</code>; <code>p.style.color = "red"</code> adds an online style. The browser applies the red and maintains the <code>20px</code> from the leaf. <code>getComputedStyle(p)</code> allows you to consult that result.</figcaption>
+</figure>
+<div class="didactic-note">
+<p><strong>What if I select several elements?</strong> One <code>HTMLCollection</code> (like the one returned by <code>getElementsByClassName()</code>) or a <code>NodeList</code> (like the one returned by <code>querySelectorAll()</code>) is a collection and <strong>He doesn't have a property. <code>style</code> own</strong>. Access an element by its index or go through the collection to modify each element.</p>
+</div>
+<pre data-example="dom-js"><code>const avisos = document.getElementsByClassName("aviso");
+
+// Un solo elemento: comprobamos que exista.
+if (avisos.length &gt; 0) {
+    avisos[0].style.color = "navy";
+}
+
+// Todos los elementos de la colección.
+for (const aviso of avisos) {
+    aviso.style.backgroundColor = "#e0f2fe";
+}</code></pre>
+<p>The same tour with <code>for...of</code> serves if you get the collection with <code>document.querySelectorAll(".aviso")</code>. Write <code>avisos.style.backgroundColor</code> would make a mistake: the style belongs to each <code>aviso</code>Not the collection.</p>
 <h4>Apply and remove CSS properties</h4>
 <p>A warning may need a temporary style. <code>style.setProperty()</code> allows you to apply a property and <code>style.removeProperty()</code> remove it later. Both get the name as written in CSS, for example <code>"background-color"</code>.</p>
 <aside class="function-card" id="ficha-metodo-setProperty">
@@ -2165,23 +2262,23 @@ mensaje.classList.toggle("destacado"); // La añade de nuevo.</code></pre>
 &lt;/ul&gt;</code></pre>
 <div class="delivery-tip"><a aria-label="Deliver activity (opens the delivery page in a new tab)" class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
-<h3 id="sec8_7">8.7. Check that an item exists</h3>
-<p>A search with <code>querySelector()</code> o <code>getElementById()</code> no matches returns <code>null</code>. The methods that return collections produce an empty collection, with <code>length === 0</code>. Try to use a property of that value, such as <code>null.textContent</code>, causes a <code>TypeError</code>. Check the selector, HTML and time of execution.</p>
-<pre data-example="dom-js"><code>const mensaje = document.querySelector("#mensaje");
+<h3 id="sec8_7">8.7. Tour DOM elements with for...of</h3>
+<aside aria-label="Control structure sheet: Values route" class="function-card" id="ficha-control-for-of">
+<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Control structure sheet</p>
+<p class="function-signature"><code>for (const elemento of iterable) { ... }</code></p>
+<p><strong>Purpose:</strong> Valuation route.</p>
+<p><strong>Components:</strong> A iterable, such as an array or a NodeList, and a variable for the current value.</p>
+<p><strong>Operation:</strong> Run the block once for each value of the iterable. In a NodeList, each value is a reference to a node.</p>
+<p><strong>Remember:</strong> It tracks values, not indices. With const, the variable is not reassigned within that iteration, but can be used to modify the referenced DOM element.</p>
+</aside>
+<p><code>for...of</code> it goes through the values of an iterable collection. We already use it in 8.4 to change texts. Now we combine it with the classes of 8.6; then we will use it to record events in various controls:</p>
+<pre data-example="control-dom"><code>const parrafos = document.querySelectorAll("p");
 
-if (mensaje !== null) {
-    mensaje.textContent = "Elemento encontrado";
+for (const parrafo of parrafos) {
+    parrafo.classList.add("destacado");
 }</code></pre>
-<p>The structure <code>if</code>, studied in paragraph 6, executes the block only if the element exists. If the element should be present, the cause of its absence should be corrected, in addition to avoiding error.</p>
-<div class="resource-card expansion-card">
-<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Consult and modify the DOM</span><span class="resource-badge badge-reading">Enlargement</span></div>
-<p class="resource-description">References about selection, content, fields and classes. The "Create a list" activity introduces the creation of elements; the detailed path of the tree will be addressed later.</p>
-<div class="resource-links"><a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector" rel="noopener noreferrer" target="_blank">MDN · querySelector()</a>
-<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent" rel="noopener noreferrer" target="_blank">MDN · textContent</a>
-<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML" rel="noopener noreferrer" target="_blank">MDN · innerHTML</a>
-<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/value" rel="noopener noreferrer" target="_blank">MDN · value</a>
-<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Element/classList" rel="noopener noreferrer" target="_blank">MDN · classList</a></div>
-</div>
+<p>Use the test page in paragraph 8.3 as support material; the selection of elements and classes are explained in paragraphs 8.4 and 8.6. This code adds the class <code>destacado</code> to each paragraph. The stylesheet must contain the class for the change to be visible. If the selection is empty, the block is not executed.</p>
+<p><code>const parrafo</code> creates a variable for each iteration: the one from the previous iteration is not reassigned. To navigate these elements is used <code>for...of</code>; <code>for...in</code> It runs property names and has another purpose.</p>
 <div class="activity-card activity-callout" id="actividad-repaso-dom-estudio">
 <p><strong>2.43. Create a Snippet</strong></p>
 <p>Improve reading a notebook or news site by applying your own styles from Chrome. You will create a small reusable script on the page you have open.</p>
@@ -2194,8 +2291,8 @@ if (mensaje !== null) {
     background: #FFF8E7 !important;
 }</code></pre>
 <ol>
-<li><strong>Open the editor (2 minutes).</strong> In Chrome, open an article and tap <kbd>F12</kbd>. In DevTools enters <strong>Sources → Snippets</strong> (may be within <strong>»</strong>) Pulse <strong>New snippet</strong> and call him <code>lectura</code>. A snippet saves code to run it over the open web.</li>
-<li><strong>Complete the script (5 minutes).</strong> Write this template in the editor, without tags <code>&lt;script&gt;</code>. Adds within the loop four calls to <code>setProperty()</code>, following the first and using the CSS block values.</li>
+<li><strong>Open the editor.</strong> In Chrome, open an article and tap <kbd>F12</kbd>. In DevTools enters <strong>Sources → Snippets</strong> (may be within <strong>»</strong>) Pulse <strong>New snippet</strong> and call him <code>lectura</code>. A snippet saves code to run it over the open web.</li>
+<li><strong>Complete the script.</strong> Write this template in the editor, without tags <code>&lt;script&gt;</code>. Adds within the loop four calls to <code>setProperty()</code>, following the first and using the CSS block values.</li>
 </ol>
 <pre><code class="language-javascript">{
     const elementos = document.querySelectorAll("body, body *");
@@ -2207,32 +2304,22 @@ if (mensaje !== null) {
 }</code></pre>
 <p><code>body, body *</code> select the body and its elements: you don't need to know the identifiers of each website. <code>setProperty(propiedad, valor, "important")</code> applies the style with priority over the usual rules of the page.</p>
 <ol start="3">
-<li><strong>Run and check (3 minutes).</strong> Save with <kbd>Ctrl + S</kbd> and runs with <kbd>Ctrl + Intro</kbd> or the editor's button. On Mac you use <kbd>⌘</kbd> in place of <kbd>Ctrl</kbd>. Open another website and run the same snippet from your DevTools. Check for font changes, size, separation and colors.</li>
+<li><strong>Run and check.</strong> Save with <kbd>Ctrl + S</kbd> and runs with <kbd>Ctrl + Intro</kbd> or the editor's button. On Mac you use <kbd>⌘</kbd> in place of <kbd>Ctrl</kbd>. Open another website and run the same snippet from your DevTools. Check for font changes, size, separation and colors.</li>
 </ol>
 <p>The script modifies the HTML visible in your browser; it does not change the original web. <strong>Reload to recover its appearance.</strong> It works with the elements of the selected document; the contents of encapsulated frames and components can retain their styles.</p>
 <p><strong>Delivery:</strong> the completed script. <a href="https://developer.chrome.com/docs/devtools/javascript/snippets?hl=es" rel="noopener noreferrer" target="_blank">Chrome Help: Run Snippets</a>.</p>
 <div class="delivery-tip"><a class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
-<h3 id="sec8_8">8.8. Organize interaction</h3>
-<p>A simple interaction can be organized in three steps: <strong>read current data</strong>, <strong>check or process them</strong> y <strong>update the DOM</strong>. Reading from <code>value</code> must be performed within the handler when the value of the field is needed at that time.</p>
-<p>Select items and register handlers once when preparing the page. Keep each handler brief, use <code>textContent</code> to display user data and use CSS classes to change the presentation. It is not necessary to repeat a query continuously to detect the user's actions.</p>
-<div class="resource-card expansion-card">
-<div class="resource-card-header"><span class="resource-title"><i aria-hidden="true" class="fa-solid fa-book-open"></i> Events and forms</span><span class="resource-badge badge-reading">Enlargement</span></div>
-<p class="resource-description">References to consult the driver's log, the event object and the behavior of the forms.</p>
-<div class="resource-links"><a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener" rel="noopener noreferrer" target="_blank">MDN · addEventListener()</a>
-<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Event/currentTarget" rel="noopener noreferrer" target="_blank">MDN · currentTarget</a>
-<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event" rel="noopener noreferrer" target="_blank">MDN · change</a>
-<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event" rel="noopener noreferrer" target="_blank">MDN · submission</a>
-<a class="resource-link-btn" href="https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault" rel="noopener noreferrer" target="_blank">MDN · preventDefault()</a></div>
-</div>
 <div class="activity-card activity-callout" id="actividad-jsinfo-menu">
 <p><strong>2.44. Show and hide a menu</strong></p>
-<p>Creates a button and a list of links initially hidden using CSS. Change your visibility with <code>classList.toggle()</code> when pressing the button. Keep the event log out of the handler and try several openings and closures in a row.</p>
+<p>Use the starting HTML and CSS. The link list is initially hidden by the class <code>oculto</code>. In <code>menu.js</code>, alternate that class with <code>classList.toggle()</code> when pressing the button. Keep the event log out of the handler and try several openings and closures in a row.</p>
+<p>Download <code>index.html</code> y <code>estilos.css</code> and keep them in the same folder. Create next to them <code>menu.js</code>: JavaScript you program it.</p>
+<div class="resource-links"><a class="resource-link-btn" download="index.html" href="alumnado/u02/proyectos/menu/index.html">Download HTML</a> <a class="resource-link-btn" download="estilos.css" href="alumnado/u02/proyectos/menu/estilos.css">Download CSS</a></div>
 <div class="delivery-tip"><a aria-label="Deliver activity (opens the delivery page in a new tab)" class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 <div class="activity-card activity-callout" id="actividad-complementaria-8-6"><p><strong>2.45. Meter of an eight-step goal</strong></p><p>Records the progress of a task divided into eight steps. The bar is prepared with the HTML element <code>&lt;progress&gt;</code>; don't draw it with CSS.</p><ol><li>Saves the number of completed steps, initially zero.</li><li>‘Fill step’ adds one to a maximum of eight; ‘Undo’ subtracts one to zero; ‘Restart’ returns to zero.</li><li>Centralizes the presentation in <code>actualizarVista()</code>: assigns the number to <code>progreso.value</code> and shows steps and percentage with <code>textContent</code>.</li><li>Record handlers once. Call the update when loading and after each action.</li></ol><p><strong>Tests:</strong> four steps equal 50%; eight to 100%. A ninth click does not increase the account. Undoing from scratch keeps zero. Restart after five steps and check that you can start again.</p><p>Inspiration: <a href="https://github.com/bradtraversy/50projects50days/tree/master/drink-water">Drink Water</a>adapted to a generic goal.</p><p><strong>Material provided:</strong> download these files together into a folder called <code>progreso</code>HTML and CSS are ready; complete <code>app.js</code>. Visual customization is optional.</p><div class="resource-links"><a class="resource-link-btn" download="index.html" href="alumnado/u02/proyectos/progreso/index.html">index.html</a> <a class="resource-link-btn" download="estilos.css" href="alumnado/u02/proyectos/progreso/estilos.css">styles.css</a> <a class="resource-link-btn" download="app.js" href="alumnado/u02/proyectos/progreso/app.js">app.js</a> <a class="resource-link-btn" download="LEEME.txt" href="alumnado/u02/proyectos/progreso/LEEME.txt">LEEME.txt</a></div><p><strong>Delivery:</strong> includes project files and <code>pruebas.txt</code> with the expected and observed results. JavaScript behavior is evaluated; you don't need to expand the CSS.</p><div class="delivery-tip"><a aria-label="Deliver activity (opens the delivery page in a new tab)" class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
-<div class="activity-card activity-callout" id="actividad-jsinfo-calendario">
-<p><strong>2.46. Review of the DOM. Create a calendar</strong></p>
+<div class="activity-card activity-callout activity-optional" id="actividad-jsinfo-calendario">
+<p><strong>2.46. Review of the DOM. Create a calendar — Voluntary activity</strong></p>
 <p>Agenda <code>createCalendar(elem, year, month)</code> to show the month indicated within <code>elem</code>. You will receive the year and a month from 1 to 12. The table will have seven columns, from Monday to Sunday: use <code>th</code> for their headers, <code>tr</code> for each week and <code>td</code> for the days. You do not need to respond to clicks.</p>
 <p><strong>Starting HTML:</strong> download <code>index.html</code> and keep it next to the file <code>calendario.js</code> You're going to schedule.</p>
 <div class="resource-links"><a class="resource-link-btn" download="index.html" href="alumnado/u02/calendario/index.html">Download HTML from Calendar</a></div>
@@ -2325,7 +2412,36 @@ boton.addEventListener("click", mostrarSaludo);</code></pre>
 <p>Browser runs <code>mostrarSaludo</code> Each time the button is activated. An HTML button can be activated with both the mouse and the keyboard.</p>
 <div class="didactic-note"><p><strong>Pass the function, not run it.</strong> Write <code>mostrarSaludo</code> as a second argument. If you write <code>mostrarSaludo()</code>, the function is executed during the log and its result is passed instead of the handler.</p></div>
 <p>Record handlers when items already exist, as is the case when using <code>defer</code>. <code>addEventListener()</code> allows you to associate several functions to the same event and maintains the behavior in the JavaScript file.</p>
-<div class="activity-card activity-callout" id="actividad-jsinfo-ocultar"><p><strong>2.47. Drop-down Help Panel</strong></p><p>Build a help that can be consulted without leaving the delivery page.</p><ol><li>Before programming, identify the button, the event <code>click</code> and the change the handler will make.</li><li>Keep a boolean indicating if the help is open. Register the handler once with <code>addEventListener()</code>.</li><li>On each click, change the status and add or remove the class <code>oculto</code>. Alternate the text between "Show Help" and "Hide Help".</li></ol><p><strong>Tests:</strong> when loading is closed; after one click it opens; after four it returns to the start. Test Tab to focus the button and Space or Enter to activate it.</p><p>Inspiration: <a href="https://github.com/bradtraversy/50projects50days/tree/master/faq-collapse">FAQ Collapse</a>reduced to a card.</p><p><strong>Material provided:</strong> download these files together into a folder called <code>ayuda</code>HTML and CSS are ready; complete <code>app.js</code>. Visual customization is optional.</p><div class="resource-links"><a class="resource-link-btn" download="index.html" href="alumnado/u02/proyectos/ayuda/index.html">index.html</a> <a class="resource-link-btn" download="estilos.css" href="alumnado/u02/proyectos/ayuda/estilos.css">styles.css</a> <a class="resource-link-btn" download="app.js" href="alumnado/u02/proyectos/ayuda/app.js">app.js</a> <a class="resource-link-btn" download="LEEME.txt" href="alumnado/u02/proyectos/ayuda/LEEME.txt">LEEME.txt</a></div><p><strong>Delivery:</strong> includes project files and <code>pruebas.txt</code> with the expected and observed results. JavaScript behavior is evaluated; you don't need to expand the CSS.</p><div class="delivery-tip"><a aria-label="Deliver activity (opens the delivery page in a new tab)" class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
+<aside class="function-card" id="ficha-addeventlistener-completa">
+<p class="function-label">Method Sheet</p>
+<p class="function-signature"><code>destino.addEventListener(tipo, manejador, opciones)</code></p>
+<p>Record a response to an event in an element, <code>document</code> o <code>window</code>.</p>
+<ul>
+<li><strong>type:</strong> name of the event, as <code>"click"</code> o <code>"keydown"</code>, without <code>on</code>. Distinguish uppercase and lowercase.</li>
+<li><strong>handler:</strong> function without running it. The browser automatically passes the event object as the first argument. It also supports an object with method <code>handleEvent()</code>; <code>null</code> It doesn't record anything.</li>
+<li><strong>options:</strong> optional object to configure the record. It also supports a boolean as abbreviation of <code>capture</code>.</li>
+</ul>
+<p><strong>Returns:</strong> <code>undefined</code>The value returned by the handler is ignored.</p>
+<p><strong>Options:</strong></p>
+<ul>
+<li><code>capture</code>: by default, <code>false</code>. With <code>true</code>, listen during the capture: the event travels the ancestors towards their destination. <code>false</code>, listen in fate or when the event ascends by its predecessors, if it has spread by bubbling.</li>
+<li><code>once</code>: by default, <code>false</code>. With <code>true</code>, the handler runs at most once and is automatically removed.</li>
+<li><code>passive</code>: with <code>true</code>, the handler cannot cancel the default action by <code>preventDefault()</code>. Allows the browser to start scrolling without waiting for the handler. Normally it is <code>false</code>But it may be <code>true</code> default for wheel or touch events in destinations such as <code>document</code> y <code>window</code>. If you need to cancel a cancelable action, indicate <code>passive: false</code>.</li>
+<li><code>signal</code>: receives the signal of a <code>AbortController</code>. When calling <code>abort()</code>, associated handlers are removed. By default there is no signal; if it is already cancelled, the handler is not registered.</li>
+</ul>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener" rel="noopener noreferrer" target="_blank">Reference: MDN · addEventListener()</a></p>
+</aside>
+<p><strong>Example: reply only to the first click.</strong> Replaces the record of the above example with:</p>
+<pre><code>boton.addEventListener("click", mostrarSaludo, { once: true });</code></pre>
+<p><strong>Example: be able to remove the handler.</strong> Alternatively, it records the function with a signal:</p>
+<pre><code>const controlador = new AbortController();
+boton.addEventListener("click", mostrarSaludo, {
+    signal: controlador.signal
+});
+
+// Ejecuta esta línea cuando quieras dejar de escuchar:
+controlador.abort();</code></pre>
+<p>If you run <code>abort()</code> immediately, the handler is removed before you can press the button.</p>
 <div class="activity-card activity-callout" id="actividad-complementaria-8-2">
 <p><strong>2.48. Two handlers on the same button</strong></p>
 <p>A click on "Vote" must add a vote and show "Thank you for voting!". You will check how the same button responds to two functions.</p>
@@ -2337,13 +2453,53 @@ boton.addEventListener("click", mostrarSaludo);</code></pre>
 <p><strong>Try the change.</strong> Replaces the two records with <code>boton.onclick = contarVoto;</code> and then <code>boton.onclick = agradecer;</code>. Reload and press once. Why does the thank you appear and the counter is still at 0?</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (opens the delivery page in a new tab)" class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
-<h3 id="sec9_3">9.3. Basic events: click, input, change and submit</h3>
+<h3 id="sec9_3">9.3. Most common types of events</h3>
+<p>Choose the event according to the action you need to detect and register it in the corresponding item.</p>
+<h4>Mouse</h4>
 <ul>
-<li><strong><code>click</code>:</strong> responds to the activation of an element, like a button.</li>
-<li><strong><code>input</code>:</strong> is produced by modifying a field by means of a user action. Allows to update a view while writing.</li>
-<li><strong><code>change</code>:</strong> indicates that a change has been confirmed. In text fields it usually occurs when you leave the field after you modify it; in a selector, when you confirm an option.</li>
-<li><strong><code>submit</code>:</strong> is produced on the form when you request it to be sent, for example by using your button or by pressing Enter in an appropriate field.</li>
+<li><code>click</code>: activates an element. On a button can also be produced using the keyboard.</li>
+<li><code>dblclick</code>: Double click on an item.</li>
+<li><code>mouseover</code> y <code>mouseout</code>: the pointer enters or exits an element. They can also be shot as they pass between him and his descendants.</li>
+<li><code>mousemove</code>: the pointer moves over an element; it can occur many times in a row.</li>
 </ul>
+<h4>Keyboard</h4>
+<ul>
+<li><code>keydown</code>: a key is pressed. It can be repeated if it is held down.</li>
+<li><code>keyup</code>: a key is released.</li>
+</ul>
+<div class="didactic-note" id="ficha-evento-tecla">
+<p><strong>What key has been pressed?</strong> The browser passes an object <code>KeyboardEvent</code> to the handler. <code>event.key</code> identifies the key: <code>"Enter"</code>, <code>"Escape"</code>, <code>"ArrowLeft"</code> or a character like <code>"a"</code>. Takes into account capital letters and keyboard layout; space is represented with <code>" "</code>.</p>
+<p>Try this fragment with the field <code>#nombre</code> and the paragraph <code>#mensaje</code> from the example page. Click on the field to give it the focus and press different keys:</p>
+<pre data-example="events-js"><code>const campo = document.querySelector("#nombre");
+const mensaje = document.querySelector("#mensaje");
+
+function identificarTecla(event) {
+    mensaje.textContent = "Tecla: [" + event.key + "]";
+    if (event.key === "Enter") {
+        mensaje.textContent = "Has pulsado Intro";
+    }
+}
+
+campo.addEventListener("keydown", identificarTecla);</code></pre>
+<p>With <code>keyup</code> the check is the same, but it runs when the key is dropped. <code>event</code> you choose it; the browser provides the object. To detect text changes, including pasting, use <code>input</code>.</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key" rel="noopener noreferrer" target="_blank">MDN · KeyboardEvent.key</a></p>
+</div>
+<h4>Forms and controls</h4>
+<ul>
+<li><code>input</code>: the user modifies a field, for example when writing or pasting. It allows updating a view while editing.</li>
+<li><code>change</code>: a change is confirmed. In text fields it usually occurs when you leave the field after you modify it; in a selector, when you confirm an option.</li>
+<li><code>submit</code>: send a form via your button or by pressing Enter in an appropriate field. It is heard in the form.</li>
+<li><code>focus</code>: the control receives the focus, for example when you press it or reach it with Tab.</li>
+<li><code>blur</code>: control loses focus. <code>focus</code> y <code>blur</code> do not spread by bubble; you can register them directly in the field.</li>
+</ul>
+<h4>Document and Window</h4>
+<ul>
+<li><code>DOMContentLoaded</code>, <code>document</code>: HTML has already been analyzed and deferred scripts have finished running. It does not wait for images; it is used to prepare interaction when DOM is available.</li>
+<li><code>load</code>, <code>window</code>: the page and its dependent resources have finished loading, except those that are loaded in a deferred way, as images with lazy load.</li>
+<li><code>resize</code>, <code>window</code>: changes the size of the window.</li>
+<li><code>scroll</code>, <code>document</code> or in a moveable element: changes the displacement position.</li>
+</ul>
+<p>With an external script you use <code>defer</code>, you can access the DOM directly when running it. You don’t need to add a handler in addition <code>DOMContentLoaded</code> for that very purpose. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event" rel="noopener noreferrer" target="_blank">Reference: MDN · DOMContentLoaded</a>.</p>
 <p>This example shows the name while writing and recording when the change is confirmed:</p>
 <pre data-example="events-js"><code>const campo = document.querySelector("#nombre");
 const mensaje = document.querySelector("#mensaje");
@@ -2359,7 +2515,6 @@ function confirmarCambio() {
 campo.addEventListener("input", mostrarNombre);
 campo.addEventListener("change", confirmarCambio);</code></pre>
 <p>Assign a value from JavaScript by <code>campo.value = "Ana"</code> does not automatically trigger these events. If the program modifies the data, you must also update the presentation when applicable.</p>
-<div class="activity-card activity-callout" id="actividad-jsinfo-deposito-eventos"><p><strong>2.49. Live card designer</strong></p><p>Customize an already modeled card by changing three basic properties: text color, letter size and rounded corners.</p><ol><li>Create <code>actualizarTarjeta()</code> to read all three controls and modify <code>style.color</code>, <code>style.fontSize</code> y <code>style.borderRadius</code>.</li><li>Add <code>"px"</code> to size and radius. Shows the values chosen in the summary with <code>textContent</code>.</li><li>Run the function when loading and register for <code>input</code> in every control.</li><li>Register also <code>change</code> to display ‘Reconfirmed change’ in the paragraph <code>#estadoEvento</code> facilitated. In the handler of <code>input</code>, shows "Editing". Explains when each message appears.</li></ol><p><strong>Tests:</strong> when loading, 18 px letter and 8 px radius. Test the ends of both controls, change color and use the keyboard arrows as well. The card and summary must match. You do not need CSS variables or animations.</p><p>Inspiration: <a href="https://github.com/wesbos/JavaScript30/tree/master/03%20-%20CSS%20Variables">CSS Variables</a> y <a href="https://github.com/florinpop17/app-ideas/blob/master/Projects/1-Beginner/Border-Radius-Previewer.md">Border-radius Previewer</a>adapted to basic styles.</p><p><strong>Material provided:</strong> download these files together into a folder called <code>tarjeta</code>HTML and CSS are ready; complete <code>app.js</code>. Visual customization is optional.</p><div class="resource-links"><a class="resource-link-btn" download="index.html" href="alumnado/u02/proyectos/tarjeta/index.html">index.html</a> <a class="resource-link-btn" download="estilos.css" href="alumnado/u02/proyectos/tarjeta/estilos.css">styles.css</a> <a class="resource-link-btn" download="app.js" href="alumnado/u02/proyectos/tarjeta/app.js">app.js</a> <a class="resource-link-btn" download="LEEME.txt" href="alumnado/u02/proyectos/tarjeta/LEEME.txt">LEEME.txt</a></div><p><strong>Delivery:</strong> includes project files and <code>pruebas.txt</code> with the expected and observed results. JavaScript behavior is evaluated; you don't need to expand the CSS.</p><div class="delivery-tip"><a aria-label="Deliver activity (opens the delivery page in a new tab)" class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
 <h3 id="sec9_4">9.4. The object of the event and currentTarget</h3>
 <p>The browser gives the handler an object with event information. To use it, a parameter is added, which we will call here. <code>event</code>:</p>
 <pre data-example="events-js"><code>const campo = document.querySelector("#nombre");
@@ -2409,75 +2564,13 @@ formulario.addEventListener("submit", procesarFormulario);</code></pre>
 <p>Create a link to an external page of your choice. Register your event <code>click</code> and ask with <code>confirm()</code> if you want to open the destination. If cancelled, use <code>preventDefault()</code>; if accepted, let the browser act. Try both answers.</p>
 <div class="delivery-tip"><a aria-label="Deliver activity (opens the delivery page in a new tab)" class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
-<div class="activity-card activity-callout" id="actividad-complementaria-8-5">
-<p><strong>2.52. Is return false enough?</strong></p>
-<p>Create a form with a field and a shipping button. Register a handler with <code>addEventListener()</code> to write "Send received" in a paragraph and return <code>false</code>. Checks if the message disappears when the page is reloaded by the shipment. Replaces that return by <code>event.preventDefault()</code>.</p>
-<p><strong>Check:</strong> Try with click and enter and explain why the second version remains on the page.</p>
-<div class="delivery-tip"><a aria-label="Deliver activity (opens the delivery page in a new tab)" class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
-</div>
-<div class="activity-card activity-callout" id="actividad-complementaria-9-7"><p><strong>2.53. binary converter for SSII</strong></p><p>Program a converter from one to eight bits. A valid entry contains only zeros and ones.</p><figure id="interfaz-conversor-binario" style="margin:1.25rem 0">
-<svg role="img" style="display:block;width:100%;max-width:520px;height:auto;margin:0 auto" viewbox="0 0 520 430" xmlns="http://www.w3.org/2000/svg">
-<title>Convert binary to decimal: example with 1010</title>
-<desc>Form with a field for a binary number of one to eight bits, a Convert button and a result zone. The field contains 1010 and the decimal result is 10.</desc>
-<rect fill="#f1f5f9" height="430" rx="12" width="520"></rect>
-<rect fill="#ffffff" height="398" rx="8" stroke="#cbd5e1" width="488" x="16" y="16"></rect>
-<g fill="#172033" font-family="Arial, sans-serif">
-<text font-size="28" font-weight="700" x="40" y="57">Convert binary to decimal</text>
-<text font-size="18" x="40" y="94">Check how a number is represented</text>
-<text font-size="18" x="40" y="121">using only two digits.</text>
-<text font-size="19" x="40" y="168">binary number (1 to 8 bits)</text>
-<rect fill="#ffffff" height="49" rx="2" stroke="#64748b" stroke-width="1.5" width="440" x="40" y="183"></rect>
-<text font-family="Consolas, monospace" font-size="26" x="54" y="216">1010</text>
-<text font-size="17" x="40" y="264">Write only zeros and ones. For example: 1010.</text>
-<rect fill="#efefef" height="44" rx="3" stroke="#767676" width="124" x="40" y="287"></rect>
-<text font-size="20" text-anchor="middle" x="102" y="316">Convert</text>
-<text font-size="24" x="40" y="374">Decimal: <tspan font-weight="700">10</tspan></text>
-</g>
-</svg>
-<figcaption style="margin-top:.75rem;font-size:.95em;text-align:center">Reference interface after conversion <code>1010</code>: the result is <code>10</code>. It is an illustrative image.</figcaption>
-</figure><ol><li>Implement <code>binarioADecimal(texto)</code> without accessing the DOM. Returns <code>null</code> if the length or some character is invalid; otherwise it returns the decimal number.</li><li>Go through the characters: start with a zero build-up and, for each bit, multiply it by 2 and add the converted bit to number. Don't use <code>parseInt(texto, 2)</code> in this practice.</li><li>Record <code>submit</code>, avoid reloading, read the text and remove the outer spaces with <code>trim()</code>.</li><li>Shows the result with <code>textContent</code>. Faced with an error it shows a clear message and replaces any previous result with «—». <code>resultado === null</code>: zero is valid.</li></ol><p><strong>Tests:</strong> <code>0 → 0</code>, <code>0001 → 1</code>, <code>1010 → 10</code> y <code>11111111 → 255</code>. Reject empty, <code>102</code>, <code>10 01</code> and nine bits. Valid test → valid error →, with button and enter.</p><p>Inspiration: <a href="https://github.com/florinpop17/app-ideas/blob/master/Projects/1-Beginner/Bin2Dec-App.md">Bin2Dec</a>with adapted requirements.</p><p><strong>Material provided:</strong> download these files together into a folder called <code>binario</code>HTML and CSS are ready; complete <code>app.js</code>. Visual customization is optional.</p><div class="resource-links"><a class="resource-link-btn" download="index.html" href="alumnado/u02/proyectos/binario/index.html">index.html</a> <a class="resource-link-btn" download="estilos.css" href="alumnado/u02/proyectos/binario/estilos.css">styles.css</a> <a class="resource-link-btn" download="app.js" href="alumnado/u02/proyectos/binario/app.js">app.js</a> <a class="resource-link-btn" download="LEEME.txt" href="alumnado/u02/proyectos/binario/LEEME.txt">LEEME.txt</a></div><p><strong>Delivery:</strong> includes project files and <code>pruebas.txt</code> with the expected and observed results. JavaScript behavior is evaluated; you don't need to expand the CSS.</p><div class="delivery-tip"><a aria-label="Deliver activity (opens the delivery page in a new tab)" class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
-<div class="activity-card activity-callout" id="actividad-complementaria-8-3">
-<p><strong>2.54. Live registration sheet</strong></p>
-<p>Prepare registration for a photography workshop. The person will write his name and choose whether to attend in the morning or afternoon. The page will show you his or her choice while filling out the form and a summary when sending it.</p>
-<p>Includes a text field labeled ‘Name’, a <strong>time dropdown</strong> and a "Confirm Registration" button of type <code>submit</code>. The drop-down is an element <code>select</code>; each <code>option</code> represents a shift:</p>
-<pre><code>&lt;label for="turno"&gt;Horario del taller&lt;/label&gt;
-&lt;select id="turno" name="turno"&gt;
-    &lt;option value="mañana"&gt;Mañana: de 10:00 a 12:00&lt;/option&gt;
-    &lt;option value="tarde"&gt;Tarde: de 17:00 a 19:00&lt;/option&gt;
-&lt;/select&gt;</code></pre>
-<ol>
-<li><strong>When writing the name:</strong> Listen. <code>input</code> in the field and updates a paragraph, for example, "Hello, Ana". So it also responds when pasting text.</li>
-<li><strong>When choosing timetable:</strong> Listen. <code>change</code> in the <code>select</code>Read your <code>value</code> and shows "You have chosen the afternoon shift", or tomorrow shift. It also shows the initial shift when loading.</li>
-<li><strong>By confirming:</strong> Listen. <code>submit</code> on the form and call <code>preventDefault()</code>. Read the current name and shift and show "Anna, your registration is for the afternoon shift" by <code>textContent</code>If the name is empty or contains only spaces, ask for it to be typed.</li>
-</ol>
-<p>It is a simulation in the browser: the goal is to distinguish when to use <code>input</code>, <code>change</code> y <code>submit</code>; no data is sent to a server.</p>
-<p><strong>Check:</strong> Try writing, pasting, shift change, click sending and shipping with Enter.</p>
-<div class="delivery-tip"><a aria-label="Deliver activity (opens the delivery page in a new tab)" class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
-</div>
-<h3 id="sec9_6">9.6. Tour DOM elements with for...of</h3>
-<aside aria-label="Control structure sheet: Values route" class="function-card" id="ficha-control-for-of">
-<p class="function-label"><i aria-hidden="true" class="fa-solid fa-code"></i> Control structure sheet</p>
-<p class="function-signature"><code>for (const elemento of iterable) { ... }</code></p>
-<p><strong>Purpose:</strong> Valuation route.</p>
-<p><strong>Components:</strong> A iterable, such as an array or a NodeList, and a variable for the current value.</p>
-<p><strong>Operation:</strong> Run the block once for each value of the iterable. In a NodeList, each value is a reference to a node.</p>
-<p><strong>Remember:</strong> It tracks values, not indices. With const, the variable is not reassigned within that iteration, but can be used to modify the referenced DOM element.</p>
-</aside>
-<p><code>for...of</code> it goes through the values of an iterable collection. We already use it in 8.4 to change texts. Now we combine it with the classes of 8.6; then we will use it to record events in various controls:</p>
-<pre data-example="control-dom"><code>const parrafos = document.querySelectorAll("p");
-
-for (const parrafo of parrafos) {
-    parrafo.classList.add("destacado");
-}</code></pre>
-<p>Use the test page in paragraph 8.3 as support material; the selection of elements and classes are explained in paragraphs 8.4 and 8.6. This code adds the class <code>destacado</code> to each paragraph. The stylesheet must contain the class for the change to be visible. If the selection is empty, the block is not executed.</p>
-<p><code>const parrafo</code> creates a variable for each iteration: the one from the previous iteration is not reassigned. To navigate these elements is used <code>for...of</code>; <code>for...in</code> It runs property names and has another purpose.</p>
-<div class="activity-card activity-callout" id="actividad-complementaria-7-7"><p><strong>2.55. Checklist before handing over</strong></p><p>Turn a checklist into a tool to review your practices.</p><ol><li>Select the boxes with <code>querySelectorAll()</code> and cross them with <code>for...of</code> to register the same handler as <code>change</code>.</li><li>In <code>actualizarResumen()</code>, runs through the collection, counts the marked boxes and builds the text of the earrings.</li><li>Shows "X of Y checks completed." Get Y from the collection; don't write a fixed total.</li><li>If no slope remains, it shows "All reviewed". The restart button unchecks the boxes and updates the summary.</li></ol><p><strong>Help:</strong> <code>casilla.checked</code> indicates if it is marked. <code>casilla.parentElement</code> reference their label; <code>casilla.parentElement.textContent.trim()</code> Get the description.</p><p><strong>Tests:</strong> none, all, mark and unmark one, and restart. Add a sixth check to HTML and reload: the abstract must include it without changing JavaScript. No persistent or node creation is required.</p><p>Inspiration: <a href="https://github.com/wesbos/JavaScript30/tree/master/10%20-%20Hold%20Shift%20and%20Check%20Checkboxes">JavaScript Checkboxes30</a> y <a href="https://github.com/dwyl/javascript-todo-list-tutorial">All List</a>, linked from Project Based Learning.</p><p><strong>Material provided:</strong> download these files together into a folder called <code>checklist</code>HTML and CSS are ready; complete <code>app.js</code>. Visual customization is optional.</p><div class="resource-links"><a class="resource-link-btn" download="index.html" href="alumnado/u02/proyectos/checklist/index.html">index.html</a> <a class="resource-link-btn" download="estilos.css" href="alumnado/u02/proyectos/checklist/estilos.css">styles.css</a> <a class="resource-link-btn" download="app.js" href="alumnado/u02/proyectos/checklist/app.js">app.js</a> <a class="resource-link-btn" download="LEEME.txt" href="alumnado/u02/proyectos/checklist/LEEME.txt">LEEME.txt</a></div><p><strong>Delivery:</strong> includes project files and <code>pruebas.txt</code> with the expected and observed results. JavaScript behavior is evaluated; you don't need to expand the CSS.</p><div class="delivery-tip"><a aria-label="Deliver activity (opens the delivery page in a new tab)" class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div>
 </section>
 <section aria-labelledby="sec10">
 <h2 id="sec10"><i aria-hidden="true" class="fa-solid fa-calculator"></i> 10. Project 1: Calculator</h2>
-<p>Create a web calculator that allows you to enter two numbers, choose an operation and check the result on your own page. You will apply functions, conditions, field reading and events to build a complete application.</p>
+<p>Create a web calculator that allows you to enter two numbers, choose an operation and check the result on the page. You will apply functions, conditions, field reading and events to build the first version.</p>
+<p>Develop the calculator in a single GitHub repository. In the next DWEC topics you will add requirements to this same application and in DIW you will develop its interface. Save every change you can test in a <em>commit</em>, a version of the project to which you can return. A message such as "DWEC U02 · Controlling the division between zero" allows you to locate that change in history.</p>
 <h3 id="sec10_1">10.1. Interface and operation</h3>
-<p>Create your own files <code>index.html</code>, <code>estilos.css</code> y <code>app.js</code>. Link JavaScript to <code>defer</code>. HTML and CSS should allow the application to be used clearly; <strong>JavaScript implementation will be evaluated only</strong>.</p>
+<p>Create your own files <code>index.html</code>, <code>estilos.css</code> y <code>app.js</code>. Link JavaScript to <code>defer</code>. HTML and CSS should allow you to use the application clearly. <strong>Only the implementation of JavaScript will be evaluated in DWEC. HTML, CSS and interface design will be evaluated in the DIW module.</strong></p>
 <ul>
 <li>Includes a form with two tagged fields that support both negative and decimal numbers, an operation selector and a "Calculate" button. If you use <code>type="number"</code>, adds <code>step="any"</code> to admit decimals.</li>
 <li>Allows you to add, subtract, multiply, divide, raise the first number to the second and calculate the rest of the division with <code>%</code>.</li>
@@ -2527,7 +2620,8 @@ for (const parrafo of parrafos) {
 </ol>
 <p>Organise the code in functions with clear tasks. Separate the calculations of field reading and output presentation. Choose the names and parameters you need and register events once. Use JavaScript without libraries and without <code>eval()</code> or <code>Function()</code> to evaluate operations.</p>
 <h3 id="sec10_3">10.3. Testing and delivery</h3>
-<p>Document the data entered, the expected result and the observed result. It includes these tests:</p>
+<p>Indicates in <code>README.md</code> how to open the calculator. <code>pruebas.txt</code>For each requirement, write down what data or actions you have tested, what you expected, and what happened. When you expand the project, repeat the tests of behaviors that change may affect.</p>
+<p>Check these cases in the first version.</p>
 <table><thead><tr><th>Test</th><th>Expected outcome</th></tr></thead><tbody>
 <tr><td>8 and 2: add, subtract, multiply and divide</td><td>10, 6, 16 and 4, respectively.</td></tr>
 <tr><td>2 to 3; rest of 7 to 3</td><td>8 and 1.</td></tr>
@@ -2542,8 +2636,16 @@ for (const parrafo of parrafos) {
 <p>Decimal type <code>Number</code> may have small inaccuracies: <code>0.1 + 0.2</code> produces <code>0.30000000000000004</code>. In this project it is not necessary to implement a special rounding.</p>
 <div class="activity-card activity-callout" id="relacion-ejercicio-21">
 <p><strong>Project 1: Calculator</strong></p>
-<p>Implements the calculator described and delivery <strong>a single flat text</strong> with the full contents of the four files. Write the name of each file followed by two points on a separate line and, below, its contents:</p>
-<pre><code>index.html:
+<p>In the name of practice writes <strong>Project 1: Calculator</strong>. Delivers a single flat text with the tracking tab and the contents of the four files in that version.</p>
+<p>In GitHub, open the <em>commit</em> you deliver and copy your link. This way you can check the exact code even if you later modify it. In later deliveries, also includes the link to <em>commit</em> check that teachers have access to the repository.</p>
+<pre><code>Módulo y unidad: DWEC U02
+Repositorio: [enlace al proyecto en GitHub]
+Versión entregada: [enlace al commit]
+Versión anterior: primera entrega
+Requisitos trabajados: [qué has implementado o modificado en esta versión]
+Pendiente o con errores: [qué queda por resolver, si lo hay]
+
+index.html:
 [Contenido completo del HTML]
 
 estilos.css:
@@ -2553,9 +2655,8 @@ app.js:
 [Contenido completo del JavaScript]
 
 pruebas.txt:
-[Pruebas realizadas y resultados observados]</code></pre>
-<p>Replaces the text in square brackets with the actual content. When saving each block with its name in the same folder, the calculator must be able to be opened and used without changing the code.</p>
-<p><strong>Evaluation:</strong> JavaScript will be valued: operations accuracy, error control, functioning organization, event management and interface update. You must create the right HTML and CSS, but its design and visual finish will not be rated.</p>
+[Requisito | Datos o pasos | Resultado esperado | Resultado observado]</code></pre>
+<p><strong>Evaluation.</strong> DWEC will evaluate operations, error control, functioning organization, event management and updating the page with JavaScript. The interface will be evaluated in DIW.</p>
 <div class="delivery-tip"><a aria-label="Deliver project (opens delivery page in new tab)" class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div>
 </div>
 </section>
@@ -2585,20 +2686,33 @@ pruebas.txt:
 <tr><td>Tab, arrows and keyboard button activation</td><td>You can complete the questionnaire without mouse and without reloading.</td></tr>
 </tbody></table></div>
 <p>Register in <code>pruebas.txt</code> actions and results expected and observed. If you find a failure, correct it and repeat the test.</p>
+<h4>Questionnaire review checklist</h4>
+<p>As part of Project 2, schedule a check page to review the questionnaire before submitting it. Save your files in a subfolder <code>revision</code> within <code>cuestionario</code>, so as not to overwrite the questionnaire.</p>
+<p>Download the starting material and complete your <code>app.js</code>. The boxes represent tests to be done in the questionnaire: mark them manually only after checking the result; this page does not execute the tests automatically.</p>
+<div class="resource-links"><a class="resource-link-btn" download="index.html" href="alumnado/u02/proyectos/checklist/index.html">index.html</a> <a class="resource-link-btn" download="estilos.css" href="alumnado/u02/proyectos/checklist/estilos.css">styles.css</a> <a class="resource-link-btn" download="app.js" href="alumnado/u02/proyectos/checklist/app.js">app.js</a> <a class="resource-link-btn" download="LEEME.txt" href="alumnado/u02/proyectos/checklist/LEEME.txt">LEEME.txt</a></div>
+<ol>
+<li>Select the boxes with <code>querySelectorAll()</code> and cross them with <code>for...of</code> to register the same handler as <code>change</code>.</li>
+<li>In <code>actualizarResumen()</code>, counts the checked boxes and shows "X of Y completed checks", obtaining Y from the collection. It also shows the pending descriptions.</li>
+<li>If all are checked, it shows "Revised Questionnaire". The "Uncheck All" button restarts the boxes and updates the summary. It also updates the summary when loading.</li>
+</ol>
+<p><strong>Help:</strong> <code>casilla.checked</code> indicates if it is marked. <code>casilla.parentElement.textContent.trim()</code> gets the text from your label.</p>
+<p><strong>Checklist tests:</strong> add a sixth check to HTML: the total must be updated without changing JavaScript. Save status is not required when closing the page. Document these tests next to the quiz in <code>pruebas.txt</code>.</p>
 <h3 id="sec11_5">11.5. Delivery and review criteria</h3>
 <p>The project has <strong>a single delivery at the end</strong>. Keeps in a folder <code>cuestionario</code> the final version of <code>index.html</code>, <code>estilos.css</code>, <code>app.js</code> y <code>pruebas.txt</code>.</p>
 <ul><li><strong>Operation:</strong> correct questions, validation, score and restart.</li><li><strong>Organization:</strong> functions with clear responsibility, separate comparison of DOM and events registered once.</li><li><strong>Interaction:</strong> comprehensible messages, keyboard navigation and upgrade without reloads.</li><li><strong>Tests:</strong> normal cases, errors and documented restarts with observed results.</li></ul>
 <p>You do not need to expand the CSS. Use JavaScript without libraries and keep the interface provided if you prefer.</p>
-<div class="activity-card activity-callout" id="actividad-complementaria-10-5"><p><strong>2.57. Project 2: Final questionnaire delivery</strong></p><p>Delivers the complete project and <code>pruebas.txt</code>. Document a complete game and an attempt to send without selection, since the page opens. Explain briefly what each function does and repeat the tests only following your instructions.</p><p><strong>Check:</strong> another person can reproduce the actions and get the same outputs. The modification of CSS is optional and does not score in this practice.</p><p><strong>Delivery:</strong> includes project files and <code>pruebas.txt</code> with the expected and observed results. JavaScript behavior is evaluated; you don't need to expand the CSS.</p><div class="delivery-tip"><a aria-label="Deliver activity (opens the delivery page in a new tab)" class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div></section>
-<footer class="document-footer">
-<p>DAW / DWEC · © Ignacio García</p>
-<p><strong>Activity credits.</strong> JavaScript material.info, by Ilya Kantor and contributors to the Spanish translation:</p>
+<div class="activity-card activity-callout" id="actividad-complementaria-10-5"><p><strong>2.57. Project 2: Final questionnaire delivery</strong></p><p>Delivers complete project including subfolder <code>revision</code> with the checklist, and <code>pruebas.txt</code>. Document a complete game and an attempt to send without selection, since the page opens. Explain briefly what each function does and repeat the tests only following your instructions.</p><p><strong>Check:</strong> another person can reproduce the actions and get the same outputs. The modification of CSS is optional and does not score in this practice.</p><p><strong>Delivery:</strong> includes project files and <code>pruebas.txt</code> with the expected and observed results. JavaScript behavior is evaluated; you don't need to expand the CSS.</p><div class="delivery-tip"><a aria-label="Deliver activity (opens the delivery page in a new tab)" class="delivery-trigger" href="https://igarciafp.github.io/labs/entrega-practicas.html" rel="noopener noreferrer" target="_blank"><i aria-hidden="true" class="fa-solid fa-file-arrow-up"></i> <span>Delivery</span></a></div></div></section>
+<footer class="document-footer unit-credits">
+<h2>Appropriations for activities</h2>
+<p>The following exercises come from JavaScript.info, Ilya Kantor and the Spanish translation team.</p>
 <ul>
-<li><a href="https://es.javascript.info/task/find-elements" rel="noopener noreferrer" target="_blank">Find Items</a>: statement and starting HTML.</li>
-<li><a href="https://es.javascript.info/task/yellow-links" rel="noopener noreferrer" target="_blank">Make the orange external links</a>: statement and starting HTML; the example script has been removed.</li>
-<li><a href="https://es.javascript.info/task/calendar-table" rel="noopener noreferrer" target="_blank">Create a calendar</a>: adapted statement and resolution guide; starting HTML and added checks.</li>
+<li><a href="https://es.javascript.info/task/find-elements">Find Items</a>. The statement and the starting HTML have been used.</li>
+<li><a href="https://es.javascript.info/task/yellow-links">Make the orange external links</a>. The initial HTML has been adapted for students to write the script.</li>
+<li><a href="https://es.javascript.info/task/calendar-table">Create a calendar</a>The statement and guide have been adapted, and an initial HTML and test cases have been added.</li>
 </ul>
-<p><a href="https://github.com/javascript-tutorial/es.javascript.info/blob/master/LICENSE.md" rel="noopener noreferrer" target="_blank">License and attribution of JavaScript.info</a>.</p>
+<p><a href="https://github.com/javascript-tutorial/es.javascript.info/blob/master/LICENSE.md">License of JavaScript materials.info</a></p>
+<p class="unit-signature">© Ignacio García · 2.o DAW · Web Development in Client Environment</p>
+<nav><a href="#sec1">Back to Unit Start</a><a href="u03_es.html">Continue with Unit 3 →</a></nav>
 </footer>
 </main>
 </div>
