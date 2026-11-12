@@ -40,12 +40,14 @@
         </section>
         <div id="cuaderno" hidden inert>
         <section class="card">
-            <h2>Qué debe hacer el formulario</h2>
+            <h2>Actividad: Validación de email.</h2>
+            <p>El siguiente código genera un formulario de entrada de email. Tu misión consiste en comprobar que la dirección introducida es válida y que termina en <code>@g.educaand.es</code>.</p>
             <ol>
-                <li>Selecciona el formulario, el campo de correo y la salida del mensaje. Registra dos eventos en el mismo formulario.</li>
-                <li>Al recibir <code>submit</code>, usa <code>preventDefault()</code> para mantener la página abierta. Lee el campo y comprueba que contiene un correo válido cuyo dominio es exactamente <strong>g.educaand.es</strong>. Acepta el dominio también en mayúsculas.</li>
-                <li>Si se acepta, aplica al campo la clase <code>correcto</code> y muestra «Correo válido». Si está vacío, mal escrito o pertenece a otro dominio, aplica <code>error</code> y muestra «Revisa tu correo del centro». El campo debe tener una sola de esas clases.</li>
-                <li>Al recibir <code>input</code>, quita ambas clases y borra el mensaje. Este evento llega al formulario cuando se edita el campo. La siguiente comprobación se hará al pulsar «Aceptar» o Intro.</li>
+                <li>Comprueba el correo cuando el usuario pulse el botón «Aceptar» o la tecla Intro.</li>
+                <li>Aplica al campo la clase <code>correcto</code> si el correo es válido y pertenece al dominio del centro, o la clase <code>error</code> en cualquier otro caso.</li>
+                <li>Si el campo tiene la clase <code>correcto</code>, muestra el mensaje «Correo válido».</li>
+                <li>Si el campo tiene la clase <code>error</code>, muestra el mensaje «Revisa tu correo del centro».</li>
+                <li>El atributo <code>novalidate</code> desactiva la validación automática del navegador al enviar el formulario. Desde JavaScript, cancela el envío por defecto para que la página permanezca abierta y se pueda leer el mensaje.</li>
             </ol>
             <details>
                 <summary>index.html</summary>
@@ -74,7 +76,7 @@
                     <p id="estado-vista" role="status">Preparando el formulario…</p>
                 </div>
             </div>
-            <p class="note"><strong>Comprueba el resultado.</strong> Prueba <code>ana@g.educaand.es</code> con Intro. Cambia el dominio a <code>gmail.com</code> y observa qué ocurre mientras escribes. Pulsa «Aceptar» y comprueba el aviso. Repite con el campo vacío.</p>
+            <p class="note"><strong>Comprueba el resultado.</strong> Prueba <code>ana@g.educaand.es</code> con Intro. Después, cambia el dominio a <code>gmail.com</code> y pulsa «Aceptar». Comprueba que el aviso cambia y la página sigue abierta. Repite con el campo vacío.</p>
         </section>
         <section class="card">
             <h2>Entrega de la práctica</h2>
