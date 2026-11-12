@@ -125,6 +125,9 @@
         events: s.events.filter(e => e && stamp(e.at) && typeof e.text === 'string')
           .slice(-CONFIG.maxEvents).map(e => ({ at: e.at, text: e.text.slice(0, 300) })) };
     }
+    function faltaNombre(values) {
+      return adapter.config.requireFullName !== false && !values.fullname?.trim();
+    }
     function load() {
       try {
         lastRaw = localStorage.getItem(CONFIG.key);
@@ -133,7 +136,7 @@
             const saved=validate(JSON.parse(lastRaw));
             // Older labs did not collect a name or require the school domain.
             // Preserve every answer and completed report; request the new identity before resuming.
-            if (saved.phase === 'active' && (!saved.data.values.fullname?.trim()
+            if (saved.phase === 'active' && (faltaNombre(saved.data.values)
                 || !/^[^\s@]+@g\.educaand\.es$/i.test(saved.data.values.student||''))) {
               if(saved.data.started)saved.data.elapsed+=Math.max(0,Date.now()-saved.data.started);
               saved.data.started=null;saved.data.language='es';
@@ -413,7 +416,7 @@
       }
       // Older files use the language already stored inside state.data.
       next.data.language=next.data.language||adapter.snapshot().language||'es';
-      if(!next.attemptAudit.startedAt||!next.data.values.fullname?.trim()||!adapter.validEmail(next.data.values.student||''))throw Error('Invalid identity');
+      if(!next.attemptAudit.startedAt||faltaNombre(next.data.values)||!adapter.validEmail(next.data.values.student||''))throw Error('Invalid identity');
       const currentEmail=$('student').value.trim().toLowerCase();
       if(!adapter.validEmail(currentEmail))throw Object.assign(Error('Enter current email'),{code:'RECOVERY_EMAIL_REQUIRED'});
       if(currentEmail!==next.data.values.student.trim().toLowerCase())throw Object.assign(Error('Email mismatch'),{code:'RECOVERY_EMAIL_MISMATCH'});

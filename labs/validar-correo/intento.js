@@ -5,7 +5,6 @@ const claveEntrega = "entrega-texto-v1:" + CONFIG.id + ":" + CONFIG.version + ":
 
 export function protegerIntento(actualizarSesion) {
     const editor = porId("text");
-    const nombre = porId("fullname");
     const alumno = porId("student");
     const informe = porId("report");
     const estadoEntrega = porId("reportStatus");
@@ -19,16 +18,15 @@ export function protegerIntento(actualizarSesion) {
     let entrega = JSON.parse(localStorage.getItem(claveEntrega) || "null");
 
     function vacio() {
-        return {values: {fullname: "", student: "", text: ""}, report: "", started: null, elapsed: 0, language: "es"};
+        return {values: {student: "", text: ""}, report: "", started: null, elapsed: 0, language: "es"};
     }
 
     function leer() {
-        return {values: {fullname: nombre.value.trim(), student: alumno.value.trim().toLowerCase(), text: editor.value},
+        return {values: {student: alumno.value.trim().toLowerCase(), text: editor.value},
             report: informe.value, started: inicio, elapsed: transcurrido, language: "es"};
     }
 
     function restaurar(datos) {
-        nombre.value = datos.values.fullname;
         alumno.value = datos.values.student;
         editor.value = datos.values.text;
         informe.value = datos.report;
@@ -79,8 +77,9 @@ export function protegerIntento(actualizarSesion) {
             return "";
         }
         const valor = bloqueado || !codigo.trim() ? 0 : porcentaje;
+        const email = alumno.value.trim().toLowerCase();
         const datos = {exam: CONFIG.id, activityVersion: CONFIG.version, version: 3, language: "es",
-            name: nombre.value.trim(), email: alumno.value.trim().toLowerCase(), practiceName: actividad, group: "", module: "DWEC",
+            name: email, email, practiceName: actividad, group: "", module: "DWEC",
             notes: ("Motivo de cierre: " + (automatico ? "tercera incidencia" : "entrega del alumno") + "\n" + notas).slice(0, 2400),
             incidents: valor, verificationDetails: detalles, zeroFinalConfirmation: valor === 0, audit: auditoria,
             finishedAt: new Date(fin).toISOString(), seconds: Math.floor((transcurrido + (inicio ? Math.max(0, fin - inicio) : 0)) / 1000),
@@ -115,17 +114,17 @@ export function protegerIntento(actualizarSesion) {
     const correoValido = valor => /^[^\s@]+@g\.educaand\.es$/i.test(valor);
     intento = window.createPracticeGuard({
         config: {storage: {key: "dwec-correo-intento-v1", legacyKey: "dwec-correo-intento-anterior"},
-            resumeInBrowser: true, format: {save: "dwec-correo"}},
+            resumeInBrowser: true, requireFullName: false, format: {save: "dwec-correo"}},
         empty: vacio,
         sanitize(datos) {
-            if (typeof datos?.values?.text !== "string" || typeof datos.values.fullname !== "string"
+            if (typeof datos?.values?.text !== "string"
                     || typeof datos.values.student !== "string" || typeof datos.report !== "string") throw Error("Borrador dañado");
-            return {...vacio(), values: datos.values, report: datos.report,
+            return {...vacio(), values: {student: datos.values.student, text: datos.values.text}, report: datos.report,
                 elapsed: Number.isFinite(datos.elapsed) ? Math.max(0, datos.elapsed) : 0,
                 started: Number.isFinite(datos.started) ? datos.started : null};
         },
         snapshot: leer, restore: restaurar, validEmail: correoValido,
-        canStart: () => !entrega && nombre.value.trim() && alumno.validity.valid && correoValido(alumno.value.trim()) && LabDelivery.configured(destino),
+        canStart: () => !entrega && alumno.validity.valid && correoValido(alumno.value.trim()) && LabDelivery.configured(destino),
         startClock() { inicio ??= Date.now(); },
         stopClock(fin = Date.now()) { if (inicio !== null) transcurrido += Math.max(0, fin - inicio); inicio = null; },
         isAnswer: nodo => nodo === editor,
@@ -154,7 +153,7 @@ export function protegerIntento(actualizarSesion) {
         onReset() { porId("panel-resultado").hidden = true; },
         saveBeforeReset: () => false
     });
-    for (const campo of [nombre, alumno]) campo.addEventListener("input", intento.render);
+    alumno.addEventListener("input", intento.render);
     editor.addEventListener("input", intento.saveEdit);
     porId("reanudar").addEventListener("click", intento.recoverPractice);
     reintentar.addEventListener("click", () => cerrado ? intento.finalizeForced() : enviar());
