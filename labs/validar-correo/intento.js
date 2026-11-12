@@ -1,7 +1,9 @@
 const porId = id => document.getElementById(id);
 const actividad = "Lab: Validar un dato";
+// La actividad de edad tiene un guardado independiente del antiguo laboratorio de correo.
+const versionActividad = "edad-v1";
 const destino = {type: "apps-script", endpoint: CONFIG.endpoint};
-const claveEntrega = "entrega-texto-v1:" + CONFIG.id + ":" + CONFIG.version + ":" + actividad;
+const claveEntrega = "entrega-texto-v1:" + CONFIG.id + ":" + CONFIG.version + ":" + actividad + ":" + versionActividad;
 
 export function protegerIntento(actualizarSesion) {
     const editor = porId("text");
@@ -113,8 +115,8 @@ export function protegerIntento(actualizarSesion) {
 
     const correoValido = valor => /^[^\s@]+@g\.educaand\.es$/i.test(valor);
     intento = window.createPracticeGuard({
-        config: {storage: {key: "dwec-correo-intento-v1", legacyKey: "dwec-correo-intento-anterior"},
-            resumeInBrowser: true, requireFullName: false, format: {save: "dwec-correo"}},
+        config: {storage: {key: "dwec-validar-edad-intento-v1", legacyKey: "dwec-validar-edad-intento-anterior"},
+            resumeInBrowser: true, requireFullName: false, format: {save: "dwec-validar-edad"}},
         empty: vacio,
         sanitize(datos) {
             if (typeof datos?.values?.text !== "string"
