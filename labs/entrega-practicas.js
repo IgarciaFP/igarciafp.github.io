@@ -92,7 +92,10 @@ const delivery={type:'apps-script',endpoint:CONFIG.endpoint};
 const fixedPractice = $('practice-name').defaultValue;
 const baseKey = 'entrega-texto-v1:' + CONFIG.id + ':' + CONFIG.version;
 const emailKey = baseKey + ':email';
-const key = fixedPractice ? baseKey + ':' + fixedPractice : baseKey;
+const draftParam = new URLSearchParams(location.search).get('borrador') || '';
+const draftId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(draftParam) ? draftParam : '';
+// Cada transferencia conserva su envío y justificante sin sustituir otras entregas.
+const key = draftId ? baseKey + ':borrador:' + draftId : fixedPractice ? baseKey + ':' + fixedPractice : baseKey;
 let current=null,busy=false,storageOK=true;
 const urls={};
 const validEmail=value=>/^[^\s@]+@g\.educaand\.es$/i.test(value);
@@ -305,6 +308,17 @@ async function init(){
    if(current.receipt)await showReceipt();else{await backup();notice('Hay una entrega pendiente en este navegador. Pulsa «Reintentar entrega» para comprobar su recepción.');}
   }
  }catch{notice('No se pudo recuperar la copia guardada. Revisa los datos antes de enviar.');}
+ if(!current && draftId){
+  try{
+   const draft=JSON.parse(localStorage.getItem('laboratorio-entrega:'+draftId));
+   if(!draft||!validEmail(draft.email)||typeof draft.practiceName!=='string'||!draft.practiceName.trim()||draft.practiceName.length>100||typeof draft.text!=='string'||draft.text.length>10000)throw Error('INVALID_DRAFT');
+   if(fixedPractice && fixedPractice!==draft.practiceName)throw Error('WRONG_PRACTICE');
+   $('email').value=draft.email;
+   $('practice-name').value=fixedPractice||draft.practiceName;
+   $('text').value=draft.text;
+   notice('Datos cargados desde el laboratorio. Revisa el contenido y pulsa «Entregar práctica».');
+  }catch{notice('No se pudo recuperar el código del laboratorio. Vuelve al laboratorio para abrir de nuevo la entrega o utiliza la copia TXT.');}
+ }
  refresh();
 }
 void init().then(()=>{
