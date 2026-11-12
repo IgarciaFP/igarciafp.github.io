@@ -14,6 +14,7 @@ export function protegerIntento(actualizarSesion) {
     let intento;
     let urlCodigo;
     let faseActual = "ready";
+    let abrirAlFinalizar = false;
 
     function vacio() {
         return {values: {student: "", text: ""}, report: "", started: null, elapsed: 0, language: "es"};
@@ -38,16 +39,34 @@ export function protegerIntento(actualizarSesion) {
     function mostrarFinalizado() {
         prepararDescarga();
         porId("panel-resultado").hidden = false;
-        porId("reportStatus").textContent = "Código preparado. Descarga el TXT y pega su contenido en el formulario de entrega. Indica «Lab: Validar un dato» como nombre de la práctica. La entrega se completa y el justificante se obtiene en ese formulario.";
+        porId("reportStatus").textContent = "Código preparado. Abre el formulario de entrega con tu correo, el nombre de la práctica y el código ya rellenados. Confirma allí la entrega y guarda el justificante.";
         nuevo.hidden = false;
     }
+    function abrirFormulario() {
+        try {
+            let datos;
+            try { datos = JSON.parse(informe.value); } catch { datos = {}; }
+            const id = datos.draftId || crypto.randomUUID();
+            localStorage.setItem("laboratorio-entrega:" + id, JSON.stringify({
+                email: alumno.value.trim().toLowerCase(), practiceName: actividad, text: editor.value
+            }));
+            location.assign("../entrega-practicas.html?borrador=" + encodeURIComponent(id));
+        } catch {
+            porId("reportStatus").textContent = "No se pudo abrir el formulario con los datos. Descarga el TXT y utiliza el formulario de entrega.";
+        }
+    }
+    porId("abrir-formulario").addEventListener("click", evento => {
+        evento.preventDefault();
+        abrirFormulario();
+    });
     function prepararInforme(notas, final, fin, auditoria) {
         if (!editor.value.trim() && auditoria.finishReason !== "incident-limit") {
             porId("panel-resultado").hidden = false;
             porId("reportStatus").textContent = "Escribe tu JavaScript antes de finalizar.";
             return "";
         }
-        return JSON.stringify({activity: actividad, email: alumno.value.trim().toLowerCase(),
+        abrirAlFinalizar = auditoria.finishReason !== "incident-limit";
+        return JSON.stringify({draftId: crypto.randomUUID(), activity: actividad, email: alumno.value.trim().toLowerCase(),
             code: editor.value, finishedAt: new Date(fin).toISOString(), audit: auditoria,
             notes: notas, seconds: Math.floor((transcurrido + (inicio ? Math.max(0, fin - inicio) : 0)) / 1000)});
     }
@@ -94,12 +113,15 @@ export function protegerIntento(actualizarSesion) {
         },
         confirmText() {
             porId("guard-confirm-title").textContent = "¿Finalizar tu JavaScript?";
-            porId("guard-confirm-text").textContent = "El intento se cerrará. Después podrás descargar tu código y entregarlo a través del formulario de entrega de prácticas.";
-            porId("guard-confirm-ok").textContent = "Finalizar";
+            porId("guard-confirm-text").textContent = "El intento se cerrará y se abrirá el formulario de entrega con tu correo, el nombre de la práctica y el código ya rellenados.";
+            porId("guard-confirm-ok").textContent = "Abrir formulario";
         },
         makeReport: prepararInforme,
         setReport(texto) { informe.value = texto; },
-        downloadReport: mostrarFinalizado,
+        downloadReport() {
+            mostrarFinalizado();
+            if (abrirAlFinalizar) abrirFormulario();
+        },
         forcedError() {
             porId("panel-resultado").hidden = false;
             porId("reportStatus").textContent = "No se pudo preparar el código. Recarga para recuperar el intento guardado.";
