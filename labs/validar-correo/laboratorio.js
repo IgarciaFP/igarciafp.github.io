@@ -1,4 +1,4 @@
-import { protegerIntento } from "./intento.js?v=formulario-v3";
+import { protegerIntento } from "./intento.js?v=formulario-v4";
 
 const editor = document.querySelector("#text");
 const vista = document.querySelector("#vista");
