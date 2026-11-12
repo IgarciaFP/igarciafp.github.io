@@ -62,7 +62,7 @@ function refreshPendingParameters(){
  for(const [key,group]of Object.entries(variants.groups)){
    if(parameterLocks[key])continue;
    parameters[key]=variants.create(key,parameters[key]);changed++;
-   for(const id of group){const f=fields.find(f=>f.id===id);clearFeedback(f);checked[f.section]=false;$('status-'+f.section).textContent='';}
+   for(const id of group){const f=fields.find(f=>f.id===id);checked[f.section]=false;$('status-'+f.section).textContent='';}
  }
  randomized=true;applyParameters();progress();
  return changed;
@@ -200,9 +200,18 @@ function complete(s){return fields.filter(f=>f.section===s.id).every(f=>f.kind==
 function progress(){const n=sections.filter(s=>checked[s.id]&&complete(s)).length;$('progress').value=n;$('progressText').textContent=`${n}${tr('blocks')}`;}
 let reportRevision=0;
 function invalidate(){reportRevision++;if($('report').value){$('report').value='';$('download').disabled=true;$('reportStatus').textContent=tr('changed');}}
-function clearFeedback(f){const el=$(f.id);el.removeAttribute('aria-invalid');el.closest('.field').classList.remove('correct','wrong');$('feedback-'+f.id).textContent='';}
-function check(id,focus=false){let ok=0,bad=0,missing=0,open=0;const list=fields.filter(f=>f.section===id);for(const f of list){clearFeedback(f);const el=$(f.id),out=$('feedback-'+f.id);if(!hasAnswer(f)){out.textContent=tr('missing');missing++;if(f.kind!=='open')el.setAttribute('aria-invalid','true');}else if(f.kind==='open'){out.textContent=tr('review');open++;}else if(correct(f)){out.textContent=tr('correct');el.closest('.field').classList.add('correct');ok++;}else{out.textContent=f.kind==='groups'?tr('groups'):tr('wrong');el.setAttribute('aria-invalid','true');el.closest('.field').classList.add('wrong');bad++;}}
- checked[id]=true;$('status-'+id).textContent=`${ok} ${tr('hits')} · ${bad} ${tr('errors')} · ${missing} ${tr('pendingSteps')} · ${open} ${tr('explanations')}`;progress();if(focus&&missing+bad){const f=list.find(f=>!hasAnswer(f)||(f.kind!=='open'&&!correct(f)));$(f.id).focus();}}
+function check(id) {
+  let ok = 0, bad = 0, missing = 0, open = 0;
+  for (const field of fields.filter(field => field.section === id)) {
+    if (!hasAnswer(field)) missing++;
+    else if (field.kind === 'open') open++;
+    else if (correct(field)) ok++;
+    else bad++;
+  }
+  checked[id] = true;
+  $('status-' + id).textContent = `${ok} ${tr('hits')} · ${bad} ${tr('errors')} · ${missing} ${tr('pendingSteps')} · ${open} ${tr('explanations')}`;
+  progress();
+}
 
 async function encodeReport(text){
  const stream=new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'));
@@ -249,7 +258,6 @@ function restore(data) {
   fillCachedIdentity();
   checked={...data.checked};hints={...data.hints};elapsed=data.elapsed;started=data.started??null;
   setLanguage(data.language||null);
-  fields.forEach(clearFeedback);
   sections.forEach(s=>{$('status-'+s.id).textContent='';if(checked[s.id])check(s.id);});
   hintNodes.forEach(d=>d.open=false);
   $('report').value=data.report||'';$('download').disabled=true;$('reportStatus').textContent='';
@@ -457,12 +465,12 @@ $('back-language').addEventListener('click',()=>{languageSelected=false;setLangu
 
 for(const f of fields) $(f.id).addEventListener('input',()=>{
  if(!guard.canEdit())return;
- clearFeedback(f);checked[f.section]=false;$('status-'+f.section).textContent=tr('changed');
+ checked[f.section]=false;$('status-'+f.section).textContent=tr('changed');
  invalidate();progress();guard.saveEdit();
 });
 for(const id of ['group','reflection'])$(id).addEventListener('input',()=>{if(guard.canEdit()){invalidate();guard.saveEdit();}});
 document.querySelectorAll('[data-check]').forEach(b=>b.addEventListener('click',()=>{
- if(!guard.canEdit())return;invalidate();check(b.dataset.check,true);guard.saveEdit();
+ if(!guard.canEdit())return;invalidate();check(b.dataset.check);guard.saveEdit();
 }));
 hintNodes.forEach((d,i)=>d.addEventListener('toggle',()=>{
  if(guard?.canEdit()&&d.open&&!hints[i]){hints[i]=true;invalidate();guard.saveEdit();}
