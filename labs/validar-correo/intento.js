@@ -1,5 +1,5 @@
 const porId = id => document.getElementById(id);
-const actividad = "2.52. Validar el correo del centro";
+const actividad = "Lab: Validar un dato";
 const destino = {type: "apps-script", endpoint: CONFIG.endpoint};
 const claveEntrega = "entrega-texto-v1:" + CONFIG.id + ":" + CONFIG.version + ":" + actividad;
 
