@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta name="description" content="Todas las propiedades CSS de la UD02, básicas y de consulta, agrupadas por familia."/>
+<title>UD02 · Referencia de propiedades CSS · DIW</title>
+<link href="u01_es.css" rel="stylesheet"/>
+<style>
+.document-container { max-width: 75rem; margin: auto; }
+.document-container p { text-align: left; }
+.lead { font-size: 1.15rem; }
+.ref-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 1.5rem 0; }
+.ref-controls button { font: inherit; font-weight: 600; min-height: 2.75rem; padding: .4rem .9rem; border: 1px solid #80b39e; border-radius: .55rem; background: #fff; color: #171717; cursor: pointer; }
+.ref-controls button[aria-pressed="true"] { background: #dcf4e7; border-color: #2f7d5b; }
+.ref-controls input { font: inherit; min-height: 2.75rem; padding: .4rem .75rem; border: 1px solid #64748b; border-radius: .55rem; min-width: min(100%, 16rem); }
+:focus-visible { outline: .1875rem solid #d97706; outline-offset: .2rem; }
+.ref-family { margin-block: 2.5rem; }
+.table-wrap { overflow: auto; }
+table { width: 100%; border-collapse: collapse; }
+caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+th, td { padding: .6rem; border: 1px solid #cbd5e1; text-align: left; vertical-align: top; }
+thead th { background: #d8effb; color: #18485c; }
+code { font-size: .9em; }
+.prop-nivel { display: inline-block; margin-inline-start: .35rem; padding: 0 .4rem; border: 1px dashed #8a9199; border-radius: 999px; font-size: .75em; font-weight: 600; font-family: system-ui, sans-serif; }
+.prop-shorthand { display: none; }
+.ref-empty { font-style: italic; }
+[hidden] { display: none !important; }
+@media print { .ref-controls { display: none; } }
+</style>
+<link rel="stylesheet" href="u02_es_v2_light.css" media="screen">
+</head><body>
+<div class="document-wrapper"><main class="document-container" id="contenido">
+<header class="header-banner"><div class="header-top-row"><span class="module-tag">Diseño de Interfaces Web · 2º DAW</span></div>
+<h1>UD02. Referencia de propiedades</h1>
+<p class="lead">Todas las propiedades CSS de la unidad, agrupadas por familia. Las marcadas como «ampliada» son de consulta: no hacen falta para las actividades ni para los proyectos.</p></header>
+<p><a href="u02_es.html">← Volver a la unidad</a></p>
+<div class="ref-controls" role="group" aria-label="Filtrar propiedades">
+<button type="button" data-filter="todas" aria-pressed="true">Todas</button>
+<button type="button" data-filter="basica" aria-pressed="false">Solo básicas</button>
+<button type="button" data-filter="ampliada" aria-pressed="false">Solo de consulta</button>
+<label for="ref-search">Buscar</label> <input id="ref-search" type="search" placeholder="margin, sombra…" autocomplete="off">
+</div>
+<p class="ref-count" role="status"></p>
+<div id="ref-families"></div>
+</main></div>
+<script src="u02_propiedades.js"></script>
+<script>
+(() => {
+  const data = window.U02_PROPIEDADES;
+  const host = document.getElementById('ref-families');
+  // Un bloque por familia; u02_propiedades.js solo genera tablas al cargarse, así que aquí se montan a mano con sus mismos datos.
+  const names = p => Array.isArray(p.n) ? p.n : [p.n];
+  const code = x => '<code>' + x + '</code>';
+  for (const family of data.familias) {
+    const list = data.propiedades.filter(p => p.f === family.id)
+      .sort((a, b) => (a.nivel === b.nivel ? 0 : a.nivel === 'basica' ? -1 : 1));
+    if (!list.length) continue;
+    const section = document.createElement('section');
+    section.className = 'ref-family';
+    section.innerHTML = '<h2>' + family.titulo + '</h2><div class="table-wrap"><table><caption>' + family.titulo +
+      '</caption><thead><tr><th scope="col">Propiedad</th><th scope="col">Qué controla</th><th scope="col">Valores habituales</th><th scope="col">Valor inicial</th><th scope="col">¿Se hereda?</th><th scope="col">Ejemplo</th></tr></thead><tbody>' +
+      list.map(p => '<tr data-nivel="' + p.nivel + '"><th scope="row">' + names(p).map(code).join(', ') +
+        (p.nivel === 'ampliada' ? ' <span class="prop-nivel">ampliada</span>' : '') + '</th><td>' + p.c + '</td><td>' + p.v +
+        '</td><td>' + p.i + '</td><td>' + (p.h ? 'Sí' : 'No') + '</td><td>' + code(p.e) + '</td></tr>').join('') +
+      '</tbody></table></div>';
+    host.append(section);
+  }
+  const search = document.getElementById('ref-search');
+  const buttons = [...document.querySelectorAll('[data-filter]')];
+  let level = 'todas';
+  function update() {
+    const query = search.value.trim().toLowerCase();
+    let shown = 0;
+    for (const section of host.children) {
+      let any = false;
+      for (const row of section.querySelectorAll('tbody tr')) {
+        const ok = (level === 'todas' || row.dataset.nivel === level) && (!query || row.textContent.toLowerCase().includes(query));
+        row.hidden = !ok;
+        if (ok) { any = true; shown++; }
+      }
+      section.hidden = !any;
+    }
+    document.querySelector('.ref-count').textContent = shown + (shown === 1 ? ' fila' : ' filas') + ' a la vista.';
+  }
+  for (const button of buttons) button.addEventListener('click', () => {
+    level = button.dataset.filter;
+    for (const other of buttons) other.setAttribute('aria-pressed', String(other === button));
+    update();
+  });
+  search.addEventListener('input', update);
+  update();
+})();
+</script>
+</body></html>
