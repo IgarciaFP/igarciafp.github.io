@@ -880,6 +880,13 @@ p .destacado { font-style: italic; }    /* ¡con espacio! un .destacado DENTRO d
 nav a { color: #1e3a8a; }       /* Los dos enlaces. */
 nav &gt; a { font-weight: bold; } /* Solo Inicio. */</code></pre>
 <p class="example-note"><code>nav a</code> alcanza los dos enlaces, aunque Contacto esté dentro de un <code>div</code>. <code>nav &gt; a</code> solo pone en negrita Inicio, el único hijo directo de <code>nav</code>.</p>
+<aside class="didactic-note inline-card" data-display-inline aria-labelledby="definicion-var">
+<h4 id="definicion-var">Definición de <code>var()</code></h4>
+<p>Si todos los enlaces de un menú comparten un color, puedes darle un nombre con una <strong>propiedad personalizada</strong>, como <code>--color-enlace</code>. La función CSS <code>var()</code> recupera el valor de esa propiedad para usarlo en una declaración.</p>
+<pre data-example-title="Usar el color del menú en sus enlaces"><code>nav { --color-enlace: #1e3a8a; }
+nav a { color: var(--color-enlace, navy); }</code></pre>
+<p>Los enlaces heredan <code>--color-enlace</code> del menú, incluido el enlace que está dentro del <code>div</code>. Si cambias el color en <code>nav</code>, ambos enlaces cambian. Si eliminas esa declaración y la propiedad no está definida en ningún antepasado, se usa <code>navy</code>, el valor de reserva que aparece tras la coma.</p>
+</aside>
 <p class="key-note"><strong>Recuerda:</strong> los combinadores describen relaciones, pero no suman especificidad. Evita cadenas excesivamente largas que dependan de cada contenedor intermedio: un pequeño cambio en el HTML podría dejar la regla sin efecto.</p>
 <h3 id="selectores-atributo">2.3. Selectores de atributo</h3>
 <p>Los corchetes permiten seleccionar por la presencia de un atributo o por su valor. Son útiles para distinguir campos de formulario y tipos de enlace.</p>
