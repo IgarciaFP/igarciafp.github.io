@@ -257,7 +257,14 @@ function resetPreview(){
  if(ownScript(value('html')))previewNotice(tr('pendingRun'));
  else renderPreview(value('html'),value('css'),ranJs??'');
 }
+// Actualizar: vuelve a cargar el resultado tal como se mostró por última vez (reinicia su estado).
+// No ejecuta JavaScript nuevo, ni toca el editor, el guardado, el reloj o las incidencias.
+function refreshPreview(){
+ if(shown.html!==null)renderPreview(shown.html,shown.css,shown.js);
+ else if(!ownScript(value('html')))renderPreview(value('html'),value('css'),ranJs??'');
+}
 $('preview-run').addEventListener('click',runPreview);
+$('preview-refresh').addEventListener('click',refreshPreview);
 window.addEventListener('message',event=>{
  const m=event.data;
  if(!previewToken||event.source!==frame.contentWindow||!m||m.labPreview!==previewToken||typeof m.kind!=='string'||typeof m.text!=='string')return;
