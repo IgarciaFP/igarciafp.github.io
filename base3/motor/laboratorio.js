@@ -1,0 +1,606 @@
+(() => {
+'use strict';
+// Motor del taller de código: editor HTML/CSS/JS a la izquierda y resultado a la derecha.
+// Sin selección de idioma ni nombre: la identificación es solo el correo del centro.
+// Seguridad y entrega son los módulos comunes de /base/motor/.
+const {config,code}=window.Lab;
+const $=id=>document.getElementById(id);
+const LANGS=['html','css','js'];
+const NAMES={html:'HTML',css:'CSS',js:'JavaScript'};
+const language='es';
+const ids=[...LANGS,'student'];
+const blank={html:'',css:'',js:''};
+const start=config.editor.inicio==='codigo'?code:blank;
+const RECOVERY=config.storage.recovery;
+const IDENTITY_KEY=config.storage.key+'-identity';
+let emailTouched=false,guard=null,elapsed=0,started=null,phase='ready',delivering=false,lastDelivery=null,recoveryMode=false;
+
+const texts={
+ identification:'Identificación',email:'Correo del centro',retrySave:'Reintentar guardado',
+ elapsed:'Tiempo',cancel:'Cancelar',confirm:'Confirmar',start:'Empezar',backStart:'Volver al inicio',
+ ready:'Pendiente de comenzar',active:'En curso',blocked:'Código bloqueado · reloj en marcha',
+ paused:'Práctica guardada y pausada',closing:'Cierre automático: código conservado',
+ submitted:'Intento finalizado',reset:'Intento invalidado',review:'Copia recuperada: solo lectura',
+ saved:'Código guardado: ',saveReady:'Guardado local preparado.',
+ saveError:'Guardado bloqueado. Revisa el aviso superior.',
+ first:'Primer aviso',last:'Último aviso',resetTitle:'Intento reiniciado',resume:'Recuperar práctica guardada',
+ firstText:'Primer aviso. Tu código se conserva. La tercera incidencia cerrará el intento y generará una entrega con el contenido actual.',
+ lastText:'Segundo aviso. La próxima incidencia cerrará el intento y generará automáticamente una entrega con tu código actual.',
+ resetText:'Tercera incidencia. Volverás a identificarte.',
+ resumeText:'Recuperar añade una incidencia al mismo contador que las pérdidas de foco. La tercera incidencia cierra el intento conservando tu código.',
+ resumeAction:'Recuperar (+1 incidencia)',continue:'Continuar en pantalla completa',understood:'Volver al inicio',
+ confirmTitle:'¿Generar la entrega y finalizar?',
+ confirmBody:'El código quedará bloqueado. Se descargará un TXT de respaldo y se enviará la entrega. Espera la confirmación de recepción.',
+ changed:'Has cambiado el código: la entrega anterior ya no es válida.',
+ genericError:'No se pudo generar el informe. No se ha finalizado el intento; revisa los datos y vuelve a intentarlo.',
+ domain:`Solo se admite el dominio @${config.emailDomain}.`,
+ identityError:`Introduce un correo válido terminado exactamente en @${config.emailDomain}.`,
+ receipt:'Descargar comprobante TXT',
+ receiptRequested:'Descarga del comprobante solicitada. Si no aparece, pulsa «Descargar comprobante TXT».',
+ receiptError:'No se pudo iniciar la descarga. La entrega sigue guardada; vuelve a descargar el comprobante.',
+ compressionError:'Este navegador no permite comprimir la entrega. Actualízalo o consulta al profesor. El intento no se ha finalizado.',
+ forcedPending:'Se ha alcanzado el tercer aviso. Se está generando la entrega con tu código conservado.',
+ forcedError:'No se pudo generar la entrega automática. Tu código sigue guardado y bloqueado. Pulsa Reintentar entrega.',
+ forcedRetry:'Reintentar entrega',
+ savePractice:'Guardar y pausar',recoverPractice:'Recuperar práctica',toolbarFinish:'Entregar',toolbarReset:'Reiniciar',
+ saveWarning:'Se descargará un documento y se pausará la práctica. Al recuperarla se generará una incidencia de las 3 disponibles. Si es la tercera, se cerrará el intento. ¿Guardar y pausar?',
+ restartWarning:'Se descargará automáticamente una copia antes de borrar el intento y volver al comienzo. ¿Reiniciar?',
+ recoveryFullscreenError:'El navegador no ha permitido activar la pantalla completa. Revisa el permiso y vuelve a pulsar Recuperar práctica.',
+ fileSaved:'Archivo descargado. Consérvalo: Recuperar práctica lo leerá para continuar otro día.',
+ fileError:'No se pudo descargar el documento. La práctica sigue guardada aquí; vuelve a pulsar Guardar.',
+ recoveryEmailRequired:'Introduce primero tu correo en los datos de inicio para poder recuperar una práctica.',
+ recoveryEmailMismatch:'El correo actual no coincide con el de la práctica guardada. No se ha recuperado ni se ha añadido ninguna incidencia.',
+ fileInvalid:'No se pudo recuperar: selecciona un archivo de práctica o comprobante válido que no haya agotado las tres incidencias.',
+ deliveryTitle:'Entrega del laboratorio',copyOpen:'Enviar / reintentar entrega',
+ deliveryNote:'Conserva el TXT. La entrega solo está registrada cuando aparece la confirmación con su identificador y fecha. Si falla la conexión, reintenta sin cambiar el código.',
+ sending:'Enviando el código… Espera la confirmación.',
+ received:'Entrega recibida. Identificador:',receivedShort:'Entrega recibida',
+ deliveryFailed:'No se ha podido confirmar la recepción. Tu código sigue guardado. Pulsa «Enviar / reintentar entrega».',
+ notConfigured:'Esta práctica todavía no tiene activado el destino de entrega. El profesor debe configurarlo antes de comenzar.',
+ pendingDelivery:'Tienes una entrega pendiente de confirmar. Puedes volver a enviarla o descargar su TXT.',
+ previousReceived:'Ya has completado este laboratorio',viewReceipt:'Ver confirmación',recover:'Ver la última entrega',
+ pendingRun:'Hay cambios sin ejecutar: pulsa Ejecutar.',
+ navigation:'La vista previa no puede abrir otras páginas. Pulsa Ejecutar para volver a tu resultado.',
+ consoleEmpty:'Aquí aparecen los mensajes de console.log y los errores de tu código.',
+ chars:' caracteres',showCode:'Ver código del ejercicio',hideCode:'Ocultar código del ejercicio'
+};
+const tr=k=>texts[k]??k;
+
+// ---------------------------------------------------------------- Identidad
+function cachedIdentity(){
+ try{const value=JSON.parse(localStorage.getItem(IDENTITY_KEY));
+  if(value&&typeof value.student==='string')return {student:value.student.slice(0,254)};
+ }catch{}
+ return null;
+}
+function rememberIdentity(){
+ try{localStorage.setItem(IDENTITY_KEY,JSON.stringify({student:$('student').value}));}catch{}
+}
+function fillCachedIdentity(onlyEmpty=true){
+ const saved=cachedIdentity();if(!saved)return;
+ if(!onlyEmpty||!$('student').value)$('student').value=saved.student;
+}
+function validEmail(email){return /^[^\s@]+@[^\s@]+$/.test(email)&&email.split('@')[1].toLowerCase()===config.emailDomain.toLowerCase();}
+function validIdentity(){return $('student').validity.valid&&validEmail($('student').value.trim());}
+function canStart(){return window.LabDelivery.configured(config.delivery)&&validIdentity();}
+// El receptor y la hoja del profesor esperan un nombre: se usa la parte local del correo.
+function displayName(){return $('student').value.trim().toLowerCase().split('@')[0].slice(0,160);}
+
+// ---------------------------------------------------------------- Reloj
+function timeSpent(at=Date.now()){return elapsed+(started===null?0:Math.max(0,at-started));}
+function clock(){const sec=Math.floor(timeSpent()/1000);$('clock').textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');}
+function startClock(){if(started===null)started=Date.now();clock();}
+function stopClock(at=Date.now()){elapsed=timeSpent(at);started=null;clock();}
+
+// ---------------------------------------------------------------- Código del ejercicio (desplegable)
+const codeTabs=[...document.querySelectorAll('[data-code]')];
+function showCode(lang){
+ for(const tab of codeTabs)tab.setAttribute('aria-selected',String(tab.dataset.code===lang));
+ $('code-text').textContent=code[lang];
+ $('code-view').setAttribute('aria-label','Código '+NAMES[lang]+' del ejercicio');
+ $('code-view').scrollTop=0;
+}
+const codeAvailable=LANGS.filter(lang=>code[lang].trim());
+for(const tab of codeTabs){
+ tab.hidden=!codeAvailable.includes(tab.dataset.code);
+ tab.addEventListener('click',()=>showCode(tab.dataset.code));
+}
+$('code-toggle').hidden=!codeAvailable.length;
+if(codeAvailable.length)showCode(codeAvailable[0]);
+$('code-toggle').addEventListener('click',()=>{
+ const open=$('code-panel').hidden;
+ $('code-panel').hidden=!open;
+ $('code-toggle').setAttribute('aria-expanded',String(open));
+ $('code-toggle').textContent=tr(open?'hideCode':'showCode');
+});
+
+// ---------------------------------------------------------------- Editor
+const editorTabs=[...document.querySelectorAll('[data-editor]')];
+let currentEditor='html';
+function countChars(){const el=$(currentEditor);$('editor-count').textContent=NAMES[currentEditor]+' · '+el.value.length+' / '+el.maxLength+tr('chars');}
+function showEditor(lang,focus=false){
+ currentEditor=lang;
+ for(const tab of editorTabs)tab.setAttribute('aria-selected',String(tab.dataset.editor===lang));
+ for(const id of LANGS)$(id).hidden=id!==lang;
+ countChars();
+ if(focus&&!$('answer-fields').disabled)$(lang).focus();
+}
+for(const tab of editorTabs)tab.addEventListener('click',()=>showEditor(tab.dataset.editor,true));
+let reportRevision=0;
+function invalidate(){reportRevision++;if($('report').value){$('report').value='';$('download').disabled=true;$('reportStatus').textContent=tr('changed');}}
+function edited(id){
+ if(!guard.canEdit())return;
+ invalidate();guard.saveEdit();countChars();
+ if(id==='js')previewStatus();else schedulePreview();
+}
+function insertText(el,text){
+ const room=el.maxLength-(el.value.length-(el.selectionEnd-el.selectionStart));
+ if(text.length>room)return;
+ el.setRangeText(text,el.selectionStart,el.selectionEnd,'end');
+ edited(el.id);
+}
+for(const id of LANGS){
+ $(id).addEventListener('input',()=>edited(id));
+ // Tabulador y sangría automática: escribir código sin poder pegar debe ser cómodo.
+ $(id).addEventListener('keydown',e=>{
+  if(e.isComposing||e.ctrlKey||e.altKey||e.metaKey||!guard?.canEdit())return;
+  const el=e.currentTarget;
+  if(e.key==='Tab'&&!e.shiftKey){e.preventDefault();insertText(el,'  ');}
+  else if(e.key==='Enter'&&!e.shiftKey){
+   const before=el.value.slice(0,el.selectionStart);
+   const indent=/^[ \t]*/.exec(before.slice(before.lastIndexOf('\n')+1))[0];
+   e.preventDefault();insertText(el,'\n'+indent);
+  }
+ });
+}
+
+// ---------------------------------------------------------------- Resultado (vista previa aislada)
+// El iframe no comparte origen con la página (sandbox sin allow-same-origin): el código del
+// alumno no puede leer las respuestas, el guardado ni la entrega. La política de contenido
+// impide peticiones de red, marcos anidados y envío de formularios.
+const frame=$('preview');
+const CSP=config.preview?.csp||"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: https:; media-src data: https:; font-src data: https:; form-action 'none'; base-uri 'none'";
+const attr=text=>text.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
+// Se ejecuta DENTRO de la vista previa, antes que el código del alumno.
+function bridge(token,jsLine){
+ var parent=window.parent,sent=0;
+ function format(value){
+  if(typeof value==='string')return value;
+  if(value instanceof Error)return value.name+': '+value.message;
+  try{var json=JSON.stringify(value);return json===undefined?String(value):json;}catch(error){return String(value);}
+ }
+ function send(kind,values){
+  if(sent>300)return;
+  var text=sent++===300?'… demasiados mensajes: se omite el resto.':Array.prototype.map.call(values,format).join(' ').slice(0,2000);
+  try{parent.postMessage({labPreview:token,kind:kind,text:text},'*');}catch(error){}
+ }
+ ['log','info','warn','error','debug'].forEach(function(kind){
+  var original=console[kind];
+  console[kind]=function(){send(kind,arguments);try{original.apply(console,arguments);}catch(error){}};
+ });
+ window.addEventListener('error',function(event){
+  var line=event.lineno>=jsLine?' (JavaScript, línea '+(event.lineno-jsLine+1)+')':'';
+  send('error',[(event.message||'Error')+line]);
+ });
+ window.addEventListener('unhandledrejection',function(event){send('error',['Promesa rechazada: '+format(event.reason)]);});
+ // Los diálogos nativos sacarían de la pantalla completa: se muestran en la consola.
+ window.alert=function(message){send('alert',['alert: '+format(message===undefined?'':message)]);};
+ window.confirm=function(message){send('alert',['confirm: '+format(message===undefined?'':message)+' → false (no disponible en la vista previa)']);return false;};
+ window.prompt=function(message){send('alert',['prompt: '+format(message===undefined?'':message)+' → null (no disponible en la vista previa)']);return null;};
+ function stop(event){event.preventDefault();event.stopImmediatePropagation();}
+ ['contextmenu','copy','cut','paste','dragstart','drop'].forEach(function(type){document.addEventListener(type,stop,true);});
+ ['keydown','keypress','keyup'].forEach(function(type){document.addEventListener(type,function(event){
+  var key=String(event.key||'').toLowerCase();
+  if(event.ctrlKey||(event.metaKey&&['c','x','v'].indexOf(key)>=0)||/^f([1-9]|1\d|2[0-4])$/.test(key))stop(event);
+ },true);});
+ document.addEventListener('click',function(event){
+  var link=event.target&&event.target.closest&&event.target.closest('a[href],area[href]');
+  var href=link&&(link.getAttribute('href')||'');
+  if(link&&href.charAt(0)!=='#'&&href.toLowerCase().indexOf('javascript:')!==0){
+   event.preventDefault();send('info',['Enlace desactivado en la vista previa: '+href]);
+  }
+ },true);
+ // Responde a la comprobación de la página: demuestra que este documento sigue en el marco.
+ window.addEventListener('message',function(event){
+  if(event.source===parent&&event.data&&typeof event.data.labPing==='number')
+   try{parent.postMessage({labPreview:token,kind:'pong',text:String(event.data.labPing)},'*');}catch(error){}
+ });
+}
+const lines=text=>text.split('\n').length-1;
+function previewDocument(html,css,js,token){
+ const head='<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="'+attr(CSP)+'"><script>('+bridge+')('+JSON.stringify(token)+',';
+ const body=')<\/script><style>'+css.replace(/<\/style/gi,'<\\/style')+'</style>'+html+'<script>';
+ return head+(lines(head)+lines(body)+1)+body+js.replace(/<\/script/gi,'<\\/script')+'<\/script>';
+}
+let previewToken='',pingId=0,pongId=0,noticeLoads=0,previewTimer=null,ranJs=null,shown={html:null,css:null,js:null};
+const value=id=>$(id).value;
+// El HTML del alumno con <script> propio se trata como JavaScript: solo se ejecuta al pulsar Ejecutar.
+const ownScript=html=>/<script/i.test(html)&&html!==start.html;
+function clearConsole(){$('preview-console').replaceChildren();$('console-count').textContent='';}
+function consoleLine(kind,text){
+ const list=$('preview-console'),item=document.createElement('li');
+ item.className='consola-'+(['warn','error','alert'].includes(kind)?kind:'log');
+ item.textContent=text;list.append(item);
+ while(list.children.length>200)list.firstElementChild.remove();
+ const errors=list.querySelectorAll('.consola-error').length;
+ $('console-count').textContent=errors?'· '+errors+(errors===1?' error':' errores'):'';
+ list.scrollTop=list.scrollHeight;
+}
+function previewStatus(){
+ const pending=value('js')!==(ranJs??'')||shown.html!==value('html')||shown.css!==value('css');
+ $('preview-status').textContent=pending?tr('pendingRun'):'';
+ $('preview-run').classList.toggle('pendiente',pending);
+}
+function renderPreview(html,css,js){
+ clearTimeout(previewTimer);previewTimer=null;clearConsole();
+ previewToken=Array.from(crypto.getRandomValues(new Uint8Array(12)),x=>x.toString(16).padStart(2,'0')).join('');
+ noticeLoads=0;
+ frame.srcdoc=previewDocument(html,css,js,previewToken);
+ shown={html,css,js};previewStatus();
+}
+function previewNotice(text){
+ clearTimeout(previewTimer);previewTimer=null;clearConsole();
+ previewToken='';noticeLoads=1;
+ frame.srcdoc='<!doctype html><meta charset="utf-8"><body style="font:15px/1.6 system-ui,sans-serif;color:#56657b;padding:24px;margin:0">'+attr(text)+'</body>';
+ shown={html:null,css:null,js:null};previewStatus();
+}
+// Actualización automática: HTML y CSS al escribir, con el último JavaScript ejecutado.
+function autoPreview(){
+ if(ownScript(value('html'))){previewStatus();return;}
+ renderPreview(value('html'),value('css'),ranJs??'');
+}
+function schedulePreview(){clearTimeout(previewTimer);previewTimer=setTimeout(autoPreview,350);previewStatus();}
+function runPreview(){ranJs=value('js');renderPreview(value('html'),value('css'),ranJs);}
+// Al cargar o recuperar un intento solo se ejecuta sin pedirlo el JavaScript del ejercicio.
+function resetPreview(){
+ ranJs=value('js')===start.js?value('js'):null;
+ if(ownScript(value('html')))previewNotice(tr('pendingRun'));
+ else renderPreview(value('html'),value('css'),ranJs??'');
+}
+$('preview-run').addEventListener('click',runPreview);
+window.addEventListener('message',event=>{
+ const m=event.data;
+ if(!previewToken||event.source!==frame.contentWindow||!m||m.labPreview!==previewToken||typeof m.kind!=='string'||typeof m.text!=='string')return;
+ if(m.kind==='pong'){pongId=Math.max(pongId,Number(m.text)||0);return;}
+ consoleLine(m.kind,m.text.slice(0,2000));
+});
+// Tras cada carga del marco se pregunta al documento si sigue siendo el generado aquí.
+// Si no responde, el alumno ha navegado dentro del marco y se sustituye por un aviso.
+function verifyFrame(tries){
+ const token=previewToken,id=++pingId;
+ try{frame.contentWindow.postMessage({labPing:id},'*');}catch{}
+ setTimeout(()=>{
+  if(token!==previewToken||pongId>=id)return;
+  if(tries>1)verifyFrame(tries-1);else previewNotice(tr('navigation'));
+ },500);
+}
+frame.addEventListener('load',()=>{
+ if(noticeLoads>0){noticeLoads--;return;}
+ verifyFrame(2);
+});
+
+// ---------------------------------------------------------------- Estado del intento
+async function encodeReport(text){
+ const stream=new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'));
+ const bytes=new Uint8Array(await new Response(stream).arrayBuffer());
+ let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);
+ return config.format.report+btoa(binary).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'');
+}
+function empty(){return {values:{...start,student:''},elapsed:0,started:null,report:'',language,reportEncoding:'gzip-base64url'};}
+function sanitize(data){
+ if(!data||typeof data!=='object'||!data.values||typeof data.values!=='object'||Array.isArray(data.values))throw new Error('Borrador inválido');
+ const out=empty();
+ for(const id of ids){
+  const v=data.values[id];
+  if(v!==undefined&&typeof v!=='string')throw new Error('Campo inválido: '+id);
+  out.values[id]=(v||'').slice(0,$(id).maxLength);
+ }
+ out.elapsed=Number.isFinite(data.elapsed)&&data.elapsed>=0?Math.min(data.elapsed,31536000000):0;
+ out.started=Number.isFinite(data.started)&&data.started>0&&data.started<=Date.now()?data.started:null;
+ const report=typeof data.report==='string'?data.report:'';
+ if(report.length>2000000)throw new Error('Informe demasiado largo');
+ if(report&&data.reportEncoding!=='gzip-base64url')throw new Error('Formato de informe no válido');
+ if(data.language!=null&&data.language!==language)throw Error('Invalid language');
+ out.report=report;
+ return out;
+}
+function snapshot(){
+ return {values:Object.fromEntries(ids.map(id=>[id,$(id).value])),elapsed,started,language,report:$('report').value,reportEncoding:'gzip-base64url'};
+}
+function restore(data){
+ emailTouched=false;
+ for(const id of ids)$(id).value=data.values[id]||'';
+ fillCachedIdentity();
+ elapsed=data.elapsed;started=data.started??null;
+ $('report').value=data.report||'';$('download').disabled=true;$('reportStatus').textContent='';
+ reportRevision++;clock();countChars();resetPreview();
+}
+function setEnabled(enabled){$('answer-fields').disabled=!enabled;}
+function setReport(report){$('report').value=report;}
+
+// ---------------------------------------------------------------- Vista según el estado
+const syncToolbarHeight=()=>document.documentElement.style.setProperty('--toolbar-height',Math.ceil($('practice-toolbar').getBoundingClientRect().height)+'px');
+function syncToolbar(){
+ $('practice-toolbar').hidden=document.fullscreenElement!==document.documentElement||!['active','paused','closing','submitted'].includes(phase);
+ syncToolbarHeight();
+}
+let recoverySelecting=false,recoveryReading=false;
+function afterRender(state,ctx){
+ phase=state.phase;syncToolbar();
+ const paused=phase==='paused',needsRecovery=paused||ctx.restoring;
+ const active=phase==='active',submitted=phase==='submitted'||phase==='closing';
+ const panelHidden=submitted||(active&&!ctx.restoring&&!ctx.problem&&!$('guard-action-status').textContent);
+ $('guard-panel').hidden=panelHidden;
+ $('setup-stage').hidden=panelHidden||recoveryMode;
+ $('lab-title').hidden=active;
+ document.querySelector('.setup-only').hidden=(active&&!ctx.restoring)||phase==='reset';
+ $('guard-start-box').hidden=active&&!ctx.restoring;
+ $('active-status').hidden=true;
+ $('event-details').hidden=false;
+ $('cuaderno').hidden=!active||needsRecovery;$('cuaderno').inert=!active||needsRecovery;
+ $('delivery-stage').hidden=!submitted&&!recoveryMode;
+ $('delivery-back').hidden=!recoveryMode||submitted;
+ if(phase==='closing'){
+  if(!$('delivery-status').textContent)$('delivery-status').textContent=tr('forcedPending');
+  $('delivery-retry').textContent=tr('forcedRetry');
+  $('delivery-retry').disabled=!!ctx.forcedBusy;
+ }else if(phase==='submitted'){$('delivery-retry').textContent=tr('copyOpen');$('delivery-retry').disabled=delivering;}
+ $('receipt-download').disabled=phase==='closing';
+ if(phase==='submitted'&&lastDelivery?.code===$('report').value&&lastDelivery.receipt)showDeliveryReceipt(lastDelivery);
+ $('download').hidden=true;
+ $('student').disabled=false;
+ $('guard-start').textContent=tr('start');
+ $('delivery-config-note').hidden=window.LabDelivery.configured(config.delivery);
+ $('practice-recover').disabled=!active||ctx.restoring||!validIdentity()||!!ctx.problem||ctx.busy||!ctx.supported||recoverySelecting||recoveryReading;
+ $('guard-state').textContent=tr(active?($('answer-fields').disabled?'blocked':'active'):phase);
+ $('guard-count').textContent='Incidencias: '+state.count+'/3';
+ $('guard-conditions').textContent='Pantalla completa: '+(document.fullscreenElement?'✓':'—')+' · Foco: '+(document.hasFocus()?'✓':'—')+' · Visible: '+(document.visibilityState==='visible'?'✓':'—');
+ $('saveStatus').textContent=ctx.problem?tr('saveError'):state.savedAt?tr('saved')+new Date(state.savedAt).toLocaleTimeString('es-ES'):tr('saveReady');
+ $('identity-error').textContent=emailTouched&&$('student').value.trim()&&!validIdentity()?tr('identityError'):'';
+ if(state.pending){
+  const k=state.pending;
+  $('guard-warning-title').textContent=tr(k==='reset'?'resetTitle':k);
+  $('guard-warning-text').textContent=tr(k+'Text');
+  $('guard-warning-count').textContent=$('guard-count').textContent;
+  $('guard-continue').textContent=tr(ctx.restoring?'resumeAction':active?'continue':'understood');
+ }
+ // Última entrega: accesible desde la pantalla de identificación.
+ $('recovery').hidden=recoveryMode||!lastDelivery||phase!=='ready';
+ $('recovery-message').textContent=tr(lastDelivery?.receipt?'previousReceived':'pendingDelivery');
+ $('recover-delivery').textContent=tr(lastDelivery?.receipt?'viewReceipt':'copyOpen');
+ $('practice-save').disabled=(!active&&!paused)||ctx.restoring||!!ctx.problem||ctx.busy||(active&&$('answer-fields').disabled);
+ $('practice-finish').disabled=!guard?.canEdit();
+ $('practice-reset').disabled=!!ctx.problem||ctx.busy||phase==='closing';
+ $('toolbar-count').textContent='Incidencias: '+state.count+'/3';
+}
+function confirmText(kind){
+ if(kind==='save'){$('guard-confirm-title').textContent=tr('savePractice');$('guard-confirm-text').textContent=tr('saveWarning');}
+ if(kind==='erase'){$('guard-confirm-title').textContent=tr('toolbarReset');$('guard-confirm-text').textContent=tr('restartWarning');}
+ if(kind==='finish'){$('guard-confirm-title').textContent=tr('confirmTitle');$('guard-confirm-text').textContent=tr('confirmBody');}
+}
+
+// ---------------------------------------------------------------- Informe y entrega
+// Mismo formato de informe (versión 3) que el resto de laboratorios: tres respuestas
+// abiertas (html, css, js) pendientes de revisión del profesor.
+async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
+ if(!validIdentity()){$('reportStatus').textContent=tr('identityError');return null;}
+ if(typeof CompressionStream!=='function'){$('reportStatus').textContent=tr('compressionError');return null;}
+ const data={exam:config.id,activityVersion:config.version,version:3,language,name:displayName(),email:$('student').value.trim().toLowerCase(),finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:[...LANGS],answers:LANGS.map(id=>({question:id,answer:$(id).value,status:$(id).value.trim()?'teacher-review':'pending'})),parameters:{},parameterLocks:{},group:'',checked:{},hints:{},notes:'',...context,audit:metadata,url:location.href};
+ const body=JSON.stringify(data);
+ const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(body))),b=>b.toString(16).padStart(2,'0')).join('');
+ return encodeReport(body+'\nCódigo de comprobación: '+config.format.checksum+hash);
+}
+function persistDelivery(item){
+ lastDelivery=item;
+ try{localStorage.setItem(RECOVERY,JSON.stringify(item));}catch{/* El TXT sigue disponible. */}
+}
+function rememberDelivery(report){
+ if(lastDelivery?.code===report&&lastDelivery.practice)return lastDelivery;
+ const item={code:report,practice:guard.exportPractice(),name:displayName(),language};
+ persistDelivery(item);
+ return item;
+}
+async function decodePracticeDocument(text){
+ text=text.trim();
+ if(text.startsWith('{'))return text;
+ if(!text.startsWith(config.format.report)||!/^[A-Za-z0-9_-]+$/.test(text.slice(config.format.report.length)))throw Error('Invalid encoded document');
+ const encoded=text.slice(config.format.report.length).replaceAll('-','+').replaceAll('_','/');
+ const binary=atob(encoded+'='.repeat((4-encoded.length%4)%4));
+ const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));
+ const reader=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip')).getReader();
+ const chunks=[];let length=0;
+ try{
+  for(;;){const {value,done}=await reader.read();if(done)break;
+   length+=value.length;if(length>3000000){await reader.cancel();throw Error('Document too large');}
+   chunks.push(value);
+  }
+ }finally{reader.releaseLock();}
+ const result=new Uint8Array(length);let offset=0;
+ for(const chunk of chunks){result.set(chunk,offset);offset+=chunk.length;}
+ return new TextDecoder('utf-8',{fatal:true}).decode(result);
+}
+async function deliveryEnvelope(item){
+ const decoded=await decodePracticeDocument(item.code);
+ const marker='\nCódigo de comprobación: '+config.format.checksum;
+ const offset=decoded.lastIndexOf(marker);
+ if(offset<0)throw Error('INVALID');
+ const payload=decoded.slice(0,offset),data=JSON.parse(payload);
+ const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(payload))),b=>b.toString(16).padStart(2,'0')).join('');
+ if(hash!==decoded.slice(offset+marker.length)||data.exam!==config.id||data.activityVersion!==config.version)throw Error('INVALID');
+ return {protocol:1,submissionId:hash,practiceId:config.id,practiceVersion:config.version,payload};
+}
+function showDeliveryReceipt(item){
+ $('delivery-status').textContent=tr('received')+' '+item.receipt.submissionId+' · '+new Date(item.receipt.receivedAt).toLocaleString('es-ES');
+ $('delivery-retry').textContent=tr('receivedShort');$('delivery-retry').disabled=true;
+}
+async function deliver(item){
+ if(delivering)return;
+ if(item.receipt){showDeliveryReceipt(item);return;}
+ delivering=true;$('delivery-retry').disabled=true;$('delivery-status').textContent=tr('sending');
+ persistDelivery(item);
+ try{
+  const envelope=await deliveryEnvelope(item);
+  item.receipt=await window.LabDelivery.send(config.delivery,envelope);
+  persistDelivery(item);showDeliveryReceipt(item);
+ }catch(error){
+  $('delivery-status').textContent=tr(error.message==='NOT_CONFIGURED'?'notConfigured':'deliveryFailed');
+  $('delivery-retry').textContent=tr('copyOpen');$('delivery-retry').disabled=false;
+ }finally{delivering=false;}
+}
+const requestedReceipts=new Set();
+async function downloadReceipt(item){
+ if(!item?.code)return false;
+ let url;
+ try{
+  const documentCode=item.practice?await encodeReport(item.practice):item.code;
+  url=URL.createObjectURL(new Blob([documentCode],{type:'text/plain;charset=utf-8'}));
+  const link=document.createElement('a');
+  link.href=url;link.download='comprobante-'+config.filePrefix+'-'+item.code.slice(-16).replace(/[^a-zA-Z0-9_-]/g,'')+'.txt';
+  document.body.append(link);link.click();link.remove();
+  requestedReceipts.add(item.code);
+  $('receipt-status').textContent=tr('receiptRequested');
+  return true;
+ }catch{$('receipt-status').textContent=tr('receiptError');return false;}
+ finally{if(url)setTimeout(()=>URL.revokeObjectURL(url),60000);}
+}
+async function downloadReport(){
+ const item=rememberDelivery($('report').value);
+ if(!requestedReceipts.has(item.code))await downloadReceipt(item);
+ const sending=deliver(item);
+ guard.render(); // Muestra el estado de la entrega mientras se espera la confirmación.
+ return sending;
+}
+function onReset(){
+ emailTouched=false;recoveryMode=false;$('practice-file-status').hidden=true;
+ $('delivery-retry').textContent=tr('copyOpen');$('delivery-status').textContent='';$('receipt-status').textContent='';
+ showEditor('html');window.scrollTo(0,0);
+}
+
+// ---------------------------------------------------------------- Guardar y recuperar en archivo
+function fileStatus(key){$('practice-file-status').hidden=false;$('practice-file-status').textContent=tr(key);}
+async function savePracticeDocument(){
+ let url;
+ try{
+  const documentCode=await encodeReport(guard.exportPractice());
+  url=URL.createObjectURL(new Blob([documentCode],{type:'text/plain;charset=utf-8'}));
+  const link=document.createElement('a');link.href=url;link.download='practica-'+config.filePrefix+'-'+Date.now()+'.txt';
+  document.body.append(link);link.click();link.remove();
+  fileStatus('fileSaved');return true;
+ }catch{fileStatus('fileError');return false;}
+ finally{if(url)setTimeout(()=>URL.revokeObjectURL(url),60000);}
+}
+function recoveryEmailReady(){
+ if(validEmail($('student').value.trim()))return true;
+ fileStatus('recoveryEmailRequired');return false;
+}
+async function waitForRecoveryFocus(){
+ // El selector nativo puede emitir change antes de que la ventana recupere el foco.
+ for(let tries=0;tries<40;tries++){
+  if(document.fullscreenElement!==document.documentElement)throw Object.assign(Error('Fullscreen required'),{code:'RECOVERY_FULLSCREEN'});
+  if(document.visibilityState==='visible'&&document.hasFocus())return;
+  await new Promise(resolve=>setTimeout(resolve,50));
+ }
+ throw Object.assign(Error('Focus not restored'),{code:'RECOVERY_FULLSCREEN'});
+}
+async function restorePickerFullscreen(){
+ const root=document.documentElement;
+ if(document.fullscreenElement!==root){try{await root.requestFullscreen();}catch{throw Object.assign(Error('Fullscreen denied'),{code:'RECOVERY_FULLSCREEN'});}}
+ if(document.fullscreenElement!==root)throw Object.assign(Error('Fullscreen required'),{code:'RECOVERY_FULLSCREEN'});
+}
+async function readRecoveryFile(file){
+ if(recoveryReading)return;
+ recoverySelecting=false;
+ if(!file||!recoveryEmailReady()){guard.endFileRecovery();guard.render();return;}
+ recoveryReading=true;guard.render();
+ try{
+  await restorePickerFullscreen();
+  if(file.size>3000000)throw Error('Too large');
+  const text=await decodePracticeDocument(await file.text());
+  await waitForRecoveryFocus();
+  // Validar e importar; después se reanuda. Solo el controlador suma la incidencia.
+  guard.importPractice(text);
+  guard.endFileRecovery();
+  $('practice-file-status').hidden=true;
+  if(!await guard.recoverPractice())throw Object.assign(Error('Recovery did not start'),{code:'RECOVERY_FULLSCREEN'});
+ }catch(error){
+  fileStatus(error.code==='RECOVERY_FULLSCREEN'?'recoveryFullscreenError':error.code==='RECOVERY_EMAIL_MISMATCH'?'recoveryEmailMismatch':error.code==='RECOVERY_EMAIL_REQUIRED'?'recoveryEmailRequired':'fileInvalid');
+ }finally{recoveryReading=false;guard.endFileRecovery();guard.render();}
+}
+$('practice-save').addEventListener('click',()=>guard.ask('save'));
+$('practice-recover').addEventListener('click',async()=>{
+ if(recoverySelecting||recoveryReading||!recoveryEmailReady()||!guard.beginFileRecovery())return;
+ recoverySelecting=true;$('practice-file-status').hidden=true;guard.render();
+ try{
+  if(document.fullscreenElement!==document.documentElement)await restorePickerFullscreen();
+  if(typeof window.showOpenFilePicker==='function'){
+   const [handle]=await window.showOpenFilePicker({multiple:false,types:[{description:config.title,accept:{'text/plain':['.txt'],'application/json':['.json']}}]});
+   // El selector renueva la activación; se recupera la pantalla completa antes de leer.
+   await restorePickerFullscreen();
+   await readRecoveryFile(await handle.getFile());
+  }else{
+   $('practice-file').value='';$('practice-file').click();
+  }
+ }catch(error){
+  try{await restorePickerFullscreen();}catch{$('guard-action-status').textContent=tr('recoveryFullscreenError');}
+  recoverySelecting=false;guard.endFileRecovery();
+  if(error.name!=='AbortError')fileStatus('recoveryFullscreenError');
+  guard.render();
+ }
+});
+$('practice-file').addEventListener('cancel',async()=>{
+ try{await restorePickerFullscreen();}catch{$('guard-action-status').textContent=tr('recoveryFullscreenError');}
+ recoverySelecting=false;guard.endFileRecovery();guard.render();
+});
+$('practice-file').addEventListener('change',()=>readRecoveryFile($('practice-file').files[0]));
+$('practice-finish').addEventListener('click',()=>guard.ask('finish'));
+$('practice-reset').addEventListener('click',()=>guard.ask('erase'));
+
+// ---------------------------------------------------------------- Arranque
+const deliveryConfigNote=document.createElement('p');deliveryConfigNote.id='delivery-config-note';deliveryConfigNote.className='note warm';
+deliveryConfigNote.textContent=tr('notConfigured');$('guard-start-box').prepend(deliveryConfigNote);
+for(const [id,anchor]of [['receipt-download','delivery-retry'],['recovery-download','recover-delivery']]){
+ const button=document.createElement('button');button.id=id;button.type='button';button.className='secondary';button.dataset.text='receipt';$(anchor).after(button);
+ button.addEventListener('click',()=>downloadReceipt(guard.canDownloadReport()?rememberDelivery($('report').value):lastDelivery));
+}
+const receiptStatus=document.createElement('p');receiptStatus.id='receipt-status';receiptStatus.setAttribute('role','status');$('receipt-download').after(receiptStatus);
+document.title=config.title;
+document.querySelector('.topline').textContent=config.title;
+$('lab-title').textContent=config.title;
+document.querySelectorAll('[data-text]').forEach(el=>el.textContent=tr(el.dataset.text));
+$('code-toggle').textContent=tr('showCode');
+$('preview-console').dataset.empty=tr('consoleEmpty');
+
+$('delivery-retry').addEventListener('click',()=>{
+ if(phase==='closing'){$('delivery-status').textContent=tr('forcedPending');void guard.finalizeForced();return;}
+ if(guard.canDownloadReport())downloadReport();
+ else if(lastDelivery)deliver(lastDelivery);
+});
+$('recover-delivery').addEventListener('click',()=>{
+ if(!lastDelivery)return;
+ recoveryMode=true;guard.render();
+ deliver(lastDelivery);
+});
+$('delivery-back').addEventListener('click',()=>{recoveryMode=false;$('delivery-status').textContent='';$('receipt-status').textContent='';guard.render();});
+$('student').addEventListener('blur',()=>{emailTouched=!!$('student').value.trim();guard?.render();});
+$('student').addEventListener('input',()=>{rememberIdentity();guard?.render();});
+$('student').addEventListener('keydown',e=>{if(e.key==='Enter'&&!$('guard-start').disabled)$('guard-start').click();});
+if(typeof ResizeObserver==='function')new ResizeObserver(syncToolbarHeight).observe($('practice-toolbar'));
+window.addEventListener('resize',syncToolbarHeight);
+$('lab').addEventListener('submit',e=>e.preventDefault());
+setInterval(clock,1000);
+try{const item=JSON.parse(localStorage.getItem(RECOVERY));if(item&&typeof item.code==='string'&&item.code.length<2000000&&typeof item.name==='string'&&item.language===language)lastDelivery=item;}catch{}
+showEditor('html');
+guard=window.createPracticeGuard({config,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,
+ async saveBeforeReset(current){
+  if(current==='paused')return savePracticeDocument();
+  if(current==='submitted')return downloadReceipt(rememberDelivery($('report').value));
+  return current==='ready'||current==='reset'||current==='review';
+ },
+ forcedError(){$('delivery-status').textContent=tr('forcedError');},
+ isAnswer(el){return el instanceof HTMLElement&&ids.includes(el.id);},
+ restoreValue(el,data){el.value=data.values[el.id]||'';}
+});
+if(['ready','reset','review'].includes(phase))fillCachedIdentity(false);
+rememberIdentity();guard.render();
+window.Lab.ready=true;
+})();

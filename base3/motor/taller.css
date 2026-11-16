@@ -1,0 +1,73 @@
+/* Taller de código (base3): enunciado arriba, editor a la izquierda y resultado a la derecha.
+   Complementa /base/motor/estilos.css, que aporta la barra, los diálogos y la identificación. */
+.lab-title{font-size:clamp(1.6rem,3vw,2.2rem);line-height:1.2;letter-spacing:-.02em;margin:0 0 24px}
+.stages .identity{grid-template-columns:minmax(0,420px)}
+
+.taller{display:flex;padding:14px 16px 16px;min-height:calc(100dvh - var(--toolbar-height,0px))}
+.taller form{flex:1;display:flex;flex-direction:column;gap:14px;min-width:0}
+
+/* Enunciado */
+.enunciado{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px}
+.enunciado .eyebrow{margin:0 0 6px}
+.enunciado-texto{max-height:30vh;overflow:auto;overscroll-behavior:contain}
+.enunciado-texto>:first-child{margin-top:0}
+.enunciado-texto>:last-child{margin-bottom:0}
+.enunciado-texto h3{font-size:1.2rem;margin:0 0 8px}
+.enunciado-texto p,.enunciado-texto ol,.enunciado-texto ul{margin:8px 0}
+.enunciado-texto code{font:.92em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#edf3ff;border-radius:5px;padding:1px 5px}
+.enunciado-pie{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 16px;margin-top:12px}
+.enunciado-pie button{padding:8px 14px;font-size:.9rem}
+.enunciado-pie button::after{content:" ▾"}
+.enunciado-pie button[aria-expanded=true]::after{content:" ▴"}
+.guardado{font-size:.8rem;color:var(--muted);margin-left:auto}
+
+/* Desplegable con el código del ejercicio */
+.codigo{margin-top:12px;border:1px solid #2c3b53;border-radius:12px;overflow:hidden;background:#111a2c}
+.codigo .pestanas{padding:8px 10px 0;background:#18243a}
+.codigo pre{margin:0;border-radius:0;padding:14px 16px;max-height:34vh;font:13.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:2}
+.codigo pre:focus-visible{outline-offset:-3px}
+
+/* Pestañas HTML · CSS · JavaScript */
+.pestanas{display:flex;gap:4px}
+.pestanas button{background:transparent;color:var(--muted);border:1px solid transparent;border-radius:8px;padding:6px 12px;font-size:.84rem;font-weight:650;line-height:1.4}
+.pestanas button:hover{background:#e9f0ff;color:#173eb1}
+.pestanas button[aria-selected=true]{background:#fff;border-color:var(--line);color:#173eb1}
+.codigo .pestanas button{color:#b7c5d9;border-radius:8px 8px 0 0;border-bottom:0}
+.codigo .pestanas button:hover{background:#25354e;color:#fff}
+.codigo .pestanas button[aria-selected=true]{background:#111a2c;border-color:#2c3b53;color:#d9ff52}
+
+/* Paneles */
+.paneles{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:14px;min-height:420px}
+.panel{display:flex;flex-direction:column;min-width:0;min-height:0;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.panel-cabecera{display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 12px 8px 16px;background:#f7f9fc;border-bottom:1px solid var(--line)}
+.panel-cabecera h2{font-size:.95rem;line-height:1.3;margin:0}
+.panel-cabecera .pestanas{margin-left:auto}
+.panel-estado{margin-left:auto;font-size:.8rem;color:#7c5400;text-align:right}
+.panel-cabecera #preview-run{padding:7px 14px;font-size:.86rem;white-space:nowrap}
+.panel-cabecera #preview-run.pendiente{box-shadow:0 0 0 3px #f9731655}
+.panel-pie{margin:0;padding:6px 16px;font-size:.76rem;color:var(--muted);background:#f7f9fc;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+
+.editores{flex:1;display:flex;min-height:0}
+.editores .editor{flex:1;min-height:0;border:0;border-radius:0;resize:none;padding:14px 16px;background:#111a2c;color:#e0edff;caret-color:#d9ff52;font:14px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:2;white-space:pre;overflow:auto}
+.editores .editor:focus-visible{outline-offset:-3px}
+.editores:disabled .editor{opacity:.6}
+
+.vista{flex:1;width:100%;min-height:0;border:0;background:#fff}
+.consola{margin:0;padding:8px 16px;border:0;border-top:1px solid var(--line);border-radius:0;background:#f7f9fc}
+.consola summary{font-size:.8rem}
+#console-count{color:#b42318;font-weight:650}
+#preview-console{list-style:none;margin:6px 0 2px;padding:0;max-height:112px;overflow:auto;font:12.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+#preview-console:empty::before{content:attr(data-empty);font-family:system-ui,sans-serif;color:var(--muted)}
+#preview-console li{padding:1px 0;white-space:pre-wrap;overflow-wrap:anywhere;border-bottom:1px solid #e6ecf4}
+#preview-console .consola-warn{color:#7c5400}
+#preview-console .consola-error{color:#b42318}
+#preview-console .consola-alert{color:#173eb1}
+
+#delivery-stage .secondary{margin-top:12px}
+#delivery-back{display:block}
+
+@media(max-width:900px){
+ .taller{padding:12px}
+ .paneles{grid-template-columns:minmax(0,1fr);grid-template-rows:none}
+ .panel{min-height:340px}
+}
