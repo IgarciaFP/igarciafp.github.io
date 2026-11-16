@@ -7,19 +7,27 @@ const ORIGEN_ = 'https://igarciafp.github.io';     // sitio del laboratorio
 const DOMINIO_ = 'g.educaand.es';                  // dominio de correo admitido
 const PAGINA_PROFESOR_ = 'https://igarciafp.github.io/base3/profesor.html';
 const SERVIDOR_ = 'https://igarciafp-github-io.igarciafp.workers.dev';   // dirección del servidor de control (Cloudflare Worker), sin barra final. Vacío: no se verifica el sello.
+const HOJA_ID_ = '';    // solo si el script NO se creó desde la hoja: el ID de la hoja (lo que va entre /d/ y /edit en su dirección)
 const PESTANA_ = 'Entregas';
 const CABECERAS_ = ['DIA Y HORA [DD/MM/AA HH:MM:SS]', 'MODULO', 'Nombre de la práctica', 'EMAIL', 'PROBAR CODIGO', 'Tiempo', 'IP', 'Incidencias', 'ENTREGA completa'];
 const FORMATO_ = { informe: 'SSII3G.', comprobacion: 'SSII3-' };
 const PRACTICA_ = /^(DIW|DWEC|SSII)-[A-Z0-9][A-Z0-9-]{0,59}$/;
 
-/** Ejecutar una vez desde el editor. Comprueba la pestaña y guarda qué hoja se usa.
- *  El guion final impide invocarla desde el navegador. */
-function configurarReceptor_() {
-  const libro = SpreadsheetApp.getActiveSpreadsheet();
-  if (!libro) throw Error('Abre este script desde la hoja de entregas: Extensiones → Apps Script.');
-  comprobarCabeceras_(libro.getSheetByName(PESTANA_));
-  PropertiesService.getScriptProperties().setProperty('HOJA_ENTREGAS', libro.getId());
-  console.log('Receptor configurado. Publícalo como aplicación web y copia la dirección /exec.');
+/** Hoja de entregas: la indicada en HOJA_ID_ o, si está vacío, la hoja desde la que se creó el script. */
+function libro_() {
+  const libro = HOJA_ID_ ? SpreadsheetApp.openById(HOJA_ID_) : SpreadsheetApp.getActiveSpreadsheet();
+  if (!libro) throw Error('ROUTE');
+  return libro;
+}
+/**
+ * Comprobación opcional: elegir «configurar» en el desplegable del editor y pulsar Ejecutar.
+ * Pide los permisos y verifica que encuentra la hoja y las cabeceras de «Entregas».
+ */
+function configurar() {
+  let libro;
+  try { libro = libro_(); } catch (error) { throw Error('No encuentro la hoja de entregas. Crea el script desde la hoja (Extensiones → Apps Script) o escribe su ID en HOJA_ID_.'); }
+  try { comprobarCabeceras_(libro.getSheetByName(PESTANA_)); } catch (error) { throw Error('La hoja «' + libro.getName() + '» no tiene una pestaña «' + PESTANA_ + '» con las cabeceras esperadas en las columnas A a I.'); }
+  console.log('Todo correcto. Las entregas se escribirán en «' + libro.getName() + '», pestaña «' + PESTANA_ + '». Publica una versión nueva de la aplicación web.');
 }
 
 const igual_ = texto => String(texto).replace(/\s+/g, ' ').trim().toLowerCase();
@@ -90,12 +98,9 @@ function recibirEntrega(sobre) {
   let cerrojo;
   try {
     const datos = validarEntrega_(sobre);
-    // Si no se ha ejecutado configurarReceptor_, se usa la hoja a la que está vinculado el script.
-    const id = PropertiesService.getScriptProperties().getProperty('HOJA_ENTREGAS') || SpreadsheetApp.getActiveSpreadsheet()?.getId();
-    if (!id) throw Error('ROUTE');
     cerrojo = LockService.getScriptLock();
     if (!cerrojo.tryLock(25000)) throw Error('BUSY');
-    const hoja = SpreadsheetApp.openById(id).getSheetByName(PESTANA_);
+    const libro = libro_(), id = libro.getId(), hoja = libro.getSheetByName(PESTANA_);
     comprobarCabeceras_(hoja);
     const codigo = documento_(sobre), cabe = codigo.length <= 45000 && /^[A-Za-z0-9._-]+$/.test(codigo);
     const ultima = hoja.getLastRow();

@@ -23,7 +23,7 @@ Las columnas siguientes (Detección IA, NOTA, Comentarios) no se tocan. El recep
 3. Crear un archivo **HTML** llamado `Bridge` y pegar `Bridge.html`.
 4. En **Configuración del proyecto**, mostrar `appsscript.json` en el editor y sustituirlo por el de esta carpeta.
 5. Si se usa el servidor de control, poner su dirección en `SERVIDOR_`, al principio de `Code.gs`.
-6. Seleccionar la función `configurarReceptor_`, pulsar **Ejecutar** y autorizar el acceso.
+6. Seleccionar la función `configurar` en el desplegable del editor, pulsar **Ejecutar** y autorizar el acceso. Debe responder «Todo correcto». Si el script no se creó desde la hoja, escribir antes el ID de la hoja en `HOJA_ID_`.
 7. **Implementar → Nueva implementación → Aplicación web**: ejecutar como «Yo» y dar acceso a «Cualquier usuario». Esto publica el script, no la hoja.
 8. Copiar la dirección que termina en `/exec` en `contenido/config.json`:
 
