@@ -6,7 +6,7 @@
 const ORIGEN_ = 'https://igarciafp.github.io';     // sitio del laboratorio
 const DOMINIO_ = 'g.educaand.es';                  // dominio de correo admitido
 const PAGINA_PROFESOR_ = 'https://igarciafp.github.io/base3/profesor.html';
-const SERVIDOR_ = '';   // dirección del servidor de control (Cloudflare Worker), sin barra final. Vacío: no se verifica el sello.
+const SERVIDOR_ = 'https://igarciafp-github-io.igarciafp.workers.dev';   // dirección del servidor de control (Cloudflare Worker), sin barra final. Vacío: no se verifica el sello.
 const PESTANA_ = 'Entregas';
 const CABECERAS_ = ['DIA Y HORA [DD/MM/AA HH:MM:SS]', 'MODULO', 'Nombre de la práctica', 'EMAIL', 'PROBAR CODIGO', 'Tiempo', 'IP', 'Incidencias', 'ENTREGA completa'];
 const FORMATO_ = { informe: 'SSII3G.', comprobacion: 'SSII3-' };
