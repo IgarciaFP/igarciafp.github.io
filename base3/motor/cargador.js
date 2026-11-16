@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261116-base3-9';
+  const version=loaderURL.searchParams.get('v')||'20261116-base3-10';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=path=>fetch(asset(path),{cache:'no-cache'});
   const read=async path=>{
@@ -38,11 +38,28 @@
     const match=/^(diw|dwec|ssii)\/([a-z0-9][a-z0-9-]{0,59})$/.exec(wanted);
     if(!match){notFound();return;}
     const [,mod,slug]=match,folder=`actividades/${mod}/${slug}/`;
+    const common=await read('contenido/config.json').then(r=>r.json());
+    // Control de red y horario: lo decide el servidor (servidor/worker.js), que ve la IP real
+    // y usa su propia hora. Si niega el acceso, la actividad «no existe». Si no responde
+    // (caído o bloqueado), se deja entrar y la entrega queda anotada como sin comprobar.
+    const server=String(common.control?.servidor||'').replace(/\/+$/,'');
+    const key=new URLSearchParams(location.search).get('clave')||'';
+    let unchecked=false;
+    if(server){
+      if(!/^https:\/\/[^/]+$/.test(server))throw Error('"control.servidor" debe ser una dirección https sin ruta.');
+      let answer=null;
+      try{
+        const query=new URLSearchParams({a:mod+'/'+slug});if(key)query.set('clave',key);
+        const response=await fetch(server+'/acceso?'+query,{cache:'no-store',signal:AbortSignal.timeout(8000)});
+        if(response.ok)answer=await response.json();
+      }catch{}
+      if(answer&&typeof answer.ok==='boolean'){if(!answer.ok){notFound();return;}}
+      else unchecked=true;
+    }
     const [activityResponse,statementResponse]=await Promise.all([fetchAsset(folder+'actividad.json'),fetchAsset(folder+'enunciado.html')]);
     if(activityResponse.status===404||statementResponse.status===404){notFound();return;}
     if(!activityResponse.ok||!statementResponse.ok)throw Error('No se pudo cargar la actividad.');
-    const [common,activity,statement,html,css,js]=await Promise.all([
-      read('contenido/config.json').then(r=>r.json()),
+    const [activity,statement,html,css,js]=await Promise.all([
       activityResponse.json(),statementResponse.text(),
       optional(folder+'codigo.html'),optional(folder+'codigo.css'),optional(folder+'codigo.js')
     ]);
@@ -55,10 +72,11 @@
     for(const [name,value]of Object.entries(code))
       if(value.length>10000)throw Error(`codigo.${name} supera los 10000 caracteres que admite el editor.`);
     // Identidad y claves derivadas de módulo y actividad: no hay que configurarlas a mano.
-    const MOD=mod.toUpperCase(),id=MOD+'-'+slug.toUpperCase(),key='base3-'+mod+'-'+slug;
+    const MOD=mod.toUpperCase(),id=MOD+'-'+slug.toUpperCase(),store='base3-'+mod+'-'+slug;
     const config={...common,module:MOD,activity:slug,id,title:MOD+' · '+activity.title.trim(),
       filePrefix:mod+'-'+slug,version:String(activity.version).trim(),
-      storage:{key:key+'-v1',legacyKey:key+'-anterior-v1',recovery:key+'-ultima-entrega-v1'},
+      storage:{key:store+'-v1',legacyKey:store+'-anterior-v1',recovery:store+'-ultima-entrega-v1'},
+      activityTitle:activity.title.trim(),control:server?{servidor:server,clave:key,sinComprobar:unchecked}:null,
       format:{...common.format,save:id+'-SAVE'}};
     document.getElementById('activity-text').innerHTML=statement;
     const seen=new Set();

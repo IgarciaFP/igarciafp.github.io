@@ -427,7 +427,22 @@ async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
  // menos una respuesta: si no cambió nada, se envía una única respuesta vacía «sin-cambios».
  const changed=LANGS.filter(id=>$(id).value!==start[id]);
  const answers=changed.length?changed.map(id=>({question:id,answer:id==='txt'?noteComment($(id).value):$(id).value,status:$(id).value.trim()?'teacher-review':'pending'})):[{question:'sin-cambios',answer:'',status:'pending'}];
- const data={exam:config.id,module:config.module,activity:config.activity,activityVersion:config.version,version:3,language,name:displayName(),email:$('student').value.trim().toLowerCase(),finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:changed.length?changed:['sin-cambios'],answers,modified:changed,parameters:{},parameterLocks:{},group:'',checked:{},hints:{},notes:'',...context,audit:metadata,url:location.href};
+ // Sello del servidor: IP real, hora del servidor y si la entrega cumple red y horario.
+ // Va ligado a esta entrega mediante la huella de su contenido. Si no se obtiene, la
+ // entrega se genera igualmente y queda marcada como «sin sello».
+ let sello=null;
+ if(config.control){
+  const email=$('student').value.trim().toLowerCase();
+  try{
+   const huella=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify([config.id,email,answers])))),b=>b.toString(16).padStart(2,'0')).join('');
+   const response=await fetch(config.control.servidor+'/sello',{method:'POST',cache:'no-store',signal:AbortSignal.timeout(8000),body:JSON.stringify({a:config.module.toLowerCase()+'/'+config.activity,email,huella,clave:config.control.clave||undefined})});
+   const stamp=response.ok?await response.json():null;
+   sello=stamp&&stamp.huella===huella&&typeof stamp.firma==='string'?stamp:{error:'sin-sello'};
+  }catch{sello={error:'sin-sello'};}
+  // El servidor tampoco respondió al abrir la actividad: se entró sin comprobar red ni horario.
+  if(config.control.sinComprobar)sello.accesoSinComprobar=true;
+ }
+ const data={exam:config.id,module:config.module,activity:config.activity,activityTitle:config.activityTitle,activityVersion:config.version,version:3,language,name:displayName(),email:$('student').value.trim().toLowerCase(),finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:changed.length?changed:['sin-cambios'],answers,modified:changed,parameters:{},parameterLocks:{},group:'',checked:{},hints:{},notes:'',...context,sello,audit:metadata,url:location.origin+location.pathname+'?a='+config.module.toLowerCase()+'/'+config.activity};
  const body=JSON.stringify(data);
  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(body))),b=>b.toString(16).padStart(2,'0')).join('');
  return encodeReport(body+'\nCódigo de comprobación: '+config.format.checksum+hash);

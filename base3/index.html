@@ -122,8 +122,10 @@
       aunque sean de actividades distintas: muestra el código de cada alumno con sus
       cambios resaltados y su resultado.
 
-   B) HOJA DE CÁLCULO. Además de descargar el archivo, envía la entrega a una hoja de
-      Google Sheets a través de un receptor de Apps Script:
+   B) HOJA DE CÁLCULO. Además de descargar el archivo, envía la entrega a tu hoja de
+      Google Sheets (pestaña «Entregas», columnas A a I) a través del receptor de Apps
+      Script de la carpeta receptor/. La hoja sigue siendo privada. Los pasos para
+      instalarlo están en receptor/README.md.
 
         "delivery": {
           "type": "apps-script",
@@ -132,6 +134,21 @@
 
       Con "apps-script" y "endpoint" vacío, la página avisa de que falta el destino de
       entrega y el botón «Empezar» permanece desactivado.
+
+   "control"      Control de red y horario, común a todas las actividades:
+
+        "control": { "servidor": "https://base3-control.SUBDOMINIO.workers.dev" }
+
+      Con una dirección en "servidor", cada actividad solo se abre desde la red del centro
+      y en el horario de su módulo (cinco minutos de margen); en otro caso se muestra
+      «No se encuentra la actividad.». Cada entrega lleva un sello del servidor con la IP
+      y la hora, y queda marcada si se hizo fuera de la red o del horario. Si el servidor
+      no responde, se deja entrar y la entrega lo indica.
+      El servidor es el Cloudflare Worker de la carpeta servidor/: la red, el horario, la
+      clave del profesor y los pasos para publicarlo están en servidor/README.md.
+      Con "servidor" vacío, el control está desactivado.
+      Para entrar tú fuera de horario o desde otra red, añade &clave=TU_CLAVE a la
+      dirección. La clave se guarda solo en Cloudflare, nunca en este repositorio.
 
    No cambies "format" (común a todos los laboratorios) ni "requireFullName" (debe ser
    false para que no se pida el nombre).
@@ -154,8 +171,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Laboratorio</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-9">
-<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-9">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-10">
+<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-10">
 </head>
 <body>
 
@@ -295,6 +312,6 @@
   </div>
 </dialog>
 
-<script src="motor/cargador.js?v=20261116-base3-9" defer></script>
+<script src="motor/cargador.js?v=20261116-base3-10" defer></script>
 </body>
 </html>

@@ -19,6 +19,8 @@ Las instrucciones detalladas están en el comentario inicial de `index.html`.
 - `contenido/config.json`: ajustes comunes a todas las actividades (dominio del correo y entrega).
 - `actividades/MODULO/ACTIVIDAD/`: una carpeta por actividad.
 - `profesor.html`: página del profesor para revisar los archivos de entrega.
+- `servidor/`: Cloudflare Worker que controla la red y el horario y sella las entregas ([guía](servidor/README.md)).
+- `receptor/`: Apps Script que escribe las entregas en la hoja de cálculo del profesor ([guía](receptor/README.md)).
 
 La seguridad, la entrega y los estilos generales se cargan de `/base/motor/` (`seguridad.js`, `entregas.js`, `estilos.css`), igual que en los laboratorios de `/labs/`.
 
@@ -37,11 +39,15 @@ Ejemplos incluidos: `?a=diw/tarjeta` (con los tres archivos) y `?a=dwec/contador
 
 Por defecto (`"delivery": { "type": "archivo" }`) no hace falta receptor: al pulsar «Entregar» se descarga un único archivo `MÓDULO · NOMBRE DE LA ACTIVIDAD_USUARIO.txt` (el usuario es el del correo, sin dominio) con el código modificado, comprimido con gzip y codificado en base64 para URL, precedido del prefijo `format.report`. El alumno lo hace llegar al profesor por el medio que se le indique.
 
-Con `"type": "apps-script"` y `endpoint`, además de la descarga, la entrega se envía a un receptor de Google Sheets.
+Con `"type": "apps-script"` y `endpoint`, además de la descarga, la entrega se envía al receptor de `receptor/`, que añade una fila en la pestaña «Entregas» de la hoja del profesor (columnas A a I).
+
+## Control de red y horario
+
+Con `control.servidor` en `contenido/config.json`, las actividades solo se abren desde la red del centro y en el horario de su módulo, y cada entrega lleva un sello del servidor con la IP y la hora (campo `sello` del informe). Las entregas fuera de red o de horario se generan igualmente, marcadas. Ver [servidor/README.md](servidor/README.md).
 
 En ambos casos el informe conserva el formato del resto de laboratorios (versión 3), añade `module` y `activity`, e incluye solo las pestañas que difieren del código de partida, como respuestas abiertas `html`, `css`, `js` o `txt`; la lista `modified` las enumera. La respuesta `txt` son las notas del alumno, envueltas en un comentario `/* … */`. Si no se modificó nada, hay una única respuesta vacía `sin-cambios`. Cada pestaña admite 10 000 caracteres.
 
-Para revisar las entregas, abrir `profesor.html` y arrastrar los archivos TXT, aunque sean de actividades distintas: muestra de cada alumno la actividad, el código con los cambios respecto al de partida resaltados, el resultado, la consola, el tiempo, las incidencias y el registro del intento, y avisa si un archivo ha sido alterado, es de una actividad que no está en el sitio o de otra versión. Los archivos se leen en el navegador y no se envían a ningún sitio.
+Para revisar las entregas, abrir `profesor.html` y arrastrar los archivos TXT, aunque sean de actividades distintas (también admite pegar el texto de la columna «ENTREGA completa» de la hoja, o llegar desde su enlace «Probar código»): muestra de cada alumno la actividad, el código con los cambios respecto al de partida resaltados, el resultado, la consola, el tiempo, las incidencias y el registro del intento, y avisa si un archivo ha sido alterado, es de una actividad que no está en el sitio o de otra versión. Los archivos se leen en el navegador y no se envían a ningún sitio.
 
 Para leer un archivo de entrega sin esa página:
 

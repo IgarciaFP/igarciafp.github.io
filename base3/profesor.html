@@ -2,6 +2,8 @@
 <!--
  PÁGINA DEL PROFESOR · base3
  Arrastra aquí los archivos de entrega (.txt) de los alumnos para ver su código y su resultado.
+ También admite el texto de la columna «ENTREGA completa» de la hoja de cálculo: cópialo y
+ pégalo en la página (Ctrl+V), o usa el enlace «Probar código» de la hoja.
  Los archivos se leen en este navegador: no se suben ni se envían a ningún sitio.
  Sirve para todas las actividades: cada entrega indica su módulo y su actividad, y la
  página lee de actividades/MODULO/ACTIVIDAD/ el código de partida para reconstruir las
@@ -13,8 +15,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Entregas · Profesor</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-9">
-<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-9">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-10">
+<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-10">
 <style>
 .revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
 .revision h1{font-size:1.5rem;line-height:1.25;margin:0}
@@ -73,7 +75,7 @@
 
   <label id="soltar" class="soltar" for="archivos">
     <strong>Arrastra aquí los archivos de entrega (.txt)</strong>
-    <span>o pulsa para elegirlos. Puedes soltar varios a la vez.</span>
+    <span>o pulsa para elegirlos. También puedes pegar (Ctrl+V) la celda «ENTREGA completa» de la hoja.</span>
   </label>
   <input id="archivos" type="file" accept=".txt,text/plain" multiple hidden>
   <ul id="avisos" role="status"></ul>
@@ -162,6 +164,22 @@ function activityOf(mod,slug){
 // «DIW-TARJETA» o «DIW-TARJETA-SAVE» → módulo y actividad.
 function split(id){const m=/^(DIW|DWEC|SSII)-([A-Z0-9-]+?)(?:-SAVE)?$/.exec(String(id||''));return m?[m[1].toLowerCase(),m[2].toLowerCase()]:['',''];}
 
+// ------------------------------------------------------------ Sello del servidor (IP y hora)
+// 'ok' sello auténtico · 'bad' manipulado o de otra entrega · 'unknown' no se pudo comprobar
+// 'missing' la entrega no lleva sello aunque el control está activo · null sin control.
+const server=String(config.control?.servidor||'').replace(/\/+$/,'');
+async function checkStamp(report){
+ const sello=report.sello;
+ if(!sello||sello.error)return server||sello?'missing':null;
+ try{
+  const huella=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify([report.exam,report.email,report.answers])))),b=>b.toString(16).padStart(2,'0')).join('');
+  if(huella!==sello.huella||sello.email!==report.email)return 'bad';
+  if(!server)return 'unknown';
+  const response=await fetch(server+'/verificar',{method:'POST',cache:'no-store',signal:AbortSignal.timeout(8000),body:JSON.stringify({sello})});
+  return response.ok?((await response.json()).valido===true?'ok':'bad'):'unknown';
+ }catch{return 'unknown';}
+}
+
 // ------------------------------------------------------------ Descodificar
 async function decode(text){
  text=text.trim();
@@ -197,7 +215,7 @@ async function parse(text){
  const [mod,slug]=report.module&&report.activity?[String(report.module).toLowerCase(),String(report.activity).toLowerCase()]:split(report.exam);
  const known=await activityOf(mod,slug),start=known?.start||EMPTY;
  const answers=Object.fromEntries((report.answers||[]).filter(a=>TABS.includes(a.question)&&typeof a.answer==='string').map(a=>[a.question,a.answer]));
- return {...report,id:hash,intact:hash===decoded.slice(offset+marker.length),known,start,label:known?.title||String(report.exam||'Actividad desconocida'),
+ return {...report,id:hash,intact:hash===decoded.slice(offset+marker.length),stamp:await checkStamp(report),known,start,label:known?.title||String(report.exam||'Actividad desconocida'),
   email:String(report.email||'(sin correo)'),modified:TABS.filter(t=>t in answers),
   code:Object.fromEntries(TABS.map(t=>[t,t in answers?answers[t]:start[t]]))};
 }
@@ -210,6 +228,12 @@ function problems(item){
  const out=[];
  if(item.draft)out.push('Sin entregar');
  if(item.intact===false)out.push('Archivo alterado');
+ if(item.stamp==='missing')out.push('Sin sello');
+ if(item.stamp==='bad')out.push('Sello no válido');
+ if(item.stamp&&item.stamp!=='missing'&&item.sello){
+  if(!item.sello.enRed)out.push('Fuera de la red');
+  if(!item.sello.enHorario)out.push('Fuera de horario');
+ }
  if(!item.known)out.push('Actividad desconocida');
  else if(item.activityVersion!==item.known.version)out.push('Otra versión');
  return out;
@@ -329,6 +353,16 @@ function select(id){
  chips.unshift(chip(item.label));
  if(!item.known)chips.push(chip('No se encuentra esta actividad en el sitio: solo se muestran las pestañas modificadas, sin código de partida','mal'));
  else if(item.activityVersion!==item.known.version)chips.push(chip('Versión '+item.activityVersion+' (la actividad publicada es la '+item.known.version+'): el código de partida puede no coincidir','mal'));
+ if(item.sello?.accesoSinComprobar)chips.push(chip('Entró sin comprobar red ni horario: el servidor no respondió al abrir la actividad','mal'));
+ if(item.stamp==='missing')chips.push(chip('Sin sello del servidor: IP y hora sin comprobar','mal'));
+ else if(item.stamp){
+  const sello=item.sello;
+  if(item.stamp==='bad')chips.push(chip('Sello no válido: no corresponde a esta entrega o ha sido manipulado','mal'));
+  if(item.stamp==='unknown')chips.push(chip('Sello sin verificar: no se pudo consultar al servidor','mal'));
+  chips.push(chip('IP '+sello.ip+(sello.enRed?' · red del centro':' · FUERA DE LA RED'),sello.enRed?'bien':'mal'));
+  chips.push(chip((sello.enHorario?'En horario de clase':'FUERA DE HORARIO')+' · '+when(sello.hora),sello.enHorario?'bien':'mal'));
+  if(sello.profesor)chips.push(chip('Entrega hecha con la clave del profesor'));
+ }
  if(when(item.finishedAt))chips.push(chip('Entregado: '+when(item.finishedAt)));
  chips.push(chip('Tiempo: '+duration(item.seconds)));
  chips.push(chip('Incidencias: '+(item.incidents??'—')+'/3',item.incidents>=3?'mal':''));
@@ -354,7 +388,7 @@ async function add(files){
  for(const file of files){
   try{
    if(file.size>3000000)throw Error('es demasiado grande');
-   const item=await parse(await file.text());
+   const item=await parse(typeof file.text==='string'?file.text:await file.text());
    item.file=file.name;
    if(!items.has(item.id))first??=item.id;
    items.set(item.id,item);
@@ -367,6 +401,13 @@ for(const type of ['dragenter','dragover'])document.addEventListener(type,e=>{e.
 for(const type of ['dragleave','drop'])document.addEventListener(type,e=>{e.preventDefault();drop.classList.remove('encima');});
 document.addEventListener('drop',e=>{if(e.dataTransfer?.files?.length)add([...e.dataTransfer.files]);});
 $('archivos').addEventListener('change',()=>{add([...$('archivos').files]);$('archivos').value='';});
+// Texto de la columna «ENTREGA completa»: pegado en la página o recibido en el enlace de la hoja.
+document.addEventListener('paste',e=>{
+ const text=(e.clipboardData?.getData('text')||'').trim();
+ if(text.startsWith(config.format.report)){e.preventDefault();add([{name:'Texto pegado',size:text.length,text}]);}
+});
+const linked=/^#entrega=([A-Za-z0-9._-]+)$/.exec(location.hash);
+if(linked)add([{name:'Enlace de la hoja',size:linked[1].length,text:linked[1]}]);
 window.reviewReady=true;
 })();
 </script>

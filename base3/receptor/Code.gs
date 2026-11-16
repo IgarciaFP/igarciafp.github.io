@@ -1,0 +1,120 @@
+/**
+ * Receptor de entregas de base3. Instalar VINCULADO a la hoja de cálculo de entregas
+ * (Extensiones → Apps Script). Escribe con la cuenta del propietario: la hoja no se comparte.
+ * Añade una fila por entrega en la pestaña «Entregas», columnas A a I. No toca las demás.
+ */
+const ORIGEN_ = 'https://igarciafp.github.io';     // sitio del laboratorio
+const DOMINIO_ = 'g.educaand.es';                  // dominio de correo admitido
+const PAGINA_PROFESOR_ = 'https://igarciafp.github.io/base3/profesor.html';
+const SERVIDOR_ = '';   // dirección del servidor de control (Cloudflare Worker), sin barra final. Vacío: no se verifica el sello.
+const PESTANA_ = 'Entregas';
+const CABECERAS_ = ['DIA Y HORA [DD/MM/AA HH:MM:SS]', 'MODULO', 'Nombre de la práctica', 'EMAIL', 'PROBAR CODIGO', 'Tiempo', 'IP', 'Incidencias', 'ENTREGA completa'];
+const FORMATO_ = { informe: 'SSII3G.', comprobacion: 'SSII3-' };
+const PRACTICA_ = /^(DIW|DWEC|SSII)-[A-Z0-9][A-Z0-9-]{0,59}$/;
+
+/** Ejecutar una vez desde el editor. Comprueba la pestaña y guarda qué hoja se usa.
+ *  El guion final impide invocarla desde el navegador. */
+function configurarReceptor_() {
+  const libro = SpreadsheetApp.getActiveSpreadsheet();
+  if (!libro) throw Error('Abre este script desde la hoja de entregas: Extensiones → Apps Script.');
+  comprobarCabeceras_(libro.getSheetByName(PESTANA_));
+  PropertiesService.getScriptProperties().setProperty('HOJA_ENTREGAS', libro.getId());
+  console.log('Receptor configurado. Publícalo como aplicación web y copia la dirección /exec.');
+}
+
+const igual_ = texto => String(texto).replace(/\s+/g, ' ').trim().toLowerCase();
+function comprobarCabeceras_(hoja) {
+  if (!hoja) throw Error('SCHEMA');
+  const fila = hoja.getRange(1, 1, 1, CABECERAS_.length).getValues()[0];
+  if (CABECERAS_.some((cabecera, i) => igual_(fila[i]) !== igual_(cabecera))) throw Error('SCHEMA');
+}
+function doGet(e) {
+  const practica = e?.parameter?.practice || '', canal = e?.parameter?.channel || '';
+  if (!PRACTICA_.test(practica) || !/^[a-f0-9]{32}$/.test(canal)) return HtmlService.createHtmlOutput('Receptor de entregas. Accede desde el laboratorio.');
+  const plantilla = HtmlService.createTemplateFromFile('Bridge');
+  plantilla.settings = JSON.stringify({ origin: ORIGEN_, practiceId: practica, channel: canal }).replace(/</g, '\\u003c');
+  return plantilla.evaluate().setTitle('Entrega de laboratorio').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+function huella_(texto) {
+  return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, texto, Utilities.Charset.UTF_8)
+    .map(b => (b & 255).toString(16).padStart(2, '0')).join('');
+}
+function texto_(valor, maximo, vacio = false) {
+  if (typeof valor !== 'string' || valor.length > maximo || (!vacio && !valor.trim())) throw Error('INVALID');
+  return valor;
+}
+function validarEntrega_(sobre) {
+  if (sobre?.protocol !== 1 || !/^[a-f0-9]{64}$/.test(sobre.submissionId || '') || !PRACTICA_.test(sobre.practiceId || '') ||
+    typeof sobre.payload !== 'string' || sobre.payload.length > 500000) throw Error('INVALID');
+  if (huella_(sobre.payload) !== sobre.submissionId) throw Error('HASH');
+  const datos = JSON.parse(sobre.payload);
+  if (datos.exam !== sobre.practiceId || datos.activityVersion !== sobre.practiceVersion || datos.version !== 3) throw Error('INVALID');
+  texto_(datos.module, 4); texto_(datos.activity, 60); texto_(datos.activityTitle, 200); texto_(datos.email, 254);
+  if (datos.exam !== datos.module + '-' + datos.activity.toUpperCase()) throw Error('INVALID');
+  if (!/^[^\s@]+@[^\s@]+$/.test(datos.email) || datos.email.split('@')[1].toLowerCase() !== DOMINIO_.toLowerCase()) throw Error('EMAIL');
+  if (!Number.isFinite(Date.parse(datos.finishedAt)) || !Number.isFinite(datos.seconds) || datos.seconds < 0 || datos.seconds > 31536000 ||
+    !Array.isArray(datos.answers) || datos.answers.length < 1 || datos.answers.length > 10) throw Error('INVALID');
+  for (const respuesta of datos.answers) { texto_(respuesta.question, 100); texto_(respuesta.answer, 10000, true); }
+  return datos;
+}
+/** Columna G: IP vista por el servidor de control y si es de la red del centro. */
+function ip_(datos) {
+  const sello = datos.sello;
+  if (!sello || sello.error || typeof sello.ip !== 'string' || !/^[0-9a-fA-F.:]{3,45}$/.test(sello.ip)) return 'SIN COMPROBAR';
+  if (huella_(JSON.stringify([datos.exam, datos.email, datos.answers])) !== sello.huella || sello.email !== datos.email) return 'SELLO NO VÁLIDO';
+  if (SERVIDOR_) {
+    try {
+      const respuesta = UrlFetchApp.fetch(SERVIDOR_ + '/verificar', { method: 'post', payload: JSON.stringify({ sello }), muteHttpExceptions: true });
+      if (respuesta.getResponseCode() === 200 && JSON.parse(respuesta.getContentText()).valido !== true) return 'SELLO NO VÁLIDO';
+      if (respuesta.getResponseCode() !== 200) return sello.ip + ' (sin verificar)';
+    } catch (error) { return sello.ip + ' (sin verificar)'; }
+  }
+  return sello.ip + (sello.enRed === true ? '' : ' (FUERA DE LA RED)') + (sello.profesor === true ? ' (clave del profesor)' : '');
+}
+function incidencias_(datos) {
+  const partes = [(Number.isFinite(datos.incidents) ? datos.incidents : '?') + '/3'];
+  if (datos.finishReason === 'incident-limit') partes.push('cierre automático');
+  if (datos.sello && !datos.sello.error && datos.sello.enHorario !== true) partes.push('FUERA DE HORARIO');
+  if (datos.sello && datos.sello.accesoSinComprobar === true) partes.push('acceso sin comprobar');
+  return partes.join(' · ');
+}
+/** Mismo documento que descarga el alumno: informe comprimido (gzip) y codificado. */
+function documento_(sobre) {
+  const contenido = sobre.payload + '\nCódigo de comprobación: ' + FORMATO_.comprobacion + sobre.submissionId;
+  return FORMATO_.informe + Utilities.base64EncodeWebSafe(Utilities.gzip(Utilities.newBlob(contenido, 'text/plain')).getBytes()).replace(/=+$/, '');
+}
+const literal_ = valor => ({ userEnteredValue: { stringValue: String(valor ?? '') } });
+
+/** Única función de escritura expuesta al navegador. Nunca devuelve entregas ajenas. */
+function recibirEntrega(sobre) {
+  let cerrojo;
+  try {
+    const datos = validarEntrega_(sobre);
+    const id = PropertiesService.getScriptProperties().getProperty('HOJA_ENTREGAS');
+    if (!id) throw Error('ROUTE');
+    cerrojo = LockService.getScriptLock();
+    if (!cerrojo.tryLock(25000)) throw Error('BUSY');
+    const hoja = SpreadsheetApp.openById(id).getSheetByName(PESTANA_);
+    comprobarCabeceras_(hoja);
+    const codigo = documento_(sobre), cabe = codigo.length <= 45000 && /^[A-Za-z0-9._-]+$/.test(codigo);
+    const ultima = hoja.getLastRow();
+    // Reenviar la misma entrega no añade otra fila.
+    if (cabe && ultima > 1 && hoja.getRange(2, 9, ultima - 1, 1).createTextFinder(codigo).matchEntireCell(true).matchCase(true).findNext())
+      return { ok: true, submissionId: sobre.submissionId, receivedAt: new Date().toISOString(), duplicate: true };
+    const ahora = new Date(), segundos = Math.floor(datos.seconds);
+    const fila = [
+      literal_(Utilities.formatDate(ahora, 'Europe/Madrid', 'dd/MM/yy HH:mm:ss')),
+      literal_(datos.module), literal_(datos.activityTitle), literal_(datos.email.toLowerCase()),
+      // El código solo contiene letras, cifras, punto, guion y guion bajo: no puede alterar la fórmula.
+      cabe ? { userEnteredValue: { formulaValue: '=HYPERLINK("' + PAGINA_PROFESOR_ + '#entrega=' + codigo + '","Probar código")' } } : literal_('Pide el archivo TXT al alumno'),
+      literal_(Math.floor(segundos / 60) + ' min ' + String(segundos % 60).padStart(2, '0') + ' s'),
+      literal_(ip_(datos)), literal_(incidencias_(datos)),
+      literal_(cabe ? codigo : 'Entrega demasiado larga para una celda: pide el archivo TXT al alumno.')
+    ];
+    Sheets.Spreadsheets.batchUpdate({ requests: [{ appendCells: { sheetId: hoja.getSheetId(), rows: [{ values: fila }], fields: 'userEnteredValue' } }] }, id);
+    return { ok: true, submissionId: sobre.submissionId, receivedAt: ahora.toISOString(), duplicate: false };
+  } catch (error) {
+    const conocidos = ['INVALID', 'HASH', 'EMAIL', 'ROUTE', 'SCHEMA', 'BUSY'];
+    return { ok: false, code: conocidos.includes(error.message) ? error.message : 'STORAGE' };
+  } finally { if (cerrojo?.hasLock()) cerrojo.releaseLock(); }
+}
