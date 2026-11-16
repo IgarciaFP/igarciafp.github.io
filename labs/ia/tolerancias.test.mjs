@@ -57,9 +57,9 @@ test('la mezcla de espacios y tabuladores sigue excluida de la paridad',()=>{
 test('se retira use strict del catálogo y todos los pesos de 25 pasan a 10',()=>{
  assert.equal('modo_estricto' in PESOS,false);
  assert.equal(regla(analizar('"use strict";\nlet x=1;'),'modo_estricto'),undefined);
- assert.equal(Object.keys(PESOS).length,44);
+ assert.equal(Object.keys(PESOS).length,45);
  for(const [id,peso] of Object.entries(PESOS)){
-  if(!['sin_comentarios','caracteres_especiales','ausencia_faltas'].includes(id))assert.equal(peso,10,id);
+  if(!['sin_comentarios','caracteres_especiales','ausencia_faltas','comentarios_tres_espacios_finales'].includes(id))assert.equal(peso,10,id);
  }
  assert.equal(PESOS.sin_comentarios,100);assert.equal(PESOS.caracteres_especiales,60);assert.equal(PESOS.ausencia_faltas,25);
 });
