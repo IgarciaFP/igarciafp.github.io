@@ -25,6 +25,18 @@ Mientras `control.servidor` esté vacío en `contenido/config.json`, el control 
 
 Ninguno de los dos secretos debe escribirse en el repositorio, que es público.
 
+### Alternativa: Worker conectado al repositorio de GitHub
+
+Si el Worker se creó importando este repositorio, Cloudflare intenta publicar el sitio entero y la compilación falla. Para que publique solo este servidor, en el Worker ir a **Settings → Build** y dejar:
+
+- **Root directory:** `base3/servidor`
+- **Build command:** vacío
+- **Deploy command:** `npx wrangler deploy`
+
+`wrangler.jsonc` indica qué archivo se publica. Su `name` debe coincidir con el nombre del Worker en Cloudflare (`igarciafp-github-io`); si el Worker se llama de otra forma, cambiarlo ahí. Con esta conexión, cada cambio de `worker.js` en la rama `main` se publica solo. Los secretos se añaden igual, en el panel.
+
+Si Cloudflare abre en GitHub una *pull request* de configuración automática (añade `wrangler.jsonc` y un plugin de Vite en la raíz), hay que cerrarla sin fusionar: es para publicar el sitio, no este servidor.
+
 ## Comprobar desde el aula
 
 Abrir en un ordenador del aula:
