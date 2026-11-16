@@ -15,8 +15,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Entregas · Profesor</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-10">
-<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-10">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-13">
+<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-13">
 <style>
 .revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
 .revision h1{font-size:1.5rem;line-height:1.25;margin:0}
@@ -147,6 +147,7 @@ try{
 $('titulo').textContent='Revisión de entregas';
 const CSP=config.preview?.csp||"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: https:; media-src data: https:; font-src data: https:; form-action 'none'; base-uri 'none'";
 const EMPTY={html:'',css:'',js:'',txt:''};
+const skeleton=fetchFile('contenido/esqueleto.html').then(r=>r.ok?r.text():'').catch(()=>'');
 // Código de partida de cada actividad (actividades/MODULO/ACTIVIDAD/), leído una sola vez.
 const activities=new Map();
 function activityOf(mod,slug){
@@ -156,7 +157,9 @@ function activityOf(mod,slug){
   const folder='actividades/'+key+'/',optional=async name=>{const r=await fetchFile(folder+name);return r.ok?r.text():'';};
   const response=await fetchFile(folder+'actividad.json');
   if(!response.ok)return null;
-  const info=await response.json(),[html,css,js]=await Promise.all([optional('codigo.html'),optional('codigo.css'),optional('codigo.js')]);
+  const info=await response.json(),[ownHtml,css,js]=await Promise.all([optional('codigo.html'),optional('codigo.css'),optional('codigo.js')]);
+  // Igual que el laboratorio: sin HTML de partida, la pestaña empieza con el esqueleto común.
+  const html=ownHtml.trim()?ownHtml:await skeleton;
   return {key,title:mod.toUpperCase()+' · '+String(info.title||slug),version:String(info.version??''),start:{html,css,js,txt:''}};
  })().catch(()=>null));
  return activities.get(key);

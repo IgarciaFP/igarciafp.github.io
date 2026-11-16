@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261116-base3-12';
+  const version=loaderURL.searchParams.get('v')||'20261116-base3-13';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=path=>fetch(asset(path),{cache:'no-cache'});
   const read=async path=>{
@@ -59,10 +59,13 @@
     const [activityResponse,statementResponse]=await Promise.all([fetchAsset(folder+'actividad.json'),fetchAsset(folder+'enunciado.html')]);
     if(activityResponse.status===404||statementResponse.status===404){notFound();return;}
     if(!activityResponse.ok||!statementResponse.ok)throw Error('No se pudo cargar la actividad.');
-    const [activity,statement,html,css,js]=await Promise.all([
+    const [activity,statement,ownHtml,css,js,skeleton]=await Promise.all([
       activityResponse.json(),statementResponse.text(),
-      optional(folder+'codigo.html'),optional(folder+'codigo.css'),optional(folder+'codigo.js')
+      optional(folder+'codigo.html'),optional(folder+'codigo.css'),optional(folder+'codigo.js'),
+      optional('contenido/esqueleto.html')
     ]);
+    // Sin HTML de partida (no hay codigo.html o está vacío), la pestaña HTML empieza con el esqueleto común.
+    const html=ownHtml.trim()?ownHtml:skeleton;
     if(!common.emailDomain||!common.format?.report||!common.format?.checksum||common.requireFullName!==false||
       !['archivo','apps-script'].includes(common.delivery?.type)||
       (common.delivery.type==='apps-script'&&typeof common.delivery.endpoint!=='string'))throw Error('Configuración incompleta o inválida.');

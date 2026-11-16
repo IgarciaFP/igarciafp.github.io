@@ -16,7 +16,8 @@ Las instrucciones detalladas están en el comentario inicial de `index.html`.
 - `motor/cargador.js`: lee el parámetro `a`, carga la actividad y valida la configuración.
 - `motor/laboratorio.js`: editor, vista previa, informe y entrega.
 - `motor/taller.css`: presentación del enunciado y de los paneles.
-- `contenido/config.json`: ajustes comunes a todas las actividades (dominio del correo y entrega).
+- `contenido/config.json`: ajustes comunes a todas las actividades (dominio del correo, control y entrega).
+- `contenido/esqueleto.html`: documento HTML con el que empieza la pestaña HTML cuando la actividad no aporta el suyo.
 - `actividades/MODULO/ACTIVIDAD/`: una carpeta por actividad.
 - `profesor.html`: página del profesor para revisar los archivos de entrega.
 - `servidor/`: Cloudflare Worker que controla la red y el horario y sella las entregas ([guía](servidor/README.md)).
@@ -28,7 +29,7 @@ La seguridad, la entrega y los estilos generales se cargan de `/base/motor/` (`s
 
 1. Crear la carpeta `actividades/diw/NOMBRE/` (o `dwec`, `ssii`). El nombre solo admite minúsculas, números y guiones.
 2. Añadir `actividad.json` con `title` y `version`, y `enunciado.html` con el texto.
-3. Añadir, si hacen falta, `codigo.html`, `codigo.css` y `codigo.js`. Los tres son opcionales: la pestaña de un archivo que no existe empieza vacía.
+3. Añadir, si hacen falta, `codigo.html`, `codigo.css` y `codigo.js`. Los tres son opcionales: las pestañas CSS y JavaScript sin archivo empiezan vacías, y la pestaña HTML sin archivo (o con el archivo vacío) empieza con el esqueleto de `contenido/esqueleto.html`.
 4. Dar a los alumnos la dirección `…/base3/?a=diw/NOMBRE`.
 
 El identificador de la práctica (`DIW-NOMBRE`), las claves de guardado y los nombres de archivo se derivan del módulo y de la carpeta. Sin parámetro, o si la actividad no existe, la página muestra «No se encuentra la actividad.».
