@@ -504,8 +504,10 @@ async function downloadReceipt(item){
   const documentCode=item.practice&&!fileMode?await encodeReport(item.practice):item.code;
   url=URL.createObjectURL(new Blob([documentCode],{type:'text/plain;charset=utf-8'}));
   const link=document.createElement('a');
-  const who=String(item.name||'').replace(/[^a-z0-9._-]/gi,'').slice(0,60);
-  link.href=url;link.download=(fileMode?'entrega-':'comprobante-')+config.filePrefix+'-'+(fileMode&&who?who+'-':'')+item.code.slice(-16).replace(/[^a-zA-Z0-9_-]/g,'')+'.txt';
+  // Entrega por archivo: «nombre de la actividad_usuario.txt», con el usuario del correo sin dominio.
+  const clean=text=>String(text||'').replace(/[\\/:*?"<>|\u0000-\u001f]/g,' ').replace(/\s+/g,' ').trim().replace(/^\.+|\.+$/g,'');
+  link.href=url;link.download=fileMode?(clean(config.title).slice(0,120)||config.filePrefix)+'_'+(clean(item.name).slice(0,64)||'alumno')+'.txt'
+   :'comprobante-'+config.filePrefix+'-'+item.code.slice(-16).replace(/[^a-zA-Z0-9_-]/g,'')+'.txt';
   document.body.append(link);link.click();link.remove();
   requestedReceipts.add(item.code);
   $('receipt-status').textContent=tr('receiptRequested');

@@ -35,7 +35,7 @@ La seguridad, la entrega y los estilos generales se cargan de `/base/motor/` (`s
 
 ## Entrega
 
-Por defecto (`"delivery": { "type": "archivo" }`) no hace falta receptor: al pulsar «Entregar» se descarga un único archivo `entrega-PREFIJO-USUARIO-XXXX.txt` con el código modificado, comprimido con gzip y codificado en base64 para URL, precedido del prefijo `format.report`. El alumno lo hace llegar al profesor por el medio que se le indique.
+Por defecto (`"delivery": { "type": "archivo" }`) no hace falta receptor: al pulsar «Entregar» se descarga un único archivo `NOMBRE DE LA ACTIVIDAD_USUARIO.txt` (el `title` de la práctica y el usuario del correo sin dominio) con el código modificado, comprimido con gzip y codificado en base64 para URL, precedido del prefijo `format.report`. El alumno lo hace llegar al profesor por el medio que se le indique.
 
 Con `"type": "apps-script"` y `endpoint`, además de la descarga, la entrega se envía al receptor de Google Sheets. En la hoja, la columna «Nombre» recibe la parte del correo anterior a la arroba, porque no se pide el nombre.
 

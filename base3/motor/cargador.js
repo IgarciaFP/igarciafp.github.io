@@ -3,7 +3,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261116-base3-6';
+  const version=loaderURL.searchParams.get('v')||'20261116-base3-8';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const read=async path=>{
     const response=await fetch(asset(path),{cache:'no-cache'});
