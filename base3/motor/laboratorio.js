@@ -506,7 +506,9 @@ async function deliver(item){
   item.receipt=await window.LabDelivery.send(config.delivery,envelope);
   persistDelivery(item);showDeliveryReceipt(item);
  }catch(error){
-  $('delivery-status').textContent=tr(error.message==='NOT_CONFIGURED'?'notConfigured':'deliveryFailed');
+  // El código (TIMEOUT, ROUTE, SCHEMA, STORAGE…) indica al profesor qué ha fallado en el receptor.
+  const code=/^[A-Z_]{3,20}$/.test(error.message)?error.message:'ERROR';
+  $('delivery-status').textContent=code==='NOT_CONFIGURED'?tr('notConfigured'):tr('deliveryFailed')+' Código para el profesor: '+code+'.';
   $('delivery-retry').textContent=tr('copyOpen');$('delivery-retry').disabled=false;
  }finally{delivering=false;}
 }
