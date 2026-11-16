@@ -1863,6 +1863,140 @@
 <h4 id="direccionamiento-classless">Direccionamiento sin clases (<em lang="en">classless</em>)</h4>
 <p>El direccionamiento actual utiliza un <strong>prefijo explícito</strong> para indicar qué bits identifican la red, sin deducirlo de la antigua clase. Permite ajustar los bloques a las necesidades y agrupar rutas.</p>
 <p>Por ejemplo, <code>192.168.10.0/26</code> deja 6 bits de host: 64 direcciones, de las cuales 62 son asignables en una subred convencional. Aunque empiece por 192, su máscara es <code>255.255.255.192</code>, no la antigua máscara de clase C. La notación CIDR expresa ese prefijo.</p>
+<figure id="esquema-cidr-26" style="margin:1.5rem auto;max-width:900px">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 610" role="img" aria-labelledby="cidr26-title cidr26-desc" style="display:block;width:100%;height:auto">
+<title id="cidr26-title">192.168.10.0/26: de los bits a las direcciones</title>
+<desc id="cidr26-desc">El prefijo /26 reserva 26 bits para la red y deja 6 para los hosts. La máscara tiene 26 unos y 6 ceros: 255.255.255.192. Los 6 bits de host generan 64 direcciones, de 192.168.10.0 a 192.168.10.63. La primera identifica la red y la última es el broadcast. Se pueden asignar las 62 direcciones de 192.168.10.1 a 192.168.10.62.</desc>
+<rect x="1" y="1" width="718" height="608" rx="20" fill="#f8fafc" stroke="#cbd5e1"/>
+<g font-family="Arial,sans-serif" fill="#183153" text-anchor="middle">
+<text x="360" y="44" font-size="28" font-weight="700" fill="#1e3a8a">192.168.10.0/26</text>
+<text x="300" y="88" font-size="23" font-weight="700" fill="#1e40af">26 bits de red</text>
+<text x="620" y="88" font-size="21" font-weight="700" fill="#0f766e">6 de host</text>
+<path d="M40 104V97H560V104M560 104V97H680V104" fill="none" stroke="#64748b" stroke-width="1.5"/>
+<rect x="40" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="50" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="60" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="70" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="80" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="90" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="100" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="110" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="120" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="130" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="140" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="150" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="160" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="170" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="180" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="190" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="200" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="210" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="220" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="230" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="240" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="250" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="260" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="270" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="280" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="290" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="300" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="310" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="320" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="330" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="340" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="350" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="360" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="370" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="380" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="390" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="400" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="410" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="420" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="430" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="440" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="450" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="460" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="470" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="480" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="490" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="500" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="510" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="520" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="530" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="540" y="112" width="20" height="44" fill="#dbeafe" stroke="white"/><text x="550" y="141" font-family="monospace" font-size="22" fill="#1e40af">1</text>
+<rect x="560" y="112" width="20" height="44" fill="#ccfbf1" stroke="white"/><text x="570" y="141" font-family="monospace" font-size="22" fill="#0f766e">0</text>
+<rect x="580" y="112" width="20" height="44" fill="#ccfbf1" stroke="white"/><text x="590" y="141" font-family="monospace" font-size="22" fill="#0f766e">0</text>
+<rect x="600" y="112" width="20" height="44" fill="#ccfbf1" stroke="white"/><text x="610" y="141" font-family="monospace" font-size="22" fill="#0f766e">0</text>
+<rect x="620" y="112" width="20" height="44" fill="#ccfbf1" stroke="white"/><text x="630" y="141" font-family="monospace" font-size="22" fill="#0f766e">0</text>
+<rect x="640" y="112" width="20" height="44" fill="#ccfbf1" stroke="white"/><text x="650" y="141" font-family="monospace" font-size="22" fill="#0f766e">0</text>
+<rect x="660" y="112" width="20" height="44" fill="#ccfbf1" stroke="white"/><text x="670" y="141" font-family="monospace" font-size="22" fill="#0f766e">0</text>
+<path d="M200 110V160M360 110V160M520 110V160" stroke="#64748b" stroke-width="2"/>
+<g font-family="monospace" font-size="24" font-weight="700"><text x="120" y="188">255</text><text x="280" y="188">255</text><text x="440" y="188">255</text><text x="600" y="188">192</text></g>
+<text x="360" y="225" font-size="22">Máscara: 255.255.255.192</text>
+<path d="M28 245H692" stroke="#cbd5e1"/>
+<text x="360" y="281" font-size="23" font-weight="700">32 − 26 = 6 bits de host → 2⁶ = 64 direcciones</text>
+<text x="360" y="311" font-size="20" fill="#475569">Cada casilla representa una dirección del bloque.</text>
+<rect x="40" y="330" width="8" height="24" rx="2" fill="#1e40af"/>
+<rect x="50" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="60" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="70" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="80" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="90" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="100" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="110" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="120" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="130" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="140" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="150" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="160" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="170" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="180" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="190" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="200" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="210" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="220" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="230" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="240" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="250" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="260" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="270" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="280" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="290" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="300" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="310" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="320" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="330" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="340" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="350" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="360" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="370" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="380" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="390" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="400" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="410" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="420" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="430" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="440" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="450" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="460" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="470" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="480" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="490" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="500" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="510" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="520" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="530" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="540" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="550" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="560" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="570" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="580" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="590" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="600" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="610" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="620" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="630" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="640" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="650" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="660" y="330" width="8" height="24" rx="2" fill="#0f766e"/>
+<rect x="670" y="330" width="8" height="24" rx="2" fill="#b45309"/>
+<path d="M44 356V372H124V389" fill="none" stroke="#1e40af" stroke-width="2"/>
+<path d="M360 356V389" fill="none" stroke="#0f766e" stroke-width="2"/>
+<path d="M674 356V372H596V389" fill="none" stroke="#b45309" stroke-width="2"/>
+<rect x="24" y="390" width="200" height="145" rx="12" fill="#eff6ff" stroke="#93c5fd"/>
+<rect x="240" y="390" width="240" height="145" rx="12" fill="#f0fdfa" stroke="#5eead4"/>
+<rect x="496" y="390" width="200" height="145" rx="12" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="124" y="421" font-size="23" font-weight="700" fill="#1e40af">Red</text>
+<text x="124" y="455" font-size="22">192.168.10.0</text>
+<text x="124" y="489" font-size="21">1 dirección</text>
+<text x="124" y="519" font-size="19">Host: 000000</text>
+<text x="360" y="421" font-size="23" font-weight="700" fill="#0f766e">Hosts asignables</text>
+<text x="360" y="451" font-size="22">192.168.10.1</text>
+<text x="360" y="480" font-size="22">a 192.168.10.62</text>
+<text x="360" y="519" font-size="23" font-weight="700" fill="#0f766e">62 direcciones</text>
+<text x="596" y="421" font-size="23" font-weight="700" fill="#92400e">Broadcast</text>
+<text x="596" y="455" font-size="22">192.168.10.63</text>
+<text x="596" y="489" font-size="21">1 dirección</text>
+<text x="596" y="519" font-size="19">Host: 111111</text>
+<text x="360" y="578" font-size="25" font-weight="700" fill="#1e3a8a">64 − 1 de red − 1 de broadcast = 62</text>
+</g>
+</svg>
+</figure>
 <p class="media-caption">Referencia: <a href="https://www.rfc-editor.org/rfc/rfc4632.html" target="_blank" rel="noopener noreferrer">RFC 4632: del direccionamiento por clases a CIDR</a>.</p>
 <h4 id="notacion-cidr">Notación CIDR</h4>
 <p>La notación <strong>CIDR</strong> (<em lang="en">Classless Inter-Domain Routing</em>) escribe la longitud del prefijo después de una barra. En <code>192.168.10.34/24</code>, el <code>/24</code> indica que los primeros 24 de los 32 bits identifican la red. Los 8 restantes corresponden al host. Las clases históricas A, B y C utilizaban máscaras predeterminadas. Con CIDR, la máscara se obtiene del prefijo indicado.</p>
