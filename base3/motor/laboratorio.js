@@ -658,6 +658,23 @@ $('lab').addEventListener('submit',e=>e.preventDefault());
 setInterval(clock,1000);
 try{const item=JSON.parse(localStorage.getItem(RECOVERY));if(item&&typeof item.code==='string'&&item.code.length<2000000&&typeof item.name==='string'&&item.language===language)lastDelivery=item;}catch{}
 showEditor('html');
+// Errores de JavaScript. El controlador común bloquea el laboratorio ante cualquier error de
+// la página. Antes de que lo vea se descartan los que no son de este laboratorio: avisos
+// benignos del navegador y errores de extensiones (frecuentes en perfiles gestionados por el
+// centro). De los demás se guarda el detalle para mostrarlo junto al aviso de bloqueo.
+let lastError='';
+const fromExtension=text=>/(?:chrome|moz|safari-web)-extension:\/\//.test(text);
+window.addEventListener('error',e=>{
+ const file=String(e.filename||''),message=String(e.message||'');
+ if(/^ResizeObserver loop/.test(message)||fromExtension(file)||fromExtension(String(e.error?.stack||''))||(message==='Script error.'&&!file)){e.stopImmediatePropagation();return;}
+ lastError=message+(file?' ('+file.split('/').pop().split('?')[0]+':'+e.lineno+')':'');
+},true);
+window.addEventListener('unhandledrejection',e=>{
+ const reason=e.reason,text=String(reason?.stack||reason?.message||reason);
+ if(fromExtension(text)){e.stopImmediatePropagation();return;}
+ const where=/([\w.-]+\.js)[^\n]*?:(\d+):\d+/.exec(String(reason?.stack||''));
+ lastError=String(reason?.message||reason)+(where?' ('+where[1]+':'+where[2]+')':'');
+},true);
 guard=window.createPracticeGuard({config,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,
  async saveBeforeReset(current){
   if(current==='paused')return savePracticeDocument();
@@ -669,6 +686,10 @@ guard=window.createPracticeGuard({config,validEmail,savePracticeDocument,refresh
  restoreValue(el,data){el.value=data.values[el.id]||'';}
 });
 if(['ready','reset','review'].includes(phase))fillCachedIdentity(false);
+// Registrados después de los del controlador: añaden el detalle a su aviso de bloqueo.
+const showError=()=>{if(lastError&&!$('guard-boot').hidden&&!$('guard-boot-detail').textContent.includes('Detalle técnico'))$('guard-boot-detail').textContent+=' Detalle técnico: '+lastError.slice(0,300);};
+window.addEventListener('error',showError);
+window.addEventListener('unhandledrejection',showError);
 rememberIdentity();guard.render();
 window.Lab.ready=true;
 })();
