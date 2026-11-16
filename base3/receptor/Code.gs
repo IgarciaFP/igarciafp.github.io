@@ -112,7 +112,9 @@ function recibirEntrega(sobre) {
       literal_(Utilities.formatDate(ahora, 'Europe/Madrid', 'dd/MM/yy HH:mm:ss')),
       literal_(datos.module), literal_(datos.activityTitle), literal_(datos.email.toLowerCase()),
       // El código solo contiene letras, cifras, punto, guion y guion bajo: no puede alterar la fórmula.
-      cabe ? { userEnteredValue: { formulaValue: '=HYPERLINK("' + PAGINA_PROFESOR_ + '#entrega=' + codigo + '","Probar código")' } } : literal_('Pide el archivo TXT al alumno'),
+      // Los argumentos se separan con punto y coma: es válido en todas las configuraciones regionales
+      // (con coma, las hojas en español dan #ERROR!).
+      cabe ? { userEnteredValue: { formulaValue: '=HYPERLINK("' + PAGINA_PROFESOR_ + '#entrega=' + codigo + '";"Probar código")' } } : literal_('Pide el archivo TXT al alumno'),
       literal_(Math.floor(segundos / 60) + ' min ' + String(segundos % 60).padStart(2, '0') + ' s'),
       literal_(ip_(datos)), literal_(incidencias_(datos)),
       literal_(cabe ? codigo : 'Entrega demasiado larga para una celda: pide el archivo TXT al alumno.')
