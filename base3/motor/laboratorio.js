@@ -9,8 +9,8 @@ const LANGS=['html','css','js'];
 const NAMES={html:'HTML',css:'CSS',js:'JavaScript'};
 const language='es';
 const ids=[...LANGS,'student'];
-const blank={html:'',css:'',js:''};
-const start=config.editor.inicio==='codigo'?code:blank;
+// El código de partida (contenido/codigo.*) se carga en las pestañas del editor al empezar.
+const start=code;
 const RECOVERY=config.storage.recovery;
 const IDENTITY_KEY=config.storage.key+'-identity';
 let emailTouched=false,guard=null,elapsed=0,started=null,phase='ready',delivering=false,lastDelivery=null,recoveryMode=false;
@@ -62,7 +62,7 @@ const texts={
  pendingRun:'Hay cambios sin ejecutar: pulsa Ejecutar.',
  navigation:'La vista previa no puede abrir otras páginas. Pulsa Ejecutar para volver a tu resultado.',
  consoleEmpty:'Aquí aparecen los mensajes de console.log y los errores de tu código.',
- chars:' caracteres',showCode:'Ver código del ejercicio',hideCode:'Ocultar código del ejercicio'
+ chars:' caracteres'
 };
 const tr=k=>texts[k]??k;
 
@@ -91,28 +91,6 @@ function timeSpent(at=Date.now()){return elapsed+(started===null?0:Math.max(0,at
 function clock(){const sec=Math.floor(timeSpent()/1000);$('clock').textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');}
 function startClock(){if(started===null)started=Date.now();clock();}
 function stopClock(at=Date.now()){elapsed=timeSpent(at);started=null;clock();}
-
-// ---------------------------------------------------------------- Código del ejercicio (desplegable)
-const codeTabs=[...document.querySelectorAll('[data-code]')];
-function showCode(lang){
- for(const tab of codeTabs)tab.setAttribute('aria-selected',String(tab.dataset.code===lang));
- $('code-text').textContent=code[lang];
- $('code-view').setAttribute('aria-label','Código '+NAMES[lang]+' del ejercicio');
- $('code-view').scrollTop=0;
-}
-const codeAvailable=LANGS.filter(lang=>code[lang].trim());
-for(const tab of codeTabs){
- tab.hidden=!codeAvailable.includes(tab.dataset.code);
- tab.addEventListener('click',()=>showCode(tab.dataset.code));
-}
-$('code-toggle').hidden=!codeAvailable.length;
-if(codeAvailable.length)showCode(codeAvailable[0]);
-$('code-toggle').addEventListener('click',()=>{
- const open=$('code-panel').hidden;
- $('code-panel').hidden=!open;
- $('code-toggle').setAttribute('aria-expanded',String(open));
- $('code-toggle').textContent=tr(open?'hideCode':'showCode');
-});
 
 // ---------------------------------------------------------------- Editor
 const editorTabs=[...document.querySelectorAll('[data-editor]')];
@@ -252,8 +230,17 @@ function autoPreview(){
 function schedulePreview(){clearTimeout(previewTimer);previewTimer=setTimeout(autoPreview,350);previewStatus();}
 function runPreview(){ranJs=value('js');renderPreview(value('html'),value('css'),ranJs);}
 // Al cargar o recuperar un intento solo se ejecuta sin pedirlo el JavaScript del ejercicio.
+// Un marco cargado mientras el taller está oculto puede quedarse en blanco al mostrarlo:
+// en ese caso se deja pendiente y se genera cuando el taller pasa a ser visible.
+let previewDeferred=false;
 function resetPreview(){
  ranJs=value('js')===start.js?value('js'):null;
+ if($('cuaderno').hidden){
+  previewDeferred=true;clearTimeout(previewTimer);previewTimer=null;
+  shown={html:null,css:null,js:null};previewStatus();
+  return;
+ }
+ previewDeferred=false;
  if(ownScript(value('html')))previewNotice(tr('pendingRun'));
  else renderPreview(value('html'),value('css'),ranJs??'');
 }
@@ -345,6 +332,7 @@ function afterRender(state,ctx){
  $('active-status').hidden=true;
  $('event-details').hidden=false;
  $('cuaderno').hidden=!active||needsRecovery;$('cuaderno').inert=!active||needsRecovery;
+ if(previewDeferred&&!$('cuaderno').hidden)resetPreview();
  $('delivery-stage').hidden=!submitted&&!recoveryMode;
  $('delivery-back').hidden=!recoveryMode||submitted;
  if(phase==='closing'){
@@ -574,7 +562,6 @@ document.title=config.title;
 document.querySelector('.topline').textContent=config.title;
 $('lab-title').textContent=config.title;
 document.querySelectorAll('[data-text]').forEach(el=>el.textContent=tr(el.dataset.text));
-$('code-toggle').textContent=tr('showCode');
 $('preview-console').dataset.empty=tr('consoleEmpty');
 
 $('delivery-retry').addEventListener('click',()=>{

@@ -4,8 +4,10 @@ Variante de [`/base/`](../base/README.md) para ejercicios de HTML, CSS y JavaScr
 
 - No se elige idioma: la interfaz está solo en español.
 - La identificación pide únicamente el correo del centro.
-- Bajo la barra aparece el enunciado, con un botón que despliega el código del ejercicio (HTML, CSS y JavaScript).
-- Debajo hay dos paneles: a la izquierda el editor con pestañas HTML, CSS y JavaScript; a la derecha el resultado y una consola.
+- Bajo la barra aparece el enunciado de la actividad.
+- Debajo hay dos paneles: a la izquierda el editor con pestañas HTML, CSS y JavaScript, que empiezan con el código de partida; a la derecha el resultado y una consola.
+
+Las instrucciones detalladas para preparar una práctica están en el comentario inicial de `index.html`.
 
 ## Organización
 
@@ -15,7 +17,7 @@ Variante de [`/base/`](../base/README.md) para ejercicios de HTML, CSS y JavaScr
 - `motor/taller.css`: presentación del enunciado y de los paneles.
 - `contenido/config.json`: identidad de la práctica, dominio del correo, claves y destino de entrega.
 - `contenido/enunciado.html`: texto de la actividad.
-- `contenido/codigo.html`, `codigo.css`, `codigo.js`: código del ejercicio. Pueden quedar vacíos; el desplegable solo muestra los que tienen contenido.
+- `contenido/codigo.html`, `codigo.css`, `codigo.js`: código de partida de cada pestaña del editor. Pueden quedar vacíos, pero deben existir.
 
 La seguridad, la entrega y los estilos generales se cargan de `/base/motor/` (`seguridad.js`, `entregas.js`, `estilos.css`), igual que en los laboratorios de `/labs/`. El receptor de Apps Script es el de [`/base/receptor/`](../base/receptor/README.md).
 
@@ -24,9 +26,8 @@ La seguridad, la entrega y los estilos generales se cargan de `/base/motor/` (`s
 1. Copiar esta carpeta a la ubicación de la nueva práctica.
 2. Editar `contenido/config.json`: `id`, `title`, `filePrefix` y `version` propios; claves únicas en `storage`; identificador propio en `format.save`; y `delivery.endpoint` con la URL `/exec` del receptor. Sin esa URL no se puede iniciar un intento.
 3. Registrar el `id` y la versión en `CONFIGURACION_` del receptor y volver a ejecutar su configuración.
-4. Escribir el enunciado en `contenido/enunciado.html` y el código del ejercicio en los tres archivos `codigo.*`.
-5. Elegir en `editor.inicio` cómo empieza el editor: `"codigo"` lo carga con el código del ejercicio y `"vacio"` lo deja en blanco.
-6. Al modificar archivos, actualizar los parámetros `v` de `index.html`.
+4. Escribir el enunciado en `contenido/enunciado.html` y el código de partida en los tres archivos `codigo.*`.
+5. Al modificar archivos, actualizar los parámetros `v` de `index.html`.
 
 `requireFullName` debe ser `false`: el módulo de seguridad común lo usa para no exigir el nombre.
 
