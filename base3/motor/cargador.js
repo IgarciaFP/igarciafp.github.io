@@ -3,7 +3,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261116-base3-3';
+  const version=loaderURL.searchParams.get('v')||'20261116-base3-5';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const read=async path=>{
     const response=await fetch(asset(path),{cache:'no-cache'});
@@ -28,7 +28,8 @@
       !config.storage?.key||!config.storage?.legacyKey||!config.storage?.recovery||
       !config.format?.save||!config.format?.report||!config.format?.checksum||
       !config.filePrefix||!config.version||config.requireFullName!==false||
-      config.delivery?.type!=='apps-script'||typeof config.delivery.endpoint!=='string')throw Error('Configuración incompleta o inválida.');
+      !['archivo','apps-script'].includes(config.delivery?.type)||
+      (config.delivery.type==='apps-script'&&typeof config.delivery.endpoint!=='string'))throw Error('Configuración incompleta o inválida.');
     const code={html,css,js};
     for(const [name,value]of Object.entries(code))
       if(value.length>10000)throw Error(`contenido/codigo.${name} supera los 10000 caracteres que admite el editor.`);

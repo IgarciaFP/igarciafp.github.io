@@ -5,12 +5,16 @@
 // Seguridad y entrega son los módulos comunes de /base/motor/.
 const {config,code}=window.Lab;
 const $=id=>document.getElementById(id);
-const LANGS=['html','css','js'];
-const NAMES={html:'HTML',css:'CSS',js:'JavaScript'};
+// Pestañas del editor. «txt» son notas del alumno: no forman parte del resultado.
+const LANGS=['html','css','js','txt'];
+const NAMES={html:'HTML',css:'CSS',js:'JavaScript',txt:'TXT'};
 const language='es';
 const ids=[...LANGS,'student'];
 // El código de partida (contenido/codigo.*) se carga en las pestañas del editor al empezar.
-const start=code;
+const start={...code,txt:''};
+// Entrega por defecto: un único archivo TXT descargado. Con "apps-script" se envía además al receptor.
+const fileMode=config.delivery.type==='archivo';
+const deliveryReady=()=>fileMode||window.LabDelivery.configured(config.delivery);
 const RECOVERY=config.storage.recovery;
 const IDENTITY_KEY=config.storage.key+'-identity';
 let emailTouched=false,guard=null,elapsed=0,started=null,phase='ready',delivering=false,lastDelivery=null,recoveryMode=false;
@@ -62,8 +66,18 @@ const texts={
  pendingRun:'Hay cambios sin ejecutar: pulsa Ejecutar.',
  navigation:'La vista previa no puede abrir otras páginas. Pulsa Ejecutar para volver a tu resultado.',
  consoleEmpty:'Aquí aparecen los mensajes de console.log y los errores de tu código.',
- chars:' caracteres'
+ chars:' caracteres',restore:'↺ Restaurar',restoreConfirm:'¿Seguro? Pulsa otra vez'
 };
+if(fileMode)Object.assign(texts,{
+ confirmBody:'El código quedará bloqueado y se descargará un único archivo TXT con tu entrega. Entrégalo como te indique el profesor.',
+ copyOpen:'Descargar la entrega de nuevo',
+ deliveryNote:'Tu entrega es el archivo TXT descargado: contiene todo tu código, comprimido y codificado. Consérvalo sin modificarlo y entrégalo como te indique el profesor.',
+ fileDelivered:'Entrega generada y descargada en un único archivo TXT.',
+ receiptRequested:'Descarga solicitada. Si no aparece el archivo, pulsa «Descargar la entrega de nuevo».',
+ receiptError:'No se pudo iniciar la descarga. La entrega sigue guardada en este navegador; vuelve a descargarla.',
+ pendingDelivery:'Ya generaste una entrega en este navegador. Puedes volver a descargar su archivo TXT.',
+ forcedPending:'Se ha alcanzado el tercer aviso. Se está generando el archivo de entrega con tu código conservado.'
+});
 const tr=k=>texts[k]??k;
 
 // ---------------------------------------------------------------- Identidad
@@ -82,7 +96,7 @@ function fillCachedIdentity(onlyEmpty=true){
 }
 function validEmail(email){return /^[^\s@]+@[^\s@]+$/.test(email)&&email.split('@')[1].toLowerCase()===config.emailDomain.toLowerCase();}
 function validIdentity(){return $('student').validity.valid&&validEmail($('student').value.trim());}
-function canStart(){return window.LabDelivery.configured(config.delivery)&&validIdentity();}
+function canStart(){return deliveryReady()&&validIdentity();}
 // El receptor y la hoja del profesor esperan un nombre: se usa la parte local del correo.
 function displayName(){return $('student').value.trim().toLowerCase().split('@')[0].slice(0,160);}
 
@@ -95,7 +109,18 @@ function stopClock(at=Date.now()){elapsed=timeSpent(at);started=null;clock();}
 // ---------------------------------------------------------------- Editor
 const editorTabs=[...document.querySelectorAll('[data-editor]')];
 let currentEditor='html';
-function countChars(){const el=$(currentEditor);$('editor-count').textContent=NAMES[currentEditor]+' · '+el.value.length+' / '+el.maxLength+tr('chars');}
+// Restaurar el código de partida de la pestaña visible. Pide una segunda pulsación:
+// no hay deshacer (Ctrl+Z está bloqueado) y un confirm() nativo sacaría de la pantalla completa.
+let restoreArmed=null,restoreTimer=null;
+function syncRestore(){
+ const button=$('editor-restore'),same=$(currentEditor).value===start[currentEditor];
+ if(restoreArmed&&(restoreArmed!==currentEditor||same)){restoreArmed=null;clearTimeout(restoreTimer);}
+ button.disabled=same;
+ button.classList.toggle('armado',!!restoreArmed);
+ button.textContent=tr(restoreArmed?'restoreConfirm':'restore');
+ button.setAttribute('aria-label',(restoreArmed?'Confirmar: restaurar':'Restaurar')+' el código de partida de '+NAMES[currentEditor]);
+}
+function countChars(){const el=$(currentEditor);$('editor-count').textContent=NAMES[currentEditor]+' · '+el.value.length+' / '+el.maxLength+tr('chars');syncRestore();}
 function showEditor(lang,focus=false){
  currentEditor=lang;
  for(const tab of editorTabs)tab.setAttribute('aria-selected',String(tab.dataset.editor===lang));
@@ -109,6 +134,7 @@ function invalidate(){reportRevision++;if($('report').value){$('report').value='
 function edited(id){
  if(!guard.canEdit())return;
  invalidate();guard.saveEdit();countChars();
+ if(id==='txt')return; // Las notas no cambian el resultado.
  if(id==='js')previewStatus();else schedulePreview();
 }
 function insertText(el,text){
@@ -117,6 +143,21 @@ function insertText(el,text){
  el.setRangeText(text,el.selectionStart,el.selectionEnd,'end');
  edited(el.id);
 }
+$('editor-restore').addEventListener('click',()=>{
+ if(!guard.canEdit())return;
+ const id=currentEditor;
+ if(restoreArmed!==id){
+  restoreArmed=id;clearTimeout(restoreTimer);
+  restoreTimer=setTimeout(()=>{restoreArmed=null;syncRestore();},4000);
+  syncRestore();return;
+ }
+ $(id).value=start[id];$(id).scrollTop=0;
+ invalidate();guard.saveEdit();countChars();
+ // El JavaScript de partida es del profesor: se ejecuta sin esperar a «Ejecutar».
+ if(id==='js')ranJs=start.js;
+ if(id!=='txt')autoPreview();
+ $(id).focus();
+});
 for(const id of LANGS){
  $(id).addEventListener('input',()=>edited(id));
  // Tabulador y sangría automática: escribir código sin poder pegar debe ser cómodo.
@@ -340,12 +381,12 @@ function afterRender(state,ctx){
   $('delivery-retry').textContent=tr('forcedRetry');
   $('delivery-retry').disabled=!!ctx.forcedBusy;
  }else if(phase==='submitted'){$('delivery-retry').textContent=tr('copyOpen');$('delivery-retry').disabled=delivering;}
- $('receipt-download').disabled=phase==='closing';
+ $('receipt-download').disabled=phase==='closing';$('receipt-download').hidden=fileMode;$('recovery-download').hidden=fileMode;
  if(phase==='submitted'&&lastDelivery?.code===$('report').value&&lastDelivery.receipt)showDeliveryReceipt(lastDelivery);
  $('download').hidden=true;
  $('student').disabled=false;
  $('guard-start').textContent=tr('start');
- $('delivery-config-note').hidden=window.LabDelivery.configured(config.delivery);
+ $('delivery-config-note').hidden=deliveryReady();
  $('practice-recover').disabled=!active||ctx.restoring||!validIdentity()||!!ctx.problem||ctx.busy||!ctx.supported||recoverySelecting||recoveryReading;
  $('guard-state').textContent=tr(active?($('answer-fields').disabled?'blocked':'active'):phase);
  $('guard-count').textContent='Incidencias: '+state.count+'/3';
@@ -362,7 +403,7 @@ function afterRender(state,ctx){
  // Última entrega: accesible desde la pantalla de identificación.
  $('recovery').hidden=recoveryMode||!lastDelivery||phase!=='ready';
  $('recovery-message').textContent=tr(lastDelivery?.receipt?'previousReceived':'pendingDelivery');
- $('recover-delivery').textContent=tr(lastDelivery?.receipt?'viewReceipt':'copyOpen');
+ $('recover-delivery').textContent=tr(fileMode?'recover':lastDelivery?.receipt?'viewReceipt':'copyOpen');
  $('practice-save').disabled=(!active&&!paused)||ctx.restoring||!!ctx.problem||ctx.busy||(active&&$('answer-fields').disabled);
  $('practice-finish').disabled=!guard?.canEdit();
  $('practice-reset').disabled=!!ctx.problem||ctx.busy||phase==='closing';
@@ -376,11 +417,13 @@ function confirmText(kind){
 
 // ---------------------------------------------------------------- Informe y entrega
 // Mismo formato de informe (versión 3) que el resto de laboratorios: tres respuestas
-// abiertas (html, css, js) pendientes de revisión del profesor.
+// abiertas (html, css, js y las notas txt) pendientes de revisión del profesor.
+// Las notas de la pestaña TXT se entregan como un comentario /* … */.
+function noteComment(text){return text.trim()?'/*\n'+text.replaceAll('*/','* /')+'\n*/':'';}
 async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
  if(!validIdentity()){$('reportStatus').textContent=tr('identityError');return null;}
  if(typeof CompressionStream!=='function'){$('reportStatus').textContent=tr('compressionError');return null;}
- const data={exam:config.id,activityVersion:config.version,version:3,language,name:displayName(),email:$('student').value.trim().toLowerCase(),finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:[...LANGS],answers:LANGS.map(id=>({question:id,answer:$(id).value,status:$(id).value.trim()?'teacher-review':'pending'})),parameters:{},parameterLocks:{},group:'',checked:{},hints:{},notes:'',...context,audit:metadata,url:location.href};
+ const data={exam:config.id,activityVersion:config.version,version:3,language,name:displayName(),email:$('student').value.trim().toLowerCase(),finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:[...LANGS],answers:LANGS.map(id=>({question:id,answer:id==='txt'?noteComment($(id).value):$(id).value,status:$(id).value.trim()?'teacher-review':'pending',modified:$(id).value!==start[id]})),modified:LANGS.filter(id=>$(id).value!==start[id]),parameters:{},parameterLocks:{},group:'',checked:{},hints:{},notes:'',...context,audit:metadata,url:location.href};
  const body=JSON.stringify(data);
  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(body))),b=>b.toString(16).padStart(2,'0')).join('');
  return encodeReport(body+'\nCódigo de comprobación: '+config.format.checksum+hash);
@@ -429,6 +472,12 @@ function showDeliveryReceipt(item){
  $('delivery-retry').textContent=tr('receivedShort');$('delivery-retry').disabled=true;
 }
 async function deliver(item){
+ if(fileMode){
+  // Sin receptor: la entrega es el archivo descargado.
+  $('delivery-status').textContent=tr('fileDelivered');
+  $('delivery-retry').textContent=tr('copyOpen');$('delivery-retry').disabled=false;
+  return;
+ }
  if(delivering)return;
  if(item.receipt){showDeliveryReceipt(item);return;}
  delivering=true;$('delivery-retry').disabled=true;$('delivery-status').textContent=tr('sending');
@@ -450,7 +499,8 @@ async function downloadReceipt(item){
   const documentCode=item.practice?await encodeReport(item.practice):item.code;
   url=URL.createObjectURL(new Blob([documentCode],{type:'text/plain;charset=utf-8'}));
   const link=document.createElement('a');
-  link.href=url;link.download='comprobante-'+config.filePrefix+'-'+item.code.slice(-16).replace(/[^a-zA-Z0-9_-]/g,'')+'.txt';
+  const who=String(item.name||'').replace(/[^a-z0-9._-]/gi,'').slice(0,60);
+  link.href=url;link.download=(fileMode?'entrega-':'comprobante-')+config.filePrefix+'-'+(fileMode&&who?who+'-':'')+item.code.slice(-16).replace(/[^a-zA-Z0-9_-]/g,'')+'.txt';
   document.body.append(link);link.click();link.remove();
   requestedReceipts.add(item.code);
   $('receipt-status').textContent=tr('receiptRequested');
@@ -466,6 +516,7 @@ async function downloadReport(){
  return sending;
 }
 function onReset(){
+ $('statement').open=true;
  emailTouched=false;recoveryMode=false;$('practice-file-status').hidden=true;
  $('delivery-retry').textContent=tr('copyOpen');$('delivery-status').textContent='';$('receipt-status').textContent='';
  showEditor('html');window.scrollTo(0,0);
@@ -566,6 +617,7 @@ $('preview-console').dataset.empty=tr('consoleEmpty');
 
 $('delivery-retry').addEventListener('click',()=>{
  if(phase==='closing'){$('delivery-status').textContent=tr('forcedPending');void guard.finalizeForced();return;}
+ if(fileMode){downloadReceipt(guard.canDownloadReport()?rememberDelivery($('report').value):lastDelivery);return;}
  if(guard.canDownloadReport())downloadReport();
  else if(lastDelivery)deliver(lastDelivery);
 });

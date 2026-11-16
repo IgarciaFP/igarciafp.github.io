@@ -4,8 +4,9 @@ Variante de [`/base/`](../base/README.md) para ejercicios de HTML, CSS y JavaScr
 
 - No se elige idioma: la interfaz está solo en español.
 - La identificación pide únicamente el correo del centro.
-- Bajo la barra aparece el enunciado de la actividad.
-- Debajo hay dos paneles: a la izquierda el editor con pestañas HTML, CSS y JavaScript, que empiezan con el código de partida; a la derecha el resultado y una consola.
+- Bajo la barra aparece el enunciado de la actividad, en una tarjeta desplegable que empieza abierta.
+- Debajo hay dos paneles: a la izquierda el editor con pestañas HTML, CSS y JavaScript, que empiezan con el código de partida y tienen un botón para restaurarlo, más una pestaña TXT para notas; a la derecha el resultado y una consola.
+- La entrega, por defecto, es un único archivo TXT descargado; el envío a Google Sheets es opcional.
 
 Las instrucciones detalladas para preparar una práctica están en el comentario inicial de `index.html`.
 
@@ -24,8 +25,8 @@ La seguridad, la entrega y los estilos generales se cargan de `/base/motor/` (`s
 ## Crear otra práctica
 
 1. Copiar esta carpeta a la ubicación de la nueva práctica.
-2. Editar `contenido/config.json`: `id`, `title`, `filePrefix` y `version` propios; claves únicas en `storage`; identificador propio en `format.save`; y `delivery.endpoint` con la URL `/exec` del receptor. Sin esa URL no se puede iniciar un intento.
-3. Registrar el `id` y la versión en `CONFIGURACION_` del receptor y volver a ejecutar su configuración.
+2. Editar `contenido/config.json`: `id`, `title`, `filePrefix` y `version` propios; claves únicas en `storage`; e identificador propio en `format.save`.
+3. Elegir la entrega en `delivery` (ver «Entrega»). Si se usa el receptor, registrar el `id` y la versión en su `CONFIGURACION_` y volver a ejecutar su configuración.
 4. Escribir el enunciado en `contenido/enunciado.html` y el código de partida en los tres archivos `codigo.*`.
 5. Al modificar archivos, actualizar los parámetros `v` de `index.html`.
 
@@ -33,7 +34,28 @@ La seguridad, la entrega y los estilos generales se cargan de `/base/motor/` (`s
 
 ## Entrega
 
-El informe conserva el formato del resto de laboratorios (versión 3), con tres respuestas abiertas, `html`, `css` y `js`, en estado «pendiente de revisión». Como no se pide el nombre, la columna «Nombre» de la hoja recibe la parte del correo anterior a la arroba. Cada pestaña admite 10 000 caracteres, el máximo por respuesta del receptor.
+Por defecto (`"delivery": { "type": "archivo" }`) no hace falta receptor: al pulsar «Entregar» se descarga un único archivo `entrega-PREFIJO-USUARIO-XXXX.txt` con todo el código, comprimido con gzip y codificado en base64 para URL, precedido del prefijo `format.report`. El alumno lo hace llegar al profesor por el medio que se le indique.
+
+Con `"type": "apps-script"` y `endpoint`, además de la descarga, la entrega se envía al receptor de Google Sheets. En la hoja, la columna «Nombre» recibe la parte del correo anterior a la arroba, porque no se pide el nombre.
+
+En ambos casos el informe conserva el formato del resto de laboratorios (versión 3), con cuatro respuestas abiertas: `html`, `css`, `js` y `txt`. La respuesta `txt` son las notas del alumno, envueltas en un comentario `/* … */` (vacía si no escribió nada). Cada una lleva `modified` (si difiere del código de partida) y el informe incluye la lista `modified` con las pestañas cambiadas. Cada pestaña admite 10 000 caracteres, el máximo por respuesta del receptor.
+
+Para leer un archivo de entrega:
+
+```python
+import base64, gzip, json, sys
+
+def abrir(texto, prefijo="SSII3G."):
+    datos = texto.strip()[len(prefijo):]
+    return gzip.decompress(base64.urlsafe_b64decode(datos + "=" * (-len(datos) % 4))).decode()
+
+practica = json.loads(abrir(open(sys.argv[1], encoding="utf-8").read()))
+informe = json.loads(abrir(practica["state"]["data"]["report"]).rsplit("\nCódigo de comprobación: ", 1)[0])
+print(informe["email"], informe["seconds"], "s · incidencias:", informe["incidents"], "· modificado:", informe["modified"])
+for respuesta in informe["answers"]:
+    print("\n=====", respuesta["question"], "(modificado)" if respuesta["modified"] else "(sin cambios)")
+    print(respuesta["answer"])
+```
 
 ## Vista previa
 

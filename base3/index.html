@@ -21,9 +21,9 @@
    "title"        Nombre que ve el alumno: en la pantalla de identificación, en la barra
                   superior y en la pestaña del navegador.
                   Ejemplo: "DIW · U03 · Tarjeta de presentación"
-   "id"           Identificador interno, único para cada práctica, sin espacios. Es el que
-                  aparece en la columna «Práctica» de la hoja de cálculo y el que hay que
-                  dar de alta en el receptor (paso 2). Ejemplo: "DIW-U03-TARJETA"
+   "id"           Identificador interno, único para cada práctica, sin espacios. Queda
+                  anotado en cada entrega y, si usas la hoja de cálculo, es el que hay
+                  que dar de alta en el receptor (paso 2). Ejemplo: "DIW-U03-TARJETA"
    "version"      Versión del enunciado, entre comillas: "1". Súbela a "2", "3"… cuando
                   cambies el enunciado o el código de partida con la práctica ya en uso.
    "filePrefix"   Prefijo de los archivos TXT que descarga el alumno, en minúsculas y sin
@@ -45,42 +45,57 @@
  ..........................................................................................
  2. DESTINO DE ENTREGA                                             contenido/config.json
  ..........................................................................................
-   Las entregas llegan a una hoja de Google Sheets a través del receptor de Apps Script
-   (archivos y guía completa en /base/receptor/README.md). Hacen falta las DOS partes:
+   Hay dos formas de entrega. Se elige en "delivery":
 
-   a) En el receptor (Google Sheets → Extensiones → Apps Script → Code.gs), añade la
-      práctica a la lista CONFIGURACION_ con el mismo "id" y "version" del paso 1:
+   A) ARCHIVO (por defecto). No necesita ninguna configuración externa:
 
-        { practiceId: 'DIW-U03-TARJETA', versions: ['1'], spreadsheetId: '',
-          origin: 'https://igarciafp.github.io', emailDomain: 'g.educaand.es' }
+        "delivery": { "type": "archivo" }
 
-      Con spreadsheetId: '' se usa la hoja a la que está vinculado el script. Conserva en
-      la lista las demás prácticas activas. Después selecciona la función
-      configurarReceptor_ y pulsa «Ejecutar». Si cambias la versión en config.json, añádela
-      también aquí: versions: ['1','2'].
-      Si es un receptor nuevo, publícalo con Implementar → Nueva implementación →
-      Aplicación web. Si ya estaba publicado, su dirección no cambia.
+      Al pulsar «Entregar», el navegador del alumno descarga UN ÚNICO archivo de texto,
+      llamado entrega-PREFIJO-USUARIO-XXXX.txt, con todo su código (HTML, CSS y
+      JavaScript) y sus notas, comprimido (gzip) y codificado (base64). El alumno te lo hace llegar
+      como le indiques (Moodle, Classroom, correo…). Dentro, cada pestaña lleva la marca
+      "modified" (true o false) para saber cuáles ha cambiado respecto al código de
+      partida, junto con el correo, el tiempo empleado y el registro de incidencias.
+      README.md explica cómo descodificar el archivo.
 
-   b) En contenido/config.json, pega la dirección de la aplicación web del receptor, la
-      que termina en /exec:
+   B) HOJA DE CÁLCULO. Además de descargar el archivo, envía la entrega a una hoja de
+      Google Sheets a través del receptor de Apps Script (archivos y guía completa en
+      /base/receptor/README.md). Hacen falta las DOS partes:
 
-        "delivery": {
-          "type": "apps-script",
-          "endpoint": "https://script.google.com/macros/s/ID_DE_LA_IMPLEMENTACION/exec"
-        }
+      a) En el receptor (Google Sheets → Extensiones → Apps Script → Code.gs), añade la
+         práctica a la lista CONFIGURACION_ con el mismo "id" y "version" del paso 1:
 
-   Mientras "endpoint" esté vacío, la página avisa de que falta el destino de entrega y el
-   botón «Empezar» permanece desactivado. Antes de usarla en clase haz una entrega de
-   prueba y comprueba que aparece en la pestaña «Entregas» de la hoja: una dirección
-   válida no garantiza por sí sola que el receptor esté bien configurado.
-   En la hoja, cada entrega tiene tres respuestas (html, css y js). Como no se pide el
-   nombre, la columna «Nombre» recibe la parte del correo anterior a la arroba.
+           { practiceId: 'DIW-U03-TARJETA', versions: ['1'], spreadsheetId: '',
+             origin: 'https://igarciafp.github.io', emailDomain: 'g.educaand.es' }
+
+         Con spreadsheetId: '' se usa la hoja a la que está vinculado el script. Conserva
+         en la lista las demás prácticas activas. Después selecciona la función
+         configurarReceptor_ y pulsa «Ejecutar». Si cambias la versión en config.json,
+         añádela también aquí: versions: ['1','2'].
+         Si es un receptor nuevo, publícalo con Implementar → Nueva implementación →
+         Aplicación web. Si ya estaba publicado, su dirección no cambia.
+
+      b) En contenido/config.json, pon la dirección de la aplicación web del receptor,
+         la que termina en /exec:
+
+           "delivery": {
+             "type": "apps-script",
+             "endpoint": "https://script.google.com/macros/s/ID_DE_LA_IMPLEMENTACION/exec"
+           }
+
+      Con "apps-script" y "endpoint" vacío, la página avisa de que falta el destino de
+      entrega y el botón «Empezar» permanece desactivado. Antes de usarla en clase haz
+      una entrega de prueba y comprueba que aparece en la pestaña «Entregas» de la hoja.
+      En la hoja, cada entrega tiene cuatro respuestas (html, css, js y txt). Como no se pide el
+      nombre, la columna «Nombre» recibe la parte del correo anterior a la arroba.
 
  ..........................................................................................
  3. ACTIVIDAD A REALIZAR                                        contenido/enunciado.html
  ..........................................................................................
    Escribe ahí el enunciado en HTML normal: se muestra bajo la barra superior, encima de
-   los dos paneles. Es solo un fragmento; no lleva <html>, <head> ni <body>. Ejemplo:
+   los dos paneles, en una tarjeta desplegable que aparece abierta al empezar y que el
+   alumno puede plegar pulsando «Actividad» para dejar más espacio al código. Es solo un fragmento; no lleva <html>, <head> ni <body>. Ejemplo:
 
         <h3>Título de la actividad</h3>
         <p>Explicación de lo que hay que conseguir.</p>
@@ -114,6 +129,10 @@
    derecha lo muestra desde el primer momento. Si quieres que una pestaña empiece en
    blanco, deja vacío su archivo.
 
+   El editor tiene además una cuarta pestaña, TXT, siempre vacía al empezar, para que el
+   alumno anote lo que necesite. No afecta al resultado y no tiene archivo de partida. En
+   la entrega, esas notas llegan como respuesta "txt", dentro de un comentario /* … */.
+
    No borres ninguno de los tres archivos aunque esté vacío: la plantilla necesita que
    existan. Cada archivo admite 10 000 caracteres como máximo.
    El resultado no puede cargar hojas de estilo ni scripts de otros sitios (Bootstrap por
@@ -137,8 +156,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Laboratorio</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-3">
-<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-3">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-5">
+<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-5">
 </head>
 <body>
 
@@ -196,11 +215,11 @@
 <main id="cuaderno" class="taller" hidden inert>
 <form id="lab" novalidate autocomplete="off">
 
-  <!-- 1. Enunciado de la actividad (contenido/enunciado.html). -->
-  <section class="enunciado" aria-labelledby="statement-title">
-    <h2 id="statement-title" class="eyebrow">Actividad</h2>
+  <!-- 1. Enunciado de la actividad (contenido/enunciado.html): tarjeta desplegable, abierta al inicio. -->
+  <details id="statement" class="enunciado" open>
+    <summary><span class="eyebrow">Actividad</span></summary>
     <div id="activity-text" class="enunciado-texto"></div>
-  </section>
+  </details>
 
   <!-- 2. Dos paneles: editor a la izquierda y resultado a la derecha. -->
   <div class="paneles">
@@ -211,13 +230,16 @@
           <button type="button" role="tab" data-editor="html" aria-controls="html">HTML</button>
           <button type="button" role="tab" data-editor="css" aria-controls="css">CSS</button>
           <button type="button" role="tab" data-editor="js" aria-controls="js">JavaScript</button>
+          <button type="button" role="tab" data-editor="txt" aria-controls="txt" title="Notas: no afectan al resultado y se entregan como comentario">TXT</button>
         </div>
       </header>
       <!-- Cerrado hasta identificarse y activar la pantalla completa. -->
       <fieldset id="answer-fields" class="editores" disabled>
+        <button id="editor-restore" type="button" class="restaurar" disabled>↺ Restaurar</button>
         <textarea id="html" class="editor" role="tabpanel" aria-label="Código HTML" maxlength="10000" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off"></textarea>
         <textarea id="css" class="editor" role="tabpanel" aria-label="Código CSS" maxlength="10000" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off" hidden></textarea>
         <textarea id="js" class="editor" role="tabpanel" aria-label="Código JavaScript" maxlength="10000" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off" hidden></textarea>
+        <textarea id="txt" class="editor notas" role="tabpanel" aria-label="Notas en texto" maxlength="9900" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Notas para el profesor (opcional). No afectan al resultado." hidden></textarea>
       </fieldset>
       <p class="panel-pie"><span id="editor-count"></span><span id="saveStatus" class="guardado" role="status"></span></p>
     </section>
@@ -275,6 +297,6 @@
   </div>
 </dialog>
 
-<script src="motor/cargador.js?v=20261116-base3-3" defer></script>
+<script src="motor/cargador.js?v=20261116-base3-5" defer></script>
 </body>
 </html>
