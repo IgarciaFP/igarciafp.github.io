@@ -71,7 +71,7 @@ const texts={
 if(fileMode)Object.assign(texts,{
  confirmBody:'El código quedará bloqueado y se descargará un único archivo TXT con tu entrega. Entrégalo como te indique el profesor.',
  copyOpen:'Descargar la entrega de nuevo',
- deliveryNote:'Tu entrega es el archivo TXT descargado: contiene todo tu código, comprimido y codificado. Consérvalo sin modificarlo y entrégalo como te indique el profesor.',
+ deliveryNote:'Tu entrega es el archivo TXT descargado: contiene el código que has modificado, comprimido y codificado. Consérvalo sin modificarlo y entrégalo como te indique el profesor.',
  fileDelivered:'Entrega generada y descargada en un único archivo TXT.',
  receiptRequested:'Descarga solicitada. Si no aparece el archivo, pulsa «Descargar la entrega de nuevo».',
  receiptError:'No se pudo iniciar la descarga. La entrega sigue guardada en este navegador; vuelve a descargarla.',
@@ -416,14 +416,18 @@ function confirmText(kind){
 }
 
 // ---------------------------------------------------------------- Informe y entrega
-// Mismo formato de informe (versión 3) que el resto de laboratorios: tres respuestas
-// abiertas (html, css, js y las notas txt) pendientes de revisión del profesor.
+// Mismo formato de informe (versión 3) que el resto de laboratorios: una respuesta abierta
+// por cada pestaña modificada (html, css, js y las notas txt), pendiente de revisión del profesor.
 // Las notas de la pestaña TXT se entregan como un comentario /* … */.
 function noteComment(text){return text.trim()?'/*\n'+text.replaceAll('*/','* /')+'\n*/':'';}
 async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
  if(!validIdentity()){$('reportStatus').textContent=tr('identityError');return null;}
  if(typeof CompressionStream!=='function'){$('reportStatus').textContent=tr('compressionError');return null;}
- const data={exam:config.id,activityVersion:config.version,version:3,language,name:displayName(),email:$('student').value.trim().toLowerCase(),finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:[...LANGS],answers:LANGS.map(id=>({question:id,answer:id==='txt'?noteComment($(id).value):$(id).value,status:$(id).value.trim()?'teacher-review':'pending',modified:$(id).value!==start[id]})),modified:LANGS.filter(id=>$(id).value!==start[id]),parameters:{},parameterLocks:{},group:'',checked:{},hints:{},notes:'',...context,audit:metadata,url:location.href};
+ // Solo se entregan las pestañas que difieren del código de partida. El receptor exige al
+ // menos una respuesta: si no cambió nada, se envía una única respuesta vacía «sin-cambios».
+ const changed=LANGS.filter(id=>$(id).value!==start[id]);
+ const answers=changed.length?changed.map(id=>({question:id,answer:id==='txt'?noteComment($(id).value):$(id).value,status:$(id).value.trim()?'teacher-review':'pending'})):[{question:'sin-cambios',answer:'',status:'pending'}];
+ const data={exam:config.id,activityVersion:config.version,version:3,language,name:displayName(),email:$('student').value.trim().toLowerCase(),finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:changed.length?changed:['sin-cambios'],answers,modified:changed,parameters:{},parameterLocks:{},group:'',checked:{},hints:{},notes:'',...context,audit:metadata,url:location.href};
  const body=JSON.stringify(data);
  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(body))),b=>b.toString(16).padStart(2,'0')).join('');
  return encodeReport(body+'\nCódigo de comprobación: '+config.format.checksum+hash);
@@ -496,7 +500,8 @@ async function downloadReceipt(item){
  if(!item?.code)return false;
  let url;
  try{
-  const documentCode=item.practice?await encodeReport(item.practice):item.code;
+  // En la entrega por archivo se descarga solo el informe: no incluye el código sin modificar.
+  const documentCode=item.practice&&!fileMode?await encodeReport(item.practice):item.code;
   url=URL.createObjectURL(new Blob([documentCode],{type:'text/plain;charset=utf-8'}));
   const link=document.createElement('a');
   const who=String(item.name||'').replace(/[^a-z0-9._-]/gi,'').slice(0,60);

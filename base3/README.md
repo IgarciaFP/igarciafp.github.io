@@ -6,7 +6,7 @@ Variante de [`/base/`](../base/README.md) para ejercicios de HTML, CSS y JavaScr
 - La identificación pide únicamente el correo del centro.
 - Bajo la barra aparece el enunciado de la actividad, en una tarjeta desplegable que empieza abierta.
 - Debajo hay dos paneles: a la izquierda el editor con pestañas HTML, CSS y JavaScript, que empiezan con el código de partida y tienen un botón para restaurarlo, más una pestaña TXT para notas; a la derecha el resultado y una consola.
-- La entrega, por defecto, es un único archivo TXT descargado; el envío a Google Sheets es opcional.
+- La entrega, por defecto, es un único archivo TXT descargado con el código modificado; el envío a Google Sheets es opcional.
 
 Las instrucciones detalladas para preparar una práctica están en el comentario inicial de `index.html`.
 
@@ -34,28 +34,27 @@ La seguridad, la entrega y los estilos generales se cargan de `/base/motor/` (`s
 
 ## Entrega
 
-Por defecto (`"delivery": { "type": "archivo" }`) no hace falta receptor: al pulsar «Entregar» se descarga un único archivo `entrega-PREFIJO-USUARIO-XXXX.txt` con todo el código, comprimido con gzip y codificado en base64 para URL, precedido del prefijo `format.report`. El alumno lo hace llegar al profesor por el medio que se le indique.
+Por defecto (`"delivery": { "type": "archivo" }`) no hace falta receptor: al pulsar «Entregar» se descarga un único archivo `entrega-PREFIJO-USUARIO-XXXX.txt` con el código modificado, comprimido con gzip y codificado en base64 para URL, precedido del prefijo `format.report`. El alumno lo hace llegar al profesor por el medio que se le indique.
 
 Con `"type": "apps-script"` y `endpoint`, además de la descarga, la entrega se envía al receptor de Google Sheets. En la hoja, la columna «Nombre» recibe la parte del correo anterior a la arroba, porque no se pide el nombre.
 
-En ambos casos el informe conserva el formato del resto de laboratorios (versión 3), con cuatro respuestas abiertas: `html`, `css`, `js` y `txt`. La respuesta `txt` son las notas del alumno, envueltas en un comentario `/* … */` (vacía si no escribió nada). Cada una lleva `modified` (si difiere del código de partida) y el informe incluye la lista `modified` con las pestañas cambiadas. Cada pestaña admite 10 000 caracteres, el máximo por respuesta del receptor.
+En ambos casos el informe conserva el formato del resto de laboratorios (versión 3) e incluye solo las pestañas que difieren del código de partida, como respuestas abiertas `html`, `css`, `js` o `txt`; la lista `modified` las enumera. La respuesta `txt` son las notas del alumno, envueltas en un comentario `/* … */`. Si no se modificó nada, hay una única respuesta vacía `sin-cambios`, porque el receptor exige al menos una. Cada pestaña admite 10 000 caracteres, el máximo por respuesta del receptor.
 
 Para leer un archivo de entrega:
 
 ```python
 import base64, gzip, json, sys
 
-def abrir(texto, prefijo="SSII3G."):
-    datos = texto.strip()[len(prefijo):]
-    return gzip.decompress(base64.urlsafe_b64decode(datos + "=" * (-len(datos) % 4))).decode()
-
-practica = json.loads(abrir(open(sys.argv[1], encoding="utf-8").read()))
-informe = json.loads(abrir(practica["state"]["data"]["report"]).rsplit("\nCódigo de comprobación: ", 1)[0])
+texto = open(sys.argv[1], encoding="utf-8").read().strip()[len("SSII3G."):]
+contenido = gzip.decompress(base64.urlsafe_b64decode(texto + "=" * (-len(texto) % 4))).decode()
+informe = json.loads(contenido.rsplit("\nCódigo de comprobación: ", 1)[0])
 print(informe["email"], informe["seconds"], "s · incidencias:", informe["incidents"], "· modificado:", informe["modified"])
 for respuesta in informe["answers"]:
-    print("\n=====", respuesta["question"], "(modificado)" if respuesta["modified"] else "(sin cambios)")
+    print("\n=====", respuesta["question"])
     print(respuesta["answer"])
 ```
+
+El archivo de «Guardar y pausar» (`practica-….txt`) es distinto: guarda el intento completo para poder recuperarlo.
 
 ## Vista previa
 

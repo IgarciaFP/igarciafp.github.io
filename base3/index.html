@@ -52,11 +52,12 @@
         "delivery": { "type": "archivo" }
 
       Al pulsar «Entregar», el navegador del alumno descarga UN ÚNICO archivo de texto,
-      llamado entrega-PREFIJO-USUARIO-XXXX.txt, con todo su código (HTML, CSS y
-      JavaScript) y sus notas, comprimido (gzip) y codificado (base64). El alumno te lo hace llegar
-      como le indiques (Moodle, Classroom, correo…). Dentro, cada pestaña lleva la marca
-      "modified" (true o false) para saber cuáles ha cambiado respecto al código de
-      partida, junto con el correo, el tiempo empleado y el registro de incidencias.
+      llamado entrega-PREFIJO-USUARIO-XXXX.txt, comprimido (gzip) y codificado (base64).
+      Contiene SOLO las pestañas que el alumno ha modificado respecto al código de partida
+      (HTML, CSS, JavaScript y sus notas), junto con el correo, el tiempo empleado y el
+      registro de incidencias. Las pestañas sin cambios no se incluyen: su contenido es el
+      de contenido/codigo.*. El alumno te lo hace llegar como le indiques (Moodle,
+      Classroom, correo…).
       README.md explica cómo descodificar el archivo.
 
    B) HOJA DE CÁLCULO. Además de descargar el archivo, envía la entrega a una hoja de
@@ -87,7 +88,8 @@
       Con "apps-script" y "endpoint" vacío, la página avisa de que falta el destino de
       entrega y el botón «Empezar» permanece desactivado. Antes de usarla en clase haz
       una entrega de prueba y comprueba que aparece en la pestaña «Entregas» de la hoja.
-      En la hoja, cada entrega tiene cuatro respuestas (html, css, js y txt). Como no se pide el
+      En la hoja, cada entrega tiene una respuesta por pestaña modificada (html, css, js
+      o txt); si el alumno no cambió nada, una sola respuesta vacía llamada sin-cambios. Como no se pide el
       nombre, la columna «Nombre» recibe la parte del correo anterior a la arroba.
 
  ..........................................................................................
@@ -156,8 +158,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Laboratorio</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-5">
-<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-5">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-6">
+<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-6">
 </head>
 <body>
 
@@ -297,6 +299,6 @@
   </div>
 </dialog>
 
-<script src="motor/cargador.js?v=20261116-base3-5" defer></script>
+<script src="motor/cargador.js?v=20261116-base3-6" defer></script>
 </body>
 </html>
