@@ -10,7 +10,8 @@
      MODULO     diw, dwec o ssii
      ACTIVIDAD  nombre de la carpeta de la actividad
 
-     Ejemplos:  …/base3/?a=diw/tarjeta      …/base3/?a=dwec/contador
+     Ejemplos:  …/base3/?a=diw/01-01-tarjeta-de-presentacion
+                …/base3/?a=dwec/01-01-contador-de-pulsaciones
 
  Sin el parámetro "a", con un módulo distinto o con una actividad que no exista, la página
  muestra «No se encuentra la actividad.» y no deja empezar.
@@ -18,11 +19,36 @@
  No hace falta tocar este archivo ni la carpeta motor/.
 
  ..........................................................................................
- 1. CREAR UNA ACTIVIDAD                             actividades/MODULO/ACTIVIDAD/
+ 1. NOMBRE DE LAS ACTIVIDADES
  ..........................................................................................
-   Crea una carpeta dentro de actividades/diw/, actividades/dwec/ o actividades/ssii/.
-   Su nombre va en la dirección: solo minúsculas, números y guiones (sin espacios, tildes
-   ni eñes), por ejemplo actividades/diw/menu-responsive/. Dentro van estos archivos:
+   Todas las actividades se nombran igual:
+
+        MODULO NN-MM-Nombre de la actividad      →   DIW02-01-Menú responsive
+
+        MODULO   diw, dwec o ssii
+        NN       número de tema, con dos cifras (02)
+        MM       número de la actividad dentro del tema, con dos cifras (01)
+
+   Ese nombre se reparte así:
+
+     · El MÓDULO es la carpeta: actividades/diw/, actividades/dwec/ o actividades/ssii/.
+     · NN-MM-nombre es la carpeta de la actividad, que es lo que va en la dirección. Las
+       direcciones solo admiten minúsculas, números y guiones, así que se escribe sin
+       tildes, eñes ni espacios:        actividades/diw/02-01-menu-responsive/
+                                        …/base3/?a=diw/02-01-menu-responsive
+     · NN-MM-Nombre de la actividad, ya con sus mayúsculas, tildes y espacios, es el
+       "title" de actividad.json (paso 2):      "title": "02-01-Menú responsive"
+
+   El alumno ve el nombre completo con el módulo delante, «DIW02-01-Menú responsive», en
+   la identificación, en la barra y en el nombre del archivo de entrega. En la hoja de
+   cálculo el módulo va en su columna (DIW) y el nombre en la suya (02-01-Menú responsive),
+   de modo que al ordenar por nombre las actividades quedan por tema y número.
+   Si escribes el módulo en el "title" («diw02-01-Menú responsive»), no se repite.
+
+ ..........................................................................................
+ 2. CREAR UNA ACTIVIDAD                             actividades/MODULO/NN-MM-nombre/
+ ..........................................................................................
+   Crea la carpeta de la actividad con el nombre del paso 1. Dentro van estos archivos:
 
      actividad.json    OBLIGATORIO   nombre y versión de la actividad
      enunciado.html    OBLIGATORIO   texto de la actividad
@@ -30,26 +56,22 @@
      codigo.css        opcional      código CSS de partida (pestaña CSS)
      codigo.js         opcional      código JavaScript de partida (pestaña JavaScript)
 
-   El módulo NO se escribe en ningún archivo: es la carpeta (diw, dwec o ssii) en la que
-   está la actividad. Se muestra delante del nombre («DIW · Menú responsive») en la
-   identificación, en la barra y en el nombre del archivo de entrega, y queda anotado en
-   cada entrega.
-   Lo más rápido es copiar una carpeta de ejemplo (actividades/diw/tarjeta/) y cambiarla.
+   Lo más rápido es copiar una carpeta de ejemplo
+   (actividades/diw/01-01-tarjeta-de-presentacion/) y cambiarla.
 
- ..........................................................................................
- 2. NOMBRE Y VERSIÓN                                               actividad.json
- ..........................................................................................
+   actividad.json:
+
         {
-          "title": "Menú responsive",
+          "title": "02-01-Menú responsive",
           "version": "1"
         }
 
-   "title"    Nombre que ve el alumno (sin el módulo, que se añade solo).
+   "title"    Nombre de la actividad, NN-MM-Nombre (paso 1).
    "version"  Súbela a "2", "3"… cuando cambies el enunciado o el código de partida con la
               actividad ya en uso: así cada entrega dice con qué versión se hizo.
 
-   El identificador de la práctica (DIW-MENU-RESPONSIVE), las claves con las que el
-   navegador guarda el intento y los nombres de los archivos se generan solos a partir
+   El identificador de la práctica (DIW-02-01-MENU-RESPONSIVE), las claves con las que
+   el navegador guarda el intento y los nombres de los archivos se generan solos a partir
    del módulo y de la carpeta.
 
  ..........................................................................................
@@ -116,9 +138,9 @@
         "delivery": { "type": "archivo" }
 
       Al pulsar «Entregar», el navegador del alumno descarga UN ÚNICO archivo de texto,
-      llamado «MÓDULO · NOMBRE DE LA ACTIVIDAD_USUARIO.txt», comprimido (gzip) y
+      llamado «MÓDULO NN-MM-NOMBRE_USUARIO.txt», comprimido (gzip) y
       codificado (base64). El usuario es la parte del correo anterior a la arroba:
-      «DIW · Menú responsive_ana.perez.txt».
+      «DIW02-01-Menú responsive_ana.perez.txt».
       Contiene SOLO las pestañas que el alumno ha modificado respecto al código de partida
       (HTML, CSS, JavaScript y sus notas), junto con el módulo, la actividad, el correo,
       el tiempo empleado y el registro de incidencias. El alumno te lo hace llegar como
@@ -166,7 +188,7 @@
      navegadores no usen la versión anterior guardada en caché. Para crear o cambiar
      actividades no hace falta.
    · Para probar en tu ordenador, ejecuta  python3 -m http.server 8000  en la raíz del
-     repositorio y abre http://localhost:8000/base3/?a=diw/tarjeta (no funciona abriendo
+     repositorio y abre http://localhost:8000/base3/?a=diw/01-01-tarjeta-de-presentacion (no funciona abriendo
      el archivo con doble clic, y necesita la carpeta /base/motor/ del mismo sitio).
    · Más detalles en README.md.
 ==========================================================================================
@@ -176,8 +198,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Laboratorio</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-13">
-<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-13">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-14">
+<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-14">
 </head>
 <body>
 
@@ -317,6 +339,6 @@
   </div>
 </dialog>
 
-<script src="motor/cargador.js?v=20261116-base3-13" defer></script>
+<script src="motor/cargador.js?v=20261116-base3-14" defer></script>
 </body>
 </html>

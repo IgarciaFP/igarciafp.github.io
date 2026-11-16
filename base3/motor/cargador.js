@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261116-base3-13';
+  const version=loaderURL.searchParams.get('v')||'20261116-base3-14';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=path=>fetch(asset(path),{cache:'no-cache'});
   const read=async path=>{
@@ -76,10 +76,13 @@
       if(value.length>10000)throw Error(`codigo.${name} supera los 10000 caracteres que admite el editor.`);
     // Identidad y claves derivadas de módulo y actividad: no hay que configurarlas a mano.
     const MOD=mod.toUpperCase(),id=MOD+'-'+slug.toUpperCase(),store='base3-'+mod+'-'+slug;
-    const config={...common,module:MOD,activity:slug,id,title:MOD+' · '+activity.title.trim(),
+    // Nombre de la actividad: «NN-MM-Nombre» (tema y número de actividad). Se muestra con el
+    // módulo delante: «DIW02-01-Nombre». Si el título ya lo lleva escrito, no se repite.
+    const name=activity.title.trim().replace(new RegExp('^'+mod+'\\s*','i'),'').trim()||activity.title.trim();
+    const config={...common,module:MOD,activity:slug,id,title:MOD+name,
       filePrefix:mod+'-'+slug,version:String(activity.version).trim(),
       storage:{key:store+'-v1',legacyKey:store+'-anterior-v1',recovery:store+'-ultima-entrega-v1'},
-      activityTitle:activity.title.trim(),control:server?{servidor:server,clave:key,sinComprobar:unchecked}:null,
+      activityTitle:name,control:server?{servidor:server,clave:key,sinComprobar:unchecked}:null,
       format:{...common.format,save:id+'-SAVE'}};
     document.getElementById('activity-text').innerHTML=statement;
     const seen=new Set();

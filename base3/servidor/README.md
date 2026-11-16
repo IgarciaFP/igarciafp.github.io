@@ -52,7 +52,7 @@ Muestra la IP que ve el servidor, si pertenece a la red, el día y la hora, y qu
 Añadir la clave a la dirección de la actividad:
 
 ```
-https://igarciafp.github.io/base3/?a=diw/tarjeta&clave=LA_CLAVE
+https://igarciafp.github.io/base3/?a=diw/01-01-tarjeta-de-presentacion&clave=LA_CLAVE
 ```
 
 Las entregas hechas así llevan la marca «clave del profesor». La clave queda visible en la barra de direcciones: no usarla en una pantalla proyectada.

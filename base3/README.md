@@ -27,18 +27,18 @@ La seguridad, la entrega y los estilos generales se cargan de `/base/motor/` (`s
 
 ## Crear una actividad
 
-1. Crear la carpeta `actividades/diw/NOMBRE/` (o `dwec`, `ssii`). El nombre solo admite minúsculas, números y guiones.
-2. Añadir `actividad.json` con `title` y `version`, y `enunciado.html` con el texto.
+1. Crear la carpeta `actividades/diw/NN-MM-nombre/` (o `dwec`, `ssii`), con NN el número de tema y MM el de la actividad, por ejemplo `actividades/diw/02-01-menu-responsive/`. Solo admite minúsculas, números y guiones.
+2. Añadir `actividad.json` con `title` (`"02-01-Menú responsive"`) y `version`, y `enunciado.html` con el texto.
 3. Añadir, si hacen falta, `codigo.html`, `codigo.css` y `codigo.js`. Los tres son opcionales: las pestañas CSS y JavaScript sin archivo empiezan vacías, y la pestaña HTML sin archivo (o con el archivo vacío) empieza con el esqueleto de `contenido/esqueleto.html`.
-4. Dar a los alumnos la dirección `…/base3/?a=diw/NOMBRE`.
+4. Dar a los alumnos la dirección `…/base3/?a=diw/02-01-menu-responsive`.
 
-El identificador de la práctica (`DIW-NOMBRE`), las claves de guardado y los nombres de archivo se derivan del módulo y de la carpeta. Sin parámetro, o si la actividad no existe, la página muestra «No se encuentra la actividad.».
+Las actividades se nombran `MÓDULO NN-MM-Nombre de la actividad`: el alumno ve «DIW02-01-Menú responsive» y en la hoja el módulo y el nombre van en columnas separadas. El identificador de la práctica (`DIW-02-01-MENU-RESPONSIVE`), las claves de guardado y los nombres de archivo se derivan del módulo y de la carpeta. Sin parámetro, o si la actividad no existe, la página muestra «No se encuentra la actividad.».
 
-Ejemplos incluidos: `?a=diw/tarjeta` (con los tres archivos) y `?a=dwec/contador` (solo JavaScript).
+Ejemplos incluidos: `?a=diw/01-01-tarjeta-de-presentacion` (con los tres archivos) y `?a=dwec/01-01-contador-de-pulsaciones` (solo JavaScript).
 
 ## Entrega
 
-Por defecto (`"delivery": { "type": "archivo" }`) no hace falta receptor: al pulsar «Entregar» se descarga un único archivo `MÓDULO · NOMBRE DE LA ACTIVIDAD_USUARIO.txt` (el usuario es el del correo, sin dominio) con el código modificado, comprimido con gzip y codificado en base64 para URL, precedido del prefijo `format.report`. El alumno lo hace llegar al profesor por el medio que se le indique.
+Por defecto (`"delivery": { "type": "archivo" }`) no hace falta receptor: al pulsar «Entregar» se descarga un único archivo `MÓDULO NN-MM-NOMBRE_USUARIO.txt` (el usuario es el del correo, sin dominio) con el código modificado, comprimido con gzip y codificado en base64 para URL, precedido del prefijo `format.report`. El alumno lo hace llegar al profesor por el medio que se le indique.
 
 Con `"type": "apps-script"` y `endpoint`, además de la descarga, la entrega se envía al receptor de `receptor/`, que añade una fila en la pestaña «Entregas» de la hoja del profesor (columnas A a I).
 
@@ -85,4 +85,4 @@ Servir desde la raíz del repositorio, porque se usan rutas `/base/motor/`:
 python3 -m http.server 8000
 ```
 
-Abrir `http://localhost:8000/base3/?a=diw/tarjeta`.
+Abrir `http://localhost:8000/base3/?a=diw/01-01-tarjeta-de-presentacion`.
