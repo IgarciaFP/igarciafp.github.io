@@ -1,0 +1,351 @@
+<!doctype html>
+<!--
+ PÁGINA DEL PROFESOR · base3
+ Arrastra aquí los archivos entrega-….txt de los alumnos para ver su código y su resultado.
+ Los archivos se leen en este navegador: no se suben ni se envían a ningún sitio.
+ Usa contenido/config.json y contenido/codigo.* de ESTA carpeta para descodificar las
+ entregas y reconstruir las pestañas que el alumno no modificó, así que cada práctica
+ tiene su propia página: copia este archivo junto con el resto de la carpeta.
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Entregas · Profesor</title>
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-7">
+<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-7">
+<style>
+.revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
+.revision h1{font-size:1.5rem;line-height:1.25;margin:0}
+.revision .eyebrow{margin:0 0 4px}
+.cabecera{display:flex;align-items:flex-end;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;margin-bottom:16px}
+.cabecera p{margin:0;font-size:.85rem;color:var(--muted)}
+.soltar{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:40px 20px;border:2px dashed #97a6bb;border-radius:14px;background:#fff;color:var(--muted);cursor:pointer}
+.soltar strong{color:var(--navy);font-size:1.05rem}
+.soltar.encima{border-color:var(--blue);background:#edf3ff}
+.soltar.compacta{flex-direction:row;padding:12px 16px;gap:12px}
+.soltar.compacta strong{font-size:.9rem}
+.soltar small{display:inline}
+#avisos{list-style:none;margin:12px 0 0;padding:0;font-size:.86rem}
+#avisos li{padding:8px 12px;margin-top:6px;border-radius:8px;background:#fffbeb;border-left:4px solid #e8aa28;overflow-wrap:anywhere}
+.mesa{display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;margin-top:16px;align-items:start}
+.lista{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.lista-cabecera{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;background:#f7f9fc;border-bottom:1px solid var(--line);font-size:.85rem;font-weight:650}
+.lista-cabecera button{padding:4px 10px;font-size:.78rem}
+#entregas{list-style:none;margin:0;padding:6px;max-height:calc(100dvh - 60px);overflow:auto}
+#entregas button{display:block;width:100%;text-align:left;background:transparent;color:var(--navy);border:1px solid transparent;border-radius:9px;padding:8px 10px;font-weight:500}
+#entregas button:hover{background:#f2f5fa}
+#entregas button[aria-current=true]{background:#e9f0ff;border-color:#b9cbf5}
+#entregas b{display:block;font-size:.9rem;overflow-wrap:anywhere}
+#entregas small{font-size:.76rem;line-height:1.45}
+.alerta{color:#b42318}
+.ficha{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;padding:0;list-style:none}
+.ficha li{background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.82rem}
+.ficha li.mal{border-color:#f3b4ad;background:#fff4f2;color:#8f1d14}
+.ficha li.bien{border-color:#b7e3cf;background:#f1fbf6;color:#0f5f47}
+.detalle h2{font-size:1.2rem;margin:0 0 10px;overflow-wrap:anywhere}
+.detalle .paneles{min-height:560px;height:calc(100dvh - 190px)}
+.pestanas button .punto{color:#e8590c;margin-left:3px}
+.panel-cabecera label{display:flex;align-items:center;gap:6px;margin:0;font-size:.8rem;font-weight:500;color:var(--muted);white-space:nowrap}
+.panel-cabecera input[type=checkbox]{width:16px;min-height:16px;margin:0}
+#codigo{flex:1;min-height:0;margin:0;border-radius:0;padding:10px 0;font:13.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:2;user-select:text}
+#codigo span{display:block;padding:0 16px 0 28px;min-height:1.6em;white-space:pre;position:relative}
+#codigo .mas{background:#16402e;color:#d6ffe9}
+#codigo .menos{background:#4a1d22;color:#ffc9c4;text-decoration:line-through;text-decoration-color:#ff8c8280}
+#codigo .mas::before,#codigo .menos::before{position:absolute;left:10px;text-decoration:none}
+#codigo .mas::before{content:"+"}
+#codigo .menos::before{content:"−"}
+#registro{margin:14px 0 0;background:#fff}
+#registro pre{margin:10px 0 0;padding:14px 16px;font-size:12.5px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:340px}
+@media(max-width:1000px){.mesa{grid-template-columns:minmax(0,1fr)}#entregas{max-height:220px}.detalle .paneles{height:auto}}
+</style>
+</head>
+<body>
+<main class="revision">
+  <div class="cabecera">
+    <div>
+      <p class="eyebrow">Entregas · Profesor</p>
+      <h1 id="titulo">Cargando…</h1>
+    </div>
+    <p>Los archivos se leen en este navegador. No se suben ni se envían a ningún sitio.</p>
+  </div>
+
+  <label id="soltar" class="soltar" for="archivos">
+    <strong>Arrastra aquí los archivos de entrega (.txt)</strong>
+    <span>o pulsa para elegirlos. Puedes soltar varios a la vez.</span>
+  </label>
+  <input id="archivos" type="file" accept=".txt,text/plain" multiple hidden>
+  <ul id="avisos" role="status"></ul>
+
+  <div id="mesa" class="mesa" hidden>
+    <aside class="lista">
+      <div class="lista-cabecera"><span id="total"></span><button id="vaciar" type="button" class="secondary">Vaciar</button></div>
+      <ul id="entregas"></ul>
+    </aside>
+
+    <section class="detalle">
+      <h2 id="alumno"></h2>
+      <ul id="ficha" class="ficha"></ul>
+      <div class="paneles">
+        <section class="panel">
+          <header class="panel-cabecera">
+            <div class="pestanas" role="tablist" aria-label="Pestaña del código" style="margin-left:0">
+              <button type="button" role="tab" data-tab="html">HTML</button>
+              <button type="button" role="tab" data-tab="css">CSS</button>
+              <button type="button" role="tab" data-tab="js">JavaScript</button>
+              <button type="button" role="tab" data-tab="txt">TXT</button>
+            </div>
+            <label style="margin-left:auto"><input id="cambios" type="checkbox" checked> Resaltar cambios</label>
+          </header>
+          <pre id="codigo" tabindex="0"></pre>
+          <p id="pie-codigo" class="panel-pie"></p>
+        </section>
+        <section class="panel">
+          <header class="panel-cabecera">
+            <h2>Resultado</h2>
+            <label style="margin-left:auto"><input id="con-js" type="checkbox" checked> Ejecutar JavaScript</label>
+            <button id="recargar" type="button" class="secondary" style="padding:7px 14px;font-size:.86rem">↻ Actualizar</button>
+          </header>
+          <iframe id="vista" class="vista" title="Resultado de la entrega" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe>
+          <details class="consola" open>
+            <summary>Consola <span id="console-count"></span></summary>
+            <ol id="preview-console" data-empty="Aquí aparecen los mensajes de console.log y los errores del código."></ol>
+          </details>
+        </section>
+      </div>
+      <details id="registro">
+        <summary>Registro del intento</summary>
+        <pre id="auditoria"></pre>
+      </details>
+    </section>
+  </div>
+</main>
+
+<script>
+(async () => {
+'use strict';
+const $=id=>document.getElementById(id);
+const TABS=['html','css','js','txt'];
+const NAMES={html:'HTML',css:'CSS',js:'JavaScript',txt:'TXT'};
+const warn=text=>{const li=document.createElement('li');li.textContent=text;$('avisos').append(li);};
+
+// ------------------------------------------------------------ Práctica de esta carpeta
+let config,start;
+try{
+ const read=async path=>{const r=await fetch(path,{cache:'no-cache'});if(!r.ok)throw Error(path+' ('+r.status+')');return r;};
+ const [c,html,css,js]=await Promise.all([read('contenido/config.json').then(r=>r.json()),read('contenido/codigo.html').then(r=>r.text()),read('contenido/codigo.css').then(r=>r.text()),read('contenido/codigo.js').then(r=>r.text())]);
+ config=c;start={html,css,js,txt:''};
+}catch(error){
+ $('titulo').textContent='No se pudo cargar la práctica';
+ warn('No se pudo leer la configuración o el código de partida de esta carpeta: '+error.message+'. Abre la página desde el sitio web o desde un servidor local, no con doble clic.');
+ return;
+}
+$('titulo').textContent=config.title;document.title='Entregas · '+config.title;
+const CSP=config.preview?.csp||"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: https:; media-src data: https:; font-src data: https:; form-action 'none'; base-uri 'none'";
+
+// ------------------------------------------------------------ Descodificar
+async function decode(text){
+ text=text.trim();
+ const prefix=config.format.report;
+ if(!text.startsWith(prefix)||!/^[A-Za-z0-9_-]+$/.test(text.slice(prefix.length)))throw Error('no es un archivo de entrega de este tipo de práctica');
+ const encoded=text.slice(prefix.length).replaceAll('-','+').replaceAll('_','/');
+ try{
+  const bytes=Uint8Array.from(atob(encoded+'='.repeat((4-encoded.length%4)%4)),c=>c.charCodeAt(0));
+  const buffer=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+  return new TextDecoder('utf-8',{fatal:true}).decode(buffer);
+ }catch{throw Error('el archivo está dañado o ha sido alterado');}
+}
+async function parse(text){
+ let decoded=await decode(text);
+ // Comprobantes y archivos de «Guardar y pausar»: llevan el intento completo.
+ if(decoded.trimStart().startsWith('{')&&!decoded.includes('\nCódigo de comprobación: ')){
+  const doc=JSON.parse(decoded),data=doc.state?.data;
+  if(!data)throw Error('formato no reconocido');
+  if(data.report)decoded=await decode(data.report);
+  else{
+   const values=data.values||{};
+   return {id:'borrador-'+(values.student||'')+'-'+(doc.state.savedAt||''),draft:true,intact:null,email:values.student||'(sin correo)',exam:config.id,activityVersion:config.version,
+    code:Object.fromEntries(TABS.map(t=>[t,typeof values[t]==='string'?values[t]:start[t]])),
+    modified:TABS.filter(t=>typeof values[t]==='string'&&values[t]!==start[t]),
+    seconds:Math.floor((data.elapsed||0)/1000),incidents:doc.state.count,audit:(doc.state.events||[]).map(e=>new Date(e.at).toISOString()+' · '+e.text).join('\n')};
+  }
+ }
+ const marker='\nCódigo de comprobación: '+config.format.checksum,offset=decoded.lastIndexOf(marker);
+ if(offset<0)throw Error('falta el código de comprobación');
+ const payload=decoded.slice(0,offset),report=JSON.parse(payload);
+ const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(payload))),b=>b.toString(16).padStart(2,'0')).join('');
+ const answers=Object.fromEntries((report.answers||[]).filter(a=>TABS.includes(a.question)&&typeof a.answer==='string').map(a=>[a.question,a.answer]));
+ return {...report,id:hash,intact:hash===decoded.slice(offset+marker.length),
+  email:String(report.email||'(sin correo)'),modified:TABS.filter(t=>t in answers),
+  code:Object.fromEntries(TABS.map(t=>[t,t in answers?answers[t]:start[t]]))};
+}
+
+// ------------------------------------------------------------ Lista
+const items=new Map();let current=null,tab='html';
+const duration=s=>Number.isFinite(s)?Math.floor(s/60)+' min '+String(s%60).padStart(2,'0')+' s':'—';
+const when=iso=>iso&&Number.isFinite(Date.parse(iso))?new Date(iso).toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'}):'';
+function problems(item){
+ const out=[];
+ if(item.draft)out.push('Sin entregar');
+ if(item.intact===false)out.push('Archivo alterado');
+ if(item.exam!==config.id)out.push('Otra práctica');
+ else if(item.activityVersion!==config.version)out.push('Otra versión');
+ return out;
+}
+function renderList(){
+ const sorted=[...items.values()].sort((a,b)=>a.email.localeCompare(b.email,'es')||String(a.finishedAt).localeCompare(String(b.finishedAt)));
+ $('entregas').replaceChildren(...sorted.map(item=>{
+  const li=document.createElement('li'),button=document.createElement('button'),name=document.createElement('b'),meta=document.createElement('small');
+  button.type='button';button.setAttribute('aria-current',String(item.id===current));
+  name.textContent=item.email;
+  meta.textContent=[when(item.finishedAt),duration(item.seconds),'incidencias '+(item.incidents??'—')].filter(Boolean).join(' · ');
+  button.append(name,meta);
+  const bad=problems(item);
+  if(bad.length){const alert=document.createElement('small');alert.className='alerta';alert.textContent=bad.join(' · ');button.append(alert);}
+  button.addEventListener('click',()=>select(item.id));
+  li.append(button);return li;
+ }));
+ $('total').textContent=items.size+(items.size===1?' entrega':' entregas');
+ $('mesa').hidden=!items.size;
+ $('soltar').classList.toggle('compacta',items.size>0);
+}
+
+// ------------------------------------------------------------ Código y cambios
+function diff(before,after){
+ const a=before===''?[]:before.replace(/\n$/,'').split('\n'),b=after===''?[]:after.replace(/\n$/,'').split('\n');
+ if((a.length+1)*(b.length+1)>4000000)return b.map(text=>({text}));
+ const width=b.length+1,table=new Uint16Array((a.length+1)*width);
+ for(let i=a.length-1;i>=0;i--)for(let j=b.length-1;j>=0;j--)
+  table[i*width+j]=a[i]===b[j]?table[(i+1)*width+j+1]+1:Math.max(table[(i+1)*width+j],table[i*width+j+1]);
+ const out=[];let i=0,j=0;
+ while(i<a.length&&j<b.length){
+  if(a[i]===b[j]){out.push({text:b[j]});i++;j++;}
+  else if(table[(i+1)*width+j]>=table[i*width+j+1])out.push({text:a[i++],kind:'menos'});
+  else out.push({text:b[j++],kind:'mas'});
+ }
+ while(i<a.length)out.push({text:a[i++],kind:'menos'});
+ while(j<b.length)out.push({text:b[j++],kind:'mas'});
+ return out;
+}
+function renderCode(){
+ const item=items.get(current);if(!item)return;
+ for(const button of document.querySelectorAll('[data-tab]')){
+  const t=button.dataset.tab;
+  button.setAttribute('aria-selected',String(t===tab));
+  button.replaceChildren(NAMES[t]);
+  if(item.modified.includes(t)){const dot=document.createElement('span');dot.className='punto';dot.textContent='●';dot.title='Modificada';button.append(dot);}
+ }
+ const changed=item.modified.includes(tab),marked=$('cambios').checked&&changed;
+ const rows=marked?diff(start[tab],item.code[tab]):item.code[tab].replace(/\n$/,'').split('\n').map(text=>({text}));
+ $('codigo').replaceChildren(...rows.map(row=>{const span=document.createElement('span');if(row.kind)span.className=row.kind;span.textContent=row.text;return span;}));
+ $('codigo').scrollTop=0;
+ const added=rows.filter(r=>r.kind==='mas').length,removed=rows.filter(r=>r.kind==='menos').length;
+ $('pie-codigo').textContent=NAMES[tab]+' · '+(!changed?(tab==='txt'?'sin notas':'sin cambios: es el código de partida'):marked?added+' líneas añadidas o cambiadas · '+removed+' eliminadas':'modificada por el alumno');
+}
+
+// ------------------------------------------------------------ Resultado (marco aislado)
+function bridge(token){
+ var parent=window.parent,sent=0;
+ function format(value){
+  if(typeof value==='string')return value;
+  if(value instanceof Error)return value.name+': '+value.message;
+  try{var json=JSON.stringify(value);return json===undefined?String(value):json;}catch(error){return String(value);}
+ }
+ function send(kind,values){
+  if(sent>300)return;
+  var text=sent++===300?'… demasiados mensajes: se omite el resto.':Array.prototype.map.call(values,format).join(' ').slice(0,2000);
+  try{parent.postMessage({labReview:token,kind:kind,text:text},'*');}catch(error){}
+ }
+ ['log','info','warn','error','debug'].forEach(function(kind){
+  var original=console[kind];
+  console[kind]=function(){send(kind,arguments);try{original.apply(console,arguments);}catch(error){}};
+ });
+ window.addEventListener('error',function(event){send('error',[event.message||'Error']);});
+ window.addEventListener('unhandledrejection',function(event){send('error',['Promesa rechazada: '+format(event.reason)]);});
+ window.alert=function(message){send('alert',['alert: '+format(message===undefined?'':message)]);};
+ window.confirm=function(message){send('alert',['confirm: '+format(message===undefined?'':message)+' → false']);return false;};
+ window.prompt=function(message){send('alert',['prompt: '+format(message===undefined?'':message)+' → null']);return null;};
+ document.addEventListener('click',function(event){
+  var link=event.target&&event.target.closest&&event.target.closest('a[href],area[href]');
+  var href=link&&(link.getAttribute('href')||'');
+  if(link&&href.charAt(0)!=='#'&&href.toLowerCase().indexOf('javascript:')!==0){event.preventDefault();send('info',['Enlace desactivado en la vista previa: '+href]);}
+ },true);
+}
+const attr=text=>text.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
+let token='';
+function renderResult(){
+ const item=items.get(current);if(!item)return;
+ $('preview-console').replaceChildren();$('console-count').textContent='';
+ token=Array.from(crypto.getRandomValues(new Uint8Array(12)),x=>x.toString(16).padStart(2,'0')).join('');
+ const js=$('con-js').checked?item.code.js:'';
+ // Sin «Ejecutar JavaScript» también se anulan los <script> y manejadores escritos en el HTML.
+ const policy=$('con-js').checked?CSP:CSP.replace(/script-src[^;]*/,"script-src 'none'");
+ $('vista').srcdoc='<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="'+attr(policy)+'">'
+  +($('con-js').checked?'<script>('+bridge+')('+JSON.stringify(token)+')<\/script>':'')
+  +'<style>'+item.code.css.replace(/<\/style/gi,'<\\/style')+'</style>'+item.code.html
+  +(js?'<script>'+js.replace(/<\/script/gi,'<\\/script')+'<\/script>':'');
+}
+window.addEventListener('message',event=>{
+ const m=event.data;
+ if(!token||event.source!==$('vista').contentWindow||!m||m.labReview!==token||typeof m.kind!=='string'||typeof m.text!=='string')return;
+ const list=$('preview-console'),li=document.createElement('li');
+ li.className='consola-'+(['warn','error','alert'].includes(m.kind)?m.kind:'log');li.textContent=m.text.slice(0,2000);list.append(li);
+ while(list.children.length>200)list.firstElementChild.remove();
+ const errors=list.querySelectorAll('.consola-error').length;
+ $('console-count').textContent=errors?'· '+errors+(errors===1?' error':' errores'):'';
+});
+
+// ------------------------------------------------------------ Detalle
+function chip(text,kind){const li=document.createElement('li');li.textContent=text;if(kind)li.className=kind;return li;}
+function select(id){
+ current=id;const item=items.get(id);renderList();if(!item)return;
+ $('alumno').textContent=item.email;
+ const chips=[];
+ if(item.draft)chips.push(chip('Práctica guardada sin entregar','mal'));
+ else chips.push(item.intact?chip('Archivo íntegro','bien'):chip('El archivo ha sido alterado: el código de comprobación no coincide','mal'));
+ if(item.exam!==config.id)chips.push(chip('Es de otra práctica: '+item.exam,'mal'));
+ else if(item.activityVersion!==config.version)chips.push(chip('Versión '+item.activityVersion+' (esta carpeta tiene la '+config.version+'): el código de partida puede no coincidir','mal'));
+ if(when(item.finishedAt))chips.push(chip('Entregado: '+when(item.finishedAt)));
+ chips.push(chip('Tiempo: '+duration(item.seconds)));
+ chips.push(chip('Incidencias: '+(item.incidents??'—')+'/3',item.incidents>=3?'mal':''));
+ if(item.finishReason==='incident-limit')chips.push(chip('Cierre automático por tercera incidencia','mal'));
+ if(item.recoveries)chips.push(chip('Recuperaciones: '+item.recoveries));
+ const blocked=Object.entries(item.actionCounts||{}).map(([k,v])=>k+' ×'+v).join(', ');
+ if(blocked)chips.push(chip('Acciones bloqueadas: '+blocked));
+ chips.push(chip(item.modified.length?'Modificado: '+item.modified.map(t=>NAMES[t]).join(', '):'No modificó nada',item.modified.length?'':'mal'));
+ $('ficha').replaceChildren(...chips);
+ $('auditoria').textContent=item.audit||'Sin registro.';
+ if(!item.modified.includes(tab))tab=item.modified.find(t=>t!=='txt')||item.modified[0]||'html';
+ renderCode();renderResult();
+}
+for(const button of document.querySelectorAll('[data-tab]'))button.addEventListener('click',()=>{tab=button.dataset.tab;renderCode();});
+$('cambios').addEventListener('change',renderCode);
+$('con-js').addEventListener('change',renderResult);
+$('recargar').addEventListener('click',renderResult);
+$('vaciar').addEventListener('click',()=>{items.clear();current=null;$('avisos').replaceChildren();$('vista').srcdoc='';renderList();});
+
+// ------------------------------------------------------------ Entrada de archivos
+async function add(files){
+ let first=null;
+ for(const file of files){
+  try{
+   if(file.size>3000000)throw Error('es demasiado grande');
+   const item=await parse(await file.text());
+   item.file=file.name;
+   if(!items.has(item.id))first??=item.id;
+   items.set(item.id,item);
+  }catch(error){warn(file.name+': no se pudo leer ('+(error.message||'archivo no válido')+').');}
+ }
+ if(first||!items.has(current))select(first||[...items.keys()][0]||null);else renderList();
+}
+const drop=$('soltar');
+for(const type of ['dragenter','dragover'])document.addEventListener(type,e=>{e.preventDefault();drop.classList.add('encima');});
+for(const type of ['dragleave','drop'])document.addEventListener(type,e=>{e.preventDefault();drop.classList.remove('encima');});
+document.addEventListener('drop',e=>{if(e.dataTransfer?.files?.length)add([...e.dataTransfer.files]);});
+$('archivos').addEventListener('change',()=>{add([...$('archivos').files]);$('archivos').value='';});
+window.reviewReady=true;
+})();
+</script>
+</body>
+</html>

@@ -16,6 +16,7 @@ Las instrucciones detalladas para preparar una práctica están en el comentario
 - `motor/cargador.js`: carga y valida la configuración y el contenido.
 - `motor/laboratorio.js`: editor, vista previa, informe y entrega.
 - `motor/taller.css`: presentación del enunciado y de los paneles.
+- `profesor.html`: página del profesor para revisar los archivos de entrega.
 - `contenido/config.json`: identidad de la práctica, dominio del correo, claves y destino de entrega.
 - `contenido/enunciado.html`: texto de la actividad.
 - `contenido/codigo.html`, `codigo.css`, `codigo.js`: código de partida de cada pestaña del editor. Pueden quedar vacíos, pero deben existir.
@@ -40,7 +41,9 @@ Con `"type": "apps-script"` y `endpoint`, además de la descarga, la entrega se 
 
 En ambos casos el informe conserva el formato del resto de laboratorios (versión 3) e incluye solo las pestañas que difieren del código de partida, como respuestas abiertas `html`, `css`, `js` o `txt`; la lista `modified` las enumera. La respuesta `txt` son las notas del alumno, envueltas en un comentario `/* … */`. Si no se modificó nada, hay una única respuesta vacía `sin-cambios`, porque el receptor exige al menos una. Cada pestaña admite 10 000 caracteres, el máximo por respuesta del receptor.
 
-Para leer un archivo de entrega:
+Para revisar las entregas, abrir `profesor.html` de esta misma carpeta y arrastrar los archivos TXT: muestra de cada alumno el código, con los cambios respecto al código de partida resaltados, el resultado, la consola, el tiempo, las incidencias y el registro del intento, y avisa si un archivo ha sido alterado o es de otra práctica o versión. Los archivos se leen en el navegador y no se envían a ningún sitio. La página usa `contenido/config.json` y `contenido/codigo.*` de su carpeta, así que cada práctica tiene la suya.
+
+Para leer un archivo de entrega sin esa página:
 
 ```python
 import base64, gzip, json, sys
