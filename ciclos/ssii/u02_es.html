@@ -2044,6 +2044,63 @@
 <h3 id="ip-subredes">8.7. Dividir una red: subnetting</h3>
 <p>Dividir un bloque permite planificar direcciones para varias redes. Al aumentar el prefijo, quedan menos bits por subred. Para separar dominios de broadcast también se necesitan segmentos físicos distintos o VLAN: <strong>cambiar la máscara no crea por sí solo una barrera de seguridad</strong>.</p>
 <div class="example-box"><h4>Ejemplo: dividir 192.168.10.0/24 en cuatro /26</h4><p>Tomamos 2 bits más para la red: obtenemos 2<sup>2</sup> = 4 subredes. Quedan 6 bits: 64 direcciones por bloque y 62 asignables. La máscara es <code>255.255.255.192</code> y el salto entre redes es 64.</p><div class="table-scroll" role="region" tabindex="0" aria-label="Tabla de direccionamiento IP"><table><thead><tr><th>Red</th><th>Hosts asignables</th><th>Broadcast</th></tr></thead><tbody><tr><td>192.168.10.0/26</td><td>.1 – .62</td><td>.63</td></tr><tr><td>192.168.10.64/26</td><td>.65 – .126</td><td>.127</td></tr><tr><td>192.168.10.128/26</td><td>.129 – .190</td><td>.191</td></tr><tr><td>192.168.10.192/26</td><td>.193 – .254</td><td>.255</td></tr></tbody></table></div><p>Todos los valores abreviados pertenecen a 192.168.10.x. Para <code>192.168.10.70/26</code>, la red es .64 y el broadcast .127; el primer host no es .1.</p></div>
+<figure id="esquema-subnetting-24-26" style="margin:1.5rem auto;max-width:900px">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 800" role="img" aria-labelledby="subnet24-title subnet24-desc" style="display:block;width:100%;height:auto">
+<title id="subnet24-title">Dividir 192.168.10.0/24 en cuatro subredes /26</title>
+<desc id="subnet24-desc">El bloque /24 contiene 256 direcciones. Se toman dos de sus ocho bits de host para ampliar el prefijo a /26. Sus combinaciones 00, 01, 10 y 11 crean cuatro subredes de 64 direcciones. Quedan seis bits de host y 62 direcciones asignables en cada una. Redes: 192.168.10.0, 192.168.10.64, 192.168.10.128 y 192.168.10.192, todas con máscara 255.255.255.192. Rangos asignables: .1 a .62, .65 a .126, .129 a .190 y .193 a .254. Sus broadcasts son .63, .127, .191 y .255.</desc>
+<rect x="1" y="1" width="718" height="798" rx="20" fill="#f8fafc" stroke="#cbd5e1"/>
+<g font-family="Arial,sans-serif" fill="#183153" text-anchor="middle">
+<text x="360" y="42" font-size="28" font-weight="700" fill="#1e3a8a">De una /24 a cuatro /26</text>
+<rect x="32" y="65" width="656" height="78" rx="12" fill="#dbeafe" stroke="#93c5fd"/>
+<text x="360" y="97" font-size="26" font-weight="700" fill="#1e3a8a">192.168.10.0/24</text>
+<text x="360" y="127" font-size="22">256 direcciones: 192.168.10.0 → 192.168.10.255</text>
+<text x="360" y="182" font-size="23" font-weight="700">De los 8 bits de host, tomamos 2 para la subred.</text>
+<text x="360" y="212" font-size="21">El prefijo pasa de 24 a 26 bits de red.</text>
+<rect x="160" y="232" width="48" height="46" rx="5" fill="#fef3c7" stroke="#d97706"/><text x="184" y="263" font-size="25" font-weight="700" fill="#92400e">S</text>
+<rect x="210" y="232" width="48" height="46" rx="5" fill="#fef3c7" stroke="#d97706"/><text x="234" y="263" font-size="25" font-weight="700" fill="#92400e">S</text>
+<rect x="260" y="232" width="48" height="46" rx="5" fill="#ccfbf1" stroke="#0f766e"/><text x="284" y="263" font-size="25" font-weight="700" fill="#0f766e">H</text>
+<rect x="310" y="232" width="48" height="46" rx="5" fill="#ccfbf1" stroke="#0f766e"/><text x="334" y="263" font-size="25" font-weight="700" fill="#0f766e">H</text>
+<rect x="360" y="232" width="48" height="46" rx="5" fill="#ccfbf1" stroke="#0f766e"/><text x="384" y="263" font-size="25" font-weight="700" fill="#0f766e">H</text>
+<rect x="410" y="232" width="48" height="46" rx="5" fill="#ccfbf1" stroke="#0f766e"/><text x="434" y="263" font-size="25" font-weight="700" fill="#0f766e">H</text>
+<rect x="460" y="232" width="48" height="46" rx="5" fill="#ccfbf1" stroke="#0f766e"/><text x="484" y="263" font-size="25" font-weight="700" fill="#0f766e">H</text>
+<rect x="510" y="232" width="48" height="46" rx="5" fill="#ccfbf1" stroke="#0f766e"/><text x="534" y="263" font-size="25" font-weight="700" fill="#0f766e">H</text>
+<text x="210" y="306" font-size="21" fill="#92400e">S: subred · 2 bits</text>
+<text x="460" y="306" font-size="21" fill="#0f766e">H: host · 6 bits</text>
+<text x="360" y="347" font-size="24" font-weight="700">2² = 4 subredes · 2⁶ = 64 direcciones por subred</text>
+<rect x="32" y="372" width="164" height="63" fill="#1e40af" stroke="white" stroke-width="2"/><text x="114" y="398" font-family="monospace" font-size="24" fill="white" font-weight="700">00</text><text x="114" y="423" font-size="20" fill="white">.0 – .63</text>
+<rect x="196" y="372" width="164" height="63" fill="#0f766e" stroke="white" stroke-width="2"/><text x="278" y="398" font-family="monospace" font-size="24" fill="white" font-weight="700">01</text><text x="278" y="423" font-size="20" fill="white">.64 – .127</text>
+<rect x="360" y="372" width="164" height="63" fill="#7e22ce" stroke="white" stroke-width="2"/><text x="442" y="398" font-family="monospace" font-size="24" fill="white" font-weight="700">10</text><text x="442" y="423" font-size="20" fill="white">.128 – .191</text>
+<rect x="524" y="372" width="164" height="63" fill="#92400e" stroke="white" stroke-width="2"/><text x="606" y="398" font-family="monospace" font-size="24" fill="white" font-weight="700">11</text><text x="606" y="423" font-size="20" fill="white">.192 – .255</text>
+<text x="360" y="462" font-size="20" fill="#475569">Todos los rangos siguientes pertenecen a 192.168.10.x.</text>
+<rect x="32" y="483" width="312" height="109" rx="12" fill="#eff6ff" stroke="#93c5fd"/>
+<rect x="44" y="496" width="42" height="28" rx="5" fill="#1e40af"/>
+<text x="65" y="517" font-family="monospace" font-size="20" font-weight="700" fill="white">00</text>
+<text x="216" y="518" font-size="22" font-weight="700" fill="#1e40af">192.168.10.0/26</text>
+<text x="188" y="551" font-size="22">Hosts: .1 – .62</text>
+<text x="188" y="578" font-size="22">Broadcast: .63</text>
+<rect x="376" y="483" width="312" height="109" rx="12" fill="#f0fdfa" stroke="#5eead4"/>
+<rect x="388" y="496" width="42" height="28" rx="5" fill="#0f766e"/>
+<text x="409" y="517" font-family="monospace" font-size="20" font-weight="700" fill="white">01</text>
+<text x="560" y="518" font-size="22" font-weight="700" fill="#0f766e">192.168.10.64/26</text>
+<text x="532" y="551" font-size="22">Hosts: .65 – .126</text>
+<text x="532" y="578" font-size="22">Broadcast: .127</text>
+<rect x="32" y="607" width="312" height="109" rx="12" fill="#faf5ff" stroke="#d8b4fe"/>
+<rect x="44" y="620" width="42" height="28" rx="5" fill="#7e22ce"/>
+<text x="65" y="641" font-family="monospace" font-size="20" font-weight="700" fill="white">10</text>
+<text x="216" y="642" font-size="22" font-weight="700" fill="#7e22ce">192.168.10.128/26</text>
+<text x="188" y="675" font-size="22">Hosts: .129 – .190</text>
+<text x="188" y="702" font-size="22">Broadcast: .191</text>
+<rect x="376" y="607" width="312" height="109" rx="12" fill="#fffbeb" stroke="#fcd34d"/>
+<rect x="388" y="620" width="42" height="28" rx="5" fill="#92400e"/>
+<text x="409" y="641" font-family="monospace" font-size="20" font-weight="700" fill="white">11</text>
+<text x="560" y="642" font-size="22" font-weight="700" fill="#92400e">192.168.10.192/26</text>
+<text x="532" y="675" font-size="22">Hosts: .193 – .254</text>
+<text x="532" y="702" font-size="22">Broadcast: .255</text>
+<text x="360" y="752" font-size="23" font-weight="700" fill="#1e3a8a">En cada /26: 64 − 2 = 62 direcciones asignables</text>
+<text x="360" y="782" font-size="21">Máscara de las cuatro subredes: 255.255.255.192</text>
+</g>
+</svg>
+</figure>
 <div class="activity-card activity-callout" id="actividad-calculo-subredes"><h4>Actividad: calcula antes de configurar</h4><ol><li>Para <code>192.168.20.130/26</code>, calcula máscara, red, broadcast, rango y capacidad.</li><li>Divide <code>192.168.30.0/24</code> en dos /25 y propón una IP de puerta de enlace para cada una.</li><li>Decide si <code>192.168.30.100/25</code> y <code>192.168.30.150/25</code> pertenecen a la misma subred. Justifica con los intervalos.</li></ol><p><strong>Entrega:</strong> cálculos y tabla de direccionamiento en texto, indicando también las direcciones que no asignarías a equipos.</p><div class="card-actions activity-submit"><a class="resource-link-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSfeD0nYyiE2bhmtoDXCIGh-ZNNQyJN4Vi6YXZrRD9cLuaJMSQ/viewform?usp=sf_link" target="_blank" rel="noopener noreferrer">Entregar actividad</a></div></div>
 <details class="extension" id="ip-vlsm"><summary>Para ampliar: máscaras de longitud variable (VLSM)</summary><p>VLSM asigna bloques de tamaños diferentes según las necesidades. Para 50, 25 y 10 interfaces en <code>192.168.40.0/24</code>, asigna primero la red mayor: <code>192.168.40.0/26</code>, después <code>192.168.40.64/27</code> y <code>192.168.40.96/28</code>. Admiten 62, 30 y 14 direcciones de host, respectivamente.</p><p>Completa broadcast y rango de cada bloque, comprueba que no se solapan y señala el espacio restante. Si el número de equipos no incluye la interfaz del router, cuenta también esa dirección antes de elegir el prefijo.</p></details>
 </section>
