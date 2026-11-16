@@ -90,7 +90,8 @@ function recibirEntrega(sobre) {
   let cerrojo;
   try {
     const datos = validarEntrega_(sobre);
-    const id = PropertiesService.getScriptProperties().getProperty('HOJA_ENTREGAS');
+    // Si no se ha ejecutado configurarReceptor_, se usa la hoja a la que está vinculado el script.
+    const id = PropertiesService.getScriptProperties().getProperty('HOJA_ENTREGAS') || SpreadsheetApp.getActiveSpreadsheet()?.getId();
     if (!id) throw Error('ROUTE');
     cerrojo = LockService.getScriptLock();
     if (!cerrojo.tryLock(25000)) throw Error('BUSY');
