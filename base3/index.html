@@ -1,107 +1,64 @@
 <!doctype html>
 <!--
 ==========================================================================================
- CÓMO PREPARAR UNA PRÁCTICA CON ESTA PLANTILLA (base3 · taller de código)
+ CÓMO USAR ESTE LABORATORIO (base3 · taller de código)
 ==========================================================================================
- No hace falta tocar este archivo ni la carpeta motor/. Todo lo que cambia de una práctica
- a otra está en la carpeta contenido/:
+ Hay UN solo laboratorio para todas las actividades. La actividad se elige en la dirección:
 
-   contenido/config.json      nombre de la práctica, correo admitido y destino de entrega
-   contenido/enunciado.html   texto de la actividad a realizar
-   contenido/codigo.html      código HTML de partida (pestaña HTML del editor)
-   contenido/codigo.css       código CSS de partida (pestaña CSS del editor)
-   contenido/codigo.js        código JavaScript de partida (pestaña JavaScript del editor)
+     https://igarciafp.github.io/base3/?a=MODULO/ACTIVIDAD
 
- Para crear una práctica nueva, copia la carpeta base3 completa con otro nombre (por
- ejemplo /labs/diw-tarjeta/) y sigue los cuatro pasos.
+     MODULO     diw, dwec o ssii
+     ACTIVIDAD  nombre de la carpeta de la actividad
 
- ..........................................................................................
- 1. NOMBRE DE LA PRÁCTICA                                          contenido/config.json
- ..........................................................................................
-   "title"        Nombre que ve el alumno: en la pantalla de identificación, en la barra
-                  superior y en la pestaña del navegador.
-                  Ejemplo: "DIW · U03 · Tarjeta de presentación"
-   "id"           Identificador interno, único para cada práctica, sin espacios. Queda
-                  anotado en cada entrega y, si usas la hoja de cálculo, es el que hay
-                  que dar de alta en el receptor (paso 2). Ejemplo: "DIW-U03-TARJETA"
-   "version"      Versión del enunciado, entre comillas: "1". Súbela a "2", "3"… cuando
-                  cambies el enunciado o el código de partida con la práctica ya en uso.
-   "filePrefix"   Prefijo de los archivos de «Guardar y pausar», en minúsculas y sin
-                  espacios. Ejemplo: "diw-u03-tarjeta". El archivo de entrega no lo usa:
-                  se llama como el "title" seguido del usuario (paso 2).
-   "emailDomain"  Dominio obligatorio del correo con el que se identifica el alumno.
-                  Ejemplo: "g.educaand.es"
-   "storage"      Tres claves ("key", "legacyKey" y "recovery") con las que el navegador
-                  guarda el intento. Deben ser distintas de las de cualquier otra práctica
-                  del sitio; si se repiten, se mezclan los intentos de dos prácticas.
-                  Lo más sencillo es usar el prefijo anterior:
-                  "diw-u03-tarjeta-v1", "diw-u03-tarjeta-anterior-v1" y
-                  "diw-u03-tarjeta-ultima-entrega-v1"
-   "format.save"  Identificador de los archivos de «Guardar y pausar». Único por práctica,
-                  para que no se pueda recuperar aquí un archivo de otra.
-                  Ejemplo: "DIW-U03-TARJETA-SAVE"
-   No cambies "format.report" ni "format.checksum" (son comunes a todos los laboratorios)
-   ni "requireFullName" (debe ser false para que no se pida el nombre).
+     Ejemplos:  …/base3/?a=diw/tarjeta      …/base3/?a=dwec/contador
+
+ Sin el parámetro "a", con un módulo distinto o con una actividad que no exista, la página
+ muestra «No se encuentra la actividad.» y no deja empezar.
+
+ No hace falta tocar este archivo ni la carpeta motor/.
 
  ..........................................................................................
- 2. DESTINO DE ENTREGA                                             contenido/config.json
+ 1. CREAR UNA ACTIVIDAD                             actividades/MODULO/ACTIVIDAD/
  ..........................................................................................
-   Hay dos formas de entrega. Se elige en "delivery":
+   Crea una carpeta dentro de actividades/diw/, actividades/dwec/ o actividades/ssii/.
+   Su nombre va en la dirección: solo minúsculas, números y guiones (sin espacios, tildes
+   ni eñes), por ejemplo actividades/diw/menu-responsive/. Dentro van estos archivos:
 
-   A) ARCHIVO (por defecto). No necesita ninguna configuración externa:
+     actividad.json    OBLIGATORIO   nombre y versión de la actividad
+     enunciado.html    OBLIGATORIO   texto de la actividad
+     codigo.html       opcional      código HTML de partida (pestaña HTML)
+     codigo.css        opcional      código CSS de partida (pestaña CSS)
+     codigo.js         opcional      código JavaScript de partida (pestaña JavaScript)
 
-        "delivery": { "type": "archivo" }
-
-      Al pulsar «Entregar», el navegador del alumno descarga UN ÚNICO archivo de texto,
-      llamado «NOMBRE DE LA ACTIVIDAD_USUARIO.txt», comprimido (gzip) y codificado (base64).
-      El nombre de la actividad es el "title" del paso 1 y el usuario es la parte del
-      correo anterior a la arroba: «DIW · U03 · Tarjeta de presentación_ana.perez.txt».
-      Contiene SOLO las pestañas que el alumno ha modificado respecto al código de partida
-      (HTML, CSS, JavaScript y sus notas), junto con el correo, el tiempo empleado y el
-      registro de incidencias. Las pestañas sin cambios no se incluyen: su contenido es el
-      de contenido/codigo.*. El alumno te lo hace llegar como le indiques (Moodle,
-      Classroom, correo…).
-      Para revisarlos, abre profesor.html (en esta misma carpeta) y arrastra los archivos:
-      muestra el código de cada alumno con sus cambios resaltados y su resultado.
-
-   B) HOJA DE CÁLCULO. Además de descargar el archivo, envía la entrega a una hoja de
-      Google Sheets a través del receptor de Apps Script (archivos y guía completa en
-      /base/receptor/README.md). Hacen falta las DOS partes:
-
-      a) En el receptor (Google Sheets → Extensiones → Apps Script → Code.gs), añade la
-         práctica a la lista CONFIGURACION_ con el mismo "id" y "version" del paso 1:
-
-           { practiceId: 'DIW-U03-TARJETA', versions: ['1'], spreadsheetId: '',
-             origin: 'https://igarciafp.github.io', emailDomain: 'g.educaand.es' }
-
-         Con spreadsheetId: '' se usa la hoja a la que está vinculado el script. Conserva
-         en la lista las demás prácticas activas. Después selecciona la función
-         configurarReceptor_ y pulsa «Ejecutar». Si cambias la versión en config.json,
-         añádela también aquí: versions: ['1','2'].
-         Si es un receptor nuevo, publícalo con Implementar → Nueva implementación →
-         Aplicación web. Si ya estaba publicado, su dirección no cambia.
-
-      b) En contenido/config.json, pon la dirección de la aplicación web del receptor,
-         la que termina en /exec:
-
-           "delivery": {
-             "type": "apps-script",
-             "endpoint": "https://script.google.com/macros/s/ID_DE_LA_IMPLEMENTACION/exec"
-           }
-
-      Con "apps-script" y "endpoint" vacío, la página avisa de que falta el destino de
-      entrega y el botón «Empezar» permanece desactivado. Antes de usarla en clase haz
-      una entrega de prueba y comprueba que aparece en la pestaña «Entregas» de la hoja.
-      En la hoja, cada entrega tiene una respuesta por pestaña modificada (html, css, js
-      o txt); si el alumno no cambió nada, una sola respuesta vacía llamada sin-cambios. Como no se pide el
-      nombre, la columna «Nombre» recibe la parte del correo anterior a la arroba.
+   El módulo NO se escribe en ningún archivo: es la carpeta (diw, dwec o ssii) en la que
+   está la actividad. Se muestra delante del nombre («DIW · Menú responsive») en la
+   identificación, en la barra y en el nombre del archivo de entrega, y queda anotado en
+   cada entrega.
+   Lo más rápido es copiar una carpeta de ejemplo (actividades/diw/tarjeta/) y cambiarla.
 
  ..........................................................................................
- 3. ACTIVIDAD A REALIZAR                                        contenido/enunciado.html
+ 2. NOMBRE Y VERSIÓN                                               actividad.json
+ ..........................................................................................
+        {
+          "title": "Menú responsive",
+          "version": "1"
+        }
+
+   "title"    Nombre que ve el alumno (sin el módulo, que se añade solo).
+   "version"  Súbela a "2", "3"… cuando cambies el enunciado o el código de partida con la
+              actividad ya en uso: así cada entrega dice con qué versión se hizo.
+
+   El identificador de la práctica (DIW-MENU-RESPONSIVE), las claves con las que el
+   navegador guarda el intento y los nombres de los archivos se generan solos a partir
+   del módulo y de la carpeta.
+
+ ..........................................................................................
+ 3. TEXTO DE LA ACTIVIDAD                                          enunciado.html
  ..........................................................................................
    Escribe ahí el enunciado en HTML normal: se muestra bajo la barra superior, encima de
    los dos paneles, en una tarjeta desplegable que aparece abierta al empezar y que el
-   alumno puede plegar pulsando «Actividad» para dejar más espacio al código. Es solo un fragmento; no lleva <html>, <head> ni <body>. Ejemplo:
+   alumno puede plegar pulsando «Actividad» para dejar más espacio al código. Es solo un
+   fragmento; no lleva <html>, <head> ni <body>. Ejemplo:
 
         <h3>Título de la actividad</h3>
         <p>Explicación de lo que hay que conseguir.</p>
@@ -112,48 +69,83 @@
 
    Puedes usar títulos (<h3>), párrafos, listas, <strong>, <code>, tablas e imágenes. Si el
    texto es largo, el enunciado muestra su propia barra de desplazamiento. No uses
-   atributos id que ya existan en esta página (html, css, js, lab, report, student…): la
-   plantilla comprueba los duplicados y no arranca si encuentra alguno.
+   atributos id que ya existan en esta página (html, css, js, txt, lab, report, student…):
+   la página comprueba los duplicados y no arranca si encuentra alguno.
 
  ..........................................................................................
- 4. CÓDIGO HTML, CSS Y JAVASCRIPT DE PARTIDA                          contenido/codigo.*
+ 4. CÓDIGO HTML, CSS Y JAVASCRIPT DE PARTIDA                       codigo.html / .css / .js
  ..........................................................................................
-   Escribe cada lenguaje en su archivo, tal cual, sin comillas ni caracteres de escape:
+   Los tres archivos son opcionales. Pon solo los que necesite la actividad; puede no
+   haber ninguno. El alumno encuentra cada uno ya escrito en su pestaña del editor al
+   empezar. La pestaña de un archivo que no existe aparece vacía y el alumno puede escribir
+   en ella igualmente.
 
-        contenido/codigo.html   →  pestaña HTML
-        contenido/codigo.css    →  pestaña CSS
-        contenido/codigo.js     →  pestaña JavaScript
-
-   No hay que enlazarlos entre sí. En codigo.html NO pongas <link rel="stylesheet"> ni
-   <script src="…">: la plantilla une los tres archivos al mostrar el resultado (el CSS se
-   aplica antes del HTML y el JavaScript se ejecuta al final, con el documento ya cargado).
+   Escribe cada lenguaje en su archivo, tal cual, sin comillas ni caracteres de escape.
+   No hay que enlazarlos entre sí: en codigo.html NO pongas <link rel="stylesheet"> ni
+   <script src="…">, porque la página une las tres pestañas al mostrar el resultado (el
+   CSS se aplica primero y el JavaScript se ejecuta al final, con el documento ya cargado).
    En codigo.html basta el contenido de la página (lo que iría dentro de <body>); también
    admite un documento completo con <!doctype html>, <head> y <body>.
 
-   El alumno encuentra este código ya escrito en la pestaña correspondiente del editor
-   (HTML, CSS o JavaScript) al empezar el intento, y trabaja sobre él. El resultado de la
-   derecha lo muestra desde el primer momento. Si quieres que una pestaña empiece en
-   blanco, deja vacío su archivo.
+   Si el JavaScript de partida usa elementos que el alumno todavía tiene que crear,
+   escríbelo de forma que no falle sin ellos (por ejemplo con ?.), o la consola mostrará
+   un error nada más empezar.
 
    El editor tiene además una cuarta pestaña, TXT, siempre vacía al empezar, para que el
    alumno anote lo que necesite. No afecta al resultado y no tiene archivo de partida. En
    la entrega, esas notas llegan como respuesta "txt", dentro de un comentario /* … */.
 
-   No borres ninguno de los tres archivos aunque esté vacío: la plantilla necesita que
-   existan. Cada archivo admite 10 000 caracteres como máximo.
-   El resultado no puede cargar hojas de estilo ni scripts de otros sitios (Bootstrap por
-   CDN, por ejemplo) ni hacer peticiones de red; las imágenes y las fuentes por https sí
-   se cargan. Tampoco funcionan confirm() ni prompt(); alert() se muestra en la consola.
+   Cada archivo admite 10 000 caracteres como máximo. El resultado no puede cargar hojas
+   de estilo ni scripts de otros sitios (Bootstrap por CDN, por ejemplo) ni hacer
+   peticiones de red; las imágenes y las fuentes por https sí se cargan. Tampoco funcionan
+   confirm() ni prompt(); alert() se muestra en la consola.
+
+ ..........................................................................................
+ 5. ENTREGA Y AJUSTES COMUNES A TODAS LAS ACTIVIDADES              contenido/config.json
+ ..........................................................................................
+   "emailDomain"  Dominio obligatorio del correo con el que se identifica el alumno.
+   "delivery"     Forma de entrega, la misma para todas las actividades:
+
+   A) ARCHIVO (por defecto). No necesita ninguna configuración externa:
+
+        "delivery": { "type": "archivo" }
+
+      Al pulsar «Entregar», el navegador del alumno descarga UN ÚNICO archivo de texto,
+      llamado «MÓDULO · NOMBRE DE LA ACTIVIDAD_USUARIO.txt», comprimido (gzip) y
+      codificado (base64). El usuario es la parte del correo anterior a la arroba:
+      «DIW · Menú responsive_ana.perez.txt».
+      Contiene SOLO las pestañas que el alumno ha modificado respecto al código de partida
+      (HTML, CSS, JavaScript y sus notas), junto con el módulo, la actividad, el correo,
+      el tiempo empleado y el registro de incidencias. El alumno te lo hace llegar como
+      le indiques (Moodle, Classroom, correo…).
+      Para revisarlos, abre profesor.html (en esta misma carpeta) y arrastra los archivos,
+      aunque sean de actividades distintas: muestra el código de cada alumno con sus
+      cambios resaltados y su resultado.
+
+   B) HOJA DE CÁLCULO. Además de descargar el archivo, envía la entrega a una hoja de
+      Google Sheets a través de un receptor de Apps Script:
+
+        "delivery": {
+          "type": "apps-script",
+          "endpoint": "https://script.google.com/macros/s/ID_DE_LA_IMPLEMENTACION/exec"
+        }
+
+      Con "apps-script" y "endpoint" vacío, la página avisa de que falta el destino de
+      entrega y el botón «Empezar» permanece desactivado.
+
+   No cambies "format" (común a todos los laboratorios) ni "requireFullName" (debe ser
+   false para que no se pida el nombre).
 
  ..........................................................................................
  ANTES DE PUBLICAR
  ..........................................................................................
-   · Si modificas una práctica que ya estaba publicada, cambia el valor de "v=" en las tres
+   · Si modificas archivos de motor/ o este mismo, cambia el valor de "v=" en las tres
      direcciones de este archivo que lo llevan (dos <link> y un <script>), para que los
-     navegadores no usen la versión anterior guardada en caché.
+     navegadores no usen la versión anterior guardada en caché. Para crear o cambiar
+     actividades no hace falta.
    · Para probar en tu ordenador, ejecuta  python3 -m http.server 8000  en la raíz del
-     repositorio y abre http://localhost:8000/base3/ (no funciona abriendo el archivo con
-     doble clic, y necesita la carpeta /base/motor/ del mismo sitio).
+     repositorio y abre http://localhost:8000/base3/?a=diw/tarjeta (no funciona abriendo
+     el archivo con doble clic, y necesita la carpeta /base/motor/ del mismo sitio).
    · Más detalles en README.md.
 ==========================================================================================
 -->
@@ -162,8 +154,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Laboratorio</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-8">
-<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-8">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-9">
+<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-9">
 </head>
 <body>
 
@@ -185,7 +177,7 @@
 <noscript><p class="wrap note">Activa JavaScript para continuar.</p></noscript>
 
 <section id="guard-boot" class="wrap card" hidden>
-  <h2>Error</h2>
+  <h2 id="guard-boot-title">Error</h2>
   <p id="guard-boot-detail"></p>
 </section>
 
@@ -303,6 +295,6 @@
   </div>
 </dialog>
 
-<script src="motor/cargador.js?v=20261116-base3-8" defer></script>
+<script src="motor/cargador.js?v=20261116-base3-9" defer></script>
 </body>
 </html>

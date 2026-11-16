@@ -3,9 +3,9 @@
  PÁGINA DEL PROFESOR · base3
  Arrastra aquí los archivos de entrega (.txt) de los alumnos para ver su código y su resultado.
  Los archivos se leen en este navegador: no se suben ni se envían a ningún sitio.
- Usa contenido/config.json y contenido/codigo.* de ESTA carpeta para descodificar las
- entregas y reconstruir las pestañas que el alumno no modificó, así que cada práctica
- tiene su propia página: copia este archivo junto con el resto de la carpeta.
+ Sirve para todas las actividades: cada entrega indica su módulo y su actividad, y la
+ página lee de actividades/MODULO/ACTIVIDAD/ el código de partida para reconstruir las
+ pestañas que el alumno no modificó y resaltar sus cambios.
 -->
 <html lang="es">
 <head>
@@ -13,8 +13,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Entregas · Profesor</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-8">
-<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-8">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-9">
+<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-9">
 <style>
 .revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
 .revision h1{font-size:1.5rem;line-height:1.25;margin:0}
@@ -130,19 +130,37 @@ const TABS=['html','css','js','txt'];
 const NAMES={html:'HTML',css:'CSS',js:'JavaScript',txt:'TXT'};
 const warn=text=>{const li=document.createElement('li');li.textContent=text;$('avisos').append(li);};
 
-// ------------------------------------------------------------ Práctica de esta carpeta
-let config,start;
+// ------------------------------------------------------------ Configuración común y actividades
+let config;
+const fetchFile=path=>fetch(path,{cache:'no-cache'});
 try{
- const read=async path=>{const r=await fetch(path,{cache:'no-cache'});if(!r.ok)throw Error(path+' ('+r.status+')');return r;};
- const [c,html,css,js]=await Promise.all([read('contenido/config.json').then(r=>r.json()),read('contenido/codigo.html').then(r=>r.text()),read('contenido/codigo.css').then(r=>r.text()),read('contenido/codigo.js').then(r=>r.text())]);
- config=c;start={html,css,js,txt:''};
+ const response=await fetchFile('contenido/config.json');
+ if(!response.ok)throw Error('contenido/config.json ('+response.status+')');
+ config=await response.json();
 }catch(error){
- $('titulo').textContent='No se pudo cargar la práctica';
- warn('No se pudo leer la configuración o el código de partida de esta carpeta: '+error.message+'. Abre la página desde el sitio web o desde un servidor local, no con doble clic.');
+ $('titulo').textContent='No se pudo cargar la página';
+ warn('No se pudo leer la configuración de esta carpeta: '+error.message+'. Abre la página desde el sitio web o desde un servidor local, no con doble clic.');
  return;
 }
-$('titulo').textContent=config.title;document.title='Entregas · '+config.title;
+$('titulo').textContent='Revisión de entregas';
 const CSP=config.preview?.csp||"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: https:; media-src data: https:; font-src data: https:; form-action 'none'; base-uri 'none'";
+const EMPTY={html:'',css:'',js:'',txt:''};
+// Código de partida de cada actividad (actividades/MODULO/ACTIVIDAD/), leído una sola vez.
+const activities=new Map();
+function activityOf(mod,slug){
+ const key=mod+'/'+slug;
+ if(!/^(diw|dwec|ssii)\/[a-z0-9][a-z0-9-]{0,59}$/.test(key))return Promise.resolve(null);
+ if(!activities.has(key))activities.set(key,(async()=>{
+  const folder='actividades/'+key+'/',optional=async name=>{const r=await fetchFile(folder+name);return r.ok?r.text():'';};
+  const response=await fetchFile(folder+'actividad.json');
+  if(!response.ok)return null;
+  const info=await response.json(),[html,css,js]=await Promise.all([optional('codigo.html'),optional('codigo.css'),optional('codigo.js')]);
+  return {key,title:mod.toUpperCase()+' · '+String(info.title||slug),version:String(info.version??''),start:{html,css,js,txt:''}};
+ })().catch(()=>null));
+ return activities.get(key);
+}
+// «DIW-TARJETA» o «DIW-TARJETA-SAVE» → módulo y actividad.
+function split(id){const m=/^(DIW|DWEC|SSII)-([A-Z0-9-]+?)(?:-SAVE)?$/.exec(String(id||''));return m?[m[1].toLowerCase(),m[2].toLowerCase()]:['',''];}
 
 // ------------------------------------------------------------ Descodificar
 async function decode(text){
@@ -164,8 +182,9 @@ async function parse(text){
   if(!data)throw Error('formato no reconocido');
   if(data.report)decoded=await decode(data.report);
   else{
-   const values=data.values||{};
-   return {id:'borrador-'+(values.student||'')+'-'+(doc.state.savedAt||''),draft:true,intact:null,email:values.student||'(sin correo)',exam:config.id,activityVersion:config.version,
+   const values=data.values||{},[mod,slug]=split(doc.format),known=await activityOf(mod,slug),start=known?.start||EMPTY;
+   return {id:'borrador-'+(values.student||'')+'-'+(doc.state.savedAt||''),draft:true,intact:null,email:values.student||'(sin correo)',
+    known,start,label:known?.title||String(doc.format||'Actividad desconocida'),activityVersion:known?.version,
     code:Object.fromEntries(TABS.map(t=>[t,typeof values[t]==='string'?values[t]:start[t]])),
     modified:TABS.filter(t=>typeof values[t]==='string'&&values[t]!==start[t]),
     seconds:Math.floor((data.elapsed||0)/1000),incidents:doc.state.count,audit:(doc.state.events||[]).map(e=>new Date(e.at).toISOString()+' · '+e.text).join('\n')};
@@ -175,8 +194,10 @@ async function parse(text){
  if(offset<0)throw Error('falta el código de comprobación');
  const payload=decoded.slice(0,offset),report=JSON.parse(payload);
  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(payload))),b=>b.toString(16).padStart(2,'0')).join('');
+ const [mod,slug]=report.module&&report.activity?[String(report.module).toLowerCase(),String(report.activity).toLowerCase()]:split(report.exam);
+ const known=await activityOf(mod,slug),start=known?.start||EMPTY;
  const answers=Object.fromEntries((report.answers||[]).filter(a=>TABS.includes(a.question)&&typeof a.answer==='string').map(a=>[a.question,a.answer]));
- return {...report,id:hash,intact:hash===decoded.slice(offset+marker.length),
+ return {...report,id:hash,intact:hash===decoded.slice(offset+marker.length),known,start,label:known?.title||String(report.exam||'Actividad desconocida'),
   email:String(report.email||'(sin correo)'),modified:TABS.filter(t=>t in answers),
   code:Object.fromEntries(TABS.map(t=>[t,t in answers?answers[t]:start[t]]))};
 }
@@ -189,18 +210,19 @@ function problems(item){
  const out=[];
  if(item.draft)out.push('Sin entregar');
  if(item.intact===false)out.push('Archivo alterado');
- if(item.exam!==config.id)out.push('Otra práctica');
- else if(item.activityVersion!==config.version)out.push('Otra versión');
+ if(!item.known)out.push('Actividad desconocida');
+ else if(item.activityVersion!==item.known.version)out.push('Otra versión');
  return out;
 }
 function renderList(){
- const sorted=[...items.values()].sort((a,b)=>a.email.localeCompare(b.email,'es')||String(a.finishedAt).localeCompare(String(b.finishedAt)));
+ const sorted=[...items.values()].sort((a,b)=>a.label.localeCompare(b.label,'es')||a.email.localeCompare(b.email,'es')||String(a.finishedAt).localeCompare(String(b.finishedAt)));
  $('entregas').replaceChildren(...sorted.map(item=>{
   const li=document.createElement('li'),button=document.createElement('button'),name=document.createElement('b'),meta=document.createElement('small');
   button.type='button';button.setAttribute('aria-current',String(item.id===current));
   name.textContent=item.email;
+  const activity=document.createElement('small');activity.textContent=item.label;
   meta.textContent=[when(item.finishedAt),duration(item.seconds),'incidencias '+(item.incidents??'—')].filter(Boolean).join(' · ');
-  button.append(name,meta);
+  button.append(name,activity,meta);
   const bad=problems(item);
   if(bad.length){const alert=document.createElement('small');alert.className='alerta';alert.textContent=bad.join(' · ');button.append(alert);}
   button.addEventListener('click',()=>select(item.id));
@@ -237,7 +259,7 @@ function renderCode(){
   if(item.modified.includes(t)){const dot=document.createElement('span');dot.className='punto';dot.textContent='●';dot.title='Modificada';button.append(dot);}
  }
  const changed=item.modified.includes(tab),marked=$('cambios').checked&&changed;
- const rows=marked?diff(start[tab],item.code[tab]):item.code[tab].replace(/\n$/,'').split('\n').map(text=>({text}));
+ const rows=marked?diff(item.start[tab],item.code[tab]):item.code[tab].replace(/\n$/,'').split('\n').map(text=>({text}));
  $('codigo').replaceChildren(...rows.map(row=>{const span=document.createElement('span');if(row.kind)span.className=row.kind;span.textContent=row.text;return span;}));
  $('codigo').scrollTop=0;
  const added=rows.filter(r=>r.kind==='mas').length,removed=rows.filter(r=>r.kind==='menos').length;
@@ -304,8 +326,9 @@ function select(id){
  const chips=[];
  if(item.draft)chips.push(chip('Práctica guardada sin entregar','mal'));
  else chips.push(item.intact?chip('Archivo íntegro','bien'):chip('El archivo ha sido alterado: el código de comprobación no coincide','mal'));
- if(item.exam!==config.id)chips.push(chip('Es de otra práctica: '+item.exam,'mal'));
- else if(item.activityVersion!==config.version)chips.push(chip('Versión '+item.activityVersion+' (esta carpeta tiene la '+config.version+'): el código de partida puede no coincidir','mal'));
+ chips.unshift(chip(item.label));
+ if(!item.known)chips.push(chip('No se encuentra esta actividad en el sitio: solo se muestran las pestañas modificadas, sin código de partida','mal'));
+ else if(item.activityVersion!==item.known.version)chips.push(chip('Versión '+item.activityVersion+' (la actividad publicada es la '+item.known.version+'): el código de partida puede no coincidir','mal'));
  if(when(item.finishedAt))chips.push(chip('Entregado: '+when(item.finishedAt)));
  chips.push(chip('Tiempo: '+duration(item.seconds)));
  chips.push(chip('Incidencias: '+(item.incidents??'—')+'/3',item.incidents>=3?'mal':''));
