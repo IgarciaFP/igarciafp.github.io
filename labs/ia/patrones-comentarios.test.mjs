@@ -60,3 +60,32 @@ test('comentarios con numeración y mayúsculas acentuadas',()=>{
  assert.equal(regla(r,'comentarios_mayuscula').cumple,true);
 });
 
+
+
+test('tres espacios finales detecta comentarios reales JS CSS HTML sin recortar la fuente',()=>{
+ for(const [tipo,codigo] of [
+ ['js','// Comentario   \nconst x=1;'], ['js','const x=1; // Comentario   '],
+ ['js','// Comentario   \r\nconst x=1;'], ['js','/** Comentario   */\nconst x=1;'],
+ ['css','/* Comentario   */\na{color:red}'], ['html','<!-- Comentario   --><p>Texto</p>'],
+ ['css','/* Comentario    */\na{color:red}']]) {
+  const r=analizarEntrega({[tipo]:codigo},tipo,{codigoBreve:{lineas:1}});
+  const v=regla(r,'comentarios_tres_espacios_finales');
+  assert.equal(v.cumple,true,codigo);assert.equal(v.peso,50);assert.equal(v.valor,1);
+ }
+});
+test('espacios iniciales, intermedios, tras cierre, tabuladores y cadenas no activan la marca',()=>{
+ for(const codigo of ['//   Comentario\nconst x=1;', '// Comentario  \nconst x=1;',
+ '// Comentario\t\nconst x=1;', '/* Comentario */   const x=1;',
+ '// Comentario   intermedio\nconst x=1;', 'const x="// Comentario   ";',
+ '/*   */const x=1;']) {
+  assert.equal(regla(analizarEntrega({js:codigo},'js'),'comentarios_tres_espacios_finales').cumple,false,codigo);
+ }
+ assert.equal(regla(analizarEntrega({texto:'Comentario   '},'txt'),'comentarios_tres_espacios_finales'),undefined);
+});
+test('marca conserva el peso reducido HTML y revisa comentarios de lenguajes no seleccionados',()=>{
+ const r=analizarEntrega({css:'a{color:red}',html:'<!-- Comentario   -->'},'CSS');
+ assert.equal(regla(r,'comentarios_tres_espacios_finales').peso,25);
+ const otro=analizarEntrega({css:'a{color:red}',js:'// Comentario   \nconst x=1;'},'CSS');
+ const v=otro.resultados.find(x=>x.id==='comentarios_tres_espacios_finales'&&x.lenguaje==='js');
+ assert.equal(v.cumple,true);assert.equal(v.peso,50);
+});
