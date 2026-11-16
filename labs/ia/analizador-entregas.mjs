@@ -19,7 +19,7 @@ import * as parse5 from "parse5";
 const EVALUACIONES_PROSA = Symbol("evaluacionesProsa");
 
 export const PESOS = Object.freeze({
-  sin_comentarios: 100, caracteres_especiales: 60,
+  sin_comentarios: 100, caracteres_especiales: 60, comentarios_tres_espacios_finales: 50,
   comentarios_mayuscula: 10, indentacion_par: 10,
   comentarios_abundantes: 10, comentarios_sin_puntos: 10,
   comentarios_punto_final: 10, comentarios_largos: 10, comentarios_longitud_similar: 10,
@@ -227,8 +227,11 @@ export function prepararEntrega(contenido) {
     if (!unidad.texto.trim()) return;
     const { lenguaje, texto, nombre, base } = unidad;
     if (lenguaje === "js") {
-      const fin = Math.max(texto.lastIndexOf('}'), texto.lastIndexOf(';')) + 1;
+      let fin = Math.max(texto.lastIndexOf('}'), texto.lastIndexOf(';')) + 1;
       if (fin > 0) {
+        // Conservar comentarios finales para revisar también sus espacios.
+        const comentariosFinales = /^(?:\s*(?:\/\/[^\r\n]*|\/\*[\s\S]*?\*\/))+/.exec(texto.slice(fin));
+        if (comentariosFinales) fin += comentariosFinales[0].length;
         bloques.javascript.push({ texto: texto.slice(0, fin), nombre, base });
         const resto = texto.slice(fin);
         if (resto.trim()) bloques.texto.push({ texto: resto, nombre: nombre + '#texto-posterior',
@@ -565,6 +568,15 @@ export function analizarEntregaDetallada(contenido, lenguajes = "", opciones = {
       registrar('caracteres_especiales', !!prosa.trim(), especialesProsa.length > 0, especialesProsa.length, evComentarios(comentarios));
       coincidencias('espacios_invisibles', prosa, /[\u00a0\u200b-\u200f\u202a-\u202e\u202f\u2060\u2066-\u2069]/g);
     }
+    const conTresEspacios = comentarios.filter(c => {
+      const raw = s.slice(c.start, c.end);
+      const cuerpo = raw.startsWith('//') ? raw.slice(2)
+        : raw.startsWith('<!--') ? raw.slice(4, -3) : raw.slice(2, -2);
+      return /\S/.test(cuerpo) && / {3,}$/.test(cuerpo);
+    });
+    registrar('comentarios_tres_espacios_finales', comentarios.length > 0,
+      conTresEspacios.length > 0, conTresEspacios.length,
+      conTresEspacios.map(c => evidencia(c.start, 'Comentario con tres o más espacios ASCII al final del contenido.')));
     const textos = comentarios.map(c => c.text.replace(/^\s*\* ?/gm, "").trim());
     const activos = comentarios.map((c, i) => ({ ...c, text: textos[i] })).filter(c => /\p{L}/u.test(c.text));
     const suficiente = activos.length >= u.minComentarios;
