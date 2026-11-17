@@ -179,3 +179,11 @@ El contador de la hoja reemplaza la caché aunque disminuya (por ejemplo, al bor
 «Borrar datos locales de esta práctica», en la pantalla de entrada, elimina el historial y los comprobantes locales de esa actividad previa confirmación. No borra filas ni cambia notas en la hoja; descarga antes cualquier TXT que quieras conservar.
 
 Fuera de la práctica activa no se bloquean los atajos del navegador. El registro inicial comprueba que el Bridge publicado anuncie la operación de inicio; si falta, muestra RECEIVER_VERSION en lugar de esperar sin explicación. Para actualizarlo copia Code.gs y Bridge.html y elige **Implementar → Gestionar implementaciones → Editar → Nueva versión → Implementar**, conservando la URL.
+
+## Archivos de partida declarados
+
+En config.json, `"archivos": ["html", "css"]` indica que la actividad aporta codigo.html y codigo.css. No se solicita codigo.js; su pestaña queda vacía y editable. Usa `["js"]` para una práctica que solo aporte JavaScript, o `[]` para partir del esqueleto HTML común sin CSS ni JS. Al añadir un archivo, inclúyelo en esta lista.
+
+Los archivos declarados deben existir. Los errores temporales de carga se reintentan hasta tres veces y no se convierten silenciosamente en código vacío. Para compatibilidad, si no existe el campo archivos se conserva la detección por 404 de los tres archivos opcionales. La actividad de prueba CSS declara solo html y css.
+
+Si aparece RECEIVER_VERSION, comprueba la implementación existente de Apps Script: debe publicar Code.gs con iniciarEntrega y Bridge.html con LAB_START y capabilities. Guardar archivos en el editor o ejecutar configurar no actualiza la versión servida por /exec. Si creas una implementación distinta con otra URL, hay que cambiar delivery.endpoint en contenido/config.json.

@@ -5,9 +5,21 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261117-base3-25';
+  const version=loaderURL.searchParams.get('v')||'20261117-base3-26';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
-  const fetchAsset=path=>fetch(asset(path),{cache:'no-cache'});
+  const fetchAsset=async path=>{
+    let response,error;
+    for(let attempt=0;attempt<3;attempt++){
+      try{
+        response=await fetch(asset(path),{cache:attempt?'reload':'no-cache',signal:AbortSignal.timeout(15000)});
+        if(![408,429,500,502,503,504].includes(response.status))return response;
+        error=null;
+      }catch(cause){error=cause;}
+      if(attempt<2)await new Promise(resolve=>setTimeout(resolve,250*(attempt+1)));
+    }
+    if(error)throw error;
+    return response;
+  };
   const read=async path=>{
     const response=await fetchAsset(path);
     if(!response.ok)throw Error(`No se pudo cargar ${path} (${response.status})`);
@@ -52,6 +64,12 @@
       typeof settings.restringirHorario!=='boolean'||typeof settings.restringirIPs!=='boolean'||
       !Array.isArray(settings.redes)||!settings.redes.every(red=>typeof red==='string'&&red.includes('/')))
       throw Error('Revisa guardar, duracion, entregas, reiniciar, redes, restringirHorario y restringirIPs en el config.json de la actividad.');
+    const files=supplied.archivos;
+    if(files!==undefined&&(!Array.isArray(files)||files.some(ext=>!['html','css','js'].includes(ext))||new Set(files).size!==files.length))
+      throw Error('archivos debe ser una lista sin duplicados con html, css o js.');
+    // Un archivo no declarado no se solicita: su ausencia no depende del estado HTTP de un proxy.
+    const readCode=ext=>files===undefined?optional(folder+'codigo.'+ext):
+      files.includes(ext)?read(folder+'codigo.'+ext).then(r=>r.text()):Promise.resolve('');
     const allowSaveRecovery=settings.guardar,minutes=settings.duracion;
     // El servidor comprueba red y horario. En modo de registro no se bloquea el acceso.
     // Solo control.restringirAcceso === true aplica la negativa del servidor.
@@ -75,7 +93,7 @@
     if(!statementResponse.ok)throw Error('No se pudo cargar la actividad.');
     const [statement,ownHtml,css,js,skeleton]=await Promise.all([
       statementResponse.text(),
-      optional(folder+'codigo.html'),optional(folder+'codigo.css'),optional(folder+'codigo.js'),
+      readCode('html'),readCode('css'),readCode('js'),
       optional('contenido/esqueleto.html')
     ]);
     // Sin HTML de partida (no hay codigo.html o está vacío), la pestaña HTML empieza con el esqueleto común.
