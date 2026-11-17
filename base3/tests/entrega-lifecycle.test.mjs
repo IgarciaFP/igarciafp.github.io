@@ -200,4 +200,40 @@ for(const [reason,number,expected]of [['voluntary',1,0],['duration-limit',1,1],[
  }
 }
 
+
+// Una respuesta de la hoja con cero sustituye un historial local mayor.
+{
+ const cacheContext=vm.createContext({$:()=>({value:'alumno@g.educaand.es'}),
+  opportunityCache:{'alumno@g.educaand.es':{used:5}},submittedCount:()=>7,config:{maxSubmissions:1}});
+ vm.runInContext(part('function cachedOpportunity(){','function saveOpportunity('),cacheContext);
+ assert.equal(cacheContext.cachedOpportunity().used,5);
+ cacheContext.opportunityCache['alumno@g.educaand.es'].used=0;
+ assert.equal(cacheContext.cachedOpportunity().used,0);
+}
+// Un Bridge antiguo se detecta antes de enviar LAB_START, sin esperar 90 segundos.
+const deliverySource=readFileSync(new URL('../../base/motor/entregas.js',import.meta.url),'utf8');
+for(const compatible of [false,true]){
+ let receive,posted=0,removed=0;
+ const runtime=vm.createContext({
+  window:{addEventListener:(name,fn)=>receive=fn,removeEventListener(){}},
+  document:{createElement:()=>({remove:()=>removed++}),body:{append(){}}},
+  crypto:{getRandomValues:a=>a.fill(1)},URL,Uint8Array,
+  setTimeout:()=>1,clearTimeout(){}
+ });
+ vm.runInContext(deliverySource,runtime);
+ const peer={postMessage:m=>{posted++;assert.equal(m.type,'LAB_START');}};
+ const request=runtime.window.LabDelivery.start({type:'apps-script',endpoint:'https://script.google.com/macros/s/test/exec'},
+  {practiceId:'DIW-PRUEBA',payload:JSON.stringify({attemptId:'a'.repeat(32)})});
+ const event={origin:'https://x-script.googleusercontent.com',source:peer,data:{type:'LAB_READY',channel:'01'.repeat(16)}};
+ if(compatible)event.data.capabilities=['start'];
+ receive(event);
+ if(compatible){
+  receive({...event,data:{type:'LAB_RESULT',channel:'01'.repeat(16),result:{ok:true,attemptId:'a'.repeat(32),number:1,limit:1}}});
+  assert.equal((await request).number,1);assert.equal(posted,1);
+ }else{
+  await assert.rejects(request,/RECEIVER_VERSION/);assert.equal(posted,0);
+ }
+ assert.equal(removed,1);
+}
+
 console.log('OK: reserva, actualización, idempotencia, motivos, notas y panel definitivo.');

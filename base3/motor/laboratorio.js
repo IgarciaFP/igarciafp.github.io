@@ -119,7 +119,7 @@ let opportunityCache={};try{opportunityCache=JSON.parse(localStorage.getItem(opp
 let opportunitySerial=0,opportunityTimer,revisionReason='',revisionNeeded=false;
 function cachedOpportunity(){
  const email=$('student').value.trim().toLowerCase(),saved=opportunityCache[email];
- return {used:Math.max(submittedCount(),Number.isSafeInteger(saved?.used)?saved.used:0),limit:config.maxSubmissions};
+ return {used:Number.isSafeInteger(saved?.used)?saved.used:submittedCount(),limit:config.maxSubmissions};
 }
 function saveOpportunity(email,used){
  opportunityCache[email]={used,at:Date.now()};
@@ -654,8 +654,8 @@ async function deliver(item){
  delivering=true;setDeliveryState('sending');$('delivery-retry').disabled=true;$('delivery-status').textContent=tr('sending');
  persistDelivery(item);
  try{
-  await ensureRegistration();
   const envelope=await deliveryEnvelope(item);
+  if(JSON.parse(envelope.payload).attemptId)await ensureRegistration();
   item.receipt=await window.LabDelivery.send(config.delivery,envelope);
   persistDelivery(item);await recordSubmission(item);showDeliveryReceipt(item);
  }catch(error){
@@ -831,6 +831,19 @@ $('practice-finish').addEventListener('click',()=>guard.ask('finish'));
 $('practice-reset').addEventListener('click',()=>{if(config.allowRestart)guard.ask('erase');});
 
 // ---------------------------------------------------------------- Arranque
+
+const clearLocalButton=document.createElement('button');
+clearLocalButton.id='clear-local-practice';clearLocalButton.type='button';clearLocalButton.className='secondary';
+clearLocalButton.textContent='Borrar datos locales de esta práctica';
+$('recovery').append(clearLocalButton);
+clearLocalButton.addEventListener('click',()=>{
+ if(phase!=='ready'||recoveryMode)return;
+ if(!window.confirm('Se borrarán los datos locales y el comprobante guardado de esta práctica, incluida cualquier entrega pendiente. Descarga antes el TXT si quieres conservarlo. No se borrará nada de la hoja del profesor. ¿Continuar?'))return;
+ try{
+  for(const key of [config.storage.key,config.storage.key+'-previous',config.storage.legacyKey,RECOVERY,submissionStore,opportunityStore])localStorage.removeItem(key);
+  location.reload();
+ }catch{$('recovery-message').textContent='El navegador no permite borrar los datos locales. Revisa sus permisos de almacenamiento.';}
+});
 const deliveryConfigNote=document.createElement('p');deliveryConfigNote.id='delivery-config-note';deliveryConfigNote.className='note warm';
 deliveryConfigNote.textContent=tr('notConfigured');$('guard-start-box').prepend(deliveryConfigNote);
 for(const [id,anchor]of [['receipt-download','delivery-retry'],['recovery-download','recover-delivery']]){
@@ -900,7 +913,14 @@ guard=window.createPracticeGuard({config,deliveryPanel:true,onAttemptStart,timeS
   if(current==='submitted')return downloadReceipt(rememberDelivery($('report').value));
   return current==='ready'||current==='reset'||current==='review';
  },
- forcedError(){setDeliveryState('error');$('delivery-status').textContent=tr('forcedError');},
+ forcedError(error){
+  setDeliveryState('error');
+  const code=/^[A-Z_]{3,30}$/.test(error?.message||'')?error.message:'REPORT';
+  const detail=code==='RECEIVER_VERSION'?'El receptor publicado está desactualizado. El profesor debe actualizar Code.gs y Bridge.html y publicar una nueva versión de Apps Script.':
+    code==='TIMEOUT'?'El receptor no ha respondido a tiempo. Comprueba la implementación de Apps Script y reintenta.':
+    code==='SCHEMA'?'Las cabeceras de la hoja no coinciden con las que espera el receptor publicado.':'No se pudo preparar la entrega. El código permanece bloqueado en esta página; puedes reintentar.';
+  $('delivery-status').textContent=detail+' Código: '+code+'.';
+ },
  isAnswer(el){return el instanceof HTMLElement&&ids.includes(el.id);},
  restoreValue(el,data){el.value=data.values[el.id]||'';}
 });

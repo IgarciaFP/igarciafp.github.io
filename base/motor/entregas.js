@@ -16,6 +16,7 @@
         const m=event.data;
         if(!googleOrigin(event.origin)||m?.channel!==channel||!event.source)return;
         if(m.type==='LAB_READY'&&!sent){
+          if(statusOnly==='start'&&(!Array.isArray(m.capabilities)||!m.capabilities.includes('start'))){fail('RECEIVER_VERSION');return;}
           // HtmlService se ejecuta dentro de un iframe adicional de Google.
           peer=event.source;peerOrigin=event.origin;sent=true;
           peer.postMessage({type:statusOnly==='start'?'LAB_START':statusOnly?'LAB_STATUS':'LAB_SUBMIT',channel,envelope},peerOrigin);

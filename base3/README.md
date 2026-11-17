@@ -172,3 +172,10 @@ El Worker observa la IP pública de salida (o IPv6 pública), no la IPv4 privada
 Para activar esta versión, actualiza Code.gs y publica una nueva versión de Apps Script. Publica también servidor/worker.js en Cloudflare para que el sello y la revisión del profesor usen las redes de cada actividad. El nuevo registro inicial también requiere actualizar Bridge.html.
 
 Pruebas de regresión del ciclo de entrega: `node base3/tests/entrega-lifecycle.test.mjs`.
+
+## Caché local y receptor publicado
+
+El contador de la hoja reemplaza la caché aunque disminuya (por ejemplo, al borrar entregas de prueba). Mientras llega la consulta se muestra el último valor local disponible.
+«Borrar datos locales de esta práctica», en la pantalla de entrada, elimina el historial y los comprobantes locales de esa actividad previa confirmación. No borra filas ni cambia notas en la hoja; descarga antes cualquier TXT que quieras conservar.
+
+Fuera de la práctica activa no se bloquean los atajos del navegador. El registro inicial comprueba que el Bridge publicado anuncie la operación de inicio; si falta, muestra RECEIVER_VERSION en lugar de esperar sin explicación. Para actualizarlo copia Code.gs y Bridge.html y elige **Implementar → Gestionar implementaciones → Editar → Nueva versión → Implementar**, conservando la URL.

@@ -535,6 +535,7 @@
       persist();
     }
     function blockAction(e) {
+      if(adapter.deliveryPanel&&state.phase!=='active')return;
       if (e.cancelable) e.preventDefault();
       e.stopImmediatePropagation();
       auditAction(e);
@@ -658,7 +659,7 @@
         render();
         await adapter.downloadReport();
         if (document.fullscreenElement === root) { try { await document.exitFullscreen(); } catch {} }
-      } catch { adapter.forcedError(); }
+      } catch (error) { adapter.forcedError(error); }
       finally { forcedBusy = false; render(); }
     }
     function resetProcess() {
