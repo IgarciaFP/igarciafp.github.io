@@ -2,7 +2,7 @@
  * Receptor de entregas de base3. Instalar VINCULADO a la hoja de cálculo de entregas
  * (Extensiones → Apps Script). Escribe con la cuenta del propietario: la hoja no se comparte.
  * Añade una fila por entrega en «Entregas», columnas identificadas por sus cabeceras.
- * La revisión autenticada consulta y modifica únicamente la columna «nota».
+ * La revisión autenticada consulta y modifica «nota» y «Comentarios a la nota».
  */
 const ORIGEN_ = 'https://igarciafp.github.io';     // sitio del laboratorio
 const DOMINIO_ = 'g.educaand.es';                  // dominio de correo admitido
@@ -43,7 +43,7 @@ function configurar() {
 function prepararHojaVacia_(hoja) {
   if(!hoja)throw Object.assign(Error('SCHEMA'),{detail:'No existe la pestaña «'+PESTANA_+'».'});
   if(hoja.getLastRow()!==0)return false;
-  const cabeceras=['ID','NUM ENTREGA',...CABECERAS_,'nota'];
+  const cabeceras=['ID','NUM ENTREGA',...CABECERAS_,'nota','Comentarios a la nota'];
   if(hoja.getMaxColumns()<cabeceras.length)hoja.insertColumnsAfter(hoja.getMaxColumns(),cabeceras.length-hoja.getMaxColumns());
   hoja.getRange(1,1,1,cabeceras.length).setValues([cabeceras]);
   SpreadsheetApp.flush();
@@ -416,9 +416,10 @@ function filaDeEntrega_(hoja, id) {
   if (!encontrada) throw Error('NOT_FOUND');
   return encontrada;
 }
-function estadoNota_(celda) {
+function estadoNota_(celda, celdaComentarios) {
   const valor = celda.getValue(), formula = celda.getFormula(), nota = celda.getDisplayValue();
-  return { nota, revision: huella_(JSON.stringify([valor, formula, nota])) };
+  const comentarios = celdaComentarios.getDisplayValue();
+  return { nota, comentarios, revision: huella_(JSON.stringify([valor, formula, nota, celdaComentarios.getValue(), celdaComentarios.getFormula(), comentarios])) };
 }
 /** Todas las consultas y escrituras de notas requieren una sesión validada aquí. */
 function gestionarNota(pedido) {
@@ -437,22 +438,31 @@ function gestionarNota(pedido) {
     const columnas = cabeceras.map((v, i) => igual_(v) === 'nota' ? i + 1 : 0).filter(Boolean);
     if (columnas.length !== 1) throw Error('GRADE_COLUMN');
     const fila = filaDeEntrega_(hoja, pedido.submissionId), columna = columnas[0], celda = hoja.getRange(fila, columna);
-    const actual = estadoNota_(celda);
+    const columnasComentarios = cabeceras.map((v, i) => igual_(v) === 'comentarios a la nota' ? i + 1 : 0).filter(Boolean);
+    if (columnasComentarios.length !== 1) throw Error('COMMENTS_COLUMN');
+    const columnaComentarios = columnasComentarios[0], celdaComentarios = hoja.getRange(fila, columnaComentarios);
+    const actual = estadoNota_(celda, celdaComentarios);
     if (pedido.action === 'get') return { ok: true, submissionId: pedido.submissionId, ...actual };
     texto_(pedido.nota, 100, true);
+    if (pedido.comentarios !== undefined) texto_(pedido.comentarios, 10000, true);
     // Evitar sobreescribir una modificación realizada desde la hoja u otra revisión.
     if (pedido.revision !== actual.revision) return { ok: false, code: 'CONFLICT', ...actual };
     const nota = pedido.nota.trim();
     const numero = /^-?\d+(?:[.,]\d+)?$/.test(nota) ? Number(nota.replace(',', '.')) : NaN;
     const entrada = nota === '' ? {} : Number.isFinite(numero) ? { userEnteredValue: { numberValue: numero } } : literal_(nota);
-    Sheets.Spreadsheets.batchUpdate({ requests: [{ updateCells: {
+    const requests = [{ updateCells: {
       range: { sheetId: hoja.getSheetId(), startRowIndex: fila - 1, endRowIndex: fila, startColumnIndex: columna - 1, endColumnIndex: columna },
       rows: [{ values: [entrada] }], fields: 'userEnteredValue'
-    } }] }, libro.getId());
+    } }];
+    if (pedido.comentarios !== undefined) requests.push({ updateCells: {
+      range: { sheetId: hoja.getSheetId(), startRowIndex: fila - 1, endRowIndex: fila, startColumnIndex: columnaComentarios - 1, endColumnIndex: columnaComentarios },
+      rows: [{ values: [literal_(pedido.comentarios)] }], fields: 'userEnteredValue'
+    } });
+    Sheets.Spreadsheets.batchUpdate({ requests }, libro.getId());
     SpreadsheetApp.flush();
-    return { ok: true, submissionId: pedido.submissionId, ...estadoNota_(celda) };
+    return { ok: true, submissionId: pedido.submissionId, ...estadoNota_(celda, celdaComentarios) };
   } catch (error) {
-    const conocidos = ['AUTH', 'AUTH_CONFIG', 'SESSION', 'INVALID', 'BUSY', 'SCHEMA', 'ROUTE', 'NOT_FOUND', 'AMBIGUOUS', 'GRADE_COLUMN'];
+    const conocidos = ['AUTH', 'AUTH_CONFIG', 'SESSION', 'INVALID', 'BUSY', 'SCHEMA', 'ROUTE', 'NOT_FOUND', 'AMBIGUOUS', 'GRADE_COLUMN', 'COMMENTS_COLUMN'];
     return { ok: false, code: conocidos.includes(error.message) ? error.message : 'STORAGE' };
   } finally { if (cerrojo?.hasLock()) cerrojo.releaseLock(); }
 }
@@ -475,3 +485,4 @@ function consultarOportunidades(pedido) {
     return {ok:false,code:conocidos.includes(error.message)?error.message:'STORAGE'};
   }
 }
+

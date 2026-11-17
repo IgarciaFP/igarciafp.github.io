@@ -6,7 +6,7 @@ const server=readFileSync(new URL('../receptor/Code.gs',import.meta.url),'utf8')
 const guardSource=readFileSync(new URL('../../base/motor/seguridad.js',import.meta.url),'utf8');
 const labSource=readFileSync(new URL('../motor/laboratorio.js',import.meta.url),'utf8');
 const hash=s=>createHash('sha256').update(s).digest('hex');
-const headers=['DIA Y HORA [DD/MM/AA HH:MM:SS]','MODULO','Nombre de la práctica','EMAIL','PROBAR CODIGO','Tiempo','IP','Incidencias','ENTREGA completa','nota','Comentarios'];
+const headers=['DIA Y HORA [DD/MM/AA HH:MM:SS]','MODULO','Nombre de la práctica','EMAIL','PROBAR CODIGO','Tiempo','IP','Incidencias','ENTREGA completa','nota','Comentarios a la nota'];
 const rows=[headers.map(v=>({value:v,note:''}))];
 const cell=(r,c)=>{rows[r]||=[];return rows[r][c]||=( {value:'',note:''});};
 function range(r,c,n=1,m=1){
@@ -42,7 +42,7 @@ let restoredHeaders=null;
 const blankSheet={getLastRow:()=>0,getMaxColumns:()=>30,getRange:()=>({setValues:values=>{restoredHeaders=values[0];}})};
 assert.equal(context.prepararHojaVacia_(blankSheet),true);
 assert.deepEqual(Array.from(restoredHeaders).slice(0,4),['ID','NUM ENTREGA','DIA Y HORA [DD/MM/AA HH:MM:SS]','MODULO']);
-assert.equal(restoredHeaders.at(-1),'nota');
+assert.equal(restoredHeaders.at(-1),'Comentarios a la nota');
 assert.equal(context.prepararHojaVacia_({getLastRow:()=>2}),false);
 assert.throws(()=>context.comprobarCabeceras_(null),e=>e.message==='SCHEMA'&&e.detail.includes('No existe'));
 const missingSheet={getLastColumn:()=>1,getRange:()=>({getValues:()=>[['ID']]})};
@@ -127,10 +127,20 @@ context.Utilities.base64DecodeWebSafe=s=>Buffer.from(s,'base64url');
 context.Utilities.newBlob=bytes=>bytes;
 context.Utilities.ungzip=bytes=>({getDataAsString:()=>bytes.toString('utf8')});
 vm.runInContext("sesionProfesor_=()=>({});",context);
+cell(last,12).value='Comentario desde la hoja';
 const grade=context.gestionarNota({action:'get',submissionId:moved.submissionId});
 assert.equal(grade.ok,true);assert.equal(grade.nota,'8');
-assert.equal(context.gestionarNota({action:'set',submissionId:moved.submissionId,revision:grade.revision,nota:'9'}).ok,true);
+assert.equal(grade.comentarios,'Comentario desde la hoja');
+cell(last,12).value='Cambio externo';
+assert.equal(context.gestionarNota({action:'set',submissionId:moved.submissionId,revision:grade.revision,nota:'9',comentarios:'No guardar'}).code,'CONFLICT');
+assert.equal(cell(last,11).value,8);
+const updated=context.gestionarNota({action:'get',submissionId:moved.submissionId});
+assert.equal(context.gestionarNota({action:'set',submissionId:moved.submissionId,revision:updated.revision,nota:'9',comentarios:'=Texto literal del profesor'}).ok,true);
 assert.equal(cell(last,11).value,9);
+assert.equal(cell(last,12).value,'=Texto literal del profesor');
+const current=context.gestionarNota({action:'get',submissionId:moved.submissionId});
+assert.equal(context.gestionarNota({action:'set',submissionId:moved.submissionId,revision:current.revision,nota:'9',comentarios:''}).ok,true);
+assert.equal(cell(last,12).value,'');
 assert.equal(cell(last,0).value,'6'.repeat(32));
 // Rechaza cabeceras ambiguas sin adivinar dónde escribir.
 cell(0,12).value='NUM ENTREGA';
@@ -290,3 +300,4 @@ console.log('OK: reserva, actualización, idempotencia, motivos, notas y panel d
  assert.equal(elements['delivery-retry'].hidden,true);
  assert.equal(elements['delivery-note'].hidden,true);
 }
+

@@ -10,7 +10,9 @@ const messages={
  NOT_FOUND:'Esta entrega no se encuentra en la hoja. Comprueba que fue recibida y que su código completo está en la columna I.',
  AMBIGUOUS:'Hay varias filas con la misma entrega. Revisa los duplicados en la hoja.',
  GRADE_COLUMN:'Debe existir una única columna con la cabecera «nota», después de las columnas A–I.',
- CONFLICT:'La nota cambió en la hoja. Pulsa «Actualizar nota» antes de volver a guardar.',
+ COMMENTS_COLUMN:'Debe existir una única columna «Comentarios a la nota» en la hoja.',
+ RECEIVER_VERSION:'Actualiza Code.gs y publica una nueva versión para guardar comentarios.',
+ CONFLICT:'La nota o los comentarios cambiaron en la hoja. Pulsa «Actualizar nota» antes de volver a guardar.',
  TIMEOUT:'No se recibió respuesta. Actualiza la nota para comprobar si se guardó antes de reintentar.',
  NOT_CONFIGURED:'No hay un receptor de Google Sheets configurado.',
  SCHEMA:'Las cabeceras de la hoja no coinciden con las esperadas.',
@@ -32,6 +34,7 @@ function render(){
  $('nota-session').textContent=logged?'Sesión recordada hasta '+new Date(session.expiresAt).toLocaleDateString('es-ES'):'Accede con la clave del profesor.';
  const valid=selected&&selected.intact&&!selected.draft;
  $('nota-value').disabled=busy||!logged||!valid||revision===null;
+ $('nota-comments').disabled=$('nota-value').disabled;
  $('nota-save').disabled=busy||!logged||!valid||revision===null;
  $('nota-refresh').disabled=busy||!logged||!valid;
  $('nota-enter').disabled=busy;
@@ -77,11 +80,11 @@ async function operate(action){
  if((action==='get'||action==='set')&&(!session||!item?.intact||item.draft))return;
  const key=$('nota-key').value;
  if(action==='login'&&!key){status('Introduce la clave del profesor.',true);return;}
- busy=true;render();status(action==='set'?'Guardando nota…':action==='login'?'Iniciando sesión…':action==='logout'?'Cerrando sesión…':'Consultando la nota actual…');
+ busy=true;render();status(action==='set'?'Guardando nota y comentarios…':action==='login'?'Iniciando sesión…':action==='logout'?'Cerrando sesión…':'Consultando la nota actual…');
  try{
   const result=await request(action==='login'?{action,key}:{
    action,token:session?.token,submissionId:item?.id,
-   ...(action==='set'?{nota:$('nota-value').value,revision}: {})
+   ...(action==='set'?{nota:$('nota-value').value,comentarios:$('nota-comments').value,revision}: {})
   });
   if(turn!==serial)return;
   if(!result.ok){
@@ -94,15 +97,16 @@ async function operate(action){
    remember({token:result.token,expiresAt:result.expiresAt,endpoint});$('nota-key').value='';
    status('Sesión iniciada.');
   }else if(action==='logout'){
-   remember(null);revision=null;$('nota-value').value='';status('Sesión cerrada.');
+   remember(null);revision=null;$('nota-value').value='';$('nota-comments').value='';status('Sesión cerrada.');
   }else{
    if(result.submissionId!==item.id||typeof result.nota!=='string'||typeof result.revision!=='string')throw Error('STORAGE');
-   revision=result.revision;$('nota-value').value=result.nota;
-   status(action==='set'?'Nota guardada en la hoja.':result.nota===''?'Sin calificar: la celda está vacía.':'Nota actual de la hoja.');
+   if(typeof result.comentarios!=='string')throw Error('RECEIVER_VERSION');
+   revision=result.revision;$('nota-value').value=result.nota;$('nota-comments').value=result.comentarios;
+   status(action==='set'?'Nota y comentarios guardados en la hoja.':result.nota===''?'Sin calificar: la celda está vacía.':'Nota actual de la hoja.');
   }
  }catch(error){
   if(turn!==serial)return;
-  if(action==='logout'){remember(null);revision=null;$('nota-value').value='';}
+  if(action==='logout'){remember(null);revision=null;$('nota-value').value='';$('nota-comments').value='';}
   if(action==='set'||action==='get')revision=null;
   status(messages[error.message]||'No se pudo completar la operación.',true);
  }finally{
@@ -110,7 +114,7 @@ async function operate(action){
  }
 }
 window.addEventListener('review-selection',async event=>{
- ++serial;busy=false;selected=event.detail;revision=null;$('nota-value').value='';
+ ++serial;busy=false;selected=event.detail;revision=null;$('nota-value').value='';$('nota-comments').value='';
  render();
  if(!selected){status('Selecciona una entrega.');return;}
  if(selected.draft||!selected.intact){status('La nota solo está disponible para entregas íntegras, no para borradores.');return;}
@@ -124,3 +128,4 @@ $('nota-save').addEventListener('click',()=>void operate('set'));
 $('nota-logout').addEventListener('click',()=>void operate('logout'));
 render();
 })();
+
