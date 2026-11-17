@@ -1,7 +1,7 @@
 /**
  * Receptor de entregas de base3. Instalar VINCULADO a la hoja de cálculo de entregas
  * (Extensiones → Apps Script). Escribe con la cuenta del propietario: la hoja no se comparte.
- * Añade una fila por entrega en «Entregas», columnas A a I.
+ * Añade una fila por entrega en «Entregas», columnas identificadas por sus cabeceras.
  * La revisión autenticada consulta y modifica únicamente la columna «nota».
  */
 const ORIGEN_ = 'https://igarciafp.github.io';     // sitio del laboratorio
@@ -27,15 +27,27 @@ function libro_() {
 function configurar() {
   let libro;
   try { libro = libro_(); } catch (error) { throw Error('No encuentro la hoja de entregas. Crea el script desde la hoja (Extensiones → Apps Script) o escribe su ID en HOJA_ID_.'); }
-  try { comprobarCabeceras_(libro.getSheetByName(PESTANA_)); } catch (error) { throw Error('La hoja «' + libro.getName() + '» no tiene una pestaña «' + PESTANA_ + '» con las cabeceras esperadas en las columnas A a I.'); }
+  try { comprobarCabeceras_(libro.getSheetByName(PESTANA_)); } catch (error) { throw Error('Revisa la pestaña «' + PESTANA_ + '» de «' + libro.getName() + '»: ' + error.message); }
   console.log('Todo correcto. Las entregas se escribirán en «' + libro.getName() + '», pestaña «' + PESTANA_ + '». Publica una versión nueva de la aplicación web.');
 }
 
 const igual_ = texto => String(texto).replace(/\s+/g, ' ').trim().toLowerCase();
+const nombreCabecera_ = valor => igual_(valor).normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 function comprobarCabeceras_(hoja) {
   if (!hoja) throw Error('SCHEMA');
-  const fila = hoja.getRange(1, 1, 1, CABECERAS_.length).getValues()[0];
-  if (CABECERAS_.some((cabecera, i) => igual_(fila[i]) !== igual_(cabecera))) throw Error('SCHEMA');
+  const fila=hoja.getRange(1,1,1,Math.max(1,hoja.getLastColumn())).getValues()[0];
+  return CABECERAS_.map(nombre=>{
+    const posiciones=fila.map((v,i)=>nombreCabecera_(v)===nombreCabecera_(nombre)?i+1:0).filter(Boolean);
+    if(posiciones.length!==1)throw Error('SCHEMA');
+    return posiciones[0];
+  });
+}
+/** Traduce el orden lógico de los datos al orden real de las columnas. */
+function distribuirFila_(hoja,fila) {
+  const columnas=comprobarCabeceras_(hoja);
+  const values=Array.from({length:hoja.getLastColumn()},()=>literal_(''));
+  fila.forEach((valor,i)=>{values[columnas[i]-1]=valor;});
+  return values;
 }
 function doGet(e) {
   const practica = e?.parameter?.practice || '', canal = e?.parameter?.channel || '';
@@ -200,7 +212,9 @@ function informeAlmacenado_(codigo) {
 function entregasAnteriores_(hoja,datos,id) {
   const total=hoja.getLastRow()-1,email=datos.email.toLowerCase();
   if(total<1)return {count:0,duplicate:false};
-  const filas=hoja.getRange(2,2,total,8).getValues(),notas=hoja.getRange(2,9,total,1).getNotes();
+  const columnas=comprobarCabeceras_(hoja);
+  const filas=hoja.getRange(2,1,total,hoja.getLastColumn()).getValues().map(fila=>columnas.slice(1).map(col=>fila[col-1]));
+  const notas=hoja.getRange(2,columnas[8],total,1).getNotes();
   let count=0,duplicate=false;
   for(let i=0;i<filas.length;i++){
     const fila=filas[i];
@@ -222,8 +236,9 @@ const literal_ = valor => ({ userEnteredValue: { stringValue: String(valor ?? ''
 function columnasIntento_(hoja) {
   const headers=hoja.getRange(1,1,1,hoja.getLastColumn()).getValues()[0];
   return ['ID','Número de entrega'].map(nombre=>{
-    const matches=headers.map((v,i)=>igual_(v)===igual_(nombre)?i+1:0).filter(Boolean);
-    if(matches.length>1||matches.some(n=>n<=9))throw Error('SCHEMA');
+    const aliases=nombre==='ID'?['id']:['numero de entrega','num entrega'];
+    const matches=headers.map((v,i)=>aliases.includes(nombreCabecera_(v))?i+1:0).filter(Boolean);
+    if(matches.length>1)throw Error('SCHEMA');
     if(matches.length)return matches[0];
     const col=headers.length+1;
     if(col>hoja.getMaxColumns())hoja.insertColumnsAfter(hoja.getMaxColumns(),col-hoja.getMaxColumns());
@@ -237,7 +252,7 @@ function buscarIntento_(hoja,sobre,datos,columnas) {
   if(matches.length>1)throw Error('AMBIGUOUS');
   if(!matches.length)return null;
   const row=matches[0].getRow();
-  let meta;try{meta=JSON.parse(hoja.getRange(row,9).getNote());}catch{throw Error('INVALID');}
+  let meta;try{meta=JSON.parse(hoja.getRange(row,comprobarCabeceras_(hoja)[8]).getNote());}catch{throw Error('INVALID');}
   if(meta.base3!==2||meta.exam!==datos.exam||meta.email!==datos.email.toLowerCase()||meta.tokenHash!==huella_(sobre.attemptToken))throw Error('INVALID');
   return {row,meta};
 }
@@ -256,11 +271,12 @@ function iniciarEntrega(sobre) {
     const control=controlEntrega_(datos,{...politica,restringirIPs:false,restringirHorario:false});
     const meta={base3:2,exam:datos.exam,email:datos.email.toLowerCase(),attemptId:datos.attemptId,
       number,tokenHash:huella_(sobre.attemptToken),status:'started',startedAt:ahora.toISOString(),initialIP:control.ip};
-    const values=Array.from({length:Math.max(9,...columnas)},()=>literal_(''));
+    let values=Array.from({length:9},()=>literal_(''));
     values[0]=literal_(Utilities.formatDate(ahora,'Europe/Madrid','dd/MM/yy HH:mm:ss'));
     values[1]=literal_(datos.module);values[2]=literal_(datos.activityTitle);values[3]=literal_(meta.email);
     values[6]=literal_(control.ip);values[7]=literal_(['INICIADA · pendiente de entrega',...control.avisos].join(' · '));
     values[8]={...literal_(''),note:JSON.stringify(meta)};
+    values=distribuirFila_(hoja,values);
     values[columnas[0]-1]=literal_(datos.attemptId);values[columnas[1]-1]={userEnteredValue:{numberValue:number}};
     Sheets.Spreadsheets.batchUpdate({requests:[{appendCells:{sheetId:hoja.getSheetId(),rows:[{values}],fields:'userEnteredValue,note'}}]},libro.getId());
     return {ok:true,attemptId:datos.attemptId,number,limit:politica.entregas};
@@ -309,12 +325,13 @@ function recibirEntrega(sobre) {
         note:JSON.stringify({base3:1,exam:datos.exam,email:datos.email.toLowerCase(),id:sobre.submissionId,adicional})}
     ];
     if(intento){
-      // A–D y G conservan la fecha, identidad e IP iniciales; no se toca «nota».
+      // Conserva fecha, identidad e IP iniciales; no se toca «nota».
       fila[8].note=JSON.stringify({...intento.meta,id:sobre.submissionId,status:'submitted',receivedAt:ahora.toISOString(),adicional});
+      const columnas=comprobarCabeceras_(hoja);
       const update=(start,values)=>({updateCells:{range:{sheetId:hoja.getSheetId(),startRowIndex:intento.row-1,endRowIndex:intento.row,startColumnIndex:start,endColumnIndex:start+values.length},rows:[{values}],fields:'userEnteredValue,note'}});
-      Sheets.Spreadsheets.batchUpdate({requests:[update(4,fila.slice(4,6)),update(7,fila.slice(7,9))]},id);
+      Sheets.Spreadsheets.batchUpdate({requests:[4,5,7,8].map(i=>update(columnas[i]-1,[fila[i]]))},id);
     }else{
-      Sheets.Spreadsheets.batchUpdate({ requests: [{ appendCells: { sheetId: hoja.getSheetId(), rows: [{ values: fila }], fields: 'userEnteredValue,note' } }] }, id);
+      Sheets.Spreadsheets.batchUpdate({ requests: [{ appendCells: { sheetId: hoja.getSheetId(), rows: [{ values: distribuirFila_(hoja,fila) }], fields: 'userEnteredValue,note' } }] }, id);
     }
     return { ok: true, submissionId: sobre.submissionId, receivedAt: ahora.toISOString(), duplicate: false };
   } catch (error) {
@@ -358,7 +375,7 @@ function filaDeEntrega_(hoja, id) {
   if (!/^[a-f0-9]{64}$/.test(id || '')) throw Error('INVALID');
   const total = hoja.getLastRow() - 1;
   if (total < 1) throw Error('NOT_FOUND');
-  const valores = hoja.getRange(2, 9, total, 1).getValues();
+  const valores = hoja.getRange(2, comprobarCabeceras_(hoja)[8], total, 1).getValues();
   const marcador = '\nCódigo de comprobación: ' + FORMATO_.comprobacion;
   let encontrada = 0;
   for (let i = 0; i < valores.length; i++) {
@@ -399,7 +416,7 @@ function gestionarNota(pedido) {
     comprobarCabeceras_(hoja);
     const cabeceras = hoja.getRange(1, 1, 1, hoja.getLastColumn()).getValues()[0];
     const columnas = cabeceras.map((v, i) => igual_(v) === 'nota' ? i + 1 : 0).filter(Boolean);
-    if (columnas.length !== 1 || columnas[0] <= 9) throw Error('GRADE_COLUMN');
+    if (columnas.length !== 1) throw Error('GRADE_COLUMN');
     const fila = filaDeEntrega_(hoja, pedido.submissionId), columna = columnas[0], celda = hoja.getRange(fila, columna);
     const actual = estadoNota_(celda);
     if (pedido.action === 'get') return { ok: true, submissionId: pedido.submissionId, ...actual };

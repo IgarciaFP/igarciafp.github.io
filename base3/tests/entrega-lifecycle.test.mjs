@@ -14,6 +14,7 @@ function range(r,c,n=1,m=1){
   getValues:()=>Array.from({length:n},(_,i)=>Array.from({length:m},(_,j)=>cell(r-1+i,c-1+j).value)),
   getNotes:()=>Array.from({length:n},(_,i)=>Array.from({length:m},(_,j)=>cell(r-1+i,c-1+j).note)),
   getNote:()=>cell(r-1,c-1).note,
+  getValue:()=>cell(r-1,c-1).value,getFormula:()=>'',getDisplayValue:()=>String(cell(r-1,c-1).value),
   setValue:v=>{cell(r-1,c-1).value=v;},
   createTextFinder:term=>{const finder={matchEntireCell:()=>finder,matchCase:()=>finder,
    findAll:()=>Array.from({length:n},(_,i)=>i+r).filter(row=>cell(row-1,c-1).value===term).map(row=>({getRow:()=>row}))};return finder;}
@@ -23,7 +24,7 @@ const sheet={getRange:range,getLastRow:()=>rows.length,getLastColumn:()=>rows[0]
 const book={getId:()=> 'sheet',getSheetByName:()=>sheet};
 let policy={entregas:1,redes:['185.197.0.0/16'],restringirIPs:false,restringirHorario:false};
 const context=vm.createContext({
- SpreadsheetApp:{openById:()=>book},
+ SpreadsheetApp:{openById:()=>book,flush(){}},
  LockService:{getScriptLock:()=>({tryLock:()=>true,hasLock:()=>true,releaseLock(){}})},
  UrlFetchApp:{fetch:()=>({getResponseCode:()=>200,getContentText:()=>JSON.stringify(policy)})},
  Utilities:{DigestAlgorithm:{SHA_256:1},Charset:{UTF_8:1},computeDigest:(_,s)=>Array.from(Buffer.from(hash(s),'hex')),formatDate:date=>date.toISOString()},
@@ -80,6 +81,49 @@ assert.equal(context.iniciarEntrega(envelope('5')).number,4);
 policy.restringirIPs=true;
 assert.equal(context.recibirEntrega(envelope('4','Quiero revisar los errores de mi código CSS')).code,'CONTROL_REQUIRED');
 assert.match(cell(4,7).value,/pendiente/,'una restricción conserva la fila inicial');
+
+
+// La hoja real del profesor empieza por ID y NUM ENTREGA; las filas antiguas se conservan.
+const order=[11,12,0,1,2,3,4,5,6,7,8,9,10];
+for(let i=0;i<rows.length;i++){const old=rows[i];rows[i]=order.map(j=>old[j]||{value:'',note:''});}
+cell(0,1).value='NUM ENTREGA';
+policy.restringirIPs=false;
+assert.equal(context.comprobarCabeceras_(sheet)[0],3);
+assert.deepEqual(Array.from(context.columnasIntento_(sheet)),[1,2]);
+assert.equal(rows[0].length,13,'no crea columnas duplicadas');
+assert.equal(context.iniciarEntrega(first).number,1,'localiza reservas tras mover columnas');
+assert.equal(context.recibirEntrega(first).duplicate,true);
+assert.equal(context.consultarOportunidades({practiceId:'DIW-PRUEBA',email:'alumno@g.educaand.es'}).used,4);
+const moved=envelope('6','Necesito revisar el resultado de este nuevo ejercicio');
+assert.equal(context.iniciarEntrega(moved).number,5);
+const last=rows.length-1;
+const dateBefore=cell(last,2).value;
+cell(last,11).value=8;
+assert.equal(context.recibirEntrega(moved).ok,true);
+assert.equal(cell(last,0).value,'6'.repeat(32));
+assert.equal(cell(last,1).value,5);
+assert.equal(cell(last,2).value,dateBefore);
+assert.equal(cell(last,3).value,'DIW');
+assert.equal(cell(last,5).value,'alumno@g.educaand.es');
+assert.match(cell(last,6).value,/HYPERLINK/);
+assert.match(cell(last,9).value,/Motivo de revisión/);
+assert.equal(cell(last,11).value,8);
+// Lectura y edición de nota resuelven también ENTREGA completa por nombre.
+const reportText=moved.payload+'\nCódigo de comprobación: SSII3-'+moved.submissionId;
+cell(last,10).value='SSII3G.'+Buffer.from(reportText).toString('base64url');
+context.Utilities.base64DecodeWebSafe=s=>Buffer.from(s,'base64url');
+context.Utilities.newBlob=bytes=>bytes;
+context.Utilities.ungzip=bytes=>({getDataAsString:()=>bytes.toString('utf8')});
+vm.runInContext("sesionProfesor_=()=>({});",context);
+const grade=context.gestionarNota({action:'get',submissionId:moved.submissionId});
+assert.equal(grade.ok,true);assert.equal(grade.nota,'8');
+assert.equal(context.gestionarNota({action:'set',submissionId:moved.submissionId,revision:grade.revision,nota:'9'}).ok,true);
+assert.equal(cell(last,11).value,9);
+assert.equal(cell(last,0).value,'6'.repeat(32));
+// Rechaza cabeceras ambiguas sin adivinar dónde escribir.
+cell(0,12).value='NUM ENTREGA';
+assert.throws(()=>context.columnasIntento_(sheet),/SCHEMA/);
+cell(0,12).value='Comentarios';
 
 // Controlador real, DOM simulado: cancelación manual, reloj y cierre automático.
 async function guardHarness(automatic=false){

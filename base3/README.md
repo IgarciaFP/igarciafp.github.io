@@ -143,9 +143,9 @@ El contador muestra el tiempo restante desde Empezar. Al quedar un minuto se pon
 #
 ## Registro inicial y panel definitivo
 
-Al empezar se genera un ID aleatorio y se registra en segundo plano una fila con fecha y hora de inicio (Madrid), módulo, actividad, correo e IP. Se añaden al final las columnas **ID** y **Número de entrega**, sin desplazar «nota». El número se asigna en el servidor bajo bloqueo para el mismo correo y práctica. Los intentos iniciados, aunque se abandonen, consumen una oportunidad.
+Al empezar se genera un ID aleatorio y se registra en segundo plano una fila con fecha y hora de inicio (Madrid), módulo, actividad, correo e IP. Se usan las columnas **ID** y **NUM ENTREGA** (o **Número de entrega**) donde estén. Todas las columnas se localizan por su cabecera, sin exigir un orden; solo se añaden al final las de identificación que falten. El número se asigna en el servidor bajo bloqueo para el mismo correo y práctica. Los intentos iniciados, aunque se abandonen, consumen una oportunidad.
 
-La entrega final actualiza esa fila por ID; conserva los datos iniciales y las notas del profesor. En Incidencias quedan el estado inicial pendiente, o los avisos y el motivo al completar. La hora de recepción final se conserva en los metadatos de la celda I y se devuelve en el comprobante. Reintentar una petición no crea filas duplicadas.
+La entrega final actualiza esa fila por ID; conserva los datos iniciales y las notas del profesor. En Incidencias quedan el estado inicial pendiente, o los avisos y el motivo al completar. La hora de recepción final se conserva en los metadatos de la celda de «ENTREGA completa» y se devuelve en el comprobante. Reintentar una petición no crea filas duplicadas.
 
 - **Manual:** «Entregar» muestra un aviso sencillo que permite cancelar. Al aceptarlo se entra en el panel definitivo, se para el reloj y no se puede volver al editor.
 - **Automática con intentos:** abre el mismo panel y envía sin esperar confirmación.

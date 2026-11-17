@@ -1,20 +1,20 @@
 # Receptor de entregas en Google Sheets
 
-Escribe cada entrega en la pestaña **Entregas** de la hoja de cálculo del profesor, columnas A a I. La hoja sigue siendo privada: el script se ejecuta con la cuenta del propietario y los alumnos no pueden abrirla ni leerla.
+Escribe cada entrega en la pestaña **Entregas** de la hoja de cálculo del profesor, columnas localizadas por el nombre de su cabecera. La hoja sigue siendo privada: el script se ejecuta con la cuenta del propietario y los alumnos no pueden abrirla ni leerla.
 
 | Columna | Contenido |
 | --- | --- |
-| A · DIA Y HORA | Fecha y hora de inicio registrada en el servidor de Google, `DD/MM/AA HH:MM:SS` (hora de Madrid) |
-| B · MODULO | `DIW`, `DWEC` o `SSII` |
-| C · Nombre de la práctica | Título de la actividad |
-| D · EMAIL | Correo con el que se identificó el alumno |
-| E · PROBAR CODIGO | Enlace «Probar código»: abre `profesor.html` con esa entrega cargada |
-| F · Tiempo | Tiempo empleado |
-| G · IP | Solo la dirección IP; vacía si falta el sello o no es válido |
-| H · Incidencias | Número de incidencias y todos los avisos: cierre automático, fuera de red/horario, clave del profesor, acceso sin comprobar y problemas de verificación del sello |
-| I · ENTREGA completa | La entrega comprimida y codificada, igual que el archivo TXT del alumno |
+| DIA Y HORA | Fecha y hora de inicio registrada en el servidor de Google, `DD/MM/AA HH:MM:SS` (hora de Madrid) |
+| MODULO | `DIW`, `DWEC` o `SSII` |
+| Nombre de la práctica | Título de la actividad |
+| EMAIL | Correo con el que se identificó el alumno |
+| PROBAR CODIGO | Enlace «Probar código»: abre `profesor.html` con esa entrega cargada |
+| Tiempo | Tiempo empleado |
+| IP | Solo la dirección IP; vacía si falta el sello o no es válido |
+| Incidencias | Número de incidencias y todos los avisos: cierre automático, fuera de red/horario, clave del profesor, acceso sin comprobar y problemas de verificación del sello |
+| ENTREGA completa | La entrega comprimida y codificada, igual que el archivo TXT del alumno |
 
-Las columnas existentes siguientes (Detección IA, NOTA, Comentarios) no se tocan; ID y Número de entrega se añaden al final. El receptor comprueba las nueve cabeceras antes de escribir y no escribe nada si alguna ha cambiado. Reenviar la misma entrega no añade otra fila.
+Las columnas existentes siguientes (Detección IA, NOTA, Comentarios) no se tocan; ID y NUM ENTREGA se reutilizan donde estén; solo se añaden al final si faltan. El receptor comprueba que cada cabecera necesaria exista una sola vez, independientemente de su posición. Reenviar la misma entrega no añade otra fila.
 
 ## Instalación
 
@@ -46,7 +46,7 @@ Tras cambiar `Code.gs` hay que actualizar la implementación con una versión nu
 
 ## Notas desde la revisión del profesor
 
-La página `profesor.html` consulta y modifica la columna cuya cabecera sea «nota» (sin distinguir mayúsculas ni espacios exteriores), situada después de A–I. No crea la columna ni toca otras celdas. La identifica por el hash de la entrega completa de la columna I: no depende del número de fila ni del orden de la hoja.
+La página `profesor.html` consulta y modifica la columna cuya cabecera sea «nota» (sin distinguir mayúsculas ni espacios exteriores), en cualquier posición. No crea la columna ni toca otras celdas. La identifica por el hash de la entrega completa de la columna «ENTREGA completa»: no depende del número de fila ni del orden de la hoja.
 
 1. Actualiza **Code.gs y Bridge.html** con los archivos de esta carpeta.
 2. Publica una nueva versión de la implementación existente de Apps Script, conservando su URL.
@@ -61,9 +61,9 @@ Las entregas sin código completo en I, los borradores y las entregas duplicadas
 
 ## Registro inicial y panel definitivo
 
-Al empezar se genera un ID aleatorio y se registra en segundo plano una fila con fecha y hora de inicio (Madrid), módulo, actividad, correo e IP. Se añaden al final las columnas **ID** y **Número de entrega**, sin desplazar «nota». El número se asigna en el servidor bajo bloqueo para el mismo correo y práctica. Los intentos iniciados, aunque se abandonen, consumen una oportunidad.
+Al empezar se genera un ID aleatorio y se registra en segundo plano una fila con fecha y hora de inicio (Madrid), módulo, actividad, correo e IP. Se localizan **ID** y **NUM ENTREGA** (también se acepta **Número de entrega**) en cualquier posición. Si faltan se crean al final, sin desplazar «nota». El número se asigna en el servidor bajo bloqueo para el mismo correo y práctica. Los intentos iniciados, aunque se abandonen, consumen una oportunidad.
 
-La entrega final actualiza esa fila por ID; conserva los datos iniciales y las notas del profesor. En Incidencias quedan el estado inicial pendiente, o los avisos y el motivo al completar. La hora de recepción final se conserva en los metadatos de la celda I y se devuelve en el comprobante. Reintentar una petición no crea filas duplicadas.
+La entrega final actualiza esa fila por ID; conserva los datos iniciales y las notas del profesor. En Incidencias quedan el estado inicial pendiente, o los avisos y el motivo al completar. La hora de recepción final se conserva en los metadatos de la celda de «ENTREGA completa» y se devuelve en el comprobante. Reintentar una petición no crea filas duplicadas.
 
 - **Manual:** «Entregar» muestra un aviso sencillo que permite cancelar. Al aceptarlo se entra en el panel definitivo, se para el reloj y no se puede volver al editor.
 - **Automática con intentos:** abre el mismo panel y envía sin esperar confirmación.
@@ -73,4 +73,4 @@ La entrega final actualiza esa fila por ID; conserva los datos iniciales y las n
 
 El ID se mantiene al guardar y recuperar una práctica pausada. El registro inicial se reintenta con el mismo ID antes del envío si falló la red; no se puede garantizar el registro remoto sin conexión. La actualización final mantiene las restricciones de red y horario. Si se rechaza, la fila inicial sigue pendiente y el panel permite reintentar.
 
-**Despliegue:** sustituir **Code.gs y Bridge.html** y publicar una nueva versión de la implementación existente. La URL y el Worker no cambian. Las columnas nuevas se crean automáticamente en el primer inicio.
+**Despliegue:** sustituir **Code.gs y Bridge.html** y publicar una nueva versión de la implementación existente. La URL y el Worker no cambian. Solo se crean columnas de identificación si faltan. El orden ID, NUM ENTREGA, DIA Y HORA, MODULO, Nombre de la práctica, EMAIL… es válido.
