@@ -186,7 +186,7 @@ await guardHarness(true);
 
 // Adaptador real: el envío automático solo espera cuando faltan oportunidades.
 const part=(from,to)=>labSource.slice(labSource.indexOf(from),labSource.indexOf(to,labSource.indexOf(from)));
-for(const [reason,number,expected]of [['voluntary',1,0],['duration-limit',1,1],['return-timeout',1,1],['duration-limit',2,0],['return-timeout',2,0]]){
+for(const [reason,number,expected]of [['voluntary',1,1],['voluntary',2,0],['duration-limit',1,1],['return-timeout',1,1],['duration-limit',2,0],['return-timeout',2,0]]){
  const elements={};let sends=0;
  const ctx=vm.createContext({
   attempt:{number,limit:1},revisionNeeded:false,revisionReason:'',delivering:false,panelSending:false,
@@ -271,3 +271,22 @@ for(const compatible of [false,true]){
 }
 
 console.log('OK: reserva, actualización, idempotencia, motivos, notas y panel definitivo.');
+
+
+// El panel solo ofrece reintentar si hubo un error; el motivo tiene su propio botón.
+{
+ const elements={};
+ const ctx=vm.createContext({fileMode:false,lastDelivery:{code:'test'},$:id=>elements[id]||={hidden:true,dataset:{}}});
+ vm.runInContext(part('function syncDeliveryActions(){','function showDeliveryReceipt('),ctx);
+ for(const state of ['idle','sending','success','error']){
+  elements['delivery-stage']={dataset:{state}};
+  elements['revision-delivery']={hidden:true};
+  ctx.syncDeliveryActions();
+  assert.equal(elements['delivery-retry'].hidden,state!=='error');
+  assert.equal(elements['delivery-note'].hidden,state!=='error');
+ }
+ elements['revision-delivery'].hidden=false;
+ ctx.syncDeliveryActions();
+ assert.equal(elements['delivery-retry'].hidden,true);
+ assert.equal(elements['delivery-note'].hidden,true);
+}

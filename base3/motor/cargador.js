@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261117-base3-28';
+  const version=loaderURL.searchParams.get('v')||'20261117-base3-29';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=async path=>{
     // La configuración cambia sin necesidad de publicar otra versión del HTML.
@@ -138,3 +138,4 @@
     console.error(error);
   }
 })();
+

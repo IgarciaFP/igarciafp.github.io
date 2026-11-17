@@ -494,7 +494,7 @@ function afterRender(state,ctx){
   if(!$('delivery-status').textContent)$('delivery-status').textContent=tr('forcedPending');
   $('delivery-retry').textContent=tr('forcedRetry');
   $('delivery-retry').disabled=!!ctx.forcedBusy;
- }else if(phase==='submitted'){$('delivery-retry').textContent='Entregar';$('delivery-retry').disabled=delivering||panelSending||deliveryComplete;}
+ }else if(phase==='submitted'){$('delivery-retry').textContent=fileMode?tr('copyOpen'):'Reintentar entrega';$('delivery-retry').disabled=delivering||panelSending||(!fileMode&&deliveryComplete);}
  $('receipt-download').disabled=phase==='closing';$('receipt-download').hidden=fileMode;$('recovery-download').hidden=fileMode;
  if(phase==='submitted'&&lastDelivery?.code===$('report').value&&lastDelivery.receipt)showDeliveryReceipt(lastDelivery);
  $('download').hidden=true;
@@ -534,6 +534,7 @@ function afterRender(state,ctx){
  $('practice-reset').disabled=!!ctx.problem||ctx.busy||panelEntered;
  if(panelEntered){$('practice-save').hidden=true;$('practice-recover').hidden=true;$('practice-reset').hidden=true;}
  if(!$('revision-delivery').hidden)$('delivery-retry').disabled=true;
+ syncDeliveryActions();
  $('toolbar-count').textContent='Incidencias: '+state.count+' · Margen: '+ctx.remainingSeconds+' s';
 }
 function confirmText(kind){
@@ -625,6 +626,7 @@ function setDeliveryState(state){
  container.dataset.state=state;
  container.setAttribute('aria-busy',String(state==='sending'));
  progress.hidden=state==='idle';
+ syncDeliveryActions();
  if(state==='sending'){
   progress.removeAttribute('value');
   progress.setAttribute('aria-label','Enviando la entrega y esperando confirmación de recepción');
@@ -632,6 +634,13 @@ function setDeliveryState(state){
   progress.value=state==='success'?1:0;
   progress.setAttribute('aria-label',state==='success'?'Entrega completada':state==='error'?'Error en la entrega':'Progreso de entrega');
  }
+}
+function syncDeliveryActions(){
+ const state=$('delivery-stage').dataset.state;
+ const reasonVisible=!$('revision-delivery').hidden;
+ $('delivery-retry').hidden=reasonVisible||!(state==='error'||(fileMode&&state==='success'));
+ $('delivery-note').hidden=state!=='error'||reasonVisible;
+ $('delivery-note').textContent=lastDelivery?.code?'Tu trabajo está guardado. Puedes reintentar o descargar el TXT.':'Tu trabajo está guardado. Pulsa Reintentar entrega.';
 }
 function showDeliveryReceipt(item){
  deliveryComplete=true;$('delivery-abandon').hidden=true;$('revision-delivery').hidden=true;
@@ -683,7 +692,7 @@ async function deliver(item){
   };
   $('delivery-status').textContent=policyErrors[code]|| (code==='ACTIVITY_CONFIG'?'No se pudo comprobar la configuración de la actividad. Conserva el TXT y reintenta más tarde.':code==='NOT_CONFIGURED'?tr('notConfigured'):tr('deliveryFailed')+' Código para el profesor: '+code+'.');
   $('delivery-retry').textContent=tr('copyOpen');$('delivery-retry').disabled=false;
- }finally{delivering=false;if(!$('revision-delivery').hidden)refreshDeliveryReason();}
+ }finally{delivering=false;syncDeliveryActions();if(!$('revision-delivery').hidden)refreshDeliveryReason();}
 }
 function refreshDeliveryReason(){
  const valid=reasonValid($('revision-delivery-reason').value);
@@ -716,10 +725,9 @@ async function downloadReceipt(item){
 async function downloadReport(){
  const item=rememberDelivery($('report').value);
  showReason();
- $('delivery-status').textContent='La práctica ha terminado. Revisa el motivo, si corresponde, y pulsa Entregar. No puedes volver al editor.';
+ $('delivery-status').textContent=revisionNeeded?'':'Preparando el envío…';
  setDeliveryState('idle');guard.render();
- const data=JSON.parse((await deliveryEnvelope(item)).payload);
- if(data.finishReason!=='voluntary'&&!revisionNeeded)return submitPanel();
+ if(!revisionNeeded)return submitPanel();
 }
 async function submitPanel(){
  if(delivering||panelSending||!lastDelivery||deliveryComplete)return;
@@ -856,7 +864,7 @@ clearLocalButton.id='clear-local-practice';clearLocalButton.type='button';clearL
 clearLocalButton.title='Flush Caché';
 clearLocalButton.setAttribute('aria-label','Flush Caché');
 clearLocalButton.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M20 7v5h-5M20 12a8 8 0 1 0-2.3 5.7M20 12l-3-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-$('guard-start').before(clearLocalButton);
+$('recover-delivery').after(clearLocalButton);
 clearLocalButton.addEventListener('click',async()=>{
  if(phase!=='ready'||recoveryMode)return;
  if(!await confirmActionModal('Se borrarán los datos locales y el comprobante guardado de esta práctica, incluida cualquier entrega pendiente. Descarga antes el TXT si quieres conservarlo. No se borrará nada de la hoja del profesor. ¿Continuar?'))return;
@@ -872,6 +880,7 @@ for(const [id,anchor]of [['receipt-download','delivery-retry'],['recovery-downlo
  const button=document.createElement('button');button.id=id;button.type='button';button.className='secondary';button.dataset.text='receipt';$(anchor).after(button);
  button.addEventListener('click',()=>downloadReceipt(guard.canDownloadReport()?rememberDelivery($('report').value):lastDelivery));
 }
+$('recover-delivery').after(clearLocalButton);
 const receiptStatus=document.createElement('p');receiptStatus.id='receipt-status';receiptStatus.setAttribute('role','status');$('receipt-download').after(receiptStatus);
 document.title=config.title;
 
@@ -930,7 +939,7 @@ window.addEventListener('unhandledrejection',e=>{
  const where=/([\w.-]+\.js)[^\n]*?:(\d+):\d+/.exec(String(reason?.stack||''));
  lastError=String(reason?.message||reason)+(where?' ('+where[1]+':'+where[2]+')':'');
 },true);
-guard=window.createPracticeGuard({config,deliveryPanel:true,onAttemptStart,confirmDelivery:()=>confirmActionModal('Vas a finalizar la práctica. Al aceptar no podrás volver al editor. ¿Abrir el panel de entrega?'),timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
+guard=window.createPracticeGuard({config,deliveryPanel:true,onAttemptStart,confirmDelivery:()=>confirmActionModal('Vas a finalizar la práctica. Al aceptar no podrás volver al editor. ¿Entregar la práctica?'),timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
  async saveBeforeReset(current){
   if(current==='paused')return savePracticeDocument();
   if(current==='submitted')return downloadReceipt(rememberDelivery($('report').value));
@@ -956,3 +965,4 @@ rememberIdentity();guard.render();
 void checkOpportunities();
 window.Lab.ready=true;
 })();
+
