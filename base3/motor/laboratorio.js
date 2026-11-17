@@ -834,8 +834,10 @@ $('practice-reset').addEventListener('click',()=>{if(config.allowRestart)guard.a
 
 const clearLocalButton=document.createElement('button');
 clearLocalButton.id='clear-local-practice';clearLocalButton.type='button';clearLocalButton.className='secondary';
-clearLocalButton.textContent='Borrar datos locales de esta práctica';
-$('recovery').append(clearLocalButton);
+clearLocalButton.title='Flush Caché';
+clearLocalButton.setAttribute('aria-label','Flush Caché');
+clearLocalButton.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M20 7v5h-5M20 12a8 8 0 1 0-2.3 5.7M20 12l-3-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+$('guard-start').before(clearLocalButton);
 clearLocalButton.addEventListener('click',()=>{
  if(phase!=='ready'||recoveryMode)return;
  if(!window.confirm('Se borrarán los datos locales y el comprobante guardado de esta práctica, incluida cualquier entrega pendiente. Descarga antes el TXT si quieres conservarlo. No se borrará nada de la hoja del profesor. ¿Continuar?'))return;

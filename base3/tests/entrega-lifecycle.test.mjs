@@ -37,6 +37,18 @@ const context=vm.createContext({
  }}}
 });
 vm.runInContext(server+"\ndocumento_=s=>'SSII3G.'+s.submissionId;",context);
+// Configuración de una pestaña vacía y diagnósticos sin sobrescribir contenido.
+let restoredHeaders=null;
+const blankSheet={getLastRow:()=>0,getMaxColumns:()=>30,getRange:()=>({setValues:values=>{restoredHeaders=values[0];}})};
+assert.equal(context.prepararHojaVacia_(blankSheet),true);
+assert.deepEqual(Array.from(restoredHeaders).slice(0,4),['ID','NUM ENTREGA','DIA Y HORA [DD/MM/AA HH:MM:SS]','MODULO']);
+assert.equal(restoredHeaders.at(-1),'nota');
+assert.equal(context.prepararHojaVacia_({getLastRow:()=>2}),false);
+assert.throws(()=>context.comprobarCabeceras_(null),e=>e.message==='SCHEMA'&&e.detail.includes('No existe'));
+const missingSheet={getLastColumn:()=>1,getRange:()=>({getValues:()=>[['ID']]})};
+assert.throws(()=>context.comprobarCabeceras_(missingSheet),e=>e.detail.includes('Falta la cabecera'));
+const duplicateSheet={getLastColumn:()=>10,getRange:()=>({getValues:()=>[headers.concat(headers[0])]})};
+assert.throws(()=>context.comprobarCabeceras_(duplicateSheet),e=>e.detail.includes('duplicada'));
 function envelope(id,reason='',email='alumno@g.educaand.es',finishReason='voluntary'){
  const payload=JSON.stringify({attemptId:id.repeat(32),exam:'DIW-PRUEBA',module:'DIW',activity:'prueba',activityTitle:'Prueba',activityVersion:'1',version:3,email,finishedAt:new Date().toISOString(),seconds:30,answers:[{question:'css',answer:'h1{color:white}'}],finishReason,revisionReason:reason});
  return {protocol:1,submissionId:hash(payload),payload,practiceId:'DIW-PRUEBA',practiceVersion:'1',attemptToken:'a'.repeat(64)};

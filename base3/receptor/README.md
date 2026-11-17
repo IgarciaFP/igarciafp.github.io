@@ -74,3 +74,9 @@ La entrega final actualiza esa fila por ID; conserva los datos iniciales y las n
 El ID se mantiene al guardar y recuperar una práctica pausada. El registro inicial se reintenta con el mismo ID antes del envío si falló la red; no se puede garantizar el registro remoto sin conexión. La actualización final mantiene las restricciones de red y horario. Si se rechaza, la fila inicial sigue pendiente y el panel permite reintentar.
 
 **Despliegue:** sustituir **Code.gs y Bridge.html** y publicar una nueva versión de la implementación existente. La URL y el Worker no cambian. Solo se crean columnas de identificación si faltan. El orden ID, NUM ENTREGA, DIA Y HORA, MODULO, Nombre de la práctica, EMAIL… es válido.
+
+## Hoja vacía y errores de cabecera
+
+Al ejecutar `configurar`, una pestaña Entregas completamente vacía se inicializa con ID, NUM ENTREGA, las nueve cabeceras de entrega y nota. Una pestaña con contenido nunca se reinicializa ni se reordena. Si falta una cabecera o está repetida, el registro de ejecución indica su nombre; el protocolo del navegador conserva el código SCHEMA.
+
+El botón de limpieza local se muestra como un icono de recarga junto a Empezar, con el tooltip «Flush Caché». El pie del laboratorio muestra una fecha y hora de revisión fija, actualizada al modificar su HTML (Europe/Madrid), no la fecha de apertura.

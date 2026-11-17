@@ -27,18 +27,37 @@ function libro_() {
 function configurar() {
   let libro;
   try { libro = libro_(); } catch (error) { throw Error('No encuentro la hoja de entregas. Crea el script desde la hoja (Extensiones → Apps Script) o escribe su ID en HOJA_ID_.'); }
-  try { comprobarCabeceras_(libro.getSheetByName(PESTANA_)); } catch (error) { throw Error('Revisa la pestaña «' + PESTANA_ + '» de «' + libro.getName() + '»: ' + error.message); }
+  const hoja=libro.getSheetByName(PESTANA_);
+  const lock=LockService.getScriptLock();
+  if(!lock.tryLock(25000))throw Error('El receptor está ocupado. Vuelve a ejecutar configurar.');
+  try {
+    prepararHojaVacia_(hoja);
+    comprobarCabeceras_(hoja);
+  } catch(error) {
+    throw Error('Revisa la pestaña «'+PESTANA_+'» de «'+libro.getName()+'»: '+(error.detail||error.message));
+  } finally { lock.releaseLock(); }
   console.log('Todo correcto. Las entregas se escribirán en «' + libro.getName() + '», pestaña «' + PESTANA_ + '». Publica una versión nueva de la aplicación web.');
+}
+
+/** Solo inicializa una pestaña sin contenido; nunca reordena filas ni columnas existentes. */
+function prepararHojaVacia_(hoja) {
+  if(!hoja)throw Object.assign(Error('SCHEMA'),{detail:'No existe la pestaña «'+PESTANA_+'».'});
+  if(hoja.getLastRow()!==0)return false;
+  const cabeceras=['ID','NUM ENTREGA',...CABECERAS_,'nota'];
+  if(hoja.getMaxColumns()<cabeceras.length)hoja.insertColumnsAfter(hoja.getMaxColumns(),cabeceras.length-hoja.getMaxColumns());
+  hoja.getRange(1,1,1,cabeceras.length).setValues([cabeceras]);
+  SpreadsheetApp.flush();
+  return true;
 }
 
 const igual_ = texto => String(texto).replace(/\s+/g, ' ').trim().toLowerCase();
 const nombreCabecera_ = valor => igual_(valor).normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 function comprobarCabeceras_(hoja) {
-  if (!hoja) throw Error('SCHEMA');
+  if (!hoja) throw Object.assign(Error('SCHEMA'),{detail:'No existe la pestaña «'+PESTANA_+'».'});
   const fila=hoja.getRange(1,1,1,Math.max(1,hoja.getLastColumn())).getValues()[0];
   return CABECERAS_.map(nombre=>{
     const posiciones=fila.map((v,i)=>nombreCabecera_(v)===nombreCabecera_(nombre)?i+1:0).filter(Boolean);
-    if(posiciones.length!==1)throw Error('SCHEMA');
+    if(posiciones.length!==1)throw Object.assign(Error('SCHEMA'),{detail:posiciones.length?'Cabecera duplicada: «'+nombre+'».':'Falta la cabecera «'+nombre+'» en la fila 1.'});
     return posiciones[0];
   });
 }
