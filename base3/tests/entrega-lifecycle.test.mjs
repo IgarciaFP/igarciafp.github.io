@@ -276,7 +276,7 @@ console.log('OK: reserva, actualización, idempotencia, motivos, notas y panel d
 // El panel solo ofrece reintentar si hubo un error; el motivo tiene su propio botón.
 {
  const elements={};
- const ctx=vm.createContext({fileMode:false,lastDelivery:{code:'test'},$:id=>elements[id]||={hidden:true,dataset:{}}});
+ const ctx=vm.createContext({fileMode:false,panelEntered:true,deliveryComplete:false,lastDelivery:{code:'test'},$:id=>elements[id]||={hidden:true,dataset:{}}});
  vm.runInContext(part('function syncDeliveryActions(){','function showDeliveryReceipt('),ctx);
  for(const state of ['idle','sending','success','error']){
   elements['delivery-stage']={dataset:{state}};
