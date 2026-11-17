@@ -6,7 +6,16 @@ let busy=false;
 const tell=message=>window.top.postMessage({channel:settings.channel,...message},settings.origin);
 window.addEventListener('message',event=>{
   const m=event.data;
-  if(event.source!==window.top||event.origin!==settings.origin||m?.channel!==settings.channel||m?.type!=='LAB_SUBMIT'||busy)return;
+  if(event.source!==window.top||event.origin!==settings.origin||m?.channel!==settings.channel||busy)return;
+  if(settings.mode==='grade'){
+    if(m?.type!=='LAB_GRADE')return;
+    busy=true;
+    google.script.run.withSuccessHandler(result=>{busy=false;tell({type:'GRADE_RESULT',result});})
+      .withFailureHandler(()=>{busy=false;tell({type:'GRADE_RESULT',result:{ok:false,code:'NETWORK'}});})
+      .gestionarNota(m.request);
+    return;
+  }
+  if(m?.type!=='LAB_SUBMIT')return;
   if(m.envelope?.practiceId!==settings.practiceId)return;
   busy=true;
   google.script.run.withSuccessHandler(result=>{busy=false;tell({type:'LAB_RESULT',result});})

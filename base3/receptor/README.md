@@ -43,3 +43,17 @@ Tras cambiar `Code.gs` hay que actualizar la implementación con una versión nu
 - El correo es el que escribe el alumno: se comprueba el dominio, no la identidad.
 - La dirección `/exec` es pública. El receptor solo acepta entregas bien formadas de los tres módulos y del dominio del centro, pero no puede impedir envíos fabricados; el sello del servidor de control es lo que acredita IP y hora.
 - Una celda admite 50 000 caracteres. Si una entrega codificada no cabe, la fila se añade con un aviso en las columnas E e I y hay que pedir el archivo TXT al alumno.
+
+## Notas desde la revisión del profesor
+
+La página `profesor.html` consulta y modifica la columna cuya cabecera sea «nota» (sin distinguir mayúsculas ni espacios exteriores), situada después de A–I. No crea la columna ni toca otras celdas. La identifica por el hash de la entrega completa de la columna I: no depende del número de fila ni del orden de la hoja.
+
+1. Actualiza **Code.gs y Bridge.html** con los archivos de esta carpeta.
+2. Publica una nueva versión de la implementación existente de Apps Script, conservando su URL.
+3. Abre «Probar código», introduce la **CLAVE_PROFESOR del Worker** e inicia sesión.
+4. Consulta la nota actual, edítala y pulsa «Guardar nota». «Actualizar nota» vuelve a consultar la hoja. Dejar el campo vacío borra la calificación.
+5. La sesión se recuerda durante 30 días en el mismo navegador y perfil. «Cerrar sesión» revoca el identificador. No se guarda la clave: el navegador guarda un token aleatorio y el servidor su hash con caducidad en las propiedades del script.
+
+La consulta y escritura requieren validación de sesión en el servidor. Los alumnos no reciben acceso a las notas. La primera autenticación verifica la clave con el Worker; no requiere modificarlo. Los cambios manuales detectados desde la última consulta producen un aviso de conflicto; actualiza la nota antes de guardar de nuevo. El bloqueo del script coordina sus propias escrituras, pero no bloquea la edición simultánea desde Google Sheets.
+
+Las entregas sin código completo en I, los borradores y las entregas duplicadas no se califican desde esta página: se muestra un aviso. Las notas numéricas se guardan como números; otros textos se guardan literalmente, nunca como fórmulas. Una nota con fórmula escrita previamente en la hoja se muestra con su resultado; guardar una nueva nota sustituye esa fórmula.

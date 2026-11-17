@@ -61,6 +61,14 @@
 #registro{margin:14px 0 0;background:#fff}
 #registro pre{margin:10px 0 0;padding:14px 16px;font-size:12.5px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:340px}
 @media(max-width:1000px){.mesa{grid-template-columns:minmax(0,1fr)}#entregas{max-height:220px}.detalle .paneles{height:auto}}
+.nota-panel{padding:12px 16px;margin-bottom:14px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.nota-auth,.nota-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.nota-controls{margin-top:10px}
+#nota-login{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#nota-login[hidden]{display:none}
+.nota-panel label{margin:0}.nota-panel button{padding:7px 12px;font-size:.85rem}
+#nota-key{width:220px;min-height:36px}#nota-value{width:120px;min-height:36px}
+#nota-session,#nota-status{font-size:.85rem}#nota-status{margin:8px 0 0}
 </style>
 </head>
 <body>
@@ -70,7 +78,7 @@
       <p class="eyebrow">Entregas · Profesor</p>
       <h1 id="titulo">Cargando…</h1>
     </div>
-    <p>Los archivos se leen en este navegador. No se suben ni se envían a ningún sitio.</p>
+    <p>Los archivos se leen en este navegador. La gestión de notas se conecta a tu hoja de cálculo.</p>
   </div>
 
   <label id="soltar" class="soltar" for="archivos">
@@ -89,6 +97,23 @@
     <section class="detalle">
       <h2 id="alumno"></h2>
       <ul id="ficha" class="ficha"></ul>
+      <section class="nota-panel" aria-label="Calificación">
+        <div class="nota-auth">
+          <span id="nota-session"></span>
+          <span id="nota-login"><label for="nota-key">Clave del profesor</label>
+            <input id="nota-key" type="password" autocomplete="current-password" maxlength="500">
+            <button id="nota-enter" type="button">Iniciar sesión</button>
+          </span>
+          <button id="nota-logout" type="button" class="secondary" hidden>Cerrar sesión</button>
+        </div>
+        <div class="nota-controls">
+          <label for="nota-value">Nota</label>
+          <input id="nota-value" type="text" inputmode="decimal" maxlength="100" placeholder="Sin calificar" disabled>
+          <button id="nota-save" type="button" disabled>Guardar nota</button>
+          <button id="nota-refresh" type="button" class="secondary" disabled>Actualizar nota</button>
+        </div>
+        <p id="nota-status" role="status" aria-live="polite"></p>
+      </section>
       <div class="paneles">
         <section class="panel">
           <header class="panel-cabecera">
@@ -124,6 +149,7 @@
   </div>
 </main>
 
+<script src="motor/notas.js?v=20261117-notas-1"></script>
 <script>
 (async () => {
 'use strict';
@@ -379,12 +405,13 @@ function select(id){
  $('auditoria').textContent=item.audit||'Sin registro.';
  if(!item.modified.includes(tab))tab=item.modified.find(t=>t!=='txt')||item.modified[0]||'html';
  renderCode();renderResult();
+ window.dispatchEvent(new CustomEvent('review-selection',{detail:{id:item.id,intact:item.intact,draft:!!item.draft}}));
 }
 for(const button of document.querySelectorAll('[data-tab]'))button.addEventListener('click',()=>{tab=button.dataset.tab;renderCode();});
 $('cambios').addEventListener('change',renderCode);
 $('con-js').addEventListener('change',renderResult);
 $('recargar').addEventListener('click',renderResult);
-$('vaciar').addEventListener('click',()=>{items.clear();current=null;$('avisos').replaceChildren();$('vista').srcdoc='';renderList();});
+$('vaciar').addEventListener('click',()=>{items.clear();current=null;window.dispatchEvent(new CustomEvent('review-selection',{detail:null}));$('avisos').replaceChildren();$('vista').srcdoc='';renderList();});
 
 // ------------------------------------------------------------ Entrada de archivos
 async function add(files){

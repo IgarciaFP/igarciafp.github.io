@@ -1,7 +1,8 @@
 /**
  * Receptor de entregas de base3. Instalar VINCULADO a la hoja de cálculo de entregas
  * (Extensiones → Apps Script). Escribe con la cuenta del propietario: la hoja no se comparte.
- * Añade una fila por entrega en la pestaña «Entregas», columnas A a I. No toca las demás.
+ * Añade una fila por entrega en «Entregas», columnas A a I.
+ * La revisión autenticada consulta y modifica únicamente la columna «nota».
  */
 const ORIGEN_ = 'https://igarciafp.github.io';     // sitio del laboratorio
 const DOMINIO_ = 'g.educaand.es';                  // dominio de correo admitido
@@ -38,9 +39,10 @@ function comprobarCabeceras_(hoja) {
 }
 function doGet(e) {
   const practica = e?.parameter?.practice || '', canal = e?.parameter?.channel || '';
-  if (!PRACTICA_.test(practica) || !/^[a-f0-9]{32}$/.test(canal)) return HtmlService.createHtmlOutput('Receptor de entregas. Accede desde el laboratorio.');
+  const profesor = e?.parameter?.mode === 'grade';
+  if ((!profesor && !PRACTICA_.test(practica)) || !/^[a-f0-9]{32}$/.test(canal)) return HtmlService.createHtmlOutput('Receptor de entregas. Accede desde el laboratorio.');
   const plantilla = HtmlService.createTemplateFromFile('Bridge');
-  plantilla.settings = JSON.stringify({ origin: ORIGEN_, practiceId: practica, channel: canal }).replace(/</g, '\\u003c');
+  plantilla.settings = JSON.stringify({ origin: ORIGEN_, practiceId: practica, channel: canal, mode: profesor ? 'grade' : 'submit' }).replace(/</g, '\\u003c');
   return plantilla.evaluate().setTitle('Entrega de laboratorio').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 function huella_(texto) {
@@ -108,7 +110,7 @@ function documento_(sobre) {
 }
 const literal_ = valor => ({ userEnteredValue: { stringValue: String(valor ?? '') } });
 
-/** Única función de escritura expuesta al navegador. Nunca devuelve entregas ajenas. */
+/** Recepción del alumno. Nunca devuelve entregas ajenas. */
 function recibirEntrega(sobre) {
   let cerrojo;
   try {
@@ -139,6 +141,104 @@ function recibirEntrega(sobre) {
     return { ok: true, submissionId: sobre.submissionId, receivedAt: ahora.toISOString(), duplicate: false };
   } catch (error) {
     const conocidos = ['INVALID', 'HASH', 'EMAIL', 'ROUTE', 'SCHEMA', 'BUSY'];
+    return { ok: false, code: conocidos.includes(error.message) ? error.message : 'STORAGE' };
+  } finally { if (cerrojo?.hasLock()) cerrojo.releaseLock(); }
+}
+
+/** Sesiones de profesor: token aleatorio, 30 días; solo su hash queda en el servidor. */
+const SESION_DIAS_ = 30;
+function autenticarProfesor_(clave) {
+  texto_(clave, 500);
+  if (!SERVIDOR_) throw Error('AUTH_CONFIG');
+  let respuesta;
+  try {
+    respuesta = UrlFetchApp.fetch(SERVIDOR_ + '/acceso?a=diw/revision&clave=' + encodeURIComponent(clave), { muteHttpExceptions: true });
+    if (respuesta.getResponseCode() !== 200) throw Error('AUTH');
+    if (JSON.parse(respuesta.getContentText()).profesor !== true) throw Error('AUTH');
+  } catch (error) { throw Error('AUTH'); }
+}
+function sesionProfesor_(token) {
+  if (typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token)) throw Error('SESSION');
+  const propiedades = PropertiesService.getScriptProperties(), nombre = 'PROF_SESSION_' + huella_(token);
+  const expiresAt = Number(propiedades.getProperty(nombre));
+  if (!expiresAt || expiresAt <= Date.now()) { propiedades.deleteProperty(nombre); throw Error('SESSION'); }
+  return { propiedades, nombre, expiresAt };
+}
+function iniciarSesionProfesor_(clave) {
+  autenticarProfesor_(clave);
+  const propiedades = PropertiesService.getScriptProperties();
+  // Retirar las sesiones caducadas sin tocar otras propiedades del proyecto.
+  for (const [nombre, valor] of Object.entries(propiedades.getProperties()))
+    if (nombre.startsWith('PROF_SESSION_') && Number(valor) <= Date.now()) propiedades.deleteProperty(nombre);
+  const token = (Utilities.getUuid() + Utilities.getUuid()).replace(/-/g, '');
+  const expiresAt = Date.now() + SESION_DIAS_ * 86400000;
+  propiedades.setProperty('PROF_SESSION_' + huella_(token), String(expiresAt));
+  return { ok: true, token, expiresAt };
+}
+/** Identifica la entrega por el hash del informe, también para archivos TXT descargados. */
+function filaDeEntrega_(hoja, id) {
+  if (!/^[a-f0-9]{64}$/.test(id || '')) throw Error('INVALID');
+  const total = hoja.getLastRow() - 1;
+  if (total < 1) throw Error('NOT_FOUND');
+  const valores = hoja.getRange(2, 9, total, 1).getValues();
+  const marcador = '\nCódigo de comprobación: ' + FORMATO_.comprobacion;
+  let encontrada = 0;
+  for (let i = 0; i < valores.length; i++) {
+    const codigo = String(valores[i][0] || '');
+    if (!codigo.startsWith(FORMATO_.informe)) continue;
+    let coincide = false;
+    try {
+      const encoded = codigo.slice(FORMATO_.informe.length);
+      const bytes = Utilities.base64DecodeWebSafe(encoded + '='.repeat((4 - encoded.length % 4) % 4));
+      const texto = Utilities.ungzip(Utilities.newBlob(bytes, 'application/gzip')).getDataAsString('UTF-8');
+      const pos = texto.lastIndexOf(marcador);
+      coincide = pos >= 0 && texto.slice(pos + marcador.length) === id && huella_(texto.slice(0, pos)) === id;
+    } catch (error) { continue; }
+    if (coincide) {
+      if (encontrada) throw Error('AMBIGUOUS');
+      encontrada = i + 2;
+    }
+  }
+  if (!encontrada) throw Error('NOT_FOUND');
+  return encontrada;
+}
+function estadoNota_(celda) {
+  const valor = celda.getValue(), formula = celda.getFormula(), nota = celda.getDisplayValue();
+  return { nota, revision: huella_(JSON.stringify([valor, formula, nota])) };
+}
+/** Todas las consultas y escrituras de notas requieren una sesión validada aquí. */
+function gestionarNota(pedido) {
+  let cerrojo;
+  try {
+    if (!pedido || typeof pedido !== 'object') throw Error('INVALID');
+    if (pedido.action === 'login') return iniciarSesionProfesor_(pedido.key);
+    const sesion = sesionProfesor_(pedido.token);
+    if (pedido.action === 'logout') { sesion.propiedades.deleteProperty(sesion.nombre); return { ok: true }; }
+    if (!['get', 'set'].includes(pedido.action)) throw Error('INVALID');
+    cerrojo = LockService.getScriptLock();
+    if (!cerrojo.tryLock(25000)) throw Error('BUSY');
+    const libro = libro_(), hoja = libro.getSheetByName(PESTANA_);
+    comprobarCabeceras_(hoja);
+    const cabeceras = hoja.getRange(1, 1, 1, hoja.getLastColumn()).getValues()[0];
+    const columnas = cabeceras.map((v, i) => igual_(v) === 'nota' ? i + 1 : 0).filter(Boolean);
+    if (columnas.length !== 1 || columnas[0] <= 9) throw Error('GRADE_COLUMN');
+    const fila = filaDeEntrega_(hoja, pedido.submissionId), columna = columnas[0], celda = hoja.getRange(fila, columna);
+    const actual = estadoNota_(celda);
+    if (pedido.action === 'get') return { ok: true, submissionId: pedido.submissionId, ...actual };
+    texto_(pedido.nota, 100, true);
+    // Evitar sobreescribir una modificación realizada desde la hoja u otra revisión.
+    if (pedido.revision !== actual.revision) return { ok: false, code: 'CONFLICT', ...actual };
+    const nota = pedido.nota.trim();
+    const numero = /^-?\d+(?:[.,]\d+)?$/.test(nota) ? Number(nota.replace(',', '.')) : NaN;
+    const entrada = nota === '' ? {} : Number.isFinite(numero) ? { userEnteredValue: { numberValue: numero } } : literal_(nota);
+    Sheets.Spreadsheets.batchUpdate({ requests: [{ updateCells: {
+      range: { sheetId: hoja.getSheetId(), startRowIndex: fila - 1, endRowIndex: fila, startColumnIndex: columna - 1, endColumnIndex: columna },
+      rows: [{ values: [entrada] }], fields: 'userEnteredValue'
+    } }] }, libro.getId());
+    SpreadsheetApp.flush();
+    return { ok: true, submissionId: pedido.submissionId, ...estadoNota_(celda) };
+  } catch (error) {
+    const conocidos = ['AUTH', 'AUTH_CONFIG', 'SESSION', 'INVALID', 'BUSY', 'SCHEMA', 'ROUTE', 'NOT_FOUND', 'AMBIGUOUS', 'GRADE_COLUMN'];
     return { ok: false, code: conocidos.includes(error.message) ? error.message : 'STORAGE' };
   } finally { if (cerrojo?.hasLock()) cerrojo.releaseLock(); }
 }
