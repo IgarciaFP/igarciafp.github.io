@@ -377,6 +377,7 @@ function afterRender(state,ctx){
  $('delivery-stage').hidden=!submitted&&!recoveryMode;
  $('delivery-back').hidden=!recoveryMode||submitted;
  if(phase==='closing'){
+  if(ctx.forcedBusy)setDeliveryState('sending');
   if(!$('delivery-status').textContent)$('delivery-status').textContent=tr('forcedPending');
   $('delivery-retry').textContent=tr('forcedRetry');
   $('delivery-retry').disabled=!!ctx.forcedBusy;
@@ -492,26 +493,42 @@ async function deliveryEnvelope(item){
  if(hash!==decoded.slice(offset+marker.length)||data.exam!==config.id||data.activityVersion!==config.version)throw Error('INVALID');
  return {protocol:1,submissionId:hash,practiceId:config.id,practiceVersion:config.version,payload};
 }
+function setDeliveryState(state){
+ const container=$('delivery-stage'),progress=$('delivery-progress');
+ container.dataset.state=state;
+ container.setAttribute('aria-busy',String(state==='sending'));
+ progress.hidden=state==='idle';
+ if(state==='sending'){
+  progress.removeAttribute('value');
+  progress.setAttribute('aria-label','Enviando la entrega y esperando confirmación de recepción');
+ }else{
+  progress.value=state==='success'?1:0;
+  progress.setAttribute('aria-label',state==='success'?'Entrega completada':state==='error'?'Error en la entrega':'Progreso de entrega');
+ }
+}
 function showDeliveryReceipt(item){
+ setDeliveryState('success');
  $('delivery-status').textContent=tr('received')+' '+item.receipt.submissionId+' · '+new Date(item.receipt.receivedAt).toLocaleString('es-ES');
  $('delivery-retry').textContent=tr('receivedShort');$('delivery-retry').disabled=true;
 }
 async function deliver(item){
  if(fileMode){
   // Sin receptor: la entrega es el archivo descargado.
+  setDeliveryState('success');
   $('delivery-status').textContent=tr('fileDelivered');
   $('delivery-retry').textContent=tr('copyOpen');$('delivery-retry').disabled=false;
   return;
  }
  if(delivering)return;
  if(item.receipt){showDeliveryReceipt(item);return;}
- delivering=true;$('delivery-retry').disabled=true;$('delivery-status').textContent=tr('sending');
+ delivering=true;setDeliveryState('sending');$('delivery-retry').disabled=true;$('delivery-status').textContent=tr('sending');
  persistDelivery(item);
  try{
   const envelope=await deliveryEnvelope(item);
   item.receipt=await window.LabDelivery.send(config.delivery,envelope);
   persistDelivery(item);showDeliveryReceipt(item);
  }catch(error){
+  setDeliveryState('error');
   // El código (TIMEOUT, ROUTE, SCHEMA, STORAGE…) indica al profesor qué ha fallado en el receptor.
   const code=/^[A-Z_]{3,20}$/.test(error.message)?error.message:'ERROR';
   $('delivery-status').textContent=code==='NOT_CONFIGURED'?tr('notConfigured'):tr('deliveryFailed')+' Código para el profesor: '+code+'.';
@@ -546,6 +563,7 @@ async function downloadReport(){
  return sending;
 }
 function onReset(){
+ setDeliveryState('idle');
  $('statement').open=true;
  emailTouched=false;recoveryMode=false;$('practice-file-status').hidden=true;
  $('delivery-retry').textContent=tr('copyOpen');$('delivery-status').textContent='';$('receipt-status').textContent='';
@@ -656,7 +674,7 @@ $('recover-delivery').addEventListener('click',()=>{
  recoveryMode=true;guard.render();
  deliver(lastDelivery);
 });
-$('delivery-back').addEventListener('click',()=>{recoveryMode=false;$('delivery-status').textContent='';$('receipt-status').textContent='';guard.render();});
+$('delivery-back').addEventListener('click',()=>{recoveryMode=false;setDeliveryState('idle');$('delivery-status').textContent='';$('receipt-status').textContent='';guard.render();});
 $('student').addEventListener('blur',()=>{emailTouched=!!$('student').value.trim();guard?.render();});
 $('student').addEventListener('input',()=>{rememberIdentity();guard?.render();});
 $('student').addEventListener('keydown',e=>{if(e.key==='Enter'&&!$('guard-start').disabled)$('guard-start').click();});
@@ -689,7 +707,7 @@ guard=window.createPracticeGuard({config,validEmail,savePracticeDocument,refresh
   if(current==='submitted')return downloadReceipt(rememberDelivery($('report').value));
   return current==='ready'||current==='reset'||current==='review';
  },
- forcedError(){$('delivery-status').textContent=tr('forcedError');},
+ forcedError(){setDeliveryState('error');$('delivery-status').textContent=tr('forcedError');},
  isAnswer(el){return el instanceof HTMLElement&&ids.includes(el.id);},
  restoreValue(el,data){el.value=data.values[el.id]||'';}
 });
