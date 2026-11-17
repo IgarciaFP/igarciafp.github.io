@@ -25,12 +25,12 @@
           if(!result?.ok){fail(result?.code||'STORAGE');return;}
           if(statusOnly==='start'){
             const data=JSON.parse(envelope.payload);
-            if(result.attemptId!==data.attemptId||!Number.isSafeInteger(result.number)||result.number<1||!Number.isSafeInteger(result.limit)||result.limit<1){fail('INVALID_RECEIPT');return;}
+            if(result.attemptId!==data.attemptId||!Number.isSafeInteger(result.number)||result.number<1||!Number.isSafeInteger(result.limit)||result.limit<0){fail('INVALID_RECEIPT');return;}
             cleanup();resolve(result);return;
           }
           if(statusOnly){
             if(result.practiceId!==envelope.practiceId||result.email!==envelope.email.toLowerCase()||
-              !Number.isSafeInteger(result.used)||result.used<0||!Number.isSafeInteger(result.limit)||result.limit<1){fail('INVALID_RECEIPT');return;}
+              !Number.isSafeInteger(result.used)||result.used<0||!Number.isSafeInteger(result.limit)||result.limit<0){fail('INVALID_RECEIPT');return;}
             cleanup();resolve(result);return;
           }
           if(result.submissionId!==envelope.submissionId||typeof result.receivedAt!=='string'||!Number.isFinite(Date.parse(result.receivedAt))){fail('INVALID_RECEIPT');return;}
