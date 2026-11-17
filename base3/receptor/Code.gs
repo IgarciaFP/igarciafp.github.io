@@ -171,12 +171,12 @@ function configuracionActividad_(datos) {
       if(![408,429,500,502,503,504].includes(estado)||intento===2)break;
       Utilities.sleep(300*(intento+1));
     }
-    if(respuesta.getResponseCode()===404)return {entregas:0,redes:['185.197.0.0/16','88.16.0.0/16'],restringirHorario:false,restringirIPs:false};
+    if(respuesta.getResponseCode()===404)return {entregas:1,redes:['185.197.0.0/16','88.16.0.0/16'],restringirHorario:false,restringirIPs:false};
     if(respuesta.getResponseCode()!==200)throw errorConfiguracion_('HTTP '+respuesta.getResponseCode()+' al descargar '+url);
     let config;
     try{config=JSON.parse(respuesta.getContentText());}catch{throw errorConfiguracion_('La respuesta de '+url+' no es JSON válido.');}
     if(!config||typeof config!=='object'||Array.isArray(config))throw errorConfiguracion_('config.json debe contener un objeto.');
-    const limite=config.entregas===undefined?0:config.entregas;
+    const limite=config.entregas===undefined?1:config.entregas;
     if(!Number.isSafeInteger(limite)||limite<0)throw errorConfiguracion_('entregas debe ser un entero mayor o igual a 0.');
     const redes=config.redes===undefined?['185.197.0.0/16','88.16.0.0/16']:config.redes;
     const restringirHorario=config.restringirHorario??false,restringirIPs=config.restringirIPs??false;

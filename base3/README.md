@@ -115,7 +115,7 @@ Cada carpeta `actividades/MODULO/ACTIVIDAD/` incluye un único **config.json** c
   "version": "1",
   "guardar": false,
   "duracion": 15,
-  "entregas": 0,
+  "entregas": 1,
   "reiniciar": false,
   "redes": ["185.197.0.0/16", "88.16.0.0/16"],
   "restringirHorario": false,
@@ -129,7 +129,7 @@ Cada carpeta `actividades/MODULO/ACTIVIDAD/` incluye un único **config.json** c
 | version | Versión del contenido | Obligatorio |
 | guardar | Mostrar Guardar y pausar y Recuperar práctica | false |
 | duracion | Minutos disponibles; número positivo, hasta 1440 | 15 |
-| entregas | Oportunidades ordinarias por correo y actividad; entero no negativo; 0 exige motivo desde la primera entrega | 0 |
+| entregas | Oportunidades ordinarias por correo y actividad; entero no negativo; 0 exige motivo desde la primera entrega | 1 |
 | reiniciar | Mostrar y habilitar el botón Reiniciar | false |
 
 `title` y `version` son obligatorios. Los demás campos omitidos toman su valor predeterminado. Si falta config.json (404), la actividad no se abre. Un archivo inválido o un fallo de conexión produce un error; no se interpreta como ausencia. Los antiguos parámetros `guardar` y `duracion` de la URL ya no modifican la configuración.

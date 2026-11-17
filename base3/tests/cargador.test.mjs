@@ -46,7 +46,7 @@ console.log('OK: configuración sin caché y URL nueva en cada carga.');
 
 result=await run(['html','css']);
 assert.equal(result.window.Lab.config.durationMs,15*60000);
-assert.equal(result.window.Lab.config.maxSubmissions,0);
+assert.equal(result.window.Lab.config.maxSubmissions,1);
 assert.equal(result.window.Lab.config.allowSaveRecovery,false);
 assert.equal(result.window.Lab.config.allowRestart,false);
 result=await run(['html','css'],{},{entregas:-1});
