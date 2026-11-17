@@ -7,7 +7,7 @@ const ORIGEN_ = 'https://igarciafp.github.io';     // sitio del laboratorio
 const DOMINIO_ = 'g.educaand.es';                  // dominio de correo admitido
 const PAGINA_PROFESOR_ = 'https://igarciafp.github.io/base3/profesor.html';
 const SERVIDOR_ = 'https://igarciafp-github-io.igarciafp.workers.dev';   // dirección del servidor de control (Cloudflare Worker), sin barra final. Vacío: no se verifica el sello.
-const HOJA_ID_ = '';    // solo si el script NO se creó desde la hoja: el ID de la hoja (lo que va entre /d/ y /edit en su dirección)
+const HOJA_ID_ = '14dLBTlpFRY7mJ33Ckj-60T6MULZxp1tz2FTvUM7PKT4';    // solo si el script NO se creó desde la hoja: el ID de la hoja (lo que va entre /d/ y /edit en su dirección)
 const PESTANA_ = 'Entregas';
 const CABECERAS_ = ['DIA Y HORA [DD/MM/AA HH:MM:SS]', 'MODULO', 'Nombre de la práctica', 'EMAIL', 'PROBAR CODIGO', 'Tiempo', 'IP', 'Incidencias', 'ENTREGA completa'];
 const FORMATO_ = { informe: 'SSII3G.', comprobacion: 'SSII3-' };
@@ -65,25 +65,39 @@ function validarEntrega_(sobre) {
   for (const respuesta of datos.answers) { texto_(respuesta.question, 100); texto_(respuesta.answer, 10000, true); }
   return datos;
 }
-/** Columna G: IP vista por el servidor de control y si es de la red del centro. */
-function ip_(datos) {
+/** Comprueba el sello una sola vez y separa la IP de los avisos. */
+function controlEntrega_(datos) {
   const sello = datos.sello;
-  if (!sello || sello.error || typeof sello.ip !== 'string' || !/^[0-9a-fA-F.:]{3,45}$/.test(sello.ip)) return 'SIN COMPROBAR';
-  if (huella_(JSON.stringify([datos.exam, datos.email, datos.answers])) !== sello.huella || sello.email !== datos.email) return 'SELLO NO VÁLIDO';
+  const avisos = [];
+  if (sello?.accesoSinComprobar === true) avisos.push('acceso sin comprobar');
+  if (!sello || sello.error || typeof sello.ip !== 'string' || !/^[0-9a-fA-F.:]{3,45}$/.test(sello.ip))
+    return { ip: '', avisos: [...avisos, 'SIN COMPROBAR'] };
+  if (huella_(JSON.stringify([datos.exam, datos.email, datos.answers])) !== sello.huella || sello.email !== datos.email)
+    return { ip: '', avisos: [...avisos, 'SELLO NO VÁLIDO'] };
+  let verificado = false;
   if (SERVIDOR_) {
     try {
-      const respuesta = UrlFetchApp.fetch(SERVIDOR_ + '/verificar', { method: 'post', payload: JSON.stringify({ sello }), muteHttpExceptions: true });
-      if (respuesta.getResponseCode() === 200 && JSON.parse(respuesta.getContentText()).valido !== true) return 'SELLO NO VÁLIDO';
-      if (respuesta.getResponseCode() !== 200) return sello.ip + ' (sin verificar)';
-    } catch (error) { return sello.ip + ' (sin verificar)'; }
+      const respuesta = UrlFetchApp.fetch(SERVIDOR_ + '/verificar', {
+        method: 'post', contentType: 'application/json',
+        payload: JSON.stringify({ sello }), muteHttpExceptions: true
+      });
+      if (respuesta.getResponseCode() === 200) {
+        if (JSON.parse(respuesta.getContentText()).valido !== true)
+          return { ip: '', avisos: [...avisos, 'SELLO NO VÁLIDO'] };
+        verificado = true;
+      }
+    } catch (error) { /* Se conserva la entrega y se avisa de que no pudo verificarse. */ }
   }
-  return sello.ip + (sello.enRed === true ? '' : ' (FUERA DE LA RED)') + (sello.profesor === true ? ' (clave del profesor)' : '');
+  if (!verificado) avisos.push('sello sin verificar');
+  if (sello.enRed !== true) avisos.push('FUERA DE LA RED');
+  if (sello.enHorario !== true) avisos.push('FUERA DE HORARIO');
+  if (sello.profesor === true) avisos.push('clave del profesor');
+  return { ip: sello.ip, avisos };
 }
-function incidencias_(datos) {
+function incidencias_(datos, control) {
   const partes = [(Number.isFinite(datos.incidents) ? datos.incidents : '?') + '/3'];
   if (datos.finishReason === 'incident-limit') partes.push('cierre automático');
-  if (datos.sello && !datos.sello.error && datos.sello.enHorario !== true) partes.push('FUERA DE HORARIO');
-  if (datos.sello && datos.sello.accesoSinComprobar === true) partes.push('acceso sin comprobar');
+  partes.push(...control.avisos);
   return partes.join(' · ');
 }
 /** Mismo documento que descarga el alumno: informe comprimido (gzip) y codificado. */
@@ -108,6 +122,7 @@ function recibirEntrega(sobre) {
     if (cabe && ultima > 1 && hoja.getRange(2, 9, ultima - 1, 1).createTextFinder(codigo).matchEntireCell(true).matchCase(true).findNext())
       return { ok: true, submissionId: sobre.submissionId, receivedAt: new Date().toISOString(), duplicate: true };
     const ahora = new Date(), segundos = Math.floor(datos.seconds);
+    const control = controlEntrega_(datos);
     const fila = [
       literal_(Utilities.formatDate(ahora, 'Europe/Madrid', 'dd/MM/yy HH:mm:ss')),
       literal_(datos.module), literal_(datos.activityTitle), literal_(datos.email.toLowerCase()),
@@ -116,7 +131,7 @@ function recibirEntrega(sobre) {
       // (con coma, las hojas en español dan #ERROR!).
       cabe ? { userEnteredValue: { formulaValue: '=HYPERLINK("' + PAGINA_PROFESOR_ + '#entrega=' + codigo + '";"Probar código")' } } : literal_('Pide el archivo TXT al alumno'),
       literal_(Math.floor(segundos / 60) + ' min ' + String(segundos % 60).padStart(2, '0') + ' s'),
-      literal_(ip_(datos)), literal_(incidencias_(datos)),
+      literal_(control.ip), literal_(incidencias_(datos, control)),
       literal_(cabe ? codigo : 'Entrega demasiado larga para una celda: pide el archivo TXT al alumno.')
     ];
     Sheets.Spreadsheets.batchUpdate({ requests: [{ appendCells: { sheetId: hoja.getSheetId(), rows: [{ values: fila }], fields: 'userEnteredValue' } }] }, id);

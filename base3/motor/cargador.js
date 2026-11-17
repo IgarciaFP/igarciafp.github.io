@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261116-base3-14';
+  const version=loaderURL.searchParams.get('v')||'20261117-base3-15';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=path=>fetch(asset(path),{cache:'no-cache'});
   const read=async path=>{
@@ -39,9 +39,9 @@
     if(!match){notFound();return;}
     const [,mod,slug]=match,folder=`actividades/${mod}/${slug}/`;
     const common=await read('contenido/config.json').then(r=>r.json());
-    // Control de red y horario: lo decide el servidor (servidor/worker.js), que ve la IP real
-    // y usa su propia hora. Si niega el acceso, la actividad «no existe». Si no responde
-    // (caído o bloqueado), se deja entrar y la entrega queda anotada como sin comprobar.
+    // El servidor comprueba red y horario. En modo de registro no se bloquea el acceso.
+    // Solo control.restringirAcceso === true aplica la negativa del servidor.
+    // Si no responde, la entrega queda anotada como acceso sin comprobar.
     const server=String(common.control?.servidor||'').replace(/\/+$/,'');
     const key=new URLSearchParams(location.search).get('clave')||'';
     let unchecked=false;
@@ -53,7 +53,7 @@
         const response=await fetch(server+'/acceso?'+query,{cache:'no-store',signal:AbortSignal.timeout(8000)});
         if(response.ok)answer=await response.json();
       }catch{}
-      if(answer&&typeof answer.ok==='boolean'){if(!answer.ok){notFound();return;}}
+      if(answer&&typeof answer.ok==='boolean'){if(!answer.ok&&common.control?.restringirAcceso===true){notFound();return;}}
       else unchecked=true;
     }
     const [activityResponse,statementResponse]=await Promise.all([fetchAsset(folder+'actividad.json'),fetchAsset(folder+'enunciado.html')]);

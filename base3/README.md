@@ -44,7 +44,7 @@ Con `"type": "apps-script"` y `endpoint`, además de la descarga, la entrega se 
 
 ## Control de red y horario
 
-Con `control.servidor` en `contenido/config.json`, las actividades solo se abren desde la red del centro y en el horario de su módulo, y cada entrega lleva un sello del servidor con la IP y la hora (campo `sello` del informe). Las entregas fuera de red o de horario se generan igualmente, marcadas. Ver [servidor/README.md](servidor/README.md).
+Con `control.servidor` en `contenido/config.json`, cada entrega lleva un sello del servidor con la IP y la hora (campo `sello` del informe). Actualmente `control.restringirAcceso` es `false`: se permite abrir y realizar las prácticas fuera de red y horario, dejando constancia en Incidencias. La columna IP contiene solo la dirección, o queda vacía si no hay un sello utilizable. Para activar más adelante el bloqueo al abrir, cambiar `control.restringirAcceso` a `true`. Ver [servidor/README.md](servidor/README.md).
 
 En ambos casos el informe conserva el formato del resto de laboratorios (versión 3), añade `module` y `activity`, e incluye solo las pestañas que difieren del código de partida, como respuestas abiertas `html`, `css`, `js` o `txt`; la lista `modified` las enumera. La respuesta `txt` son las notas del alumno, envueltas en un comentario `/* … */`. Si no se modificó nada, hay una única respuesta vacía `sin-cambios`. Cada pestaña admite 10 000 caracteres.
 

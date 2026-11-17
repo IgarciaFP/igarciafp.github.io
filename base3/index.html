@@ -164,13 +164,14 @@
 
    "control"      Control de red y horario, común a todas las actividades:
 
-        "control": { "servidor": "https://base3-control.SUBDOMINIO.workers.dev" }
+        "control": { "servidor": "https://base3-control.SUBDOMINIO.workers.dev", "restringirAcceso": false }
 
-      Con una dirección en "servidor", cada actividad solo se abre desde la red del centro
-      y en el horario de su módulo (cinco minutos de margen); en otro caso se muestra
-      «No se encuentra la actividad.». Cada entrega lleva un sello del servidor con la IP
-      y la hora, y queda marcada si se hizo fuera de la red o del horario. Si el servidor
-      no responde, se deja entrar y la entrega lo indica.
+      Con una dirección en "servidor", cada entrega lleva un sello con la IP y la hora.
+      Con "restringirAcceso": false (valor predeterminado), se permite realizar la práctica
+      fuera de red y horario, y se registran esos avisos en Incidencias. IP solo contiene
+      la dirección, o queda vacía si no hay un sello utilizable.
+      En el futuro, "restringirAcceso": true aplicará el bloqueo al abrir la actividad.
+      Si el servidor no responde, se deja entrar y la entrega lo indica.
       El servidor es el Cloudflare Worker de la carpeta servidor/: la red, el horario, la
       clave del profesor y los pasos para publicarlo están en servidor/README.md.
       Con "servidor" vacío, el control está desactivado.
@@ -198,8 +199,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Laboratorio</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-14">
-<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-14">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261117-base3-15">
+<link rel="stylesheet" href="motor/taller.css?v=20261117-base3-15">
 </head>
 <body>
 
@@ -339,6 +340,6 @@
   </div>
 </dialog>
 
-<script src="motor/cargador.js?v=20261116-base3-14" defer></script>
+<script src="motor/cargador.js?v=20261117-base3-15" defer></script>
 </body>
 </html>

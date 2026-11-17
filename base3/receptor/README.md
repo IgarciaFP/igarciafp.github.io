@@ -10,8 +10,8 @@ Escribe cada entrega en la pestaña **Entregas** de la hoja de cálculo del prof
 | D · EMAIL | Correo con el que se identificó el alumno |
 | E · PROBAR CODIGO | Enlace «Probar código»: abre `profesor.html` con esa entrega cargada |
 | F · Tiempo | Tiempo empleado |
-| G · IP | IP vista por el servidor de control; añade `(FUERA DE LA RED)`, o `SIN COMPROBAR` si no hay sello |
-| H · Incidencias | `n/3`; añade `cierre automático`, `FUERA DE HORARIO` o `acceso sin comprobar` si procede |
+| G · IP | Solo la dirección IP; vacía si falta el sello o no es válido |
+| H · Incidencias | `n/3` y todos los avisos: cierre automático, fuera de red/horario, clave del profesor, acceso sin comprobar y problemas de verificación del sello |
 | I · ENTREGA completa | La entrega comprimida y codificada, igual que el archivo TXT del alumno |
 
 Las columnas siguientes (Detección IA, NOTA, Comentarios) no se tocan. El receptor comprueba las nueve cabeceras antes de escribir y no escribe nada si alguna ha cambiado. Reenviar la misma entrega no añade otra fila.

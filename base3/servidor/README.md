@@ -2,7 +2,7 @@
 
 `worker.js` es un Cloudflare Worker. Hace lo que una página estática no puede: ver la IP real desde la que se conecta el alumno y usar la hora del servidor, no la del ordenador del alumno.
 
-- **Al abrir una actividad** decide si se puede: solo desde la red del centro y dentro del horario del módulo, con cinco minutos de margen antes y después. Si no, la página muestra «No se encuentra la actividad.».
+- **Al abrir una actividad** comprueba la red del centro y el horario del módulo, con cinco minutos de margen. El laboratorio registra el control pero permite entrar mientras `control.restringirAcceso` sea `false` (modo actual y predeterminado). Solo con `true` aplica la negativa del Worker y muestra «No se encuentra la actividad.».
 - **Al entregar** emite un sello firmado con la IP, la hora y si la entrega cumple red y horario. La entrega se genera siempre; si no cumple, queda marcada.
 - **Si el servidor no responde** (caído o bloqueado por la red), el alumno entra igualmente y la entrega queda anotada como «sin comprobar».
 
@@ -18,7 +18,7 @@ Mientras `control.servidor` esté vacío en `contenido/config.json`, el control 
 4. Copiar la dirección del Worker (`https://base3-control.SUBDOMINIO.workers.dev`) en `contenido/config.json`, sin barra final:
 
    ```json
-   "control": { "servidor": "https://base3-control.SUBDOMINIO.workers.dev" }
+   "control": { "servidor": "https://base3-control.SUBDOMINIO.workers.dev", "restringirAcceso": false }
    ```
 
 5. Si se usa la hoja de cálculo, poner la misma dirección en `SERVIDOR_` del receptor (`receptor/Code.gs`) para que verifique los sellos.
@@ -61,7 +61,7 @@ Las entregas hechas así llevan la marca «clave del profesor». La clave queda 
 
 Están al principio de `worker.js` (`REDES`, `MARGEN_MINUTOS`, `HORARIO`). Tras cambiarlos hay que volver a pegar el archivo en Cloudflare y desplegar. El horario está en hora de Madrid y sigue el cambio de hora.
 
-Con el margen de cinco minutos, el descanso de 18:30 a 18:45 deja cerrados los minutos de 18:35 a 18:40.
+Con el margen de cinco minutos, el intervalo entre las 18:35 y las 18:40 queda fuera de horario; en el modo actual se permite trabajar y se registra el aviso.
 
 ## Límites
 
