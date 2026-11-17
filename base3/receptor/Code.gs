@@ -109,6 +109,54 @@ function documento_(sobre) {
   const contenido = sobre.payload + '\nCódigo de comprobación: ' + FORMATO_.comprobacion + sobre.submissionId;
   return FORMATO_.informe + Utilities.base64EncodeWebSafe(Utilities.gzip(Utilities.newBlob(contenido, 'text/plain')).getBytes()).replace(/=+$/, '');
 }
+
+/** Configuración publicada por el profesor; nunca se acepta el límite enviado por el alumno. */
+function limiteActividad_(datos) {
+  if (!/^(DIW|DWEC|SSII)$/.test(datos.module) || !/^[a-z0-9][a-z0-9-]{0,59}$/.test(datos.activity)) throw Error('INVALID');
+  try {
+    const url=ORIGEN_+'/base3/actividades/'+datos.module.toLowerCase()+'/'+datos.activity+'/config.json';
+    const respuesta=UrlFetchApp.fetch(url+'?v='+Date.now(),{muteHttpExceptions:true});
+    if(respuesta.getResponseCode()===404)return 1;
+    if(respuesta.getResponseCode()!==200)throw Error('ACTIVITY_CONFIG');
+    const config=JSON.parse(respuesta.getContentText());
+    if(!config||typeof config!=='object'||Array.isArray(config))throw Error('ACTIVITY_CONFIG');
+    const limite=config.entregas===undefined?1:config.entregas;
+    if(!Number.isSafeInteger(limite)||limite<1)throw Error('ACTIVITY_CONFIG');
+    return limite;
+  }catch(error){throw Error('ACTIVITY_CONFIG');}
+}
+function informeAlmacenado_(codigo) {
+  if(typeof codigo!=='string'||!codigo.startsWith(FORMATO_.informe))return null;
+  try{
+    const encoded=codigo.slice(FORMATO_.informe.length);
+    const bytes=Utilities.base64DecodeWebSafe(encoded+'='.repeat((4-encoded.length%4)%4));
+    const texto=Utilities.ungzip(Utilities.newBlob(bytes,'application/gzip')).getDataAsString('UTF-8');
+    const marker='\nCódigo de comprobación: '+FORMATO_.comprobacion,pos=texto.lastIndexOf(marker);
+    if(pos<0)return null;
+    const payload=texto.slice(0,pos),id=huella_(payload);
+    if(id!==texto.slice(pos+marker.length))return null;
+    const report=JSON.parse(payload);
+    return {exam:report.exam,email:String(report.email).toLowerCase(),id};
+  }catch{return null;}
+}
+function entregasAnteriores_(hoja,datos,id) {
+  const total=hoja.getLastRow()-1,email=datos.email.toLowerCase();
+  if(total<1)return {count:0,duplicate:false};
+  const filas=hoja.getRange(2,2,total,8).getValues(),notas=hoja.getRange(2,9,total,1).getNotes();
+  let count=0,duplicate=false;
+  for(let i=0;i<filas.length;i++){
+    const fila=filas[i];
+    if(String(fila[0])!==datos.module||String(fila[2]).trim().toLowerCase()!==email)continue;
+    let meta=null;
+    try{const n=JSON.parse(notas[i][0]);if(n?.base3===1&&/^[a-f0-9]{64}$/.test(n.id))meta=n;}catch{}
+    meta=meta||informeAlmacenado_(fila[7]);
+    if(meta&&meta.exam===datos.exam&&meta.email===email){count++;if(meta.id===id)duplicate=true;}
+    // Entregas antiguas demasiado largas: solo queda el título en la hoja.
+    else if(!meta&&String(fila[1])===datos.activityTitle)count++;
+  }
+  return {count,duplicate};
+}
+
 const literal_ = valor => ({ userEnteredValue: { stringValue: String(valor ?? '') } });
 
 /** Recepción del alumno. Nunca devuelve entregas ajenas. */
@@ -121,12 +169,13 @@ function recibirEntrega(sobre) {
     const libro = libro_(), id = libro.getId(), hoja = libro.getSheetByName(PESTANA_);
     comprobarCabeceras_(hoja);
     const codigo = documento_(sobre), cabe = codigo.length <= 45000 && /^[A-Za-z0-9._-]+$/.test(codigo);
-    const ultima = hoja.getLastRow();
-    // Reenviar la misma entrega no añade otra fila.
-    if (cabe && ultima > 1 && hoja.getRange(2, 9, ultima - 1, 1).createTextFinder(codigo).matchEntireCell(true).matchCase(true).findNext())
-      return { ok: true, submissionId: sobre.submissionId, receivedAt: new Date().toISOString(), duplicate: true };
+    const anteriores=entregasAnteriores_(hoja,datos,sobre.submissionId);
+    if(anteriores.duplicate)
+      return {ok:true,submissionId:sobre.submissionId,receivedAt:new Date().toISOString(),duplicate:true};
+    const limite=limiteActividad_(datos),adicional=anteriores.count>=limite;
     const ahora = new Date(), segundos = Math.floor(datos.seconds);
     const control = controlEntrega_(datos);
+    if(adicional)control.avisos.push('entrega adicional: no sustituye ni actualiza la nota anterior');
     const fila = [
       literal_(Utilities.formatDate(ahora, 'Europe/Madrid', 'dd/MM/yy HH:mm:ss')),
       literal_(datos.module), literal_(datos.activityTitle), literal_(datos.email.toLowerCase()),
@@ -136,12 +185,13 @@ function recibirEntrega(sobre) {
       cabe ? { userEnteredValue: { formulaValue: '=HYPERLINK("' + PAGINA_PROFESOR_ + '#entrega=' + codigo + '";"Probar código")' } } : literal_('Pide el archivo TXT al alumno'),
       literal_(Math.floor(segundos / 60) + ' min ' + String(segundos % 60).padStart(2, '0') + ' s'),
       literal_(control.ip), literal_(incidencias_(datos, control)),
-      literal_(cabe ? codigo : 'Entrega demasiado larga para una celda: pide el archivo TXT al alumno.')
+      {...literal_(cabe ? codigo : 'Entrega demasiado larga para una celda: pide el archivo TXT al alumno.'),
+        note:JSON.stringify({base3:1,exam:datos.exam,email:datos.email.toLowerCase(),id:sobre.submissionId,adicional})}
     ];
-    Sheets.Spreadsheets.batchUpdate({ requests: [{ appendCells: { sheetId: hoja.getSheetId(), rows: [{ values: fila }], fields: 'userEnteredValue' } }] }, id);
+    Sheets.Spreadsheets.batchUpdate({ requests: [{ appendCells: { sheetId: hoja.getSheetId(), rows: [{ values: fila }], fields: 'userEnteredValue,note' } }] }, id);
     return { ok: true, submissionId: sobre.submissionId, receivedAt: ahora.toISOString(), duplicate: false };
   } catch (error) {
-    const conocidos = ['INVALID', 'HASH', 'EMAIL', 'ROUTE', 'SCHEMA', 'BUSY'];
+    const conocidos = ['INVALID', 'HASH', 'EMAIL', 'ROUTE', 'SCHEMA', 'BUSY', 'ACTIVITY_CONFIG'];
     return { ok: false, code: conocidos.includes(error.message) ? error.message : 'STORAGE' };
   } finally { if (cerrojo?.hasLock()) cerrojo.releaseLock(); }
 }
@@ -242,4 +292,23 @@ function gestionarNota(pedido) {
     const conocidos = ['AUTH', 'AUTH_CONFIG', 'SESSION', 'INVALID', 'BUSY', 'SCHEMA', 'ROUTE', 'NOT_FOUND', 'AMBIGUOUS', 'GRADE_COLUMN'];
     return { ok: false, code: conocidos.includes(error.message) ? error.message : 'STORAGE' };
   } finally { if (cerrojo?.hasLock()) cerrojo.releaseLock(); }
+}
+
+/** Consulta previa: solo devuelve contadores, nunca código ni calificaciones. */
+function consultarOportunidades(pedido) {
+  try {
+    if(!PRACTICA_.test(pedido?.practiceId||''))throw Error('INVALID');
+    const email=texto_(pedido.email,254).trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+$/.test(email)||email.split('@')[1]!==DOMINIO_)throw Error('EMAIL');
+    const modulo=pedido.practiceId.split('-')[0];
+    const datos={exam:pedido.practiceId,module:modulo,activity:pedido.practiceId.slice(modulo.length+1).toLowerCase(),
+      email,activityTitle:typeof pedido.activityTitle==='string'?pedido.activityTitle:''};
+    const limite=limiteActividad_(datos),hoja=libro_().getSheetByName(PESTANA_);
+    comprobarCabeceras_(hoja);
+    const anteriores=entregasAnteriores_(hoja,datos,'');
+    return {ok:true,practiceId:pedido.practiceId,email,used:anteriores.count,limit:limite};
+  }catch(error){
+    const conocidos=['INVALID','EMAIL','SCHEMA','ROUTE','ACTIVITY_CONFIG'];
+    return {ok:false,code:conocidos.includes(error.message)?error.message:'STORAGE'};
+  }
 }

@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261117-base3-18';
+  const version=loaderURL.searchParams.get('v')||'20261117-base3-19';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=path=>fetch(asset(path),{cache:'no-cache'});
   const read=async path=>{
@@ -35,16 +35,20 @@
   const notFound=()=>stop('No se encuentra la actividad.','Comprueba que la dirección es exactamente la que te ha dado el profesor.');
   try {
     const params=new URLSearchParams(location.search);
-    const minutesText=params.get('duracion')??'10';
-    const minutes=Number(minutesText);
-    if(!/^\d+(?:\.\d+)?$/.test(minutesText)||!Number.isFinite(minutes)||minutes<=0||minutes>1440)
-      throw Error('El parámetro duracion debe indicar minutos: mayor que 0 y como máximo 1440.');
-    const allowSaveRecovery=params.get('guardar')==='1';
     const wanted=(params.get('a')||'').trim().toLowerCase();
     const match=/^(diw|dwec|ssii)\/([a-z0-9][a-z0-9-]{0,59})$/.exec(wanted);
     if(!match){notFound();return;}
     const [,mod,slug]=match,folder=`actividades/${mod}/${slug}/`;
     const common=await read('contenido/config.json').then(r=>r.json());
+    const settingsText=await optional(folder+'config.json');
+    const supplied=settingsText?JSON.parse(settingsText):{};
+    if(!supplied||typeof supplied!=='object'||Array.isArray(supplied))throw Error('config.json de la actividad no es válido.');
+    const settings={guardar:false,duracion:10,entregas:1,reiniciar:false,...supplied};
+    if(typeof settings.guardar!=='boolean'||typeof settings.reiniciar!=='boolean'||
+      !Number.isFinite(settings.duracion)||settings.duracion<=0||settings.duracion>1440||
+      !Number.isSafeInteger(settings.entregas)||settings.entregas<1)
+      throw Error('Revisa guardar, duracion, entregas y reiniciar en el config.json de la actividad.');
+    const allowSaveRecovery=settings.guardar,minutes=settings.duracion;
     // El servidor comprueba red y horario. En modo de registro no se bloquea el acceso.
     // Solo control.restringirAcceso === true aplica la negativa del servidor.
     // Si no responde, la entrega queda anotada como acceso sin comprobar.
@@ -85,7 +89,7 @@
     // Nombre de la actividad: «NN-MM-Nombre» (tema y número de actividad). Se muestra con el
     // módulo delante: «DIW02-01-Nombre». Si el título ya lo lleva escrito, no se repite.
     const name=activity.title.trim().replace(new RegExp('^'+mod+'\\s*','i'),'').trim()||activity.title.trim();
-    const config={...common,allowSaveRecovery,durationMs:Math.round(minutes*60000),module:MOD,activity:slug,id,title:MOD+name,
+    const config={...common,allowSaveRecovery,allowRestart:settings.reiniciar,maxSubmissions:settings.entregas,durationMs:Math.round(minutes*60000),module:MOD,activity:slug,id,title:MOD+name,
       filePrefix:mod+'-'+slug,version:String(activity.version).trim(),
       storage:{key:store+'-v1',legacyKey:store+'-anterior-v1',recovery:store+'-ultima-entrega-v1'},
       activityTitle:name,control:server?{servidor:server,clave:key,sinComprobar:unchecked}:null,

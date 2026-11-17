@@ -57,3 +57,9 @@ La página `profesor.html` consulta y modifica la columna cuya cabecera sea «no
 La consulta y escritura requieren validación de sesión en el servidor. Los alumnos no reciben acceso a las notas. La primera autenticación verifica la clave con el Worker; no requiere modificarlo. Los cambios manuales detectados desde la última consulta producen un aviso de conflicto; actualiza la nota antes de guardar de nuevo. El bloqueo del script coordina sus propias escrituras, pero no bloquea la edición simultánea desde Google Sheets.
 
 Las entregas sin código completo en I, los borradores y las entregas duplicadas no se califican desde esta página: se muestra un aviso. Las notas numéricas se guardan como números; otros textos se guardan literalmente, nunca como fórmulas. Una nota con fórmula escrita previamente en la hoja se muestra con su resultado; guardar una nueva nota sustituye esa fórmula.
+
+## Oportunidades de entrega
+
+El receptor consulta `actividades/MODULO/ACTIVIDAD/config.json` y cuenta las oportunidades ordinarias (`entregas`, por defecto 1) por correo y actividad. No bloquea nuevas entregas al agotarlas: las añade como filas adicionales y marca Incidencias sin modificar notas anteriores. Los reintentos idénticos no añaden filas.
+
+La consulta previa `consultarOportunidades` solo devuelve el contador y el límite configurado, para advertir antes de empezar. La recepción vuelve a contar bajo bloqueo. Las nuevas filas incluyen metadatos en una nota de la celda I, sin añadir columnas. Actualiza **Code.gs y Bridge.html** y publica una nueva versión.

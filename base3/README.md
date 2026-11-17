@@ -95,13 +95,54 @@ La barra muestra solo los controles. Arrastra la esquina inferior derecha del re
 
 El receptor actualizado y `profesor.html` reconocen `guardPolicy: "return-timeout"` y `finishReason: "return-timeout"`. Actualiza la implementación de Apps Script para que la hoja muestre el nuevo motivo de cierre y el contador sin «/3».
 
-## Opciones en el enlace de la actividad
+## Llamada y configuración por actividad
 
-- `guardar=1`: muestra los controles Guardar y pausar y Recuperar práctica. Si se omite, están ocultos.
-- `duracion=20`: duración en minutos (por defecto 10). Admite decimales positivos y hasta 1440 minutos.
+La URL conserva únicamente la actividad y, si hace falta, la clave del profesor:
 
-Ejemplo: `/base3/?a=diw/02-01-prueba-css-adaptable&guardar=1&duracion=20`.
+```text
+https://igarciafp.github.io/base3/?a=MODULO/ACTIVIDAD
+https://igarciafp.github.io/base3/?a=MODULO/ACTIVIDAD&clave=TU_CLAVE
+```
 
-El contador muestra el tiempo restante desde que se pulsa Empezar. Durante el último minuto se pone rojo y aparece un aviso. Al agotarse se bloquea el editor y se entrega automáticamente, con motivo `duration-limit`. La pérdida de foco no detiene la duración; el margen acumulado de regreso sigue siendo un límite independiente. Guardar y pausar detiene el tiempo de trabajo; al recuperar se conserva el tiempo consumido y no se amplía el límite original aunque el nuevo enlace indique más minutos. La detección del vencimiento usa el reloj real: si el navegador suspende la ejecución se comprueba al volver.
+Módulos admitidos: `diw`, `dwec`, `ssii`. Ejemplo:
+`/base3/?a=diw/02-01-prueba-css-adaptable`.
 
-Estas opciones son parámetros de un entorno didáctico en el navegador, no una autorización firmada del servidor.
+Cada carpeta `actividades/MODULO/ACTIVIDAD/` incluye un **config.json** independiente de `actividad.json`:
+
+```json
+{
+  "guardar": false,
+  "duracion": 10,
+  "entregas": 1,
+  "reiniciar": false
+}
+```
+
+| Campo | Función | Valor predeterminado |
+| --- | --- | --- |
+| guardar | Mostrar Guardar y pausar y Recuperar práctica | false |
+| duracion | Minutos disponibles; número positivo, hasta 1440 | 10 |
+| entregas | Oportunidades ordinarias por correo y actividad; entero positivo | 1 |
+| reiniciar | Mostrar y habilitar el botón Reiniciar | false |
+
+Los campos omitidos toman su valor predeterminado. Si falta el archivo (404), se aplican todos los valores predeterminados. Un archivo inválido o un fallo de conexión produce un error; no se interpreta como ausencia. Los antiguos parámetros `guardar` y `duracion` de la URL ya no modifican la configuración.
+
+Se han creado los archivos con estos valores en las tres actividades existentes. Para crear otra, copia uno de ellos a su carpeta. `contenido/config.json` sigue conteniendo los ajustes comunes de correo, entrega, servidor y margen de regreso.
+
+### Duración y entrega
+
+El contador muestra el tiempo restante desde Empezar. Al quedar un minuto se pone rojo y aparece un aviso. A cero se bloquea el editor y se entrega automáticamente. El margen acumulado para volver a pantalla completa es independiente. Si guardar está habilitado, pausar detiene el tiempo de trabajo y recuperar conserva lo consumido.
+
+### Oportunidades y entregas adicionales
+
+Cuenta por correo y actividad, incluyendo entregas manuales y automáticas y las anteriores que figuren en la hoja. Reenviar exactamente el mismo informe devuelve su confirmación sin consumir otra oportunidad. Reiniciar no borra el historial. La clave del profesor no elimina el aviso.
+
+**Agotar las oportunidades no bloquea una entrega nueva.** Antes de comenzar, el laboratorio consulta el contador y avisa claramente de que la nueva entrega no sustituirá ni actualizará la nota de la anterior. El botón pasa a indicar «Empezar entrega adicional (sin cambiar la nota anterior)».
+
+La entrega adicional se añade como una fila nueva, con su nota inicialmente vacía y una marca en Incidencias. Las notas y filas anteriores quedan intactas. El receptor vuelve a contar al recibirla para registrar correctamente los envíos concurrentes.
+
+Con Google Sheets, el receptor consulta el config.json publicado, cuenta los informes y utiliza una nota técnica en la celda I para identificar las nuevas entregas, incluso las demasiado largas. La consulta previa solo devuelve contadores, nunca notas ni códigos. Si falla, se ofrece reintentar antes de comenzar para poder mostrar el aviso correcto. El correo sigue siendo declarado por el alumno, no una identidad autenticada.
+
+En modo de entrega solo por archivo, el aviso se basa en el historial local del navegador.
+
+Tras actualizar esta funcionalidad, sustituye Code.gs y Bridge.html en Apps Script y publica una nueva versión.

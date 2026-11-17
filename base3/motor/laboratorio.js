@@ -97,7 +97,46 @@ function fillCachedIdentity(onlyEmpty=true){
 }
 function validEmail(email){return /^[^\s@]+@[^\s@]+$/.test(email)&&email.split('@')[1].toLowerCase()===config.emailDomain.toLowerCase();}
 function validIdentity(){return $('student').validity.valid&&validEmail($('student').value.trim());}
-function canStart(){return deliveryReady()&&validIdentity();}
+const submissionStore=config.storage.key+'-submissions';
+let submissionLedger={};
+try{submissionLedger=JSON.parse(localStorage.getItem(submissionStore))||{};}catch{}
+function submittedCount(){
+ const email=$('student').value.trim().toLowerCase();
+ const entries=submissionLedger[email];
+ return Array.isArray(entries)?entries.length:0;
+}
+async function recordSubmission(item){
+ const envelope=await deliveryEnvelope(item),email=JSON.parse(envelope.payload).email.toLowerCase();
+ let latest={};try{latest=JSON.parse(localStorage.getItem(submissionStore))||{};}catch{}
+ const ids=new Set([...(Array.isArray(latest[email])?latest[email]:[]),...(Array.isArray(submissionLedger[email])?submissionLedger[email]:[]),envelope.submissionId]);
+ submissionLedger={...latest,[email]:[...ids]};
+ try{localStorage.setItem(submissionStore,JSON.stringify(submissionLedger));}catch{}
+}
+let opportunity={email:'',used:0,limit:config.maxSubmissions,pending:false,error:false},opportunitySerial=0,opportunityTimer;
+function opportunityReady(){
+ return fileMode||(opportunity.email===$('student').value.trim().toLowerCase()&&!opportunity.pending&&!opportunity.error);
+}
+function canStart(){return deliveryReady()&&validIdentity()&&opportunityReady();}
+async function checkOpportunities(){
+ const email=$('student').value.trim().toLowerCase(),serial=++opportunitySerial;
+ if(fileMode){opportunity={email,used:submittedCount(),limit:config.maxSubmissions,pending:false,error:false};guard?.render();return;}
+ opportunity={email,used:0,limit:config.maxSubmissions,pending:validIdentity(),error:false};
+ guard?.render();
+ if(!validIdentity()||!deliveryReady())return;
+ try{
+  const result=await window.LabDelivery.status(config.delivery,{practiceId:config.id,email,activityTitle:config.activityTitle});
+  if(serial!==opportunitySerial)return;
+  opportunity={email,used:result.used,limit:result.limit,pending:false,error:false};
+ }catch{
+  if(serial!==opportunitySerial)return;
+  opportunity={email,used:0,limit:config.maxSubmissions,pending:false,error:true};
+ }
+ guard?.render();
+}
+function scheduleOpportunityCheck(){
+ clearTimeout(opportunityTimer);++opportunitySerial;opportunity.email='';
+ opportunityTimer=setTimeout(checkOpportunities,500);guard?.render();
+}
 // El receptor y la hoja del profesor esperan un nombre: se usa la parte local del correo.
 function displayName(){return $('student').value.trim().toLowerCase().split('@')[0].slice(0,160);}
 
@@ -373,6 +412,7 @@ function syncToolbar(){
 let recoverySelecting=false,recoveryReading=false;
 function afterRender(state,ctx){
  phase=state.phase;clock();syncToolbar();
+ $('practice-reset').hidden=!config.allowRestart;
  $('practice-save').hidden=!config.allowSaveRecovery;
  $('practice-recover').hidden=!config.allowSaveRecovery;
  const paused=phase==='paused',needsRecovery=paused||ctx.restoring;
@@ -400,7 +440,12 @@ function afterRender(state,ctx){
  $('download').hidden=true;
  $('student').disabled=false;
  $('guard-start').textContent=tr('start');
- $('delivery-config-note').hidden=deliveryReady();
+ const limitReached=validIdentity()&&(fileMode?submittedCount()>=config.maxSubmissions:opportunityReady()&&opportunity.used>=opportunity.limit);
+ $('delivery-config-note').hidden=deliveryReady()&&!limitReached&&!opportunity.pending&&!opportunity.error;
+ $('delivery-config-note').textContent=!deliveryReady()?tr('notConfigured'):opportunity.pending?'Comprobando entregas anteriores…':opportunity.error?'No se pudieron comprobar las entregas anteriores. Pulsa Reintentar comprobación.':limitReached?'Has consumido las oportunidades previstas. Puedes realizar y enviar otra práctica, pero esta entrega adicional NO sustituirá ni actualizará la nota de la entrega anterior.':'';
+ $('opportunity-retry').hidden=!opportunity.error||!validIdentity();
+ if(limitReached)$('guard-start').textContent='Empezar entrega adicional (sin cambiar la nota anterior)';
+
  $('practice-recover').disabled=!active||ctx.restoring||!validIdentity()||!!ctx.problem||ctx.busy||!ctx.supported||recoverySelecting||recoveryReading;
  $('guard-state').textContent=tr(active?($('answer-fields').disabled?'blocked':'active'):phase);
  $('guard-count').textContent='Incidencias: '+state.count;
@@ -526,6 +571,7 @@ function showDeliveryReceipt(item){
 }
 async function deliver(item){
  if(fileMode){
+  await recordSubmission(item);
   // Sin receptor: la entrega es el archivo descargado.
   setDeliveryState('success');
   $('delivery-status').textContent=tr('fileDelivered');
@@ -539,12 +585,12 @@ async function deliver(item){
  try{
   const envelope=await deliveryEnvelope(item);
   item.receipt=await window.LabDelivery.send(config.delivery,envelope);
-  persistDelivery(item);showDeliveryReceipt(item);
+  persistDelivery(item);await recordSubmission(item);showDeliveryReceipt(item);
  }catch(error){
   setDeliveryState('error');
   // El código (TIMEOUT, ROUTE, SCHEMA, STORAGE…) indica al profesor qué ha fallado en el receptor.
   const code=/^[A-Z_]{3,20}$/.test(error.message)?error.message:'ERROR';
-  $('delivery-status').textContent=code==='NOT_CONFIGURED'?tr('notConfigured'):tr('deliveryFailed')+' Código para el profesor: '+code+'.';
+  $('delivery-status').textContent=code==='ACTIVITY_CONFIG'?'No se pudo comprobar la configuración de la actividad. Conserva el TXT y reintenta más tarde.':code==='NOT_CONFIGURED'?tr('notConfigured'):tr('deliveryFailed')+' Código para el profesor: '+code+'.';
   $('delivery-retry').textContent=tr('copyOpen');$('delivery-retry').disabled=false;
  }finally{delivering=false;}
 }
@@ -576,6 +622,7 @@ async function downloadReport(){
  return sending;
 }
 function onReset(){
+ scheduleOpportunityCheck();
  setDeliveryState('idle');
  $('statement').open=true;
  emailTouched=false;recoveryMode=false;$('practice-file-status').hidden=true;
@@ -661,11 +708,13 @@ $('practice-file').addEventListener('cancel',async()=>{
 });
 $('practice-file').addEventListener('change',()=>readRecoveryFile($('practice-file').files[0]));
 $('practice-finish').addEventListener('click',()=>guard.ask('finish'));
-$('practice-reset').addEventListener('click',()=>guard.ask('erase'));
+$('practice-reset').addEventListener('click',()=>{if(config.allowRestart)guard.ask('erase');});
 
 // ---------------------------------------------------------------- Arranque
 const deliveryConfigNote=document.createElement('p');deliveryConfigNote.id='delivery-config-note';deliveryConfigNote.className='note warm';
 deliveryConfigNote.textContent=tr('notConfigured');$('guard-start-box').prepend(deliveryConfigNote);
+const opportunityRetry=document.createElement('button');opportunityRetry.id='opportunity-retry';opportunityRetry.type='button';opportunityRetry.hidden=true;opportunityRetry.textContent='Reintentar comprobación';
+opportunityRetry.addEventListener('click',()=>void checkOpportunities());deliveryConfigNote.after(opportunityRetry);
 for(const [id,anchor]of [['receipt-download','delivery-retry'],['recovery-download','recover-delivery']]){
  const button=document.createElement('button');button.id=id;button.type='button';button.className='secondary';button.dataset.text='receipt';$(anchor).after(button);
  button.addEventListener('click',()=>downloadReceipt(guard.canDownloadReport()?rememberDelivery($('report').value):lastDelivery));
@@ -690,7 +739,7 @@ $('recover-delivery').addEventListener('click',()=>{
 });
 $('delivery-back').addEventListener('click',()=>{recoveryMode=false;setDeliveryState('idle');$('delivery-status').textContent='';$('receipt-status').textContent='';guard.render();});
 $('student').addEventListener('blur',()=>{emailTouched=!!$('student').value.trim();guard?.render();});
-$('student').addEventListener('input',()=>{rememberIdentity();guard?.render();});
+$('student').addEventListener('input',()=>{rememberIdentity();scheduleOpportunityCheck();});
 $('student').addEventListener('keydown',e=>{if(e.key==='Enter'&&!$('guard-start').disabled)$('guard-start').click();});
 if(typeof ResizeObserver==='function')new ResizeObserver(syncToolbarHeight).observe($('practice-toolbar'));
 window.addEventListener('resize',syncToolbarHeight);
@@ -731,5 +780,6 @@ const showError=()=>{if(lastError&&!$('guard-boot').hidden&&!$('guard-boot-detai
 window.addEventListener('error',showError);
 window.addEventListener('unhandledrejection',showError);
 rememberIdentity();guard.render();
+void checkOpportunities();
 window.Lab.ready=true;
 })();
