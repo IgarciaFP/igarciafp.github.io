@@ -200,8 +200,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Laboratorio</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261117-base3-19">
-<link rel="stylesheet" href="motor/taller.css?v=20261117-base3-19">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261117-base3-21">
+<link rel="stylesheet" href="motor/taller.css?v=20261117-base3-21">
 </head>
 <body>
 
@@ -314,6 +314,13 @@
   <h2 data-text="deliveryTitle"></h2>
   <progress id="delivery-progress" max="1" value="0" aria-label="Progreso de entrega" hidden></progress>
   <p id="delivery-status" role="status"></p>
+  <div id="revision-delivery" hidden>
+    <p>Has agotado los intentos disponibles. Indica el motivo para solicitar al profesor la revisión de la nota anterior.</p>
+    <label for="revision-delivery-reason">Motivo de la revisión (mínimo 20 letras)</label>
+    <textarea id="revision-delivery-reason" maxlength="2000" rows="3"></textarea>
+    <p id="revision-delivery-error" class="error" role="status">Debes indicar el motivo de la entrega</p>
+    <button id="revision-delivery-send" type="button" disabled>Enviar motivo y entrega</button>
+  </div>
   <button id="delivery-retry" type="button"><span data-text="copyOpen"></span></button>
   <p class="note"><span data-text="deliveryNote"></span></p>
   <button id="delivery-back" class="secondary" type="button" hidden><span data-text="backStart"></span></button>
@@ -339,12 +346,18 @@
 <dialog id="guard-confirm" class="guard-dialog" aria-labelledby="guard-confirm-title" aria-describedby="guard-confirm-text">
   <h2 id="guard-confirm-title"></h2>
   <p id="guard-confirm-text"></p>
+  <div id="revision-fields" hidden>
+    <p>Has agotado los intentos disponibles. Esta entrega no actualizará la nota anterior. Debes explicar al profesor por qué solicitas su revisión.</p>
+    <label for="revision-reason">Motivo de la revisión (mínimo 20 letras)</label>
+    <textarea id="revision-reason" maxlength="2000" rows="3" aria-describedby="revision-error"></textarea>
+    <p id="revision-error" class="error" role="status"></p>
+  </div>
   <div class="actions">
     <button id="guard-confirm-cancel" class="secondary" type="button" autofocus><span data-text="cancel"></span></button>
     <button id="guard-confirm-ok" type="button"><span data-text="confirm"></span></button>
   </div>
 </dialog>
 
-<script src="motor/cargador.js?v=20261117-base3-19" defer></script>
+<script src="motor/cargador.js?v=20261117-base3-21" defer></script>
 </body>
 </html>

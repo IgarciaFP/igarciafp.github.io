@@ -137,11 +137,13 @@ El contador muestra el tiempo restante desde Empezar. Al quedar un minuto se pon
 
 Cuenta por correo y actividad, incluyendo entregas manuales y automáticas y las anteriores que figuren en la hoja. Reenviar exactamente el mismo informe devuelve su confirmación sin consumir otra oportunidad. Reiniciar no borra el historial. La clave del profesor no elimina el aviso.
 
-**Agotar las oportunidades no bloquea una entrega nueva.** Antes de comenzar, el laboratorio consulta el contador y avisa claramente de que la nueva entrega no sustituirá ni actualizará la nota de la anterior. El botón pasa a indicar «Empezar entrega adicional (sin cambiar la nota anterior)».
+**Agotar las oportunidades no bloquea una entrega nueva.** La entrada lee primero el contador en caché, muestra «Intentos restantes: N» junto al mensaje de la última entrega y consulta la hoja en segundo plano. Empezar nunca espera esa consulta ni muestra avisos de comprobación. Si la respuesta llega después del inicio, se conserva en caché sin cambiar la pantalla de trabajo.
 
-La entrega adicional se añade como una fila nueva, con su nota inicialmente vacía y una marca en Incidencias. Las notas y filas anteriores quedan intactas. El receptor vuelve a contar al recibirla para registrar correctamente los envíos concurrentes.
+Al pulsar Entregar sin intentos restantes, el modal explica que se solicita revisión al profesor y exige un motivo con un mínimo de **20 letras Unicode** (espacios, cifras y signos no cuentan). El botón permanece desactivado y muestra «Debes indicar el motivo de la entrega» hasta cumplirlo. El motivo, de hasta 2000 caracteres, se incluye en el informe y en Incidencias.
 
-Con Google Sheets, el receptor consulta el config.json publicado, cuenta los informes y utiliza una nota técnica en la celda I para identificar las nuevas entregas, incluso las demasiado largas. La consulta previa solo devuelve contadores, nunca notas ni códigos. Si falla, se ofrece reintentar antes de comenzar para poder mostrar el aviso correcto. El correo sigue siendo declarado por el alumno, no una identidad autenticada.
+El receptor comprueba de nuevo el contador al recibir entregas manuales. Si la caché no reflejaba que los intentos estaban agotados, exige el motivo antes de añadir la fila; la pantalla de entrega permite completarlo y reintentar sin perder código. Los reintentos idénticos no generan duplicados. Las filas y notas anteriores no se modifican.
+
+Los cierres automáticos por tiempo o margen de regreso siguen enviando el código sin esperar un formulario; incluyen el motivo si ya se había escrito. Esta excepción permite conservar la entrega automática previamente configurada.
 
 En modo de entrega solo por archivo, el aviso se basa en el historial local del navegador.
 

@@ -173,9 +173,13 @@ function recibirEntrega(sobre) {
     if(anteriores.duplicate)
       return {ok:true,submissionId:sobre.submissionId,receivedAt:new Date().toISOString(),duplicate:true};
     const limite=limiteActividad_(datos),adicional=anteriores.count>=limite;
+    const motivo=typeof datos.revisionReason==='string'?datos.revisionReason.trim():'';
+    if(motivo.length>2000)throw Error('INVALID');
+    if(adicional&&datos.finishReason==='voluntary'&&(motivo.match(/\p{L}/gu)||[]).length<20)throw Error('REVISION_REASON');
     const ahora = new Date(), segundos = Math.floor(datos.seconds);
     const control = controlEntrega_(datos);
     if(adicional)control.avisos.push('entrega adicional: no sustituye ni actualiza la nota anterior');
+    if(motivo)control.avisos.push('Motivo de revisión: '+motivo);
     const fila = [
       literal_(Utilities.formatDate(ahora, 'Europe/Madrid', 'dd/MM/yy HH:mm:ss')),
       literal_(datos.module), literal_(datos.activityTitle), literal_(datos.email.toLowerCase()),
@@ -191,7 +195,7 @@ function recibirEntrega(sobre) {
     Sheets.Spreadsheets.batchUpdate({ requests: [{ appendCells: { sheetId: hoja.getSheetId(), rows: [{ values: fila }], fields: 'userEnteredValue,note' } }] }, id);
     return { ok: true, submissionId: sobre.submissionId, receivedAt: ahora.toISOString(), duplicate: false };
   } catch (error) {
-    const conocidos = ['INVALID', 'HASH', 'EMAIL', 'ROUTE', 'SCHEMA', 'BUSY', 'ACTIVITY_CONFIG'];
+    const conocidos = ['INVALID', 'HASH', 'EMAIL', 'ROUTE', 'SCHEMA', 'BUSY', 'ACTIVITY_CONFIG', 'REVISION_REASON'];
     return { ok: false, code: conocidos.includes(error.message) ? error.message : 'STORAGE' };
   } finally { if (cerrojo?.hasLock()) cerrojo.releaseLock(); }
 }

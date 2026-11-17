@@ -578,6 +578,7 @@
     }
     async function confirmAction() {
       const kind = confirmation;
+      if(kind==='finish'&&adapter.validateFinish&&!adapter.validateFinish())return;
       confirmation = null; confirmBox.close();
       if(kind==='save'){
         if(await pausePractice()){

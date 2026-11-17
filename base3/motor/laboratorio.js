@@ -108,35 +108,47 @@ function submittedCount(){
 async function recordSubmission(item){
  const envelope=await deliveryEnvelope(item),email=JSON.parse(envelope.payload).email.toLowerCase();
  let latest={};try{latest=JSON.parse(localStorage.getItem(submissionStore))||{};}catch{}
+ const wasKnown=(Array.isArray(submissionLedger[email])?submissionLedger[email]:[]).includes(envelope.submissionId);
  const ids=new Set([...(Array.isArray(latest[email])?latest[email]:[]),...(Array.isArray(submissionLedger[email])?submissionLedger[email]:[]),envelope.submissionId]);
+ if(!wasKnown)saveOpportunity(email,Math.max(ids.size,(opportunityCache[email]?.used||0)+1));
  submissionLedger={...latest,[email]:[...ids]};
  try{localStorage.setItem(submissionStore,JSON.stringify(submissionLedger));}catch{}
 }
-let opportunity={email:'',used:0,limit:config.maxSubmissions,pending:false,error:false},opportunitySerial=0,opportunityTimer;
-function opportunityReady(){
- return fileMode||(opportunity.email===$('student').value.trim().toLowerCase()&&!opportunity.pending&&!opportunity.error);
+const opportunityStore=config.storage.key+'-opportunities';
+let opportunityCache={};try{opportunityCache=JSON.parse(localStorage.getItem(opportunityStore))||{};}catch{}
+let opportunitySerial=0,opportunityTimer,revisionReason='',revisionNeeded=false;
+function cachedOpportunity(){
+ const email=$('student').value.trim().toLowerCase(),saved=opportunityCache[email];
+ return {used:Math.max(submittedCount(),Number.isSafeInteger(saved?.used)?saved.used:0),limit:config.maxSubmissions};
 }
-function canStart(){return deliveryReady()&&validIdentity()&&opportunityReady();}
+function saveOpportunity(email,used){
+ opportunityCache[email]={used,at:Date.now()};
+ try{localStorage.setItem(opportunityStore,JSON.stringify(opportunityCache));}catch{}
+}
+function canStart(){return deliveryReady()&&validIdentity();}
 async function checkOpportunities(){
  const email=$('student').value.trim().toLowerCase(),serial=++opportunitySerial;
- if(fileMode){opportunity={email,used:submittedCount(),limit:config.maxSubmissions,pending:false,error:false};guard?.render();return;}
- opportunity={email,used:0,limit:config.maxSubmissions,pending:validIdentity(),error:false};
- guard?.render();
- if(!validIdentity()||!deliveryReady())return;
+ if(fileMode||!validIdentity()||!deliveryReady())return;
  try{
   const result=await window.LabDelivery.status(config.delivery,{practiceId:config.id,email,activityTitle:config.activityTitle});
   if(serial!==opportunitySerial)return;
-  opportunity={email,used:result.used,limit:result.limit,pending:false,error:false};
- }catch{
-  if(serial!==opportunitySerial)return;
-  opportunity={email,used:0,limit:config.maxSubmissions,pending:false,error:true};
- }
- guard?.render();
+  saveOpportunity(email,result.used);
+  if(phase==='ready')guard?.render();
+ }catch{/* La entrada usa la caché y nunca espera a la red. */}
 }
 function scheduleOpportunityCheck(){
- clearTimeout(opportunityTimer);++opportunitySerial;opportunity.email='';
+ clearTimeout(opportunityTimer);++opportunitySerial;
  opportunityTimer=setTimeout(checkOpportunities,500);guard?.render();
 }
+const reasonValid=text=>(text.match(/\p{L}/gu)||[]).length>=20;
+function refreshReason(){
+ revisionReason=$('revision-reason').value.trim();
+ const invalid=revisionNeeded&&!reasonValid(revisionReason);
+ $('revision-error').textContent=invalid?'Debes indicar el motivo de la entrega':'';
+ $('guard-confirm-ok').disabled=invalid;
+ return !invalid;
+}
+function validateFinish(){return refreshReason();}
 // El receptor y la hoja del profesor esperan un nombre: se usa la parte local del correo.
 function displayName(){return $('student').value.trim().toLowerCase().split('@')[0].slice(0,160);}
 
@@ -440,11 +452,8 @@ function afterRender(state,ctx){
  $('download').hidden=true;
  $('student').disabled=false;
  $('guard-start').textContent=tr('start');
- const limitReached=validIdentity()&&(fileMode?submittedCount()>=config.maxSubmissions:opportunityReady()&&opportunity.used>=opportunity.limit);
- $('delivery-config-note').hidden=deliveryReady()&&!limitReached&&!opportunity.pending&&!opportunity.error;
- $('delivery-config-note').textContent=!deliveryReady()?tr('notConfigured'):opportunity.pending?'Comprobando entregas anteriores…':opportunity.error?'No se pudieron comprobar las entregas anteriores. Pulsa Reintentar comprobación.':limitReached?'Has consumido las oportunidades previstas. Puedes realizar y enviar otra práctica, pero esta entrega adicional NO sustituirá ni actualizará la nota de la entrega anterior.':'';
- $('opportunity-retry').hidden=!opportunity.error||!validIdentity();
- if(limitReached)$('guard-start').textContent='Empezar entrega adicional (sin cambiar la nota anterior)';
+ $('delivery-config-note').hidden=deliveryReady();
+ $('delivery-config-note').textContent=tr('notConfigured');
 
  $('practice-recover').disabled=!active||ctx.restoring||!validIdentity()||!!ctx.problem||ctx.busy||!ctx.supported||recoverySelecting||recoveryReading;
  $('guard-state').textContent=tr(active?($('answer-fields').disabled?'blocked':'active'):phase);
@@ -466,15 +475,23 @@ function afterRender(state,ctx){
   $('guard-continue').textContent='Continuar en pantalla completa';
  }
  // Última entrega: accesible desde la pantalla de identificación.
- $('recovery').hidden=recoveryMode||!lastDelivery||phase!=='ready';
- $('recovery-message').textContent=tr(lastDelivery?.receipt?'previousReceived':'pendingDelivery');
+ $('recovery').hidden=recoveryMode||phase!=='ready';
+ const attempts=cachedOpportunity();
+ $('recovery-message').textContent=(lastDelivery?.receipt?tr('previousReceived'):lastDelivery?tr('pendingDelivery'):'')+' Intentos restantes: '+Math.max(0,attempts.limit-attempts.used);
+ $('recover-delivery').hidden=!lastDelivery;
+ $('recovery-download').hidden=fileMode||!lastDelivery;
  $('recover-delivery').textContent=tr(fileMode?'recover':lastDelivery?.receipt?'viewReceipt':'copyOpen');
  $('practice-save').disabled=(!active&&!paused)||ctx.restoring||!!ctx.problem||ctx.busy||(active&&$('answer-fields').disabled);
  $('practice-finish').disabled=!guard?.canEdit();
  $('practice-reset').disabled=!!ctx.problem||ctx.busy||phase==='closing';
+ if(!$('revision-delivery').hidden)$('delivery-retry').disabled=true;
  $('toolbar-count').textContent='Incidencias: '+state.count+' · Margen: '+ctx.remainingSeconds+' s';
 }
 function confirmText(kind){
+ revisionNeeded=kind==='finish'&&cachedOpportunity().used>=cachedOpportunity().limit;
+ $('revision-fields').hidden=!revisionNeeded;
+ $('guard-confirm-ok').disabled=false;
+ if(kind==='finish')refreshReason();
  if(kind==='save'){$('guard-confirm-title').textContent=tr('savePractice');$('guard-confirm-text').textContent=tr('saveWarning');}
  if(kind==='erase'){$('guard-confirm-title').textContent=tr('toolbarReset');$('guard-confirm-text').textContent=tr('restartWarning');}
  if(kind==='finish'){$('guard-confirm-title').textContent=tr('confirmTitle');$('guard-confirm-text').textContent=tr('confirmBody');}
@@ -507,7 +524,7 @@ async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
   // El servidor tampoco respondió al abrir la actividad: se entró sin comprobar red ni horario.
   if(config.control.sinComprobar)sello.accesoSinComprobar=true;
  }
- const data={exam:config.id,module:config.module,activity:config.activity,activityTitle:config.activityTitle,activityVersion:config.version,version:3,language,name:displayName(),email:$('student').value.trim().toLowerCase(),finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:changed.length?changed:['sin-cambios'],answers,modified:changed,parameters:{},parameterLocks:{},group:'',checked:{},hints:{},notes:'',...context,sello,audit:metadata,url:location.origin+location.pathname+'?a='+config.module.toLowerCase()+'/'+config.activity};
+ const data={exam:config.id,module:config.module,activity:config.activity,activityTitle:config.activityTitle,activityVersion:config.version,version:3,language,name:displayName(),email:$('student').value.trim().toLowerCase(),finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:changed.length?changed:['sin-cambios'],answers,modified:changed,parameters:{},parameterLocks:{},group:'',checked:{},hints:{},notes:'',revisionReason:revisionReason.trim(),...context,sello,audit:metadata,url:location.origin+location.pathname+'?a='+config.module.toLowerCase()+'/'+config.activity};
  const body=JSON.stringify(data);
  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(body))),b=>b.toString(16).padStart(2,'0')).join('');
  return encodeReport(body+'\nCódigo de comprobación: '+config.format.checksum+hash);
@@ -590,10 +607,46 @@ async function deliver(item){
   setDeliveryState('error');
   // El código (TIMEOUT, ROUTE, SCHEMA, STORAGE…) indica al profesor qué ha fallado en el receptor.
   const code=/^[A-Z_]{3,20}$/.test(error.message)?error.message:'ERROR';
+  if(code==='REVISION_REASON'){
+   $('revision-delivery').hidden=false;
+   $('revision-delivery-reason').value=revisionReason;
+   refreshDeliveryReason();
+   $('delivery-status').textContent='Debes indicar el motivo de la entrega';
+   $('delivery-retry').disabled=true;
+   return;
+  }
   $('delivery-status').textContent=code==='ACTIVITY_CONFIG'?'No se pudo comprobar la configuración de la actividad. Conserva el TXT y reintenta más tarde.':code==='NOT_CONFIGURED'?tr('notConfigured'):tr('deliveryFailed')+' Código para el profesor: '+code+'.';
   $('delivery-retry').textContent=tr('copyOpen');$('delivery-retry').disabled=false;
- }finally{delivering=false;}
+ }finally{delivering=false;if(!$('revision-delivery').hidden)refreshDeliveryReason();}
 }
+function refreshDeliveryReason(){
+ const valid=reasonValid($('revision-delivery-reason').value);
+ $('revision-delivery-error').textContent=valid?'':'Debes indicar el motivo de la entrega';
+ $('revision-delivery-send').disabled=!valid||delivering;
+ return valid;
+}
+$('revision-delivery-reason').addEventListener('input',refreshDeliveryReason);
+$('revision-delivery-send').addEventListener('click',async()=>{
+ if(delivering||!lastDelivery||!refreshDeliveryReason())return;
+ const item=lastDelivery;
+ $('revision-delivery-send').disabled=true;
+ try{
+  const envelope=await deliveryEnvelope(item),data=JSON.parse(envelope.payload);
+  data.revisionReason=$('revision-delivery-reason').value.trim();
+  const payload=JSON.stringify(data);
+  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(payload))),b=>b.toString(16).padStart(2,'0')).join('');
+  item.code=await encodeReport(payload+'\nCódigo de comprobación: '+config.format.checksum+hash);
+  if(item.practice){
+   const practice=JSON.parse(item.practice);practice.state.data.report=item.code;item.practice=JSON.stringify(practice);
+  }
+  setReport(item.code);persistDelivery(item);
+  $('revision-delivery').hidden=true;
+  await deliver(item);
+ }catch{
+  $('revision-delivery-error').textContent='No se pudo preparar la entrega. Reintenta.';
+  $('revision-delivery-send').disabled=false;
+ }
+});
 const requestedReceipts=new Set();
 async function downloadReceipt(item){
  if(!item?.code)return false;
@@ -622,6 +675,8 @@ async function downloadReport(){
  return sending;
 }
 function onReset(){
+ $('revision-delivery').hidden=true;
+ revisionReason='';$('revision-reason').value='';
  scheduleOpportunityCheck();
  setDeliveryState('idle');
  $('statement').open=true;
@@ -707,14 +762,13 @@ $('practice-file').addEventListener('cancel',async()=>{
  recoverySelecting=false;guard.endFileRecovery();guard.render();
 });
 $('practice-file').addEventListener('change',()=>readRecoveryFile($('practice-file').files[0]));
+$('revision-reason').addEventListener('input',refreshReason);
 $('practice-finish').addEventListener('click',()=>guard.ask('finish'));
 $('practice-reset').addEventListener('click',()=>{if(config.allowRestart)guard.ask('erase');});
 
 // ---------------------------------------------------------------- Arranque
 const deliveryConfigNote=document.createElement('p');deliveryConfigNote.id='delivery-config-note';deliveryConfigNote.className='note warm';
 deliveryConfigNote.textContent=tr('notConfigured');$('guard-start-box').prepend(deliveryConfigNote);
-const opportunityRetry=document.createElement('button');opportunityRetry.id='opportunity-retry';opportunityRetry.type='button';opportunityRetry.hidden=true;opportunityRetry.textContent='Reintentar comprobación';
-opportunityRetry.addEventListener('click',()=>void checkOpportunities());deliveryConfigNote.after(opportunityRetry);
 for(const [id,anchor]of [['receipt-download','delivery-retry'],['recovery-download','recover-delivery']]){
  const button=document.createElement('button');button.id=id;button.type='button';button.className='secondary';button.dataset.text='receipt';$(anchor).after(button);
  button.addEventListener('click',()=>downloadReceipt(guard.canDownloadReport()?rememberDelivery($('report').value):lastDelivery));
@@ -764,7 +818,7 @@ window.addEventListener('unhandledrejection',e=>{
  const where=/([\w.-]+\.js)[^\n]*?:(\d+):\d+/.exec(String(reason?.stack||''));
  lastError=String(reason?.message||reason)+(where?' ('+where[1]+':'+where[2]+')':'');
 },true);
-guard=window.createPracticeGuard({config,timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,
+guard=window.createPracticeGuard({config,timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
  async saveBeforeReset(current){
   if(current==='paused')return savePracticeDocument();
   if(current==='submitted')return downloadReceipt(rememberDelivery($('report').value));

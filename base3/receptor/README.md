@@ -63,3 +63,5 @@ Las entregas sin código completo en I, los borradores y las entregas duplicadas
 El receptor consulta `actividades/MODULO/ACTIVIDAD/config.json` y cuenta las oportunidades ordinarias (`entregas`, por defecto 1) por correo y actividad. No bloquea nuevas entregas al agotarlas: las añade como filas adicionales y marca Incidencias sin modificar notas anteriores. Los reintentos idénticos no añaden filas.
 
 La consulta previa `consultarOportunidades` solo devuelve el contador y el límite configurado, para advertir antes de empezar. La recepción vuelve a contar bajo bloqueo. Las nuevas filas incluyen metadatos en una nota de la celda I, sin añadir columnas. Actualiza **Code.gs y Bridge.html** y publica una nueva versión.
+
+El inicio utiliza caché y consulta el contador sin bloquear. Las entregas manuales adicionales requieren `revisionReason` con 20 letras como mínimo y hasta 2000 caracteres. Se guarda en Incidencias; si falta, se devuelve `REVISION_REASON` sin escribir la fila. Los cierres automáticos se conservan sin bloquearlos por este formulario. Para este cambio actualiza Code.gs; Bridge.html no cambia.
