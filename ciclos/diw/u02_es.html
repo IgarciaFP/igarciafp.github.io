@@ -612,11 +612,18 @@ html body #contenido a#checkpoint-01 {
   display: flex;
   box-sizing: border-box;
   width: 100%;
-  min-height: 3rem;
+  align-items: center;
+  justify-content: flex-start;
+  gap: .55rem;
+  margin: 1rem 0;
+  padding: .45rem .85rem;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
   color: #fff;
   border-color: var(--checkpoint-edge);
   background: var(--button-surface);
-  text-align: center;
+  text-align: start;
 }
 html[data-theme="dark"] body #contenido a#checkpoint-01 {
   --checkpoint-top: #7f1d1d;
@@ -627,11 +634,21 @@ html[data-theme="dark"] body #contenido a#checkpoint-01 {
 }
 html body #contenido a#checkpoint-01:hover {
   color: #fff;
-  background: var(--checkpoint-hover);
+  background-image: linear-gradient(110deg, transparent 35%, var(--shine-color, #b8dcff66) 50%, transparent 65%), var(--button-surface);
 }
 html body #contenido a#checkpoint-01:focus-visible {
   outline: 3px solid var(--checkpoint-focus);
   outline-offset: 3px;
+}
+html body #contenido a#checkpoint-01 > svg {
+  flex: none;
+  width: 1.15em;
+  height: 1.15em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 </style></head><body><a class="skip" href="#contenido">Saltar al contenido</a><div class="reading-rail" role="group" aria-label="Controles de lectura"><button type="button" id="unit-index" class="toc-toggle">Índice</button><button class="toc-toggle theme-toggle" id="theme-toggle" type="button">Dark</button><button class="toc-toggle route-toggle" type="button" data-route-toggle>Ampliar</button><a class="toc-toggle language-switch" href="https://igarciafp.github.io/ciclos/diw/u02_en.html" hreflang="en" lang="en">English</a><button class="rail-handle" type="button" aria-label="Mostrar controles de lectura"></button></div><div class="document-wrapper"><main class="document-container" id="contenido"><header class="header-banner"><div class="header-top-row"><span class="module-tag">Diseño de Interfaces Web · 2º DAW</span></div><h1>UD02. Fundamentos de CSS</h1><p class="lead">Cómo decide el navegador qué estilo aplicar y cómo dar forma a cajas, colores y texto.</p></header><figure aria-label="Portada del tema: Fundamentos de CSS" class="css-cover">
 <svg aria-labelledby="cover-css-title cover-css-desc" height="460" role="img" viewbox="0 0 1000 460" width="1000" xmlns="http://www.w3.org/2000/svg">
@@ -1333,7 +1350,7 @@ li::marker { color: #0f766e; }
 </details></article>
 <h3 id="comprueba-3">Comprueba antes de seguir</h3>
 <div class="section-check"><p>Responde de memoria y despliega después cada respuesta. Si fallas una, vuelve al apartado antes de continuar.</p><details><summary>Una <code>.tarjeta</code> tiene <code>font-size: 1.5em</code> y dentro hay otra <code>.tarjeta</code>. ¿Qué tamaño de letra tiene la interior? ¿Y con <code>1.5rem</code>?</summary><p>Con <code>em</code>, 1,5 × 1,5 = 2,25 veces el tamaño de partida, porque cada <code>em</code> se calcula sobre el elemento padre. Con <code>rem</code>, las dos miden 1,5 veces la fuente raíz.</p></details><details><summary>Has declarado <code>:root { --acento: #b45309; }</code> y el botón, con <code>background-color: --acento;</code>, sigue sin color. ¿Qué falta?</summary><p>La función <code>var()</code>: <code>background-color: var(--acento);</code>. Sin ella la declaración no es válida y el navegador la descarta sin avisar. La verás tachada en el inspector.</p></details><details><summary>En <code>border-color: var(--borde, #64748b)</code>, ¿cuándo se usa el segundo valor? Relaciónalo con la herencia del apartado 1.4.</summary><p>Cuando <code>--borde</code> no está definida para ese elemento. Las variables se heredan: basta con que la declare un antepasado, como <code>:root</code>, para que el valor de reserva no se utilice.</p></details></div>
-<p><a class="delivery-trigger checkpoint-warning" id="checkpoint-01" href="https://igarciafp.github.io/base3/?a=diw/02-01-prueba-css-adaptable" target="_blank" rel="noopener noreferrer">Checkpoint 01</a></p>
+<p><a class="delivery-trigger card-launch checkpoint-warning" id="checkpoint-01" href="https://igarciafp.github.io/base3/?a=diw/02-01-prueba-css-adaptable" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4 M5 4h12l-2.5 4L17 12H5"></path></svg><span>Checkpoint 01</span></a></p>
 </section>
 <section id="cajas"><h2>4. El modelo de caja</h2>
 <h3 id="caja-y-display">Antes de medir: ¿a qué afecta el modelo de caja?</h3>
