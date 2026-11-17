@@ -467,7 +467,9 @@ function syncToolbar(){
 }
 let recoverySelecting=false,recoveryReading=false;
 function afterRender(state,ctx){
- phase=state.phase;if(phase==='closing'||phase==='submitted')panelEntered=true;clock();syncToolbar();
+ const previousPhase=phase;
+ phase=state.phase;if(previousPhase!==phase&&(phase==='closing'||phase==='submitted'))closeActionModal(false);
+ if(phase==='closing'||phase==='submitted')panelEntered=true;clock();syncToolbar();
  $('practice-reset').hidden=!config.allowRestart;
  $('practice-save').hidden=!config.allowSaveRecovery;
  $('practice-recover').hidden=!config.allowSaveRecovery;
@@ -832,15 +834,33 @@ $('practice-reset').addEventListener('click',()=>{if(config.allowRestart)guard.a
 
 // ---------------------------------------------------------------- Arranque
 
+let modalResolve=null;
+function confirmActionModal(message){
+ if(modalResolve)return Promise.resolve(false);
+ const dialog=$('action-confirm');
+ $('action-confirm-message').textContent=message;
+ return new Promise(resolve=>{modalResolve=resolve;dialog.showModal();});
+}
+function closeActionModal(accepted=false){
+ const resolve=modalResolve;modalResolve=null;
+ if($('action-confirm').open)$('action-confirm').close();
+ if(resolve)resolve(accepted);
+}
+$('action-confirm-accept').addEventListener('click',()=>closeActionModal(true));
+$('action-confirm-cancel').addEventListener('click',()=>closeActionModal(false));
+$('action-confirm').addEventListener('cancel',event=>{event.preventDefault();closeActionModal(false);});
+$('action-confirm').addEventListener('close',()=>{if(modalResolve)closeActionModal(false);});
+
 const clearLocalButton=document.createElement('button');
 clearLocalButton.id='clear-local-practice';clearLocalButton.type='button';clearLocalButton.className='secondary';
 clearLocalButton.title='Flush Caché';
 clearLocalButton.setAttribute('aria-label','Flush Caché');
 clearLocalButton.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M20 7v5h-5M20 12a8 8 0 1 0-2.3 5.7M20 12l-3-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 $('guard-start').before(clearLocalButton);
-clearLocalButton.addEventListener('click',()=>{
+clearLocalButton.addEventListener('click',async()=>{
  if(phase!=='ready'||recoveryMode)return;
- if(!window.confirm('Se borrarán los datos locales y el comprobante guardado de esta práctica, incluida cualquier entrega pendiente. Descarga antes el TXT si quieres conservarlo. No se borrará nada de la hoja del profesor. ¿Continuar?'))return;
+ if(!await confirmActionModal('Se borrarán los datos locales y el comprobante guardado de esta práctica, incluida cualquier entrega pendiente. Descarga antes el TXT si quieres conservarlo. No se borrará nada de la hoja del profesor. ¿Continuar?'))return;
+ if(phase!=='ready'||recoveryMode)return;
  try{
   for(const key of [config.storage.key,config.storage.key+'-previous',config.storage.legacyKey,RECOVERY,submissionStore,opportunityStore])localStorage.removeItem(key);
   location.reload();
@@ -874,8 +894,9 @@ function discardPendingDelivery(){
  if(!panelEntered||deliveryComplete||lastDelivery?.receipt)return;
  try{localStorage.removeItem(config.storage.key);localStorage.removeItem(RECOVERY);}catch{}
 }
-$('delivery-abandon').addEventListener('click',()=>{
- if(delivering||!window.confirm('Si cierras sin entregar perderás todo el trabajo y no podrás recuperarlo. El intento iniciado seguirá registrado. ¿Abandonar?'))return;
+$('delivery-abandon').addEventListener('click',async()=>{
+ if(delivering||!await confirmActionModal('Si cierras sin entregar perderás todo el trabajo y no podrás recuperarlo. El intento iniciado seguirá registrado. ¿Abandonar?'))return;
+ if(delivering||panelSending||deliveryComplete)return;
  discardPendingDelivery();panelEntered=false;location.reload();
 });
 window.addEventListener('beforeunload',event=>{
@@ -909,7 +930,7 @@ window.addEventListener('unhandledrejection',e=>{
  const where=/([\w.-]+\.js)[^\n]*?:(\d+):\d+/.exec(String(reason?.stack||''));
  lastError=String(reason?.message||reason)+(where?' ('+where[1]+':'+where[2]+')':'');
 },true);
-guard=window.createPracticeGuard({config,deliveryPanel:true,onAttemptStart,timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
+guard=window.createPracticeGuard({config,deliveryPanel:true,onAttemptStart,confirmDelivery:()=>confirmActionModal('Vas a finalizar la práctica. Al aceptar no podrás volver al editor. ¿Abrir el panel de entrega?'),timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
  async saveBeforeReset(current){
   if(current==='paused')return savePracticeDocument();
   if(current==='submitted')return downloadReceipt(rememberDelivery($('report').value));

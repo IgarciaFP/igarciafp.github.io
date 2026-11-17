@@ -571,14 +571,15 @@
       if(kind==='save'&&!canEdit()&&state.phase!=='paused')return;
 
       if(kind==='finish'&&adapter.deliveryPanel){
-        if(!window.confirm('Vas a finalizar la práctica. Al continuar no podrás volver al editor. ¿Abrir el panel de entrega?'))return;
+        return adapter.confirmDelivery().then(accepted=>{
+        if(!accepted||busy||problem||fatal)return;
         if(checkReturnDeadline()||state.phase!=='active')return;
         state.closingAt=Date.now();state.closingReason='voluntary';
         state.attemptAudit.finishedAt=state.closingAt;adapter.stopClock(state.closingAt);
         state.data=adapter.snapshot();state.phase='closing';state.pending=null;state.episode=null;
         clearReturnTimer();if(warning.open)warning.close();if(confirmBox.open)confirmBox.close();
         if(persist()){render();void finalizeForced();}
-        return;
+        });
       }
       confirmation = kind;
       $('guard-confirm-title').textContent = kind === 'finish' ? '¿Finalizar el intento?' : '¿Borrar los datos locales?';

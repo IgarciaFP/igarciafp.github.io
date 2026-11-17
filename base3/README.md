@@ -187,3 +187,5 @@ En config.json, `"archivos": ["html", "css"]` indica que la actividad aporta cod
 Los archivos declarados deben existir. Los errores temporales de carga se reintentan hasta tres veces y no se convierten silenciosamente en código vacío. Para compatibilidad, si no existe el campo archivos se conserva la detección por 404 de los tres archivos opcionales. La actividad de prueba CSS declara solo html y css.
 
 Si aparece RECEIVER_VERSION, comprueba la implementación existente de Apps Script: debe publicar Code.gs con iniciarEntrega y Bridge.html con LAB_START y capabilities. Guardar archivos en el editor o ejecutar configurar no actualiza la versión servida por /exec. Si creas una implementación distinta con otra URL, hay que cambiar delivery.endpoint en contenido/config.json.
+
+Las confirmaciones de entrega manual, limpieza de caché y abandono se muestran mediante modales HTML con Aceptar/Cancelar (Escape cancela). El reloj continúa durante el aviso previo; si vence, se cierra ese aviso y sigue la entrega automática. Solo el aviso de cerrar o recargar la pestaña usa el diálogo obligatorio del navegador.

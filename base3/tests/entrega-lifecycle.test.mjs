@@ -154,6 +154,7 @@ async function guardHarness(automatic=false){
  vm.runInContext(guardSource,runtime);
  const blank=()=>({values:{student:'alumno@g.educaand.es'},elapsed,started,language:'es'});
  const adapter={config:{storage:{key:'test',legacyKey:'old'},guard:{returnSeconds:10},requireFullName:false},deliveryPanel:true,
+  confirmDelivery:async()=>{prompts++;return confirmResult;},
   empty:blank,sanitize:x=>x,snapshot:blank,restore(){},setEnabled(){},canStart:()=>true,validEmail:()=>true,
   timeSpent:()=>elapsed+(started===null?0:now-started),timeLimitMs:()=>120000,
   startClock:()=>{started=now;},stopClock:at=>{elapsed+= (at??now)-started;started=null;},
@@ -170,14 +171,14 @@ async function guardHarness(automatic=false){
   assert.equal(prepared,1);
   return;
  }
- guard.ask('finish');assert.equal(prompts,1);assert.equal(latest,'active');assert.notEqual(started,null);
- confirmResult=true;now+=5000;guard.ask('finish');
- assert.equal(latest,'closing');assert.equal(started,null);
+ await guard.ask('finish');assert.equal(prompts,1);assert.equal(latest,'active');assert.notEqual(started,null);
+ confirmResult=true;now+=5000;await guard.ask('finish');
+ assert.ok(['closing','submitted'].includes(latest));assert.equal(started,null);
  for(let i=0;i<10;i++)await Promise.resolve();
  assert.equal(latest,'submitted');assert.equal(prepared,1);assert.equal(get('guard-confirm').open,false);
  now+=200000;for(const f of intervals)f();
  assert.equal(prepared,1,'no repite envío ni temporizador estando en panel');
- guard.ask('finish');assert.equal(prompts,2,'no reabre el aviso');
+ await guard.ask('finish');assert.equal(prompts,2,'no reabre el aviso');
  return {runtime,get,intervals};
 }
 await guardHarness();
@@ -246,6 +247,27 @@ for(const compatible of [false,true]){
   await assert.rejects(request,/RECEIVER_VERSION/);assert.equal(posted,0);
  }
  assert.equal(removed,1);
+}
+
+
+{
+ const elements={};
+ const get=id=>elements[id]||=( {open:false,textContent:'',handlers:{},addEventListener(type,fn){this.handlers[type]=fn;},showModal(){this.open=true;},close(){this.open=false;}});
+ const runtime=vm.createContext({$:get});
+ vm.runInContext(part('let modalResolve=null;','const clearLocalButton='),runtime);
+ let promise=runtime.confirmActionModal('¿Continuar?');
+ assert.equal(get('action-confirm').open,true);
+ get('action-confirm-cancel').handlers.click();
+ assert.equal(await promise,false);
+ promise=runtime.confirmActionModal('¿Entregar?');
+ get('action-confirm-accept').handlers.click();
+ assert.equal(await promise,true);
+ promise=runtime.confirmActionModal('¿Abandonar?');
+ get('action-confirm').handlers.cancel({preventDefault(){}});
+ assert.equal(await promise,false);
+ promise=runtime.confirmActionModal('¿Entregar?');
+ runtime.closeActionModal(false);
+ assert.equal(await promise,false,'el cierre automático descarta la confirmación manual');
 }
 
 console.log('OK: reserva, actualización, idempotencia, motivos, notas y panel definitivo.');
