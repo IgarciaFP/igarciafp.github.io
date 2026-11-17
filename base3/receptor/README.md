@@ -4,17 +4,17 @@ Escribe cada entrega en la pestaña **Entregas** de la hoja de cálculo del prof
 
 | Columna | Contenido |
 | --- | --- |
-| A · DIA Y HORA | Fecha y hora de recepción en el servidor de Google, `DD/MM/AA HH:MM:SS` (hora de Madrid) |
+| A · DIA Y HORA | Fecha y hora de inicio registrada en el servidor de Google, `DD/MM/AA HH:MM:SS` (hora de Madrid) |
 | B · MODULO | `DIW`, `DWEC` o `SSII` |
 | C · Nombre de la práctica | Título de la actividad |
 | D · EMAIL | Correo con el que se identificó el alumno |
 | E · PROBAR CODIGO | Enlace «Probar código»: abre `profesor.html` con esa entrega cargada |
 | F · Tiempo | Tiempo empleado |
 | G · IP | Solo la dirección IP; vacía si falta el sello o no es válido |
-| H · Incidencias | `n/3` y todos los avisos: cierre automático, fuera de red/horario, clave del profesor, acceso sin comprobar y problemas de verificación del sello |
+| H · Incidencias | Número de incidencias y todos los avisos: cierre automático, fuera de red/horario, clave del profesor, acceso sin comprobar y problemas de verificación del sello |
 | I · ENTREGA completa | La entrega comprimida y codificada, igual que el archivo TXT del alumno |
 
-Las columnas siguientes (Detección IA, NOTA, Comentarios) no se tocan. El receptor comprueba las nueve cabeceras antes de escribir y no escribe nada si alguna ha cambiado. Reenviar la misma entrega no añade otra fila.
+Las columnas existentes siguientes (Detección IA, NOTA, Comentarios) no se tocan; ID y Número de entrega se añaden al final. El receptor comprueba las nueve cabeceras antes de escribir y no escribe nada si alguna ha cambiado. Reenviar la misma entrega no añade otra fila.
 
 ## Instalación
 
@@ -58,10 +58,19 @@ La consulta y escritura requieren validación de sesión en el servidor. Los alu
 
 Las entregas sin código completo en I, los borradores y las entregas duplicadas no se califican desde esta página: se muestra un aviso. Las notas numéricas se guardan como números; otros textos se guardan literalmente, nunca como fórmulas. Una nota con fórmula escrita previamente en la hoja se muestra con su resultado; guardar una nueva nota sustituye esa fórmula.
 
-## Oportunidades de entrega
 
-El receptor consulta `actividades/MODULO/ACTIVIDAD/config.json` y cuenta las oportunidades ordinarias (`entregas`, por defecto 1) por correo y actividad. No bloquea nuevas entregas al agotarlas: las añade como filas adicionales y marca Incidencias sin modificar notas anteriores. Los reintentos idénticos no añaden filas.
+## Registro inicial y panel definitivo
 
-La consulta previa `consultarOportunidades` solo devuelve el contador y el límite configurado, para advertir antes de empezar. La recepción vuelve a contar bajo bloqueo. Las nuevas filas incluyen metadatos en una nota de la celda I, sin añadir columnas. Actualiza **Code.gs y Bridge.html** y publica una nueva versión.
+Al empezar se genera un ID aleatorio y se registra en segundo plano una fila con fecha y hora de inicio (Madrid), módulo, actividad, correo e IP. Se añaden al final las columnas **ID** y **Número de entrega**, sin desplazar «nota». El número se asigna en el servidor bajo bloqueo para el mismo correo y práctica. Los intentos iniciados, aunque se abandonen, consumen una oportunidad.
 
-El inicio utiliza caché y consulta el contador sin bloquear. Las entregas manuales adicionales requieren `revisionReason` con 20 letras como mínimo y hasta 2000 caracteres. Se guarda en Incidencias; si falta, se devuelve `REVISION_REASON` sin escribir la fila. Los cierres automáticos se conservan sin bloquearlos por este formulario. Para este cambio actualiza Code.gs; Bridge.html no cambia.
+La entrega final actualiza esa fila por ID; conserva los datos iniciales y las notas del profesor. En Incidencias quedan el estado inicial pendiente, o los avisos y el motivo al completar. La hora de recepción final se conserva en los metadatos de la celda I y se devuelve en el comprobante. Reintentar una petición no crea filas duplicadas.
+
+- **Manual:** «Entregar» muestra un aviso sencillo que permite cancelar. Al aceptarlo se entra en el panel definitivo, se para el reloj y no se puede volver al editor.
+- **Automática con intentos:** abre el mismo panel y envía sin esperar confirmación.
+- **Automática sin intentos:** abre ese panel y espera un motivo de al menos 20 letras antes de enviar.
+- El motivo ocupa un campo de **2rem** de alto y se almacena en Incidencias.
+- «Cerrar sin entregar» exige confirmación. Recargar o cerrar la pestaña muestra la advertencia nativa del navegador cuando este la permite. Al salir se elimina la copia local pendiente; queda la fila inicial, no una entrega completa. No se recuperan comprobantes finalizados como prácticas editables.
+
+El ID se mantiene al guardar y recuperar una práctica pausada. El registro inicial se reintenta con el mismo ID antes del envío si falló la red; no se puede garantizar el registro remoto sin conexión. La actualización final mantiene las restricciones de red y horario. Si se rechaza, la fila inicial sigue pendiente y el panel permite reintentar.
+
+**Despliegue:** sustituir **Code.gs y Bridge.html** y publicar una nueva versión de la implementación existente. La URL y el Worker no cambian. Las columnas nuevas se crean automáticamente en el primer inicio.

@@ -115,7 +115,7 @@
         attemptAudit:sanitizeAudit(s.attemptAudit),
         recoveries: Number.isInteger(s.recoveries)&&s.recoveries>=0&&s.recoveries<=s.count?s.recoveries:0,
         closingAt: stamp(s.closingAt) ? s.closingAt : null,
-        closingReason: ['duration-limit','return-timeout','incident-limit'].includes(s.closingReason) ? s.closingReason : null,
+        closingReason: ['voluntary','duration-limit','return-timeout','incident-limit'].includes(s.closingReason) ? s.closingReason : null,
         actionCounts: Object.fromEntries(Object.entries(s.actionCounts || {}).filter(([k,v]) => /^[A-Za-z0-9+_-]{1,48}$/.test(k) && Number.isSafeInteger(v) && v >= 0).slice(0,300)),
         actions: Array.isArray(s.actions) ? s.actions.filter(a => a && stamp(a.at) && typeof a.action === 'string' && /^[A-Za-z0-9+_-]{1,48}$/.test(a.action)).slice(-1000).map(a => ({at:a.at,action:a.action})) : [],
         savedAt: stamp(s.savedAt) ? s.savedAt : null,
@@ -433,7 +433,7 @@
           const backup = state.backup, events = state.events, attempt = state.attempt + 1;
           state = { ...fresh(), phase: 'active', attempt, data, backup, events };
           state.attemptAudit.startedAt=Date.now();recordIPUnavailable('start');
-          adapter.restore(data); log(`Comienzo del intento ${attempt}. Identificación completada.`);
+          adapter.restore(data); adapter.onAttemptStart?.(); log(`Comienzo del intento ${attempt}. Identificación completada.`);
         } else log('Intento reanudado en pantalla completa.');
         state.pending = null; state.episode = null; restoring = false;
         clearReturnTimer();
@@ -468,6 +468,7 @@
     function importPractice(text){
       if(problem||fatal||busy||!(['ready','paused','submitted','reset'].includes(state.phase)||(state.phase==='active'&&(restoring||fileRecovery))))throw Error('Cannot import now');
       const doc=JSON.parse(text);
+      if(adapter.deliveryPanel&&(doc.state?.phase==='submitted'||['closing','submitted'].includes(state.phase)))throw Error('La práctica ya está finalizada');
       if(doc.format!==adapter.config.format.save||doc.version!==1||!['paused','submitted'].includes(doc.state?.phase))throw Error('Invalid save file');
       const next=validate(doc.state);
       if(doc.language!==undefined){
@@ -568,6 +569,16 @@
       if (kind === 'finish' && !canEdit()) return;
       if(kind==='save'&&!canEdit()&&state.phase!=='paused')return;
 
+      if(kind==='finish'&&adapter.deliveryPanel){
+        if(!window.confirm('Vas a finalizar la práctica. Al continuar no podrás volver al editor. ¿Abrir el panel de entrega?'))return;
+        if(checkReturnDeadline()||state.phase!=='active')return;
+        state.closingAt=Date.now();state.closingReason='voluntary';
+        state.attemptAudit.finishedAt=state.closingAt;adapter.stopClock(state.closingAt);
+        state.data=adapter.snapshot();state.phase='closing';state.pending=null;state.episode=null;
+        clearReturnTimer();if(warning.open)warning.close();if(confirmBox.open)confirmBox.close();
+        if(persist()){render();void finalizeForced();}
+        return;
+      }
       confirmation = kind;
       $('guard-confirm-title').textContent = kind === 'finish' ? '¿Finalizar el intento?' : '¿Borrar los datos locales?';
       $('guard-confirm-text').textContent = kind === 'finish'

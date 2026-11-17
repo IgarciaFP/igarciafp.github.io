@@ -181,7 +181,7 @@ function activityOf(mod,slug){
  if(!/^(diw|dwec|ssii)\/[a-z0-9][a-z0-9-]{0,59}$/.test(key))return Promise.resolve(null);
  if(!activities.has(key))activities.set(key,(async()=>{
   const folder='actividades/'+key+'/',optional=async name=>{const r=await fetchFile(folder+name);return r.ok?r.text():'';};
-  const response=await fetchFile(folder+'actividad.json');
+  const response=await fetchFile(folder+'config.json');
   if(!response.ok)return null;
   const info=await response.json(),[ownHtml,css,js]=await Promise.all([optional('codigo.html'),optional('codigo.css'),optional('codigo.js')]);
   // Igual que el laboratorio: sin HTML de partida, la pestaña empieza con el esqueleto común.

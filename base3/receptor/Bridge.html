@@ -15,6 +15,14 @@ window.addEventListener('message',event=>{
       .gestionarNota(m.request);
     return;
   }
+  if(m?.type==='LAB_START'){
+    if(m.envelope?.practiceId!==settings.practiceId)return;
+    busy=true;
+    google.script.run.withSuccessHandler(result=>{busy=false;tell({type:'LAB_RESULT',result});})
+      .withFailureHandler(()=>{busy=false;tell({type:'LAB_RESULT',result:{ok:false,code:'NETWORK'}});})
+      .iniciarEntrega(m.envelope);
+    return;
+  }
   if(m?.type==='LAB_STATUS'){
     if(m.envelope?.practiceId!==settings.practiceId)return;
     busy=true;

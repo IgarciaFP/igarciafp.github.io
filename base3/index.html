@@ -37,7 +37,7 @@
        tildes, eñes ni espacios:        actividades/diw/02-01-menu-responsive/
                                         …/base3/?a=diw/02-01-menu-responsive
      · NN-MM-Nombre de la actividad, ya con sus mayúsculas, tildes y espacios, es el
-       "title" de actividad.json (paso 2):      "title": "02-01-Menú responsive"
+       "title" de config.json (paso 2):      "title": "02-01-Menú responsive"
 
    El alumno ve el nombre completo con el módulo delante, «DIW02-01-Menú responsive», en
    la identificación, en la barra y en el nombre del archivo de entrega. En la hoja de
@@ -50,8 +50,7 @@
  ..........................................................................................
    Crea la carpeta de la actividad con el nombre del paso 1. Dentro van estos archivos:
 
-     config.json       ajustes: guardar, duracion, entregas y reiniciar (ver README.md)
-     actividad.json    OBLIGATORIO   nombre y versión de la actividad
+     config.json       OBLIGATORIO: título, versión y todos los ajustes de la actividad
      enunciado.html    OBLIGATORIO   texto de la actividad
      codigo.html       opcional      código HTML de partida (pestaña HTML)
      codigo.css        opcional      código CSS de partida (pestaña CSS)
@@ -60,11 +59,18 @@
    Lo más rápido es copiar una carpeta de ejemplo
    (actividades/diw/01-01-tarjeta-de-presentacion/) y cambiarla.
 
-   actividad.json:
+   config.json:
 
         {
           "title": "02-01-Menú responsive",
-          "version": "1"
+          "version": "1",
+          "guardar": false,
+          "duracion": 10,
+          "entregas": 1,
+          "reiniciar": false,
+          "redes": ["185.197.0.0/16", "192.168.0.0/16"],
+          "restringirHorario": false,
+          "restringirIPs": false
         }
 
    "title"    Nombre de la actividad, NN-MM-Nombre (paso 1).
@@ -200,8 +206,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Laboratorio</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261117-base3-22">
-<link rel="stylesheet" href="motor/taller.css?v=20261117-base3-22">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261117-base3-23">
+<link rel="stylesheet" href="motor/taller.css?v=20261117-base3-23">
 </head>
 <body>
 
@@ -317,12 +323,14 @@
   <div id="revision-delivery" hidden>
     <p>Has agotado los intentos disponibles. Indica el motivo para solicitar al profesor la revisión de la nota anterior.</p>
     <label for="revision-delivery-reason">Motivo de la revisión (mínimo 20 letras)</label>
-    <textarea id="revision-delivery-reason" maxlength="2000" rows="3"></textarea>
+    <textarea id="revision-delivery-reason" maxlength="2000" rows="1"></textarea>
     <p id="revision-delivery-error" class="error" role="status">Debes indicar el motivo de la entrega</p>
     <button id="revision-delivery-send" type="button" disabled>Enviar motivo y entrega</button>
   </div>
   <button id="delivery-retry" type="button"><span data-text="copyOpen"></span></button>
   <p class="note"><span data-text="deliveryNote"></span></p>
+  <p class="note">Al entrar en este panel el tiempo se detiene y ya no puedes volver a la práctica. Si abandonas sin entregar, perderás el trabajo.</p>
+  <button id="delivery-abandon" class="secondary" type="button" hidden>Cerrar sin entregar</button>
   <button id="delivery-back" class="secondary" type="button" hidden><span data-text="backStart"></span></button>
 </section>
 
@@ -358,6 +366,6 @@
   </div>
 </dialog>
 
-<script src="motor/cargador.js?v=20261117-base3-22" defer></script>
+<script src="motor/cargador.js?v=20261117-base3-23" defer></script>
 </body>
 </html>

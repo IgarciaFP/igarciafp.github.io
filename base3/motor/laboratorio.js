@@ -110,7 +110,7 @@ async function recordSubmission(item){
  let latest={};try{latest=JSON.parse(localStorage.getItem(submissionStore))||{};}catch{}
  const wasKnown=(Array.isArray(submissionLedger[email])?submissionLedger[email]:[]).includes(envelope.submissionId);
  const ids=new Set([...(Array.isArray(latest[email])?latest[email]:[]),...(Array.isArray(submissionLedger[email])?submissionLedger[email]:[]),envelope.submissionId]);
- if(!wasKnown)saveOpportunity(email,Math.max(ids.size,(opportunityCache[email]?.used||0)+1));
+ if(!wasKnown&&!attempt)saveOpportunity(email,Math.max(ids.size,(opportunityCache[email]?.used||0)+1));
  submissionLedger={...latest,[email]:[...ids]};
  try{localStorage.setItem(submissionStore,JSON.stringify(submissionLedger));}catch{}
 }
@@ -140,6 +140,44 @@ function scheduleOpportunityCheck(){
  clearTimeout(opportunityTimer);++opportunitySerial;
  opportunityTimer=setTimeout(checkOpportunities,500);guard?.render();
 }
+
+let attempt=null,initialEnvelopePromise=null,registrationPromise=null,panelEntered=false,deliveryComplete=false,panelSending=false;
+const randomHex=bytes=>Array.from(crypto.getRandomValues(new Uint8Array(bytes)),b=>b.toString(16).padStart(2,'0')).join('');
+function onAttemptStart(){
+ const cached=cachedOpportunity();
+ attempt={id:randomHex(16),token:randomHex(32),number:cached.used+1,limit:cached.limit,registered:false};
+ initialEnvelopePromise=null;registrationPromise=null;panelEntered=false;deliveryComplete=false;lastDelivery=null;
+ ++opportunitySerial;clearTimeout(opportunityTimer);
+ if(fileMode){attempt.registered=true;saveOpportunity($('student').value.trim().toLowerCase(),attempt.number);return;}
+ // La petición conserva la identidad y el sello iniciales aunque el alumno siga editando.
+ const owner=attempt;
+ initialEnvelopePromise=makeReport({},false,Date.now(),{finishReason:'start'})
+  .then(code=>deliveryEnvelope({code,attemptToken:owner.token}));
+ void ensureRegistration().catch(()=>{/* Se reintenta con el mismo ID antes de enviar. */});
+}
+async function ensureRegistration(){
+ if(fileMode||attempt?.registered)return;
+ if(!attempt)throw Error('NOT_STARTED');
+ if(registrationPromise)return registrationPromise;
+ const owner=attempt;
+ if(!initialEnvelopePromise)initialEnvelopePromise=makeReport({},false,Date.now(),{finishReason:'start'}).then(code=>deliveryEnvelope({code,attemptToken:owner.token}));
+ const source=initialEnvelopePromise;
+ const job=(async()=>{
+  const envelope=await source.catch(error=>{if(initialEnvelopePromise===source)initialEnvelopePromise=null;throw error;});
+  const result=await window.LabDelivery.start(config.delivery,envelope);
+  owner.number=result.number;owner.limit=result.limit;owner.registered=true;
+  saveOpportunity(JSON.parse(envelope.payload).email.toLowerCase(),result.number);
+ })();
+ registrationPromise=job;
+ try{await job;}finally{if(registrationPromise===job)registrationPromise=null;}
+}
+function requiresReason(){return attempt?attempt.number>attempt.limit:cachedOpportunity().used>=cachedOpportunity().limit;}
+function showReason(){
+ revisionNeeded=requiresReason();
+ $('revision-delivery').hidden=!revisionNeeded;
+ if(revisionNeeded)refreshDeliveryReason();
+}
+
 const reasonValid=text=>(text.match(/\p{L}/gu)||[]).length>=20;
 function refreshReason(){
  revisionReason=$('revision-reason').value.trim();
@@ -397,13 +435,19 @@ function sanitize(data){
  if(report.length>2000000)throw new Error('Informe demasiado largo');
  if(report&&data.reportEncoding!=='gzip-base64url')throw new Error('Formato de informe no válido');
  if(data.language!=null&&data.language!==language)throw Error('Invalid language');
+ if(data.attempt){
+  const a=data.attempt;
+  if(!/^[a-f0-9]{32}$/.test(a.id||'')||!/^[a-f0-9]{64}$/.test(a.token||'')||!Number.isSafeInteger(a.number)||a.number<1)throw Error('Invalid attempt');
+  out.attempt={id:a.id,token:a.token,number:a.number,limit:config.maxSubmissions,registered:false};
+ }
  out.report=report;
  return out;
 }
 function snapshot(){
- return {values:Object.fromEntries(ids.map(id=>[id,$(id).value])),elapsed,started,durationMs,language,report:$('report').value,reportEncoding:'gzip-base64url'};
+ return {attempt,values:Object.fromEntries(ids.map(id=>[id,$(id).value])),elapsed,started,durationMs,language,report:$('report').value,reportEncoding:'gzip-base64url'};
 }
 function restore(data){
+ attempt=data.attempt||null;initialEnvelopePromise=null;registrationPromise=null;
  emailTouched=false;
  for(const id of ids)$(id).value=data.values[id]||'';
  fillCachedIdentity();
@@ -418,12 +462,12 @@ function setReport(report){$('report').value=report;}
 // ---------------------------------------------------------------- Vista según el estado
 const syncToolbarHeight=()=>document.documentElement.style.setProperty('--toolbar-height',Math.ceil($('practice-toolbar').getBoundingClientRect().height)+'px');
 function syncToolbar(){
- $('practice-toolbar').hidden=document.fullscreenElement!==document.documentElement||!['active','paused','closing','submitted'].includes(phase);
+ $('practice-toolbar').hidden=document.fullscreenElement!==document.documentElement||!['active','paused'].includes(phase);
  syncToolbarHeight();
 }
 let recoverySelecting=false,recoveryReading=false;
 function afterRender(state,ctx){
- phase=state.phase;clock();syncToolbar();
+ phase=state.phase;if(phase==='closing'||phase==='submitted')panelEntered=true;clock();syncToolbar();
  $('practice-reset').hidden=!config.allowRestart;
  $('practice-save').hidden=!config.allowSaveRecovery;
  $('practice-recover').hidden=!config.allowSaveRecovery;
@@ -440,13 +484,15 @@ function afterRender(state,ctx){
  $('cuaderno').hidden=!active||needsRecovery;$('cuaderno').inert=!active||needsRecovery;
  if(previewDeferred&&!$('cuaderno').hidden)resetPreview();
  $('delivery-stage').hidden=!submitted&&!recoveryMode;
- $('delivery-back').hidden=!recoveryMode||submitted;
+ $('delivery-back').hidden=true;
+ $('delivery-abandon').hidden=!panelEntered||deliveryComplete||!!lastDelivery?.receipt;
+ $('delivery-abandon').disabled=delivering||panelSending||!!ctx.forcedBusy;
  if(phase==='closing'){
   if(ctx.forcedBusy)setDeliveryState('sending');
   if(!$('delivery-status').textContent)$('delivery-status').textContent=tr('forcedPending');
   $('delivery-retry').textContent=tr('forcedRetry');
   $('delivery-retry').disabled=!!ctx.forcedBusy;
- }else if(phase==='submitted'){$('delivery-retry').textContent=tr('copyOpen');$('delivery-retry').disabled=delivering;}
+ }else if(phase==='submitted'){$('delivery-retry').textContent='Entregar';$('delivery-retry').disabled=delivering||panelSending||deliveryComplete;}
  $('receipt-download').disabled=phase==='closing';$('receipt-download').hidden=fileMode;$('recovery-download').hidden=fileMode;
  if(phase==='submitted'&&lastDelivery?.code===$('report').value&&lastDelivery.receipt)showDeliveryReceipt(lastDelivery);
  $('download').hidden=true;
@@ -483,7 +529,8 @@ function afterRender(state,ctx){
  $('recover-delivery').textContent=tr(fileMode?'recover':lastDelivery?.receipt?'viewReceipt':'copyOpen');
  $('practice-save').disabled=(!active&&!paused)||ctx.restoring||!!ctx.problem||ctx.busy||(active&&$('answer-fields').disabled);
  $('practice-finish').disabled=!guard?.canEdit();
- $('practice-reset').disabled=!!ctx.problem||ctx.busy||phase==='closing';
+ $('practice-reset').disabled=!!ctx.problem||ctx.busy||panelEntered;
+ if(panelEntered){$('practice-save').hidden=true;$('practice-recover').hidden=true;$('practice-reset').hidden=true;}
  if(!$('revision-delivery').hidden)$('delivery-retry').disabled=true;
  $('toolbar-count').textContent='Incidencias: '+state.count+' · Margen: '+ctx.remainingSeconds+' s';
 }
@@ -503,7 +550,9 @@ function confirmText(kind){
 // Las notas de la pestaña TXT se entregan como un comentario /* … */.
 function noteComment(text){return text.trim()?'/*\n'+text.replaceAll('*/','* /')+'\n*/':'';}
 async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
+ const reportAttempt=attempt,reportEmail=$('student').value.trim().toLowerCase();
  if(!validIdentity()){$('reportStatus').textContent=tr('identityError');return null;}
+ if(context.finishReason!=='start'&&attempt)await ensureRegistration();
  if(typeof CompressionStream!=='function'){$('reportStatus').textContent=tr('compressionError');return null;}
  // Solo se entregan las pestañas que difieren del código de partida. El receptor exige al
  // menos una respuesta: si no cambió nada, se envía una única respuesta vacía «sin-cambios».
@@ -524,18 +573,19 @@ async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
   // El servidor tampoco respondió al abrir la actividad: se entró sin comprobar red ni horario.
   if(config.control.sinComprobar)sello.accesoSinComprobar=true;
  }
- const data={exam:config.id,module:config.module,activity:config.activity,activityTitle:config.activityTitle,activityVersion:config.version,version:3,language,name:displayName(),email:$('student').value.trim().toLowerCase(),finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:changed.length?changed:['sin-cambios'],answers,modified:changed,parameters:{},parameterLocks:{},group:'',checked:{},hints:{},notes:'',revisionReason:revisionReason.trim(),...context,sello,audit:metadata,url:location.origin+location.pathname+'?a='+config.module.toLowerCase()+'/'+config.activity};
+ const data={attemptId:reportAttempt?.id,attemptNumber:reportAttempt?.number,exam:config.id,module:config.module,activity:config.activity,activityTitle:config.activityTitle,activityVersion:config.version,version:3,language,name:reportEmail.split('@')[0],email:reportEmail,finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:changed.length?changed:['sin-cambios'],answers,modified:changed,parameters:{},parameterLocks:{},group:'',checked:{},hints:{},notes:'',revisionReason:revisionReason.trim(),...context,sello,audit:metadata,url:location.origin+location.pathname+'?a='+config.module.toLowerCase()+'/'+config.activity};
  const body=JSON.stringify(data);
  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(body))),b=>b.toString(16).padStart(2,'0')).join('');
  return encodeReport(body+'\nCódigo de comprobación: '+config.format.checksum+hash);
 }
 function persistDelivery(item){
  lastDelivery=item;
+ if(!item.receipt)return;
  try{localStorage.setItem(RECOVERY,JSON.stringify(item));}catch{/* El TXT sigue disponible. */}
 }
 function rememberDelivery(report){
  if(lastDelivery?.code===report&&lastDelivery.practice)return lastDelivery;
- const item={code:report,practice:guard.exportPractice(),name:displayName(),language};
+ const item={code:report,attemptToken:attempt?.token,practice:guard.exportPractice(),name:displayName(),language};
  persistDelivery(item);
  return item;
 }
@@ -566,7 +616,7 @@ async function deliveryEnvelope(item){
  const payload=decoded.slice(0,offset),data=JSON.parse(payload);
  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(payload))),b=>b.toString(16).padStart(2,'0')).join('');
  if(hash!==decoded.slice(offset+marker.length)||data.exam!==config.id||data.activityVersion!==config.version)throw Error('INVALID');
- return {protocol:1,submissionId:hash,practiceId:config.id,practiceVersion:config.version,payload};
+ return {attemptToken:item.attemptToken||attempt?.token,protocol:1,submissionId:hash,practiceId:config.id,practiceVersion:config.version,payload};
 }
 function setDeliveryState(state){
  const container=$('delivery-stage'),progress=$('delivery-progress');
@@ -582,12 +632,16 @@ function setDeliveryState(state){
  }
 }
 function showDeliveryReceipt(item){
+ deliveryComplete=true;$('delivery-abandon').hidden=true;$('revision-delivery').hidden=true;
  setDeliveryState('success');
  $('delivery-status').textContent=tr('received')+' '+item.receipt.submissionId+' · '+new Date(item.receipt.receivedAt).toLocaleString('es-ES');
  $('delivery-retry').textContent=tr('receivedShort');$('delivery-retry').disabled=true;
 }
 async function deliver(item){
+ if(item.receipt){showDeliveryReceipt(item);return;}
+ if(requiresReason()&&!reasonValid(revisionReason)) {showReason();return;}
  if(fileMode){
+  deliveryComplete=true;$('delivery-abandon').hidden=true;
   await recordSubmission(item);
   // Sin receptor: la entrega es el archivo descargado.
   setDeliveryState('success');
@@ -600,6 +654,7 @@ async function deliver(item){
  delivering=true;setDeliveryState('sending');$('delivery-retry').disabled=true;$('delivery-status').textContent=tr('sending');
  persistDelivery(item);
  try{
+  await ensureRegistration();
   const envelope=await deliveryEnvelope(item);
   item.receipt=await window.LabDelivery.send(config.delivery,envelope);
   persistDelivery(item);await recordSubmission(item);showDeliveryReceipt(item);
@@ -608,6 +663,8 @@ async function deliver(item){
   // El código (TIMEOUT, ROUTE, SCHEMA, STORAGE…) indica al profesor qué ha fallado en el receptor.
   const code=/^[A-Z_]{3,20}$/.test(error.message)?error.message:'ERROR';
   if(code==='REVISION_REASON'){
+   revisionNeeded=true;
+   if(attempt)attempt.limit=Math.min(attempt.limit,attempt.number-1);
    $('revision-delivery').hidden=false;
    $('revision-delivery-reason').value=revisionReason;
    refreshDeliveryReason();
@@ -629,31 +686,11 @@ async function deliver(item){
 function refreshDeliveryReason(){
  const valid=reasonValid($('revision-delivery-reason').value);
  $('revision-delivery-error').textContent=valid?'':'Debes indicar el motivo de la entrega';
- $('revision-delivery-send').disabled=!valid||delivering;
+ $('revision-delivery-send').disabled=!valid||delivering||panelSending;
  return valid;
 }
 $('revision-delivery-reason').addEventListener('input',refreshDeliveryReason);
-$('revision-delivery-send').addEventListener('click',async()=>{
- if(delivering||!lastDelivery||!refreshDeliveryReason())return;
- const item=lastDelivery;
- $('revision-delivery-send').disabled=true;
- try{
-  const envelope=await deliveryEnvelope(item),data=JSON.parse(envelope.payload);
-  data.revisionReason=$('revision-delivery-reason').value.trim();
-  const payload=JSON.stringify(data);
-  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(payload))),b=>b.toString(16).padStart(2,'0')).join('');
-  item.code=await encodeReport(payload+'\nCódigo de comprobación: '+config.format.checksum+hash);
-  if(item.practice){
-   const practice=JSON.parse(item.practice);practice.state.data.report=item.code;item.practice=JSON.stringify(practice);
-  }
-  setReport(item.code);persistDelivery(item);
-  $('revision-delivery').hidden=true;
-  await deliver(item);
- }catch{
-  $('revision-delivery-error').textContent='No se pudo preparar la entrega. Reintenta.';
-  $('revision-delivery-send').disabled=false;
- }
-});
+$('revision-delivery-send').addEventListener('click',()=>submitPanel());
 const requestedReceipts=new Set();
 async function downloadReceipt(item){
  if(!item?.code)return false;
@@ -676,12 +713,32 @@ async function downloadReceipt(item){
 }
 async function downloadReport(){
  const item=rememberDelivery($('report').value);
- if(!requestedReceipts.has(item.code))await downloadReceipt(item);
- const sending=deliver(item);
- guard.render(); // Muestra el estado de la entrega mientras se espera la confirmación.
- return sending;
+ showReason();
+ $('delivery-status').textContent='La práctica ha terminado. Revisa el motivo, si corresponde, y pulsa Entregar. No puedes volver al editor.';
+ setDeliveryState('idle');guard.render();
+ const data=JSON.parse((await deliveryEnvelope(item)).payload);
+ if(data.finishReason!=='voluntary'&&!revisionNeeded)return submitPanel();
+}
+async function submitPanel(){
+ if(delivering||panelSending||!lastDelivery||deliveryComplete)return;
+ if(revisionNeeded&&!refreshDeliveryReason())return;
+ const item=lastDelivery;panelSending=true;$('delivery-retry').disabled=true;$('revision-delivery-send').disabled=true;
+ try{
+  const envelope=await deliveryEnvelope(item),data=JSON.parse(envelope.payload);
+  revisionReason=revisionNeeded?$('revision-delivery-reason').value.trim():'';
+  data.revisionReason=revisionReason;
+  const payload=JSON.stringify(data);
+  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(payload))),b=>b.toString(16).padStart(2,'0')).join('');
+  item.code=await encodeReport(payload+'\nCódigo de comprobación: '+config.format.checksum+hash);
+  setReport(item.code);
+  if(item.practice){const p=JSON.parse(item.practice);p.state.data.report=item.code;item.practice=JSON.stringify(p);}
+  await deliver(item);
+  if(deliveryComplete&&!requestedReceipts.has(item.code))await downloadReceipt(item);
+ }catch(error){setDeliveryState('error');$('delivery-status').textContent='No se pudo enviar la entrega: '+error.message+'. Puedes reintentar.';}
+ finally{panelSending=false;guard.render();if(revisionNeeded&&!deliveryComplete)refreshDeliveryReason();}
 }
 function onReset(){
+ attempt=null;initialEnvelopePromise=null;registrationPromise=null;panelEntered=false;deliveryComplete=false;
  $('revision-delivery').hidden=true;
  revisionReason='';$('revision-reason').value='';
  scheduleOpportunityCheck();
@@ -790,7 +847,7 @@ $('preview-console').dataset.empty=tr('consoleEmpty');
 $('delivery-retry').addEventListener('click',()=>{
  if(phase==='closing'){$('delivery-status').textContent=tr('forcedPending');void guard.finalizeForced();return;}
  if(fileMode){downloadReceipt(guard.canDownloadReport()?rememberDelivery($('report').value):lastDelivery);return;}
- if(guard.canDownloadReport())downloadReport();
+ if(guard.canDownloadReport())void submitPanel();
  else if(lastDelivery)deliver(lastDelivery);
 });
 $('recover-delivery').addEventListener('click',()=>{
@@ -798,7 +855,19 @@ $('recover-delivery').addEventListener('click',()=>{
  recoveryMode=true;guard.render();
  deliver(lastDelivery);
 });
-$('delivery-back').addEventListener('click',()=>{recoveryMode=false;setDeliveryState('idle');$('delivery-status').textContent='';$('receipt-status').textContent='';guard.render();});
+function discardPendingDelivery(){
+ if(!panelEntered||deliveryComplete||lastDelivery?.receipt)return;
+ try{localStorage.removeItem(config.storage.key);localStorage.removeItem(RECOVERY);}catch{}
+}
+$('delivery-abandon').addEventListener('click',()=>{
+ if(delivering||!window.confirm('Si cierras sin entregar perderás todo el trabajo y no podrás recuperarlo. El intento iniciado seguirá registrado. ¿Abandonar?'))return;
+ discardPendingDelivery();panelEntered=false;location.reload();
+});
+window.addEventListener('beforeunload',event=>{
+ if(panelEntered&&!deliveryComplete&&!lastDelivery?.receipt){event.preventDefault();event.returnValue='';}
+});
+window.addEventListener('pagehide',discardPendingDelivery);
+window.addEventListener('pageshow',event=>{if(event.persisted&&panelEntered&&!deliveryComplete)location.reload();});
 $('student').addEventListener('blur',()=>{emailTouched=!!$('student').value.trim();guard?.render();});
 $('student').addEventListener('input',()=>{rememberIdentity();scheduleOpportunityCheck();});
 $('student').addEventListener('keydown',e=>{if(e.key==='Enter'&&!$('guard-start').disabled)$('guard-start').click();});
@@ -825,7 +894,7 @@ window.addEventListener('unhandledrejection',e=>{
  const where=/([\w.-]+\.js)[^\n]*?:(\d+):\d+/.exec(String(reason?.stack||''));
  lastError=String(reason?.message||reason)+(where?' ('+where[1]+':'+where[2]+')':'');
 },true);
-guard=window.createPracticeGuard({config,timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
+guard=window.createPracticeGuard({config,deliveryPanel:true,onAttemptStart,timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
  async saveBeforeReset(current){
   if(current==='paused')return savePracticeDocument();
   if(current==='submitted')return downloadReceipt(rememberDelivery($('report').value));

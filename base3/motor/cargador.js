@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261117-base3-22';
+  const version=loaderURL.searchParams.get('v')||'20261117-base3-23';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=path=>fetch(asset(path),{cache:'no-cache'});
   const read=async path=>{
@@ -40,8 +40,10 @@
     if(!match){notFound();return;}
     const [,mod,slug]=match,folder=`actividades/${mod}/${slug}/`;
     const common=await read('contenido/config.json').then(r=>r.json());
-    const settingsText=await optional(folder+'config.json');
-    const supplied=settingsText?JSON.parse(settingsText):{};
+    const settingsResponse=await fetchAsset(folder+'config.json');
+    if(settingsResponse.status===404){notFound();return;}
+    if(!settingsResponse.ok)throw Error('No se pudo cargar config.json de la actividad.');
+    const supplied=await settingsResponse.json();
     if(!supplied||typeof supplied!=='object'||Array.isArray(supplied))throw Error('config.json de la actividad no es válido.');
     const settings={guardar:false,duracion:10,entregas:1,reiniciar:false,redes:['185.197.0.0/16','192.168.0.0/16'],restringirHorario:false,restringirIPs:false,...supplied};
     if(typeof settings.guardar!=='boolean'||typeof settings.reiniciar!=='boolean'||
@@ -68,11 +70,11 @@
       if(answer&&typeof answer.ok==='boolean'){if(!answer.ok&&common.control?.restringirAcceso===true){notFound();return;}}
       else unchecked=true;
     }
-    const [activityResponse,statementResponse]=await Promise.all([fetchAsset(folder+'actividad.json'),fetchAsset(folder+'enunciado.html')]);
-    if(activityResponse.status===404||statementResponse.status===404){notFound();return;}
-    if(!activityResponse.ok||!statementResponse.ok)throw Error('No se pudo cargar la actividad.');
-    const [activity,statement,ownHtml,css,js,skeleton]=await Promise.all([
-      activityResponse.json(),statementResponse.text(),
+    const activity=supplied,statementResponse=await fetchAsset(folder+'enunciado.html');
+    if(statementResponse.status===404){notFound();return;}
+    if(!statementResponse.ok)throw Error('No se pudo cargar la actividad.');
+    const [statement,ownHtml,css,js,skeleton]=await Promise.all([
+      statementResponse.text(),
       optional(folder+'codigo.html'),optional(folder+'codigo.css'),optional(folder+'codigo.js'),
       optional('contenido/esqueleto.html')
     ]);
@@ -82,7 +84,7 @@
       !['archivo','apps-script'].includes(common.delivery?.type)||
       (common.delivery.type==='apps-script'&&typeof common.delivery.endpoint!=='string'))throw Error('Configuración incompleta o inválida.');
     if(typeof activity.title!=='string'||!activity.title.trim()||!['string','number'].includes(typeof activity.version)||!String(activity.version).trim())
-      throw Error('actividad.json debe indicar "title" y "version".');
+      throw Error('config.json debe indicar "title" y "version".');
     const code={html,css,js};
     for(const [name,value]of Object.entries(code))
       if(value.length>10000)throw Error(`codigo.${name} supera los 10000 caracteres que admite el editor.`);

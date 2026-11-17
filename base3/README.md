@@ -28,7 +28,7 @@ La seguridad, la entrega y los estilos generales se cargan de `/base/motor/` (`s
 ## Crear una actividad
 
 1. Crear la carpeta `actividades/diw/NN-MM-nombre/` (o `dwec`, `ssii`), con NN el número de tema y MM el de la actividad, por ejemplo `actividades/diw/02-01-menu-responsive/`. Solo admite minúsculas, números y guiones.
-2. Añadir `actividad.json` con `title` (`"02-01-Menú responsive"`) y `version`, y `enunciado.html` con el texto.
+2. Añadir `config.json` con `title` (`"02-01-Menú responsive"`) y `version`, y `enunciado.html` con el texto.
 3. Añadir, si hacen falta, `codigo.html`, `codigo.css` y `codigo.js`. Los tres son opcionales: las pestañas CSS y JavaScript sin archivo empiezan vacías, y la pestaña HTML sin archivo (o con el archivo vacío) empieza con el esqueleto de `contenido/esqueleto.html`.
 4. Dar a los alumnos la dirección `…/base3/?a=diw/02-01-menu-responsive`.
 
@@ -40,7 +40,7 @@ Ejemplos incluidos: `?a=diw/01-01-tarjeta-de-presentacion` (con los tres archivo
 
 Por defecto (`"delivery": { "type": "archivo" }`) no hace falta receptor: al pulsar «Entregar» se descarga un único archivo `MÓDULO NN-MM-NOMBRE_USUARIO.txt` (el usuario es el del correo, sin dominio) con el código modificado, comprimido con gzip y codificado en base64 para URL, precedido del prefijo `format.report`. El alumno lo hace llegar al profesor por el medio que se le indique.
 
-Con `"type": "apps-script"` y `endpoint`, además de la descarga, la entrega se envía al receptor de `receptor/`, que añade una fila en la pestaña «Entregas» de la hoja del profesor (columnas A a I).
+Con `"type": "apps-script"` y `endpoint`, además de la descarga, la entrega se envía al receptor de `receptor/`, que reserva una fila al empezar y la actualiza al entregar en la pestaña «Entregas», con ID y Número de entrega.
 
 ## Control de red y horario
 
@@ -107,10 +107,12 @@ https://igarciafp.github.io/base3/?a=MODULO/ACTIVIDAD&clave=TU_CLAVE
 Módulos admitidos: `diw`, `dwec`, `ssii`. Ejemplo:
 `/base3/?a=diw/02-01-prueba-css-adaptable`.
 
-Cada carpeta `actividades/MODULO/ACTIVIDAD/` incluye un **config.json** independiente de `actividad.json`:
+Cada carpeta `actividades/MODULO/ACTIVIDAD/` incluye un único **config.json** con título, versión y ajustes (sustituye al antiguo archivo de metadatos):
 
 ```json
 {
+  "title": "02-01-Menú responsive",
+  "version": "1",
   "guardar": false,
   "duracion": 10,
   "entregas": 1,
@@ -123,34 +125,37 @@ Cada carpeta `actividades/MODULO/ACTIVIDAD/` incluye un **config.json** independ
 
 | Campo | Función | Valor predeterminado |
 | --- | --- | --- |
+| title | Nombre de la actividad | Obligatorio |
+| version | Versión del contenido | Obligatorio |
 | guardar | Mostrar Guardar y pausar y Recuperar práctica | false |
 | duracion | Minutos disponibles; número positivo, hasta 1440 | 10 |
 | entregas | Oportunidades ordinarias por correo y actividad; entero positivo | 1 |
 | reiniciar | Mostrar y habilitar el botón Reiniciar | false |
 
-Los campos omitidos toman su valor predeterminado. Si falta el archivo (404), se aplican todos los valores predeterminados. Un archivo inválido o un fallo de conexión produce un error; no se interpreta como ausencia. Los antiguos parámetros `guardar` y `duracion` de la URL ya no modifican la configuración.
+`title` y `version` son obligatorios. Los demás campos omitidos toman su valor predeterminado. Si falta config.json (404), la actividad no se abre. Un archivo inválido o un fallo de conexión produce un error; no se interpreta como ausencia. Los antiguos parámetros `guardar` y `duracion` de la URL ya no modifican la configuración.
 
-Se han creado los archivos con estos valores en las tres actividades existentes. Para crear otra, copia uno de ellos a su carpeta. `contenido/config.json` sigue conteniendo los ajustes comunes de correo, entrega, servidor y margen de regreso.
+Las actividades incluyen estos valores por defecto, salvo `diw/02-01-prueba-css-adaptable`, configurada para pruebas con guardar y reiniciar activados, 2 minutos y 1 intento. Para crear otra, copia uno de ellos a su carpeta. `contenido/config.json` sigue conteniendo los ajustes comunes de correo, entrega, servidor y margen de regreso.
 
 ### Duración y entrega
 
 El contador muestra el tiempo restante desde Empezar. Al quedar un minuto se pone rojo y aparece un aviso. A cero se bloquea el editor y se entrega automáticamente. El margen acumulado para volver a pantalla completa es independiente. Si guardar está habilitado, pausar detiene el tiempo de trabajo y recuperar conserva lo consumido.
 
-### Oportunidades y entregas adicionales
+#
+## Registro inicial y panel definitivo
 
-Cuenta por correo y actividad, incluyendo entregas manuales y automáticas y las anteriores que figuren en la hoja. Reenviar exactamente el mismo informe devuelve su confirmación sin consumir otra oportunidad. Reiniciar no borra el historial. La clave del profesor no elimina el aviso.
+Al empezar se genera un ID aleatorio y se registra en segundo plano una fila con fecha y hora de inicio (Madrid), módulo, actividad, correo e IP. Se añaden al final las columnas **ID** y **Número de entrega**, sin desplazar «nota». El número se asigna en el servidor bajo bloqueo para el mismo correo y práctica. Los intentos iniciados, aunque se abandonen, consumen una oportunidad.
 
-**Agotar las oportunidades no bloquea una entrega nueva.** La entrada lee primero el contador en caché, muestra «Intentos restantes: N» junto al mensaje de la última entrega y consulta la hoja en segundo plano. Empezar nunca espera esa consulta ni muestra avisos de comprobación. Si la respuesta llega después del inicio, se conserva en caché sin cambiar la pantalla de trabajo.
+La entrega final actualiza esa fila por ID; conserva los datos iniciales y las notas del profesor. En Incidencias quedan el estado inicial pendiente, o los avisos y el motivo al completar. La hora de recepción final se conserva en los metadatos de la celda I y se devuelve en el comprobante. Reintentar una petición no crea filas duplicadas.
 
-Al pulsar Entregar sin intentos restantes, el modal explica que se solicita revisión al profesor y exige un motivo con un mínimo de **20 letras Unicode** (espacios, cifras y signos no cuentan). El botón permanece desactivado y muestra «Debes indicar el motivo de la entrega» hasta cumplirlo. El motivo, de hasta 2000 caracteres, se incluye en el informe y en Incidencias.
+- **Manual:** «Entregar» muestra un aviso sencillo que permite cancelar. Al aceptarlo se entra en el panel definitivo, se para el reloj y no se puede volver al editor.
+- **Automática con intentos:** abre el mismo panel y envía sin esperar confirmación.
+- **Automática sin intentos:** abre ese panel y espera un motivo de al menos 20 letras antes de enviar.
+- El motivo ocupa un campo de **2rem** de alto y se almacena en Incidencias.
+- «Cerrar sin entregar» exige confirmación. Recargar o cerrar la pestaña muestra la advertencia nativa del navegador cuando este la permite. Al salir se elimina la copia local pendiente; queda la fila inicial, no una entrega completa. No se recuperan comprobantes finalizados como prácticas editables.
 
-El receptor comprueba de nuevo el contador al recibir entregas manuales. Si la caché no reflejaba que los intentos estaban agotados, exige el motivo antes de añadir la fila; la pantalla de entrega permite completarlo y reintentar sin perder código. Los reintentos idénticos no generan duplicados. Las filas y notas anteriores no se modifican.
+El ID se mantiene al guardar y recuperar una práctica pausada. El registro inicial se reintenta con el mismo ID antes del envío si falló la red; no se puede garantizar el registro remoto sin conexión. La actualización final mantiene las restricciones de red y horario. Si se rechaza, la fila inicial sigue pendiente y el panel permite reintentar.
 
-Los cierres automáticos por tiempo o margen de regreso siguen enviando el código sin esperar un formulario; incluyen el motivo si ya se había escrito. Esta excepción permite conservar la entrega automática previamente configurada.
-
-En modo de entrega solo por archivo, el aviso se basa en el historial local del navegador.
-
-Tras actualizar esta funcionalidad, sustituye Code.gs y Bridge.html en Apps Script y publica una nueva versión.
+**Despliegue:** sustituir **Code.gs y Bridge.html** y publicar una nueva versión de la implementación existente. La URL y el Worker no cambian. Las columnas nuevas se crean automáticamente en el primer inicio.
 
 ## Restricciones de entrega por actividad
 
@@ -160,8 +165,10 @@ Tras actualizar esta funcionalidad, sustituye Code.gs y Bridge.html en Apps Scri
 
 Ambas restricciones son independientes y se aplican a la recepción de entregas, incluidas las automáticas y las realizadas con clave del profesor. No impiden abrir ni trabajar en la actividad. No cambian el control de acceso común opcional `control.restringirAcceso`.
 
-Con ambas desactivadas se admite la entrega aunque no se pueda verificar el sello y se registran los avisos habituales. Con alguna activada, un sello ausente, inválido o imposible de verificar impide añadir la fila. Los reintentos de una entrega ya recibida siguen devolviendo su confirmación, sin duplicarla. La comprobación de red del receptor utiliza el config.json actual, no una lista enviada por el navegador.
+Con ambas desactivadas se admite la entrega aunque no se pueda verificar el sello y se registran los avisos habituales. Con alguna activada, un sello ausente, inválido o imposible de verificar impide completar la fila inicial. Los reintentos de una entrega ya recibida siguen devolviendo su confirmación, sin duplicarla. La comprobación de red del receptor utiliza el config.json actual, no una lista enviada por el navegador.
 
 El Worker observa la IP pública de salida (o IPv6 pública), no la IPv4 privada del equipo tras NAT: `192.168.0.0/16` se conserva como valor solicitado, pero normalmente no coincidirá con la IP vista desde Internet.
 
-Para activar esta versión, actualiza Code.gs y publica una nueva versión de Apps Script. Publica también servidor/worker.js en Cloudflare para que el sello y la revisión del profesor usen las redes de cada actividad. Bridge.html no cambia.
+Para activar esta versión, actualiza Code.gs y publica una nueva versión de Apps Script. Publica también servidor/worker.js en Cloudflare para que el sello y la revisión del profesor usen las redes de cada actividad. El nuevo registro inicial también requiere actualizar Bridge.html.
+
+Pruebas de regresión del ciclo de entrega: `node base3/tests/entrega-lifecycle.test.mjs`.

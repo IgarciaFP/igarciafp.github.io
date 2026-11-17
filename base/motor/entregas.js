@@ -18,10 +18,15 @@
         if(m.type==='LAB_READY'&&!sent){
           // HtmlService se ejecuta dentro de un iframe adicional de Google.
           peer=event.source;peerOrigin=event.origin;sent=true;
-          peer.postMessage({type:statusOnly?'LAB_STATUS':'LAB_SUBMIT',channel,envelope},peerOrigin);
+          peer.postMessage({type:statusOnly==='start'?'LAB_START':statusOnly?'LAB_STATUS':'LAB_SUBMIT',channel,envelope},peerOrigin);
         } else if(m.type==='LAB_RESULT'&&sent&&event.source===peer&&event.origin===peerOrigin){
           const result=m.result;
           if(!result?.ok){fail(result?.code||'STORAGE');return;}
+          if(statusOnly==='start'){
+            const data=JSON.parse(envelope.payload);
+            if(result.attemptId!==data.attemptId||!Number.isSafeInteger(result.number)||result.number<1||!Number.isSafeInteger(result.limit)||result.limit<1){fail('INVALID_RECEIPT');return;}
+            cleanup();resolve(result);return;
+          }
           if(statusOnly){
             if(result.practiceId!==envelope.practiceId||result.email!==envelope.email.toLowerCase()||
               !Number.isSafeInteger(result.used)||result.used<0||!Number.isSafeInteger(result.limit)||result.limit<1){fail('INVALID_RECEIPT');return;}
@@ -35,5 +40,5 @@
       frame.onerror=()=>fail('NETWORK');frame.src=url.href;document.body.append(frame);
     });
   }
-  window.LabDelivery=Object.freeze({configured,send,status:(delivery,envelope)=>send(delivery,envelope,true)});
+  window.LabDelivery=Object.freeze({configured,send,start:(delivery,envelope)=>send(delivery,envelope,'start'),status:(delivery,envelope)=>send(delivery,envelope,true)});
 })();

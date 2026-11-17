@@ -206,7 +206,7 @@ function entregasAnteriores_(hoja,datos,id) {
     const fila=filas[i];
     if(String(fila[0])!==datos.module||String(fila[2]).trim().toLowerCase()!==email)continue;
     let meta=null;
-    try{const n=JSON.parse(notas[i][0]);if(n?.base3===1&&/^[a-f0-9]{64}$/.test(n.id))meta=n;}catch{}
+    try{const n=JSON.parse(notas[i][0]);if((n?.base3===1&&/^[a-f0-9]{64}$/.test(n.id))||n?.base3===2)meta=n;}catch{}
     meta=meta||informeAlmacenado_(fila[7]);
     if(meta&&meta.exam===datos.exam&&meta.email===email){count++;if(meta.id===id)duplicate=true;}
     // Entregas antiguas demasiado largas: solo queda el título en la hoja.
@@ -216,6 +216,57 @@ function entregasAnteriores_(hoja,datos,id) {
 }
 
 const literal_ = valor => ({ userEnteredValue: { stringValue: String(valor ?? '') } });
+
+
+/** Las columnas nuevas se añaden al final: nunca desplazan ni sobrescriben «nota». */
+function columnasIntento_(hoja) {
+  const headers=hoja.getRange(1,1,1,hoja.getLastColumn()).getValues()[0];
+  return ['ID','Número de entrega'].map(nombre=>{
+    const matches=headers.map((v,i)=>igual_(v)===igual_(nombre)?i+1:0).filter(Boolean);
+    if(matches.length>1||matches.some(n=>n<=9))throw Error('SCHEMA');
+    if(matches.length)return matches[0];
+    const col=headers.length+1;
+    if(col>hoja.getMaxColumns())hoja.insertColumnsAfter(hoja.getMaxColumns(),col-hoja.getMaxColumns());
+    hoja.getRange(1,col).setValue(nombre);headers.push(nombre);return col;
+  });
+}
+function buscarIntento_(hoja,sobre,datos,columnas) {
+  if(!/^[a-f0-9]{32}$/.test(datos.attemptId||'')||!/^[a-f0-9]{64}$/.test(sobre.attemptToken||''))throw Error('INVALID');
+  if(hoja.getLastRow()<2)return null;
+  const matches=hoja.getRange(2,columnas[0],hoja.getLastRow()-1,1).createTextFinder(datos.attemptId).matchEntireCell(true).matchCase(true).findAll();
+  if(matches.length>1)throw Error('AMBIGUOUS');
+  if(!matches.length)return null;
+  const row=matches[0].getRow();
+  let meta;try{meta=JSON.parse(hoja.getRange(row,9).getNote());}catch{throw Error('INVALID');}
+  if(meta.base3!==2||meta.exam!==datos.exam||meta.email!==datos.email.toLowerCase()||meta.tokenHash!==huella_(sobre.attemptToken))throw Error('INVALID');
+  return {row,meta};
+}
+/** Reserva idempotente: guarda la identidad antes de la entrega definitiva. */
+function iniciarEntrega(sobre) {
+  let lock;
+  try{
+    const datos=validarEntrega_(sobre);
+    lock=LockService.getScriptLock();if(!lock.tryLock(25000))throw Error('BUSY');
+    const libro=libro_(),hoja=libro.getSheetByName(PESTANA_);comprobarCabeceras_(hoja);
+    const columnas=columnasIntento_(hoja),existing=buscarIntento_(hoja,sobre,datos,columnas);
+    const politica=configuracionActividad_(datos);
+    if(existing)return {ok:true,attemptId:datos.attemptId,number:existing.meta.number,limit:politica.entregas};
+    const number=entregasAnteriores_(hoja,datos,'').count+1,ahora=new Date();
+    // El inicio registra los avisos; las restricciones se aplican al enviar.
+    const control=controlEntrega_(datos,{...politica,restringirIPs:false,restringirHorario:false});
+    const meta={base3:2,exam:datos.exam,email:datos.email.toLowerCase(),attemptId:datos.attemptId,
+      number,tokenHash:huella_(sobre.attemptToken),status:'started',startedAt:ahora.toISOString(),initialIP:control.ip};
+    const values=Array.from({length:Math.max(9,...columnas)},()=>literal_(''));
+    values[0]=literal_(Utilities.formatDate(ahora,'Europe/Madrid','dd/MM/yy HH:mm:ss'));
+    values[1]=literal_(datos.module);values[2]=literal_(datos.activityTitle);values[3]=literal_(meta.email);
+    values[6]=literal_(control.ip);values[7]=literal_(['INICIADA · pendiente de entrega',...control.avisos].join(' · '));
+    values[8]={...literal_(''),note:JSON.stringify(meta)};
+    values[columnas[0]-1]=literal_(datos.attemptId);values[columnas[1]-1]={userEnteredValue:{numberValue:number}};
+    Sheets.Spreadsheets.batchUpdate({requests:[{appendCells:{sheetId:hoja.getSheetId(),rows:[{values}],fields:'userEnteredValue,note'}}]},libro.getId());
+    return {ok:true,attemptId:datos.attemptId,number,limit:politica.entregas};
+  }catch(error){return {ok:false,code:['INVALID','EMAIL','HASH','BUSY','SCHEMA','ROUTE','ACTIVITY_CONFIG','AMBIGUOUS'].includes(error.message)?error.message:'STORAGE'};}
+  finally{if(lock?.hasLock())lock.releaseLock();}
+}
 
 /** Recepción del alumno. Nunca devuelve entregas ajenas. */
 function recibirEntrega(sobre) {
@@ -227,16 +278,23 @@ function recibirEntrega(sobre) {
     const libro = libro_(), id = libro.getId(), hoja = libro.getSheetByName(PESTANA_);
     comprobarCabeceras_(hoja);
     const codigo = documento_(sobre), cabe = codigo.length <= 45000 && /^[A-Za-z0-9._-]+$/.test(codigo);
+    const intento=datos.attemptId?buscarIntento_(hoja,sobre,datos,columnasIntento_(hoja)):null;
+    if(datos.attemptId&&!intento)throw Error('NOT_STARTED');
+    if(intento?.meta.status==='submitted'){
+      if(intento.meta.id!==sobre.submissionId)throw Error('ALREADY_SUBMITTED');
+      return {ok:true,submissionId:sobre.submissionId,receivedAt:intento.meta.receivedAt,duplicate:true};
+    }
     const anteriores=entregasAnteriores_(hoja,datos,sobre.submissionId);
     if(anteriores.duplicate)
       return {ok:true,submissionId:sobre.submissionId,receivedAt:new Date().toISOString(),duplicate:true};
-    const politica=configuracionActividad_(datos),limite=politica.entregas,adicional=anteriores.count>=limite;
+    const politica=configuracionActividad_(datos),limite=politica.entregas,adicional=intento?intento.meta.number>limite:anteriores.count>=limite;
     const motivo=typeof datos.revisionReason==='string'?datos.revisionReason.trim():'';
     if(motivo.length>2000)throw Error('INVALID');
-    if(adicional&&datos.finishReason==='voluntary'&&(motivo.match(/\p{L}/gu)||[]).length<20)throw Error('REVISION_REASON');
+    if(adicional&&(datos.attemptId||datos.finishReason==='voluntary')&&(motivo.match(/\p{L}/gu)||[]).length<20)throw Error('REVISION_REASON');
     const ahora = new Date(), segundos = Math.floor(datos.seconds);
     const control = controlEntrega_(datos,politica);
     if(adicional)control.avisos.push('entrega adicional: no sustituye ni actualiza la nota anterior');
+    if(intento&&control.ip!==intento.meta.initialIP)control.avisos.push('IP de entrega: '+(control.ip||'sin comprobar'));
     if(motivo)control.avisos.push('Motivo de revisión: '+motivo);
     const fila = [
       literal_(Utilities.formatDate(ahora, 'Europe/Madrid', 'dd/MM/yy HH:mm:ss')),
@@ -250,10 +308,17 @@ function recibirEntrega(sobre) {
       {...literal_(cabe ? codigo : 'Entrega demasiado larga para una celda: pide el archivo TXT al alumno.'),
         note:JSON.stringify({base3:1,exam:datos.exam,email:datos.email.toLowerCase(),id:sobre.submissionId,adicional})}
     ];
-    Sheets.Spreadsheets.batchUpdate({ requests: [{ appendCells: { sheetId: hoja.getSheetId(), rows: [{ values: fila }], fields: 'userEnteredValue,note' } }] }, id);
+    if(intento){
+      // A–D y G conservan la fecha, identidad e IP iniciales; no se toca «nota».
+      fila[8].note=JSON.stringify({...intento.meta,id:sobre.submissionId,status:'submitted',receivedAt:ahora.toISOString(),adicional});
+      const update=(start,values)=>({updateCells:{range:{sheetId:hoja.getSheetId(),startRowIndex:intento.row-1,endRowIndex:intento.row,startColumnIndex:start,endColumnIndex:start+values.length},rows:[{values}],fields:'userEnteredValue,note'}});
+      Sheets.Spreadsheets.batchUpdate({requests:[update(4,fila.slice(4,6)),update(7,fila.slice(7,9))]},id);
+    }else{
+      Sheets.Spreadsheets.batchUpdate({ requests: [{ appendCells: { sheetId: hoja.getSheetId(), rows: [{ values: fila }], fields: 'userEnteredValue,note' } }] }, id);
+    }
     return { ok: true, submissionId: sobre.submissionId, receivedAt: ahora.toISOString(), duplicate: false };
   } catch (error) {
-    const conocidos = ['INVALID', 'HASH', 'EMAIL', 'ROUTE', 'SCHEMA', 'BUSY', 'ACTIVITY_CONFIG', 'REVISION_REASON', 'CONTROL_REQUIRED', 'CONTROL_INVALID', 'CONTROL_UNAVAILABLE', 'NETWORK_DENIED', 'SCHEDULE_DENIED'];
+    const conocidos = ['INVALID', 'HASH', 'EMAIL', 'ROUTE', 'SCHEMA', 'BUSY', 'ACTIVITY_CONFIG', 'REVISION_REASON', 'CONTROL_REQUIRED', 'CONTROL_INVALID', 'CONTROL_UNAVAILABLE', 'NETWORK_DENIED', 'SCHEDULE_DENIED', 'NOT_STARTED', 'ALREADY_SUBMITTED', 'AMBIGUOUS'];
     return { ok: false, code: conocidos.includes(error.message) ? error.message : 'STORAGE' };
   } finally { if (cerrojo?.hasLock()) cerrojo.releaseLock(); }
 }
