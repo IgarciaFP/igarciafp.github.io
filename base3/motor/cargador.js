@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261117-base3-30';
+  const version=loaderURL.searchParams.get('v')||'20261117-base3-31';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=async path=>{
     // La configuración cambia sin necesidad de publicar otra versión del HTML.
@@ -61,10 +61,10 @@
     if(!settingsResponse.ok)throw Error('No se pudo cargar config.json de la actividad.');
     const supplied=await settingsResponse.json();
     if(!supplied||typeof supplied!=='object'||Array.isArray(supplied))throw Error('config.json de la actividad no es válido.');
-    const settings={guardar:false,duracion:10,entregas:1,reiniciar:false,redes:['185.197.0.0/16','192.168.0.0/16'],restringirHorario:false,restringirIPs:false,...supplied};
+    const settings={guardar:false,duracion:15,entregas:0,reiniciar:false,redes:['185.197.0.0/16','88.16.0.0/16'],restringirHorario:false,restringirIPs:false,...supplied};
     if(typeof settings.guardar!=='boolean'||typeof settings.reiniciar!=='boolean'||
       !Number.isFinite(settings.duracion)||settings.duracion<=0||settings.duracion>1440||
-      !Number.isSafeInteger(settings.entregas)||settings.entregas<1||
+      !Number.isSafeInteger(settings.entregas)||settings.entregas<0||
       typeof settings.restringirHorario!=='boolean'||typeof settings.restringirIPs!=='boolean'||
       !Array.isArray(settings.redes)||!settings.redes.every(red=>typeof red==='string'&&red.includes('/')))
       throw Error('Revisa guardar, duracion, entregas, reiniciar, redes, restringirHorario y restringirIPs en el config.json de la actividad.');

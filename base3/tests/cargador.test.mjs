@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
 const source=readFileSync(new URL('../motor/cargador.js',import.meta.url),'utf8');
-async function run(files,failures={}){
+async function run(files,failures={},overrides={}){
  const calls={},requests=[],els={},window={};
- const settings={title:'Prueba',version:'1',...(files===undefined?{}:{archivos:files})};
+ const settings={title:'Prueba',version:'1',...overrides,...(files===undefined?{}:{archivos:files})};
  const common={emailDomain:'g.educaand.es',requireFullName:false,delivery:{type:'archivo'},format:{report:'SSII3G.',checksum:'SSII3-'}};
  const get=id=>els[id]||={hidden:false,textContent:''};
  const data={'contenido/config.json':common,'actividades/diw/prueba/config.json':settings,'actividades/diw/prueba/enunciado.html':'Texto','contenido/esqueleto.html':'<html></html>','actividades/diw/prueba/codigo.html':'<h1>Prueba</h1>','actividades/diw/prueba/codigo.css':'h1{color:white}'};
@@ -43,3 +43,14 @@ for(const path of ['contenido/config.json','actividades/diw/prueba/config.json']
 }
 assert.equal(first.requests.find(r=>r.url.includes('codigo.css')).options.cache,'no-cache');
 console.log('OK: configuración sin caché y URL nueva en cada carga.');
+
+result=await run(['html','css']);
+assert.equal(result.window.Lab.config.durationMs,15*60000);
+assert.equal(result.window.Lab.config.maxSubmissions,0);
+assert.equal(result.window.Lab.config.allowSaveRecovery,false);
+assert.equal(result.window.Lab.config.allowRestart,false);
+result=await run(['html','css'],{},{entregas:-1});
+assert.match(result.error,/Revisa guardar/);
+result=await run(['html','css'],{},{entregas:0,duracion:3});
+assert.equal(result.window.Lab.ready,true);
+assert.equal(result.window.Lab.config.durationMs,180000);

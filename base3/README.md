@@ -114,10 +114,10 @@ Cada carpeta `actividades/MODULO/ACTIVIDAD/` incluye un único **config.json** c
   "title": "02-01-Menú responsive",
   "version": "1",
   "guardar": false,
-  "duracion": 10,
-  "entregas": 1,
+  "duracion": 15,
+  "entregas": 0,
   "reiniciar": false,
-  "redes": ["185.197.0.0/16", "192.168.0.0/16"],
+  "redes": ["185.197.0.0/16", "88.16.0.0/16"],
   "restringirHorario": false,
   "restringirIPs": false
 }
@@ -128,8 +128,8 @@ Cada carpeta `actividades/MODULO/ACTIVIDAD/` incluye un único **config.json** c
 | title | Nombre de la actividad | Obligatorio |
 | version | Versión del contenido | Obligatorio |
 | guardar | Mostrar Guardar y pausar y Recuperar práctica | false |
-| duracion | Minutos disponibles; número positivo, hasta 1440 | 10 |
-| entregas | Oportunidades ordinarias por correo y actividad; entero positivo | 1 |
+| duracion | Minutos disponibles; número positivo, hasta 1440 | 15 |
+| entregas | Oportunidades ordinarias por correo y actividad; entero no negativo; 0 exige motivo desde la primera entrega | 0 |
 | reiniciar | Mostrar y habilitar el botón Reiniciar | false |
 
 `title` y `version` son obligatorios. Los demás campos omitidos toman su valor predeterminado. Si falta config.json (404), la actividad no se abre. Un archivo inválido o un fallo de conexión produce un error; no se interpreta como ausencia. Los antiguos parámetros `guardar` y `duracion` de la URL ya no modifican la configuración.
@@ -159,7 +159,7 @@ El ID se mantiene al guardar y recuperar una práctica pausada. El registro inic
 
 ## Restricciones de entrega por actividad
 
-- `redes`: lista de redes IPv4 o IPv6 en CIDR. Por defecto `["185.197.0.0/16", "192.168.0.0/16"]`. Una lista vacía no autoriza ninguna IP si se activa su restricción.
+- `redes`: lista de redes IPv4 o IPv6 en CIDR. Por defecto `["185.197.0.0/16", "88.16.0.0/16"]`. Una lista vacía no autoriza ninguna IP si se activa su restricción.
 - `restringirHorario`: por defecto `false`. Con `true`, exige que el sello firmado corresponda al horario del módulo definido en el Worker (Europe/Madrid y cinco minutos de margen).
 - `restringirIPs`: por defecto `false`. Con `true`, exige que la IP real del sello firmado pertenezca a alguna red de la lista.
 
@@ -167,7 +167,7 @@ Ambas restricciones son independientes y se aplican a la recepción de entregas,
 
 Con ambas desactivadas se admite la entrega aunque no se pueda verificar el sello y se registran los avisos habituales. Con alguna activada, un sello ausente, inválido o imposible de verificar impide completar la fila inicial. Los reintentos de una entrega ya recibida siguen devolviendo su confirmación, sin duplicarla. La comprobación de red del receptor utiliza el config.json actual, no una lista enviada por el navegador.
 
-El Worker observa la IP pública de salida (o IPv6 pública), no la IPv4 privada del equipo tras NAT: `192.168.0.0/16` se conserva como valor solicitado, pero normalmente no coincidirá con la IP vista desde Internet.
+El Worker compara las redes configuradas con la IP pública de salida del equipo.
 
 Para activar esta versión, actualiza Code.gs y publica una nueva versión de Apps Script. Publica también servidor/worker.js en Cloudflare para que el sello y la revisión del profesor usen las redes de cada actividad. El nuevo registro inicial también requiere actualizar Bridge.html.
 

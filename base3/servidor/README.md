@@ -69,4 +69,4 @@ El control es real para la hora y la IP de **la entrega**, porque el sello lo fi
 
 ## Redes por actividad y restricciones de recepción
 
-El sello lee `redes` del `config.json` de la actividad. Los valores predeterminados son `185.197.0.0/16` y `192.168.0.0/16`. La clave y la firma se mantienen compatibles con los sellos anteriores. El receptor verifica la firma y vuelve a comparar la IP con la configuración publicada. `restringirIPs` y `restringirHorario` se aplican en el receptor, por defecto ambos desactivados. El horario sigue definido en `HORARIO`; la IP observada es la de salida a Internet, no la dirección privada tras NAT.
+El sello lee `redes` del `config.json` de la actividad. Los valores predeterminados son `185.197.0.0/16` y `88.16.0.0/16`. La clave y la firma se mantienen compatibles con los sellos anteriores. El receptor verifica la firma y vuelve a comparar la IP con la configuración publicada. `restringirIPs` y `restringirHorario` se aplican en el receptor, por defecto ambos desactivados. El horario sigue definido en `HORARIO`; la IP observada es la de salida a Internet, no la dirección privada tras NAT.

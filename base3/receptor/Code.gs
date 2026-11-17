@@ -155,13 +155,13 @@ function configuracionActividad_(datos) {
   try {
     const url=ORIGEN_+'/base3/actividades/'+datos.module.toLowerCase()+'/'+datos.activity+'/config.json';
     const respuesta=UrlFetchApp.fetch(url+'?v='+Date.now(),{muteHttpExceptions:true});
-    if(respuesta.getResponseCode()===404)return {entregas:1,redes:['185.197.0.0/16','192.168.0.0/16'],restringirHorario:false,restringirIPs:false};
+    if(respuesta.getResponseCode()===404)return {entregas:0,redes:['185.197.0.0/16','88.16.0.0/16'],restringirHorario:false,restringirIPs:false};
     if(respuesta.getResponseCode()!==200)throw Error('ACTIVITY_CONFIG');
     const config=JSON.parse(respuesta.getContentText());
     if(!config||typeof config!=='object'||Array.isArray(config))throw Error('ACTIVITY_CONFIG');
-    const limite=config.entregas===undefined?1:config.entregas;
-    if(!Number.isSafeInteger(limite)||limite<1)throw Error('ACTIVITY_CONFIG');
-    const redes=config.redes===undefined?['185.197.0.0/16','192.168.0.0/16']:config.redes;
+    const limite=config.entregas===undefined?0:config.entregas;
+    if(!Number.isSafeInteger(limite)||limite<0)throw Error('ACTIVITY_CONFIG');
+    const redes=config.redes===undefined?['185.197.0.0/16','88.16.0.0/16']:config.redes;
     const restringirHorario=config.restringirHorario??false,restringirIPs=config.restringirIPs??false;
     if(!Array.isArray(redes)||!redes.every(cidrValido)||typeof restringirHorario!=='boolean'||typeof restringirIPs!=='boolean')throw Error('ACTIVITY_CONFIG');
     return {entregas:limite,redes,restringirHorario,restringirIPs};

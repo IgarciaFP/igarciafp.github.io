@@ -14,7 +14,7 @@
  */
 
 // ───────────── Ajustes: lo único que hay que tocar si cambian la red o el horario ─────────────
-const REDES = ['185.197.0.0/16', '192.168.0.0/16'];            // redes del centro (IPv4 o IPv6, en notación CIDR)
+const REDES = ['185.197.0.0/16', '88.16.0.0/16'];            // redes del centro (IPv4 o IPv6, en notación CIDR)
 const MARGEN_MINUTOS = 5;                    // margen antes y después de cada clase
 const ZONA = 'Europe/Madrid';
 const ORIGENES = ['https://igarciafp.github.io'];   // sitios que pueden usar este servidor
