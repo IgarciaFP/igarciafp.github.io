@@ -150,22 +150,51 @@ function documento_(sobre) {
 }
 
 /** Configuración publicada por el profesor; nunca se acepta el límite enviado por el alumno. */
+function errorConfiguracion_(detalle) {
+  const error = Error('ACTIVITY_CONFIG');
+  error.detail = detalle;
+  return error;
+}
 function configuracionActividad_(datos) {
   if (!/^(DIW|DWEC|SSII)$/.test(datos.module) || !/^[a-z0-9][a-z0-9-]{0,59}$/.test(datos.activity)) throw Error('INVALID');
+  const url=ORIGEN_+'/base3/actividades/'+datos.module.toLowerCase()+'/'+datos.activity+'/config.json';
   try {
-    const url=ORIGEN_+'/base3/actividades/'+datos.module.toLowerCase()+'/'+datos.activity+'/config.json';
-    const respuesta=UrlFetchApp.fetch(url+'?v='+Date.now(),{muteHttpExceptions:true});
+    let respuesta;
+    for(let intento=0;intento<3;intento++){
+      try{
+        respuesta=UrlFetchApp.fetch(url+'?v='+Date.now(),{muteHttpExceptions:true});
+      }catch(error){
+        if(intento===2)throw errorConfiguracion_('No se pudo descargar '+url+': '+error.message);
+        Utilities.sleep(300*(intento+1));continue;
+      }
+      const estado=respuesta.getResponseCode();
+      if(![408,429,500,502,503,504].includes(estado)||intento===2)break;
+      Utilities.sleep(300*(intento+1));
+    }
     if(respuesta.getResponseCode()===404)return {entregas:0,redes:['185.197.0.0/16','88.16.0.0/16'],restringirHorario:false,restringirIPs:false};
-    if(respuesta.getResponseCode()!==200)throw Error('ACTIVITY_CONFIG');
-    const config=JSON.parse(respuesta.getContentText());
-    if(!config||typeof config!=='object'||Array.isArray(config))throw Error('ACTIVITY_CONFIG');
+    if(respuesta.getResponseCode()!==200)throw errorConfiguracion_('HTTP '+respuesta.getResponseCode()+' al descargar '+url);
+    let config;
+    try{config=JSON.parse(respuesta.getContentText());}catch{throw errorConfiguracion_('La respuesta de '+url+' no es JSON válido.');}
+    if(!config||typeof config!=='object'||Array.isArray(config))throw errorConfiguracion_('config.json debe contener un objeto.');
     const limite=config.entregas===undefined?0:config.entregas;
-    if(!Number.isSafeInteger(limite)||limite<0)throw Error('ACTIVITY_CONFIG');
+    if(!Number.isSafeInteger(limite)||limite<0)throw errorConfiguracion_('entregas debe ser un entero mayor o igual a 0.');
     const redes=config.redes===undefined?['185.197.0.0/16','88.16.0.0/16']:config.redes;
     const restringirHorario=config.restringirHorario??false,restringirIPs=config.restringirIPs??false;
-    if(!Array.isArray(redes)||!redes.every(cidrValido)||typeof restringirHorario!=='boolean'||typeof restringirIPs!=='boolean')throw Error('ACTIVITY_CONFIG');
+    if(!Array.isArray(redes)||!redes.every(cidrValido))throw errorConfiguracion_('redes debe ser una lista de redes CIDR válidas.');
+    if(typeof restringirHorario!=='boolean'||typeof restringirIPs!=='boolean')throw errorConfiguracion_('restringirHorario y restringirIPs deben ser true o false.');
     return {entregas:limite,redes,restringirHorario,restringirIPs};
-  }catch(error){throw Error('ACTIVITY_CONFIG');}
+  }catch(error){
+    console.error('ACTIVITY_CONFIG: '+(error.detail||error.message)+' · '+url);
+    if(error.detail)throw error;
+    throw errorConfiguracion_(error.message);
+  }
+}
+/** Ejecutar desde el editor para comprobar la descarga real desde los servidores de Google. */
+function diagnosticarActividad() {
+  try {
+    const politica=configuracionActividad_({module:'DIW',activity:'02-01-prueba-css-adaptable'});
+    console.log('Configuración correcta (receptor compatible con entregas: 0): '+JSON.stringify(politica));
+  }catch(error){throw Error(error.detail||error.message);}
 }
 function limiteActividad_(datos){return configuracionActividad_(datos).entregas;}
 function ipv4(texto) {
