@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261117-base3-17';
+  const version=loaderURL.searchParams.get('v')||'20261117-base3-18';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=path=>fetch(asset(path),{cache:'no-cache'});
   const read=async path=>{
@@ -34,7 +34,13 @@
   };
   const notFound=()=>stop('No se encuentra la actividad.','Comprueba que la dirección es exactamente la que te ha dado el profesor.');
   try {
-    const wanted=(new URLSearchParams(location.search).get('a')||'').trim().toLowerCase();
+    const params=new URLSearchParams(location.search);
+    const minutesText=params.get('duracion')??'10';
+    const minutes=Number(minutesText);
+    if(!/^\d+(?:\.\d+)?$/.test(minutesText)||!Number.isFinite(minutes)||minutes<=0||minutes>1440)
+      throw Error('El parámetro duracion debe indicar minutos: mayor que 0 y como máximo 1440.');
+    const allowSaveRecovery=params.get('guardar')==='1';
+    const wanted=(params.get('a')||'').trim().toLowerCase();
     const match=/^(diw|dwec|ssii)\/([a-z0-9][a-z0-9-]{0,59})$/.exec(wanted);
     if(!match){notFound();return;}
     const [,mod,slug]=match,folder=`actividades/${mod}/${slug}/`;
@@ -79,7 +85,7 @@
     // Nombre de la actividad: «NN-MM-Nombre» (tema y número de actividad). Se muestra con el
     // módulo delante: «DIW02-01-Nombre». Si el título ya lo lleva escrito, no se repite.
     const name=activity.title.trim().replace(new RegExp('^'+mod+'\\s*','i'),'').trim()||activity.title.trim();
-    const config={...common,module:MOD,activity:slug,id,title:MOD+name,
+    const config={...common,allowSaveRecovery,durationMs:Math.round(minutes*60000),module:MOD,activity:slug,id,title:MOD+name,
       filePrefix:mod+'-'+slug,version:String(activity.version).trim(),
       storage:{key:store+'-v1',legacyKey:store+'-anterior-v1',recovery:store+'-ultima-entrega-v1'},
       activityTitle:name,control:server?{servidor:server,clave:key,sinComprobar:unchecked}:null,

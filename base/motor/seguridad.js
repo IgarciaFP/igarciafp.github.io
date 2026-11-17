@@ -64,7 +64,7 @@
     function fresh() {
       return { version: 1, phase: 'ready', attempt: 0, count: 0, pending: null,
         episode: null, returnDeadline: null, returnRemainingMs: CONFIG.returnSeconds * 1000, clipboardBlocked: 0, savedAt: null, events: [],
-        data: adapter.empty(), backup: null, attemptAudit:{startedAt:null,finishedAt:null,ipSamples:[]}, closingAt: null, recoveries: 0, actionCounts: {}, actions: [] };
+        data: adapter.empty(), backup: null, attemptAudit:{startedAt:null,finishedAt:null,ipSamples:[]}, closingAt: null, closingReason: null, recoveries: 0, actionCounts: {}, actions: [] };
     }
     function log(text) {
       state.events.push({ at: Date.now(), text });
@@ -115,6 +115,7 @@
         attemptAudit:sanitizeAudit(s.attemptAudit),
         recoveries: Number.isInteger(s.recoveries)&&s.recoveries>=0&&s.recoveries<=s.count?s.recoveries:0,
         closingAt: stamp(s.closingAt) ? s.closingAt : null,
+        closingReason: ['duration-limit','return-timeout','incident-limit'].includes(s.closingReason) ? s.closingReason : null,
         actionCounts: Object.fromEntries(Object.entries(s.actionCounts || {}).filter(([k,v]) => /^[A-Za-z0-9+_-]{1,48}$/.test(k) && Number.isSafeInteger(v) && v >= 0).slice(0,300)),
         actions: Array.isArray(s.actions) ? s.actions.filter(a => a && stamp(a.at) && typeof a.action === 'string' && /^[A-Za-z0-9+_-]{1,48}$/.test(a.action)).slice(-1000).map(a => ({at:a.at,action:a.action})) : [],
         savedAt: stamp(s.savedAt) ? s.savedAt : null,
@@ -205,7 +206,8 @@
     const safe = s => s.visible && s.focused && s.fullscreen;
     function canEdit() {
       return initialized && !fatal && !problem && supported && state.phase === 'active'
-        && !state.pending && !state.episode && !restoring && !busy && !fileRecovery && safe(signals());
+        && !state.pending && !state.episode && !restoring && !busy && !fileRecovery && safe(signals())
+        && (!adapter.timeLimitMs || adapter.timeSpent() < adapter.timeLimitMs());
     }
     function failClosed() {
       fatal = true;
@@ -283,12 +285,31 @@
       if (state.returnDeadline !== null) state.returnRemainingMs = Math.max(0, Math.min(state.returnRemainingMs, state.returnDeadline - Date.now()));
       state.returnDeadline = null;
     }
+    function checkDuration() {
+      if (!adapter.timeLimitMs || state.phase !== 'active') return false;
+      const excess=adapter.timeSpent()-adapter.timeLimitMs();
+      if(excess<0)return false;
+      const deadline=Date.now()-excess;
+      // Si se agotó antes el margen de regreso, conserva ese motivo.
+      if(state.returnDeadline!==null&&state.returnDeadline<deadline)return false;
+      clearReturnTimer();
+      state.closingAt=deadline;state.closingReason='duration-limit';state.attemptAudit.finishedAt=deadline;
+      adapter.stopClock(deadline);state.data=adapter.snapshot();
+      state.phase='closing';state.pending=null;state.episode=null;restoring=false;rerollPending=false;
+      if(warning.open)warning.close();
+      if(confirmBox.open)confirmBox.close();
+      confirmation=null;
+      log('Duración de la práctica agotada: entrega automática con respuestas conservadas.');
+      if(persist()){render();void finalizeForced();}
+      return true;
+    }
     function checkReturnDeadline() {
+      if(checkDuration())return true;
       if (!timed || state.phase !== 'active' || state.returnDeadline === null) return false;
       if (Date.now() < state.returnDeadline) return false;
       const deadline = state.returnDeadline;
       clearReturnTimer();
-      state.closingAt = deadline; state.attemptAudit.finishedAt = deadline;
+      state.closingAt = deadline; state.closingReason='return-timeout'; state.attemptAudit.finishedAt = deadline;
       adapter.stopClock(deadline); state.data = adapter.snapshot();
       state.phase = 'closing'; state.pending = null; state.episode = null; restoring = false; rerollPending = false;
       if (warning.open) warning.close();
@@ -419,6 +440,7 @@
         if (warning.open) warning.close();
         $('guard-action-status').textContent = '';
         adapter.startClock(); state.data = adapter.snapshot();
+        if(checkReturnDeadline())return false;
         return persist();
       } catch (e) {
         $('guard-action-status').textContent = e.message || 'No se pudo activar pantalla completa.';
@@ -428,6 +450,7 @@
 
 
     async function pausePractice() {
+      if(checkReturnDeadline())return false;
       if(state.phase!=='paused'&&!canEdit())return false;
       adapter.stopClock();
       state.data=adapter.snapshot();state.phase='paused';state.pending=null;state.episode=null;
@@ -607,18 +630,18 @@
       finally { busy = false; render(); }
     }
     function reportContext(reason,finishedAt=state.closingAt||Date.now()) {
-      return {guardPolicy: timed ? 'return-timeout' : 'incident-limit', returnSeconds: CONFIG.returnSeconds, returnRemainingMs: state.returnRemainingMs, attemptStartedAt:state.attemptAudit.startedAt===null?null:new Date(state.attemptAudit.startedAt).toISOString(),attemptFinishedAt:new Date(finishedAt).toISOString(),timeZone:'Europe/Madrid',ipSamples:structuredClone(state.attemptAudit.ipSamples),finishReason:reason, recoveries:state.recoveries, incidents:state.count, actionCounts:structuredClone(state.actionCounts), actions:structuredClone(state.actions)};
+      return {durationSeconds:adapter.timeLimitMs?adapter.timeLimitMs()/1000:null,guardPolicy: timed ? 'return-timeout' : 'incident-limit', returnSeconds: CONFIG.returnSeconds, returnRemainingMs: state.returnRemainingMs, attemptStartedAt:state.attemptAudit.startedAt===null?null:new Date(state.attemptAudit.startedAt).toISOString(),attemptFinishedAt:new Date(finishedAt).toISOString(),timeZone:'Europe/Madrid',ipSamples:structuredClone(state.attemptAudit.ipSamples),finishReason:reason, recoveries:state.recoveries, incidents:state.count, actionCounts:structuredClone(state.actionCounts), actions:structuredClone(state.actions)};
     }
     async function finalizeForced() {
       if (forcedBusy || fatal || problem || state.phase !== 'closing') return;
       forcedBusy = true;
       try {
-        const report = await adapter.makeReport(metadata(), true, state.closingAt || Date.now(), reportContext(timed ? 'return-timeout' : 'incident-limit'));
+        const report = await adapter.makeReport(metadata(), true, state.closingAt || Date.now(), reportContext(state.closingReason || (timed ? 'return-timeout' : 'incident-limit')));
         if (!report) { adapter.forcedError(); return; }
         if (fatal || problem || state.phase !== 'closing') return;
         adapter.setReport(report); state.data = adapter.snapshot();
         state.phase = 'submitted'; state.pending = null; state.episode = null;
-        log(timed ? 'Entrega generada automáticamente al agotar el plazo de regreso.' : 'Entrega generada automáticamente tras tres incidencias.');
+        log(state.closingReason==='duration-limit'?'Entrega generada automáticamente al terminar la duración de la práctica.':timed ? 'Entrega generada automáticamente al agotar el plazo de regreso.' : 'Entrega generada automáticamente tras tres incidencias.');
         if (!persist()) return;
         render();
         await adapter.downloadReport();
@@ -691,6 +714,7 @@
     adapter.restore(state.data);
     if (!problem) persist(); // Prueba escritura antes de habilitar Comenzar.
     initialized = true;
+    if(adapter.timeLimitMs)setInterval(()=>{if(!fatal&&!problem)checkReturnDeadline();},250);
     if (timed && state.phase === 'active' && state.returnDeadline !== null) armReturnTimer();
     $('cuaderno').hidden = false; $('cuaderno').inert = false;
     $('guard-panel').hidden = false; $('guard-panel').inert = false;

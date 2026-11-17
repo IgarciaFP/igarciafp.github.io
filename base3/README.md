@@ -94,3 +94,14 @@ La barra muestra solo los controles. Arrastra la esquina inferior derecha del re
 `guard.returnSeconds` en `contenido/config.json` fija el plazo de regreso (actualmente 10 segundos acumulados por práctica). Al perder pantalla completa, visibilidad o foco, se bloquea el editor y aparece una cuenta atrás roja al volver a la página. Pulsa «Continuar en pantalla completa» antes del vencimiento. Si se agota, se conserva el código y se genera y envía la entrega automáticamente. Cada salida consume el tiempo restante; continuar, pausar o recuperar no repone los segundos consumidos. Las incidencias se registran sin límite de tres. Guardar y pausar detiene la práctica sin iniciar este plazo. El plazo usa una fecha límite, de modo que una pestaña suspendida comprueba el vencimiento al reactivarse; un navegador cerrado no puede enviar hasta volver a ejecutarse.
 
 El receptor actualizado y `profesor.html` reconocen `guardPolicy: "return-timeout"` y `finishReason: "return-timeout"`. Actualiza la implementación de Apps Script para que la hoja muestre el nuevo motivo de cierre y el contador sin «/3».
+
+## Opciones en el enlace de la actividad
+
+- `guardar=1`: muestra los controles Guardar y pausar y Recuperar práctica. Si se omite, están ocultos.
+- `duracion=20`: duración en minutos (por defecto 10). Admite decimales positivos y hasta 1440 minutos.
+
+Ejemplo: `/base3/?a=diw/02-01-prueba-css-adaptable&guardar=1&duracion=20`.
+
+El contador muestra el tiempo restante desde que se pulsa Empezar. Durante el último minuto se pone rojo y aparece un aviso. Al agotarse se bloquea el editor y se entrega automáticamente, con motivo `duration-limit`. La pérdida de foco no detiene la duración; el margen acumulado de regreso sigue siendo un límite independiente. Guardar y pausar detiene el tiempo de trabajo; al recuperar se conserva el tiempo consumido y no se amplía el límite original aunque el nuevo enlace indique más minutos. La detección del vencimiento usa el reloj real: si el navegador suspende la ejecución se comprueba al volver.
+
+Estas opciones son parámetros de un entorno didáctico en el navegador, no una autorización firmada del servidor.

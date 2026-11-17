@@ -17,11 +17,12 @@ const fileMode=config.delivery.type==='archivo';
 const deliveryReady=()=>fileMode||window.LabDelivery.configured(config.delivery);
 const RECOVERY=config.storage.recovery;
 const IDENTITY_KEY=config.storage.key+'-identity';
+let durationMs=config.durationMs;
 let emailTouched=false,guard=null,elapsed=0,started=null,phase='ready',delivering=false,lastDelivery=null,recoveryMode=false;
 
 const texts={
  identification:'Identificación',email:'Correo del centro',retrySave:'Reintentar guardado',
- elapsed:'Tiempo',cancel:'Cancelar',confirm:'Confirmar',start:'Empezar',backStart:'Volver al inicio',
+ elapsed:'Tiempo restante',cancel:'Cancelar',confirm:'Confirmar',start:'Empezar',backStart:'Volver al inicio',
  ready:'Pendiente de comenzar',active:'En curso',blocked:'Código bloqueado · reloj en marcha',
  paused:'Práctica guardada y pausada',closing:'Cierre automático: código conservado',
  submitted:'Intento finalizado',reset:'Intento invalidado',review:'Copia recuperada: solo lectura',
@@ -43,7 +44,7 @@ const texts={
  receiptRequested:'Descarga del comprobante solicitada. Si no aparece, pulsa «Descargar comprobante TXT».',
  receiptError:'No se pudo iniciar la descarga. La entrega sigue guardada; vuelve a descargar el comprobante.',
  compressionError:'Este navegador no permite comprimir la entrega. Actualízalo o consulta al profesor. El intento no se ha finalizado.',
- forcedPending:'Se ha agotado el tiempo para volver a pantalla completa. Se está generando la entrega con tu código conservado.',
+ forcedPending:'Se ha agotado el tiempo permitido. Se está generando la entrega con tu código conservado.',
  forcedError:'No se pudo generar la entrega automática. Tu código sigue guardado y bloqueado. Pulsa Reintentar entrega.',
  forcedRetry:'Reintentar entrega',
  savePractice:'Guardar y pausar',recoverPractice:'Recuperar práctica',toolbarFinish:'Entregar',toolbarReset:'Reiniciar',
@@ -76,7 +77,7 @@ if(fileMode)Object.assign(texts,{
  receiptRequested:'Descarga solicitada. Si no aparece el archivo, pulsa «Descargar la entrega de nuevo».',
  receiptError:'No se pudo iniciar la descarga. La entrega sigue guardada en este navegador; vuelve a descargarla.',
  pendingDelivery:'Ya generaste una entrega en este navegador. Puedes volver a descargar su archivo TXT.',
- forcedPending:'Se ha agotado el tiempo para volver a pantalla completa. Se está generando el archivo de entrega con tu código conservado.'
+ forcedPending:'Se ha agotado el tiempo permitido. Se está generando el archivo de entrega con tu código conservado.'
 });
 const tr=k=>texts[k]??k;
 
@@ -102,7 +103,15 @@ function displayName(){return $('student').value.trim().toLowerCase().split('@')
 
 // ---------------------------------------------------------------- Reloj
 function timeSpent(at=Date.now()){return elapsed+(started===null?0:Math.max(0,at-started));}
-function clock(){const sec=Math.floor(timeSpent()/1000);$('clock').textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');}
+function clock(){
+ const remaining=Math.max(0,durationMs-timeSpent()),sec=Math.ceil(remaining/1000);
+ $('clock').textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');
+ const urgent=phase==='active'&&remaining<=60000;
+ $('clock').classList.toggle('time-urgent',urgent);
+ $('duration-warning').hidden=!urgent;
+ const notice=remaining>0?'Queda menos de un minuto. La práctica se entregará automáticamente al terminar.':'Tiempo agotado. Generando la entrega automática…';
+ if($('duration-warning').textContent!==notice)$('duration-warning').textContent=notice;
+}
 function startClock(){if(started===null)started=Date.now();clock();}
 function stopClock(at=Date.now()){elapsed=timeSpent(at);started=null;clock();}
 
@@ -321,7 +330,7 @@ async function encodeReport(text){
  let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);
  return config.format.report+btoa(binary).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'');
 }
-function empty(){return {values:{...start,student:''},elapsed:0,started:null,report:'',language,reportEncoding:'gzip-base64url'};}
+function empty(){return {values:{...start,student:''},elapsed:0,started:null,durationMs:config.durationMs,report:'',language,reportEncoding:'gzip-base64url'};}
 function sanitize(data){
  if(!data||typeof data!=='object'||!data.values||typeof data.values!=='object'||Array.isArray(data.values))throw new Error('Borrador inválido');
  const out=empty();
@@ -330,6 +339,7 @@ function sanitize(data){
   if(v!==undefined&&typeof v!=='string')throw new Error('Campo inválido: '+id);
   out.values[id]=(v||'').slice(0,$(id).maxLength);
  }
+ out.durationMs=Number.isFinite(data.durationMs)&&data.durationMs>0?Math.min(data.durationMs,config.durationMs):config.durationMs;
  out.elapsed=Number.isFinite(data.elapsed)&&data.elapsed>=0?Math.min(data.elapsed,31536000000):0;
  out.started=Number.isFinite(data.started)&&data.started>0&&data.started<=Date.now()?data.started:null;
  const report=typeof data.report==='string'?data.report:'';
@@ -340,12 +350,13 @@ function sanitize(data){
  return out;
 }
 function snapshot(){
- return {values:Object.fromEntries(ids.map(id=>[id,$(id).value])),elapsed,started,language,report:$('report').value,reportEncoding:'gzip-base64url'};
+ return {values:Object.fromEntries(ids.map(id=>[id,$(id).value])),elapsed,started,durationMs,language,report:$('report').value,reportEncoding:'gzip-base64url'};
 }
 function restore(data){
  emailTouched=false;
  for(const id of ids)$(id).value=data.values[id]||'';
  fillCachedIdentity();
+ durationMs=data.durationMs??config.durationMs;
  elapsed=data.elapsed;started=data.started??null;
  $('report').value=data.report||'';$('download').disabled=true;$('reportStatus').textContent='';
  reportRevision++;clock();countChars();resetPreview();
@@ -361,7 +372,9 @@ function syncToolbar(){
 }
 let recoverySelecting=false,recoveryReading=false;
 function afterRender(state,ctx){
- phase=state.phase;syncToolbar();
+ phase=state.phase;clock();syncToolbar();
+ $('practice-save').hidden=!config.allowSaveRecovery;
+ $('practice-recover').hidden=!config.allowSaveRecovery;
  const paused=phase==='paused',needsRecovery=paused||ctx.restoring;
  const active=phase==='active',submitted=phase==='submitted'||phase==='closing';
  const panelHidden=submitted||(active&&!ctx.restoring&&!ctx.problem&&!$('guard-action-status').textContent);
@@ -620,8 +633,9 @@ async function readRecoveryFile(file){
   fileStatus(error.code==='RECOVERY_FULLSCREEN'?'recoveryFullscreenError':error.code==='RECOVERY_EMAIL_MISMATCH'?'recoveryEmailMismatch':error.code==='RECOVERY_EMAIL_REQUIRED'?'recoveryEmailRequired':'fileInvalid');
  }finally{recoveryReading=false;guard.endFileRecovery();guard.render();}
 }
-$('practice-save').addEventListener('click',()=>guard.ask('save'));
+$('practice-save').addEventListener('click',()=>{if(config.allowSaveRecovery)guard.ask('save');});
 $('practice-recover').addEventListener('click',async()=>{
+ if(!config.allowSaveRecovery)return;
  if(recoverySelecting||recoveryReading||!recoveryEmailReady()||!guard.beginFileRecovery())return;
  recoverySelecting=true;$('practice-file-status').hidden=true;guard.render();
  try{
@@ -701,7 +715,7 @@ window.addEventListener('unhandledrejection',e=>{
  const where=/([\w.-]+\.js)[^\n]*?:(\d+):\d+/.exec(String(reason?.stack||''));
  lastError=String(reason?.message||reason)+(where?' ('+where[1]+':'+where[2]+')':'');
 },true);
-guard=window.createPracticeGuard({config,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,
+guard=window.createPracticeGuard({config,timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,
  async saveBeforeReset(current){
   if(current==='paused')return savePracticeDocument();
   if(current==='submitted')return downloadReceipt(rememberDelivery($('report').value));

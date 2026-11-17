@@ -397,6 +397,8 @@ function select(id){
  chips.push(chip('Incidencias: '+(item.incidents??'—')+(item.guardPolicy==='return-timeout'?'':'/3'),item.guardPolicy!=='return-timeout'&&item.incidents>=3?'mal':''));
  if(item.finishReason==='incident-limit')chips.push(chip('Cierre automático por tercera incidencia','mal'));
  if(item.finishReason==='return-timeout')chips.push(chip('Cierre automático: tiempo de regreso agotado','mal'));
+ if(item.finishReason==='duration-limit')chips.push(chip('Entrega automática al terminar el tiempo de la práctica'));
+ if(item.durationSeconds)chips.push(chip('Duración máxima: '+duration(item.durationSeconds)));
  if(item.recoveries)chips.push(chip('Recuperaciones: '+item.recoveries));
  const blocked=Object.entries(item.actionCounts||{}).map(([k,v])=>k+' ×'+v).join(', ');
  if(blocked)chips.push(chip('Acciones bloqueadas: '+blocked));
