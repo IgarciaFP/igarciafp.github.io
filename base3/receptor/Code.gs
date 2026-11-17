@@ -140,7 +140,7 @@ function limiteActividad_(datos){return configuracionActividad_(datos).entregas;
 function ipv4(texto) {
   const partes = texto.split('.');
   if (partes.length !== 4 || partes.some(p => !/^\d{1,3}$/.test(p) || Number(p) > 255)) return null;
-  return partes.reduce((n, p) => (n << 8n) | BigInt(p), 0n);
+  return partes.map(Number);
 }
 function ipv6(texto) {
   if (!/^[0-9a-f:]+$/i.test(texto) || (texto.match(/::/g) || []).length > 1) return null;
@@ -150,7 +150,9 @@ function ipv6(texto) {
   if(despues!==undefined&&a.length+b.length>=8)return null;
   const todos = despues === undefined ? a : [...a, ...Array(8 - a.length - b.length).fill('0'), ...b];
   if (todos.length !== 8 || todos.some(g => !/^[0-9a-f]{1,4}$/i.test(g))) return null;
-  return todos.reduce((n, g) => (n << 16n) | BigInt(parseInt(g, 16)), 0n);
+  const bytes=[];
+  for(const grupo of todos){const valor=parseInt(grupo,16);bytes.push(valor >>> 8,valor & 255);}
+  return bytes;
 }
 function cidrValido(red) {
   if(typeof red!=='string')return false;
@@ -167,11 +169,15 @@ function enRed(ip, redes) {
   for (const red of redes) {
     if(!cidrValido(red))throw Error('CIDR inválido');
     const [base, prefijo] = red.split('/');
-    const v6 = base.includes(':'), bits = v6 ? 128n : 32n;
+    const v6 = base.includes(':');
     const a = v6 ? ipv6(ip) : ipv4(ip), b = v6 ? ipv6(base.toLowerCase()) : ipv4(base);
     if (a === null || b === null) continue;
-    const quitar = bits - BigInt(prefijo);
-    if (a >> quitar === b >> quitar) return true;
+    // Comparación por bytes: evita los literales de entero grande que rechaza Apps Script.
+    const longitud=Number(prefijo), completos=Math.floor(longitud/8), resto=longitud%8;
+    let coincide=true;
+    for(let i=0;i<completos;i++){if(a[i]!==b[i]){coincide=false;break;}}
+    if(coincide&&resto){const mascara=(255 << (8-resto)) & 255;coincide=(a[completos]&mascara)===(b[completos]&mascara);}
+    if(coincide)return true;
   }
   return false;
 }
