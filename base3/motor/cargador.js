@@ -5,13 +5,17 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261117-base3-27';
+  const version=loaderURL.searchParams.get('v')||'20261117-base3-28';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=async path=>{
+    // La configuración cambia sin necesidad de publicar otra versión del HTML.
+    const fresh=path.endsWith('/config.json');
     let response,error;
     for(let attempt=0;attempt<3;attempt++){
       try{
-        response=await fetch(asset(path),{cache:attempt?'reload':'no-cache',signal:AbortSignal.timeout(15000)});
+        const url=asset(path);
+        if(fresh)url.searchParams.set('_config',Date.now()+'-'+Math.random().toString(36).slice(2));
+        response=await fetch(url,{cache:fresh?'no-store':attempt?'reload':'no-cache',signal:AbortSignal.timeout(15000)});
         if(![408,429,500,502,503,504].includes(response.status))return response;
         error=null;
       }catch(cause){error=cause;}

@@ -160,7 +160,11 @@ const warn=text=>{const li=document.createElement('li');li.textContent=text;$('a
 
 // ------------------------------------------------------------ Configuración común y actividades
 let config;
-const fetchFile=path=>fetch(path,{cache:'no-cache'});
+const fetchFile=path=>{
+ const url=new URL(path,location.href),fresh=url.pathname.endsWith('/config.json');
+ if(fresh)url.searchParams.set('_config',Date.now()+'-'+Math.random().toString(36).slice(2));
+ return fetch(url,{cache:fresh?'no-store':'no-cache'});
+};
 try{
  const response=await fetchFile('contenido/config.json');
  if(!response.ok)throw Error('contenido/config.json ('+response.status+')');
