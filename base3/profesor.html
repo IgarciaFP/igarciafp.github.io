@@ -208,7 +208,7 @@ async function parse(text){
     known,start,label:known?.title||String(doc.format||'Actividad desconocida'),activityVersion:known?.version,
     code:Object.fromEntries(TABS.map(t=>[t,typeof values[t]==='string'?values[t]:start[t]])),
     modified:TABS.filter(t=>typeof values[t]==='string'&&values[t]!==start[t]),
-    seconds:Math.floor((data.elapsed||0)/1000),incidents:doc.state.count,audit:(doc.state.events||[]).map(e=>new Date(e.at).toISOString()+' · '+e.text).join('\n')};
+    seconds:Math.floor((data.elapsed||0)/1000),guardPolicy:doc.state.returnRemainingMs!==undefined?'return-timeout':'incident-limit',incidents:doc.state.count,audit:(doc.state.events||[]).map(e=>new Date(e.at).toISOString()+' · '+e.text).join('\n')};
   }
  }
  const marker='\nCódigo de comprobación: '+config.format.checksum,offset=decoded.lastIndexOf(marker);
@@ -368,8 +368,9 @@ function select(id){
  }
  if(when(item.finishedAt))chips.push(chip('Entregado: '+when(item.finishedAt)));
  chips.push(chip('Tiempo: '+duration(item.seconds)));
- chips.push(chip('Incidencias: '+(item.incidents??'—')+'/3',item.incidents>=3?'mal':''));
+ chips.push(chip('Incidencias: '+(item.incidents??'—')+(item.guardPolicy==='return-timeout'?'':'/3'),item.guardPolicy!=='return-timeout'&&item.incidents>=3?'mal':''));
  if(item.finishReason==='incident-limit')chips.push(chip('Cierre automático por tercera incidencia','mal'));
+ if(item.finishReason==='return-timeout')chips.push(chip('Cierre automático: tiempo de regreso agotado','mal'));
  if(item.recoveries)chips.push(chip('Recuperaciones: '+item.recoveries));
  const blocked=Object.entries(item.actionCounts||{}).map(([k,v])=>k+' ×'+v).join(', ');
  if(blocked)chips.push(chip('Acciones bloqueadas: '+blocked));

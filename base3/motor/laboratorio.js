@@ -28,10 +28,10 @@ const texts={
  saved:'Código guardado: ',saveReady:'Guardado local preparado.',
  saveError:'Guardado bloqueado. Revisa el aviso superior.',
  first:'Primer aviso',last:'Último aviso',resetTitle:'Intento reiniciado',resume:'Recuperar práctica guardada',
- firstText:'Primer aviso. Tu código se conserva. La tercera incidencia cerrará el intento y generará una entrega con el contenido actual.',
- lastText:'Segundo aviso. La próxima incidencia cerrará el intento y generará automáticamente una entrega con tu código actual.',
- resetText:'Tercera incidencia. Volverás a identificarte.',
- resumeText:'Recuperar añade una incidencia al mismo contador que las pérdidas de foco. La tercera incidencia cierra el intento conservando tu código.',
+ firstText:'Tu código se conserva. Vuelve a pantalla completa antes de agotar el tiempo restante.',
+ lastText:'Vuelve a pantalla completa antes de agotar el tiempo restante.',
+ resetText:'Intento finalizado. Volverás a identificarte.',
+ resumeText:'Recupera la pantalla completa para continuar con tu práctica.',
  resumeAction:'Recuperar (+1 incidencia)',continue:'Continuar en pantalla completa',understood:'Volver al inicio',
  confirmTitle:'¿Generar la entrega y finalizar?',
  confirmBody:'El código quedará bloqueado. Se descargará un TXT de respaldo y se enviará la entrega. Espera la confirmación de recepción.',
@@ -43,18 +43,18 @@ const texts={
  receiptRequested:'Descarga del comprobante solicitada. Si no aparece, pulsa «Descargar comprobante TXT».',
  receiptError:'No se pudo iniciar la descarga. La entrega sigue guardada; vuelve a descargar el comprobante.',
  compressionError:'Este navegador no permite comprimir la entrega. Actualízalo o consulta al profesor. El intento no se ha finalizado.',
- forcedPending:'Se ha alcanzado el tercer aviso. Se está generando la entrega con tu código conservado.',
+ forcedPending:'Se ha agotado el tiempo para volver a pantalla completa. Se está generando la entrega con tu código conservado.',
  forcedError:'No se pudo generar la entrega automática. Tu código sigue guardado y bloqueado. Pulsa Reintentar entrega.',
  forcedRetry:'Reintentar entrega',
  savePractice:'Guardar y pausar',recoverPractice:'Recuperar práctica',toolbarFinish:'Entregar',toolbarReset:'Reiniciar',
- saveWarning:'Se descargará un documento y se pausará la práctica. Al recuperarla se generará una incidencia de las 3 disponibles. Si es la tercera, se cerrará el intento. ¿Guardar y pausar?',
+ saveWarning:'Se descargará un documento y se pausará la práctica. La recuperación quedará registrada. ¿Guardar y pausar?',
  restartWarning:'Se descargará automáticamente una copia antes de borrar el intento y volver al comienzo. ¿Reiniciar?',
  recoveryFullscreenError:'El navegador no ha permitido activar la pantalla completa. Revisa el permiso y vuelve a pulsar Recuperar práctica.',
  fileSaved:'Archivo descargado. Consérvalo: Recuperar práctica lo leerá para continuar otro día.',
  fileError:'No se pudo descargar el documento. La práctica sigue guardada aquí; vuelve a pulsar Guardar.',
  recoveryEmailRequired:'Introduce primero tu correo en los datos de inicio para poder recuperar una práctica.',
  recoveryEmailMismatch:'El correo actual no coincide con el de la práctica guardada. No se ha recuperado ni se ha añadido ninguna incidencia.',
- fileInvalid:'No se pudo recuperar: selecciona un archivo de práctica o comprobante válido que no haya agotado las tres incidencias.',
+ fileInvalid:'No se pudo recuperar: selecciona un archivo de práctica o comprobante válido.',
  deliveryTitle:'Entrega del laboratorio',copyOpen:'Enviar / reintentar entrega',
  deliveryNote:'Conserva el TXT. La entrega solo está registrada cuando aparece la confirmación con su identificador y fecha. Si falla la conexión, reintenta sin cambiar el código.',
  sending:'Enviando el código… Espera la confirmación.',
@@ -76,7 +76,7 @@ if(fileMode)Object.assign(texts,{
  receiptRequested:'Descarga solicitada. Si no aparece el archivo, pulsa «Descargar la entrega de nuevo».',
  receiptError:'No se pudo iniciar la descarga. La entrega sigue guardada en este navegador; vuelve a descargarla.',
  pendingDelivery:'Ya generaste una entrega en este navegador. Puedes volver a descargar su archivo TXT.',
- forcedPending:'Se ha alcanzado el tercer aviso. Se está generando el archivo de entrega con tu código conservado.'
+ forcedPending:'Se ha agotado el tiempo para volver a pantalla completa. Se está generando el archivo de entrega con tu código conservado.'
 });
 const tr=k=>texts[k]??k;
 
@@ -389,16 +389,22 @@ function afterRender(state,ctx){
  $('delivery-config-note').hidden=deliveryReady();
  $('practice-recover').disabled=!active||ctx.restoring||!validIdentity()||!!ctx.problem||ctx.busy||!ctx.supported||recoverySelecting||recoveryReading;
  $('guard-state').textContent=tr(active?($('answer-fields').disabled?'blocked':'active'):phase);
- $('guard-count').textContent='Incidencias: '+state.count+'/3';
+ $('guard-count').textContent='Incidencias: '+state.count;
  $('guard-conditions').textContent='Pantalla completa: '+(document.fullscreenElement?'✓':'—')+' · Foco: '+(document.hasFocus()?'✓':'—')+' · Visible: '+(document.visibilityState==='visible'?'✓':'—');
  $('saveStatus').textContent=ctx.problem?tr('saveError'):state.savedAt?tr('saved')+new Date(state.savedAt).toLocaleTimeString('es-ES'):tr('saveReady');
  $('identity-error').textContent=emailTouched&&$('student').value.trim()&&!validIdentity()?tr('identityError'):'';
- if(state.pending){
+ if(state.pending && !ctx.returnSeconds){
   const k=state.pending;
   $('guard-warning-title').textContent=tr(k==='reset'?'resetTitle':k);
   $('guard-warning-text').textContent=tr(k+'Text');
   $('guard-warning-count').textContent=$('guard-count').textContent;
   $('guard-continue').textContent=tr(ctx.restoring?'resumeAction':active?'continue':'understood');
+ }
+ if(ctx.returnSeconds && state.pending){
+  $('guard-warning-title').textContent='Vuelve a pantalla completa';
+  $('guard-warning-text').textContent='Pulsa Continuar en pantalla completa antes de que termine el tiempo. El tiempo disponible es acumulado para toda la práctica. Si se agota, se entregará automáticamente tu código.';
+  $('guard-warning-count').textContent=ctx.remainingSeconds===null?'':'Entrega automática en '+ctx.remainingSeconds+' s';
+  $('guard-continue').textContent='Continuar en pantalla completa';
  }
  // Última entrega: accesible desde la pantalla de identificación.
  $('recovery').hidden=recoveryMode||!lastDelivery||phase!=='ready';
@@ -407,7 +413,7 @@ function afterRender(state,ctx){
  $('practice-save').disabled=(!active&&!paused)||ctx.restoring||!!ctx.problem||ctx.busy||(active&&$('answer-fields').disabled);
  $('practice-finish').disabled=!guard?.canEdit();
  $('practice-reset').disabled=!!ctx.problem||ctx.busy||phase==='closing';
- $('toolbar-count').textContent='Incidencias: '+state.count+'/3';
+ $('toolbar-count').textContent='Incidencias: '+state.count+' · Margen: '+ctx.remainingSeconds+' s';
 }
 function confirmText(kind){
  if(kind==='save'){$('guard-confirm-title').textContent=tr('savePractice');$('guard-confirm-text').textContent=tr('saveWarning');}
@@ -634,7 +640,7 @@ for(const [id,anchor]of [['receipt-download','delivery-retry'],['recovery-downlo
 }
 const receiptStatus=document.createElement('p');receiptStatus.id='receipt-status';receiptStatus.setAttribute('role','status');$('receipt-download').after(receiptStatus);
 document.title=config.title;
-document.querySelector('.topline').textContent=config.title;
+
 $('lab-title').textContent=config.title;
 document.querySelectorAll('[data-text]').forEach(el=>el.textContent=tr(el.dataset.text));
 $('preview-console').dataset.empty=tr('consoleEmpty');

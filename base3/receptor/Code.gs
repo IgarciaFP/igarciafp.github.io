@@ -95,8 +95,9 @@ function controlEntrega_(datos) {
   return { ip: sello.ip, avisos };
 }
 function incidencias_(datos, control) {
-  const partes = [(Number.isFinite(datos.incidents) ? datos.incidents : '?') + '/3'];
+  const partes = [(Number.isFinite(datos.incidents) ? datos.incidents : '?') + (datos.guardPolicy === 'return-timeout' ? ' incidencias' : '/3')];
   if (datos.finishReason === 'incident-limit') partes.push('cierre automático');
+  if (datos.finishReason === 'return-timeout') partes.push('cierre automático: tiempo de regreso agotado');
   partes.push(...control.avisos);
   return partes.join(' · ');
 }

@@ -86,3 +86,11 @@ python3 -m http.server 8000
 ```
 
 Abrir `http://localhost:8000/base3/?a=diw/01-01-tarjeta-de-presentacion`.
+
+## Plazo para regresar y tamaño del resultado
+
+La barra muestra solo los controles. Arrastra la esquina inferior derecha del resultado para ajustar su ancho y alto; el CSS responde al ancho del propio resultado.
+
+`guard.returnSeconds` en `contenido/config.json` fija el plazo de regreso (actualmente 10 segundos acumulados por práctica). Al perder pantalla completa, visibilidad o foco, se bloquea el editor y aparece una cuenta atrás roja al volver a la página. Pulsa «Continuar en pantalla completa» antes del vencimiento. Si se agota, se conserva el código y se genera y envía la entrega automáticamente. Cada salida consume el tiempo restante; continuar, pausar o recuperar no repone los segundos consumidos. Las incidencias se registran sin límite de tres. Guardar y pausar detiene la práctica sin iniciar este plazo. El plazo usa una fecha límite, de modo que una pestaña suspendida comprueba el vencimiento al reactivarse; un navegador cerrado no puede enviar hasta volver a ejecutarse.
+
+El receptor actualizado y `profesor.html` reconocen `guardPolicy: "return-timeout"` y `finishReason: "return-timeout"`. Actualiza la implementación de Apps Script para que la hoja muestre el nuevo motivo de cierre y el contador sin «/3».

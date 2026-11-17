@@ -39,7 +39,8 @@
     // borraría también borradores de otros laboratorios del mismo dominio.
     const CONFIG = Object.freeze({
       key: adapter.config.storage.key, legacyKey: adapter.config.storage.legacyKey,
-      limit: 3, maxEvents: 80, settleMs: 200, blockClipboard: true
+      returnSeconds: Number.isFinite(adapter.config.guard?.returnSeconds) && adapter.config.guard.returnSeconds > 0 ? adapter.config.guard.returnSeconds : 0,
+      limit: adapter.config.guard?.returnSeconds > 0 ? Number.MAX_SAFE_INTEGER : 3, maxEvents: 80, settleMs: 200, blockClipboard: true
     });
     const WHY = { hidden: 'página oculta', blur: 'pérdida de foco',
       fullscreen: 'salida de pantalla completa', pagehide: 'recarga o cierre' };
@@ -49,7 +50,8 @@
     let initialized = false, fatal = false, busy = false, restoring = false;
     let problem = '', problemText = '', lastRaw = null, timer = null;
     let confirmation = null, forcedBusy = false, rerollPending = false, fileRecovery=false;
-    let focusTimer = null;
+    let focusTimer = null, returnTimer = null;
+    const timed = CONFIG.returnSeconds > 0;
     const recentActions = new Map();
     const supported = typeof root.requestFullscreen === 'function'
       && document.fullscreenEnabled === true && typeof document.hasFocus === 'function'
@@ -61,7 +63,7 @@
     // submitted permite descargar el informe final; review solo es un estado legado.
     function fresh() {
       return { version: 1, phase: 'ready', attempt: 0, count: 0, pending: null,
-        episode: null, clipboardBlocked: 0, savedAt: null, events: [],
+        episode: null, returnDeadline: null, returnRemainingMs: CONFIG.returnSeconds * 1000, clipboardBlocked: 0, savedAt: null, events: [],
         data: adapter.empty(), backup: null, attemptAudit:{startedAt:null,finishedAt:null,ipSamples:[]}, closingAt: null, recoveries: 0, actionCounts: {}, actions: [] };
     }
     function log(text) {
@@ -108,7 +110,8 @@
         || ![null,'first','last','reset','resume'].includes(s.pending)
         || !s.data || !Array.isArray(s.events)) throw new Error('Estado inválido');
       return { ...fresh(), phase: s.phase, attempt: s.attempt, count: s.count,
-        pending: s.pending, clipboardBlocked: s.clipboardBlocked,
+        pending: s.pending, returnDeadline: stamp(s.returnDeadline) ? s.returnDeadline : null,
+        returnRemainingMs: Number.isFinite(s.returnRemainingMs) ? Math.max(0, Math.min(CONFIG.returnSeconds * 1000, s.returnRemainingMs)) : CONFIG.returnSeconds * 1000, clipboardBlocked: s.clipboardBlocked,
         attemptAudit:sanitizeAudit(s.attemptAudit),
         recoveries: Number.isInteger(s.recoveries)&&s.recoveries>=0&&s.recoveries<=s.count?s.recoveries:0,
         closingAt: stamp(s.closingAt) ? s.closingAt : null,
@@ -225,7 +228,7 @@
       const names = { ready: 'Pendiente de comenzar', active: enabled ? 'En curso' : 'Respuestas bloqueadas · reloj en marcha',
         paused: 'Práctica guardada y pausada', closing: 'Cerrando intento: respuestas conservadas', submitted: 'Intento finalizado', reset: 'Reiniciado por tres incidencias', review: 'Copia recuperada: solo lectura' };
       $('guard-state').textContent = names[state.phase];
-      $('guard-count').textContent = `${state.count} de ${CONFIG.limit}`;
+      $('guard-count').textContent = timed ? String(state.count) : `${state.count} de ${CONFIG.limit}`;
       $('guard-conditions').textContent = `Pantalla completa: ${s.fullscreen ? 'sí' : 'no'} · Foco: ${s.focused ? 'sí' : 'no'} · Visible: ${s.visible ? 'sí' : 'no'}`;
       $('guard-start-box').hidden = state.phase === 'active';
       $('guard-start').disabled = !supported || !!problem || busy || !!state.pending || !adapter.canStart() || state.phase === 'paused';
@@ -253,7 +256,8 @@
         if (confirmBox.open) confirmBox.close();
         confirmation = null;
       } else showWarning();
-      adapter.afterRender(state, {problem, supported, busy, restoring, forcedBusy});
+      adapter.afterRender(state, {problem, supported, busy, restoring, forcedBusy,
+        returnSeconds: CONFIG.returnSeconds, remainingSeconds: Math.max(0, Math.ceil((state.returnDeadline === null ? state.returnRemainingMs : state.returnDeadline - Date.now()) / 1000))});
     }
     function showWarning() {
       if (restoring || !initialized || !state.pending || !signals().visible || !signals().focused || fatal) return;
@@ -274,6 +278,34 @@
       if (!warning.open) warning.showModal();
     }
 
+    function clearReturnTimer() {
+      clearInterval(returnTimer); returnTimer = null;
+      if (state.returnDeadline !== null) state.returnRemainingMs = Math.max(0, Math.min(state.returnRemainingMs, state.returnDeadline - Date.now()));
+      state.returnDeadline = null;
+    }
+    function checkReturnDeadline() {
+      if (!timed || state.phase !== 'active' || state.returnDeadline === null) return false;
+      if (Date.now() < state.returnDeadline) return false;
+      const deadline = state.returnDeadline;
+      clearReturnTimer();
+      state.closingAt = deadline; state.attemptAudit.finishedAt = deadline;
+      adapter.stopClock(deadline); state.data = adapter.snapshot();
+      state.phase = 'closing'; state.pending = null; state.episode = null; restoring = false; rerollPending = false;
+      if (warning.open) warning.close();
+      if (confirmBox.open) confirmBox.close();
+      confirmation = null;
+      log('Tiempo para regresar agotado: entrega automática con respuestas conservadas.');
+      if (persist()) { render(); void finalizeForced(); }
+      return true;
+    }
+    function armReturnTimer() {
+      if (!timed) return;
+      if (state.returnDeadline === null) state.returnDeadline = Date.now() + state.returnRemainingMs;
+      if (returnTimer === null) returnTimer = setInterval(() => {
+        if (!checkReturnDeadline()) render();
+      }, 100);
+    }
+
     // 5. EPISODIOS. blur + visibilitychange + fullscreenchange pueden describir
     // UNA salida. Se agrupan hasta recuperar las tres condiciones. Solo tras
     // un regreso estable (200 ms) puede empezar otro episodio. No se sanciona
@@ -286,8 +318,10 @@
         state.episode = { at: Date.now(), reasons: [reason] };
         rerollPending = true;
         state.count++;
-        log(`Incidencia ${state.count}/${CONFIG.limit}: ${WHY[reason]}.`);
-        if (state.count >= CONFIG.limit) {
+        log(timed ? `Incidencia ${state.count}: ${WHY[reason]}.` : `Incidencia ${state.count}/${CONFIG.limit}: ${WHY[reason]}.`);
+        if (timed) {
+          state.pending = 'resume'; armReturnTimer();
+        } else if (state.count >= CONFIG.limit) {
           state.closingAt = Date.now();state.attemptAudit.finishedAt=state.closingAt;
           adapter.stopClock(state.closingAt);
           state.data = adapter.snapshot();
@@ -312,6 +346,7 @@
     }
     function environment(reason) {
       if (!initialized || fatal) return;
+      if (checkReturnDeadline()) return;
       const s = signals();
       if(safe(s)){clearTimeout(focusTimer);focusTimer=null;}
       if (state.phase === 'active' && !restoring && !fileRecovery) {
@@ -331,7 +366,7 @@
               }
             },CONFIG.settleMs);
           }else{clearTimeout(focusTimer);focusTimer=null;record(r);}
-        } else if (state.episode) {
+        } else if (state.episode && !timed) {
           clearTimeout(timer);
           timer = setTimeout(() => {
             if (safe(signals()) && state.phase === 'active' && !problem) {
@@ -349,19 +384,19 @@
       if (!safe(signals())) throw new Error('Falta pantalla completa, foco o visibilidad. Regresa y vuelve a pulsar el botón.');
     }
     async function startOrResume(resume) {
-      if (busy || problem || !supported || fatal) return;
+      if (checkReturnDeadline() || busy || problem || !supported || fatal) return;
       if (!resume && (!adapter.canStart() || !['ready','reset','review'].includes(state.phase))) return;
       const recovery=resume&&(restoring||state.phase==='paused');
       busy = true; $('guard-warning-error').textContent = ''; render();
       try {
         await fullscreen();
-        if (problem || fatal) return;
+        if (checkReturnDeadline() || problem || fatal) return;
         // Una tercera salida durante la petición no puede revivir el intento.
         if (resume && !['active','paused'].includes(state.phase)) return;
         if(recovery){
           state.count++;state.recoveries++;rerollPending=false;
           recordIPUnavailable('recovery');
-          log('Recuperación guardada: incidencia '+state.count+'/'+CONFIG.limit+'.');
+          log('Recuperación guardada: incidencia '+state.count+(timed?'':'/'+CONFIG.limit)+'.');
           if(state.count>=CONFIG.limit){
             state.closingAt=Date.now();state.attemptAudit.finishedAt=state.closingAt;adapter.stopClock(state.closingAt);
             state.data=adapter.snapshot();state.phase='closing';state.pending=null;state.episode=null;restoring=false;
@@ -380,6 +415,7 @@
           adapter.restore(data); log(`Comienzo del intento ${attempt}. Identificación completada.`);
         } else log('Intento reanudado en pantalla completa.');
         state.pending = null; state.episode = null; restoring = false;
+        clearReturnTimer();
         if (warning.open) warning.close();
         $('guard-action-status').textContent = '';
         adapter.startClock(); state.data = adapter.snapshot();
@@ -396,7 +432,8 @@
       adapter.stopClock();
       state.data=adapter.snapshot();state.phase='paused';state.pending=null;state.episode=null;
       rerollPending=false;restoring=false;
-      log('Práctica guardada y pausada; recuperar consumirá una incidencia.');
+      clearReturnTimer();
+      log(timed ? 'Práctica guardada y pausada; la recuperación quedará registrada.' : 'Práctica guardada y pausada; recuperar consumirá una incidencia.');
       const saved=persist();render();
       if(saved&&document.fullscreenElement===root){try{await document.exitFullscreen();}catch{}}
       return saved;
@@ -425,11 +462,13 @@
         if(state.phase==='closing'||state.count>=CONFIG.limit)throw Error('Incident limit reached');
         next.count=Math.max(next.count,state.count);
         next.recoveries=Math.max(next.recoveries,state.recoveries);
+        if(timed)next.returnRemainingMs=Math.min(next.returnRemainingMs,state.returnDeadline===null?state.returnRemainingMs:Math.max(0,state.returnDeadline-Date.now()));
       }
       if(next.count>=CONFIG.limit)throw Error('Incident limit reached');
+      if(timed&&next.returnRemainingMs<=0)throw Error('Return time exhausted');
       next.phase='paused';next.data.report='';next.closingAt=null;
       next.attemptAudit.finishedAt=null;
-      next.data.started=null;next.pending=null;next.episode=null;
+      next.data.started=null;next.pending=null;next.episode=null;next.returnDeadline=null;
       state=next;restoring=false;rerollPending=false;
       adapter.restore(state.data);
       log('Documento de práctica recuperado; pendiente de continuar.');
@@ -496,7 +535,7 @@
 
     // 7. FINALIZAR Y BORRAR. El adaptador descarga el TXT y envía la entrega al receptor configurado.
     function metadata() {
-      return [`Intento: ${state.attempt}`, `Incidencias de entorno: ${state.count}/${CONFIG.limit}`,
+      return [`Intento: ${state.attempt}`, timed ? `Incidencias de entorno: ${state.count}; plazo de regreso: ${CONFIG.returnSeconds} s` : `Incidencias de entorno: ${state.count}/${CONFIG.limit}`,
         'Acciones bloqueadas: ' + JSON.stringify(state.actionCounts),
         'Registro local orientativo; no acredita copia ni identidad.',
         ...state.events.map(e => `${new Date(e.at).toISOString()} · ${e.text}`)].join('\n');
@@ -568,18 +607,18 @@
       finally { busy = false; render(); }
     }
     function reportContext(reason,finishedAt=state.closingAt||Date.now()) {
-      return {attemptStartedAt:state.attemptAudit.startedAt===null?null:new Date(state.attemptAudit.startedAt).toISOString(),attemptFinishedAt:new Date(finishedAt).toISOString(),timeZone:'Europe/Madrid',ipSamples:structuredClone(state.attemptAudit.ipSamples),finishReason:reason, recoveries:state.recoveries, incidents:state.count, actionCounts:structuredClone(state.actionCounts), actions:structuredClone(state.actions)};
+      return {guardPolicy: timed ? 'return-timeout' : 'incident-limit', returnSeconds: CONFIG.returnSeconds, returnRemainingMs: state.returnRemainingMs, attemptStartedAt:state.attemptAudit.startedAt===null?null:new Date(state.attemptAudit.startedAt).toISOString(),attemptFinishedAt:new Date(finishedAt).toISOString(),timeZone:'Europe/Madrid',ipSamples:structuredClone(state.attemptAudit.ipSamples),finishReason:reason, recoveries:state.recoveries, incidents:state.count, actionCounts:structuredClone(state.actionCounts), actions:structuredClone(state.actions)};
     }
     async function finalizeForced() {
       if (forcedBusy || fatal || problem || state.phase !== 'closing') return;
       forcedBusy = true;
       try {
-        const report = await adapter.makeReport(metadata(), true, state.closingAt || Date.now(), reportContext('incident-limit'));
+        const report = await adapter.makeReport(metadata(), true, state.closingAt || Date.now(), reportContext(timed ? 'return-timeout' : 'incident-limit'));
         if (!report) { adapter.forcedError(); return; }
         if (fatal || problem || state.phase !== 'closing') return;
         adapter.setReport(report); state.data = adapter.snapshot();
         state.phase = 'submitted'; state.pending = null; state.episode = null;
-        log('Entrega generada automáticamente tras tres incidencias.');
+        log(timed ? 'Entrega generada automáticamente al agotar el plazo de regreso.' : 'Entrega generada automáticamente tras tres incidencias.');
         if (!persist()) return;
         render();
         await adapter.downloadReport();
@@ -610,6 +649,7 @@
     window.addEventListener('focus', () => environment('focus'));
     window.addEventListener('pagehide', () => environment('pagehide'));
     window.addEventListener('pageshow', e => {
+      if (checkReturnDeadline()) return;
       if (e.persisted && state.phase === 'active') {
         restoring = true; state.pending ||= 'resume'; state.episode = null; render();
       }
@@ -651,6 +691,7 @@
     adapter.restore(state.data);
     if (!problem) persist(); // Prueba escritura antes de habilitar Comenzar.
     initialized = true;
+    if (timed && state.phase === 'active' && state.returnDeadline !== null) armReturnTimer();
     $('cuaderno').hidden = false; $('cuaderno').inert = false;
     $('guard-panel').hidden = false; $('guard-panel').inert = false;
     $('guard-boot').hidden = true;
