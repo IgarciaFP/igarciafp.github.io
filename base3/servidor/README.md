@@ -59,10 +59,14 @@ Las entregas hechas así llevan la marca «clave del profesor». La clave queda 
 
 ## Cambiar la red, el margen o el horario
 
-Están al principio de `worker.js` (`REDES`, `MARGEN_MINUTOS`, `HORARIO`). Tras cambiarlos hay que volver a pegar el archivo en Cloudflare y desplegar. El horario está en hora de Madrid y sigue el cambio de hora.
+Las redes de entrega están en `redes` dentro del config.json de cada actividad. El margen y el horario están al principio de `worker.js` (`MARGEN_MINUTOS`, `HORARIO`); tras cambiarlos hay que desplegar el Worker. El horario está en hora de Madrid y sigue el cambio de hora. `REDES` queda como valor predeterminado y referencia del control de acceso común.
 
 Con el margen de cinco minutos, el intervalo entre las 18:35 y las 18:40 queda fuera de horario; en el modo actual se permite trabajar y se registra el aviso.
 
 ## Límites
 
 El control es real para la hora y la IP de **la entrega**, porque el sello lo firma el servidor y la página del profesor y el receptor lo verifican. Para **abrir** la actividad es disuasorio: el repositorio es público, así que el enunciado y el código de partida se pueden leer en GitHub a cualquier hora, y un alumno que impida a su navegador llegar al servidor entra «sin comprobar» (su entrega lo indica).
+
+## Redes por actividad y restricciones de recepción
+
+El sello lee `redes` del `config.json` de la actividad. Los valores predeterminados son `185.197.0.0/16` y `192.168.0.0/16`. La clave y la firma se mantienen compatibles con los sellos anteriores. El receptor verifica la firma y vuelve a comparar la IP con la configuración publicada. `restringirIPs` y `restringirHorario` se aplican en el receptor, por defecto ambos desactivados. El horario sigue definido en `HORARIO`; la IP observada es la de salida a Internet, no la dirección privada tras NAT.

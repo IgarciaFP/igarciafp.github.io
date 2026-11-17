@@ -14,7 +14,7 @@
  */
 
 // ───────────── Ajustes: lo único que hay que tocar si cambian la red o el horario ─────────────
-const REDES = ['45.86.184.0/24'];            // redes del centro (IPv4 o IPv6, en notación CIDR)
+const REDES = ['185.197.0.0/16', '192.168.0.0/16'];            // redes del centro (IPv4 o IPv6, en notación CIDR)
 const MARGEN_MINUTOS = 5;                    // margen antes y después de cada clase
 const ZONA = 'Europe/Madrid';
 const ORIGENES = ['https://igarciafp.github.io'];   // sitios que pueden usar este servidor
@@ -52,15 +52,25 @@ function ipv6(texto) {
   const [antes, despues] = texto.split('::');
   const grupos = t => (t ? t.split(':') : []);
   const a = grupos(antes), b = despues === undefined ? [] : grupos(despues);
+  if(despues!==undefined&&a.length+b.length>=8)return null;
   const todos = despues === undefined ? a : [...a, ...Array(8 - a.length - b.length).fill('0'), ...b];
   if (todos.length !== 8 || todos.some(g => !/^[0-9a-f]{1,4}$/i.test(g))) return null;
   return todos.reduce((n, g) => (n << 16n) | BigInt(parseInt(g, 16)), 0n);
 }
+function cidrValido(red) {
+  if(typeof red!=='string')return false;
+  const partes=red.split('/');
+  if(partes.length!==2||!/^\d{1,3}$/.test(partes[1]))return false;
+  const v6=partes[0].includes(':'),n=Number(partes[1]);
+  return n<=(v6?128:32)&&(v6?ipv6(partes[0]):ipv4(partes[0]))!==null;
+}
+
 export function enRed(ip, redes = REDES) {
   ip = String(ip || '').trim().toLowerCase();
   const mapeada = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/.exec(ip);
   if (mapeada) ip = mapeada[1];
   for (const red of redes) {
+    if(!cidrValido(red))throw Error('CIDR inválido');
     const [base, prefijo] = red.split('/');
     const v6 = base.includes(':'), bits = v6 ? 128n : 32n;
     const a = v6 ? ipv6(ip) : ipv4(ip), b = v6 ? ipv6(base.toLowerCase()) : ipv4(base);
@@ -69,6 +79,15 @@ export function enRed(ip, redes = REDES) {
     if (a >> quitar === b >> quitar) return true;
   }
   return false;
+}
+
+async function redesActividad(actividad) {
+  const response=await fetch(ORIGENES[0]+'/base3/actividades/'+actividad[1]+'/'+actividad[2]+'/config.json',{cache:'no-store'});
+  if(response.status===404)return REDES;
+  if(!response.ok)throw Error('No se pudo leer config.json');
+  const config=await response.json(),redes=config.redes===undefined?REDES:config.redes;
+  if(!Array.isArray(redes)||!redes.every(cidrValido))throw Error('CIDR inválido');
+  return redes;
 }
 
 const hex = bytes => Array.from(new Uint8Array(bytes), b => b.toString(16).padStart(2, '0')).join('');
@@ -115,8 +134,9 @@ export default {
         const cuerpo = JSON.parse(await request.text());
         const actividad = ACTIVIDAD.exec(String(cuerpo.a || '').toLowerCase());
         if (!actividad || typeof cuerpo.email !== 'string' || cuerpo.email.length > 254 || !/^[a-f0-9]{64}$/.test(cuerpo.huella || '')) return responder({ error: 'INVALIDO' }, origen, 400);
+        const redes=await redesActividad(actividad);
         const sello = { ip, hora: ahora.toISOString(), modulo: actividad[1], actividad: actividad[2], email: cuerpo.email.toLowerCase(), huella: cuerpo.huella,
-          enRed: enRed(ip), enHorario: enHorario(actividad[1], ahora), profesor: await esProfesor(cuerpo.clave, env) };
+          enRed: enRed(ip,redes), enHorario: enHorario(actividad[1], ahora), profesor: await esProfesor(cuerpo.clave, env) };
         return responder({ ...sello, firma: await firmar(sello, env) }, origen);
       }
       if (request.method === 'POST' && ruta === '/verificar') {

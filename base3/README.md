@@ -114,7 +114,10 @@ Cada carpeta `actividades/MODULO/ACTIVIDAD/` incluye un **config.json** independ
   "guardar": false,
   "duracion": 10,
   "entregas": 1,
-  "reiniciar": false
+  "reiniciar": false,
+  "redes": ["185.197.0.0/16", "192.168.0.0/16"],
+  "restringirHorario": false,
+  "restringirIPs": false
 }
 ```
 
@@ -148,3 +151,17 @@ Los cierres automáticos por tiempo o margen de regreso siguen enviando el códi
 En modo de entrega solo por archivo, el aviso se basa en el historial local del navegador.
 
 Tras actualizar esta funcionalidad, sustituye Code.gs y Bridge.html en Apps Script y publica una nueva versión.
+
+## Restricciones de entrega por actividad
+
+- `redes`: lista de redes IPv4 o IPv6 en CIDR. Por defecto `["185.197.0.0/16", "192.168.0.0/16"]`. Una lista vacía no autoriza ninguna IP si se activa su restricción.
+- `restringirHorario`: por defecto `false`. Con `true`, exige que el sello firmado corresponda al horario del módulo definido en el Worker (Europe/Madrid y cinco minutos de margen).
+- `restringirIPs`: por defecto `false`. Con `true`, exige que la IP real del sello firmado pertenezca a alguna red de la lista.
+
+Ambas restricciones son independientes y se aplican a la recepción de entregas, incluidas las automáticas y las realizadas con clave del profesor. No impiden abrir ni trabajar en la actividad. No cambian el control de acceso común opcional `control.restringirAcceso`.
+
+Con ambas desactivadas se admite la entrega aunque no se pueda verificar el sello y se registran los avisos habituales. Con alguna activada, un sello ausente, inválido o imposible de verificar impide añadir la fila. Los reintentos de una entrega ya recibida siguen devolviendo su confirmación, sin duplicarla. La comprobación de red del receptor utiliza el config.json actual, no una lista enviada por el navegador.
+
+El Worker observa la IP pública de salida (o IPv6 pública), no la IPv4 privada del equipo tras NAT: `192.168.0.0/16` se conserva como valor solicitado, pero normalmente no coincidirá con la IP vista desde Internet.
+
+Para activar esta versión, actualiza Code.gs y publica una nueva versión de Apps Script. Publica también servidor/worker.js en Cloudflare para que el sello y la revisión del profesor usen las redes de cada actividad. Bridge.html no cambia.

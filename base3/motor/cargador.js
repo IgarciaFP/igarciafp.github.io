@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261117-base3-21';
+  const version=loaderURL.searchParams.get('v')||'20261117-base3-22';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=path=>fetch(asset(path),{cache:'no-cache'});
   const read=async path=>{
@@ -43,11 +43,13 @@
     const settingsText=await optional(folder+'config.json');
     const supplied=settingsText?JSON.parse(settingsText):{};
     if(!supplied||typeof supplied!=='object'||Array.isArray(supplied))throw Error('config.json de la actividad no es válido.');
-    const settings={guardar:false,duracion:10,entregas:1,reiniciar:false,...supplied};
+    const settings={guardar:false,duracion:10,entregas:1,reiniciar:false,redes:['185.197.0.0/16','192.168.0.0/16'],restringirHorario:false,restringirIPs:false,...supplied};
     if(typeof settings.guardar!=='boolean'||typeof settings.reiniciar!=='boolean'||
       !Number.isFinite(settings.duracion)||settings.duracion<=0||settings.duracion>1440||
-      !Number.isSafeInteger(settings.entregas)||settings.entregas<1)
-      throw Error('Revisa guardar, duracion, entregas y reiniciar en el config.json de la actividad.');
+      !Number.isSafeInteger(settings.entregas)||settings.entregas<1||
+      typeof settings.restringirHorario!=='boolean'||typeof settings.restringirIPs!=='boolean'||
+      !Array.isArray(settings.redes)||!settings.redes.every(red=>typeof red==='string'&&red.includes('/')))
+      throw Error('Revisa guardar, duracion, entregas, reiniciar, redes, restringirHorario y restringirIPs en el config.json de la actividad.');
     const allowSaveRecovery=settings.guardar,minutes=settings.duracion;
     // El servidor comprueba red y horario. En modo de registro no se bloquea el acceso.
     // Solo control.restringirAcceso === true aplica la negativa del servidor.

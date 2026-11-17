@@ -68,33 +68,41 @@ function validarEntrega_(sobre) {
   return datos;
 }
 /** Comprueba el sello una sola vez y separa la IP de los avisos. */
-function controlEntrega_(datos) {
-  const sello = datos.sello;
-  const avisos = [];
-  if (sello?.accesoSinComprobar === true) avisos.push('acceso sin comprobar');
-  if (!sello || sello.error || typeof sello.ip !== 'string' || !/^[0-9a-fA-F.:]{3,45}$/.test(sello.ip))
-    return { ip: '', avisos: [...avisos, 'SIN COMPROBAR'] };
-  if (huella_(JSON.stringify([datos.exam, datos.email, datos.answers])) !== sello.huella || sello.email !== datos.email)
-    return { ip: '', avisos: [...avisos, 'SELLO NO VÁLIDO'] };
-  let verificado = false;
-  if (SERVIDOR_) {
-    try {
-      const respuesta = UrlFetchApp.fetch(SERVIDOR_ + '/verificar', {
-        method: 'post', contentType: 'application/json',
-        payload: JSON.stringify({ sello }), muteHttpExceptions: true
-      });
-      if (respuesta.getResponseCode() === 200) {
-        if (JSON.parse(respuesta.getContentText()).valido !== true)
-          return { ip: '', avisos: [...avisos, 'SELLO NO VÁLIDO'] };
-        verificado = true;
-      }
-    } catch (error) { /* Se conserva la entrega y se avisa de que no pudo verificarse. */ }
+function controlEntrega_(datos,politica) {
+  const sello=datos.sello,avisos=[],exigir=politica.restringirHorario||politica.restringirIPs;
+  if(sello?.accesoSinComprobar===true)avisos.push('acceso sin comprobar');
+  if(!sello||sello.error||typeof sello.ip!=='string'||!/^[0-9a-fA-F.:]{3,45}$/.test(sello.ip)){
+    if(exigir)throw Error('CONTROL_REQUIRED');
+    return {ip:'',avisos:[...avisos,'SIN COMPROBAR']};
   }
-  if (!verificado) avisos.push('sello sin verificar');
-  if (sello.enRed !== true) avisos.push('FUERA DE LA RED');
-  if (sello.enHorario !== true) avisos.push('FUERA DE HORARIO');
-  if (sello.profesor === true) avisos.push('clave del profesor');
-  return { ip: sello.ip, avisos };
+  if(huella_(JSON.stringify([datos.exam,datos.email,datos.answers]))!==sello.huella||sello.email!==datos.email||
+    sello.modulo!==datos.module.toLowerCase()||sello.actividad!==datos.activity){
+    if(exigir)throw Error('CONTROL_INVALID');
+    return {ip:'',avisos:[...avisos,'SELLO NO VÁLIDO']};
+  }
+  let verificado=false,invalido=false;
+  if(SERVIDOR_){
+    try{
+      const response=UrlFetchApp.fetch(SERVIDOR_+'/verificar',{method:'post',contentType:'application/json',payload:JSON.stringify({sello}),muteHttpExceptions:true});
+      if(response.getResponseCode()===200){
+        verificado=JSON.parse(response.getContentText()).valido===true;
+        invalido=!verificado;
+      }
+    }catch{}
+  }
+  if(invalido){
+    if(exigir)throw Error('CONTROL_INVALID');
+    return {ip:'',avisos:[...avisos,'SELLO NO VÁLIDO']};
+  }
+  if(exigir&&!verificado)throw Error('CONTROL_UNAVAILABLE');
+  const redPermitida=enRed(sello.ip,politica.redes);
+  if(politica.restringirIPs&&!redPermitida)throw Error('NETWORK_DENIED');
+  if(politica.restringirHorario&&sello.enHorario!==true)throw Error('SCHEDULE_DENIED');
+  if(!verificado)avisos.push('sello sin verificar');
+  if(!redPermitida)avisos.push('FUERA DE LA RED');
+  if(sello.enHorario!==true)avisos.push('FUERA DE HORARIO');
+  if(sello.profesor===true)avisos.push('clave del profesor');
+  return {ip:sello.ip,avisos};
 }
 function incidencias_(datos, control) {
   const partes = [(Number.isFinite(datos.incidents) ? datos.incidents : '?') + (datos.guardPolicy === 'return-timeout' ? ' incidencias' : '/3')];
@@ -111,20 +119,64 @@ function documento_(sobre) {
 }
 
 /** Configuración publicada por el profesor; nunca se acepta el límite enviado por el alumno. */
-function limiteActividad_(datos) {
+function configuracionActividad_(datos) {
   if (!/^(DIW|DWEC|SSII)$/.test(datos.module) || !/^[a-z0-9][a-z0-9-]{0,59}$/.test(datos.activity)) throw Error('INVALID');
   try {
     const url=ORIGEN_+'/base3/actividades/'+datos.module.toLowerCase()+'/'+datos.activity+'/config.json';
     const respuesta=UrlFetchApp.fetch(url+'?v='+Date.now(),{muteHttpExceptions:true});
-    if(respuesta.getResponseCode()===404)return 1;
+    if(respuesta.getResponseCode()===404)return {entregas:1,redes:['185.197.0.0/16','192.168.0.0/16'],restringirHorario:false,restringirIPs:false};
     if(respuesta.getResponseCode()!==200)throw Error('ACTIVITY_CONFIG');
     const config=JSON.parse(respuesta.getContentText());
     if(!config||typeof config!=='object'||Array.isArray(config))throw Error('ACTIVITY_CONFIG');
     const limite=config.entregas===undefined?1:config.entregas;
     if(!Number.isSafeInteger(limite)||limite<1)throw Error('ACTIVITY_CONFIG');
-    return limite;
+    const redes=config.redes===undefined?['185.197.0.0/16','192.168.0.0/16']:config.redes;
+    const restringirHorario=config.restringirHorario??false,restringirIPs=config.restringirIPs??false;
+    if(!Array.isArray(redes)||!redes.every(cidrValido)||typeof restringirHorario!=='boolean'||typeof restringirIPs!=='boolean')throw Error('ACTIVITY_CONFIG');
+    return {entregas:limite,redes,restringirHorario,restringirIPs};
   }catch(error){throw Error('ACTIVITY_CONFIG');}
 }
+function limiteActividad_(datos){return configuracionActividad_(datos).entregas;}
+function ipv4(texto) {
+  const partes = texto.split('.');
+  if (partes.length !== 4 || partes.some(p => !/^\d{1,3}$/.test(p) || Number(p) > 255)) return null;
+  return partes.reduce((n, p) => (n << 8n) | BigInt(p), 0n);
+}
+function ipv6(texto) {
+  if (!/^[0-9a-f:]+$/i.test(texto) || (texto.match(/::/g) || []).length > 1) return null;
+  const [antes, despues] = texto.split('::');
+  const grupos = t => (t ? t.split(':') : []);
+  const a = grupos(antes), b = despues === undefined ? [] : grupos(despues);
+  if(despues!==undefined&&a.length+b.length>=8)return null;
+  const todos = despues === undefined ? a : [...a, ...Array(8 - a.length - b.length).fill('0'), ...b];
+  if (todos.length !== 8 || todos.some(g => !/^[0-9a-f]{1,4}$/i.test(g))) return null;
+  return todos.reduce((n, g) => (n << 16n) | BigInt(parseInt(g, 16)), 0n);
+}
+function cidrValido(red) {
+  if(typeof red!=='string')return false;
+  const partes=red.split('/');
+  if(partes.length!==2||!/^\d{1,3}$/.test(partes[1]))return false;
+  const v6=partes[0].includes(':'),n=Number(partes[1]);
+  return n<=(v6?128:32)&&(v6?ipv6(partes[0]):ipv4(partes[0]))!==null;
+}
+
+function enRed(ip, redes) {
+  ip = String(ip || '').trim().toLowerCase();
+  const mapeada = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/.exec(ip);
+  if (mapeada) ip = mapeada[1];
+  for (const red of redes) {
+    if(!cidrValido(red))throw Error('CIDR inválido');
+    const [base, prefijo] = red.split('/');
+    const v6 = base.includes(':'), bits = v6 ? 128n : 32n;
+    const a = v6 ? ipv6(ip) : ipv4(ip), b = v6 ? ipv6(base.toLowerCase()) : ipv4(base);
+    if (a === null || b === null) continue;
+    const quitar = bits - BigInt(prefijo);
+    if (a >> quitar === b >> quitar) return true;
+  }
+  return false;
+}
+
+
 function informeAlmacenado_(codigo) {
   if(typeof codigo!=='string'||!codigo.startsWith(FORMATO_.informe))return null;
   try{
@@ -172,12 +224,12 @@ function recibirEntrega(sobre) {
     const anteriores=entregasAnteriores_(hoja,datos,sobre.submissionId);
     if(anteriores.duplicate)
       return {ok:true,submissionId:sobre.submissionId,receivedAt:new Date().toISOString(),duplicate:true};
-    const limite=limiteActividad_(datos),adicional=anteriores.count>=limite;
+    const politica=configuracionActividad_(datos),limite=politica.entregas,adicional=anteriores.count>=limite;
     const motivo=typeof datos.revisionReason==='string'?datos.revisionReason.trim():'';
     if(motivo.length>2000)throw Error('INVALID');
     if(adicional&&datos.finishReason==='voluntary'&&(motivo.match(/\p{L}/gu)||[]).length<20)throw Error('REVISION_REASON');
     const ahora = new Date(), segundos = Math.floor(datos.seconds);
-    const control = controlEntrega_(datos);
+    const control = controlEntrega_(datos,politica);
     if(adicional)control.avisos.push('entrega adicional: no sustituye ni actualiza la nota anterior');
     if(motivo)control.avisos.push('Motivo de revisión: '+motivo);
     const fila = [
@@ -195,7 +247,7 @@ function recibirEntrega(sobre) {
     Sheets.Spreadsheets.batchUpdate({ requests: [{ appendCells: { sheetId: hoja.getSheetId(), rows: [{ values: fila }], fields: 'userEnteredValue,note' } }] }, id);
     return { ok: true, submissionId: sobre.submissionId, receivedAt: ahora.toISOString(), duplicate: false };
   } catch (error) {
-    const conocidos = ['INVALID', 'HASH', 'EMAIL', 'ROUTE', 'SCHEMA', 'BUSY', 'ACTIVITY_CONFIG', 'REVISION_REASON'];
+    const conocidos = ['INVALID', 'HASH', 'EMAIL', 'ROUTE', 'SCHEMA', 'BUSY', 'ACTIVITY_CONFIG', 'REVISION_REASON', 'CONTROL_REQUIRED', 'CONTROL_INVALID', 'CONTROL_UNAVAILABLE', 'NETWORK_DENIED', 'SCHEDULE_DENIED'];
     return { ok: false, code: conocidos.includes(error.message) ? error.message : 'STORAGE' };
   } finally { if (cerrojo?.hasLock()) cerrojo.releaseLock(); }
 }

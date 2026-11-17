@@ -615,7 +615,14 @@ async function deliver(item){
    $('delivery-retry').disabled=true;
    return;
   }
-  $('delivery-status').textContent=code==='ACTIVITY_CONFIG'?'No se pudo comprobar la configuración de la actividad. Conserva el TXT y reintenta más tarde.':code==='NOT_CONFIGURED'?tr('notConfigured'):tr('deliveryFailed')+' Código para el profesor: '+code+'.';
+  const policyErrors={
+   NETWORK_DENIED:'Entrega no admitida: la IP no pertenece a las redes permitidas para esta actividad.',
+   SCHEDULE_DENIED:'Entrega no admitida: se ha realizado fuera del horario permitido para el módulo.',
+   CONTROL_REQUIRED:'No se ha obtenido el sello necesario para comprobar las restricciones. Conserva el TXT.',
+   CONTROL_INVALID:'El sello de esta entrega no es válido. Conserva el TXT y avisa al profesor.',
+   CONTROL_UNAVAILABLE:'No se pudo verificar el sello. Conserva el TXT y reintenta cuando el servidor responda.'
+  };
+  $('delivery-status').textContent=policyErrors[code]|| (code==='ACTIVITY_CONFIG'?'No se pudo comprobar la configuración de la actividad. Conserva el TXT y reintenta más tarde.':code==='NOT_CONFIGURED'?tr('notConfigured'):tr('deliveryFailed')+' Código para el profesor: '+code+'.');
   $('delivery-retry').textContent=tr('copyOpen');$('delivery-retry').disabled=false;
  }finally{delivering=false;if(!$('revision-delivery').hidden)refreshDeliveryReason();}
 }
