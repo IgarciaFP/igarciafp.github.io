@@ -18,7 +18,7 @@ async function main(){
   adapter=a;a.restore(a.empty());a.setEnabled(true);
   return {canEdit:()=>true,saveEdit:()=>{saved=a.sanitize(a.snapshot());return true;},render(){},canDownloadReport:()=>false};
  };
- for(const f of ['apartados.js','apartados-ui.js','herramientas.js','laboratorio.js'])w.eval(fs.readFileSync(path.join(root,'motor',f),'utf8'));
+ for(const f of ['apartados.js','apartados-ui.js','herramientas.js','portapapeles.js','laboratorio.js'])w.eval(fs.readFileSync(path.join(root,'motor',f),'utf8'));
  assert.equal(w.Lab.ready,true);assert.equal(d.querySelectorAll('#toolbar-tools button').length,6);
  const go=n=>d.querySelectorAll('#section-nav button')[n].click();
  const input=(el,value)=>{el.value=value;el.dispatchEvent(new w.Event('input',{bubbles:true}));};
@@ -26,6 +26,10 @@ async function main(){
  go(1);input(d.querySelector('#question-fields textarea'),'He aumentado el contraste para facilitar la lectura.');
  go(2);d.querySelectorAll('#question-fields input')[1].click();
  const full=adapter.sanitize(adapter.snapshot());assert.equal(full.sections.values.tarjeta.html,'<h1>Mi tarjeta final</h1>');assert.equal(full.sections.values.comprobacion.enlace,'1');
+ const confirmation=adapter.confirmDelivery();
+ assert.equal(d.getElementById('action-confirm-warning').hidden,false);
+ assert.ok(d.getElementById('action-confirm-warning').textContent.includes('sin responder'));
+ d.getElementById('action-confirm-cancel').click();assert.equal(await confirmation,false);
  adapter.restore(full);assert.equal(d.querySelectorAll('#question-fields input')[1].checked,true);
  const packed=await adapter.makeReport({},true,Date.now(),{finishReason:'start'});
  const text=gunzipSync(Buffer.from(packed.slice(common.format.report.length),'base64url')).toString('utf8');

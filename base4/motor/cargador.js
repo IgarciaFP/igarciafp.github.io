@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261118112710-base4';
+  const version=loaderURL.searchParams.get('v')||'20261118113226-base4';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=async path=>{
     // La configuración cambia sin necesidad de publicar otra versión del HTML.
@@ -123,6 +123,7 @@
     await script('/base/motor/seguridad.js');
     await script('/base/motor/entregas.js');
     if(sectionMode)await script('motor/apartados-ui.js');
+    await script('motor/portapapeles.js');
     await script('motor/laboratorio.js');
     if(!window.Lab.ready)throw Error('No se pudo completar el inicio. Recarga la página con Ctrl + F5.');
   } catch(error) {

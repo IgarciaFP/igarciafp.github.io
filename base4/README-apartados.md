@@ -109,11 +109,19 @@ Los apuntes se leen de `/ciclos/MODULO/uNN_es.html`. Si no se indica `unidad`, s
 
 Cambiar de apartado conserva el código, las respuestas abiertas y las alternativas seleccionadas. El guardado y la entrega incluyen todos los apartados, también las preguntas sin responder. El tiempo es común y no se reinicia al navegar. Las actividades con apartados usan un espacio de guardado propio de `base4` para no interpretar los borradores antiguos como respuestas nuevas.
 
+Al pulsar Entregar, la confirmación muestra un aviso rojo si hay preguntas QA vacías, preguntas Test sin selección o apartados webcode sin cambios en HTML, CSS o JavaScript. Las notas TXT no cuentan como cambios de código. Este aviso detecta trabajo pendiente, no comprueba si la solución es correcta; permite cancelar y revisar o entregar igualmente.
+
 Para revisar estos archivos utiliza **`base4/profesor.html`**. El visor muestra una navegación por apartados: código y resultado para `webcode`, respuestas escritas para QA y alternativa elegida para Test.
 
 El transporte mantiene el protocolo del receptor actual: el estado se serializa en fragmentos `apartados-01`, `apartados-02`, etc., de hasta 9000 caracteres. El visor los recompone antes de mostrar las respuestas. Se admiten hasta 20 apartados, 50 preguntas por apartado, 10 000 caracteres por respuesta o archivo de código y 90 000 caracteres serializados para el conjunto del estado. Si se supera el límite, se conserva el último estado válido y se avisa; no se recorta la respuesta silenciosamente.
 
 La conexión de Apps Script y el servicio de control siguen siendo los heredados de `base3`. Su política y el enlace de revisión escrito en la hoja todavía corresponden a ese despliegue; para independizar también los servicios de `base4` hay que cambiar sus rutas y publicar esos servicios. La actividad de ejemplo conserva la política de intentos del original. El nuevo visor puede abrir directamente el TXT descargado, sin modificar los servicios.
+
+## Menú contextual y portapapeles
+
+Dentro del laboratorio, el botón derecho abre un menú propio con Copiar y Pegar. Copiar utiliza la selección; Pegar inserta el contenido en el campo editable, respetando su longitud máxima y el estado de la práctica. El resultado webcode comunica estas acciones con la página mediante el token de su vista previa.
+
+Al pulsar Empezar y al pasar de una práctica activa a su finalización se solicita escribir una cadena vacía en el portapapeles. También se intenta al abandonar la página. La API del navegador requiere un contexto seguro y puede denegar permisos; las operaciones asíncronas al cerrar una pestaña pueden cancelarse. Por eso no se garantiza el borrado del portapapeles del sistema: un fallo mientras la página sigue abierta muestra un aviso y no borra las respuestas guardadas.
 
 ## Publicar una revisión
 

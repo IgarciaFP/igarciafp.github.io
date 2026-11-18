@@ -4,7 +4,7 @@
 // Sin selección de idioma ni nombre: la identificación es solo el correo del centro.
 // Seguridad y entrega son los módulos comunes de /base/motor/.
 const {config,code,sections,sectionMode}=window.Lab;
-let sectionView=null,toolbox=null;
+let sectionView=null,toolbox=null,clipboard=null;
 // Temporal en base4: poner false para restaurar las restricciones de selección y menú contextual.
 const TEMP_ALLOW_INSPECTION=true;
 if(TEMP_ALLOW_INSPECTION){
@@ -350,6 +350,23 @@ function bridge(token,jsLine,allowInspection){
  window.alert=function(message){send('alert',['alert: '+format(message===undefined?'':message)]);};
  window.confirm=function(message){send('alert',['confirm: '+format(message===undefined?'':message)+' → false (no disponible en la vista previa)']);return false;};
  window.prompt=function(message){send('alert',['prompt: '+format(message===undefined?'':message)+' → null (no disponible en la vista previa)']);return null;};
+ var clipboardTarget=null;
+ document.addEventListener('contextmenu',function(event){
+  event.preventDefault();event.stopImmediatePropagation();clipboardTarget=event.target;
+  var el=clipboardTarget,editable=(el.tagName==='TEXTAREA'||(el.tagName==='INPUT'&&['text','search','url','tel','password','email'].indexOf(el.type)>=0))&&!el.disabled&&!el.readOnly;
+  var text=typeof el.selectionStart==='number'?el.value.slice(el.selectionStart,el.selectionEnd):String(window.getSelection()||'');
+  parent.postMessage({labClipboard:token,action:'menu',text:text.slice(0,10000),editable:editable,x:event.clientX,y:event.clientY},'*');
+ },true);
+ window.addEventListener('message',function(event){
+  if(event.source!==parent||event.data?.labClipboard!==token||event.data.action!=='paste'||typeof event.data.text!=='string')return;
+  var el=clipboardTarget;if(!el||!el.isConnected||el.disabled||el.readOnly)return;
+  var text=event.data.text.slice(0,10000);
+  if(typeof el.selectionStart==='number'){
+   var room=el.maxLength>=0?Math.max(0,el.maxLength-(el.value.length-(el.selectionEnd-el.selectionStart))):text.length;
+   el.setRangeText(text.slice(0,room),el.selectionStart,el.selectionEnd,'end');
+  }else if(el.tagName==='INPUT')el.value=text.slice(0,el.maxLength>=0?el.maxLength:text.length);else return;
+  el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));
+ });
  function stop(event){
   var key=String(event.key||'').toLowerCase();
   if(allowInspection&&(event.type==='contextmenu'||(event.type.startsWith('key')&&(key==='control'||((event.ctrlKey||event.metaKey)&&['a','arrowleft','arrowright','arrowup','arrowdown','home','end'].indexOf(key)>=0)))))return;
@@ -521,7 +538,7 @@ function syncToolbar(){
 let recoverySelecting=false,recoveryReading=false;
 function afterRender(state,ctx){
  const previousPhase=phase;
- phase=state.phase;if(!['active','paused'].includes(phase))toolbox?.close();if(previousPhase!==phase&&(phase==='closing'||phase==='submitted'))closeActionModal(false);
+ phase=state.phase;if(['active','paused'].includes(previousPhase)&&!['active','paused'].includes(phase))void clipboard?.clear();if(!['active','paused'].includes(phase))toolbox?.close();if(previousPhase!==phase&&(phase==='closing'||phase==='submitted'))closeActionModal(false);
  if(phase==='closing'||phase==='submitted')panelEntered=true;clock();syncToolbar();
  $('practice-reset').hidden=!config.allowRestart;
  $('practice-save').hidden=!config.allowSaveRecovery;
@@ -902,10 +919,21 @@ $('practice-reset').addEventListener('click',()=>{if(config.allowRestart)guard.a
 // ---------------------------------------------------------------- Arranque
 
 let modalResolve=null;
-function confirmActionModal(message){
+function incompleteWarning(){
+ const pending=sectionView?window.LabSections.incomplete(sections,sectionView.snapshot()):
+  LANGS.slice(0,3).some(id=>$(id).value!==start[id])?[]:[{title:config.title,type:'webcode',count:1}];
+ if(!pending.length)return '';
+ const english=uiLanguage==='en';
+ return (english?'There is unfinished work:\n':'Quedan apartados o preguntas sin completar:\n')+
+  pending.map(item=>'• '+item.title+': '+(item.type==='webcode'?(english?'no code changes':'sin cambios en el código'):item.count+(english?' unanswered question(s)':' pregunta(s) sin responder'))).join('\n')+
+  (english?'\nYou can cancel to review them or confirm submission anyway.':'\nPuedes cancelar para revisarlos o confirmar la entrega igualmente.');
+}
+function confirmActionModal(message,warning=''){
  if(modalResolve)return Promise.resolve(false);
  const dialog=$('action-confirm');
  $('action-confirm-message').textContent=message;
+ $('action-confirm-warning').textContent=warning;
+ $('action-confirm-warning').hidden=!warning;
  return new Promise(resolve=>{modalResolve=resolve;dialog.showModal();});
 }
 function closeActionModal(accepted=false){
@@ -1002,6 +1030,8 @@ window.addEventListener('unhandledrejection',e=>{
  const where=/([\w.-]+\.js)[^\n]*?:(\d+):\d+/.exec(String(reason?.stack||''));
  lastError=String(reason?.message||reason)+(where?' ('+where[1]+':'+where[2]+')':'');
 },true);
+clipboard=window.createLabClipboard?.({canEdit:()=>phase==='ready'||!!guard?.canEdit(),language:()=>uiLanguage});
+window.addEventListener('message',event=>clipboard?.preview(event,frame,previewToken));
 toolbox=window.LabTools?.init(config.tools,{language:()=>uiLanguage});
 if(sectionMode){
  sectionView=window.createSectionView(sections,{
@@ -1012,7 +1042,7 @@ if(sectionMode){
   save:()=>{invalidate();guard.saveEdit();}
  });
 }
-guard=window.createPracticeGuard({config,deliveryPanel:true,onAttemptStart,confirmDelivery:()=>confirmActionModal('Vas a finalizar la práctica. Al aceptar no podrás volver al editor. ¿Entregar la práctica?'),timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
+guard=window.createPracticeGuard({config,deliveryPanel:true,onAttemptStart,confirmDelivery:()=>confirmActionModal('Vas a finalizar la práctica. Al aceptar no podrás volver al editor. ¿Entregar la práctica?',incompleteWarning()),timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
  async saveBeforeReset(current){
   if(current==='paused')return savePracticeDocument();
   if(current==='submitted')return downloadReceipt(rememberDelivery($('report').value));

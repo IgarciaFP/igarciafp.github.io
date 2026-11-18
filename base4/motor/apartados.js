@@ -73,13 +73,26 @@ function pack(sections,data){
  const state=sanitize(sections,data),json=JSON.stringify(state);
  return Array.from({length:Math.ceil(json.length/9000)},(_,i)=>({question:'apartados-'+String(i+1).padStart(2,'0'),answer:json.slice(i*9000,(i+1)*9000),status:'teacher-review'}));
 }
+function incomplete(sections,data){
+ const state=sanitize(sections,data),pending=[];
+ for(const section of sections){
+  const values=state.values[section.id];
+  if(section.type==='webcode'){
+   if(!LANGS.slice(0,3).some(key=>values[key]!==section.code[key]))pending.push({id:section.id,title:section.title,type:section.type,count:1});
+  }else{
+   const count=section.questions.filter(q=>!values[q.id].trim()).length;
+   if(count)pending.push({id:section.id,title:section.title,type:section.type,count});
+  }
+ }
+ return pending;
+}
 function unpack(answers){
  const parts=answers.filter(a=>/^apartados-\d{2}$/.test(a.question)).sort((a,b)=>a.question.localeCompare(b.question));
  if(!parts.length)return null;
  if(parts.length>10||parts.some((p,i)=>p.question!=='apartados-'+String(i+1).padStart(2,'0')||typeof p.answer!=='string'||p.answer.length>9000))fail('Entrega de apartados incompleta.');
  return JSON.parse(parts.map(p=>p.answer).join(''));
 }
-const api={LANGS,definitions,questions,load,initial,sanitize,pack,unpack};
+const api={LANGS,definitions,questions,load,initial,sanitize,pack,unpack,incomplete};
 if(typeof module==='object'&&module.exports)module.exports=api;
 else root.LabSections=api;
 })(typeof window==='object'?window:globalThis);

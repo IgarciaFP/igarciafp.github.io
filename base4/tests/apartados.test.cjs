@@ -13,7 +13,11 @@ const sections=[{id:'web',type:'webcode',code:{html:'<p>Hola</p>',css:'',js:'',t
  {id:'razona',type:'qa',questions:[{id:'p',text:'¿Por qué?'}]},
  {id:'elige',type:'test',questions:[{id:'p',text:'Elige',options:['A','B','C','D']}]}];
 const state=S.initial(sections);
+assert.equal(S.incomplete(sections,state).length,3);
+const notesOnly=S.initial(sections);notesOnly.values.web.txt='Notas';assert.equal(S.incomplete(sections,notesOnly).length,3);
 state.values.web.html='<h1>Entrega</h1>';state.values.razona.p='Una respuesta con tildes y símbolos <>&.';state.values.elige.p='2';state.active='elige';
+assert.equal(S.incomplete(sections,state).length,0);
+const blank=structuredClone(state);blank.values.razona.p='  ';blank.values.elige.p='0';assert.equal(S.incomplete(sections,blank).length,1);
 assert.deepEqual(S.unpack(S.pack(sections,state)),state);
 const sanitized=S.sanitize(sections,state);sanitized.values.web.html='Otro';assert.notEqual(state.values.web.html,'Otro');
 const invalid=structuredClone(state);invalid.values.elige.p='4';assert.throws(()=>S.sanitize(sections,invalid));

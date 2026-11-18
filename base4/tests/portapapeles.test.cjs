@@ -1,0 +1,20 @@
+const {JSDOM}=require('jsdom'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+async function main(){
+ const dom=new JSDOM('<button id="guard-start">Start</button><textarea id="code" maxlength="12">hola mundo</textarea>',{runScripts:'outside-only',url:'https://example.com/base4/'}),w=dom.window,d=w.document;
+ let text='externo',deny=false,editable=true,inputs=0;
+ Object.defineProperty(w.navigator,'clipboard',{value:{writeText:async value=>{if(deny)throw Error('Denied');text=value;},readText:async()=>{if(deny)throw Error('Denied');return text;}}});
+ w.eval(fs.readFileSync(path.join(__dirname,'../motor/portapapeles.js'),'utf8'));
+ const api=w.createLabClipboard({canEdit:()=>editable});const field=d.getElementById('code');field.addEventListener('input',()=>inputs++);
+ const tick=()=>new Promise(r=>setTimeout(r,0));
+ function menu(){field.dispatchEvent(new w.MouseEvent('contextmenu',{bubbles:true,cancelable:true,clientX:20,clientY:20}));return [...d.querySelectorAll('#clipboard-menu button')];}
+ field.setSelectionRange(0,4);let buttons=menu();assert.deepEqual(buttons.map(b=>b.textContent),['Copiar','Pegar']);buttons[0].click();await tick();assert.equal(text,'hola');
+ text='tierra';field.setSelectionRange(5,10);buttons=menu();buttons[1].click();await tick();assert.equal(field.value,'hola tierra');assert.equal(inputs,1);
+ editable=false;buttons=menu();assert.equal(buttons[1].disabled,true);editable=true;
+ d.getElementById('guard-start').click();await tick();assert.equal(text,'');
+ text='algo';assert.equal(await api.clear(),true);assert.equal(text,'');
+ deny=true;assert.equal(await api.clear(),false);assert.equal(d.getElementById('clipboard-status').hidden,false);
+ deny=false;text='salir';w.dispatchEvent(new w.Event('beforeunload'));await tick();assert.equal(text,'');
+ const frame={contentWindow:{},getBoundingClientRect:()=>({left:0,top:0,width:100,height:100})};api.hide();api.preview({source:{},data:{labClipboard:'ok',action:'menu',text:'x'}},frame,'ok');assert.equal(d.getElementById('clipboard-menu').hidden,true);
+ dom.window.close();console.log('OK: copy/paste-only menu, insertion events, locked fields, entry/exit clearing and denied access.');
+}
+main().catch(e=>{console.error(e);process.exit(1);});
