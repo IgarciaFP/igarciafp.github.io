@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict'),T=require('../motor/herramientas.js');
+const defaults=T.settings({},'diw','02-01-prueba');assert.ok(Object.values(defaults.enabled).every(Boolean));assert.equal(defaults.notes,'/ciclos/diw/u02_es.html');
+const custom=T.settings({herramientas:{traductor:false,apuntes:false},unidad:3},'ssii','01-01-prueba');assert.equal(custom.enabled.traductor,false);assert.equal(custom.enabled.calculadora,true);assert.equal(custom.notes,'/ciclos/ssii/u03_es.html');
+assert.throws(()=>T.settings({herramientas:{traductor:'no'}},'diw','x'));
+assert.throws(()=>T.settings({herramientas:{desconocida:true}},'diw','x'));
+assert.equal(T.convert('1010',2,10),'10');assert.equal(T.convert('255',10,16),'FF');assert.equal(T.convert('ff',16,10),'255');assert.equal(T.convert('0',10,2),'0');
+const huge='123456789012345678901234567890';assert.equal(T.convert(T.convert(huge,10,2),2,10),huge);
+assert.throws(()=>T.convert('102',2,10));assert.throws(()=>T.convert('-1',10,16));assert.throws(()=>T.convert('1.2',10,2));
+assert.equal(T.calculate('(12 + 8) / 4'),'5');assert.equal(T.calculate('-2 * (3 + 4)'),'-14');assert.equal(T.calculate('0.1+0.2'),'0.3');assert.equal(T.calculate('7%4'),'3');
+assert.throws(()=>T.calculate('1/0'));assert.throws(()=>T.calculate('alert(1)'));assert.throws(()=>T.calculate('2+'));assert.throws(()=>T.calculate('(2+3'));
+console.log('OK: tool defaults/overrides, unit links, exact conversions and calculator without eval.');

@@ -3,7 +3,8 @@
 // Motor del taller de código: editor HTML/CSS/JS a la izquierda y resultado a la derecha.
 // Sin selección de idioma ni nombre: la identificación es solo el correo del centro.
 // Seguridad y entrega son los módulos comunes de /base/motor/.
-const {config,code}=window.Lab;
+const {config,code,sections,sectionMode}=window.Lab;
+let sectionView=null,toolbox=null;
 // Temporal en base4: poner false para restaurar las restricciones de selección y menú contextual.
 const TEMP_ALLOW_INSPECTION=true;
 if(TEMP_ALLOW_INSPECTION){
@@ -112,6 +113,7 @@ function renderStartIcon(){
  button.setAttribute('aria-label',tr('start'));button.title=tr('start');
 }
 function applyUILanguage(){
+ toolbox?.language();
  document.documentElement.lang=uiLanguage;
  document.querySelectorAll('[data-text]').forEach(el=>el.textContent=tr(el.dataset.text));
  const languageAction=uiLanguage==='es'?'Cambiar a inglés':'Switch to Spanish';
@@ -273,6 +275,7 @@ let reportRevision=0;
 function invalidate(){reportRevision++;if($('report').value){$('report').value='';$('download').disabled=true;$('reportStatus').textContent=tr('changed');}}
 function edited(id){
  if(!guard.canEdit())return;
+ if(sectionView&&!sectionView.acceptCode())return;
  invalidate();guard.saveEdit();countChars();
  if(id==='txt')return; // Las notas no cambian el resultado.
  if(id==='js')previewStatus();else schedulePreview();
@@ -292,6 +295,7 @@ $('editor-restore').addEventListener('click',()=>{
   syncRestore();return;
  }
  $(id).value=start[id];$(id).scrollTop=0;
+ if(sectionView&&!sectionView.acceptCode())return;
  invalidate();guard.saveEdit();countChars();
  // El JavaScript de partida es del profesor: se ejecuta sin esperar a «Ejecutar».
  if(id==='js')ranJs=start.js;
@@ -419,6 +423,7 @@ function runPreview(){ranJs=value('js');renderPreview(value('html'),value('css')
 // en ese caso se deja pendiente y se genera cuando el taller pasa a ser visible.
 let previewDeferred=false;
 function resetPreview(){
+ if(sectionView&&!sectionView.isWeb()){previewDeferred=false;clearTimeout(previewTimer);frame.srcdoc='';return;}
  ranJs=value('js')===start.js?value('js'):null;
  if($('cuaderno').hidden){
   previewDeferred=true;clearTimeout(previewTimer);previewTimer=null;
@@ -465,7 +470,7 @@ async function encodeReport(text){
  let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);
  return config.format.report+btoa(binary).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'');
 }
-function empty(){return {values:{...start,student:''},elapsed:0,started:null,durationMs:config.durationMs,report:'',language,reportEncoding:'gzip-base64url'};}
+function empty(){return {...(sectionMode?{sections:window.LabSections.initial(sections)}:{}),values:{...code,txt:'',student:''},elapsed:0,started:null,durationMs:config.durationMs,report:'',language,reportEncoding:'gzip-base64url'};}
 function sanitize(data){
  if(!data||typeof data!=='object'||!data.values||typeof data.values!=='object'||Array.isArray(data.values))throw new Error('Borrador inválido');
  const out=empty();
@@ -486,23 +491,25 @@ function sanitize(data){
   if(!/^[a-f0-9]{32}$/.test(a.id||'')||!/^[a-f0-9]{64}$/.test(a.token||'')||!Number.isSafeInteger(a.number)||a.number<1)throw Error('Invalid attempt');
   out.attempt={id:a.id,token:a.token,number:a.number,limit:config.maxSubmissions,registered:false};
  }
+ if(sectionMode)out.sections=window.LabSections.sanitize(sections,data.sections);
  out.report=report;
  return out;
 }
 function snapshot(){
- return {attempt,values:Object.fromEntries(ids.map(id=>[id,$(id).value])),elapsed,started,durationMs,language,report:$('report').value,reportEncoding:'gzip-base64url'};
+ return {...(sectionView?{sections:sectionView.snapshot()}:{}),attempt,values:Object.fromEntries(ids.map(id=>[id,$(id).value])),elapsed,started,durationMs,language,report:$('report').value,reportEncoding:'gzip-base64url'};
 }
 function restore(data){
  attempt=data.attempt||null;initialEnvelopePromise=null;registrationPromise=null;
  emailTouched=false;
  for(const id of ids)$(id).value=data.values[id]||'';
+ if(sectionView)sectionView.restore(data.sections);
  fillCachedIdentity();
  durationMs=data.durationMs??config.durationMs;
  elapsed=data.elapsed;started=data.started??null;
  $('report').value=data.report||'';$('download').disabled=true;$('reportStatus').textContent='';
  reportRevision++;clock();countChars();resetPreview();
 }
-function setEnabled(enabled){$('answer-fields').disabled=!enabled;}
+function setEnabled(enabled){$('answer-fields').disabled=!enabled;sectionView?.enabled(enabled);}
 function setReport(report){$('report').value=report;}
 
 // ---------------------------------------------------------------- Vista según el estado
@@ -514,7 +521,7 @@ function syncToolbar(){
 let recoverySelecting=false,recoveryReading=false;
 function afterRender(state,ctx){
  const previousPhase=phase;
- phase=state.phase;if(previousPhase!==phase&&(phase==='closing'||phase==='submitted'))closeActionModal(false);
+ phase=state.phase;if(!['active','paused'].includes(phase))toolbox?.close();if(previousPhase!==phase&&(phase==='closing'||phase==='submitted'))closeActionModal(false);
  if(phase==='closing'||phase==='submitted')panelEntered=true;clock();syncToolbar();
  $('practice-reset').hidden=!config.allowRestart;
  $('practice-save').hidden=!config.allowSaveRecovery;
@@ -607,8 +614,8 @@ async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
  if(typeof CompressionStream!=='function'){$('reportStatus').textContent=tr('compressionError');return null;}
  // Solo se entregan las pestañas que difieren del código de partida. El receptor exige al
  // menos una respuesta: si no cambió nada, se envía una única respuesta vacía «sin-cambios».
- const changed=LANGS.filter(id=>$(id).value!==start[id]);
- const answers=changed.length?changed.map(id=>({question:id,answer:id==='txt'?noteComment($(id).value):$(id).value,status:$(id).value.trim()?'teacher-review':'pending'})):[{question:'sin-cambios',answer:'',status:'pending'}];
+ const changed=sectionView?sections.map(s=>s.id):LANGS.filter(id=>$(id).value!==start[id]);
+ const answers=sectionView?sectionView.answers():changed.length?changed.map(id=>({question:id,answer:id==='txt'?noteComment($(id).value):$(id).value,status:$(id).value.trim()?'teacher-review':'pending'})):[{question:'sin-cambios',answer:'',status:'pending'}];
  // Sello del servidor: IP real, hora del servidor y si la entrega cumple red y horario.
  // Va ligado a esta entrega mediante la huella de su contenido. Si no se obtiene, la
  // entrega se genera igualmente y queda marcada como «sin sello».
@@ -624,7 +631,7 @@ async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
   // El servidor tampoco respondió al abrir la actividad: se entró sin comprobar red ni horario.
   if(config.control.sinComprobar)sello.accesoSinComprobar=true;
  }
- const data={attemptId:reportAttempt?.id,attemptNumber:reportAttempt?.number,exam:config.id,module:config.module,activity:config.activity,activityTitle:config.activityTitle,activityVersion:config.version,version:3,language,name:reportEmail.split('@')[0],email:reportEmail,finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:changed.length?changed:['sin-cambios'],answers,modified:changed,parameters:{},parameterLocks:{},group:'',checked:{},hints:{},notes:'',revisionReason:revisionReason.trim(),...context,sello,audit:metadata,url:location.origin+location.pathname+'?a='+config.module.toLowerCase()+'/'+config.activity};
+ const data={...(sectionView?{sectionsVersion:1,sectionDefinitions:sections.map(s=>({id:s.id,type:s.type,title:s.title,questions:s.questions}))}:{}),attemptId:reportAttempt?.id,attemptNumber:reportAttempt?.number,exam:config.id,module:config.module,activity:config.activity,activityTitle:config.activityTitle,activityVersion:config.version,version:3,language,name:reportEmail.split('@')[0],email:reportEmail,finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:changed.length?changed:['sin-cambios'],answers,modified:changed,parameters:{},parameterLocks:{},group:'',checked:{},hints:{},notes:'',revisionReason:revisionReason.trim(),...context,sello,audit:metadata,url:location.origin+location.pathname+'?a='+config.module.toLowerCase()+'/'+config.activity};
  const body=JSON.stringify(data);
  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(body))),b=>b.toString(16).padStart(2,'0')).join('');
  return encodeReport(body+'\nCódigo de comprobación: '+config.format.checksum+hash);
@@ -995,6 +1002,16 @@ window.addEventListener('unhandledrejection',e=>{
  const where=/([\w.-]+\.js)[^\n]*?:(\d+):\d+/.exec(String(reason?.stack||''));
  lastError=String(reason?.message||reason)+(where?' ('+where[1]+':'+where[2]+')':'');
 },true);
+toolbox=window.LabTools?.init(config.tools,{language:()=>uiLanguage});
+if(sectionMode){
+ sectionView=window.createSectionView(sections,{
+  canEdit:()=>!!guard?.canEdit(),
+  readCode:()=>Object.fromEntries(LANGS.map(id=>[id,$(id).value])),
+  writeCode:(initial,values)=>{Object.assign(start,initial);for(const id of LANGS)$(id).value=values[id];countChars();resetPreview();},
+  stopPreview:()=>{clearTimeout(previewTimer);previewDeferred=false;frame.srcdoc='';},
+  save:()=>{invalidate();guard.saveEdit();}
+ });
+}
 guard=window.createPracticeGuard({config,deliveryPanel:true,onAttemptStart,confirmDelivery:()=>confirmActionModal('Vas a finalizar la práctica. Al aceptar no podrás volver al editor. ¿Entregar la práctica?'),timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
  async saveBeforeReset(current){
   if(current==='paused')return savePracticeDocument();
@@ -1009,8 +1026,8 @@ guard=window.createPracticeGuard({config,deliveryPanel:true,onAttemptStart,confi
     code==='SCHEMA'?'Las cabeceras de la hoja no coinciden con las que espera el receptor publicado.':'No se pudo preparar la entrega. El código permanece bloqueado en esta página; puedes reintentar.';
   $('delivery-status').textContent=detail+' Código: '+code+'.';
  },
- isAnswer(el){return el instanceof HTMLElement&&ids.includes(el.id);},
- restoreValue(el,data){el.value=data.values[el.id]||'';}
+ isAnswer(el){return el instanceof HTMLElement&&(ids.includes(el.id)||!!sectionView?.isAnswer(el));},
+ restoreValue(el,data){if(sectionView?.isAnswer(el))sectionView.restore(data.sections);else el.value=data.values[el.id]||'';}
 });
 if(['ready','reset','review'].includes(phase))fillCachedIdentity(false);
 // Registrados después de los del controlador: añaden el detalle a su aviso de bloqueo.

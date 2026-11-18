@@ -1,223 +1,26 @@
 <!doctype html>
 <!--
-==========================================================================================
- CÓMO USAR ESTE LABORATORIO (base3 · taller de código)
-==========================================================================================
- Hay UN solo laboratorio para todas las actividades. La actividad se elige en la dirección:
-
-     https://igarciafp.github.io/base3/?a=MODULO/ACTIVIDAD
-
-     MODULO     diw, dwec o ssii
-     ACTIVIDAD  nombre de la carpeta de la actividad
-
-     Ejemplos:  …/base3/?a=diw/01-01-tarjeta-de-presentacion
-                …/base3/?a=dwec/01-01-contador-de-pulsaciones
-
- Sin el parámetro "a", con un módulo distinto o con una actividad que no exista, la página
- muestra «No se encuentra la actividad.» y no deja empezar.
-
- No hace falta tocar este archivo ni la carpeta motor/.
-
- ..........................................................................................
- 1. NOMBRE DE LAS ACTIVIDADES
- ..........................................................................................
-   Todas las actividades se nombran igual:
-
-        MODULO NN-MM-Nombre de la actividad      →   DIW02-01-Menú responsive
-
-        MODULO   diw, dwec o ssii
-        NN       número de tema, con dos cifras (02)
-        MM       número de la actividad dentro del tema, con dos cifras (01)
-
-   Ese nombre se reparte así:
-
-     · El MÓDULO es la carpeta: actividades/diw/, actividades/dwec/ o actividades/ssii/.
-     · NN-MM-nombre es la carpeta de la actividad, que es lo que va en la dirección. Las
-       direcciones solo admiten minúsculas, números y guiones, así que se escribe sin
-       tildes, eñes ni espacios:        actividades/diw/02-01-menu-responsive/
-                                        …/base3/?a=diw/02-01-menu-responsive
-     · NN-MM-Nombre de la actividad, ya con sus mayúsculas, tildes y espacios, es el
-       "title" de config.json (paso 2):      "title": "02-01-Menú responsive"
-
-   El alumno ve el nombre completo con el módulo delante, «DIW02-01-Menú responsive», en
-   la identificación, en la barra y en el nombre del archivo de entrega. En la hoja de
-   cálculo el módulo va en su columna (DIW) y el nombre en la suya (02-01-Menú responsive),
-   de modo que al ordenar por nombre las actividades quedan por tema y número.
-   Si escribes el módulo en el "title" («diw02-01-Menú responsive»), no se repite.
-
- ..........................................................................................
- 2. CREAR UNA ACTIVIDAD                             actividades/MODULO/NN-MM-nombre/
- ..........................................................................................
-   Crea la carpeta de la actividad con el nombre del paso 1. Dentro van estos archivos:
-
-     config.json       OBLIGATORIO: título, versión y todos los ajustes de la actividad
-     enunciado.html    OBLIGATORIO   texto de la actividad
-     codigo.html       opcional      código HTML de partida (pestaña HTML)
-     codigo.css        opcional      código CSS de partida (pestaña CSS)
-     codigo.js         opcional      código JavaScript de partida (pestaña JavaScript)
-
-   Lo más rápido es copiar una carpeta de ejemplo
-   (actividades/diw/01-01-tarjeta-de-presentacion/) y cambiarla.
-
-   config.json:
-
-        {
-          "title": "02-01-Menú responsive",
-          "version": "1",
-          "guardar": false,
-          "duracion": 15,
-          "entregas": 1,
-          "reiniciar": false,
-          "redes": ["185.197.0.0/16", "88.16.0.0/16"],
-          "restringirHorario": false,
-          "restringirIPs": false
-        }
-
-   "title"    Nombre de la actividad, NN-MM-Nombre (paso 1).
-   "version"  Súbela a "2", "3"… cuando cambies el enunciado o el código de partida con la
-              actividad ya en uso: así cada entrega dice con qué versión se hizo.
-
-   El identificador de la práctica (DIW-02-01-MENU-RESPONSIVE), las claves con las que
-   el navegador guarda el intento y los nombres de los archivos se generan solos a partir
-   del módulo y de la carpeta.
-
- ..........................................................................................
- 3. TEXTO DE LA ACTIVIDAD                                          enunciado.html
- ..........................................................................................
-   Escribe ahí el enunciado en HTML normal: se muestra bajo la barra superior, encima de
-   los dos paneles, en una tarjeta desplegable que aparece abierta al empezar y que el
-   alumno puede plegar pulsando «Actividad» para dejar más espacio al código. Es solo un
-   fragmento; no lleva <html>, <head> ni <body>
-
-<div id="utility-actions">
-  <button id="ui-language" type="button" aria-label="Cambiar a inglés" title="Cambiar a inglés"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a17 17 0 0 1 0 18 17 17 0 0 1 0-18Z"/></svg></button>
-</div>. Ejemplo:
-
-        <h3>Título de la actividad</h3>
-        <p>Explicación de lo que hay que conseguir.</p>
-        <ol>
-          <li><strong>HTML:</strong> primera tarea.</li>
-          <li><strong>CSS:</strong> segunda tarea, con <code>border-radius</code>.</li>
-        </ol>
-
-   Puedes usar títulos (<h3>), párrafos, listas, <strong>, <code>, tablas e imágenes. Si el
-   texto es largo, el enunciado muestra su propia barra de desplazamiento. No uses
-   atributos id que ya existan en esta página (html, css, js, txt, lab, report, student…):
-   la página comprueba los duplicados y no arranca si encuentra alguno.
-
- ..........................................................................................
- 4. CÓDIGO HTML, CSS Y JAVASCRIPT DE PARTIDA                       codigo.html / .css / .js
- ..........................................................................................
-   Los tres archivos son opcionales. Pon solo los que necesite la actividad; puede no
-   haber ninguno. El alumno encuentra cada uno ya escrito en su pestaña del editor al
-   empezar. Las pestañas CSS y JavaScript de un archivo que no existe aparecen vacías y
-   el alumno puede escribir en ellas igualmente.
-
-   Si la actividad no aporta HTML (no hay codigo.html o está vacío), la pestaña HTML no
-   empieza vacía: se carga el esqueleto de documento de contenido/esqueleto.html
-   (<!DOCTYPE html>, <head> con sus <meta> y un <body> con un <div>). Ese archivo es común
-   a todas las actividades y se puede editar.
-
-   Escribe cada lenguaje en su archivo, tal cual, sin comillas ni caracteres de escape.
-   No hay que enlazarlos entre sí: en codigo.html NO pongas <link rel="stylesheet"> ni
-   <script src="…">, porque la página une las tres pestañas al mostrar el resultado (el
-   CSS se aplica primero y el JavaScript se ejecuta al final, con el documento ya cargado).
-   En codigo.html basta el contenido de la página (lo que iría dentro de <body>); también
-   admite un documento completo con <!doctype html>, <head> y <body>.
-
-   Si el JavaScript de partida usa elementos que el alumno todavía tiene que crear,
-   escríbelo de forma que no falle sin ellos (por ejemplo con ?.), o la consola mostrará
-   un error nada más empezar.
-
-   El editor tiene además una cuarta pestaña, TXT, siempre vacía al empezar, para que el
-   alumno anote lo que necesite. No afecta al resultado y no tiene archivo de partida. En
-   la entrega, esas notas llegan como respuesta "txt", dentro de un comentario /* … */.
-
-   Cada archivo admite 10 000 caracteres como máximo. El resultado no puede cargar hojas
-   de estilo ni scripts de otros sitios (Bootstrap por CDN, por ejemplo) ni hacer
-   peticiones de red; las imágenes y las fuentes por https sí se cargan. Tampoco funcionan
-   confirm() ni prompt(); alert() se muestra en la consola.
-
- ..........................................................................................
- 5. ENTREGA Y AJUSTES COMUNES A TODAS LAS ACTIVIDADES              contenido/config.json
- ..........................................................................................
-   "emailDomain"  Dominio obligatorio del correo con el que se identifica el alumno.
-   "delivery"     Forma de entrega, la misma para todas las actividades:
-
-   A) ARCHIVO (por defecto). No necesita ninguna configuración externa:
-
-        "delivery": { "type": "archivo" }
-
-      Al pulsar «Entregar», el navegador del alumno descarga UN ÚNICO archivo de texto,
-      llamado «MÓDULO NN-MM-NOMBRE_USUARIO.txt», comprimido (gzip) y
-      codificado (base64). El usuario es la parte del correo anterior a la arroba:
-      «DIW02-01-Menú responsive_ana.perez.txt».
-      Contiene SOLO las pestañas que el alumno ha modificado respecto al código de partida
-      (HTML, CSS, JavaScript y sus notas), junto con el módulo, la actividad, el correo,
-      el tiempo empleado y el registro de incidencias. El alumno te lo hace llegar como
-      le indiques (Moodle, Classroom, correo…).
-      Para revisarlos, abre profesor.html (en esta misma carpeta) y arrastra los archivos,
-      aunque sean de actividades distintas: muestra el código de cada alumno con sus
-      cambios resaltados y su resultado.
-
-   B) HOJA DE CÁLCULO. Además de descargar el archivo, envía la entrega a tu hoja de
-      Google Sheets (pestaña «Entregas», columnas A a I) a través del receptor de Apps
-      Script de la carpeta receptor/. La hoja sigue siendo privada. Los pasos para
-      instalarlo están en receptor/README.md.
-
-        "delivery": {
-          "type": "apps-script",
-          "endpoint": "https://script.google.com/macros/s/ID_DE_LA_IMPLEMENTACION/exec"
-        }
-
-      Con "apps-script" y "endpoint" vacío, la página avisa de que falta el destino de
-      entrega y el botón «Empezar» permanece desactivado.
-
-   "control"      Control de red y horario, común a todas las actividades:
-
-        "control": { "servidor": "https://base3-control.SUBDOMINIO.workers.dev", "restringirAcceso": false }
-
-      Con una dirección en "servidor", cada entrega lleva un sello con la IP y la hora.
-      Con "restringirAcceso": false (valor predeterminado), se permite realizar la práctica
-      fuera de red y horario, y se registran esos avisos en Incidencias. IP solo contiene
-      la dirección, o queda vacía si no hay un sello utilizable.
-      En el futuro, "restringirAcceso": true aplicará el bloqueo al abrir la actividad.
-      Si el servidor no responde, se deja entrar y la entrega lo indica.
-      El servidor es el Cloudflare Worker de la carpeta servidor/: la red, el horario, la
-      clave del profesor y los pasos para publicarlo están en servidor/README.md.
-      Con "servidor" vacío, el control está desactivado.
-      Para entrar tú fuera de horario o desde otra red, añade &clave=TU_CLAVE a la
-      dirección. La clave se guarda solo en Cloudflare, nunca en este repositorio.
-
-   No cambies "format" (común a todos los laboratorios) ni "requireFullName" (debe ser
-   false para que no se pida el nombre).
-
- ..........................................................................................
- ANTES DE PUBLICAR
- ..........................................................................................
-   · Si modificas archivos de motor/ o este mismo, cambia el valor de "v=" en las tres
-     direcciones de este archivo que lo llevan (dos <link> y un <script>), para que los
-     navegadores no usen la versión anterior guardada en caché. Para crear o cambiar
-     actividades no hace falta.
-   · Para probar en tu ordenador, ejecuta  python3 -m http.server 8000  en la raíz del
-     repositorio y abre http://localhost:8000/base3/?a=diw/01-01-tarjeta-de-presentacion (no funciona abriendo
-     el archivo con doble clic, y necesita la carpeta /base/motor/ del mismo sitio).
-   · Más detalles en README.md.
-==========================================================================================
+Laboratorio base4. La actividad se selecciona con ?a=MODULO/ACTIVIDAD.
+Cada carpeta de actividad configura sus apartados y herramientas en config.json.
+Formatos y ejemplos: README-apartados.md. Antes de publicar: scripts/revision.mjs.
 -->
 <html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Laboratorio</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261118-base4-03">
-<link rel="stylesheet" href="motor/taller.css?v=20261118-base4-03">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261118110656-base4">
+<link rel="stylesheet" href="motor/taller.css?v=20261118110656-base4">
 </head>
 <body>
+<div id="utility-actions">
+  <button id="ui-language" type="button" aria-label="Cambiar a inglés" title="Cambiar a inglés"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a17 17 0 0 1 0 18 17 17 0 0 1 0-18Z"/></svg></button>
+</div>
 
 <header id="practice-toolbar" hidden>
   <div class="toolbar-actions">
     <span id="toolbar-attempts"></span>
+    <div id="toolbar-tools" role="group" aria-label="Herramientas / Tools"></div>
     <button id="practice-save" type="button" hidden disabled data-text="savePractice">Guardar y pausar</button>
     <button id="practice-recover" type="button" hidden disabled data-text="recoverPractice">Recuperar práctica</button>
     <button id="practice-reset" type="button" hidden disabled data-text="toolbarReset">Reiniciar</button>
@@ -269,12 +72,17 @@
 
 <main id="cuaderno" class="taller" hidden inert>
 <form id="lab" novalidate autocomplete="off">
+  <nav id="section-nav" aria-label="Apartados / Sections" hidden></nav>
+  <h2 id="section-heading"></h2>
+  <p id="section-status" role="status"></p>
 
   <!-- 1. Enunciado de la actividad (contenido/enunciado.html): tarjeta desplegable, abierta al inicio. -->
   <details id="statement" class="enunciado" open>
     <summary><span class="eyebrow" data-text="activity">Actividad</span></summary>
     <div id="activity-text" class="enunciado-texto"></div>
   </details>
+
+  <fieldset id="question-fields" disabled hidden aria-label="Respuestas / Answers"></fieldset>
 
   <!-- 2. Dos paneles: editor a la izquierda y resultado a la derecha. -->
   <div class="paneles">
@@ -383,9 +191,9 @@
   </div>
 </dialog>
 
-<footer class="lab-version">Última revisión del HTML: <time datetime="2026-11-17T18:36:42.134Z">17/11/26, 19:36</time> · Europe/Madrid</footer>
+<footer class="lab-version">Última revisión del HTML: <time datetime="2026-11-18T11:06:56.291Z">18/11/26, 12:06</time> · Europe/Madrid</footer>
 
-<script src="motor/cargador.js?v=20261118-base4-03" defer></script>
+<script src="motor/cargador.js?v=20261118110656-base4" defer></script>
 </body>
 </html>
 

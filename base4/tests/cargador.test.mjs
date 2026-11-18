@@ -1,14 +1,18 @@
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url);
+const LabSections=require('../motor/apartados.js');
+const LabTools=require('../motor/herramientas.js');
 const source=readFileSync(new URL('../motor/cargador.js',import.meta.url),'utf8');
 async function run(files,failures={},overrides={}){
- const calls={},requests=[],els={},window={};
+ const calls={},requests=[],els={},window={LabSections,LabTools};
  const settings={title:'Prueba',version:'1',...overrides,...(files===undefined?{}:{archivos:files})};
  const common={emailDomain:'g.educaand.es',requireFullName:false,delivery:{type:'archivo'},format:{report:'SSII3G.',checksum:'SSII3-'}};
  const get=id=>els[id]||={hidden:false,textContent:''};
  const data={'contenido/config.json':common,'actividades/diw/prueba/config.json':settings,'actividades/diw/prueba/enunciado.html':'Texto','contenido/esqueleto.html':'<html></html>','actividades/diw/prueba/codigo.html':'<h1>Prueba</h1>','actividades/diw/prueba/codigo.css':'h1{color:white}'};
- const document={currentScript:{src:'https://example.com/base3/motor/cargador.js'},getElementById:get,querySelectorAll:()=>[],createElement:()=>({}),body:{append:el=>{window.Lab.ready=true;el.onload();}}};
+ const document={currentScript:{src:'https://example.com/base3/motor/cargador.js'},getElementById:get,querySelectorAll:()=>[],createElement:()=>({}),body:{append:el=>{if(window.Lab)window.Lab.ready=true;el.onload();}}};
  await vm.runInNewContext(source,{window,document,URL,URLSearchParams,AbortSignal,location:{search:'?a=diw/prueba'},setTimeout:fn=>fn(),console:{error(){}},
   fetch:async (url,options)=>{
    requests.push({url:String(url),options});

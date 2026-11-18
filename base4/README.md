@@ -1,3 +1,5 @@
+> **base4:** consulta [Apartados y herramientas](README-apartados.md) para configurar webcode, QA, Test y los paneles de la barra superior. Las actividades sin apartados conservan el funcionamiento descrito a continuación.
+
 # Laboratorio de taller de código (base3)
 
 Variante de [`/base/`](../base/README.md) para ejercicios de HTML, CSS y JavaScript. Mantiene la barra, las incidencias y el guardado de la plantilla común, con estas diferencias:

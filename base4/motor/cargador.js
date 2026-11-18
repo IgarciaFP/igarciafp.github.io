@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261117-base3-33';
+  const version=loaderURL.searchParams.get('v')||'20261118110656-base4';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=async path=>{
     // La configuración cambia sin necesidad de publicar otra versión del HTML.
@@ -68,12 +68,9 @@
       typeof settings.restringirHorario!=='boolean'||typeof settings.restringirIPs!=='boolean'||
       !Array.isArray(settings.redes)||!settings.redes.every(red=>typeof red==='string'&&red.includes('/')))
       throw Error('Revisa guardar, duracion, entregas, reiniciar, redes, restringirHorario y restringirIPs en el config.json de la actividad.');
-    const files=supplied.archivos;
-    if(files!==undefined&&(!Array.isArray(files)||files.some(ext=>!['html','css','js'].includes(ext))||new Set(files).size!==files.length))
-      throw Error('archivos debe ser una lista sin duplicados con html, css o js.');
-    // Un archivo no declarado no se solicita: su ausencia no depende del estado HTTP de un proxy.
-    const readCode=ext=>files===undefined?optional(folder+'codigo.'+ext):
-      files.includes(ext)?read(folder+'codigo.'+ext).then(r=>r.text()):Promise.resolve('');
+    await script('motor/apartados.js');
+    await script('motor/herramientas.js');
+    const tools=window.LabTools.settings(settings,mod,slug);
     const allowSaveRecovery=settings.guardar,minutes=settings.duracion;
     // El servidor comprueba red y horario. En modo de registro no se bloquea el acceso.
     // Solo control.restringirAcceso === true aplica la negativa del servidor.
@@ -92,30 +89,24 @@
       if(answer&&typeof answer.ok==='boolean'){if(!answer.ok&&common.control?.restringirAcceso===true){notFound();return;}}
       else unchecked=true;
     }
-    const activity=supplied,statementResponse=await fetchAsset(folder+'enunciado.html');
-    if(statementResponse.status===404){notFound();return;}
-    if(!statementResponse.ok)throw Error('No se pudo cargar la actividad.');
-    const [statement,ownHtml,css,js,skeleton]=await Promise.all([
-      statementResponse.text(),
-      readCode('html'),readCode('css'),readCode('js'),
-      optional('contenido/esqueleto.html')
-    ]);
-    // Sin HTML de partida (no hay codigo.html o está vacío), la pestaña HTML empieza con el esqueleto común.
-    const html=ownHtml.trim()?ownHtml:skeleton;
+    const activity=supplied;
+    const sections=await window.LabSections.load(activity,folder,read,optional);
+    const sectionMode=activity.apartados!==undefined||sections[0].type!=='webcode';
+    const code=sections[0].code||{html:'',css:'',js:'',txt:''};
+    const statement=sections[0].statement;
     if(!common.emailDomain||!common.format?.report||!common.format?.checksum||common.requireFullName!==false||
       !['archivo','apps-script'].includes(common.delivery?.type)||
       (common.delivery.type==='apps-script'&&typeof common.delivery.endpoint!=='string'))throw Error('Configuración incompleta o inválida.');
     if(typeof activity.title!=='string'||!activity.title.trim()||!['string','number'].includes(typeof activity.version)||!String(activity.version).trim())
       throw Error('config.json debe indicar "title" y "version".');
-    const code={html,css,js};
     for(const [name,value]of Object.entries(code))
       if(value.length>10000)throw Error(`codigo.${name} supera los 10000 caracteres que admite el editor.`);
     // Identidad y claves derivadas de módulo y actividad: no hay que configurarlas a mano.
-    const MOD=mod.toUpperCase(),id=MOD+'-'+slug.toUpperCase(),store='base3-'+mod+'-'+slug;
+    const MOD=mod.toUpperCase(),id=MOD+'-'+slug.toUpperCase(),store=(sectionMode?'base4-sections-':'base3-')+mod+'-'+slug;
     // Nombre de la actividad: «NN-MM-Nombre» (tema y número de actividad). Se muestra con el
     // módulo delante: «DIW02-01-Nombre». Si el título ya lo lleva escrito, no se repite.
     const name=activity.title.trim().replace(new RegExp('^'+mod+'\\s*','i'),'').trim()||activity.title.trim();
-    const config={...common,allowSaveRecovery,allowRestart:settings.reiniciar,maxSubmissions:settings.entregas,durationMs:Math.round(minutes*60000),module:MOD,activity:slug,id,title:MOD+name,
+    const config={...common,tools,allowSaveRecovery,allowRestart:settings.reiniciar,maxSubmissions:settings.entregas,durationMs:Math.round(minutes*60000),module:MOD,activity:slug,id,title:MOD+name,
       filePrefix:mod+'-'+slug,version:String(activity.version).trim(),
       storage:{key:store+'-v1',legacyKey:store+'-anterior-v1',recovery:store+'-ultima-entrega-v1'},
       activityTitle:name,control:server?{servidor:server,clave:key,sinComprobar:unchecked}:null,
@@ -127,10 +118,11 @@
       seen.add(el.id);
     }
     document.getElementById('student').placeholder='nombre@'+config.emailDomain;
-    window.Lab={config,code,ready:false};
+    window.Lab={config,code,sections,sectionMode,ready:false};
     // Seguridad, entrega y estilos generales son los de la plantilla común /base/.
     await script('/base/motor/seguridad.js');
     await script('/base/motor/entregas.js');
+    if(sectionMode)await script('motor/apartados-ui.js');
     await script('motor/laboratorio.js');
     if(!window.Lab.ready)throw Error('No se pudo completar el inicio. Recarga la página con Ctrl + F5.');
   } catch(error) {

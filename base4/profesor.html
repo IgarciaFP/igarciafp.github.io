@@ -15,8 +15,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Entregas · Profesor</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261116-base3-14">
-<link rel="stylesheet" href="motor/taller.css?v=20261116-base3-14">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261118110656-base4">
+<link rel="stylesheet" href="motor/taller.css?v=20261118110656-base4">
 <style>
 .revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
 .revision h1{font-size:1.5rem;line-height:1.25;margin:0}
@@ -70,6 +70,10 @@
 #nota-key{width:220px;min-height:36px}#nota-value{width:120px;min-height:36px}
 #nota-comments{display:block;width:100%;box-sizing:border-box;margin-top:6px;resize:vertical}
 #nota-session,#nota-status{font-size:.85rem}#nota-status{margin:8px 0 0}
+#review-sections{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+#review-sections[hidden],#review-questions[hidden]{display:none}
+#review-sections button[aria-current=true]{background:var(--blue);color:white}
+#review-questions>section{background:white;border:1px solid var(--line);border-radius:12px;padding:20px;margin:12px 0}
 </style>
 </head>
 <body>
@@ -117,6 +121,8 @@
         <textarea id="nota-comments" rows="3" maxlength="10000" disabled></textarea>
         <p id="nota-status" role="status" aria-live="polite"></p>
       </section>
+      <nav id="review-sections" aria-label="Apartados" hidden></nav>
+      <div id="review-questions" hidden></div>
       <div class="paneles">
         <section class="panel">
           <header class="panel-cabecera">
@@ -152,7 +158,8 @@
   </div>
 </main>
 
-<script src="motor/notas.js?v=20261117-notas-2"></script>
+<script src="motor/apartados.js?v=20261118110656-base4"></script>
+<script src="motor/notas.js?v=20261118110656-base4"></script>
 <script>
 (async () => {
 'use strict';
@@ -191,11 +198,13 @@ function activityOf(mod,slug){
   const response=await fetchFile(folder+'config.json');
   if(!response.ok)return null;
   const info=await response.json();
+  const read=async path=>{const r=await fetchFile(path);if(!r.ok)throw Error(path);return r;};
+  const sections=await window.LabSections.load(info,folder,read,async path=>{const r=await fetchFile(path);if(r.status===404)return '';if(!r.ok)throw Error(path);return r.text();});
   const code=ext=>Array.isArray(info.archivos)&&!info.archivos.includes(ext)?Promise.resolve(''):optional('codigo.'+ext);
   const [ownHtml,css,js]=await Promise.all([code('html'),code('css'),code('js')]);
   // Igual que el laboratorio: sin HTML de partida, la pestaña empieza con el esqueleto común.
   const html=ownHtml.trim()?ownHtml:await skeleton;
-  return {key,title:mod.toUpperCase()+String(info.title||slug).trim().replace(new RegExp('^'+mod+'\\s*','i'),''),version:String(info.version??''),start:{html,css,js,txt:''}};
+  return {sections,key,title:mod.toUpperCase()+String(info.title||slug).trim().replace(new RegExp('^'+mod+'\\s*','i'),''),version:String(info.version??''),start:{html,css,js,txt:''}};
  })().catch(()=>null));
  return activities.get(key);
 }
@@ -240,7 +249,7 @@ async function parse(text){
   else{
    const values=data.values||{},[mod,slug]=split(doc.format),known=await activityOf(mod,slug),start=known?.start||EMPTY;
    return {id:'borrador-'+(values.student||'')+'-'+(doc.state.savedAt||''),draft:true,intact:null,email:values.student||'(sin correo)',
-    known,start,label:known?.title||String(doc.format||'Actividad desconocida'),activityVersion:known?.version,
+    sectionData:data.sections,sectionDefinitions:known?.sections,known,start,label:known?.title||String(doc.format||'Actividad desconocida'),activityVersion:known?.version,
     code:Object.fromEntries(TABS.map(t=>[t,typeof values[t]==='string'?values[t]:start[t]])),
     modified:TABS.filter(t=>typeof values[t]==='string'&&values[t]!==start[t]),
     seconds:Math.floor((data.elapsed||0)/1000),guardPolicy:doc.state.returnRemainingMs!==undefined?'return-timeout':'incident-limit',incidents:doc.state.count,audit:(doc.state.events||[]).map(e=>new Date(e.at).toISOString()+' · '+e.text).join('\n')};
@@ -253,7 +262,7 @@ async function parse(text){
  const [mod,slug]=report.module&&report.activity?[String(report.module).toLowerCase(),String(report.activity).toLowerCase()]:split(report.exam);
  const known=await activityOf(mod,slug),start=known?.start||EMPTY;
  const answers=Object.fromEntries((report.answers||[]).filter(a=>TABS.includes(a.question)&&typeof a.answer==='string').map(a=>[a.question,a.answer]));
- return {...report,id:hash,intact:hash===decoded.slice(offset+marker.length),stamp:await checkStamp(report),known,start,label:known?.title||String(report.exam||'Actividad desconocida'),
+ return {...report,sectionData:report.sectionsVersion===1?window.LabSections.unpack(report.answers||[]):null,id:hash,intact:hash===decoded.slice(offset+marker.length),stamp:await checkStamp(report),known,start,label:known?.title||String(report.exam||'Actividad desconocida'),
   email:String(report.email||'(sin correo)'),modified:TABS.filter(t=>t in answers),
   code:Object.fromEntries(TABS.map(t=>[t,t in answers?answers[t]:start[t]]))};
 }
@@ -380,6 +389,39 @@ window.addEventListener('message',event=>{
  $('console-count').textContent=errors?'· '+errors+(errors===1?' error':' errores'):'';
 });
 
+// Cada apartado reutiliza el visor web o presenta sus respuestas como texto seguro.
+function renderSections(item,chosen){
+ const nav=$('review-sections'),questions=$('review-questions'),panels=document.querySelector('.detalle>.paneles');
+ nav.replaceChildren();questions.replaceChildren();nav.hidden=!item.sectionData;questions.hidden=true;panels.hidden=false;
+ if(!item.sectionData)return;
+ const defs=item.sectionDefinitions||item.known?.sections;
+ if(!Array.isArray(defs)||!defs.length)throw Error('No se dispone de la definición de los apartados.');
+ const sections=defs.map(s=>({id:s.id,title:s.title,type:s.type,questions:s.questions,code:item.known?.sections?.find(k=>k.id===s.id)?.code||EMPTY}));
+ const state=window.LabSections.sanitize(sections,item.sectionData);
+ const selected=sections.find(s=>s.id===chosen)||sections[0];
+ for(const section of sections){
+  const button=document.createElement('button');button.type='button';button.className='secondary';button.textContent=section.title+' · '+section.type;
+  button.setAttribute('aria-current',String(section.id===selected.id));
+  button.addEventListener('click',()=>renderSections(item,section.id));nav.append(button);
+ }
+ if(selected.type==='webcode'){
+  item.start=selected.code;item.code=state.values[selected.id];item.modified=TABS.filter(t=>item.code[t]!==item.start[t]);
+  renderCode();renderResult();
+ }else{
+  panels.hidden=true;questions.hidden=false;$('vista').srcdoc='';
+  for(const q of selected.questions){
+   const article=document.createElement('section'),heading=document.createElement('h3'),answer=document.createElement('p');
+   heading.textContent=q.text;const value=state.values[selected.id][q.id];
+   if(selected.type==='test'){
+    const options=document.createElement('ol');options.type='A';
+    q.options.forEach((text,index)=>{const li=document.createElement('li');li.textContent=text;if(value===String(index)){li.style.fontWeight='700';li.textContent+=' ✓ Elegida';}options.append(li);});article.append(heading,options);
+   }else article.append(heading);
+   answer.textContent=value===''?'Sin responder':selected.type==='test'?'Respuesta: '+String.fromCharCode(65+Number(value)):value;
+   answer.style.whiteSpace='pre-wrap';article.append(answer);questions.append(article);
+  }
+ }
+}
+
 // ------------------------------------------------------------ Detalle
 function chip(text,kind){const li=document.createElement('li');li.textContent=text;if(kind)li.className=kind;return li;}
 function select(id){
@@ -411,11 +453,11 @@ function select(id){
  if(item.recoveries)chips.push(chip('Recuperaciones: '+item.recoveries));
  const blocked=Object.entries(item.actionCounts||{}).map(([k,v])=>k+' ×'+v).join(', ');
  if(blocked)chips.push(chip('Acciones bloqueadas: '+blocked));
- chips.push(chip(item.modified.length?'Modificado: '+item.modified.map(t=>NAMES[t]).join(', '):'No modificó nada',item.modified.length?'':'mal'));
+ chips.push(chip(item.sectionData?'Entrega con varios tipos de apartado':item.modified.length?'Modificado: '+item.modified.map(t=>NAMES[t]).join(', '):'No modificó nada',item.modified.length?'':'mal'));
  $('ficha').replaceChildren(...chips);
  $('auditoria').textContent=item.audit||'Sin registro.';
  if(!item.modified.includes(tab))tab=item.modified.find(t=>t!=='txt')||item.modified[0]||'html';
- renderCode();renderResult();
+ if(item.sectionData)renderSections(item);else{renderSections(item);renderCode();renderResult();}
  window.dispatchEvent(new CustomEvent('review-selection',{detail:{id:item.id,intact:item.intact,draft:!!item.draft}}));
 }
 for(const button of document.querySelectorAll('[data-tab]'))button.addEventListener('click',()=>{tab=button.dataset.tab;renderCode();});
