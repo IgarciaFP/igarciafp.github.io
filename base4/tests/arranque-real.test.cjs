@@ -34,7 +34,10 @@ async function boot(activity,recoverFile){
   assert.equal(d.querySelector('#cuaderno').hidden,false,d.querySelector('#file-delivery-status').textContent);
   const restored=JSON.parse(w.localStorage.getItem(w.Lab.config.storage.key));
   assert.equal(restored.phase,'active');assert.equal(restored.data.elapsed,120000);
-  assert.equal(restored.data.attempt.id,recoverFile.state.data.attempt.id);
+  if(recoverFile.state.phase==='submitted'){
+   assert.notEqual(restored.data.attempt.id,recoverFile.state.data.attempt.id,'Un comprobante cerrado necesita otro ID');
+   assert.notEqual(restored.data.attempt.token,recoverFile.state.data.attempt.token);
+  }else assert.equal(restored.data.attempt.id,recoverFile.state.data.attempt.id,'Una pausa conserva el intento');
   assert.equal(restored.data.durationMs,recoverFile.state.data.durationMs);
   assert.equal(restored.recoveries,recoverFile.state.recoveries+1);
   assert.equal(restored.data.values.js,recoverFile.state.data.values.js);
@@ -67,4 +70,4 @@ async function boot(activity,recoverFile){
  const exportFile={format:w.Lab.config.format.save,version:1,state:saved};
  w.close();return exportFile;
 }
-(async()=>{await boot('diw/01-01-tarjeta-de-presentacion');const saved=await boot('dwec/01-01-contador-de-pulsaciones');await boot('dwec/01-01-contador-de-pulsaciones',saved);console.log('OK: actual HTML + loader + shared guard + modules boot and start for mixed and legacy activities.');})().catch(e=>{console.error(e);process.exit(1);});
+(async()=>{await boot('diw/01-01-tarjeta-de-presentacion');const saved=await boot('dwec/01-01-contador-de-pulsaciones');await boot('dwec/01-01-contador-de-pulsaciones',saved);saved.state.phase='paused';await boot('dwec/01-01-contador-de-pulsaciones',saved);console.log('OK: actual HTML + loader + shared guard + modules boot and start for mixed and legacy activities.');})().catch(e=>{console.error(e);process.exit(1);});

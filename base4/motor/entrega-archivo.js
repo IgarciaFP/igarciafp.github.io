@@ -28,7 +28,7 @@ root.LabFileDelivery={init({config,decode,validEmail,recover}){
    if(!remaining)throw Error('Esta práctica ya ha agotado su tiempo.');
    documentText=decoded;
    $('student').value=email;$('student').dispatchEvent(new Event('input',{bubbles:true}));
-   status.textContent='Archivo: '+file.name+'\nActividad: '+config.title+'\nCorreo: '+email+'\nTiempo restante: '+Math.floor(remaining/60000)+' min '+Math.floor(remaining/1000)%60+' s.\nSe conservarán tus respuestas y se registrará la recuperación como incidencia.';
+   status.textContent='Archivo: '+file.name+'\nActividad: '+config.title+'\nCorreo: '+email+'\nTiempo restante: '+Math.floor(remaining/60000)+' min '+Math.floor(remaining/1000)%60+' s.'+(saved.state.phase==='submitted'?'\nEste comprobante finalizado se continuará como un nuevo intento.':'')+'\nSe conservarán tus respuestas y se registrará la recuperación como incidencia.';
    resume.disabled=false;
   }catch(error){status.textContent=error.message;}
   finally{busy=false;}

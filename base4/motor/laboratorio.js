@@ -1096,9 +1096,18 @@ window.addEventListener('error',showError);
 window.addEventListener('unhandledrejection',showError);
 rememberIdentity();guard.render();
 void checkOpportunities();
+let recoveredLoginText=null;
 window.LabFileDelivery?.init({config,decode:decodePracticeDocument,validEmail,
  recover(text){
-  guard.importPractice(text);
+  const finalized=JSON.parse(text).state?.phase==='submitted';
+  if(recoveredLoginText!==text){
+   guard.importPractice(text);
+  // Un comprobante finalizado puede pertenecer a una entrega ya recibida.
+  // Su ID es inmutable en el receptor; continuar requiere otro intento.
+  // onAttemptStart solo renueva la identidad: conserva respuestas y reloj.
+   if(finalized)onAttemptStart();
+   recoveredLoginText=text;
+  }
   panelEntered=false;deliveryComplete=false;lastDelivery=null;recoveryMode=false;
   rememberIdentity();
   return guard.recoverPractice();
