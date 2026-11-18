@@ -87,7 +87,11 @@
    Escribe ahí el enunciado en HTML normal: se muestra bajo la barra superior, encima de
    los dos paneles, en una tarjeta desplegable que aparece abierta al empezar y que el
    alumno puede plegar pulsando «Actividad» para dejar más espacio al código. Es solo un
-   fragmento; no lleva <html>, <head> ni <body>. Ejemplo:
+   fragmento; no lleva <html>, <head> ni <body>
+
+<div id="utility-actions">
+  <button id="ui-language" type="button" aria-label="Cambiar a inglés" title="Cambiar a inglés"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a17 17 0 0 1 0 18 17 17 0 0 1 0-18Z"/></svg></button>
+</div>. Ejemplo:
 
         <h3>Título de la actividad</h3>
         <p>Explicación de lo que hay que conseguir.</p>
@@ -206,13 +210,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Laboratorio</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261118-base4-02">
-<link rel="stylesheet" href="motor/taller.css?v=20261118-base4-02">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261118-base4-03">
+<link rel="stylesheet" href="motor/taller.css?v=20261118-base4-03">
 </head>
 <body>
 
 <header id="practice-toolbar" hidden>
   <div class="toolbar-actions">
+    <span id="toolbar-attempts"></span>
     <button id="practice-save" type="button" hidden disabled data-text="savePractice">Guardar y pausar</button>
     <button id="practice-recover" type="button" hidden disabled data-text="recoverPractice">Recuperar práctica</button>
     <button id="practice-reset" type="button" hidden disabled data-text="toolbarReset">Reiniciar</button>
@@ -245,9 +250,9 @@
             <label for="student" class="visually-hidden"><span data-text="email"></span></label>
             <input id="student" type="email" maxlength="254" required autocomplete="email" placeholder="nombre@g.educaand.es">
           </div>
+          <div class="actions start-actions"><button id="guard-start" disabled type="button" aria-label="Empezar" title="Empezar"></button></div>
         </div>
         <p id="identity-error" class="error" role="status"></p>
-        <div class="actions start-actions"><button id="guard-start" disabled type="button" aria-label="Empezar" title="Empezar"></button><select id="ui-language" aria-label="Idioma"><option value="es" lang="es">Español</option><option value="en" lang="en">English</option></select></div>
       </div>
     </div>
     <div id="active-status">
@@ -380,7 +385,7 @@
 
 <footer class="lab-version">Última revisión del HTML: <time datetime="2026-11-17T18:36:42.134Z">17/11/26, 19:36</time> · Europe/Madrid</footer>
 
-<script src="motor/cargador.js?v=20261118-base4-02" defer></script>
+<script src="motor/cargador.js?v=20261118-base4-03" defer></script>
 </body>
 </html>
 

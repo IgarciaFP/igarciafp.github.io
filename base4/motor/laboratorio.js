@@ -114,8 +114,9 @@ function renderStartIcon(){
 function applyUILanguage(){
  document.documentElement.lang=uiLanguage;
  document.querySelectorAll('[data-text]').forEach(el=>el.textContent=tr(el.dataset.text));
- $('ui-language').value=uiLanguage;
- $('ui-language').setAttribute('aria-label',tr('languageLabel'));
+ const languageAction=uiLanguage==='es'?'Cambiar a inglés':'Switch to Spanish';
+ $('ui-language').setAttribute('aria-label',languageAction);
+ $('ui-language').title=languageAction;
  $('student').placeholder=(uiLanguage==='en'?'name':'nombre')+'@'+config.emailDomain;
  $('preview-console').dataset.empty=tr('consoleEmpty');
  clearLocalButton.title=tr('clearCache');clearLocalButton.setAttribute('aria-label',tr('clearCache'));
@@ -568,10 +569,11 @@ function afterRender(state,ctx){
   $('guard-continue').textContent='Continuar en pantalla completa';
  }
  // Última entrega: accesible desde la pantalla de identificación.
- clearLocalButton.hidden=recoveryMode||phase!=='ready';
+ $('utility-actions').hidden=recoveryMode||phase!=='ready';
  $('recovery').hidden=recoveryMode||phase!=='ready';
  const attempts=cachedOpportunity();
- $('recovery-message').textContent=(lastDelivery?.receipt?tr('previousReceived'):lastDelivery?tr('pendingDelivery'):'')+' '+tr('attempts')+Math.max(0,attempts.limit-attempts.used);
+ $('recovery-message').textContent=lastDelivery?.receipt?tr('previousReceived'):lastDelivery?tr('pendingDelivery'):'';
+ $('toolbar-attempts').textContent=tr('attempts')+Math.max(0,attempts.limit-attempts.used);
  $('recover-delivery').hidden=!lastDelivery;
  $('recovery-download').hidden=fileMode||!lastDelivery;
  $('recover-delivery').textContent=tr(fileMode?'recover':lastDelivery?.receipt?'viewReceipt':'copyOpen');
@@ -914,7 +916,7 @@ clearLocalButton.id='clear-local-practice';clearLocalButton.type='button';clearL
 clearLocalButton.title='Borrar caché';
 clearLocalButton.setAttribute('aria-label','Borrar caché');
 clearLocalButton.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10a9 9 0 1 1 2.5 8.2M3 4v6h6"/></svg>';
-document.body.prepend(clearLocalButton);
+$('utility-actions').prepend(clearLocalButton);
 clearLocalButton.addEventListener('click',async()=>{
  if(phase!=='ready'||recoveryMode)return;
  if(!await confirmActionModal('Se borrarán los datos locales y el comprobante guardado de esta práctica, incluida cualquier entrega pendiente. Descarga antes el TXT si quieres conservarlo. No se borrará nada de la hoja del profesor. ¿Continuar?'))return;
@@ -935,8 +937,8 @@ document.title=config.title;
 
 $('lab-title').textContent=config.title;
 applyUILanguage();
-$('ui-language').addEventListener('change',()=>{
- uiLanguage=$('ui-language').value==='en'?'en':'es';
+$('ui-language').addEventListener('click',()=>{
+ uiLanguage=uiLanguage==='es'?'en':'es';
  try{localStorage.setItem('base4-ui-language',uiLanguage);}catch{}
  applyUILanguage();guard?.render();
 });
