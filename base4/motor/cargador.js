@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261118124032-base4';
+  const version=loaderURL.searchParams.get('v')||'20261118125927-base4';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=async path=>{
     // La configuración cambia sin necesidad de publicar otra versión del HTML.
@@ -83,7 +83,8 @@
       throw Error('Revisa guardar, duracion, entregas, reiniciar y restringirHorario en el config.json de la actividad.');
     await script('motor/apartados.js');
     await script('motor/herramientas.js');
-    const tools=window.LabTools.settings(settings,mod,slug);
+    const rubricText=await optional(folder+'rubrica.json');
+    const tools=window.LabTools.settings(settings,mod,slug,rubricText?JSON.parse(rubricText):null);
     const allowSaveRecovery=settings.guardar,minutes=settings.duracion;
     const activity=supplied;
     const sections=await window.LabSections.load(activity,folder,read,optional);

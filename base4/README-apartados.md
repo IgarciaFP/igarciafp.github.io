@@ -81,6 +81,12 @@ Esta primera implementación registra las respuestas para revisión del profesor
 
 ## Herramientas por actividad
 
+### Rúbrica opcional
+
+Si la carpeta de la actividad contiene `rubrica.json`, aparece el icono «Rúbrica de la actividad» en la barra de herramientas. Se consulta dentro del laboratorio y no modifica las respuestas. Si el archivo no existe, el icono no aparece. Para ocultarlo expresamente, usa `"herramientas": {"rubrica": false}`.
+
+El JSON contiene `titulo` y una lista `criterios`. Cada criterio tiene `titulo`, `puntos` (máximo) y `niveles`, con pares `puntos` y `descripcion`. Los niveles deben incluir cero y la puntuación máxima, sin puntuaciones repetidas ni superiores al máximo. La puntuación total se calcula sumando los máximos de los criterios. La rúbrica sirve para consulta y valoración del profesor; no realiza autocorrección. Hay un ejemplo completo en `actividades/dwec/02-02-mover-cuadrado-con-teclado/rubrica.json`.
+
 Todas las herramientas están activadas por defecto. Solo hay que declarar las que se quieren desactivar:
 
 ```json

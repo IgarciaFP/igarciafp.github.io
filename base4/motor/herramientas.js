@@ -1,12 +1,25 @@
 (function(root){
 'use strict';
-const KEYS=['colorPicker','calculadora','binarioDecimal','hexadecimalDecimal','traductor','apuntes'];
-function settings(activity,module,slug){
+const KEYS=['colorPicker','calculadora','binarioDecimal','hexadecimalDecimal','traductor','apuntes','rubrica'];
+function rubric(value){
+ if(value==null)return null;
+ const fail=()=>{throw Error('Revisa rubrica.json: título, criterios, puntos y niveles no válidos.');};
+ const text=v=>typeof v==='string'&&v.trim()&&v.length<=2000;
+ if(!text(value.titulo)||!Array.isArray(value.criterios)||!value.criterios.length||value.criterios.length>30)fail();
+ const criterios=value.criterios.map(c=>{
+  if(!text(c.titulo)||!Number.isFinite(c.puntos)||c.puntos<=0||c.puntos>100||!Array.isArray(c.niveles)||!c.niveles.length||c.niveles.length>10)fail();
+  const niveles=c.niveles.map(n=>{if(!Number.isFinite(n.puntos)||n.puntos<0||n.puntos>c.puntos||!text(n.descripcion))fail();return {puntos:n.puntos,descripcion:n.descripcion};});
+  if(new Set(niveles.map(n=>n.puntos)).size!==niveles.length||!niveles.some(n=>n.puntos===0)||!niveles.some(n=>n.puntos===c.puntos))fail();
+  return {titulo:c.titulo,puntos:c.puntos,niveles:niveles.sort((a,b)=>b.puntos-a.puntos)};
+ });
+ return {titulo:value.titulo,criterios,total:Number(criterios.reduce((sum,c)=>sum+c.puntos,0).toFixed(4))};
+}
+function settings(activity,module,slug,rubricData=null){
  const value=activity.herramientas??{};
  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!KEYS.includes(k))||Object.values(value).some(v=>typeof v!=='boolean'))throw Error('herramientas solo admite opciones booleanas: '+KEYS.join(', '));
  const unit=activity.unidad??Number(/^(\d{2})-/.exec(slug)?.[1]||0);
  if(activity.unidad!==undefined&&(!Number.isInteger(unit)||unit<1||unit>99))throw Error('unidad debe ser un número entre 1 y 99.');
- return {enabled:Object.fromEntries(KEYS.map(k=>[k,value[k]??true])),notes:unit>0?'/ciclos/'+module+'/u'+String(unit).padStart(2,'0')+'_es.html':null};
+ return {enabled:Object.fromEntries(KEYS.map(k=>[k,value[k]??true])),rubric:rubric(rubricData),notes:unit>0?'/ciclos/'+module+'/u'+String(unit).padStart(2,'0')+'_es.html':null};
 }
 function convert(value,from,to){
  const text=String(value).trim();
@@ -34,8 +47,8 @@ function calculate(source){
 }
 function init(config,{language=()=> 'es'}={}){
  const doc=root.document,bar=doc.getElementById('toolbar-tools');if(!bar)return null;
- const names={colorPicker:['Color','Color'],calculadora:['Calculadora','Calculator'],binarioDecimal:['Binario ↔ decimal','Binary ↔ decimal'],hexadecimalDecimal:['Hexadecimal ↔ decimal','Hexadecimal ↔ decimal'],traductor:['Traductor','Translator'],apuntes:['Apuntes de la unidad','Unit notes']};
- const icons={colorPicker:'◉',calculadora:'±',binarioDecimal:'01',hexadecimalDecimal:'0F',traductor:'A↔文',apuntes:'▤'};
+ const names={colorPicker:['Color','Color'],calculadora:['Calculadora','Calculator'],binarioDecimal:['Binario ↔ decimal','Binary ↔ decimal'],hexadecimalDecimal:['Hexadecimal ↔ decimal','Hexadecimal ↔ decimal'],traductor:['Traductor','Translator'],apuntes:['Apuntes de la unidad','Unit notes'],rubrica:['Rúbrica de la actividad','Activity rubric']};
+ const icons={colorPicker:'◉',calculadora:'±',binarioDecimal:'01',hexadecimalDecimal:'0F',traductor:'A↔文',apuntes:'▤',rubrica:'☷'};
  const dialog=doc.createElement('dialog');dialog.id='tool-dialog';dialog.setAttribute('aria-labelledby','tool-title');
  dialog.innerHTML='<header><h2 id="tool-title"></h2><button type="button" class="secondary" aria-label="Cerrar / Close">×</button></header><div id="tool-content"></div>';
  doc.body.append(dialog);
@@ -77,6 +90,15 @@ function init(config,{language=()=> 'es'}={}){
      status.textContent=result.responseData.translatedText;
     }catch{status.textContent='No se pudo traducir. Revisa la conexión o inténtalo más tarde. / Translation unavailable; try again later.';}finally{button.disabled=false;}
    });
+  }else if(key==='rubrica'){
+   const heading=doc.createElement('h3');heading.textContent=config.rubric.titulo;panel.append(heading);
+   const total=doc.createElement('p');total.textContent='Total: '+config.rubric.total+' puntos / points';panel.append(total);
+   for(const criterion of config.rubric.criterios){
+    const section=doc.createElement('section'),title=doc.createElement('h4'),list=doc.createElement('ul');
+    title.textContent=criterion.titulo+' · '+criterion.puntos+' puntos / points';section.append(title,list);
+    for(const level of criterion.niveles){const li=doc.createElement('li'),score=doc.createElement('strong');score.textContent=level.puntos+' — ';li.append(score,doc.createTextNode(level.descripcion));list.append(li);}
+    panel.append(section);
+   }
   }else if(key==='apuntes'){
    const host=doc.createElement('div');panel.append(host);const shadow=host.attachShadow({mode:'open'});
    if(!config.notes)status.textContent='Indica unidad en el config.json de esta actividad. / Configure the unit number.';
@@ -102,13 +124,13 @@ function init(config,{language=()=> 'es'}={}){
   }
   panel.append(status);return panel;
  }
- for(const key of KEYS)if(config.enabled[key]){
+ for(const key of KEYS)if(config.enabled[key]&&(key!=='rubrica'||config.rubric)){
   const button=doc.createElement('button');button.type='button';button.className='tool-launch';button.dataset.tool=key;button.textContent=icons[key];button.title=title(key);button.setAttribute('aria-label',title(key));
   button.addEventListener('click',()=>{selected=key;dialog.querySelector('h2').textContent=title(key);if(!panels.has(key))panels.set(key,build(key));content.replaceChildren(panels.get(key));dialog.showModal();});bar.append(button);
  }
  bar.hidden=!bar.children.length;
  return {close:()=>{if(dialog.open)dialog.close();},language(){for(const button of bar.children){button.title=title(button.dataset.tool);button.setAttribute('aria-label',button.title);}if(selected)dialog.querySelector('h2').textContent=title(selected);}};
 }
-const api={KEYS,settings,convert,calculate,init};
+const api={KEYS,settings,rubric,convert,calculate,init};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.LabTools=api;
 })(typeof window==='object'?window:globalThis);
