@@ -7,7 +7,7 @@ window.createLabClipboard=function(options){
  const copy=document.createElement('button'),paste=document.createElement('button');
  for(const button of [copy,paste]){button.type='button';button.setAttribute('role','menuitem');menu.append(button);}
  document.body.append(menu,status);
- let context=null;
+ let context=null,internalText='';
  const message=(es,en)=>language()==='en'?en:es;
  const notify=text=>{status.textContent=text;status.hidden=!text;};
  const editable=el=>el&&(el.tagName==='TEXTAREA'||(el.tagName==='INPUT'&&['text','search','url','tel','password','email'].includes(el.type)))&&!el.disabled&&!el.readOnly&&!el.closest('[inert],fieldset:disabled');
@@ -18,7 +18,7 @@ window.createLabClipboard=function(options){
  function hide(){menu.hidden=true;}
  function show(data,x,y){
   context=data;copy.textContent=message('Copiar','Copy');paste.textContent=message('Pegar','Paste');
-  copy.disabled=!data.text;paste.disabled=!data.editable||!canEdit();
+  copy.disabled=!data.text;paste.disabled=!data.editable||!canEdit()||!internalText;
   menu.hidden=false;menu.style.left='0px';menu.style.top='0px';
   menu.style.left=Math.max(4,Math.min(x,window.innerWidth-menu.offsetWidth-4))+'px';
   menu.style.top=Math.max(4,Math.min(y,window.innerHeight-menu.offsetHeight-4))+'px';
@@ -35,13 +35,14 @@ window.createLabClipboard=function(options){
  document.addEventListener('scroll',hide,true);
  copy.addEventListener('click',async()=>{
   const current=context;hide();if(!current?.text)return;
+  internalText=current.text;
   try{await navigator.clipboard.writeText(current.text);notify('');}
   catch{notify(message('El navegador no ha permitido copiar al portapapeles.','The browser did not allow copying to the clipboard.'));}
  });
  paste.addEventListener('click',async()=>{
   const current=context;hide();if(!current?.editable||!canEdit())return;
   try{
-   const text=await navigator.clipboard.readText();if(!canEdit())return;
+   const text=internalText;if(!text||!canEdit())return;
    if(current.frame){
     // El token lo comprueba el puente antes de insertar en el resultado.
     current.frame.contentWindow.postMessage({labClipboard:current.token,action:'paste',text:text.slice(0,10000)},'*');return;
@@ -77,13 +78,13 @@ window.createLabClipboard=function(options){
  }
  let clearing=0;
  async function clear({gesture=false}={}){
-  hide();
+  hide();internalText='';
   const operation=++clearing;
   let modern;
   try{modern=Promise.resolve(navigator.clipboard.writeText(' ')).then(()=>true,()=>false);}catch{modern=Promise.resolve(false);}
   const copied=gesture&&copyBlank();
   const success=(await modern)||copied;
-  if(operation===clearing)notify(success?'':message('No se pudo vaciar el portapapeles: permite el acceso al portapapeles en este sitio.','The clipboard could not be cleared: allow clipboard access for this site.'));
+  if(operation===clearing)notify(success?'':'Err. permiso');
   return success;
  }
  // Captura: copiar antes de que solicitar pantalla completa consuma la activación.

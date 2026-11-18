@@ -102,25 +102,23 @@ function init(config,{language=()=> 'es'}={}){
     panel.append(section);
    }
   }else if(key==='apuntes'){
-   const host=doc.createElement('div');panel.append(host);const shadow=host.attachShadow({mode:'open'});
+   const frame=doc.createElement('iframe');frame.className='unit-notes-frame';
+   frame.title='Apuntes de la unidad / Unit notes';frame.setAttribute('sandbox','allow-scripts');
+   frame.referrerPolicy='no-referrer';frame.hidden=true;panel.append(frame);
    if(!config.notes)status.textContent='Indica unidad en el config.json de esta actividad. / Configure the unit number.';
    else{
-    status.textContent='Cargando apuntes… / Loading notes…';
-    const load=async()=>{try{
-     const response=await fetch(config.notes,{signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('HTTP '+response.status);
-     const parsed=new DOMParser().parseFromString(await response.text(),'text/html'),main=parsed.querySelector('main')||parsed.body;
-     main.querySelectorAll('script,style,link,iframe,object,embed,form,input,button,textarea,select,nav,header,footer,base,meta,foreignObject,animate,set').forEach(el=>el.remove());
-     const base=new URL(config.notes,location.href);
-     for(const el of main.querySelectorAll('*')){
-      for(const attr of [...el.attributes])if(attr.name.startsWith('on')||['style','srcdoc','srcset','autofocus','contenteditable'].includes(attr.name))el.removeAttribute(attr.name);
-      for(const attr of ['href','xlink:href','src'])if(el.hasAttribute(attr)){
-       try{const url=new URL(el.getAttribute(attr),base);if(!['http:','https:'].includes(url.protocol))el.removeAttribute(attr);else el.setAttribute(attr,url.href);}catch{el.removeAttribute(attr);}
-      }
-      if(el.tagName==='A')el.removeAttribute('href');
-     }
-     const style=doc.createElement('style');style.textContent=':host{display:block;font:16px/1.7 system-ui;color:#111a2c}*{box-sizing:border-box}img,svg,video{max-width:100%;height:auto}pre{overflow:auto;background:#f3f6fb;padding:12px}table{border-collapse:collapse;display:block;overflow:auto}td,th{padding:8px;border:1px solid #ccd}h1,h2,h3{line-height:1.3}';
-     shadow.replaceChildren(style,...[...main.childNodes].map(n=>doc.importNode(n,true)));status.textContent='';retry.hidden=true;
-    }catch{status.textContent='No se pudieron cargar los apuntes de esta unidad. / Could not load unit notes.';retry.hidden=false;}};
+    const failed=()=>{status.textContent='No se pudieron cargar los apuntes de esta unidad. / Could not load unit notes.';retry.hidden=false;};
+    frame.addEventListener('load',()=>{if(frame.hidden)return;status.textContent='';retry.hidden=true;});
+    frame.addEventListener('error',failed);
+    const load=async()=>{
+     status.textContent='Cargando apuntes… / Loading notes…';retry.hidden=true;
+     try{
+      const url=new URL(config.notes,location.href);
+      if(url.origin!==location.origin||!/^\/ciclos\/(diw|dwec|ssii)\/u\d{2}_es\.html$/.test(url.pathname))throw Error('Invalid unit URL');
+      const response=await fetch(url,{signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('HTTP '+response.status);
+      frame.hidden=false;frame.src=url.href;
+     }catch{failed();}
+    };
     const retry=action('Reintentar / Retry',load);retry.hidden=true;void load();
    }
   }

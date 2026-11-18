@@ -10,7 +10,11 @@ async function main(){
  let panel=open('colorPicker'),hex=panel.querySelector('input');hex.value='#FF0000';hex.dispatchEvent(new w.Event('input'));assert.equal(panel.querySelector('[role=status]').textContent,'rgb(255, 0, 0)');
  panel=open('binarioDecimal');let fields=panel.querySelectorAll('input');fields[0].value='1010';fields[0].dispatchEvent(new w.Event('input'));assert.equal(fields[1].value,'10');fields[1].value='15';fields[1].dispatchEvent(new w.Event('input'));assert.equal(fields[0].value,'1111');
  panel=open('traductor');panel.querySelector('textarea').value='Hola';panel.querySelector('button').click();await new Promise(r=>setTimeout(r,10));assert.equal(panel.querySelector('[role=status]').textContent,'Hello');assert.equal(new URL(requests[0]).searchParams.get('q'),'Hola');assert.equal(new URL(requests[0]).searchParams.size,2);
- panel=open('apuntes');await new Promise(r=>setTimeout(r,10));const shadow=panel.querySelector('div').shadowRoot;assert.ok(shadow.textContent.includes('Unidad 1'));assert.equal(shadow.querySelector('script'),null);assert.equal(shadow.querySelector('[onclick]'),null);assert.equal(shadow.querySelector('a').hasAttribute('href'),false);assert.equal(shadow.querySelector('img').src,'https://example.com/ciclos/diw/img/diagrama.svg');
+ panel=open('apuntes');await new Promise(r=>setTimeout(r,10));const frame=panel.querySelector('iframe');
+ assert.equal(frame.src,'https://example.com/ciclos/diw/u01_es.html');assert.equal(frame.hidden,false);
+ assert.equal(frame.getAttribute('sandbox'),'allow-scripts');assert.equal(frame.hasAttribute('srcdoc'),false);
+ frame.dispatchEvent(new w.Event('load'));assert.equal(panel.querySelector('[role=status]').textContent,'');
+
  tools.close();d.getElementById('tool-dialog').remove();d.getElementById('toolbar-tools').replaceChildren();
  const rubric=JSON.parse(fs.readFileSync(path.join(__dirname,'../actividades/dwec/02-02-mover-cuadrado-con-teclado/rubrica.json'),'utf8'));
  rubric.criterios[0].niveles[0].descripcion='<img src=x onerror=bad()> Texto seguro';
