@@ -1,0 +1,21 @@
+const {JSDOM}=require('jsdom'),fs=require('node:fs'),assert=require('node:assert/strict');
+const html=fs.readFileSync('base4/index.html','utf8'),source=fs.readFileSync('base4/motor/entrega-archivo.js','utf8');
+const wait=()=>new Promise(r=>setTimeout(r,15));
+(async()=>{
+ const dom=new JSDOM(html,{runScripts:'outside-only'}),w=dom.window,d=w.document,$=id=>d.getElementById(id);
+ w.HTMLDialogElement.prototype.showModal=function(){this.open=true};w.HTMLDialogElement.prototype.close=function(){this.open=false};
+ const report={exam:'SSII-PRUEBA',module:'SSII',activity:'prueba',email:'alumno@g.educaand.es',answers:[{answer:'Respuesta'}],attemptId:'a'.repeat(32),url:'https://igarciafp.github.io/base4/'};
+ const saved={format:'SAVE',state:{data:{report:JSON.stringify(report),attempt:{token:'b'.repeat(64)}}}};
+ let sends=0,starts=0,received=0,fail='',resolveSend;
+ w.LabDelivery={send:async()=>{sends++;if(fail)throw Error(fail);return new Promise(resolve=>{resolveSend=resolve})},start:async()=>{starts++}};
+ w.eval(source);w.LabFileDelivery.init({config:{title:'Prueba',module:'SSII',activity:'prueba',delivery:{type:'apps-script'},format:{save:'SAVE'}},decode:async x=>x,envelope:async item=>({payload:item.code,attemptToken:item.attemptToken}),validEmail:x=>x.endsWith('@g.educaand.es'),onReceived:()=>{received++}});
+ const choose=async data=>{Object.defineProperty($('file-delivery-input'),'files',{configurable:true,value:[{name:'comprobante.txt',size:500,text:async()=>JSON.stringify(data)}]});$('file-delivery-input').dispatchEvent(new w.Event('change'));await wait();};
+ await choose(saved);assert.equal($('file-delivery-send').disabled,false);assert.equal($('student').value,report.email);assert.equal(sends,0,'no envía al seleccionar');
+ $('file-delivery-send').click();$('file-delivery-send').click();await wait();assert.equal(sends,1);assert.equal(starts,0,'conserva el intento');resolveSend({submissionId:'receipt',receivedAt:new Date().toISOString()});await wait();assert.match($('file-delivery-status').textContent,/Entrega recibida/);assert.equal(received,1);
+ $('student').value='otro@g.educaand.es';await choose(saved);assert.equal($('file-delivery-send').disabled,true);assert.match($('file-delivery-status').textContent,/no coincide/);
+ $('student').value='';await choose({...saved,state:{data:{report:JSON.stringify({...report,activity:'otra'}),attempt:saved.state.data.attempt}}});assert.equal($('file-delivery-send').disabled,true);
+ await choose(report);assert.equal($('file-delivery-send').disabled,true);assert.match($('file-delivery-status').textContent,/clave del intento/);
+ await choose({format:'SAVE',state:{data:{}}});assert.match($('file-delivery-status').textContent,/sin entrega final/);
+ await choose(saved);fail='REVISION_REASON';$('file-delivery-send').click();await wait();assert.equal($('file-delivery-reason').parentElement.hidden,false);assert.equal($('file-delivery-send').disabled,false);
+ w.close();console.log('OK: archivo, identidad, actividad, token, confirmación, doble clic y revisión.');
+})().catch(e=>{console.error(e);process.exit(1)});

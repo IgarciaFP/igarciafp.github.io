@@ -1090,6 +1090,7 @@ window.addEventListener('error',showError);
 window.addEventListener('unhandledrejection',showError);
 rememberIdentity();guard.render();
 void checkOpportunities();
+window.LabFileDelivery?.init({config,decode:decodePracticeDocument,envelope:deliveryEnvelope,encode:encodeReport,validEmail,onReceived:async(item,receipt)=>{item.receipt=receipt;persistDelivery(item);await recordSubmission(item);}});
 window.Lab.ready=true;
 })();
 
