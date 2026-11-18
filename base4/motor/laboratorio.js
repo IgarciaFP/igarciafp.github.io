@@ -4,6 +4,18 @@
 // Sin selección de idioma ni nombre: la identificación es solo el correo del centro.
 // Seguridad y entrega son los módulos comunes de /base/motor/.
 const {config,code}=window.Lab;
+// Temporal en base4: poner false para restaurar las restricciones de selección y menú contextual.
+const TEMP_ALLOW_INSPECTION=true;
+if(TEMP_ALLOW_INSPECTION){
+ document.documentElement.classList.add('allow-inspection');
+ const installGuards=window.installPracticeInputGuards;
+ window.installPracticeInputGuards=(doc,blockAction,blockClipboard)=>installGuards(doc,event=>{
+  const key=String(event.key||'').toLowerCase();
+  if(event.type==='contextmenu'||event.button===2||event.type==='selectstart'||
+    (event.type.startsWith('key')&&(key==='control'||((event.ctrlKey||event.metaKey)&&['a','arrowleft','arrowright','arrowup','arrowdown','home','end'].includes(key)))))return;
+  blockAction(event);
+ },blockClipboard);
+}
 const $=id=>document.getElementById(id);
 // Pestañas del editor. «txt» son notas del alumno: no forman parte del resultado.
 const LANGS=['html','css','js','txt'];
@@ -279,7 +291,7 @@ const frame=$('preview');
 const CSP=config.preview?.csp||"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: https:; media-src data: https:; font-src data: https:; form-action 'none'; base-uri 'none'";
 const attr=text=>text.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
 // Se ejecuta DENTRO de la vista previa, antes que el código del alumno.
-function bridge(token,jsLine){
+function bridge(token,jsLine,allowInspection){
  var parent=window.parent,sent=0;
  function format(value){
   if(typeof value==='string')return value;
@@ -304,7 +316,11 @@ function bridge(token,jsLine){
  window.alert=function(message){send('alert',['alert: '+format(message===undefined?'':message)]);};
  window.confirm=function(message){send('alert',['confirm: '+format(message===undefined?'':message)+' → false (no disponible en la vista previa)']);return false;};
  window.prompt=function(message){send('alert',['prompt: '+format(message===undefined?'':message)+' → null (no disponible en la vista previa)']);return null;};
- function stop(event){event.preventDefault();event.stopImmediatePropagation();}
+ function stop(event){
+  var key=String(event.key||'').toLowerCase();
+  if(allowInspection&&(event.type==='contextmenu'||(event.type.startsWith('key')&&(key==='control'||((event.ctrlKey||event.metaKey)&&['a','arrowleft','arrowright','arrowup','arrowdown','home','end'].indexOf(key)>=0)))))return;
+  event.preventDefault();event.stopImmediatePropagation();
+ }
  ['contextmenu','copy','cut','paste','dragstart','drop'].forEach(function(type){document.addEventListener(type,stop,true);});
  ['keydown','keypress','keyup'].forEach(function(type){document.addEventListener(type,function(event){
   var key=String(event.key||'').toLowerCase();
@@ -326,7 +342,7 @@ function bridge(token,jsLine){
 const lines=text=>text.split('\n').length-1;
 function previewDocument(html,css,js,token){
  const head='<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="'+attr(CSP)+'"><script>('+bridge+')('+JSON.stringify(token)+',';
- const body=')<\/script><style>'+css.replace(/<\/style/gi,'<\\/style')+'</style>'+html+'<script>';
+ const body=','+JSON.stringify(TEMP_ALLOW_INSPECTION)+')<\/script><style>'+css.replace(/<\/style/gi,'<\\/style')+'</style>'+html+'<script>';
  return head+(lines(head)+lines(body)+1)+body+js.replace(/<\/script/gi,'<\\/script')+'<\/script>';
 }
 let previewToken='',pingId=0,pongId=0,noticeLoads=0,previewTimer=null,ranJs=null,shown={html:null,css:null,js:null};
@@ -523,6 +539,7 @@ function afterRender(state,ctx){
   $('guard-continue').textContent='Continuar en pantalla completa';
  }
  // Última entrega: accesible desde la pantalla de identificación.
+ clearLocalButton.hidden=recoveryMode||phase!=='ready';
  $('recovery').hidden=recoveryMode||phase!=='ready';
  const attempts=cachedOpportunity();
  $('recovery-message').textContent=(lastDelivery?.receipt?tr('previousReceived'):lastDelivery?tr('pendingDelivery'):'')+' Intentos restantes: '+Math.max(0,attempts.limit-attempts.used);
@@ -867,8 +884,8 @@ const clearLocalButton=document.createElement('button');
 clearLocalButton.id='clear-local-practice';clearLocalButton.type='button';clearLocalButton.className='secondary';
 clearLocalButton.title='Borrar caché';
 clearLocalButton.setAttribute('aria-label','Borrar caché');
-clearLocalButton.textContent='Borrar caché';
-$('recover-delivery').before(clearLocalButton);
+clearLocalButton.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10a9 9 0 1 1 2.5 8.2M3 4v6h6"/></svg>';
+document.body.prepend(clearLocalButton);
 clearLocalButton.addEventListener('click',async()=>{
  if(phase!=='ready'||recoveryMode)return;
  if(!await confirmActionModal('Se borrarán los datos locales y el comprobante guardado de esta práctica, incluida cualquier entrega pendiente. Descarga antes el TXT si quieres conservarlo. No se borrará nada de la hoja del profesor. ¿Continuar?'))return;
@@ -884,7 +901,6 @@ for(const [id,anchor]of [['receipt-download','delivery-retry'],['recovery-downlo
  const button=document.createElement('button');button.id=id;button.type='button';button.className='secondary';button.dataset.text='receipt';$(anchor).after(button);
  button.addEventListener('click',()=>downloadReceipt(guard.canDownloadReport()?rememberDelivery($('report').value):lastDelivery));
 }
-$('recover-delivery').before(clearLocalButton);
 const receiptStatus=document.createElement('p');receiptStatus.id='receipt-status';receiptStatus.setAttribute('role','status');$('delivery-actions').after(receiptStatus);
 document.title=config.title;
 
