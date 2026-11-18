@@ -121,9 +121,12 @@
           <input id="nota-value" type="text" inputmode="decimal" maxlength="100" placeholder="Sin calificar" disabled>
           <button id="nota-save" type="button" disabled>Guardar nota y comentarios</button>
           <button id="nota-refresh" type="button" class="secondary" disabled>Actualizar nota</button>
+          <button id="nota-email" type="button" class="secondary" disabled>Enviar por email</button>
+          <button id="nota-copy-email" type="button" class="secondary" disabled>Copiar texto del correo</button>
         </div>
         <label for="nota-comments">Comentarios a la nota</label>
         <textarea id="nota-comments" rows="3" maxlength="10000" disabled></textarea>
+        <p id="correo-status" role="status" aria-live="polite">El correo incluye la entrega completa y la nota y los comentarios visibles. Se abre en tu aplicación de correo para confirmar el envío.</p>
         <p id="nota-status" role="status" aria-live="polite"></p>
       </section>
       <nav id="review-sections" aria-label="Apartados" hidden></nav>
@@ -166,7 +169,8 @@
 </main>
 
 <script src="motor/apartados.js?v=20261118201222-base4"></script>
-<script src="motor/notas.js?v=20261118201222-base4"></script>
+<script src="motor/correo-profesor.js?v=20261118-email"></script>
+<script src="motor/notas.js?v=20261118-email"></script>
 <script>
 (async () => {
 'use strict';
@@ -471,6 +475,7 @@ function renderSections(item,chosen){
 function chip(text,kind){const li=document.createElement('li');li.textContent=text;if(kind)li.className=kind;return li;}
 function select(id){
  current=id;const item=items.get(id);renderList();if(!item)return;
+ $('correo-status').textContent='El correo incluye la entrega completa y la nota y los comentarios visibles. Se abre en tu aplicación de correo para confirmar el envío.';
  $('alumno').textContent=item.email;
  const chips=[];
  if(item.draft)chips.push(chip('Práctica guardada sin entregar','mal'));
@@ -510,6 +515,31 @@ $('cambios').addEventListener('change',renderCode);
 $('con-js').addEventListener('change',renderResult);
 $('recargar').addEventListener('click',renderResult);
 $('vaciar').addEventListener('click',()=>{items.clear();current=null;window.dispatchEvent(new CustomEvent('review-selection',{detail:null}));$('avisos').replaceChildren();$('vista').srcdoc='';renderList();});
+
+
+// El mensaje se construye al pulsar: nunca reutiliza otra entrega ni otra calificación.
+function emailMessage(){
+ const item=items.get(current);
+ if(!item||$('nota-value').disabled)throw Error('Selecciona una entrega y carga su nota antes de preparar el correo.');
+ window.ReviewEmail.address(item.email);
+ return {item,message:window.ReviewEmail.build(item,$('nota-value').value,$('nota-comments').value)};
+}
+$('nota-email').addEventListener('click',()=>{
+ try{
+  const {item,message}=emailMessage();
+  const link=document.createElement('a');
+  link.href=window.ReviewEmail.uri(item.email,message);
+  link.click();
+  $('correo-status').textContent='Correo preparado para '+item.email+'. Confirma el envío en tu aplicación de correo. Si no se abre o falta texto por la longitud del mensaje, usa «Copiar texto del correo» y pégalo en el correo.';
+ }catch(error){$('correo-status').textContent=error.message;}
+});
+$('nota-copy-email').addEventListener('click',async()=>{
+ try{
+  const {item,message}=emailMessage();
+  await navigator.clipboard.writeText('Para: '+item.email+'\nAsunto: '+message.subject+'\n\n'+message.body);
+  $('correo-status').textContent='Texto completo copiado. Pégalo en tu aplicación de correo.';
+ }catch(error){$('correo-status').textContent='No se pudo copiar el correo: '+error.message;}
+});
 
 // ------------------------------------------------------------ Entrada de archivos
 async function add(files){
