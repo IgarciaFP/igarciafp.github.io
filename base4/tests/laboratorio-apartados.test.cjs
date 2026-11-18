@@ -36,6 +36,10 @@ async function main(){
  const report=JSON.parse(text.split('\nCódigo de comprobación: ')[0]);assert.equal(report.sectionsVersion,1);
  const restored=S.unpack(report.answers);assert.equal(restored.values.tarjeta.html,'<h1>Mi tarjeta final</h1>');assert.ok(restored.values.explicacion.legibilidad.includes('contraste'));assert.equal(restored.values.comprobacion.enlace,'1');assert.equal(restored.values.comprobacion.espacio,'');
  assert.ok(report.answers.length<=10&&report.answers.every(a=>a.answer.length<=10000));
+ w.Lab.config.control={servidor:'https://control.example/base4'};
+ w.fetch=async()=>({ok:false});
+ await assert.rejects(adapter.makeReport({},true,Date.now(),{finishReason:'start'}),/NETWORK_UNVERIFIED/);
+ w.Lab.config.control=null;
  // Every tool opens within the document; neither input changes nor calculations change answers.
  const before=JSON.stringify(adapter.snapshot().sections);
  const calc=d.querySelector('[data-tool=calculadora]');calc.click();const panel=d.querySelector('#tool-content');input(panel.querySelector('input'),'2*(3+4)');panel.querySelector('button').click();assert.equal(panel.querySelector('[role=status]').textContent,'14');

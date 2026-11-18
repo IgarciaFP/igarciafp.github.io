@@ -8,8 +8,8 @@ async function boot(activity){
   w.HTMLElement.prototype.inert=false;w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};w.HTMLDialogElement.prototype.close=function(){this.open=false;};
   Object.defineProperty(w.document,'fullscreenEnabled',{value:true});w.document.hasFocus=()=>true;
   w.HTMLElement.prototype.requestFullscreen=async function(){w.document.fullscreenElement=this;w.document.dispatchEvent(new w.Event('fullscreenchange'));};w.document.exitFullscreen=async()=>{w.document.fullscreenElement=null;};
-  w.fetch=async url=>{const p=path.join(repo,new URL(url,'https://example.com/base4/').pathname),exists=fs.existsSync(p);let text=exists?fs.readFileSync(p,'utf8'):'';
-   if(p.endsWith(path.join('contenido','config.json'))){const c=JSON.parse(text);c.control={servidor:''};c.delivery={type:'archivo'};text=JSON.stringify(c);}
+  w.fetch=async url=>{if(new URL(url,'https://example.com/base4/').pathname==='/base4/acceso')return {ok:true,json:async()=>({ok:true,policy:'base4-prefix2-v1'})};const p=path.join(repo,new URL(url,'https://example.com/base4/').pathname),exists=fs.existsSync(p);let text=exists?fs.readFileSync(p,'utf8'):'';
+   if(p.endsWith(path.join('contenido','config.json'))){const c=JSON.parse(text);c.delivery={type:'archivo'};text=JSON.stringify(c);}
    return {status:exists?200:404,ok:exists,text:async()=>text,json:async()=>JSON.parse(text)};
   };
  }});

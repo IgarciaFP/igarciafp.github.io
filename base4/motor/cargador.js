@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261118113644-base4';
+  const version=loaderURL.searchParams.get('v')||'20261118120347-base4';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=async path=>{
     // La configuración cambia sin necesidad de publicar otra versión del HTML.
@@ -56,39 +56,35 @@
     if(!match){notFound();return;}
     const [,mod,slug]=match,folder=`actividades/${mod}/${slug}/`;
     const common=await read('contenido/config.json').then(r=>r.json());
+    // Sin respuesta positiva del servidor no se carga el contenido de la actividad.
+    const server=String(common.control?.servidor||'').replace(/\/+$/,'');
+    const key=new URLSearchParams(location.search).get('clave')||'';
+    let answer=null;
+    if(!/^https:\/\/[^/]+\/base4$/.test(server)){
+      stop('Acceso bloqueado','No se ha configurado correctamente el control de red de base4.');return;
+    }
+    try{
+      const response=await fetch(server+'/acceso?'+new URLSearchParams({a:mod+'/'+slug}),{cache:'no-store',signal:AbortSignal.timeout(8000)});
+      if(response.ok)answer=await response.json();
+    }catch{}
+    if(answer?.ok!==true||answer.policy!=='base4-prefix2-v1'){
+      stop('Acceso bloqueado','Solo se permite acceder desde las redes autorizadas de base4. Si no se puede verificar la IP, el acceso permanece bloqueado.');return;
+    }
     const settingsResponse=await fetchAsset(folder+'config.json');
     if(settingsResponse.status===404){notFound();return;}
     if(!settingsResponse.ok)throw Error('No se pudo cargar config.json de la actividad.');
     const supplied=await settingsResponse.json();
     if(!supplied||typeof supplied!=='object'||Array.isArray(supplied))throw Error('config.json de la actividad no es válido.');
-    const settings={guardar:false,duracion:15,entregas:1,reiniciar:false,redes:['185.197.0.0/16','88.16.0.0/16'],restringirHorario:false,restringirIPs:false,...supplied};
+    const settings={guardar:false,duracion:15,entregas:1,reiniciar:false,restringirHorario:false,...supplied};
     if(typeof settings.guardar!=='boolean'||typeof settings.reiniciar!=='boolean'||
       !Number.isFinite(settings.duracion)||settings.duracion<=0||settings.duracion>1440||
       !Number.isSafeInteger(settings.entregas)||settings.entregas<0||
-      typeof settings.restringirHorario!=='boolean'||typeof settings.restringirIPs!=='boolean'||
-      !Array.isArray(settings.redes)||!settings.redes.every(red=>typeof red==='string'&&red.includes('/')))
-      throw Error('Revisa guardar, duracion, entregas, reiniciar, redes, restringirHorario y restringirIPs en el config.json de la actividad.');
+      typeof settings.restringirHorario!=='boolean')
+      throw Error('Revisa guardar, duracion, entregas, reiniciar y restringirHorario en el config.json de la actividad.');
     await script('motor/apartados.js');
     await script('motor/herramientas.js');
     const tools=window.LabTools.settings(settings,mod,slug);
     const allowSaveRecovery=settings.guardar,minutes=settings.duracion;
-    // El servidor comprueba red y horario. En modo de registro no se bloquea el acceso.
-    // Solo control.restringirAcceso === true aplica la negativa del servidor.
-    // Si no responde, la entrega queda anotada como acceso sin comprobar.
-    const server=String(common.control?.servidor||'').replace(/\/+$/,'');
-    const key=new URLSearchParams(location.search).get('clave')||'';
-    let unchecked=false;
-    if(server){
-      if(!/^https:\/\/[^/]+$/.test(server))throw Error('"control.servidor" debe ser una dirección https sin ruta.');
-      let answer=null;
-      try{
-        const query=new URLSearchParams({a:mod+'/'+slug});if(key)query.set('clave',key);
-        const response=await fetch(server+'/acceso?'+query,{cache:'no-store',signal:AbortSignal.timeout(8000)});
-        if(response.ok)answer=await response.json();
-      }catch{}
-      if(answer&&typeof answer.ok==='boolean'){if(!answer.ok&&common.control?.restringirAcceso===true){notFound();return;}}
-      else unchecked=true;
-    }
     const activity=supplied;
     const sections=await window.LabSections.load(activity,folder,read,optional);
     const sectionMode=activity.apartados!==undefined||sections[0].type!=='webcode';
@@ -109,7 +105,7 @@
     const config={...common,tools,allowSaveRecovery,allowRestart:settings.reiniciar,maxSubmissions:settings.entregas,durationMs:Math.round(minutes*60000),module:MOD,activity:slug,id,title:MOD+name,
       filePrefix:mod+'-'+slug,version:String(activity.version).trim(),
       storage:{key:store+'-v1',legacyKey:store+'-anterior-v1',recovery:store+'-ultima-entrega-v1'},
-      activityTitle:name,control:server?{servidor:server,clave:key,sinComprobar:unchecked}:null,
+      activityTitle:name,control:{servidor:server,clave:key},
       format:{...common.format,save:id+'-SAVE'}};
     document.getElementById('activity-text').innerHTML=statement;
     const seen=new Set();

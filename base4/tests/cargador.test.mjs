@@ -6,16 +6,20 @@ const require=createRequire(import.meta.url);
 const LabSections=require('../motor/apartados.js');
 const LabTools=require('../motor/herramientas.js');
 const source=readFileSync(new URL('../motor/cargador.js',import.meta.url),'utf8');
-async function run(files,failures={},overrides={}){
+async function run(files,failures={},overrides={},access={ok:true,policy:'base4-prefix2-v1'}){
  const calls={},requests=[],els={},window={LabSections,LabTools};
  const settings={title:'Prueba',version:'1',...overrides,...(files===undefined?{}:{archivos:files})};
- const common={emailDomain:'g.educaand.es',requireFullName:false,delivery:{type:'archivo'},format:{report:'SSII3G.',checksum:'SSII3-'}};
+ const common={control:{servidor:'https://control.example/base4'},emailDomain:'g.educaand.es',requireFullName:false,delivery:{type:'archivo'},format:{report:'SSII3G.',checksum:'SSII3-'}};
  const get=id=>els[id]||={hidden:false,textContent:''};
  const data={'contenido/config.json':common,'actividades/diw/prueba/config.json':settings,'actividades/diw/prueba/enunciado.html':'Texto','contenido/esqueleto.html':'<html></html>','actividades/diw/prueba/codigo.html':'<h1>Prueba</h1>','actividades/diw/prueba/codigo.css':'h1{color:white}'};
  const document={currentScript:{src:'https://example.com/base3/motor/cargador.js'},getElementById:get,querySelectorAll:()=>[],createElement:()=>({}),body:{append:el=>{if(window.Lab)window.Lab.ready=true;el.onload();}}};
  await vm.runInNewContext(source,{window,document,URL,URLSearchParams,AbortSignal,location:{search:'?a=diw/prueba'},setTimeout:fn=>fn(),console:{error(){}},
   fetch:async (url,options)=>{
    requests.push({url:String(url),options});
+   if(new URL(url).hostname==='control.example'){
+    if(access==='timeout')throw Error('Timeout');
+    return {ok:access!==null,json:async()=>access};
+   }
    const path=new URL(url).pathname.replace('/base3/','');calls[path]=(calls[path]||0)+1;
    const failuresForPath=failures[path]||[];
    const status=failuresForPath[calls[path]-1]??(path in data?200:404);
@@ -58,3 +62,10 @@ assert.match(result.error,/Revisa guardar/);
 result=await run(['html','css'],{},{entregas:0,duracion:3});
 assert.equal(result.window.Lab.ready,true);
 assert.equal(result.window.Lab.config.durationMs,180000);
+for(const denied of [null,{ok:false},{ok:true},{ok:true,policy:'old'},'timeout']){
+ const blocked=await run(['html'],{},{redes:['0.0.0.0/0'],restringirIPs:false},denied);
+ assert.equal(blocked.window.Lab,undefined);
+ assert.match(blocked.error,/acceso permanece bloqueado/);
+ assert.equal(blocked.calls['actividades/diw/prueba/config.json'],undefined);
+}
+console.log('OK: fuera de red, fallo, timeout y servidor antiguo bloquean antes de cargar la actividad.');

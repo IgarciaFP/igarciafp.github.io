@@ -1,5 +1,6 @@
+import politicaRed from '../contenido/redes.json';
 /**
- * CONTROL DE ACCESO Y SELLO DE ENTREGA · base3
+ * CONTROL DE ACCESO Y SELLO DE ENTREGA · base4
  * Cloudflare Worker. Ve la IP real del alumno y usa la hora del servidor, dos cosas que
  * una página estática no puede comprobar por sí misma.
  *
@@ -9,12 +10,12 @@
  *   GET  /diagnostico?clave=…               → IP y horario vistos por el servidor (profesor)
  *
  * Secretos (Configuración → Variables y secretos, tipo «Secreto»), nunca en el repositorio:
- *   CLAVE_PROFESOR   clave que se añade a la dirección del laboratorio: &clave=…
+ *   CLAVE_PROFESOR   clave de diagnóstico; no permite saltarse la restricción de red
  *   SECRETO_SELLO    texto largo aleatorio con el que se firman los sellos
  */
 
 // ───────────── Ajustes: lo único que hay que tocar si cambian la red o el horario ─────────────
-const REDES = ['185.197.0.0/16', '88.16.0.0/16'];            // redes del centro (IPv4 o IPv6, en notación CIDR)
+const REDES = politicaRed.ipsPermitidas; // Política única de base4; solo dos octetos.
 const MARGEN_MINUTOS = 5;                    // margen antes y después de cada clase
 const ZONA = 'Europe/Madrid';
 const ORIGENES = ['https://igarciafp.github.io'];   // sitios que pueden usar este servidor
@@ -42,52 +43,16 @@ export function enHorario(modulo, fecha) {
   return (HORARIO[modulo]?.[dia] || []).some(([inicio, fin]) => minuto >= minutos(inicio) - MARGEN_MINUTOS && minuto <= minutos(fin) + MARGEN_MINUTOS);
 }
 
-function ipv4(texto) {
-  const partes = texto.split('.');
-  if (partes.length !== 4 || partes.some(p => !/^\d{1,3}$/.test(p) || Number(p) > 255)) return null;
-  return partes.reduce((n, p) => (n << 8n) | BigInt(p), 0n);
+function prefijoIPv4(value) {
+  let ip=String(value||'').trim().toLowerCase().split('/')[0];
+  if(ip.startsWith('::ffff:'))ip=ip.slice(7);
+  const parts=ip.split('.');
+  if(parts.length!==4||parts.some(p=>!/^\d{1,3}$/.test(p)||Number(p)>255))return null;
+  return Number(parts[0])+'.'+Number(parts[1]);
 }
-function ipv6(texto) {
-  if (!/^[0-9a-f:]+$/i.test(texto) || (texto.match(/::/g) || []).length > 1) return null;
-  const [antes, despues] = texto.split('::');
-  const grupos = t => (t ? t.split(':') : []);
-  const a = grupos(antes), b = despues === undefined ? [] : grupos(despues);
-  if(despues!==undefined&&a.length+b.length>=8)return null;
-  const todos = despues === undefined ? a : [...a, ...Array(8 - a.length - b.length).fill('0'), ...b];
-  if (todos.length !== 8 || todos.some(g => !/^[0-9a-f]{1,4}$/i.test(g))) return null;
-  return todos.reduce((n, g) => (n << 16n) | BigInt(parseInt(g, 16)), 0n);
-}
-function cidrValido(red) {
-  if(typeof red!=='string')return false;
-  const partes=red.split('/');
-  if(partes.length!==2||!/^\d{1,3}$/.test(partes[1]))return false;
-  const v6=partes[0].includes(':'),n=Number(partes[1]);
-  return n<=(v6?128:32)&&(v6?ipv6(partes[0]):ipv4(partes[0]))!==null;
-}
-
-export function enRed(ip, redes = REDES) {
-  ip = String(ip || '').trim().toLowerCase();
-  const mapeada = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/.exec(ip);
-  if (mapeada) ip = mapeada[1];
-  for (const red of redes) {
-    if(!cidrValido(red))throw Error('CIDR inválido');
-    const [base, prefijo] = red.split('/');
-    const v6 = base.includes(':'), bits = v6 ? 128n : 32n;
-    const a = v6 ? ipv6(ip) : ipv4(ip), b = v6 ? ipv6(base.toLowerCase()) : ipv4(base);
-    if (a === null || b === null) continue;
-    const quitar = bits - BigInt(prefijo);
-    if (a >> quitar === b >> quitar) return true;
-  }
-  return false;
-}
-
-async function redesActividad(actividad) {
-  const response=await fetch(ORIGENES[0]+'/base3/actividades/'+actividad[1]+'/'+actividad[2]+'/config.json',{cache:'no-store'});
-  if(response.status===404)return REDES;
-  if(!response.ok)throw Error('No se pudo leer config.json');
-  const config=await response.json(),redes=config.redes===undefined?REDES:config.redes;
-  if(!Array.isArray(redes)||!redes.every(cidrValido))throw Error('CIDR inválido');
-  return redes;
+export function enRed(ip,redes=REDES) {
+  const prefix=prefijoIPv4(ip);
+  return prefix!==null&&Array.isArray(redes)&&redes.some(red=>prefijoIPv4(red)===prefix);
 }
 
 const hex = bytes => Array.from(new Uint8Array(bytes), b => b.toString(16).padStart(2, '0')).join('');
@@ -113,7 +78,7 @@ function responder(datos, origen, estado = 200) {
 
 export default {
   async fetch(request, env) {
-    const url = new URL(request.url), ruta = url.pathname.replace(/\/+$/, '') || '/';
+    const url = new URL(request.url), ruta = url.pathname.replace(/^\/base4(?=\/|$)/,'').replace(/\/+$/, '') || '/';
     const pedido = request.headers.get('Origin');
     const permitidos = [...ORIGENES, ...String(env.ORIGENES_EXTRA || '').split(',').map(t => t.trim()).filter(Boolean)];
     const origen = permitidos.includes(pedido) ? pedido : null;
@@ -126,22 +91,20 @@ export default {
       if (request.method === 'GET' && ruta === '/acceso') {
         const actividad = ACTIVIDAD.exec(String(url.searchParams.get('a') || '').toLowerCase());
         if (!actividad) return responder({ ok: false }, origen);
-        if (await esProfesor(url.searchParams.get('clave'), env)) return responder({ ok: true, profesor: true }, origen);
-        // La negativa no explica el motivo: la página muestra «No se encuentra la actividad.».
-        return responder({ ok: enRed(ip) && enHorario(actividad[1], ahora) }, origen);
+        return responder({ ok: enRed(ip), policy: 'base4-prefix2-v1' }, origen, enRed(ip)?200:403);
       }
       if (request.method === 'POST' && ruta === '/sello') {
         const cuerpo = JSON.parse(await request.text());
         const actividad = ACTIVIDAD.exec(String(cuerpo.a || '').toLowerCase());
         if (!actividad || typeof cuerpo.email !== 'string' || cuerpo.email.length > 254 || !/^[a-f0-9]{64}$/.test(cuerpo.huella || '')) return responder({ error: 'INVALIDO' }, origen, 400);
-        const redes=await redesActividad(actividad);
+        if(!enRed(ip))return responder({error:'NETWORK_DENIED'},origen,403);
         const sello = { ip, hora: ahora.toISOString(), modulo: actividad[1], actividad: actividad[2], email: cuerpo.email.toLowerCase(), huella: cuerpo.huella,
-          enRed: enRed(ip,redes), enHorario: enHorario(actividad[1], ahora), profesor: await esProfesor(cuerpo.clave, env) };
+          enRed: enRed(ip), enHorario: enHorario(actividad[1], ahora), profesor: await esProfesor(cuerpo.clave, env) };
         return responder({ ...sello, firma: await firmar(sello, env) }, origen);
       }
       if (request.method === 'POST' && ruta === '/verificar') {
         const sello = JSON.parse(await request.text()).sello || {};
-        const valido = typeof sello.firma === 'string' && await iguales(sello.firma, await firmar(sello, env));
+        const valido = enRed(sello.ip) && sello.enRed === true && typeof sello.firma === 'string' && await iguales(sello.firma, await firmar(sello, env));
         return responder({ valido }, origen);
       }
       if (request.method === 'GET' && ruta === '/diagnostico') {

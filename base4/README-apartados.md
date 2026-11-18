@@ -105,6 +105,10 @@ El traductor ofrece español e inglés mediante MyMemory. Solo envía el texto e
 
 Los apuntes se leen de `/ciclos/MODULO/uNN_es.html`. Si no se indica `unidad`, se toman las dos primeras cifras de la carpeta de actividad (`02-01-ejemplo` corresponde a la unidad 2). Si el nombre no identifica una unidad, hay que declararla. Se muestran como contenido de lectura dentro del panel, sin ejecutar los scripts de la página original.
 
+## Red autorizada a nivel de aplicación
+
+La lista de IP está en `contenido/redes.json`, no en cada actividad. Se comparan los dos primeros octetos: `88.26`, `45.86` y `185.197`. Se han retirado `redes` y `restringirIPs` de las actividades. No hay modo permisivo ni excepción por clave del profesor. Si la IP no está autorizada o no se puede verificar, no se carga la actividad. Consulta `servidor/README.md` para la activación del controlador en el servidor compartido.
+
 ## Guardado, entrega y revisión
 
 Cambiar de apartado conserva el código, las respuestas abiertas y las alternativas seleccionadas. El guardado y la entrega incluyen todos los apartados, también las preguntas sin responder. El tiempo es común y no se reinicia al navegar. Las actividades con apartados usan un espacio de guardado propio de `base4` para no interpretar los borradores antiguos como respuestas nuevas.
@@ -117,7 +121,7 @@ Para revisar estos archivos utiliza **`base4/profesor.html`**. El visor muestra 
 
 El transporte mantiene el protocolo del receptor actual: el estado se serializa en fragmentos `apartados-01`, `apartados-02`, etc., de hasta 9000 caracteres. El visor los recompone antes de mostrar las respuestas. Se admiten hasta 20 apartados, 50 preguntas por apartado, 10 000 caracteres por respuesta o archivo de código y 90 000 caracteres serializados para el conjunto del estado. Si se supera el límite, se conserva el último estado válido y se avisa; no se recorta la respuesta silenciosamente.
 
-La conexión de Apps Script y el servicio de control siguen siendo los heredados de `base3`. Su política y el enlace de revisión escrito en la hoja todavía corresponden a ese despliegue; para independizar también los servicios de `base4` hay que cambiar sus rutas y publicar esos servicios. La actividad de ejemplo conserva la política de intentos del original. El nuevo visor puede abrir directamente el TXT descargado, sin modificar los servicios.
+El control de red de base4 utiliza la ruta propia `/base4/` del Worker compartido. La conexión de Apps Script sigue siendo la heredada de `base3`; el enlace de revisión escrito en la hoja todavía corresponde a ese despliegue independiente. El nuevo visor puede abrir directamente el TXT descargado. El cliente de base4 exige una verificación positiva de red antes de generar la entrega.
 
 ## Menú contextual y portapapeles
 

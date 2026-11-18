@@ -638,8 +638,7 @@ async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
  const changed=sectionView?sections.map(s=>s.id):LANGS.filter(id=>$(id).value!==start[id]);
  const answers=sectionView?sectionView.answers():changed.length?changed.map(id=>({question:id,answer:id==='txt'?noteComment($(id).value):$(id).value,status:$(id).value.trim()?'teacher-review':'pending'})):[{question:'sin-cambios',answer:'',status:'pending'}];
  // Sello del servidor: IP real, hora del servidor y si la entrega cumple red y horario.
- // Va ligado a esta entrega mediante la huella de su contenido. Si no se obtiene, la
- // entrega se genera igualmente y queda marcada como «sin sello».
+ // No se genera una entrega sin verificación positiva de red.
  let sello=null;
  if(config.control){
   const email=$('student').value.trim().toLowerCase();
@@ -649,8 +648,7 @@ async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
    const stamp=response.ok?await response.json():null;
    sello=stamp&&stamp.huella===huella&&typeof stamp.firma==='string'?stamp:{error:'sin-sello'};
   }catch{sello={error:'sin-sello'};}
-  // El servidor tampoco respondió al abrir la actividad: se entró sin comprobar red ni horario.
-  if(config.control.sinComprobar)sello.accesoSinComprobar=true;
+  if(!sello||sello.error||sello.enRed!==true||!/^[a-f0-9]{64}$/.test(sello.firma||''))throw Error('NETWORK_UNVERIFIED');
  }
  const data={...(sectionView?{sectionsVersion:1,sectionDefinitions:sections.map(s=>({id:s.id,type:s.type,title:s.title,questions:s.questions}))}:{}),attemptId:reportAttempt?.id,attemptNumber:reportAttempt?.number,exam:config.id,module:config.module,activity:config.activity,activityTitle:config.activityTitle,activityVersion:config.version,version:3,language,name:reportEmail.split('@')[0],email:reportEmail,finishedAt:new Date(finishedAt).toISOString(),seconds:Math.floor(timeSpent(finishedAt)/1000),presentationOrder:changed.length?changed:['sin-cambios'],answers,modified:changed,parameters:{},parameterLocks:{},group:'',checked:{},hints:{},notes:'',revisionReason:revisionReason.trim(),...context,sello,audit:metadata,url:location.origin+location.pathname+'?a='+config.module.toLowerCase()+'/'+config.activity};
  const body=JSON.stringify(data);

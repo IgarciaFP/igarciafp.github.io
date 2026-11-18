@@ -1,72 +1,40 @@
-# Servidor de control de red y horario
+# Control de red de base4
 
-`worker.js` es un Cloudflare Worker. Hace lo que una página estática no puede: ver la IP real desde la que se conecta el alumno y usar la hora del servidor, no la del ordenador del alumno.
+La lista única está en `base4/contenido/redes.json`:
 
-- **Al abrir una actividad** comprueba la red del centro y el horario del módulo, con cinco minutos de margen. El laboratorio registra el control pero permite entrar mientras `control.restringirAcceso` sea `false` (modo actual y predeterminado). Solo con `true` aplica la negativa del Worker y muestra «No se encuentra la actividad.».
-- **Al entregar** emite un sello firmado con la IP, la hora y si la entrega cumple red y horario. La entrega se genera siempre; si no cumple, queda marcada.
-- **Si el servidor no responde** (caído o bloqueado por la red), el alumno entra igualmente y la entrega queda anotada como «sin comprobar».
-
-Mientras `control.servidor` esté vacío en `contenido/config.json`, el control está desactivado.
-
-## Puesta en marcha
-
-1. Crear una cuenta gratuita en Cloudflare y, en **Workers & Pages**, crear un Worker (por ejemplo `base3-control`).
-2. Abrir el editor de código del Worker, sustituir todo su contenido por el de `worker.js` y desplegar.
-3. En la configuración del Worker, en **Variables y secretos**, añadir dos valores de tipo **Secreto**:
-   - `CLAVE_PROFESOR`: la clave con la que el profesor entra fuera de horario o desde otra red.
-   - `SECRETO_SELLO`: un texto largo y aleatorio (40 caracteres o más). No hace falta recordarlo.
-4. Copiar la dirección del Worker (`https://base3-control.SUBDOMINIO.workers.dev`) en `contenido/config.json`, sin barra final:
-
-   ```json
-   "control": { "servidor": "https://base3-control.SUBDOMINIO.workers.dev", "restringirAcceso": false }
-   ```
-
-5. Si se usa la hoja de cálculo, poner la misma dirección en `SERVIDOR_` del receptor (`receptor/Code.gs`) para que verifique los sellos.
-
-Ninguno de los dos secretos debe escribirse en el repositorio, que es público.
-
-### Alternativa: Worker conectado al repositorio de GitHub
-
-Si el Worker se creó importando este repositorio, Cloudflare intenta publicar el sitio entero y la compilación falla. Para que publique solo este servidor, en el Worker ir a **Settings → Build** y dejar:
-
-- **Root directory:** `base3/servidor`
-- **Build command:** vacío
-- **Deploy command:** `npx wrangler deploy`
-
-`wrangler.jsonc` indica qué archivo se publica. Su `name` debe coincidir con el nombre del Worker en Cloudflare (`igarciafp-github-io`); si el Worker se llama de otra forma, cambiarlo ahí. Con esta conexión, cada cambio de `worker.js` en la rama `main` se publica solo. Los secretos se añaden igual, en el panel.
-
-Si Cloudflare abre en GitHub una *pull request* de configuración automática (añade `wrangler.jsonc` y un plugin de Vite en la raíz), hay que cerrarla sin fusionar: es para publicar el sitio, no este servidor.
-
-## Comprobar desde el aula
-
-Abrir en un ordenador del aula:
-
-```
-https://base3-control.SUBDOMINIO.workers.dev/diagnostico?clave=LA_CLAVE
+```json
+{"ipsPermitidas": ["88.26.0.0", "45.86.0.0", "185.197.0.0"]}
 ```
 
-Muestra la IP que ve el servidor, si pertenece a la red, el día y la hora, y qué módulos están abiertos en ese momento. Conviene hacerlo antes del primer uso: si el centro saliera a Internet por IPv6 o por otra dirección, `enRed` sería `false` y habría que añadir esa red a `REDES`.
+El servidor compara únicamente los dos primeros octetos de la IP real recibida de Cloudflare. `88.26.1.2` y `88.26.254.200` pertenecen al mismo grupo permitido. La máscara de una dirección configurada, si aparece, no altera la comparación. Se rechazan IPv4 inválidas, direcciones desconocidas y IPv6 que no representen una IPv4 admitida.
 
-## Entrar como profesor
+La actividad ya no define `redes` ni `restringirIPs`. Tampoco existe un modo permisivo a nivel de la aplicación. Si no hay respuesta positiva del servidor, si falta configuración o si el servicio falla, el cargador bloquea el acceso antes de solicitar los archivos de la actividad. La clave del profesor no permite entrar desde otra red.
 
-Añadir la clave a la dirección de la actividad:
+`contenido/config.json` indica el punto de acceso:
 
+```json
+{"control": {"servidor": "https://igarciafp-github-io.igarciafp.workers.dev/base4"}}
 ```
-https://igarciafp.github.io/base3/?a=diw/01-01-tarjeta-de-presentacion&clave=LA_CLAVE
+
+`GET /base4/acceso` responde con la política `base4-prefix2-v1`. Un servidor antiguo que no identifique esta política no habilita el laboratorio. `POST /base4/sello` solo firma desde las redes permitidas; el cliente no genera una entrega cuando falta una verificación positiva. La comprobación del horario se conserva como información del sello, independiente de esta regla de IP.
+
+## Activación en el servidor existente
+
+El Worker utiliza `base3/servidor/worker.js` como punto de entrada. Un import del controlador de base4 y una condición derivan exclusivamente las rutas `/base4/`. Las demás rutas mantienen el controlador existente. La prueba `router-base3.test.mjs` comprueba que el código restante de base3 coincide con su versión anterior y conserva sus respuestas.
+
+La integración de Cloudflare con GitHub publica el Worker al cambiar la rama principal. Deben comprobarse tanto el despliegue de Cloudflare como el de GitHub Pages. No se necesitan cambios en los secretos existentes. `CLAVE_PROFESOR` sirve para diagnóstico, no para evitar el bloqueo de IP.
+
+## Alcance
+
+Esta regla bloquea el flujo normal de entrada y la emisión de sellos de base4. El repositorio y GitHub Pages siguen siendo públicos: el contenido publicado puede consultarse directamente, sin ejecutar el laboratorio. Para impedir también ese acceso directo se necesita un alojamiento que aplique la restricción a los archivos, no solo al controlador.
+
+El receptor de Apps Script heredado sigue siendo un despliegue independiente. La ruta nueva no modifica sus permisos ni hace privado el repositorio.
+
+## Pruebas locales
+
+```sh
+node base4/tests/redes-app.test.mjs
+node base4/tests/cargador.test.mjs
 ```
 
-Las entregas hechas así llevan la marca «clave del profesor». La clave queda visible en la barra de direcciones: no usarla en una pantalla proyectada.
-
-## Cambiar la red, el margen o el horario
-
-Las redes de entrega están en `redes` dentro del config.json de cada actividad. El margen y el horario están al principio de `worker.js` (`MARGEN_MINUTOS`, `HORARIO`); tras cambiarlos hay que desplegar el Worker. El horario está en hora de Madrid y sigue el cambio de hora. `REDES` queda como valor predeterminado y referencia del control de acceso común.
-
-Con el margen de cinco minutos, el intervalo entre las 18:35 y las 18:40 queda fuera de horario; en el modo actual se permite trabajar y se registra el aviso.
-
-## Límites
-
-El control es real para la hora y la IP de **la entrega**, porque el sello lo firma el servidor y la página del profesor y el receptor lo verifican. Para **abrir** la actividad es disuasorio: el repositorio es público, así que el enunciado y el código de partida se pueden leer en GitHub a cualquier hora, y un alumno que impida a su navegador llegar al servidor entra «sin comprobar» (su entrega lo indica).
-
-## Redes por actividad y restricciones de recepción
-
-El sello lee `redes` del `config.json` de la actividad. Los valores predeterminados son `185.197.0.0/16` y `88.16.0.0/16`. La clave y la firma se mantienen compatibles con los sellos anteriores. El receptor verifica la firma y vuelve a comparar la IP con la configuración publicada. `restringirIPs` y `restringirHorario` se aplican en el receptor, por defecto ambos desactivados. El horario sigue definido en `HORARIO`; la IP observada es la de salida a Internet, no la dirección privada tras NAT.
+Cubren los tres prefijos, los límites de octetos, las máscaras ignoradas, el rechazo sin excepción para el profesor y los fallos de comunicación que bloquean el acceso.

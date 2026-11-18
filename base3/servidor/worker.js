@@ -1,3 +1,4 @@
+import controlBase4 from '../../base4/servidor/worker.js';
 /**
  * CONTROL DE ACCESO Y SELLO DE ENTREGA · base3
  * Cloudflare Worker. Ve la IP real del alumno y usa la hora del servidor, dos cosas que
@@ -113,6 +114,7 @@ function responder(datos, origen, estado = 200) {
 
 export default {
   async fetch(request, env) {
+    if(/^\/base4(?:\/|$)/.test(new URL(request.url).pathname))return controlBase4.fetch(request,env);
     const url = new URL(request.url), ruta = url.pathname.replace(/\/+$/, '') || '/';
     const pedido = request.headers.get('Origin');
     const permitidos = [...ORIGENES, ...String(env.ORIGENES_EXTRA || '').split(',').map(t => t.trim()).filter(Boolean)];
