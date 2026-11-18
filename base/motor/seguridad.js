@@ -235,7 +235,8 @@
       $('guard-conditions').textContent = `Pantalla completa: ${s.fullscreen ? 'sí' : 'no'} · Foco: ${s.focused ? 'sí' : 'no'} · Visible: ${s.visible ? 'sí' : 'no'}`;
       $('guard-start-box').hidden = state.phase === 'active';
       $('guard-start').disabled = !supported || !!problem || busy || !!state.pending || !adapter.canStart() || state.phase === 'paused';
-      $('guard-start').textContent = state.phase === 'ready' ? 'Pantalla completa y comenzar' : 'Pantalla completa y nuevo intento vacío';
+      if(adapter.renderStartButton)adapter.renderStartButton();
+      else $('guard-start').textContent = state.phase === 'ready' ? 'Pantalla completa y comenzar' : 'Pantalla completa y nuevo intento vacío';
       $('guard-problem').hidden = !problem && supported;
       $('guard-problem-text').textContent = problemText || (!supported ? 'Este navegador no ofrece las funciones necesarias. Abre la página directamente en un navegador de escritorio compatible con pantalla completa.' : '');
       $('guard-retry').hidden = problem !== 'io';

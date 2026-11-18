@@ -25,7 +25,10 @@ async function boot(activity){
  const student=d.querySelector('#student');student.value='alumno@g.educaand.es';student.dispatchEvent(new w.Event('input',{bubbles:true}));
  assert.equal(d.querySelector('#guard-start').disabled,false);
  d.documentElement.requestFullscreen=async()=>{d.fullscreenElement=d.documentElement;d.dispatchEvent(new w.Event('fullscreenchange'));};
- d.querySelector('#guard-start').click();await new Promise(r=>setTimeout(r,100));
+ const icon=d.querySelector('#guard-start svg');
+ student.dispatchEvent(new w.Event('blur'));
+ assert.equal(d.querySelector('#guard-start svg'),icon,'El blur del correo conserva el objetivo del clic');
+ icon.dispatchEvent(new w.MouseEvent('click',{bubbles:true}));await new Promise(r=>setTimeout(r,100));
  assert.equal(d.querySelector('#cuaderno').hidden,false,errors.join('; '));
  assert.equal(d.querySelector('#practice-toolbar').hidden,false);
  assert.equal(d.querySelector('#practice-finish').textContent,w.Lab.sectionMode?'Siguiente':'Entregar');
