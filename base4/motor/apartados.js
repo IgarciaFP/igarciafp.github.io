@@ -42,7 +42,7 @@ async function load(activity,folder,read,optional){
   const values=await Promise.all(LANGS.slice(0,3).map(ext=>s.files===undefined?optional(path+'codigo.'+ext):s.files.includes(ext)?read(path+'codigo.'+ext).then(r=>r.text()):''));
   if(!values[0].trim())values[0]=await optional('contenido/esqueleto.html');
   if(values.some(v=>v.length>10000))fail('El código de partida supera los 10000 caracteres por archivo.');
-  return {...s,code:{html:values[0],css:values[1],js:values[2],txt:''}};
+  return {...s,statement,code:{html:values[0],css:values[1],js:values[2],txt:''}};
  }));
  if(JSON.stringify(sections.map(s=>({id:s.id,type:s.type,title:s.title,questions:s.questions}))).length>200000)fail('Los enunciados y alternativas superan el tamaño admitido para una actividad.');
  sanitize(sections,initial(sections));

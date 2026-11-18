@@ -16,6 +16,9 @@ async function boot(activity){
  const w=dom.window,d=w.document;
  for(let i=0;i<150&&!w.Lab?.ready&&!d.querySelector('#guard-boot-detail').textContent;i++)await new Promise(r=>setTimeout(r,20));
  assert.equal(w.Lab?.ready,true,activity+': '+d.querySelector('#guard-boot-detail').textContent+' '+errors.join('; '));
+ assert.equal(typeof w.Lab.sections[0].statement,'string');
+ assert.ok(d.querySelector('#activity-text').textContent.trim());
+ assert.ok(!d.querySelector('#activity-text').textContent.includes('undefined'));
  assert.equal(d.querySelector('#guard-boot').hidden,true);assert.ok(d.querySelector('#utility-actions button'));assert.equal(d.querySelectorAll('#toolbar-tools button').length,6);
  const missingKey=()=>{for(const type of ['keydown','keypress','keyup'])d.dispatchEvent(new w.Event(type,{bubbles:true,cancelable:true}));};
  missingKey();assert.equal(d.querySelector('#guard-boot').hidden,true,'Un evento sin key no debe bloquear la identificación');
@@ -25,10 +28,11 @@ async function boot(activity){
  d.querySelector('#guard-start').click();await new Promise(r=>setTimeout(r,100));
  assert.equal(d.querySelector('#cuaderno').hidden,false,errors.join('; '));
  assert.equal(d.querySelector('#practice-toolbar').hidden,false);
+ assert.equal(d.querySelector('#activity-text').innerHTML,w.Lab.sections[0].statement.replace(/\r\n/g,'\n'));
  missingKey();
  const shortcut=new w.Event('keydown',{bubbles:true,cancelable:true});Object.defineProperty(shortcut,'ctrlKey',{value:true});d.dispatchEvent(shortcut);
  assert.equal(d.querySelector('#guard-boot').hidden,true,'Un evento sin key tampoco debe bloquear un intento activo');
- if(w.Lab.sectionMode){assert.equal(d.querySelectorAll('#section-nav button').length,3);d.querySelectorAll('#section-nav button')[1].click();assert.equal(d.querySelector('#question-fields').hidden,false);assert.equal(d.querySelector('#question-fields').disabled,false);}
+ if(w.Lab.sectionMode){assert.equal(d.querySelectorAll('#section-nav button').length,3);d.querySelectorAll('#section-nav button')[1].click();assert.equal(d.querySelector('#question-fields').hidden,false);assert.equal(d.querySelector('#question-fields').disabled,false);d.querySelectorAll('#section-nav button')[0].click();assert.equal(d.querySelector('#activity-text').innerHTML,w.Lab.sections[0].statement.replace(/\r\n/g,'\n'));}
  assert.equal(errors.length,0,errors.join('; '));w.close();
 }
 (async()=>{await boot('diw/01-01-tarjeta-de-presentacion');await boot('dwec/01-01-contador-de-pulsaciones');console.log('OK: actual HTML + loader + shared guard + modules boot and start for mixed and legacy activities.');})().catch(e=>{console.error(e);process.exit(1);});
