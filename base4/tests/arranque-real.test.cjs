@@ -33,12 +33,12 @@ async function boot(activity,recoverFile){
   d.querySelector('#file-delivery-send').click();await new Promise(r=>setTimeout(r,100));
   assert.equal(d.querySelector('#cuaderno').hidden,false,d.querySelector('#file-delivery-status').textContent);
   const restored=JSON.parse(w.localStorage.getItem(w.Lab.config.storage.key));
-  assert.equal(restored.phase,'active');assert.equal(restored.data.elapsed,120000);
+  assert.equal(restored.phase,'active');assert.equal(restored.data.elapsed,0);
   if(recoverFile.state.phase==='submitted'){
    assert.notEqual(restored.data.attempt.id,recoverFile.state.data.attempt.id,'Un comprobante cerrado necesita otro ID');
    assert.notEqual(restored.data.attempt.token,recoverFile.state.data.attempt.token);
   }else assert.equal(restored.data.attempt.id,recoverFile.state.data.attempt.id,'Una pausa conserva el intento');
-  assert.equal(restored.data.durationMs,recoverFile.state.data.durationMs);
+  assert.equal(restored.data.durationMs,w.Lab.config.durationMs);
   assert.equal(restored.recoveries,recoverFile.state.recoveries+1);
   assert.equal(restored.data.values.js,recoverFile.state.data.values.js);
   assert.equal(restored.data.report,'');assert.equal(errors.length,0,errors.join('; '));

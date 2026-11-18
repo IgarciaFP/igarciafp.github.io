@@ -1,4 +1,4 @@
-/* Recuperación desde el login: conserva respuestas, intento y tiempo pendiente. */
+/* Recuperación desde el login: conserva respuestas y restablece el tiempo completo. */
 (function(root){
 'use strict';
 root.LabFileDelivery={init({config,decode,validEmail,recover}){
@@ -24,11 +24,12 @@ root.LabFileDelivery={init({config,decode,validEmail,recover}){
    if(current&&current!==email.toLowerCase())throw Error('El correo del archivo no coincide con el correo introducido.');
    if(!/^[a-f0-9]{32}$/.test(data.attempt?.id||'')||!/^[a-f0-9]{64}$/.test(data.attempt?.token||''))throw Error('El archivo no contiene la identificación completa del intento.');
    if(!Number.isFinite(data.elapsed)||data.elapsed<0||!Number.isFinite(data.durationMs)||data.durationMs<=0)throw Error('El archivo no contiene un tiempo válido.');
-   const remaining=Math.max(0,Math.min(data.durationMs,config.durationMs)-data.elapsed);
-   if(!remaining)throw Error('Esta práctica ya ha agotado su tiempo.');
-   documentText=decoded;
+   // Medida provisional: solo la recuperación desde el login renueva el reloj.
+   const remaining=config.durationMs;
+   data.durationMs=remaining;data.elapsed=0;data.started=null;
+   documentText=JSON.stringify(saved);
    $('student').value=email;$('student').dispatchEvent(new Event('input',{bubbles:true}));
-   status.textContent='Archivo: '+file.name+'\nActividad: '+config.title+'\nCorreo: '+email+'\nTiempo restante: '+Math.floor(remaining/60000)+' min '+Math.floor(remaining/1000)%60+' s.'+(saved.state.phase==='submitted'?'\nEste comprobante finalizado se continuará como un nuevo intento.':'')+'\nSe conservarán tus respuestas y se registrará la recuperación como incidencia.';
+   status.textContent='Archivo: '+file.name+'\nActividad: '+config.title+'\nCorreo: '+email+'\nTiempo completo disponible: '+Math.floor(remaining/60000)+' min '+Math.floor(remaining/1000)%60+' s.'+(saved.state.phase==='submitted'?'\nEste comprobante finalizado se continuará como un nuevo intento.':'')+'\nSe conservarán tus respuestas y se registrará la recuperación como incidencia.';
    resume.disabled=false;
   }catch(error){status.textContent=error.message;}
   finally{busy=false;}
