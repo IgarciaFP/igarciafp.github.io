@@ -206,8 +206,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Laboratorio</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261118-base4-01">
-<link rel="stylesheet" href="motor/taller.css?v=20261118-base4-01">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261118-base4-02">
+<link rel="stylesheet" href="motor/taller.css?v=20261118-base4-02">
 </head>
 <body>
 
@@ -242,12 +242,12 @@
       <div id="guard-start-box">
         <div class="identity">
           <div>
-            <label for="student"><span data-text="email"></span></label>
+            <label for="student" class="visually-hidden"><span data-text="email"></span></label>
             <input id="student" type="email" maxlength="254" required autocomplete="email" placeholder="nombre@g.educaand.es">
           </div>
         </div>
         <p id="identity-error" class="error" role="status"></p>
-        <div class="actions start-actions"><button id="guard-start" disabled type="button"></button></div>
+        <div class="actions start-actions"><button id="guard-start" disabled type="button" aria-label="Empezar" title="Empezar"></button><select id="ui-language" aria-label="Idioma"><option value="es" lang="es">Español</option><option value="en" lang="en">English</option></select></div>
       </div>
     </div>
     <div id="active-status">
@@ -267,7 +267,7 @@
 
   <!-- 1. Enunciado de la actividad (contenido/enunciado.html): tarjeta desplegable, abierta al inicio. -->
   <details id="statement" class="enunciado" open>
-    <summary><span class="eyebrow">Actividad</span></summary>
+    <summary><span class="eyebrow" data-text="activity">Actividad</span></summary>
     <div id="activity-text" class="enunciado-texto"></div>
   </details>
 
@@ -275,7 +275,7 @@
   <div class="paneles">
     <section class="panel" aria-labelledby="editor-title">
       <header class="panel-cabecera">
-        <h2 id="editor-title">Tu código</h2>
+        <h2 id="editor-title" data-text="yourCode">Tu código</h2>
         <div class="pestanas" role="tablist" aria-label="Lenguaje del editor">
           <button type="button" role="tab" data-editor="html" aria-controls="html">HTML</button>
           <button type="button" role="tab" data-editor="css" aria-controls="css">CSS</button>
@@ -296,17 +296,17 @@
 
     <section class="panel" aria-labelledby="preview-title">
       <header class="panel-cabecera">
-        <h2 id="preview-title">Resultado</h2>
+        <h2 id="preview-title" data-text="result">Resultado</h2>
         <span id="preview-status" class="panel-estado" role="status"></span>
-        <button id="preview-refresh" type="button" class="secondary" title="Vuelve a cargar solo el resultado, sin tocar el código, el reloj ni el resto de la página">↻ Actualizar</button>
-        <button id="preview-run" type="button">▶ Ejecutar</button>
+        <button id="preview-refresh" type="button" data-text="refresh" class="secondary" title="Vuelve a cargar solo el resultado, sin tocar el código, el reloj ni el resto de la página">↻ Actualizar</button>
+        <button id="preview-run" type="button" data-text="run">▶ Ejecutar</button>
       </header>
       <p class="resize-hint">Arrastra la esquina inferior derecha del resultado para cambiar su ancho y alto.</p>
       <div class="preview-resizer">
       <iframe id="preview" class="vista" title="Resultado de tu código" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe>
       </div>
       <details id="console-box" class="consola" open>
-        <summary>Consola <span id="console-count"></span></summary>
+        <summary><span data-text="console">Consola</span> <span id="console-count"></span></summary>
         <ol id="preview-console" aria-live="polite"></ol>
       </details>
     </section>
@@ -380,7 +380,7 @@
 
 <footer class="lab-version">Última revisión del HTML: <time datetime="2026-11-17T18:36:42.134Z">17/11/26, 19:36</time> · Europe/Madrid</footer>
 
-<script src="motor/cargador.js?v=20261118-base4-01" defer></script>
+<script src="motor/cargador.js?v=20261118-base4-02" defer></script>
 </body>
 </html>
 

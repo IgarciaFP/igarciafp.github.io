@@ -20,7 +20,9 @@ const $=id=>document.getElementById(id);
 // Pestañas del editor. «txt» son notas del alumno: no forman parte del resultado.
 const LANGS=['html','css','js','txt'];
 const NAMES={html:'HTML',css:'CSS',js:'JavaScript',txt:'TXT'};
-const language='es';
+const language='es'; // Idioma del contenido y del formato de entrega.
+let uiLanguage='es';
+try{if(localStorage.getItem('base4-ui-language')==='en')uiLanguage='en';}catch{}
 const ids=[...LANGS,'student'];
 // El código de partida (contenido/codigo.*) se carga en las pestañas del editor al empezar.
 const start={...code,txt:''};
@@ -33,7 +35,7 @@ let durationMs=config.durationMs;
 let emailTouched=false,guard=null,elapsed=0,started=null,phase='ready',delivering=false,lastDelivery=null,recoveryMode=false;
 
 const texts={
- identification:'Identificación',email:'Correo del centro',retrySave:'Reintentar guardado',
+ identification:'ID',email:'Correo del centro',retrySave:'Reintentar guardado',
  elapsed:'Tiempo restante',cancel:'Cancelar',confirm:'Confirmar',start:'Empezar',backStart:'Volver al inicio',
  ready:'Pendiente de comenzar',active:'En curso',blocked:'Código bloqueado · reloj en marcha',
  paused:'Práctica guardada y pausada',closing:'Cierre automático: código conservado',
@@ -91,7 +93,34 @@ if(fileMode)Object.assign(texts,{
  pendingDelivery:'Ya generaste una entrega en este navegador. Puedes volver a descargar su archivo TXT.',
  forcedPending:'Se ha agotado el tiempo permitido. Se está generando el archivo de entrega con tu código conservado.'
 });
-const tr=k=>texts[k]??k;
+Object.assign(texts,{activity:'Actividad',yourCode:'Tu código',result:'Resultado',refresh:'↻ Actualizar',run:'▶ Ejecutar',console:'Consola',attempts:'Intentos restantes: ',languageLabel:'Idioma',clearCache:'Borrar caché'});
+const english={"identification":"ID","email":"School email","retrySave":"Retry saving","elapsed":"Time remaining","cancel":"Cancel","confirm":"Confirm","start":"Start","backStart":"Back to start","ready":"Ready to start","active":"In progress","blocked":"Code locked · timer running","paused":"Practice saved and paused","closing":"Automatic submission: code preserved","submitted":"Attempt finished","reset":"Attempt invalidated","review":"Recovered copy: read only","saved":"Code saved: ","saveReady":"Local saving ready.","saveError":"Saving blocked. Check the notice above.","first":"First warning","last":"Last warning","resetTitle":"Attempt reset","resume":"Recover saved practice","firstText":"Your code is preserved. Return to full screen before time runs out.","lastText":"Return to full screen before time runs out.","resetText":"Attempt finished. Identify yourself again.","resumeText":"Return to full screen to continue.","resumeAction":"Recover (+1 incident)","continue":"Continue in full screen","understood":"Back to start","confirmTitle":"Generate the submission and finish?","confirmBody":"Your code will be locked. A backup TXT will be downloaded and your work submitted. Wait for the receipt.","changed":"Your code has changed: the previous submission is no longer valid.","genericError":"The report could not be generated. Your attempt is still open. Check your details and try again.","receipt":"Download TXT receipt","receiptRequested":"Download requested. If it does not appear, click Download TXT receipt.","receiptError":"The download could not start. Your submission is saved; try downloading it again.","compressionError":"This browser cannot compress your submission. Update it or contact your teacher. Your attempt is still open.","forcedPending":"Time is up. Preparing your submission with your saved code.","forcedError":"Automatic submission failed. Your code is still saved and locked. Click Retry submission.","forcedRetry":"Retry submission","savePractice":"Save and pause","recoverPractice":"Recover practice","toolbarFinish":"Submit","toolbarReset":"Restart","saveWarning":"A file will be downloaded and the practice paused. Recovery will be recorded. Save and pause?","restartWarning":"A backup will be downloaded before deleting this attempt. Restart?","recoveryFullscreenError":"Full screen was not allowed. Check browser permissions and click Recover practice again.","fileSaved":"File downloaded. Keep it to recover your practice later.","fileError":"The file could not be downloaded. Your work remains saved here. Try again.","recoveryEmailRequired":"Enter your email before recovering a practice.","recoveryEmailMismatch":"Your email does not match the saved practice. Nothing was recovered and no incident was added.","fileInvalid":"Select a valid saved practice or receipt file.","deliveryTitle":"Laboratory submission","copyOpen":"Send / retry submission","deliveryNote":"Keep the TXT. Submission is confirmed only when its identifier and date appear. If the connection fails, retry without changing your code.","sending":"Sending your code… Wait for confirmation.","received":"Submission received. Identifier:","receivedShort":"Submission received","deliveryFailed":"Receipt could not be confirmed. Your code is still saved. Click Send / retry submission.","notConfigured":"Submission has not been configured yet. Your teacher must set it up before you can start.","pendingDelivery":"A submission is awaiting confirmation. You can resend it or download its TXT.","previousReceived":"You have already completed this laboratory","viewReceipt":"View confirmation","recover":"View last submission","pendingRun":"There are changes to run: click Run.","navigation":"The preview cannot open other pages. Click Run to return to your result.","consoleEmpty":"console.log messages and code errors appear here.","chars":" characters","restore":"↺ Restore","restoreConfirm":"Are you sure? Click again","activity":"Activity","yourCode":"Your code","result":"Result","refresh":"↻ Refresh","run":"▶ Run","console":"Console","attempts":"Attempts remaining: ","languageLabel":"Language","clearCache":"Clear cache"};
+english.domain=`Only @${config.emailDomain} email addresses are allowed.`;
+english.identityError=`Enter a valid email ending exactly in @${config.emailDomain}.`;
+if(fileMode)Object.assign(english,{
+ confirmBody:'Your code will be locked and a single TXT file downloaded. Submit it as instructed by your teacher.',
+ copyOpen:'Download submission again',deliveryNote:'Your submission is the downloaded TXT file. Keep it unchanged and submit it as instructed by your teacher.',
+ fileDelivered:'Submission generated and downloaded as a single TXT file.',
+ receiptRequested:'Download requested. If the file does not appear, click Download submission again.',
+ pendingDelivery:'You already generated a submission in this browser. You can download its TXT again.',
+ forcedPending:'Time is up. Preparing your submission file with your saved code.'
+});
+const tr=k=>(uiLanguage==='en'?english[k]:texts[k])??texts[k]??k;
+function renderStartIcon(){
+ const button=$('guard-start');
+ button.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+ button.setAttribute('aria-label',tr('start'));button.title=tr('start');
+}
+function applyUILanguage(){
+ document.documentElement.lang=uiLanguage;
+ document.querySelectorAll('[data-text]').forEach(el=>el.textContent=tr(el.dataset.text));
+ $('ui-language').value=uiLanguage;
+ $('ui-language').setAttribute('aria-label',tr('languageLabel'));
+ $('student').placeholder=(uiLanguage==='en'?'name':'nombre')+'@'+config.emailDomain;
+ $('preview-console').dataset.empty=tr('consoleEmpty');
+ clearLocalButton.title=tr('clearCache');clearLocalButton.setAttribute('aria-label',tr('clearCache'));
+ renderStartIcon();
+}
 
 // ---------------------------------------------------------------- Identidad
 function cachedIdentity(){
@@ -515,7 +544,7 @@ function afterRender(state,ctx){
  if(phase==='submitted'&&lastDelivery?.code===$('report').value&&lastDelivery.receipt)showDeliveryReceipt(lastDelivery);
  $('download').hidden=true;
  $('student').disabled=false;
- $('guard-start').textContent=tr('start');
+ renderStartIcon();
  $('delivery-config-note').hidden=deliveryReady();
  $('delivery-config-note').textContent=tr('notConfigured');
 
@@ -542,7 +571,7 @@ function afterRender(state,ctx){
  clearLocalButton.hidden=recoveryMode||phase!=='ready';
  $('recovery').hidden=recoveryMode||phase!=='ready';
  const attempts=cachedOpportunity();
- $('recovery-message').textContent=(lastDelivery?.receipt?tr('previousReceived'):lastDelivery?tr('pendingDelivery'):'')+' Intentos restantes: '+Math.max(0,attempts.limit-attempts.used);
+ $('recovery-message').textContent=(lastDelivery?.receipt?tr('previousReceived'):lastDelivery?tr('pendingDelivery'):'')+' '+tr('attempts')+Math.max(0,attempts.limit-attempts.used);
  $('recover-delivery').hidden=!lastDelivery;
  $('recovery-download').hidden=fileMode||!lastDelivery;
  $('recover-delivery').textContent=tr(fileMode?'recover':lastDelivery?.receipt?'viewReceipt':'copyOpen');
@@ -905,7 +934,12 @@ const receiptStatus=document.createElement('p');receiptStatus.id='receipt-status
 document.title=config.title;
 
 $('lab-title').textContent=config.title;
-document.querySelectorAll('[data-text]').forEach(el=>el.textContent=tr(el.dataset.text));
+applyUILanguage();
+$('ui-language').addEventListener('change',()=>{
+ uiLanguage=$('ui-language').value==='en'?'en':'es';
+ try{localStorage.setItem('base4-ui-language',uiLanguage);}catch{}
+ applyUILanguage();guard?.render();
+});
 $('preview-console').dataset.empty=tr('consoleEmpty');
 
 $('delivery-retry').addEventListener('click',()=>{
