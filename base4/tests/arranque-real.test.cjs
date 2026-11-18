@@ -33,7 +33,7 @@ async function boot(activity,recoverFile){
   d.querySelector('#file-delivery-send').click();await new Promise(r=>setTimeout(r,100));
   assert.equal(d.querySelector('#cuaderno').hidden,false,d.querySelector('#file-delivery-status').textContent);
   const restored=JSON.parse(w.localStorage.getItem(w.Lab.config.storage.key));
-  assert.equal(restored.phase,'active');assert.equal(restored.data.elapsed,0);
+  assert.equal(restored.phase,'active');assert.equal(restored.data.elapsed,120000);
   assert.equal(restored.returnRemainingMs,w.Lab.config.guard.returnSeconds*1000);
   assert.equal(restored.returnDeadline,null);
   if(recoverFile.state.phase==='submitted'){
