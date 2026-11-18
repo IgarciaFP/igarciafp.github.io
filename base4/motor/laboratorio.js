@@ -1072,7 +1072,7 @@ if(sectionMode){
   save:()=>{invalidate();guard.saveEdit();}
  });
 }
-guard=window.createPracticeGuard({config,renderStartButton:renderStartIcon,deliveryPanel:true,onAttemptStart,confirmDelivery:()=>confirmActionModal('Vas a finalizar la práctica. Al aceptar no podrás volver al editor. ¿Entregar la práctica?',incompleteWarning(),true),timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
+guard=window.createPracticeGuard({config,renderStartButton:renderStartIcon,deliveryPanel:true,allowSubmittedRecovery:true,onAttemptStart,confirmDelivery:()=>confirmActionModal('Vas a finalizar la práctica. Al aceptar no podrás volver al editor. ¿Entregar la práctica?',incompleteWarning(),true),timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
  async saveBeforeReset(current){
   if(current==='paused')return savePracticeDocument();
   if(current==='submitted')return downloadReceipt(rememberDelivery($('report').value));
@@ -1096,7 +1096,14 @@ window.addEventListener('error',showError);
 window.addEventListener('unhandledrejection',showError);
 rememberIdentity();guard.render();
 void checkOpportunities();
-window.LabFileDelivery?.init({config,decode:decodePracticeDocument,envelope:deliveryEnvelope,encode:encodeReport,validEmail,onReceived:async(item,receipt)=>{item.receipt=receipt;persistDelivery(item);await recordSubmission(item);}});
+window.LabFileDelivery?.init({config,decode:decodePracticeDocument,validEmail,
+ recover(text){
+  guard.importPractice(text);
+  panelEntered=false;deliveryComplete=false;lastDelivery=null;recoveryMode=false;
+  rememberIdentity();
+  return guard.recoverPractice();
+ }
+});
 window.Lab.ready=true;
 })();
 

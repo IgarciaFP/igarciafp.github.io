@@ -470,7 +470,7 @@
     function importPractice(text){
       if(problem||fatal||busy||!(['ready','paused','submitted','reset'].includes(state.phase)||(state.phase==='active'&&(restoring||fileRecovery))))throw Error('Cannot import now');
       const doc=JSON.parse(text);
-      if(adapter.deliveryPanel&&(doc.state?.phase==='submitted'||['closing','submitted'].includes(state.phase)))throw Error('La práctica ya está finalizada');
+      if(adapter.deliveryPanel&&((doc.state?.phase==='submitted'&&!adapter.allowSubmittedRecovery)||['closing','submitted'].includes(state.phase)))throw Error('La práctica ya está finalizada');
       if(doc.format!==adapter.config.format.save||doc.version!==1||!['paused','submitted'].includes(doc.state?.phase))throw Error('Invalid save file');
       const next=validate(doc.state);
       if(doc.language!==undefined){
