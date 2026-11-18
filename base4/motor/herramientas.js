@@ -30,17 +30,19 @@ function convert(value,from,to){
 function calculate(source){
  const text=String(source).replaceAll(',','.').replace(/\s+/g,'');
  if(!text||text.length>200)throw Error('Introduce una expresión de hasta 200 caracteres.');
- const tokens=text.match(/\d+(?:\.\d*)?|\.\d+|[()+\-*/%]/g)||[];
- if(tokens.join('')!==text)throw Error('Usa números, paréntesis y + − * / %.');
+ const tokens=text.match(/\d+(?:\.\d*)?|\.\d+|\*\*|[()+\-*/%^]/g)||[];
+ if(tokens.join('')!==text)throw Error('Usa números, paréntesis y + − * / % ^ o **.');
  let at=0;
  function atom(){
   const token=tokens[at++];
-  if(token==='+'||token==='-')return (token==='-'?-1:1)*atom();
   if(token==='('){const value=sum();if(tokens[at++]!==')')throw Error('Falta cerrar un paréntesis.');return value;}
   if(token===undefined||!/^\d|^\.\d/.test(token))throw Error('Expresión incompleta.');
   return Number(token);
  }
- function product(){let value=atom();while(['*','/','%'].includes(tokens[at])){const op=tokens[at++],right=atom();if((op==='/'||op==='%')&&right===0)throw Error('No se puede dividir entre cero.');value=op==='*'?value*right:op==='/'?value/right:value%right;}return value;}
+ // Potencias de derecha a izquierda y antes del signo: -2^2 = -(2^2).
+ function power(){const value=atom();if(['^','**'].includes(tokens[at])){at++;return value**unary();}return value;}
+ function unary(){if(['+','-'].includes(tokens[at]))return (tokens[at++]==='-'?-1:1)*unary();return power();}
+ function product(){let value=unary();while(['*','/','%'].includes(tokens[at])){const op=tokens[at++],right=unary();if((op==='/'||op==='%')&&right===0)throw Error('No se puede dividir entre cero.');value=op==='*'?value*right:op==='/'?value/right:value%right;}return value;}
  function sum(){let value=product();while(['+','-'].includes(tokens[at])){const op=tokens[at++],right=product();value=op==='+'?value+right:value-right;}return value;}
  const result=sum();if(at!==tokens.length||!Number.isFinite(result))throw Error('Expresión inválida o resultado fuera de rango.');
  return Number(result.toPrecision(12)).toString();
@@ -66,10 +68,10 @@ function init(config,{language=()=> 'es'}={}){
    function update(){const values=channels.map(c=>Number(c.value));hex.value='#'+values.map(v=>v.toString(16).padStart(2,'0')).join('').toUpperCase();sample.style.backgroundColor=hex.value;status.textContent='rgb('+values.join(', ')+')';}
    channels.forEach(c=>c.addEventListener('input',update));hex.addEventListener('input',()=>{if(!/^#[\da-f]{6}$/i.test(hex.value)){status.textContent='HEX: #RRGGBB';return;}channels.forEach((c,i)=>c.value=parseInt(hex.value.slice(1+i*2,3+i*2),16));update();});update();
   }else if(key==='calculadora'){
-   const expression=addInput('Expresión / Expression');expression.placeholder='(12 + 8) / 4';expression.maxLength=200;
+   const expression=addInput('Expresión / Expression');expression.placeholder='2^8 - 2';expression.maxLength=200;
    const run=()=>{try{status.textContent=calculate(expression.value);}catch(error){status.textContent=error.message;}};
    action('=',run);expression.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();run();}});
-   const help=doc.createElement('small');help.textContent='+ − * / · % = resto / remainder';panel.append(help);
+   const help=doc.createElement('small');help.textContent='+ − * / · % = resto / remainder · ^ o ** = potencia / power. Ej.: 2^8 = 256; 2^-3 = 0.125; (-2)^2 = 4; -2^2 = -4.';panel.append(help);
   }else if(key==='binarioDecimal'||key==='hexadecimalDecimal'){
    const base=key==='binarioDecimal'?2:16,left=addInput(base===2?'Binario / Binary':'Hexadecimal'),right=addInput('Decimal');left.maxLength=right.maxLength=256;
    left.placeholder=base===2?'1010':'FF';right.placeholder=base===2?'10':'255';

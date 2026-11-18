@@ -14,4 +14,6 @@ const huge='123456789012345678901234567890';assert.equal(T.convert(T.convert(hug
 assert.throws(()=>T.convert('102',2,10));assert.throws(()=>T.convert('-1',10,16));assert.throws(()=>T.convert('1.2',10,2));
 assert.equal(T.calculate('(12 + 8) / 4'),'5');assert.equal(T.calculate('-2 * (3 + 4)'),'-14');assert.equal(T.calculate('0.1+0.2'),'0.3');assert.equal(T.calculate('7%4'),'3');
 assert.throws(()=>T.calculate('1/0'));assert.throws(()=>T.calculate('alert(1)'));assert.throws(()=>T.calculate('2+'));assert.throws(()=>T.calculate('(2+3'));
-console.log('OK: tool defaults/overrides, unit links, exact conversions and calculator without eval.');
+for(const [expression,result] of [['2^8-2','254'],['2**8','256'],['2^3^2','512'],['-2^2','-4'],['(-2)^2','4'],['2^-3','0.125'],['4^0.5','2'],['3*2^4','48'],['2^0','1']])assert.equal(T.calculate(expression),result,expression);
+for(const expression of ['2^','2***3','0^-1','(-2)^0.5','10^1000'])assert.throws(()=>T.calculate(expression),undefined,expression);
+console.log('OK: tools, conversions and calculator precedence, powers and invalid results.');
