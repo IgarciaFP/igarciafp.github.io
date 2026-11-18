@@ -8,8 +8,13 @@
   dialog.innerHTML = '<header><h2 id="activity-link-title"></h2><button type="button" class="secondary" autofocus aria-label="Cerrar / Close">×</button></header><p class="activity-link-note">Si el sitio impide mostrarse dentro de un iframe, el contenido no estará disponible aquí. / Some sites do not allow embedded content.</p><iframe title="Recurso de la actividad / Activity resource" sandbox="allow-scripts allow-forms" referrerpolicy="no-referrer"></iframe>';
   document.body.append(dialog);
   const frame = dialog.querySelector('iframe');
+  let openedFullscreen=null;
+  const closeDialog=()=>{if(dialog.open)dialog.close();};
+  dialog.addEventListener('cancel',event=>{event.preventDefault();closeDialog();});
+  dialog.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeDialog();}});
+  document.addEventListener('fullscreenchange',()=>{if(dialog.open&&openedFullscreen&&document.fullscreenElement!==openedFullscreen)closeDialog();});
   dialog.querySelector('button').addEventListener('click', () => dialog.close());
-  dialog.addEventListener('close', () => frame.removeAttribute('src'));
+  dialog.addEventListener('close', () => {openedFullscreen=null;frame.removeAttribute('src');});
   dialog.addEventListener('click', event => {
     if (event.target !== dialog) return;
     const rect = dialog.getBoundingClientRect();
@@ -28,7 +33,7 @@
     if (!['https:', 'http:'].includes(url.protocol)) return;
     dialog.querySelector('h2').textContent = link.textContent.trim() || url.hostname;
     frame.src = url.href;
-    if (!dialog.open) dialog.showModal();
+    if (!dialog.open) {openedFullscreen=document.fullscreenElement;dialog.showModal();}
   }
   notebook.addEventListener('click', openLink, true);
   notebook.addEventListener('auxclick', openLink, true);

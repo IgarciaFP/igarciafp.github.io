@@ -54,8 +54,14 @@ function init(config,{language=()=> 'es'}={}){
  const dialog=doc.createElement('dialog');dialog.id='tool-dialog';dialog.setAttribute('aria-labelledby','tool-title');
  dialog.innerHTML='<header><h2 id="tool-title"></h2><button type="button" class="secondary" aria-label="Cerrar / Close">×</button></header><div id="tool-content"></div>';
  doc.body.append(dialog);
- const close=dialog.querySelector('button'),content=dialog.querySelector('#tool-content'),panels=new Map();let selected=null;
- close.addEventListener('click',()=>dialog.close());
+ const close=dialog.querySelector('button'),content=dialog.querySelector('#tool-content'),panels=new Map();let selected=null,openedFullscreen=null;
+ const closeDialog=()=>{if(dialog.open)dialog.close();};
+ close.addEventListener('click',closeDialog);
+ dialog.addEventListener('cancel',event=>{event.preventDefault();closeDialog();});
+ dialog.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeDialog();}});
+ // Escape desde un iframe puede salir de pantalla completa sin cancelar el dialog.
+ doc.addEventListener('fullscreenchange',()=>{if(dialog.open&&openedFullscreen&&doc.fullscreenElement!==openedFullscreen)closeDialog();});
+ dialog.addEventListener('close',()=>{openedFullscreen=null;});
  const title=k=>names[k][language()==='en'?1:0];
  function build(key){
   const panel=doc.createElement('section');panel.className='tool-panel';
@@ -126,10 +132,10 @@ function init(config,{language=()=> 'es'}={}){
  }
  for(const key of KEYS)if(key!=='atajosTeclado'&&config.enabled[key]&&(key!=='rubrica'||config.rubric)){
   const button=doc.createElement('button');button.type='button';button.className='tool-launch';button.dataset.tool=key;button.textContent=icons[key];button.title=title(key);button.setAttribute('aria-label',title(key));
-  button.addEventListener('click',()=>{selected=key;dialog.querySelector('h2').textContent=title(key);if(!panels.has(key))panels.set(key,build(key));content.replaceChildren(panels.get(key));dialog.showModal();});bar.append(button);
+  button.addEventListener('click',()=>{selected=key;dialog.querySelector('h2').textContent=title(key);if(!panels.has(key))panels.set(key,build(key));content.replaceChildren(panels.get(key));openedFullscreen=doc.fullscreenElement;dialog.showModal();});bar.append(button);
  }
  bar.hidden=!bar.children.length;
- return {close:()=>{if(dialog.open)dialog.close();},language(){for(const button of bar.children){button.title=title(button.dataset.tool);button.setAttribute('aria-label',button.title);}if(selected)dialog.querySelector('h2').textContent=title(selected);}};
+ return {close:closeDialog,language(){for(const button of bar.children){button.title=title(button.dataset.tool);button.setAttribute('aria-label',button.title);}if(selected)dialog.querySelector('h2').textContent=title(selected);}};
 }
 const api={KEYS,settings,rubric,convert,calculate,init};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.LabTools=api;

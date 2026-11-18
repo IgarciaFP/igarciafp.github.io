@@ -1,7 +1,7 @@
 const {JSDOM}=require('jsdom'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 async function main(){
  const dom=new JSDOM('<div id="toolbar-tools"></div>',{runScripts:'outside-only',url:'https://example.com/base4/'}),w=dom.window,d=w.document;
- w.TextEncoder=TextEncoder;w.AbortSignal=AbortSignal;w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};w.HTMLDialogElement.prototype.close=function(){this.open=false;};
+ w.TextEncoder=TextEncoder;w.AbortSignal=AbortSignal;w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};w.HTMLDialogElement.prototype.close=function(){this.open=false;this.dispatchEvent(new w.Event('close'));};
  const requests=[];w.fetch=async url=>{requests.push(String(url));return String(url).includes('mymemory')?{ok:true,json:async()=>({responseStatus:200,responseData:{translatedText:'Hello'}})}:{ok:true,text:async()=>'<main><h1>Unidad 1</h1><p onclick="bad()">Apuntes</p><script>bad()</script><img src="img/diagrama.svg"><a href="javascript:bad()">Enlace</a></main>'};};
  w.eval(fs.readFileSync(path.join(__dirname,'../motor/herramientas.js'),'utf8'));
  const config=w.LabTools.settings({},'diw','01-01-ejemplo'),tools=w.LabTools.init(config);
@@ -15,6 +15,15 @@ async function main(){
  assert.equal(frame.getAttribute('sandbox'),'allow-scripts');assert.equal(frame.hasAttribute('srcdoc'),false);
  frame.dispatchEvent(new w.Event('load'));assert.equal(panel.querySelector('[role=status]').textContent,'');
 
+ const toolDialog=d.getElementById('tool-dialog');
+ const cancel=new w.Event('cancel',{cancelable:true});toolDialog.dispatchEvent(cancel);
+ assert.equal(cancel.defaultPrevented,true);assert.equal(toolDialog.open,false);
+ open('calculadora');toolDialog.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));assert.equal(toolDialog.open,false);
+ Object.defineProperty(d,'fullscreenElement',{configurable:true,value:d.documentElement});
+ open('apuntes');assert.equal(toolDialog.open,true);
+ Object.defineProperty(d,'fullscreenElement',{configurable:true,value:null});
+ d.dispatchEvent(new w.Event('fullscreenchange'));assert.equal(toolDialog.open,false,'No queda detrás del aviso al salir de pantalla completa');
+ open('calculadora');assert.equal(toolDialog.open,true,'Se puede volver a abrir');
  tools.close();d.getElementById('tool-dialog').remove();d.getElementById('toolbar-tools').replaceChildren();
  const rubric=JSON.parse(fs.readFileSync(path.join(__dirname,'../actividades/dwec/02-02-mover-cuadrado-con-teclado/rubrica.json'),'utf8'));
  rubric.criterios[0].niveles[0].descripcion='<img src=x onerror=bad()> Texto seguro';
