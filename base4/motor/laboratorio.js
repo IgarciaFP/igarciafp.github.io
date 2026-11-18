@@ -262,6 +262,34 @@ function stopClock(at=Date.now()){elapsed=timeSpent(at);started=null;clock();}
 // ---------------------------------------------------------------- Editor
 const editorTabs=[...document.querySelectorAll('[data-editor]')];
 let currentEditor='html';
+// Una columna visual compartida: nunca forma parte del código guardado o entregado.
+const lineGutter=document.createElement('div');
+lineGutter.className='editor-line-numbers';
+lineGutter.setAttribute('aria-hidden','true');
+const lineList=document.createElement('div');
+lineGutter.append(lineList);
+$('answer-fields').insertBefore(lineGutter,$('html'));
+let lastLineCount=0;
+function syncLineScroll(){
+ const editor=$(currentEditor);
+ lineList.style.transform='translateY('+(-editor.scrollTop)+'px)';
+}
+function syncLineNumbers(){
+ lineGutter.hidden=currentEditor==='txt';
+ if(lineGutter.hidden)return;
+ const count=$(currentEditor).value.split('\n').length;
+ if(count!==lastLineCount){
+  lineList.textContent=Array.from({length:count},(_,i)=>i+1).join('\n');
+  lastLineCount=count;
+ }
+ syncLineScroll();
+ requestAnimationFrame(syncLineScroll);
+}
+for(const id of ['html','css','js']){
+ $(id).addEventListener('scroll',()=>{if(id===currentEditor)syncLineScroll();});
+ $(id).addEventListener('input',()=>{if(id===currentEditor)syncLineNumbers();});
+}
+
 // Restaurar el código de partida de la pestaña visible. Pide una segunda pulsación:
 // no hay deshacer (Ctrl+Z está bloqueado) y un confirm() nativo sacaría de la pantalla completa.
 let restoreArmed=null,restoreTimer=null;
@@ -273,7 +301,7 @@ function syncRestore(){
  button.textContent=tr(restoreArmed?'restoreConfirm':'restore');
  button.setAttribute('aria-label',(restoreArmed?'Confirmar: restaurar':'Restaurar')+' el código de partida de '+NAMES[currentEditor]);
 }
-function countChars(){const el=$(currentEditor);$('editor-count').textContent=NAMES[currentEditor]+' · '+el.value.length+' / '+el.maxLength+tr('chars');syncRestore();}
+function countChars(){const el=$(currentEditor);$('editor-count').textContent=NAMES[currentEditor]+' · '+el.value.length+' / '+el.maxLength+tr('chars');syncRestore();syncLineNumbers();}
 function showEditor(lang,focus=false){
  currentEditor=lang;
  for(const tab of editorTabs)tab.setAttribute('aria-selected',String(tab.dataset.editor===lang));
