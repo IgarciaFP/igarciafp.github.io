@@ -38,6 +38,8 @@ Las columnas existentes siguientes (Detección IA, NOTA, Comentarios) no se toca
 
 Tras cambiar `Code.gs` hay que actualizar la implementación con una versión nueva; la dirección no cambia.
 
+El enlace «Probar código» se genera con `paginaProfesor_(datos)`: las entregas cuya URL pertenece a `/base4/` abren `/base4/profesor.html`; las de base3 y las antiguas sin URL conservan `/base3/profesor.html`. El fragmento `#entrega=` se conserva completo. Este cambio necesita publicarse en Apps Script: actualizar el archivo en GitHub no modifica el receptor activo ni los enlaces ya guardados.
+
 ## Límites
 
 - El correo es el que escribe el alumno: se comprueba el dominio, no la identidad.

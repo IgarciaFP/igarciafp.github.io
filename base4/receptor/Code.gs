@@ -7,6 +7,13 @@
 const ORIGEN_ = 'https://igarciafp.github.io';     // sitio del laboratorio
 const DOMINIO_ = 'g.educaand.es';                  // dominio de correo admitido
 const PAGINA_PROFESOR_ = 'https://igarciafp.github.io/base3/profesor.html';
+// El receptor es compartido: solo se elige entre nuestros dos revisores.
+function paginaProfesor_(datos) {
+  const url=typeof datos.url==='string'?datos.url:'';
+  const base4=ORIGEN_+'/base4';
+  return url===base4||url.startsWith(base4+'/')||url.startsWith(base4+'?')||url.startsWith(base4+'#')
+    ? ORIGEN_+'/base4/profesor.html' : PAGINA_PROFESOR_;
+}
 const SERVIDOR_ = 'https://igarciafp-github-io.igarciafp.workers.dev';   // dirección del servidor de control (Cloudflare Worker), sin barra final. Vacío: no se verifica el sello.
 const HOJA_ID_ = '14dLBTlpFRY7mJ33Ckj-60T6MULZxp1tz2FTvUM7PKT4';    // solo si el script NO se creó desde la hoja: el ID de la hoja (lo que va entre /d/ y /edit en su dirección)
 const PESTANA_ = 'Entregas';
@@ -366,7 +373,7 @@ function recibirEntrega(sobre) {
       // El código solo contiene letras, cifras, punto, guion y guion bajo: no puede alterar la fórmula.
       // Los argumentos se separan con punto y coma: es válido en todas las configuraciones regionales
       // (con coma, las hojas en español dan #ERROR!).
-      cabe ? { userEnteredValue: { formulaValue: '=HYPERLINK("' + PAGINA_PROFESOR_ + '#entrega=' + codigo + '";"Probar código")' } } : literal_('Pide el archivo TXT al alumno'),
+      cabe ? { userEnteredValue: { formulaValue: '=HYPERLINK("' + paginaProfesor_(datos) + '#entrega=' + codigo + '";"Probar código")' } } : literal_('Pide el archivo TXT al alumno'),
       literal_(Math.floor(segundos / 60) + ' min ' + String(segundos % 60).padStart(2, '0') + ' s'),
       literal_(control.ip), literal_(incidencias_(datos, control)),
       {...literal_(cabe ? codigo : 'Entrega demasiado larga para una celda: pide el archivo TXT al alumno.'),
