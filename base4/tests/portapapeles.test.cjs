@@ -1,6 +1,6 @@
 const {JSDOM}=require('jsdom'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 async function main(){
- const dom=new JSDOM('<button id="guard-start">Start</button><textarea id="code" maxlength="12">hola mundo</textarea>',{runScripts:'outside-only',url:'https://example.com/base4/'}),w=dom.window,d=w.document;
+ const dom=new JSDOM('<button id="guard-start">Start</button><button id="guard-continue">Continuar en pantalla completa</button><textarea id="code" maxlength="12">hola mundo</textarea>',{runScripts:'outside-only',url:'https://example.com/base4/'}),w=dom.window,d=w.document;
  let text='externo',deny=false,editable=true,inputs=0;
  Object.defineProperty(w.navigator,'clipboard',{value:{writeText:async value=>{if(deny)throw Error('Denied');text=value;},readText:async()=>{if(deny)throw Error('Denied');return text;}}});
  w.eval(fs.readFileSync(path.join(__dirname,'../motor/portapapeles.js'),'utf8'));
@@ -21,6 +21,9 @@ async function main(){
  assert.equal(d.activeElement,field);assert.equal(field.selectionStart,1);assert.equal(field.selectionEnd,4);
  assert.equal(await clearing,true);assert.equal(d.getElementById('clipboard-status').hidden,true);
  text='entrada';d.getElementById('guard-start').click();assert.equal(text,' ');await tick();
+ text='contenido externo';
+ d.getElementById('guard-continue').addEventListener('click',()=>assert.equal(text,' ','la copia precede al regreso a pantalla completa'));
+ d.getElementById('guard-continue').click();assert.equal(text,' ');await tick();
  d.execCommand=()=>false;assert.equal(await api.clear({gesture:true}),false);
  deny=false;text='salir';w.dispatchEvent(new w.Event('beforeunload'));await tick();assert.equal(text,' ');
  const frame={contentWindow:{},getBoundingClientRect:()=>({left:0,top:0,width:100,height:100})};api.hide();api.preview({source:{},data:{labClipboard:'ok',action:'menu',text:'x'}},frame,'ok');assert.equal(d.getElementById('clipboard-menu').hidden,true);

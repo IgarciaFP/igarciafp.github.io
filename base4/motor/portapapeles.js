@@ -86,7 +86,9 @@ window.createLabClipboard=function(options){
   if(operation===clearing)notify(success?'':message('No se pudo vaciar el portapapeles: permite el acceso al portapapeles en este sitio.','The clipboard could not be cleared: allow clipboard access for this site.'));
   return success;
  }
- document.getElementById('guard-start').addEventListener('click',()=>{void clear({gesture:true});},true);
+ // Captura: copiar antes de que solicitar pantalla completa consuma la activación.
+ for(const id of ['guard-start','guard-continue'])
+  document.getElementById(id)?.addEventListener('click',()=>{void clear({gesture:true});},true);
  // Al cerrar o navegar fuera el navegador puede cancelar operaciones asíncronas.
  window.addEventListener('beforeunload',()=>{void clear();});
  window.addEventListener('pagehide',()=>{void clear();});
