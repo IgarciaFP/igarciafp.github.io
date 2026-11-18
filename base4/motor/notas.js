@@ -35,6 +35,7 @@ function render(){
  const valid=selected&&selected.intact&&!selected.draft;
  $('nota-value').disabled=busy||!logged||!valid||revision===null;
  $('nota-comments').disabled=$('nota-value').disabled;
+ for(const id of ['nota-email','nota-copy-email'])if($(id))$(id).disabled=$('nota-value').disabled;
  $('nota-save').disabled=busy||!logged||!valid||revision===null;
  $('nota-refresh').disabled=busy||!logged||!valid;
  $('nota-enter').disabled=busy;
