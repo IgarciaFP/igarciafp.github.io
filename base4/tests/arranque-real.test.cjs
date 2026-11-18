@@ -17,12 +17,17 @@ async function boot(activity){
  for(let i=0;i<150&&!w.Lab?.ready&&!d.querySelector('#guard-boot-detail').textContent;i++)await new Promise(r=>setTimeout(r,20));
  assert.equal(w.Lab?.ready,true,activity+': '+d.querySelector('#guard-boot-detail').textContent+' '+errors.join('; '));
  assert.equal(d.querySelector('#guard-boot').hidden,true);assert.ok(d.querySelector('#utility-actions button'));assert.equal(d.querySelectorAll('#toolbar-tools button').length,6);
+ const missingKey=()=>{for(const type of ['keydown','keypress','keyup'])d.dispatchEvent(new w.Event(type,{bubbles:true,cancelable:true}));};
+ missingKey();assert.equal(d.querySelector('#guard-boot').hidden,true,'Un evento sin key no debe bloquear la identificación');
  const student=d.querySelector('#student');student.value='alumno@g.educaand.es';student.dispatchEvent(new w.Event('input',{bubbles:true}));
  assert.equal(d.querySelector('#guard-start').disabled,false);
  d.documentElement.requestFullscreen=async()=>{d.fullscreenElement=d.documentElement;d.dispatchEvent(new w.Event('fullscreenchange'));};
  d.querySelector('#guard-start').click();await new Promise(r=>setTimeout(r,100));
  assert.equal(d.querySelector('#cuaderno').hidden,false,errors.join('; '));
  assert.equal(d.querySelector('#practice-toolbar').hidden,false);
+ missingKey();
+ const shortcut=new w.Event('keydown',{bubbles:true,cancelable:true});Object.defineProperty(shortcut,'ctrlKey',{value:true});d.dispatchEvent(shortcut);
+ assert.equal(d.querySelector('#guard-boot').hidden,true,'Un evento sin key tampoco debe bloquear un intento activo');
  if(w.Lab.sectionMode){assert.equal(d.querySelectorAll('#section-nav button').length,3);d.querySelectorAll('#section-nav button')[1].click();assert.equal(d.querySelector('#question-fields').hidden,false);assert.equal(d.querySelector('#question-fields').disabled,false);}
  assert.equal(errors.length,0,errors.join('; '));w.close();
 }

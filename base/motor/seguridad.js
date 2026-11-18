@@ -14,7 +14,8 @@
 
   window.installPracticeInputGuards = function installPracticeInputGuards(doc, blockAction, blockClipboard) {
     for (const type of ['keydown','keypress','keyup']) doc.addEventListener(type, e => {
-      const k = e.key.toLowerCase();
+      // Los eventos sintéticos o de métodos de entrada pueden no incluir key.
+      const k = typeof e.key === 'string' ? e.key.toLowerCase() : '';
       const previousShortcut = blockClipboard && (
         (e.metaKey && ['c','x','v'].includes(k))
         || (e.shiftKey && ['insert','delete'].includes(k)));
@@ -520,9 +521,11 @@
       let action = '';
       if (e.type.startsWith('key')) {
         if (e.type !== 'keydown' || e.repeat) return;
-        const key = /^F(?:[1-9]|1\d|2[0-4])$/i.test(e.key) ? e.key.toUpperCase() : /^F(?:[1-9]|1\d|2[0-4])$/i.test(e.code) ? e.code.toUpperCase() : null;
-        const safeKey = /^[a-z0-9]$/i.test(e.key) ? e.key.toUpperCase() : ['Control','Insert','Delete','Escape','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key) ? e.key : 'Other';
-        action = key ? (e.ctrlKey ? 'Ctrl+' : '') + key : e.key === 'Control' ? 'Control' : (e.ctrlKey ? 'Ctrl+' : e.metaKey ? 'Cmd+' : e.shiftKey ? 'Shift+' : '') + safeKey;
+        const eventKey = typeof e.key === 'string' ? e.key : '';
+        const eventCode = typeof e.code === 'string' ? e.code : '';
+        const key = /^F(?:[1-9]|1\d|2[0-4])$/i.test(eventKey) ? eventKey.toUpperCase() : /^F(?:[1-9]|1\d|2[0-4])$/i.test(eventCode) ? eventCode.toUpperCase() : null;
+        const safeKey = /^[a-z0-9]$/i.test(eventKey) ? eventKey.toUpperCase() : ['Control','Insert','Delete','Escape','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(eventKey) ? eventKey : 'Other';
+        action = key ? (e.ctrlKey ? 'Ctrl+' : '') + key : eventKey === 'Control' ? 'Control' : (e.ctrlKey ? 'Ctrl+' : e.metaKey ? 'Cmd+' : e.shiftKey ? 'Shift+' : '') + safeKey;
       } else if (e.type === 'contextmenu' || e.button === 2) action = 'right-click';
       else if (e.ctrlKey && /pointer|mouse|click/.test(e.type)) action = 'Ctrl+click';
       else action = ({insertFromPaste:'paste',insertFromPasteAsQuotation:'paste',insertFromDrop:'drop',deleteByCut:'cut',deleteByDrag:'dragstart'})[e.inputType] || e.type;

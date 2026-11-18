@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
+const window={},handlers={};vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../../base/motor/seguridad.js'),'utf8'),{window});
+let blocked=0;window.installPracticeInputGuards({addEventListener:(type,fn)=>(handlers[type]??=[]).push(fn)},()=>blocked++,true);
+const fire=(type,event)=>{const before=blocked;for(const handler of handlers[type])handler(event);return blocked-before;};
+for(const type of ['keydown','keypress','keyup'])for(const key of [undefined,null,0,{},''])assert.doesNotThrow(()=>fire(type,{key}));
+assert.equal(fire('keydown',{ctrlKey:true}),1);
+assert.equal(fire('keydown',{code:'F12'}),1);
+assert.equal(fire('keydown',{key:'c',ctrlKey:true}),1);
+assert.equal(fire('keydown',{key:'a'}),0);
+console.log('OK: missing/invalid key is safe; Ctrl shortcuts and function keys remain guarded.');
