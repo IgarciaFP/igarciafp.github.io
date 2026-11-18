@@ -34,6 +34,8 @@ async function boot(activity,recoverFile){
   assert.equal(d.querySelector('#cuaderno').hidden,false,d.querySelector('#file-delivery-status').textContent);
   const restored=JSON.parse(w.localStorage.getItem(w.Lab.config.storage.key));
   assert.equal(restored.phase,'active');assert.equal(restored.data.elapsed,0);
+  assert.equal(restored.returnRemainingMs,w.Lab.config.guard.returnSeconds*1000);
+  assert.equal(restored.returnDeadline,null);
   if(recoverFile.state.phase==='submitted'){
    assert.notEqual(restored.data.attempt.id,recoverFile.state.data.attempt.id,'Un comprobante cerrado necesita otro ID');
    assert.notEqual(restored.data.attempt.token,recoverFile.state.data.attempt.token);
@@ -66,6 +68,7 @@ async function boot(activity,recoverFile){
  assert.equal(errors.length,0,errors.join('; '));
  const saved=JSON.parse(w.localStorage.getItem(w.Lab.config.storage.key));
  saved.phase='submitted';saved.data.elapsed=120000;saved.data.started=null;
+ saved.returnRemainingMs=0;saved.returnDeadline=Date.now()-60000;
  saved.data.values.js='// Respuesta recuperada';
  const exportFile={format:w.Lab.config.format.save,version:1,state:saved};
  w.close();return exportFile;
