@@ -10,10 +10,19 @@ async function main(){
  field.setSelectionRange(0,4);let buttons=menu();assert.deepEqual(buttons.map(b=>b.textContent),['Copiar','Pegar']);buttons[0].click();await tick();assert.equal(text,'hola');
  text='tierra';field.setSelectionRange(5,10);buttons=menu();buttons[1].click();await tick();assert.equal(field.value,'hola tierra');assert.equal(inputs,1);
  editable=false;buttons=menu();assert.equal(buttons[1].disabled,true);editable=true;
- d.getElementById('guard-start').click();await tick();assert.equal(text,'');
- text='algo';assert.equal(await api.clear(),true);assert.equal(text,'');
+ d.getElementById('guard-start').click();await tick();assert.equal(text,' ');
+ text='algo';assert.equal(await api.clear(),true);assert.equal(text,' ');
  deny=true;assert.equal(await api.clear(),false);assert.equal(d.getElementById('clipboard-status').hidden,false);
- deny=false;text='salir';w.dispatchEvent(new w.Event('beforeunload'));await tick();assert.equal(text,'');
+ // Synchronous copy succeeds even if the asynchronous API is denied.
+ let copies=0;
+ d.execCommand=command=>{assert.equal(command,'copy');copies++;assert.equal(d.activeElement.value,' ');text=d.activeElement.value;return true;};
+ field.focus();field.setSelectionRange(1,4);text='externo';
+ const clearing=api.clear({gesture:true});assert.equal(copies,1);assert.equal(text,' ');
+ assert.equal(d.activeElement,field);assert.equal(field.selectionStart,1);assert.equal(field.selectionEnd,4);
+ assert.equal(await clearing,true);assert.equal(d.getElementById('clipboard-status').hidden,true);
+ text='entrada';d.getElementById('guard-start').click();assert.equal(text,' ');await tick();
+ d.execCommand=()=>false;assert.equal(await api.clear({gesture:true}),false);
+ deny=false;text='salir';w.dispatchEvent(new w.Event('beforeunload'));await tick();assert.equal(text,' ');
  const frame={contentWindow:{},getBoundingClientRect:()=>({left:0,top:0,width:100,height:100})};api.hide();api.preview({source:{},data:{labClipboard:'ok',action:'menu',text:'x'}},frame,'ok');assert.equal(d.getElementById('clipboard-menu').hidden,true);
  dom.window.close();console.log('OK: copy/paste-only menu, insertion events, locked fields, entry/exit clearing and denied access.');
 }

@@ -918,13 +918,13 @@ $('revision-reason').addEventListener('input',refreshReason);
 $('practice-finish').addEventListener('click',()=>{
  if(!guard?.canEdit())return;
  if(sectionView?.hasNext())sectionView.next();
- else guard.ask('finish');
+ else {void clipboard?.clear({gesture:true});guard.ask('finish');}
 });
 $('practice-reset').addEventListener('click',()=>{if(config.allowRestart)guard.ask('erase');});
 
 // ---------------------------------------------------------------- Arranque
 
-let modalResolve=null;
+let modalResolve=null,modalClearsClipboard=false;
 function incompleteWarning(){
  const pending=sectionView?window.LabSections.incomplete(sections,sectionView.snapshot()):
   LANGS.slice(0,3).some(id=>$(id).value!==start[id])?[]:[{title:config.title,type:'webcode',count:1}];
@@ -934,8 +934,9 @@ function incompleteWarning(){
   pending.map(item=>'• '+item.title+': '+(item.type==='webcode'?(english?'no code changes':'sin cambios en el código'):item.count+(english?' unanswered question(s)':' pregunta(s) sin responder'))).join('\n')+
   (english?'\nYou can cancel to review them or confirm submission anyway.':'\nPuedes cancelar para revisarlos o confirmar la entrega igualmente.');
 }
-function confirmActionModal(message,warning=''){
+function confirmActionModal(message,warning='',clearClipboard=false){
  if(modalResolve)return Promise.resolve(false);
+ modalClearsClipboard=clearClipboard;
  const dialog=$('action-confirm');
  $('action-confirm-message').textContent=message;
  $('action-confirm-warning').textContent=warning;
@@ -943,11 +944,14 @@ function confirmActionModal(message,warning=''){
  return new Promise(resolve=>{modalResolve=resolve;dialog.showModal();});
 }
 function closeActionModal(accepted=false){
- const resolve=modalResolve;modalResolve=null;
+ const resolve=modalResolve;modalResolve=null;modalClearsClipboard=false;
  if($('action-confirm').open)$('action-confirm').close();
  if(resolve)resolve(accepted);
 }
-$('action-confirm-accept').addEventListener('click',()=>closeActionModal(true));
+$('action-confirm-accept').addEventListener('click',()=>{
+ if(modalClearsClipboard)void clipboard?.clear({gesture:true});
+ closeActionModal(true);
+});
 $('action-confirm-cancel').addEventListener('click',()=>closeActionModal(false));
 $('action-confirm').addEventListener('cancel',event=>{event.preventDefault();closeActionModal(false);});
 $('action-confirm').addEventListener('close',()=>{if(modalResolve)closeActionModal(false);});
@@ -1049,7 +1053,7 @@ if(sectionMode){
   save:()=>{invalidate();guard.saveEdit();}
  });
 }
-guard=window.createPracticeGuard({config,deliveryPanel:true,onAttemptStart,confirmDelivery:()=>confirmActionModal('Vas a finalizar la práctica. Al aceptar no podrás volver al editor. ¿Entregar la práctica?',incompleteWarning()),timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
+guard=window.createPracticeGuard({config,deliveryPanel:true,onAttemptStart,confirmDelivery:()=>confirmActionModal('Vas a finalizar la práctica. Al aceptar no podrás volver al editor. ¿Entregar la práctica?',incompleteWarning(),true),timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
  async saveBeforeReset(current){
   if(current==='paused')return savePracticeDocument();
   if(current==='submitted')return downloadReceipt(rememberDelivery($('report').value));

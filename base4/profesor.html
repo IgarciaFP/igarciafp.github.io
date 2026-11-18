@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
- PÁGINA DEL PROFESOR · base3
+ PÁGINA DEL PROFESOR · base4
  Arrastra aquí los archivos de entrega (.txt) de los alumnos para ver su código y su resultado.
  También admite el texto de la columna «ENTREGA completa» de la hoja de cálculo: cópialo y
  pégalo en la página (Ctrl+V), o usa el enlace «Probar código» de la hoja.
@@ -15,8 +15,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Entregas · Profesor</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261118120347-base4">
-<link rel="stylesheet" href="motor/taller.css?v=20261118120347-base4">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261118121249-base4">
+<link rel="stylesheet" href="motor/taller.css?v=20261118121249-base4">
 <style>
 .revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
 .revision h1{font-size:1.5rem;line-height:1.25;margin:0}
@@ -74,6 +74,11 @@
 #review-sections[hidden],#review-questions[hidden]{display:none}
 #review-sections button[aria-current=true]{background:var(--blue);color:white}
 #review-questions>section{background:white;border:1px solid var(--line);border-radius:12px;padding:20px;margin:12px 0}
+#review-statement{margin:12px 0;background:white;border:1px solid var(--line);border-radius:12px;padding:14px}
+#review-statement iframe{width:100%;height:220px;border:0}
+#review-status{font-weight:600}
+#review-questions .selected-answer{font-weight:700;background:#e9f0ff;border-radius:6px;padding:6px}
+#review-questions .unanswered{color:#b42318;font-weight:600}
 </style>
 </head>
 <body>
@@ -122,6 +127,8 @@
         <p id="nota-status" role="status" aria-live="polite"></p>
       </section>
       <nav id="review-sections" aria-label="Apartados" hidden></nav>
+      <p id="review-status" role="status" hidden></p>
+      <details id="review-statement" hidden open><summary>Instrucciones del apartado</summary><iframe title="Instrucciones del apartado" sandbox referrerpolicy="no-referrer"></iframe></details>
       <div id="review-questions" hidden></div>
       <div class="paneles">
         <section class="panel">
@@ -158,8 +165,8 @@
   </div>
 </main>
 
-<script src="motor/apartados.js?v=20261118120347-base4"></script>
-<script src="motor/notas.js?v=20261118120347-base4"></script>
+<script src="motor/apartados.js?v=20261118121249-base4"></script>
+<script src="motor/notas.js?v=20261118121249-base4"></script>
 <script>
 (async () => {
 'use strict';
@@ -239,7 +246,7 @@ async function decode(text){
   return new TextDecoder('utf-8',{fatal:true}).decode(buffer);
  }catch{throw Error('el archivo está dañado o ha sido alterado');}
 }
-async function parse(text){
+async function parseRaw(text){
  let decoded=await decode(text);
  // Comprobantes y archivos de «Guardar y pausar»: llevan el intento completo.
  if(decoded.trimStart().startsWith('{')&&!decoded.includes('\nCódigo de comprobación: ')){
@@ -265,6 +272,28 @@ async function parse(text){
  return {...report,sectionData:report.sectionsVersion===1?window.LabSections.unpack(report.answers||[]):null,id:hash,intact:hash===decoded.slice(offset+marker.length),stamp:await checkStamp(report),known,start,label:known?.title||String(report.exam||'Actividad desconocida'),
   email:String(report.email||'(sin correo)'),modified:TABS.filter(t=>t in answers),
   code:Object.fromEntries(TABS.map(t=>[t,t in answers?answers[t]:start[t]]))};
+}
+
+function reviewSections(item){
+ const defs=item.sectionDefinitions||item.known?.sections;
+ if(!Array.isArray(defs)||!defs.length)throw Error('No se dispone de la definición de los apartados.');
+ const normalized=window.LabSections.definitions({apartados:defs.map(s=>({id:s.id,tipo:s.type,titulo:s.title}))});
+ return normalized.map((s,i)=>{
+  const published=item.known?.sections?.find(k=>k.id===s.id&&k.type===s.type);
+  const sameVersion=String(item.activityVersion)===String(item.known?.version);
+  return {...s,statement:published?.statement,baselineKnown:!!published&&sameVersion,
+   code:published?.code||EMPTY,
+   ...(s.type==='webcode'?{}:{questions:window.LabSections.questions((defs[i].questions||[]).map(q=>({id:q.id,enunciado:q.text,opciones:q.options})),s.type)})};
+ });
+}
+async function parse(text){
+ const item=await parseRaw(text);
+ if(item.sectionsVersion===1&&!item.sectionData)throw Error('Faltan las respuestas de los apartados.');
+ if(item.sectionData){
+  item.reviewSections=reviewSections(item);
+  item.sectionData=window.LabSections.sanitize(item.reviewSections,item.sectionData);
+ }
+ return item;
 }
 
 // ------------------------------------------------------------ Lista
@@ -392,31 +421,47 @@ window.addEventListener('message',event=>{
 // Cada apartado reutiliza el visor web o presenta sus respuestas como texto seguro.
 function renderSections(item,chosen){
  const nav=$('review-sections'),questions=$('review-questions'),panels=document.querySelector('.detalle>.paneles');
+ const instructions=$('review-statement'),frame=instructions.querySelector('iframe'),status=$('review-status');
+ instructions.hidden=true;frame.srcdoc='';status.hidden=true;status.textContent='';
  nav.replaceChildren();questions.replaceChildren();nav.hidden=!item.sectionData;questions.hidden=true;panels.hidden=false;
- if(!item.sectionData)return;
- const defs=item.sectionDefinitions||item.known?.sections;
- if(!Array.isArray(defs)||!defs.length)throw Error('No se dispone de la definición de los apartados.');
- const sections=defs.map(s=>({id:s.id,title:s.title,type:s.type,questions:s.questions,code:item.known?.sections?.find(k=>k.id===s.id)?.code||EMPTY}));
+ const showStatement=statement=>{
+  if(!statement)return;
+  instructions.hidden=false;
+  frame.srcdoc='<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src https: data:; base-uri &#39;none&#39;; form-action &#39;none&#39;"><style>body{font:16px/1.5 system-ui;color:#14243b}img{max-width:100%}</style>'+statement;
+ };
+ if(!item.sectionData){showStatement(item.known?.sections?.[0]?.statement);return;}
+ const sections=item.reviewSections;
  const state=window.LabSections.sanitize(sections,item.sectionData);
  const selected=sections.find(s=>s.id===chosen)||sections[0];
- for(const section of sections){
-  const button=document.createElement('button');button.type='button';button.className='secondary';button.textContent=section.title+' · '+section.type;
+ const pending=window.LabSections.incomplete(sections,state);
+ const progress=section=>{
+  if(section.type==='webcode')return !section.baselineKnown?'Cambios sin comparar':pending.some(p=>p.id===section.id)?'Sin cambios en HTML, CSS o JS':'Código modificado';
+  const answered=section.questions.filter(q=>state.values[section.id][q.id].trim()).length;
+  return answered+'/'+section.questions.length+' respondidas';
+ };
+ for(const [index,section] of sections.entries()){
+  const button=document.createElement('button');button.type='button';button.className='secondary';button.textContent=(index+1)+'. '+section.title+' · '+(section.type==='qa'?'QA':section.type==='test'?'Test':'webcode')+' · '+progress(section);
   button.setAttribute('aria-current',String(section.id===selected.id));
   button.addEventListener('click',()=>renderSections(item,section.id));nav.append(button);
  }
+ showStatement(selected.statement);
+ status.hidden=false;status.textContent='Apartado '+(sections.indexOf(selected)+1)+' de '+sections.length+' · '+progress(selected)+'. '+(selected.type==='test'?'Se muestra la alternativa elegida; no implica que sea correcta.':'Pendiente de valoración del profesor.');
+ if(item.known&&String(item.activityVersion)!==String(item.known.version))status.textContent+=' Las instrucciones y el código de partida corresponden a la versión publicada actualmente.';
  if(selected.type==='webcode'){
   item.start=selected.code;item.code=state.values[selected.id];item.modified=TABS.filter(t=>item.code[t]!==item.start[t]);
+  if(!selected.baselineKnown)$('cambios').checked=false;
   renderCode();renderResult();
  }else{
-  panels.hidden=true;questions.hidden=false;$('vista').srcdoc='';
+  panels.hidden=true;questions.hidden=false;token='';$('vista').srcdoc='';$('preview-console').replaceChildren();$('console-count').textContent='';
   for(const q of selected.questions){
    const article=document.createElement('section'),heading=document.createElement('h3'),answer=document.createElement('p');
    heading.textContent=q.text;const value=state.values[selected.id][q.id];
    if(selected.type==='test'){
     const options=document.createElement('ol');options.type='A';
-    q.options.forEach((text,index)=>{const li=document.createElement('li');li.textContent=text;if(value===String(index)){li.style.fontWeight='700';li.textContent+=' ✓ Elegida';}options.append(li);});article.append(heading,options);
+    q.options.forEach((text,index)=>{const li=document.createElement('li');li.textContent=text;if(value===String(index)){li.className='selected-answer';li.textContent+=' — Elegida por el alumno';}options.append(li);});article.append(heading,options);
    }else article.append(heading);
-   answer.textContent=value===''?'Sin responder':selected.type==='test'?'Respuesta: '+String.fromCharCode(65+Number(value)):value;
+   answer.textContent=!value.trim()?'Sin responder':selected.type==='test'?'Respuesta: '+String.fromCharCode(65+Number(value)):value;
+   if(!value.trim())answer.className='unanswered';
    answer.style.whiteSpace='pre-wrap';article.append(answer);questions.append(article);
   }
  }
@@ -453,7 +498,7 @@ function select(id){
  if(item.recoveries)chips.push(chip('Recuperaciones: '+item.recoveries));
  const blocked=Object.entries(item.actionCounts||{}).map(([k,v])=>k+' ×'+v).join(', ');
  if(blocked)chips.push(chip('Acciones bloqueadas: '+blocked));
- chips.push(chip(item.sectionData?'Entrega con varios tipos de apartado':item.modified.length?'Modificado: '+item.modified.map(t=>NAMES[t]).join(', '):'No modificó nada',item.modified.length?'':'mal'));
+ chips.push(chip(item.sectionData?item.reviewSections.length+' apartado(s) · '+[...new Set(item.reviewSections.map(s=>s.type==='qa'?'QA':s.type))].join(', '):item.modified.length?'Modificado: '+item.modified.map(t=>NAMES[t]).join(', '):'No modificó nada',item.sectionData||item.modified.length?'':'mal'));
  $('ficha').replaceChildren(...chips);
  $('auditoria').textContent=item.audit||'Sin registro.';
  if(!item.modified.includes(tab))tab=item.modified.find(t=>t!=='txt')||item.modified[0]||'html';

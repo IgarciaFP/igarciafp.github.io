@@ -54,12 +54,39 @@ window.createLabClipboard=function(options){
    el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));el.focus();notify('');
   }catch{notify(message('El navegador no ha permitido leer el portapapeles para pegar.','The browser did not allow reading the clipboard to paste.'));}
  });
- async function clear(){
-  hide();
-  try{await navigator.clipboard.writeText('');notify('');return true;}
-  catch{notify(message('No se pudo vaciar el portapapeles: el navegador ha denegado el acceso.','The clipboard could not be cleared: browser access was denied.'));return false;}
+ // Un espacio sustituye el contenido incluso en navegadores que ignoran una copia vacía.
+ // La copia clásica se inicia en el mismo clic: esperar al rechazo de la API puede
+ // perder la activación del usuario. Nunca se lee el contenido anterior.
+ function copyBlank(){
+  if(typeof document.execCommand!=='function')return false;
+  const active=document.activeElement,selection=window.getSelection();
+  const ranges=selection?Array.from({length:selection.rangeCount},(_,i)=>selection.getRangeAt(i).cloneRange()):[];
+  const start=active?.selectionStart,end=active?.selectionEnd,direction=active?.selectionDirection;
+  const field=document.createElement('textarea');field.value=' ';field.tabIndex=-1;
+  field.style.cssText='position:fixed;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
+  (document.querySelector('dialog[open]')||document.body).append(field);
+  const onCopy=event=>{if(!event.clipboardData)return;event.clipboardData.setData('text/plain',' ');event.preventDefault();event.stopImmediatePropagation();};
+  window.addEventListener('copy',onCopy,true);
+  try{field.focus({preventScroll:true});field.select();return document.execCommand('copy')===true;}
+  catch{return false;}
+  finally{
+   window.removeEventListener('copy',onCopy,true);field.remove();
+   if(active?.isConnected){active.focus({preventScroll:true});if(typeof start==='number')active.setSelectionRange(start,end,direction);}
+   if(selection){selection.removeAllRanges();for(const range of ranges)selection.addRange(range);}
+  }
  }
- document.getElementById('guard-start').addEventListener('click',()=>{void clear();},true);
+ let clearing=0;
+ async function clear({gesture=false}={}){
+  hide();
+  const operation=++clearing;
+  let modern;
+  try{modern=Promise.resolve(navigator.clipboard.writeText(' ')).then(()=>true,()=>false);}catch{modern=Promise.resolve(false);}
+  const copied=gesture&&copyBlank();
+  const success=(await modern)||copied;
+  if(operation===clearing)notify(success?'':message('No se pudo vaciar el portapapeles: permite el acceso al portapapeles en este sitio.','The clipboard could not be cleared: allow clipboard access for this site.'));
+  return success;
+ }
+ document.getElementById('guard-start').addEventListener('click',()=>{void clear({gesture:true});},true);
  // Al cerrar o navegar fuera el navegador puede cancelar operaciones asíncronas.
  window.addEventListener('beforeunload',()=>{void clear();});
  window.addEventListener('pagehide',()=>{void clear();});

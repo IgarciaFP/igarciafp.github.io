@@ -1,5 +1,5 @@
 // npm install jsdom; NODE_PATH may point to a separate test-only installation.
-const {JSDOM}=require('jsdom'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{webcrypto}=require('node:crypto'),{gunzipSync}=require('node:zlib');
+const {JSDOM}=require('jsdom'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{webcrypto,createHash}=require('node:crypto'),{gunzipSync,gzipSync}=require('node:zlib');
 const root=path.resolve(__dirname,'..');
 const S=require('../motor/apartados.js'),T=require('../motor/herramientas.js');
 async function main(){
@@ -31,6 +31,10 @@ async function main(){
  assert.ok(d.getElementById('action-confirm-warning').textContent.includes('sin responder'));
  d.getElementById('action-confirm-cancel').click();assert.equal(await confirmation,false);
  adapter.restore(full);assert.equal(d.querySelectorAll('#question-fields input')[1].checked,true);
+ let clipboardWrites=0;
+ Object.defineProperty(w.navigator,'clipboard',{value:{writeText:async value=>{assert.equal(value,' ');clipboardWrites++;}}});
+ const confirmAgain=adapter.confirmDelivery();d.getElementById('action-confirm-accept').click();
+ assert.equal(clipboardWrites,1);assert.equal(await confirmAgain,true);
  const packed=await adapter.makeReport({},true,Date.now(),{finishReason:'start'});
  const text=gunzipSync(Buffer.from(packed.slice(common.format.report.length),'base64url')).toString('utf8');
  const report=JSON.parse(text.split('\nCódigo de comprobación: ')[0]);assert.equal(report.sectionsVersion,1);
@@ -59,6 +63,41 @@ async function main(){
  assert.ok(rw.document.getElementById('codigo').textContent.includes('Mi tarjeta final'));
  rw.document.querySelectorAll('#review-sections button')[1].click();assert.ok(rw.document.getElementById('review-questions').textContent.includes('contraste'));
  rw.document.querySelectorAll('#review-sections button')[2].click();assert.ok(rw.document.getElementById('review-questions').textContent.includes('Sin responder'));assert.ok(rw.document.getElementById('review-questions').textContent.includes('Elegida'));
+ assert.equal(rw.document.querySelectorAll('#review-questions ol li').length,8);
+ assert.equal(rw.document.querySelectorAll('.selected-answer').length,1);
+ assert.ok(rw.document.getElementById('review-status').textContent.includes('1/2 respondidas'));
+ assert.ok(rw.document.getElementById('review-status').textContent.includes('no implica que sea correcta'));
+ assert.equal(rw.document.querySelector('.detalle>.paneles').hidden,true);
+ assert.equal(rw.document.getElementById('review-statement').hidden,false);
+ assert.equal(rw.document.querySelector('#review-statement iframe').getAttribute('sandbox'),'');
+ rw.document.querySelectorAll('#review-sections button')[0].click();
+ assert.equal(rw.document.querySelector('.detalle>.paneles').hidden,false);
+ assert.ok(rw.document.getElementById('review-status').textContent.includes('Código modificado'));
+ // Exercise the same decoding path as pasted cells, downloaded reports and sheet links.
+ const encode=value=>common.format.report+gzipSync(JSON.stringify(value)).toString('base64url');
+ const encodeReport=value=>{const payload=JSON.stringify(value);return common.format.report+gzipSync(payload+'\nCódigo de comprobación: '+common.format.checksum+createHash('sha256').update(payload).digest('hex')).toString('base64url');};
+ const display=async value=>{const parsed=await rw.reviewTest.parse(value);rw.reviewTest.items.set(parsed.id,parsed);rw.reviewTest.select(parsed.id);return parsed;};
+ const draft=await display(encode({format:'DIW-01-01-TARJETA-DE-PRESENTACION-SAVE',state:{savedAt:'2026-11-18',data:full}}));
+ assert.equal(draft.draft,true);assert.equal(rw.document.querySelectorAll('#review-sections button').length,3);
+ // Unknown activities still show the question snapshot in the submitted report, safely as text.
+ const unknown=structuredClone(report);unknown.activity='actividad-retirada';unknown.sectionDefinitions[1].questions[0].text='<img src=x onerror=alert(1)>';
+ await display(encodeReport(unknown));rw.document.querySelectorAll('#review-sections button')[1].click();
+ assert.equal(rw.document.querySelector('#review-questions img'),null);
+ assert.ok(rw.document.getElementById('review-questions').textContent.includes('<img'));
+ assert.equal(rw.document.getElementById('review-statement').hidden,true);
+ const single=structuredClone(report),qa=single.sectionDefinitions[1];single.sectionDefinitions=[qa];
+ single.answers=S.pack([{...qa,code:{}}],{active:qa.id,values:{[qa.id]:restored.values[qa.id]}});
+ await display(encodeReport(single));assert.equal(rw.document.querySelectorAll('#review-sections button').length,1);
+ assert.equal(rw.document.querySelector('.detalle>.paneles').hidden,true);
+ const broken=structuredClone(report);broken.answers=[];
+ await assert.rejects(rw.reviewTest.parse(encodeReport(broken)),/Faltan las respuestas/);
+ const invalid=structuredClone(report);invalid.sectionDefinitions[0].type='desconocido';
+ await assert.rejects(rw.reviewTest.parse(encodeReport(invalid)),/Tipo de apartado desconocido/);
+ const legacy={...report,sectionsVersion:undefined,sectionDefinitions:undefined,answers:[{question:'html',answer:'<h1>Entrega antigua</h1>'}]};
+ await display(encodeReport(legacy));assert.equal(rw.document.getElementById('review-sections').hidden,true);
+ assert.equal(rw.document.getElementById('review-status').hidden,true);
+ assert.equal(rw.document.querySelector('.detalle>.paneles').hidden,false);
+ assert.ok(rw.document.getElementById('codigo').textContent.includes('Entrega antigua'));
  review.window.close();
  console.log('OK: complete adapter boot, saved state, gzip report, blank questions, internal tools and teacher review of all sections.');
 }
