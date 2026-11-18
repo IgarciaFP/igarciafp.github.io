@@ -5,18 +5,23 @@
 // Seguridad y entrega son los módulos comunes de /base/motor/.
 const {config,code,sections,sectionMode}=window.Lab;
 let sectionView=null,toolbox=null,clipboard=null;
-// Temporal en base4: poner false para restaurar las restricciones de selección y menú contextual.
-const TEMP_ALLOW_INSPECTION=true;
-if(TEMP_ALLOW_INSPECTION){
- document.documentElement.classList.add('allow-inspection');
- const installGuards=window.installPracticeInputGuards;
- window.installPracticeInputGuards=(doc,blockAction,blockClipboard)=>installGuards(doc,event=>{
-  const key=String(event.key||'').toLowerCase();
-  if(event.type==='contextmenu'||event.button===2||event.type==='selectstart'||
-    (event.type.startsWith('key')&&(key==='control'||((event.ctrlKey||event.metaKey)&&['a','arrowleft','arrowright','arrowup','arrowdown','home','end'].includes(key)))))return;
-  blockAction(event);
- },blockClipboard);
+// Los atajos habituales de edición están permitidos en base4.
+function editingShortcut(event){
+ const key=String(event.key||'').toLowerCase();
+ if(['copy','cut','paste','selectstart'].includes(event.type))return true;
+ if(!event.type.startsWith('key')||event.altKey)return false;
+ return ['control','meta','shift'].includes(key)||
+  ((event.ctrlKey||event.metaKey)&&['a','c','v','x','arrowleft','arrowright','arrowup','arrowdown','home','end','insert'].includes(key))||
+  (event.shiftKey&&['arrowleft','arrowright','arrowup','arrowdown','home','end','pageup','pagedown','insert','delete'].includes(key));
 }
+// Conserva la inspección y el menú contextual ya habilitados en base4.
+const TEMP_ALLOW_INSPECTION=true;
+if(TEMP_ALLOW_INSPECTION)document.documentElement.classList.add('allow-inspection');
+const installGuards=window.installPracticeInputGuards;
+window.installPracticeInputGuards=(doc,blockAction,blockClipboard)=>installGuards(doc,event=>{
+ if(editingShortcut(event)||(TEMP_ALLOW_INSPECTION&&(event.type==='contextmenu'||event.button===2)))return;
+ blockAction(event);
+},blockClipboard);
 const $=id=>document.getElementById(id);
 // Pestañas del editor. «txt» son notas del alumno: no forman parte del resultado.
 const LANGS=['html','css','js','txt'];
@@ -326,6 +331,14 @@ const CSP=config.preview?.csp||"default-src 'none'; script-src 'unsafe-inline'; 
 const attr=text=>text.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
 // Se ejecuta DENTRO de la vista previa, antes que el código del alumno.
 function bridge(token,jsLine,allowInspection){
+ var editingShortcut=function editingShortcut(event){
+ const key=String(event.key||'').toLowerCase();
+ if(['copy','cut','paste','selectstart'].includes(event.type))return true;
+ if(!event.type.startsWith('key')||event.altKey)return false;
+ return ['control','meta','shift'].includes(key)||
+  ((event.ctrlKey||event.metaKey)&&['a','c','v','x','arrowleft','arrowright','arrowup','arrowdown','home','end','insert'].includes(key))||
+  (event.shiftKey&&['arrowleft','arrowright','arrowup','arrowdown','home','end','pageup','pagedown','insert','delete'].includes(key));
+};
  var parent=window.parent,sent=0;
  function format(value){
   if(typeof value==='string')return value;
@@ -369,7 +382,7 @@ function bridge(token,jsLine,allowInspection){
  });
  function stop(event){
   var key=String(event.key||'').toLowerCase();
-  if(allowInspection&&(event.type==='contextmenu'||(event.type.startsWith('key')&&(key==='control'||((event.ctrlKey||event.metaKey)&&['a','arrowleft','arrowright','arrowup','arrowdown','home','end'].indexOf(key)>=0)))))return;
+  if(editingShortcut(event)||(allowInspection&&event.type==='contextmenu'))return;
   event.preventDefault();event.stopImmediatePropagation();
  }
  ['contextmenu','copy','cut','paste','dragstart','drop'].forEach(function(type){document.addEventListener(type,stop,true);});
@@ -614,7 +627,7 @@ function afterRender(state,ctx){
  $('toolbar-count').textContent='Incidencias: '+state.count+' · Margen: '+ctx.remainingSeconds+' s';
 }
 function confirmText(kind){
- revisionNeeded=kind==='finish'&&cachedOpportunity().used>=cachedOpportunity().limit;
+ revisionNeeded=kind==='finish'&&requiresReason();
  $('revision-fields').hidden=!revisionNeeded;
  $('guard-confirm-ok').disabled=false;
  if(kind==='finish')refreshReason();

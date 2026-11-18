@@ -203,7 +203,7 @@ for(const [reason,number,expected]of [['voluntary',1,1],['voluntary',2,0],['dura
   $:id=>elements[id]||=( {value:'',hidden:true,disabled:false,textContent:''}),
   guard:{render(){}},rememberDelivery:()=>({code:'test'}),
   deliveryEnvelope:async()=>({payload:JSON.stringify({finishReason:reason})}),
-  setDeliveryState(){},cachedOpportunity:()=>({used:0,limit:1}),
+  setDeliveryState(){},cachedOpportunity:()=>({used:number,limit:1}),
   submitPanel:async()=>{sends++;}
  });
  vm.runInContext(part('function requiresReason(){','const reasonValid=')+
@@ -212,6 +212,10 @@ for(const [reason,number,expected]of [['voluntary',1,1],['voluntary',2,0],['dura
   part('async function downloadReport(){','async function submitPanel(){'),ctx);
  await ctx.downloadReport();
  assert.equal(sends,expected,reason+' intento '+number);
+ ctx.tr=key=>key;ctx.refreshReason=()=>true;
+ vm.runInContext(part('function confirmText(kind){','// ---------------------------------------------------------------- Informe'),ctx);
+ ctx.confirmText('finish');
+ assert.equal(elements['revision-fields'].hidden,number<=1,'La reserva actual no agota su propio derecho a entregar');
  assert.equal(elements['revision-delivery'].hidden,number<=1);
  if(number>1){
   assert.equal(elements['revision-delivery-send'].disabled,true);
@@ -264,7 +268,7 @@ for(const compatible of [false,true]){
  const elements={};
  const get=id=>elements[id]||=( {open:false,textContent:'',handlers:{},addEventListener(type,fn){this.handlers[type]=fn;},showModal(){this.open=true;},close(){this.open=false;}});
  const runtime=vm.createContext({$:get});
- vm.runInContext(part('let modalResolve=null;','const clearLocalButton='),runtime);
+ vm.runInContext(part('let modalResolve=null,','const clearLocalButton='),runtime);
  let promise=runtime.confirmActionModal('¿Continuar?');
  assert.equal(get('action-confirm').open,true);
  get('action-confirm-cancel').handlers.click();
