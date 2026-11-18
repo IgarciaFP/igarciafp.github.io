@@ -2,7 +2,7 @@
 'use strict';
 const $=id=>document.getElementById(id);
 let selected=null,revision=null,serial=0,busy=false,session=null,endpoint='';
-const storageKey='base3-profesor-session-v1';
+const storageKey='base4-profesor-session-v1';
 const messages={
  AUTH:'Clave incorrecta o no se pudo verificar con el servidor de control.',
  AUTH_CONFIG:'No está configurado el servidor de control.',

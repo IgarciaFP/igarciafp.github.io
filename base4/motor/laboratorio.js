@@ -179,7 +179,7 @@ async function checkOpportunities(){
  const email=$('student').value.trim().toLowerCase(),serial=++opportunitySerial;
  if(fileMode||!validIdentity()||!deliveryReady())return;
  try{
-  const result=await window.LabDelivery.status(config.delivery,{practiceId:config.id,email,activityTitle:config.activityTitle});
+  const result=await window.LabDelivery.status(config.delivery,{practiceId:config.id,email,activityTitle:config.activityTitle,url:location.origin+location.pathname});
   if(serial!==opportunitySerial)return;
   saveOpportunity(email,result.used);
   if(phase==='ready')guard?.render();

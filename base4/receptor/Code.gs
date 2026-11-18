@@ -8,6 +8,9 @@ const ORIGEN_ = 'https://igarciafp.github.io';     // sitio del laboratorio
 const DOMINIO_ = 'g.educaand.es';                  // dominio de correo admitido
 const PAGINA_PROFESOR_ = 'https://igarciafp.github.io/base3/profesor.html';
 // El receptor es compartido: solo se elige entre nuestros dos revisores.
+function laboratorio_(datos) {
+  return /^https:\/\/igarciafp\.github\.io\/base4(?:[/?#]|$)/.test(datos.url||'')?'base4':'base3';
+}
 function paginaProfesor_(datos) {
   const url=typeof datos.url==='string'?datos.url:'';
   const base4=ORIGEN_+'/base4';
@@ -121,7 +124,7 @@ function controlEntrega_(datos,politica) {
   let verificado=false,invalido=false;
   if(SERVIDOR_){
     try{
-      const response=UrlFetchApp.fetch(SERVIDOR_+'/verificar',{method:'post',contentType:'application/json',payload:JSON.stringify({sello}),muteHttpExceptions:true});
+      const response=UrlFetchApp.fetch(SERVIDOR_+(laboratorio_(datos)==='base4'?'/base4':'')+'/verificar',{method:'post',contentType:'application/json',payload:JSON.stringify({sello}),muteHttpExceptions:true});
       if(response.getResponseCode()===200){
         verificado=JSON.parse(response.getContentText()).valido===true;
         invalido=!verificado;
@@ -164,7 +167,8 @@ function errorConfiguracion_(detalle) {
 }
 function configuracionActividad_(datos) {
   if (!/^(DIW|DWEC|SSII)$/.test(datos.module) || !/^[a-z0-9][a-z0-9-]{0,59}$/.test(datos.activity)) throw Error('INVALID');
-  const url=ORIGEN_+'/base3/actividades/'+datos.module.toLowerCase()+'/'+datos.activity+'/config.json';
+  const carpeta=laboratorio_(datos);
+  const url=ORIGEN_+'/'+carpeta+'/actividades/'+datos.module.toLowerCase()+'/'+datos.activity+'/config.json';
   try {
     let respuesta;
     for(let intento=0;intento<3;intento++){
@@ -178,12 +182,13 @@ function configuracionActividad_(datos) {
       if(![408,429,500,502,503,504].includes(estado)||intento===2)break;
       Utilities.sleep(300*(intento+1));
     }
-    if(respuesta.getResponseCode()===404)return {entregas:1,redes:['185.197.0.0/16','88.16.0.0/16'],restringirHorario:false,restringirIPs:false};
+    if(respuesta.getResponseCode()===404&&carpeta==='base4')throw errorConfiguracion_('No existe la actividad de base4: '+url);
+    if(respuesta.getResponseCode()===404)return {entregas:0,redes:['185.197.0.0/16','88.16.0.0/16'],restringirHorario:false,restringirIPs:false};
     if(respuesta.getResponseCode()!==200)throw errorConfiguracion_('HTTP '+respuesta.getResponseCode()+' al descargar '+url);
     let config;
     try{config=JSON.parse(respuesta.getContentText());}catch{throw errorConfiguracion_('La respuesta de '+url+' no es JSON válido.');}
     if(!config||typeof config!=='object'||Array.isArray(config))throw errorConfiguracion_('config.json debe contener un objeto.');
-    const limite=config.entregas===undefined?1:config.entregas;
+    const limite=config.entregas===undefined?(carpeta==='base4'?1:0):config.entregas;
     if(!Number.isSafeInteger(limite)||limite<0)throw errorConfiguracion_('entregas debe ser un entero mayor o igual a 0.');
     const redes=config.redes===undefined?['185.197.0.0/16','88.16.0.0/16']:config.redes;
     const restringirHorario=config.restringirHorario??false,restringirIPs=config.restringirIPs??false;
@@ -261,7 +266,7 @@ function informeAlmacenado_(codigo) {
     const payload=texto.slice(0,pos),id=huella_(payload);
     if(id!==texto.slice(pos+marker.length))return null;
     const report=JSON.parse(payload);
-    return {exam:report.exam,email:String(report.email).toLowerCase(),id};
+    return {laboratorio:laboratorio_(report),exam:report.exam,email:String(report.email).toLowerCase(),id};
   }catch{return null;}
 }
 function entregasAnteriores_(hoja,datos,id) {
@@ -277,6 +282,8 @@ function entregasAnteriores_(hoja,datos,id) {
     let meta=null;
     try{const n=JSON.parse(notas[i][0]);if((n?.base3===1&&/^[a-f0-9]{64}$/.test(n.id))||n?.base3===2)meta=n;}catch{}
     meta=meta||informeAlmacenado_(fila[7]);
+    const origen=meta?.laboratorio||informeAlmacenado_(fila[7])?.laboratorio;
+    if(origen&&origen!==laboratorio_(datos))continue;
     if(meta&&meta.exam===datos.exam&&meta.email===email){count++;if(meta.id===id)duplicate=true;}
     // Entregas antiguas demasiado largas: solo queda el título en la hoja.
     else if(!meta&&String(fila[1])===datos.activityTitle)count++;
@@ -308,7 +315,7 @@ function buscarIntento_(hoja,sobre,datos,columnas) {
   if(!matches.length)return null;
   const row=matches[0].getRow();
   let meta;try{meta=JSON.parse(hoja.getRange(row,comprobarCabeceras_(hoja)[8]).getNote());}catch{throw Error('INVALID');}
-  if(meta.base3!==2||meta.exam!==datos.exam||meta.email!==datos.email.toLowerCase()||meta.tokenHash!==huella_(sobre.attemptToken))throw Error('INVALID');
+  if((meta.laboratorio&&meta.laboratorio!==laboratorio_(datos))||meta.base3!==2||meta.exam!==datos.exam||meta.email!==datos.email.toLowerCase()||meta.tokenHash!==huella_(sobre.attemptToken))throw Error('INVALID');
   return {row,meta};
 }
 /** Reserva idempotente: guarda la identidad antes de la entrega definitiva. */
@@ -324,7 +331,7 @@ function iniciarEntrega(sobre) {
     const number=entregasAnteriores_(hoja,datos,'').count+1,ahora=new Date();
     // El inicio registra los avisos; las restricciones se aplican al enviar.
     const control=controlEntrega_(datos,{...politica,restringirIPs:false,restringirHorario:false});
-    const meta={base3:2,exam:datos.exam,email:datos.email.toLowerCase(),attemptId:datos.attemptId,
+    const meta={base3:2,laboratorio:laboratorio_(datos),exam:datos.exam,email:datos.email.toLowerCase(),attemptId:datos.attemptId,
       number,tokenHash:huella_(sobre.attemptToken),status:'started',startedAt:ahora.toISOString(),initialIP:control.ip};
     let values=Array.from({length:9},()=>literal_(''));
     values[0]=literal_(Utilities.formatDate(ahora,'Europe/Madrid','dd/MM/yy HH:mm:ss'));
@@ -377,7 +384,7 @@ function recibirEntrega(sobre) {
       literal_(Math.floor(segundos / 60) + ' min ' + String(segundos % 60).padStart(2, '0') + ' s'),
       literal_(control.ip), literal_(incidencias_(datos, control)),
       {...literal_(cabe ? codigo : 'Entrega demasiado larga para una celda: pide el archivo TXT al alumno.'),
-        note:JSON.stringify({base3:1,exam:datos.exam,email:datos.email.toLowerCase(),id:sobre.submissionId,adicional})}
+        note:JSON.stringify({base3:1,laboratorio:laboratorio_(datos),exam:datos.exam,email:datos.email.toLowerCase(),id:sobre.submissionId,adicional})}
     ];
     if(intento){
       // Conserva fecha, identidad e IP iniciales; no se toca «nota».
@@ -511,7 +518,7 @@ function consultarOportunidades(pedido) {
     if(!/^[^\s@]+@[^\s@]+$/.test(email)||email.split('@')[1]!==DOMINIO_)throw Error('EMAIL');
     const modulo=pedido.practiceId.split('-')[0];
     const datos={exam:pedido.practiceId,module:modulo,activity:pedido.practiceId.slice(modulo.length+1).toLowerCase(),
-      email,activityTitle:typeof pedido.activityTitle==='string'?pedido.activityTitle:''};
+      email,url:typeof pedido.url==='string'?pedido.url:'',activityTitle:typeof pedido.activityTitle==='string'?pedido.activityTitle:''};
     const limite=limiteActividad_(datos),hoja=libro_().getSheetByName(PESTANA_);
     comprobarCabeceras_(hoja);
     const anteriores=entregasAnteriores_(hoja,datos,'');
@@ -522,3 +529,12 @@ function consultarOportunidades(pedido) {
   }
 }
 
+
+/** Diagnóstico de solo lectura: no crea ni modifica entregas. */
+function diagnosticarBase4() {
+  for(const [module,activity] of [['DWEC','02-02-mover-cuadrado-con-teclado'],['SSII','02-01-distingue-mac-ipv4-ipv6']]) {
+    const policy=configuracionActividad_({module,activity,url:ORIGEN_+'/base4/?a='+module.toLowerCase()+'/'+activity});
+    if(policy.entregas!==1)throw Error('Límite inesperado: '+policy.entregas);
+    console.log(module+' '+activity+': límite='+policy.entregas+'; intento 1 adicional='+(1>policy.entregas)+'; intento 2 adicional='+(2>policy.entregas));
+  }
+}

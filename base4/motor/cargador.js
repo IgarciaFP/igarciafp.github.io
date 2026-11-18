@@ -1,11 +1,11 @@
 /* Sirve esta carpeta por HTTP(S). La actividad se elige en la dirección:
-   …/base3/?a=MODULO/ACTIVIDAD   (módulos: diw, dwec, ssii)
+   …/base4/?a=MODULO/ACTIVIDAD   (módulos: diw, dwec, ssii)
    y se lee de actividades/MODULO/ACTIVIDAD/. */
 (async () => {
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261118171503-base4';
+  const version=loaderURL.searchParams.get('v')||'20261118172424-base4';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=async path=>{
     // La configuración cambia sin necesidad de publicar otra versión del HTML.
@@ -99,7 +99,7 @@
     for(const [name,value]of Object.entries(code))
       if(value.length>10000)throw Error(`codigo.${name} supera los 10000 caracteres que admite el editor.`);
     // Identidad y claves derivadas de módulo y actividad: no hay que configurarlas a mano.
-    const MOD=mod.toUpperCase(),id=MOD+'-'+slug.toUpperCase(),store=(sectionMode?'base4-sections-':'base3-')+mod+'-'+slug;
+    const MOD=mod.toUpperCase(),id=MOD+'-'+slug.toUpperCase(),store=(sectionMode?'base4-sections-':'base4-')+mod+'-'+slug;
     // Nombre de la actividad: «NN-MM-Nombre» (tema y número de actividad). Se muestra con el
     // módulo delante: «DIW02-01-Nombre». Si el título ya lo lleva escrito, no se repite.
     const name=activity.title.trim().replace(new RegExp('^'+mod+'\\s*','i'),'').trim()||activity.title.trim();

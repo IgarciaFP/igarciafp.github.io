@@ -305,3 +305,25 @@ console.log('OK: reserva, actualización, idempotencia, motivos, notas y panel d
  assert.equal(elements['delivery-note'].hidden,true);
 }
 
+// El mismo alumno y actividad tienen contadores independientes por laboratorio.
+const legacy=envelope('a','','aislamiento@g.educaand.es');
+assert.equal(context.iniciarEntrega(legacy).number,1);
+const separate=envelope('b','','aislamiento@g.educaand.es');
+separate.payload=JSON.stringify({...JSON.parse(separate.payload),url:'https://igarciafp.github.io/base4/?a=diw/prueba'});
+separate.submissionId=hash(separate.payload);
+assert.equal(context.iniciarEntrega(separate).number,1);
+assert.equal(context.recibirEntrega(separate).ok,true);
+const next=envelope('c','','aislamiento@g.educaand.es');
+assert.equal(context.iniciarEntrega(next).number,2);
+assert.equal(context.laboratorio_({url:'https://igarciafp.github.io/base40/'}),'base3');
+assert.equal(context.laboratorio_({url:'https://igarciafp.github.io/base4/'}),'base4');
+let requested='';
+context.UrlFetchApp.fetch=url=>{requested=url;return {getResponseCode:()=>200,getContentText:()=>'{"entregas":1}'};};
+assert.equal(context.configuracionActividad_({module:'DWEC',activity:'prueba',url:'https://igarciafp.github.io/base4/'}).entregas,1);
+assert.match(requested,/\/base4\/actividades\/dwec\/prueba\/config.json/);
+context.configuracionActividad_({module:'DWEC',activity:'prueba'});
+assert.match(requested,/\/base3\/actividades\/dwec\/prueba\/config.json/);
+context.UrlFetchApp.fetch=()=>({getResponseCode:()=>404});
+assert.throws(()=>context.configuracionActividad_({module:'DWEC',activity:'prueba',url:'https://igarciafp.github.io/base4/'}),/ACTIVITY_CONFIG/);
+assert.equal(context.configuracionActividad_({module:'DWEC',activity:'prueba'}).entregas,0);
+console.log('OK: origen, contadores independientes y 404 sin alterar base3.');
