@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mover un cuadrado con el teclado</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 24px;
+            font-family: Arial, sans-serif;
+            color: #1e293b;
+            background: #f1f5f9;
+        }
+
+        main {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 24px;
+            border-radius: 12px;
+            background: white;
+        }
+
+        h1 { font-size: 24px; }
+        p { line-height: 1.5; }
+        .zona-scroll { overflow-x: auto; padding: 2px; }
+
+        #zona {
+            position: relative;
+            width: 500px;
+            height: 300px;
+            outline: 2px solid #94a3b8;
+            background: #e0f2fe;
+        }
+
+        #cuadrado {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 50px;
+            height: 50px;
+            background: #2563eb;
+            border-radius: 6px;
+        }
+
+        #coordenadas {
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Mover un cuadrado con el teclado</h1>
+        <p>Pulsa las flechas del teclado para mover el cuadrado
+           en pasos de 10 píxeles, sin salir de la zona.</p>
+        <div class="zona-scroll">
+            <div id="zona">
+                <div id="cuadrado"></div>
+            </div>
+        </div>
+        <p id="coordenadas">Posición: X = 0, Y = 0</p>
+    </main>
+
+    <script>
+        const cuadrado = document.querySelector("#cuadrado");
+        const coordenadas = document.querySelector("#coordenadas");
+        
+        let x = 0;
+        let y = 0;
+        const paso = 10;
+        
+        document.addEventListener("keydown", (evento) => {
+            switch (evento.key) {
+                case "ArrowUp":
+                    if (y >= paso) {
+                        y -= paso;
+                    }
+                    break;
+        
+                case "ArrowDown":
+                    if (y + paso <= 250) {
+                        y += paso;
+                    }
+                    break;
+        
+                case "ArrowLeft":
+                    if (x >= paso) {
+                        x -= paso;
+                    }
+                    break;
+        
+                case "ArrowRight":
+                    if (x + paso <= 450) {
+                        x += paso;
+                    }
+                    break;
+        
+                default:
+                    return;
+            }
+        
+            evento.preventDefault();
+        
+            cuadrado.style.left = `${x}px`;
+            cuadrado.style.top = `${y}px`;
+        
+            coordenadas.textContent = `Posición: X = ${x}, Y = ${y}`;
+        });
+    </script>
+</body>
+</html>
