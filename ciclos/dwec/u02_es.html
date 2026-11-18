@@ -3011,7 +3011,51 @@ pruebas.txt:
                 <div class="activity-card activity-callout" id="actividad-mover-cuadrado-teclado">
                     <p><strong>2.58. Mover un cuadrado con el teclado</strong></p>
                     <p>Abre el laboratorio y sigue las instrucciones.</p>
-                    <div class="resource-links"><a class="resource-link-btn" href="https://igarciafp.github.io/base4/?a=dwec/02-02-mover-cuadrado-con-teclado">Abrir el laboratorio</a></div>
+                    <div class="resource-links"><a class="resource-link-btn" href="https://igarciafp.github.io/base4/?a=dwec/02-02-mover-cuadrado-con-teclado">Abrir el laboratorio</a> <button type="button" class="resource-link-btn" id="boton-solucion-258" aria-expanded="false" aria-controls="solucion-258" style="font:inherit;cursor:pointer">Ver solución</button></div>
+                    <div id="solucion-258" hidden><pre><code class="language-javascript">const cuadrado = document.querySelector("#cuadrado");
+const coordenadas = document.querySelector("#coordenadas");
+
+let x = 0;
+let y = 0;
+const paso = 10;
+
+document.addEventListener("keydown", (evento) =&gt; {
+    switch (evento.key) {
+        case "ArrowUp":
+            if (y &gt;= paso) {
+                y -= paso;
+            }
+            break;
+
+        case "ArrowDown":
+            if (y + paso &lt;= 250) {
+                y += paso;
+            }
+            break;
+
+        case "ArrowLeft":
+            if (x &gt;= paso) {
+                x -= paso;
+            }
+            break;
+
+        case "ArrowRight":
+            if (x + paso &lt;= 450) {
+                x += paso;
+            }
+            break;
+
+        default:
+            return;
+    }
+
+    evento.preventDefault();
+
+    cuadrado.style.left = `${x}px`;
+    cuadrado.style.top = `${y}px`;
+
+    coordenadas.textContent = `Posición: X = ${x}, Y = ${y}`;
+});</code></pre></div>
                 </div>
                 <div class="activity-card activity-callout" id="actividad-examen-dwec-u02">
                     <p><strong>Examen · DWEC · Unidad 2</strong></p>
@@ -3075,6 +3119,17 @@ pruebas.txt:
             setOpen(false);
             toggle.focus();
         }
+    });
+})();
+</script>
+<script>
+(() => {
+    const boton = document.getElementById("boton-solucion-258");
+    const solucion = document.getElementById("solucion-258");
+    boton.addEventListener("click", () => {
+        solucion.hidden = !solucion.hidden;
+        boton.setAttribute("aria-expanded", String(!solucion.hidden));
+        boton.textContent = solucion.hidden ? "Ver solución" : "Ocultar solución";
     });
 })();
 </script>
