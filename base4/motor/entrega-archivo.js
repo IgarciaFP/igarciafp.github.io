@@ -13,7 +13,7 @@ root.LabFileDelivery={init({config,decode,envelope,encode,validEmail,onReceived}
  input.addEventListener('change',async()=>{
   const file=input.files?.[0];if(!file||busy)return;
   item=null;packet=null;send.disabled=true;reason.parentElement.hidden=true;reason.value='';
-  dialog.showModal();message('Comprobando archivo…');
+  dialog.dataset.state='idle';dialog.showModal();message('Comprobando archivo…');
   try{
    if(file.size>3000000)throw Error('El archivo es demasiado grande.');
    const text=await file.text(),decoded=await decode(text);
@@ -45,14 +45,18 @@ root.LabFileDelivery={init({config,decode,envelope,encode,validEmail,onReceived}
     const payload=JSON.stringify(data),hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(payload))),b=>b.toString(16).padStart(2,'0')).join('');
     item.code=await encode(payload+'\nCódigo de comprobación: '+config.format.checksum+hash);packet=await envelope(item);
    }
+   packet.fromFile=true;
+   dialog.dataset.state='sending';
    let receipt;
    try{receipt=await root.LabDelivery.send(config.delivery,packet);}catch(error){
     if(error.message!=='NOT_STARTED')throw error;
     await root.LabDelivery.start(config.delivery,packet);receipt=await root.LabDelivery.send(config.delivery,packet);
    }
+   dialog.dataset.state='success';
    message('Entrega recibida. Identificador: '+receipt.submissionId+'\nFecha: '+new Date(receipt.receivedAt).toLocaleString('es-ES'));
    packet=null;await onReceived?.(item,receipt);
   }catch(error){
+   dialog.dataset.state='error';
    if(error.message==='REVISION_REASON'){reason.parentElement.hidden=false;message('No quedan intentos ordinarios. Indica el motivo de revisión para enviar la entrega adicional.');}
    else message('No se ha confirmado la entrega. Conserva el archivo y vuelve a intentarlo. Código: '+error.message);
   }finally{busy=false;send.disabled=!packet;$('file-delivery-close').disabled=false;dialog.setAttribute('aria-busy','false');}

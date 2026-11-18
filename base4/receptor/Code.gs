@@ -275,7 +275,7 @@ function entregasAnteriores_(hoja,datos,id) {
   const columnas=comprobarCabeceras_(hoja);
   const filas=hoja.getRange(2,1,total,hoja.getLastColumn()).getValues().map(fila=>columnas.slice(1).map(col=>fila[col-1]));
   const notas=hoja.getRange(2,columnas[8],total,1).getNotes();
-  let count=0,duplicate=false;
+  let count=0,duplicate=false,duplicateRow=0;
   for(let i=0;i<filas.length;i++){
     const fila=filas[i];
     if(String(fila[0])!==datos.module||String(fila[2]).trim().toLowerCase()!==email)continue;
@@ -284,11 +284,11 @@ function entregasAnteriores_(hoja,datos,id) {
     meta=meta||informeAlmacenado_(fila[7]);
     const origen=meta?.laboratorio||informeAlmacenado_(fila[7])?.laboratorio;
     if(origen&&origen!==laboratorio_(datos))continue;
-    if(meta&&meta.exam===datos.exam&&meta.email===email){count++;if(meta.id===id)duplicate=true;}
+    if(meta&&meta.exam===datos.exam&&meta.email===email){count++;if(meta.id===id){duplicate=true;duplicateRow=i+2;}}
     // Entregas antiguas demasiado largas: solo queda el título en la hoja.
     else if(!meta&&String(fila[1])===datos.activityTitle)count++;
   }
-  return {count,duplicate};
+  return {count,duplicate,duplicateRow};
 }
 
 const literal_ = valor => ({ userEnteredValue: { stringValue: String(valor ?? '') } });
@@ -346,6 +346,13 @@ function iniciarEntrega(sobre) {
   finally{if(lock?.hasLock())lock.releaseLock();}
 }
 
+/** Marca el reenvío sin duplicar filas ni modificar notas o respuestas. */
+function marcarEntregaArchivo_(hoja,row) {
+  if(!row)return;
+  const celda=hoja.getRange(row,comprobarCabeceras_(hoja)[7]);
+  const actual=String(celda.getValue()||'');
+  if(!actual.split(' · ').includes('Entrega desde archivo'))celda.setValue(actual+(actual?' · ':'')+'Entrega desde archivo');
+}
 /** Recepción del alumno. Nunca devuelve entregas ajenas. */
 function recibirEntrega(sobre) {
   let cerrojo;
@@ -360,17 +367,21 @@ function recibirEntrega(sobre) {
     if(datos.attemptId&&!intento)throw Error('NOT_STARTED');
     if(intento?.meta.status==='submitted'){
       if(intento.meta.id!==sobre.submissionId)throw Error('ALREADY_SUBMITTED');
+      if(sobre.fromFile===true&&laboratorio_(datos)==='base4')marcarEntregaArchivo_(hoja,intento.row);
       return {ok:true,submissionId:sobre.submissionId,receivedAt:intento.meta.receivedAt,duplicate:true};
     }
     const anteriores=entregasAnteriores_(hoja,datos,sobre.submissionId);
-    if(anteriores.duplicate)
+    if(anteriores.duplicate){
+      if(sobre.fromFile===true&&laboratorio_(datos)==='base4')marcarEntregaArchivo_(hoja,anteriores.duplicateRow);
       return {ok:true,submissionId:sobre.submissionId,receivedAt:new Date().toISOString(),duplicate:true};
+    }
     const politica=configuracionActividad_(datos),limite=politica.entregas,adicional=intento?intento.meta.number>limite:anteriores.count>=limite;
     const motivo=typeof datos.revisionReason==='string'?datos.revisionReason.trim():'';
     if(motivo.length>2000)throw Error('INVALID');
     if(adicional&&(datos.attemptId||datos.finishReason==='voluntary')&&(motivo.match(/\p{L}/gu)||[]).length<20)throw Error('REVISION_REASON');
     const ahora = new Date(), segundos = Math.floor(datos.seconds);
     const control = controlEntrega_(datos,politica);
+    if(sobre.fromFile===true&&laboratorio_(datos)==='base4')control.avisos.push('Entrega desde archivo');
     if(adicional)control.avisos.push('entrega adicional: no sustituye ni actualiza la nota anterior');
     if(intento&&control.ip!==intento.meta.initialIP)control.avisos.push('IP de entrega: '+(control.ip||'sin comprobar'));
     if(motivo)control.avisos.push('Motivo de revisión: '+motivo);

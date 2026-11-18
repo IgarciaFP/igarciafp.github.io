@@ -327,3 +327,12 @@ context.UrlFetchApp.fetch=()=>({getResponseCode:()=>404});
 assert.throws(()=>context.configuracionActividad_({module:'DWEC',activity:'prueba',url:'https://igarciafp.github.io/base4/'}),/ACTIVITY_CONFIG/);
 assert.equal(context.configuracionActividad_({module:'DWEC',activity:'prueba'}).entregas,0);
 console.log('OK: origen, contadores independientes y 404 sin alterar base3.');
+
+// Reenviar un archivo ya recibido conserva fila y nota y marca una sola incidencia.
+const beforeFileRows=rows.length;
+const fileReceipt=context.recibirEntrega({...separate,fromFile:true});
+assert.equal(fileReceipt.ok,true);
+context.recibirEntrega({...separate,fromFile:true});
+assert.equal(rows.length,beforeFileRows);
+const fileRow=rows.find(row=>row.some(c=>c?.value==='aislamiento@g.educaand.es')&&row.some(c=>String(c?.value)==='b'.repeat(32)));
+assert.equal(fileRow[context.comprobarCabeceras_(sheet)[7]-1].value.split('Entrega desde archivo').length-1,1);
