@@ -1,6 +1,6 @@
 (function(root){
 'use strict';
-const KEYS=['colorPicker','calculadora','binarioDecimal','hexadecimalDecimal','traductor','apuntes','rubrica'];
+const KEYS=['colorPicker','calculadora','binarioDecimal','hexadecimalDecimal','traductor','apuntes','rubrica','atajosTeclado'];
 function rubric(value){
  if(value==null)return null;
  const fail=()=>{throw Error('Revisa rubrica.json: título, criterios, puntos y niveles no válidos.');};
@@ -124,7 +124,7 @@ function init(config,{language=()=> 'es'}={}){
   }
   panel.append(status);return panel;
  }
- for(const key of KEYS)if(config.enabled[key]&&(key!=='rubrica'||config.rubric)){
+ for(const key of KEYS)if(key!=='atajosTeclado'&&config.enabled[key]&&(key!=='rubrica'||config.rubric)){
   const button=doc.createElement('button');button.type='button';button.className='tool-launch';button.dataset.tool=key;button.textContent=icons[key];button.title=title(key);button.setAttribute('aria-label',title(key));
   button.addEventListener('click',()=>{selected=key;dialog.querySelector('h2').textContent=title(key);if(!panels.has(key))panels.set(key,build(key));content.replaceChildren(panels.get(key));dialog.showModal();});bar.append(button);
  }

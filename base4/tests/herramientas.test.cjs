@@ -17,3 +17,6 @@ assert.throws(()=>T.calculate('1/0'));assert.throws(()=>T.calculate('alert(1)'))
 for(const [expression,result] of [['2^8-2','254'],['2**8','256'],['2^3^2','512'],['-2^2','-4'],['(-2)^2','4'],['2^-3','0.125'],['4^0.5','2'],['3*2^4','48'],['2^0','1']])assert.equal(T.calculate(expression),result,expression);
 for(const expression of ['2^','2***3','0^-1','(-2)^0.5','10^1000'])assert.throws(()=>T.calculate(expression),undefined,expression);
 console.log('OK: tools, conversions and calculator precedence, powers and invalid results.');
+
+assert.equal(defaults.enabled.atajosTeclado,true);
+assert.equal(T.settings({herramientas:{atajosTeclado:false}},'dwec','02-02').enabled.atajosTeclado,false);

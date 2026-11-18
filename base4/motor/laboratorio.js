@@ -5,7 +5,8 @@
 // Seguridad y entrega son los módulos comunes de /base/motor/.
 const {config,code,sections,sectionMode}=window.Lab;
 let sectionView=null,toolbox=null,clipboard=null;
-// Los atajos habituales de edición están permitidos en base4.
+// Herramienta activada por defecto; solo el profesor la configura.
+const allowEditingShortcuts=config.tools?.enabled?.atajosTeclado!==false;
 function editingShortcut(event){
  const key=String(event.key||'').toLowerCase();
  if(['copy','cut','paste','selectstart'].includes(event.type))return true;
@@ -18,10 +19,15 @@ function editingShortcut(event){
 const TEMP_ALLOW_INSPECTION=true;
 if(TEMP_ALLOW_INSPECTION)document.documentElement.classList.add('allow-inspection');
 const installGuards=window.installPracticeInputGuards;
-window.installPracticeInputGuards=(doc,blockAction,blockClipboard)=>installGuards(doc,event=>{
- if(editingShortcut(event)||(TEMP_ALLOW_INSPECTION&&(event.type==='contextmenu'||event.button===2)))return;
+window.installPracticeInputGuards=(doc,blockAction,blockClipboard)=>{
+ if(!allowEditingShortcuts)for(const type of ['keydown','keypress','keyup'])doc.addEventListener(type,event=>{
+  if(editingShortcut(event)&&!['control','meta','shift'].includes(String(event.key||'').toLowerCase()))blockAction(event);
+ },true);
+ return installGuards(doc,event=>{
+ if((allowEditingShortcuts&&editingShortcut(event))||(TEMP_ALLOW_INSPECTION&&(event.type==='contextmenu'||event.button===2)))return;
  blockAction(event);
 },blockClipboard);
+};
 const $=id=>document.getElementById(id);
 // Pestañas del editor. «txt» son notas del alumno: no forman parte del resultado.
 const LANGS=['html','css','js','txt'];
@@ -330,7 +336,7 @@ const frame=$('preview');
 const CSP=config.preview?.csp||"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: https:; media-src data: https:; font-src data: https:; form-action 'none'; base-uri 'none'";
 const attr=text=>text.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
 // Se ejecuta DENTRO de la vista previa, antes que el código del alumno.
-function bridge(token,jsLine,allowInspection){
+function bridge(token,jsLine,allowInspection,allowShortcuts=true){
  var editingShortcut=function editingShortcut(event){
  const key=String(event.key||'').toLowerCase();
  if(['copy','cut','paste','selectstart'].includes(event.type))return true;
@@ -382,13 +388,13 @@ function bridge(token,jsLine,allowInspection){
  });
  function stop(event){
   var key=String(event.key||'').toLowerCase();
-  if(editingShortcut(event)||(allowInspection&&event.type==='contextmenu'))return;
+  if((allowShortcuts&&editingShortcut(event))||(allowInspection&&event.type==='contextmenu'))return;
   event.preventDefault();event.stopImmediatePropagation();
  }
  ['contextmenu','copy','cut','paste','dragstart','drop'].forEach(function(type){document.addEventListener(type,stop,true);});
  ['keydown','keypress','keyup'].forEach(function(type){document.addEventListener(type,function(event){
   var key=String(event.key||'').toLowerCase();
-  if(event.ctrlKey||(event.metaKey&&['c','x','v'].indexOf(key)>=0)||/^f([1-9]|1\d|2[0-4])$/.test(key))stop(event);
+  if((!allowShortcuts&&editingShortcut(event)&&!['control','meta','shift'].includes(key))||event.ctrlKey||(event.metaKey&&['c','x','v'].indexOf(key)>=0)||/^f([1-9]|1\d|2[0-4])$/.test(key))stop(event);
  },true);});
  document.addEventListener('click',function(event){
   var link=event.target&&event.target.closest&&event.target.closest('a[href],area[href]');
@@ -406,7 +412,7 @@ function bridge(token,jsLine,allowInspection){
 const lines=text=>text.split('\n').length-1;
 function previewDocument(html,css,js,token){
  const head='<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="'+attr(CSP)+'"><script>('+bridge+')('+JSON.stringify(token)+',';
- const body=','+JSON.stringify(TEMP_ALLOW_INSPECTION)+')<\/script><style>'+css.replace(/<\/style/gi,'<\\/style')+'</style>'+html+'<script>';
+ const body=','+JSON.stringify(TEMP_ALLOW_INSPECTION)+','+JSON.stringify(allowEditingShortcuts)+')<\/script><style>'+css.replace(/<\/style/gi,'<\\/style')+'</style>'+html+'<script>';
  return head+(lines(head)+lines(body)+1)+body+js.replace(/<\/script/gi,'<\\/script')+'<\/script>';
 }
 let previewToken='',pingId=0,pongId=0,noticeLoads=0,previewTimer=null,ranJs=null,shown={html:null,css:null,js:null};

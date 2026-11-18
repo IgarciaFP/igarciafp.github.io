@@ -97,13 +97,16 @@ Todas las herramientas están activadas por defecto. Solo hay que declarar las q
     "binarioDecimal": true,
     "hexadecimalDecimal": true,
     "traductor": false,
-    "apuntes": true
+    "apuntes": true,
+    "atajosTeclado": true
   },
   "unidad": 1
 }
 ```
 
 `herramientas` es una propiedad del mismo `config.json`; no sustituye el título, la versión ni los apartados. Cada valor debe ser `true` o `false`.
+
+`atajosTeclado` permite los atajos de selección y Ctrl/Cmd+A, C, V y X, también dentro de la vista previa. Está activo si se omite; usa `false` para bloquearlos durante la práctica. Es una opción del profesor, sin botón para que el alumno cambie la restricción.
 
 Los paneles se abren dentro del laboratorio. El selector de color utiliza deslizadores RGB y un campo HEX para evitar ventanas del sistema que puedan sacar al alumno de pantalla completa. La calculadora admite paréntesis, las cuatro operaciones y `%` como resto. Los conversores aceptan enteros no negativos y conservan la precisión con números grandes.
 
