@@ -109,6 +109,8 @@ Los apuntes se leen de `/ciclos/MODULO/uNN_es.html`. Si no se indica `unidad`, s
 
 Cambiar de apartado conserva el código, las respuestas abiertas y las alternativas seleccionadas. El guardado y la entrega incluyen todos los apartados, también las preguntas sin responder. El tiempo es común y no se reinicia al navegar. Las actividades con apartados usan un espacio de guardado propio de `base4` para no interpretar los borradores antiguos como respuestas nuevas.
 
+El botón de la barra muestra Siguiente mientras quedan apartados y avanza conservando las respuestas. En el último apartado muestra Entregar. Una actividad de un solo apartado muestra Entregar directamente.
+
 Al pulsar Entregar, la confirmación muestra un aviso rojo si hay preguntas QA vacías, preguntas Test sin selección o apartados webcode sin cambios en HTML, CSS o JavaScript. Las notas TXT no cuentan como cambios de código. Este aviso detecta trabajo pendiente, no comprueba si la solución es correcta; permite cancelar y revisar o entregar igualmente.
 
 Para revisar estos archivos utiliza **`base4/profesor.html`**. El visor muestra una navegación por apartados: código y resultado para `webcode`, respuestas escritas para QA y alternativa elegida para Test.

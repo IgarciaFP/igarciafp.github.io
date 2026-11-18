@@ -28,11 +28,19 @@ async function boot(activity){
  d.querySelector('#guard-start').click();await new Promise(r=>setTimeout(r,100));
  assert.equal(d.querySelector('#cuaderno').hidden,false,errors.join('; '));
  assert.equal(d.querySelector('#practice-toolbar').hidden,false);
+ assert.equal(d.querySelector('#practice-finish').textContent,w.Lab.sectionMode?'Siguiente':'Entregar');
  assert.equal(d.querySelector('#activity-text').innerHTML,w.Lab.sections[0].statement.replace(/\r\n/g,'\n'));
  missingKey();
  const shortcut=new w.Event('keydown',{bubbles:true,cancelable:true});Object.defineProperty(shortcut,'ctrlKey',{value:true});d.dispatchEvent(shortcut);
  assert.equal(d.querySelector('#guard-boot').hidden,true,'Un evento sin key tampoco debe bloquear un intento activo');
  if(w.Lab.sectionMode){assert.equal(d.querySelectorAll('#section-nav button').length,3);d.querySelectorAll('#section-nav button')[1].click();assert.equal(d.querySelector('#question-fields').hidden,false);assert.equal(d.querySelector('#question-fields').disabled,false);d.querySelectorAll('#section-nav button')[0].click();assert.equal(d.querySelector('#activity-text').innerHTML,w.Lab.sections[0].statement.replace(/\r\n/g,'\n'));}
+ if(w.Lab.sectionMode){
+  const next=d.querySelector('#practice-finish');
+  next.click();assert.equal(d.querySelector('#section-heading').textContent,'Explica tus decisiones · QA');assert.equal(next.textContent,'Siguiente');
+  next.click();assert.equal(d.querySelector('#section-heading').textContent,'Comprueba tus conocimientos · Test');assert.equal(next.textContent,'Entregar');
+  next.click();await new Promise(r=>setTimeout(r,20));assert.equal(d.querySelector('#action-confirm').open,true);assert.equal(d.querySelector('#action-confirm-warning').hidden,false);
+  d.querySelector('#action-confirm-cancel').click();
+ }
  assert.equal(errors.length,0,errors.join('; '));w.close();
 }
 (async()=>{await boot('diw/01-01-tarjeta-de-presentacion');await boot('dwec/01-01-contador-de-pulsaciones');console.log('OK: actual HTML + loader + shared guard + modules boot and start for mixed and legacy activities.');})().catch(e=>{console.error(e);process.exit(1);});

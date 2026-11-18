@@ -536,6 +536,9 @@ function syncToolbar(){
  syncToolbarHeight();
 }
 let recoverySelecting=false,recoveryReading=false;
+function syncFinishAction(){
+ $('practice-finish').textContent=sectionView?.hasNext()?(uiLanguage==='en'?'Next':'Siguiente'):tr('toolbarFinish');
+}
 function afterRender(state,ctx){
  const previousPhase=phase;
  phase=state.phase;if(['active','paused'].includes(previousPhase)&&!['active','paused'].includes(phase))void clipboard?.clear();if(!['active','paused'].includes(phase))toolbox?.close();if(previousPhase!==phase&&(phase==='closing'||phase==='submitted'))closeActionModal(false);
@@ -603,6 +606,7 @@ function afterRender(state,ctx){
  $('recover-delivery').textContent=tr(fileMode?'recover':lastDelivery?.receipt?'viewReceipt':'copyOpen');
  $('practice-save').disabled=(!active&&!paused)||ctx.restoring||!!ctx.problem||ctx.busy||(active&&$('answer-fields').disabled);
  $('practice-finish').disabled=!guard?.canEdit();
+ syncFinishAction();
  $('practice-reset').disabled=!!ctx.problem||ctx.busy||panelEntered;
  if(panelEntered){$('practice-save').hidden=true;$('practice-recover').hidden=true;$('practice-reset').hidden=true;}
  if(!$('revision-delivery').hidden)$('delivery-retry').disabled=true;
@@ -913,7 +917,11 @@ $('practice-file').addEventListener('cancel',async()=>{
 });
 $('practice-file').addEventListener('change',()=>readRecoveryFile($('practice-file').files[0]));
 $('revision-reason').addEventListener('input',refreshReason);
-$('practice-finish').addEventListener('click',()=>guard.ask('finish'));
+$('practice-finish').addEventListener('click',()=>{
+ if(!guard?.canEdit())return;
+ if(sectionView?.hasNext())sectionView.next();
+ else guard.ask('finish');
+});
 $('practice-reset').addEventListener('click',()=>{if(config.allowRestart)guard.ask('erase');});
 
 // ---------------------------------------------------------------- Arranque
@@ -1035,6 +1043,7 @@ window.addEventListener('message',event=>clipboard?.preview(event,frame,previewT
 toolbox=window.LabTools?.init(config.tools,{language:()=>uiLanguage});
 if(sectionMode){
  sectionView=window.createSectionView(sections,{
+  changed:syncFinishAction,
   canEdit:()=>!!guard?.canEdit(),
   readCode:()=>Object.fromEntries(LANGS.map(id=>[id,$(id).value])),
   writeCode:(initial,values)=>{Object.assign(start,initial);for(const id of LANGS)$(id).value=values[id];countChars();resetPreview();},

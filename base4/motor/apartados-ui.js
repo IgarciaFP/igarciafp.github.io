@@ -12,6 +12,11 @@ window.createSectionView=function(sections,hooks){
   else for(const el of controls())if(el.type!=='radio'||el.checked)next.values[s.id][el.dataset.question]=el.value;
   state=model.sanitize(sections,next);return JSON.parse(JSON.stringify(state));
  }
+ const hasNext=()=>sections.findIndex(s=>s.id===state.active)<sections.length-1;
+ function navigate(id){
+  if(!hooks.canEdit())return;
+  try{capture();state.active=id;render();hooks.save();}catch(error){$('section-status').textContent=error.message;}
+ }
  function render(){
   const s=active();
   $('activity-text').innerHTML=s.statement;
@@ -20,10 +25,7 @@ window.createSectionView=function(sections,hooks){
   nav.replaceChildren(...sections.map((section,i)=>{
    const button=document.createElement('button');button.type='button';button.textContent=(i+1)+'. '+section.title;
    button.setAttribute('aria-current',String(section.id===s.id));button.disabled=!enabled;
-   button.addEventListener('click',()=>{
-    if(!hooks.canEdit())return;
-    try{capture();state.active=section.id;render();hooks.save();}catch(error){$('section-status').textContent=error.message;}
-   });return button;
+   button.addEventListener('click',()=>navigate(section.id));return button;
   }));
   web.hidden=s.type!=='webcode';fields.hidden=s.type==='webcode';fields.disabled=!enabled;
   fields.replaceChildren();
@@ -47,6 +49,7 @@ window.createSectionView=function(sections,hooks){
     fields.append(box);
    });
   }
+  hooks.changed?.();
  }
  function edited(event){
   if(!event.target.matches('[data-question]')||!hooks.canEdit())return;
@@ -56,6 +59,8 @@ window.createSectionView=function(sections,hooks){
  fields.addEventListener('input',edited);
  fields.addEventListener('change',edited);
  return {
+  hasNext,
+  next(){if(hasNext())navigate(sections[sections.findIndex(s=>s.id===state.active)+1].id);},
   snapshot:capture,
   restore(data){state=model.sanitize(sections,data);render();},
   enabled(value){enabled=value;fields.disabled=!value;for(const button of nav.querySelectorAll('button'))button.disabled=!value;},
