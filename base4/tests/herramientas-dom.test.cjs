@@ -11,11 +11,15 @@ async function main(){
  panel=open('binarioDecimal');let fields=panel.querySelectorAll('input');fields[0].value='1010';fields[0].dispatchEvent(new w.Event('input'));assert.equal(fields[1].value,'10');fields[1].value='15';fields[1].dispatchEvent(new w.Event('input'));assert.equal(fields[0].value,'1111');
  panel=open('traductor');panel.querySelector('textarea').value='Hola';panel.querySelector('button').click();await new Promise(r=>setTimeout(r,10));assert.equal(panel.querySelector('[role=status]').textContent,'Hello');assert.equal(new URL(requests[0]).searchParams.get('q'),'Hola');assert.equal(new URL(requests[0]).searchParams.size,2);
  panel=open('apuntes');await new Promise(r=>setTimeout(r,10));const frame=panel.querySelector('iframe');
- assert.equal(frame.src,'https://example.com/ciclos/diw/u01_es.html');assert.equal(frame.hidden,false);
- assert.equal(frame.getAttribute('sandbox'),'allow-scripts');assert.equal(frame.hasAttribute('srcdoc'),false);
+ assert.ok(frame.srcdoc.includes('<base href="https://example.com/ciclos/diw/u01_es.html">')); assert.equal(frame.hidden,false);
+ assert.equal(frame.getAttribute('sandbox'),'allow-scripts');assert.ok(frame.srcdoc.includes('base4CloseNotes')); 
  frame.dispatchEvent(new w.Event('load'));assert.equal(panel.querySelector('[role=status]').textContent,'');
 
  const toolDialog=d.getElementById('tool-dialog');
+ const token=/base4CloseNotes:"([a-f0-9]+)"/.exec(frame.srcdoc)[1];
+ w.dispatchEvent(new w.MessageEvent('message',{source:w,data:{base4CloseNotes:token}}));assert.equal(toolDialog.open,true,'Solo se acepta el iframe de apuntes');
+ w.dispatchEvent(new w.MessageEvent('message',{source:frame.contentWindow,data:{base4CloseNotes:token}}));assert.equal(toolDialog.open,false);
+ open('apuntes');
  const cancel=new w.Event('cancel',{cancelable:true});toolDialog.dispatchEvent(cancel);
  assert.equal(cancel.defaultPrevented,true);assert.equal(toolDialog.open,false);
  open('calculadora');toolDialog.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));assert.equal(toolDialog.open,false);

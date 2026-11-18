@@ -111,6 +111,8 @@ function init(config,{language=()=> 'es'}={}){
    const frame=doc.createElement('iframe');frame.className='unit-notes-frame';
    frame.title='Apuntes de la unidad / Unit notes';frame.setAttribute('sandbox','allow-scripts');
    frame.referrerPolicy='no-referrer';frame.hidden=true;panel.append(frame);
+   const escapeToken=Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join('');
+   window.addEventListener('message',event=>{if(event.source===frame.contentWindow&&event.data?.base4CloseNotes===escapeToken&&dialog.open&&selected==='apuntes')closeDialog();});
    if(!config.notes)status.textContent='Indica unidad en el config.json de esta actividad. / Configure the unit number.';
    else{
     const failed=()=>{status.textContent='No se pudieron cargar los apuntes de esta unidad. / Could not load unit notes.';retry.hidden=false;};
@@ -122,7 +124,10 @@ function init(config,{language=()=> 'es'}={}){
       const url=new URL(config.notes,location.href);
       if(url.origin!==location.origin||!/^\/ciclos\/(diw|dwec|ssii)\/u\d{2}_es\.html$/.test(url.pathname))throw Error('Invalid unit URL');
       const response=await fetch(url,{signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('HTTP '+response.status);
-      frame.hidden=false;frame.src=url.href;
+      const html=await response.text();
+      const base=url.href.replaceAll('&','&amp;').replaceAll('"','&quot;');
+      const relay='<script>document.addEventListener("keydown",function(e){if(e.key==="Escape"){e.preventDefault();e.stopImmediatePropagation();parent.postMessage({base4CloseNotes:'+JSON.stringify(escapeToken)+'},"*");}},true);<\/script>';
+      frame.hidden=false;frame.srcdoc='<base href="'+base+'">'+relay+html;
      }catch{failed();}
     };
     const retry=action('Reintentar / Retry',load);retry.hidden=true;void load();
