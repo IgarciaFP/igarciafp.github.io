@@ -346,6 +346,19 @@ function bridge(token,jsLine,allowInspection,allowShortcuts=true){
   (event.shiftKey&&['arrowleft','arrowright','arrowup','arrowdown','home','end','pageup','pagedown','insert','delete'].includes(key));
 };
  var parent=window.parent,sent=0;
+ // El documento del iframe también necesita un destino real para el teclado.
+ function prepareKeyboardTarget(){
+  if(!document.body)return;
+  document.body.setAttribute('tabindex','-1');
+  document.body.setAttribute('contenteditable','true');
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',prepareKeyboardTarget,{once:true});
+ else prepareKeyboardTarget();
+ window.addEventListener('message',function(event){
+  if(event.source!==parent||event.data?.labFocus!==token)return;
+  prepareKeyboardTarget();
+  document.body?.focus({preventScroll:true});
+ });
  function format(value){
   if(typeof value==='string')return value;
   if(value instanceof Error)return value.name+': '+value.message;
@@ -415,7 +428,7 @@ function previewDocument(html,css,js,token){
  const body=','+JSON.stringify(TEMP_ALLOW_INSPECTION)+','+JSON.stringify(allowEditingShortcuts)+')<\/script><style>'+css.replace(/<\/style/gi,'<\\/style')+'</style>'+html+'<script>';
  return head+(lines(head)+lines(body)+1)+body+js.replace(/<\/script/gi,'<\\/script')+'<\/script>';
 }
-let previewToken='',pingId=0,pongId=0,noticeLoads=0,previewTimer=null,ranJs=null,shown={html:null,css:null,js:null};
+let previewToken='',pingId=0,pongId=0,noticeLoads=0,previewTimer=null,ranJs=null,shown={html:null,css:null,js:null},previewFocusOwner=null;
 const value=id=>$(id).value;
 // El HTML del alumno con <script> propio se trata como JavaScript: solo se ejecuta al pulsar Ejecutar.
 const ownScript=html=>/<script/i.test(html)&&html!==start.html;
@@ -434,7 +447,8 @@ function previewStatus(){
  $('preview-status').textContent=pending?tr('pendingRun'):'';
  $('preview-run').classList.toggle('pendiente',pending);
 }
-function renderPreview(html,css,js){
+function renderPreview(html,css,js,focusResult=false){
+ previewFocusOwner=focusResult?document.activeElement:null;
  clearTimeout(previewTimer);previewTimer=null;clearConsole();
  previewToken=Array.from(crypto.getRandomValues(new Uint8Array(12)),x=>x.toString(16).padStart(2,'0')).join('');
  noticeLoads=0;
@@ -443,7 +457,7 @@ function renderPreview(html,css,js){
 }
 function previewNotice(text){
  clearTimeout(previewTimer);previewTimer=null;clearConsole();
- previewToken='';noticeLoads=1;
+ previewToken='';previewFocusOwner=null;noticeLoads=1;
  frame.srcdoc='<!doctype html><meta charset="utf-8"><body style="font:15px/1.6 system-ui,sans-serif;color:#56657b;padding:24px;margin:0">'+attr(text)+'</body>';
  shown={html:null,css:null,js:null};previewStatus();
 }
@@ -453,7 +467,7 @@ function autoPreview(){
  renderPreview(value('html'),value('css'),ranJs??'');
 }
 function schedulePreview(){clearTimeout(previewTimer);previewTimer=setTimeout(autoPreview,350);previewStatus();}
-function runPreview(){ranJs=value('js');renderPreview(value('html'),value('css'),ranJs);}
+function runPreview(){ranJs=value('js');renderPreview(value('html'),value('css'),ranJs,true);}
 // Al cargar o recuperar un intento solo se ejecuta sin pedirlo el JavaScript del ejercicio.
 // Un marco cargado mientras el taller está oculto puede quedarse en blanco al mostrarlo:
 // en ese caso se deja pendiente y se genera cuando el taller pasa a ser visible.
@@ -468,13 +482,13 @@ function resetPreview(){
  }
  previewDeferred=false;
  if(ownScript(value('html')))previewNotice(tr('pendingRun'));
- else renderPreview(value('html'),value('css'),ranJs??'');
+ else renderPreview(value('html'),value('css'),ranJs??'',true);
 }
 // Actualizar: vuelve a cargar el resultado tal como se mostró por última vez (reinicia su estado).
 // No ejecuta JavaScript nuevo, ni toca el editor, el guardado, el reloj o las incidencias.
 function refreshPreview(){
- if(shown.html!==null)renderPreview(shown.html,shown.css,shown.js);
- else if(!ownScript(value('html')))renderPreview(value('html'),value('css'),ranJs??'');
+ if(shown.html!==null)renderPreview(shown.html,shown.css,shown.js,true);
+ else if(!ownScript(value('html')))renderPreview(value('html'),value('css'),ranJs??'',true);
 }
 $('preview-run').addEventListener('click',runPreview);
 $('preview-refresh').addEventListener('click',refreshPreview);
@@ -495,6 +509,14 @@ function verifyFrame(tries){
  },500);
 }
 frame.addEventListener('load',()=>{
+ const owner=previewFocusOwner;previewFocusOwner=null;
+ // Una recarga automática no roba el foco mientras se escribe en el editor.
+ if(owner&&previewToken&&guard?.canEdit()&&!$('cuaderno').hidden&&
+    !document.querySelector('dialog[open]')&&
+    [owner,frame,document.body].includes(document.activeElement)){
+  frame.focus({preventScroll:true});
+  frame.contentWindow.postMessage({labFocus:previewToken},'*');
+ }
  if(noticeLoads>0){noticeLoads--;return;}
  verifyFrame(2);
 });
