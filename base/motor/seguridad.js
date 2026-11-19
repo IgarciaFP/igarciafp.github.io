@@ -552,8 +552,28 @@
     }
     // Se instala en CAPTURA, antes de los manejadores de la actividad.
     // Si beforeinput no se pudo cancelar, input restaura el último dato aceptado.
+    const pendingEdits = new WeakSet();
     function inputGuard(e) {
       if (!adapter.isAnswer(e.target)) return;
+      if (adapter.preservePendingEdits) {
+        // change se notifica al perder foco; no representa una nueva edición.
+        // Restaurar aquí puede borrar el último texto antes de capturar la salida.
+        if (e.type === 'change') return;
+        const forbidden = CONFIG.blockClipboard && forbiddenInput(e.inputType);
+        if (e.type === 'beforeinput') {
+          pendingEdits.delete(e.target);
+          if (canEdit() && !forbidden) pendingEdits.add(e.target);
+        } else if (e.type === 'input') {
+          const accepted = pendingEdits.has(e.target);
+          pendingEdits.delete(e.target);
+          if (accepted && !forbidden && state.phase === 'active' && !fatal && !problem && !busy && !restoring && !fileRecovery) {
+            // El gesto comenzó con permiso. Su input puede llegar después de blur.
+            state.data = adapter.snapshot();
+            persist();
+            return;
+          }
+        }
+      }
       if (!canEdit() || (CONFIG.blockClipboard && forbiddenInput(e.inputType))) {
         if (e.cancelable) e.preventDefault();
         e.stopImmediatePropagation();
