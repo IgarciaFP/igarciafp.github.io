@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<!-- Actividad: DWEC02-03-Bolita rebotando
+Alumno: igarcas306@g.educaand.es
+
+Bolita rebotando con eventos de animación
+
+Programa en JavaScript una bolita que recorre una caja, rebota en sus bordes y cambia de color al chocar.
+
+La animación CSS repite su ciclo cada 16 ms. Cada repetición genera un evento animationiteration en la bolita. Utiliza ese evento como señal para actualizar el movimiento.
+
+La bolita parte de (50, 50) y avanza inicialmente hacia la derecha y hacia abajo,  con un desplazamiento de 3 píxeles en cada eje por evento.
+
+En cada rebote, asigna un color RGB aleatorio -utiliza "Math.floor(Math.radom()*256))"
+
+Aplica las coordenadas mediante style.left y style.top, expresadas en píxeles.
+
+Te recomiendo que sigas los siguientes objetivos:
+
+Conseguir que la pelota rebote correctamente.
+
+Que cambie de color al rebotar.
+
+Ampliación: dos bolitas que choquen entre sí.
+
+-->
+
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bolita rebotando</title>
+  <style>
+body {
+  background-color: transparent;
+}
+
+.caja {
+  width: 500px;
+  height: 300px;
+  border: 3px solid black;
+  background-color: transparent;
+  position: relative;
+}
+
+/* Este ciclo sin cambios visuales permite usar la animación como reloj. */
+@keyframes reloj {
+  from { opacity: 1; }
+  to { opacity: 1; }
+}
+
+.bolita {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: rgb(16, 185, 129);
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  animation: reloj 16ms infinite; /*era 16, pero necesito que vaya más lento*/
+}
+</style>
+</head>
+<body>
+  <div id="caja" class="caja">
+    <div id="bolita" class="bolita"></div>
+  </div>
+</body>
+
+
+
+
+
+
+
+<script>
+"use strict";
+const numBolas=5; //esto desde 1 hasta donde quieras, pero no más de 10, que se solapan y no se ven bien.
+const radio=30; //diámetro de la bolita
+
+// Inicializo variables
+const offset=1; //así se ve más fluido, originalmete a 3.
+const maxX=470;
+const maxY=270;
+
+//Declaro funciones
+function color(bola){
+ 
+ //asigno color aleatorio a RGB
+ let r=Math.floor(Math.random()*256);
+ let g=Math.floor(Math.random()*256);
+ let b=Math.floor(Math.random()*256);
+ bola.style.backgroundColor=`rgb(${r},${g},${b})`;
+ 
+}
+
+//modifico el HTML para añadir más bolitas:
+const contenedor=document.querySelector(".caja"); 
+let codigo="";
+for (let i=0;i<numBolas;i++){
+    codigo+=`<div class="bolita"></div>`
+}
+contenedor.innerHTML=codigo;
+
+//ahora vamos con cada una de las bolitas:
+const bolas=document.querySelectorAll(".bolita");
+
+
+// Al existir varias bolas, tengo que inicializar vectores, cada índice para una bola distinta.
+let posX=[]; //posiciones X
+let posY=[]; //posiciones Y
+let dirX=[]; //direcciones X (positiva = derecha, negativa = izquierda)
+let dirY=[]; //direcciones Y (positiva = abajo, negativa = arriba)
+
+//asigno valores a los vectores declarados de forma aleatoria
+let i=0; //inicializo índice
+for (const bola of bolas){
+  posX[i]=Math.floor(Math.random()*maxX); 
+  posY[i]=Math.floor(Math.random()*maxY);
+  dirX[i]=Math.random() < 0.5 ? 1 : -1;
+  dirY[i]=Math.random() < 0.5 ? 1 : -1;
+  i++; //incremento índice
+}
+
+//animationiteration es un evento que se dispara cada vez que termina un ciclo de animación CSS. En este caso, la animación CSS dura 16 ms, por lo que el evento se dispara cada 16 ms.
+document.addEventListener("animationiteration",()=>{
+
+  //primero controlo los rebotes.
+  let i=0;
+  for (const bola of bolas){
+      //toca derecha => rebota a izquierda (-x) y viceversa (+x)
+        if (posX[i]>=maxX || posX[i]<=0){ dirX[i]*=-1; color(bola); }
+
+      //toca suelo => rebota a techo (-y) y viceversa (+y)
+        if (posY[i]>=maxY || posY[i]<=0){ dirY[i]*=-1; color(bola); }
+    
+      //Nuevas posiciones (número)
+      posX[i]+=offset*dirX[i];
+      posY[i]+=offset*dirY[i];
+
+      //Nuevas posiciones aplicadas
+      bola.style.left=posX[i]+'px';
+      bola.style.top=posY[i]+'px';
+    i++;
+  }
+
+  //primero controlo los choques entre bolas. Si dos bolas se tocan, rebotan y cambian de color:
+  for (let i=0;i<bolas.length;i++){ //para cada bola...
+    for (let j=i+1;j<bolas.length;j++){ //miro las siguientes
+      //si la distancia entre las dos bolas es menor que el diámetro de la bola, entonces chocan.
+      let dx=posX[i]-posX[j];
+      let dy=posY[i]-posY[j];
+      let distancia=Math.sqrt(dx*dx+dy*dy);
+      if (distancia<=radio){
+        //cambio de dirección 
+        dirX[i]*=-1.01; //para que no se queden pegadas, les doy un pequeño empujón
+        dirY[i]*=-1;
+        dirX[j]*=-1;
+        dirY[j]*=-1.01;
+       
+        //cambio de color
+        color(bolas[i]);
+        color(bolas[j]);
+      }
+    }
+  }
+  
+
+
+});
+
+</script>
+
+</html>
