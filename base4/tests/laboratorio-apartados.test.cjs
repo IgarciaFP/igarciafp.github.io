@@ -68,12 +68,12 @@ async function main(){
  assert.equal(rw.document.querySelectorAll('.selected-answer').length,1);
  assert.ok(rw.document.getElementById('review-status').textContent.includes('1/2 respondidas'));
  assert.ok(rw.document.getElementById('review-status').textContent.includes('no implica que sea correcta'));
- assert.equal(rw.document.querySelector('.detalle>.paneles').hidden,true);
+ assert.equal(rw.document.querySelector('.detalle .paneles').hidden,true);
  assert.equal(rw.document.getElementById('review-statement').hidden,false);
  assert.ok(rw.document.getElementById('review-statement-content').textContent.trim());
  assert.equal(rw.document.querySelector('#review-statement iframe'),null);
  rw.document.querySelectorAll('#review-sections button')[0].click();
- assert.equal(rw.document.querySelector('.detalle>.paneles').hidden,false);
+ assert.equal(rw.document.querySelector('.detalle .paneles').hidden,false);
  assert.ok(rw.document.getElementById('review-status').textContent.includes('Código modificado'));
  // Exercise the same decoding path as pasted cells, downloaded reports and sheet links.
  const encode=value=>common.format.report+gzipSync(JSON.stringify(value)).toString('base64url');
@@ -91,7 +91,7 @@ async function main(){
  const single=structuredClone(report),qa=single.sectionDefinitions[1];single.sectionDefinitions=[qa];
  single.answers=S.pack([{...qa,code:{}}],{active:qa.id,values:{[qa.id]:restored.values[qa.id]}});
  await display(encodeReport(single));assert.equal(rw.document.querySelectorAll('#review-sections button').length,1);
- assert.equal(rw.document.querySelector('.detalle>.paneles').hidden,true);
+ assert.equal(rw.document.querySelector('.detalle .paneles').hidden,true);
  const broken=structuredClone(report);broken.answers=[];
  await assert.rejects(rw.reviewTest.parse(encodeReport(broken)),/Faltan las respuestas/);
  const invalid=structuredClone(report);invalid.sectionDefinitions[0].type='desconocido';
@@ -99,7 +99,7 @@ async function main(){
  const legacy={...report,sectionsVersion:undefined,sectionDefinitions:undefined,answers:[{question:'html',answer:'<h1>Entrega antigua</h1>'}]};
  await display(encodeReport(legacy));assert.equal(rw.document.getElementById('review-sections').hidden,true);
  assert.equal(rw.document.getElementById('review-status').hidden,true);
- assert.equal(rw.document.querySelector('.detalle>.paneles').hidden,false);
+ assert.equal(rw.document.querySelector('.detalle .paneles').hidden,false);
  assert.ok(rw.document.getElementById('codigo').textContent.includes('Entrega antigua'));
  const numbered={...item,id:'line-test',sectionData:null,start:{...item.start,html:'uno\ndos\ntres'},code:{...item.code,html:'uno\nnuevo\ntres'},modified:['html']};
  rw.reviewTest.items.set(numbered.id,numbered);rw.document.getElementById('review-statement').open=false;rw.reviewTest.select(numbered.id);

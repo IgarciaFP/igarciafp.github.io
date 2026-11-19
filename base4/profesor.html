@@ -15,8 +15,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Entregas · Profesor</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261119111219-base4">
-<link rel="stylesheet" href="motor/taller.css?v=20261119111219-base4">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261119125709-base4">
+<link rel="stylesheet" href="motor/taller.css?v=20261119125709-base4">
 <style>
 .revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
 .revision h1{font-size:1.5rem;line-height:1.25;margin:0}
@@ -91,16 +91,54 @@
 #review-rubric-content li{margin:6px 0}
 #review-questions .selected-answer{font-weight:700;background:#e9f0ff;border-radius:6px;padding:6px}
 #review-questions .unanswered{color:#b42318;font-weight:600}
+
+[hidden]{display:none!important}
+.login-page{min-height:100dvh;display:grid;place-items:center;padding:24px;box-sizing:border-box}
+.login-card{width:min(100%,390px);padding:32px;background:white;border:1px solid var(--line);border-radius:18px;box-shadow:0 16px 50px #10234a12}
+.login-card h1{margin:0 0 8px;font-size:1.5rem}.login-card p{color:var(--muted)}
+#nota-login{display:grid;gap:12px}#nota-key{width:100%;box-sizing:border-box;min-height:44px}
+.login-card button{width:100%}#login-status{min-height:1.5em;font-size:.9rem}
+.revision{max-width:1920px}.mesa{grid-template-columns:230px minmax(0,1fr)}
+.review-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
+.review-work{min-width:0}.nota-panel{position:sticky;top:16px;padding:18px;margin:0}
+.nota-panel h3{font-size:1rem;margin:0 0 12px}.nota-panel label{display:block;font-size:.88rem;font-weight:600}
+.nota-panel .nota-controls{display:grid;grid-template-columns:1fr;gap:8px}
+#nota-value{width:100%;box-sizing:border-box}#nota-comments{min-height:130px}
+.nota-ai{background:#f1f5fc;border:1px solid #d7e2f4;border-radius:10px;padding:14px;margin-bottom:20px}
+#nota-ai-value{display:block;font-size:1.5rem;font-weight:700;margin:8px 0}
+#nota-ai-comments{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;font-size:.9rem;line-height:1.5}
+#nota-ai-status{color:var(--muted);font-size:.82rem;margin:8px 0 0}
+.review-guidance{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;align-items:start}
+.review-guidance details{margin:0!important;padding:14px;border:1px solid var(--line);border-radius:12px}
+.detalle .paneles{height:65dvh;min-height:480px}.ficha{margin:10px 0}
+.review-meta{margin-bottom:14px}.review-meta summary{font-size:.85rem;color:var(--muted);cursor:pointer}
+#correo-status{font-size:.8rem;color:var(--muted)}.nota-auth{font-size:.8rem}
+@media(max-width:1400px){.mesa{grid-template-columns:190px minmax(0,1fr)}.review-layout{grid-template-columns:minmax(0,1fr) 280px}.panel-cabecera{flex-wrap:wrap}}
+@media(max-width:1100px){.mesa{grid-template-columns:1fr}#entregas{max-height:180px}.review-layout{grid-template-columns:minmax(0,1fr) 280px}}
+@media(max-width:760px){.review-layout{grid-template-columns:1fr}.nota-panel{position:static}.review-guidance{grid-template-columns:1fr}.detalle .paneles{height:auto;min-height:0}.nota-auth{width:100%;justify-content:space-between}.login-card{padding:24px}}
 </style>
+<link rel="stylesheet" href="motor/editor-profesor.css?v=20261119125709-base4">
 </head>
 <body>
-<main class="revision">
+<section id="login-page" class="login-page" aria-labelledby="login-title">
+  <div class="login-card">
+    <h1 id="login-title">Acceso del profesor</h1>
+    <p>Introduce tu contraseña para revisar las entregas.</p>
+    <form id="nota-login">
+      <label for="nota-key">Contraseña</label>
+      <input id="nota-key" type="password" autocomplete="current-password" maxlength="500" required autofocus>
+      <button id="nota-enter" type="submit">Entrar</button>
+    </form>
+    <p id="login-status" role="status" aria-live="polite"></p>
+  </div>
+</section>
+<main id="review-app" class="revision" hidden>
   <div class="cabecera">
     <div>
       <p class="eyebrow">Entregas · Profesor</p>
       <h1 id="titulo">Cargando…</h1>
     </div>
-    <p>Los archivos se leen en este navegador. La gestión de notas se conecta a tu hoja de cálculo.</p>
+    <div class="nota-auth"><span id="nota-session"></span><button id="nota-logout" type="button" class="secondary" hidden>Cerrar sesión</button></div>
   </div>
 
   <label id="soltar" class="soltar" for="archivos">
@@ -118,34 +156,13 @@
 
     <section class="detalle">
       <h2 id="alumno"></h2>
-      <ul id="ficha" class="ficha"></ul>
-      <section class="nota-panel" aria-label="Calificación">
-        <div class="nota-auth">
-          <span id="nota-session"></span>
-          <span id="nota-login"><label for="nota-key">Clave del profesor</label>
-            <input id="nota-key" type="password" autocomplete="current-password" maxlength="500">
-            <button id="nota-enter" type="button">Iniciar sesión</button>
-          </span>
-          <button id="nota-logout" type="button" class="secondary" hidden>Cerrar sesión</button>
-        </div>
-        <div class="nota-controls">
-          <label for="nota-value">Nota</label>
-          <input id="nota-value" type="text" inputmode="decimal" maxlength="100" placeholder="Sin calificar" disabled>
-          <button id="nota-save" type="button" disabled>Guardar nota y comentarios</button>
-          <button id="nota-refresh" type="button" class="secondary" disabled>Actualizar nota</button>
-          <button id="nota-email" type="button" class="secondary" disabled>Enviar por email</button>
-          <button id="nota-copy-email" type="button" class="secondary" disabled>Copiar texto del correo</button>
-        </div>
-        <label for="nota-comments">Comentarios a la nota</label>
-        <textarea id="nota-comments" rows="3" maxlength="10000" disabled></textarea>
-        <p id="correo-status" role="status" aria-live="polite">El correo incluye la entrega completa y la nota y los comentarios visibles. Se abre en Gmail para revisar y confirmar el envío.</p>
-        <p id="nota-status" role="status" aria-live="polite"></p>
-      </section>
+      <details class="review-meta"><summary>Datos y registro de la entrega</summary><ul id="ficha" class="ficha"></ul></details>
+      <div class="review-layout"><div class="review-work">
       <nav id="review-sections" aria-label="Apartados" hidden></nav>
       <p id="review-status" role="status" hidden></p>
-      <details id="review-statement" hidden open><summary>Instrucciones del apartado</summary><div id="review-statement-content"></div></details>
-      <details id="review-rubric" hidden><summary>Rúbrica de la actividad</summary><div id="review-rubric-content"></div><p><a href="correccion/instrucciones.txt" target="_blank" rel="noopener">Instrucciones reutilizables de corrección IA</a></p></details>
-      <div id="review-questions" hidden></div>
+      <div class="review-guidance"><details id="review-statement" hidden open><summary>Instrucciones de la práctica / apartado</summary><div id="review-statement-content"></div><button id="edit-statement" type="button" class="secondary">Editar instrucciones</button></details>
+      <details id="review-rubric" hidden><summary>Rúbrica de la actividad</summary><div id="review-rubric-content"></div><button id="edit-rubric" type="button" class="secondary">Editar rúbrica</button><p><a href="correccion/instrucciones.txt" target="_blank" rel="noopener">Instrucciones reutilizables de corrección IA</a></p></details>
+      </div><div id="review-questions" hidden></div>
       <div class="paneles">
         <section class="panel">
           <header class="panel-cabecera">
@@ -177,14 +194,34 @@
         <summary>Registro del intento</summary>
         <pre id="auditoria"></pre>
       </details>
+      </div>
+      <aside class="nota-panel" aria-label="Calificación">
+        <section class="nota-ai" aria-labelledby="nota-ai-title">
+          <h3 id="nota-ai-title">Propuesta de IA</h3>
+          <output id="nota-ai-value">—</output>
+          <p id="nota-ai-comments"></p><p id="nota-ai-status">Selecciona una entrega.</p>
+        </section>
+        <h3>Calificación del profesor</h3>
+        <label for="nota-value">Nota</label>
+        <input id="nota-value" type="text" inputmode="decimal" maxlength="100" placeholder="Sin calificar" disabled>
+        <label for="nota-comments">Comentarios del profesor</label>
+        <textarea id="nota-comments" rows="5" maxlength="10000" disabled></textarea>
+        <div class="nota-controls">
+          <button id="nota-save" type="button" disabled>Guardar nota y comentarios</button>
+          <button id="nota-email" type="button" class="secondary" disabled>Enviar por email</button>
+        </div>
+        <p id="nota-status" role="status" aria-live="polite"></p>
+        <p id="correo-status" role="status" aria-live="polite">Se abre en Gmail para revisar y confirmar el envío.</p>
+      </aside></div>
     </section>
   </div>
 </main>
 
-<script src="motor/apartados.js?v=20261119111219-base4"></script>
-<script src="motor/herramientas.js?v=20261119111219-base4"></script>
-<script src="motor/correo-profesor.js?v=20261119111219-base4"></script>
-<script src="motor/notas.js?v=20261119111219-base4"></script>
+<script src="motor/apartados.js?v=20261119125709-base4"></script>
+<script src="motor/herramientas.js?v=20261119125709-base4"></script>
+<script src="motor/correo-profesor.js?v=20261119125709-base4"></script>
+<script src="motor/notas.js?v=20261119125709-base4"></script>
+<script src="motor/editor-profesor.js?v=20261119125709-base4" defer></script>
 <script>
 (async () => {
 'use strict';
@@ -431,6 +468,7 @@ function bridge(token){
 const attr=text=>text.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
 let token='';
 function renderResult(){
+ if(!window.ReviewAuth?.logged){$('vista').srcdoc='';return;}
  const item=items.get(current);if(!item)return;
  $('preview-console').replaceChildren();$('console-count').textContent='';
  token=Array.from(crypto.getRandomValues(new Uint8Array(12)),x=>x.toString(16).padStart(2,'0')).join('');
@@ -495,11 +533,13 @@ function renderRubric(item){
 
 // Cada apartado reutiliza el visor web o presenta sus respuestas como texto seguro.
 function renderSections(item,chosen){
- const nav=$('review-sections'),questions=$('review-questions'),panels=document.querySelector('.detalle>.paneles');
+ const nav=$('review-sections'),questions=$('review-questions'),panels=document.querySelector('.detalle .paneles');
  const instructions=$('review-statement'),content=$('review-statement-content'),status=$('review-status');
  instructions.hidden=true;content.replaceChildren();status.hidden=true;status.textContent='';
  nav.replaceChildren();questions.replaceChildren();nav.hidden=!item.sectionData;questions.hidden=true;panels.hidden=false;
  const showStatement=(statement,sectionPath='')=>{
+  window.ReviewActivity=item.known?{key:item.known.key,section:sectionPath.split('/')[1]||''}:null;
+  $('edit-statement').disabled=!item.known;$('edit-rubric').disabled=!item.known;
   instructions.hidden=false;instructions.open=true;
   if(!statement?.trim())statement='<p>No se pudieron cargar las instrucciones de esta actividad. Comprueba que la entrega corresponde a una actividad disponible en base4 y que hay conexión.</p>';
   const base=new URL(item.known?'actividades/'+item.known.key+'/'+sectionPath:'.',location.href);
@@ -561,7 +601,7 @@ function select(id){
   const sello=item.sello;
   if(item.stamp==='bad')chips.push(chip('Sello no válido: no corresponde a esta entrega o ha sido manipulado','mal'));
   if(item.stamp==='unknown')chips.push(chip('Sello sin verificar: no se pudo consultar al servidor','mal'));
-  chips.push(chip('IP '+sello.ip+(sello.enRed?' · red del centro':' · FUERA DE LA RED'),sello.enRed?'bien':'mal'));
+  chips.push(chip('IP registrada: '+sello.ip));
   chips.push(chip((sello.enHorario?'En horario de clase':'FUERA DE HORARIO')+' · '+when(sello.hora),sello.enHorario?'bien':'mal'));
   if(sello.profesor)chips.push(chip('Entrega hecha con la clave del profesor'));
  }
@@ -603,24 +643,18 @@ $('nota-email').addEventListener('click',()=>{
   link.href=window.ReviewEmail.uri(item.email,message);
   link.target='_blank';link.rel='noopener noreferrer';
   link.click();
-  $('correo-status').textContent='Correo preparado para '+item.email+'. Revisa y confirma el envío en Gmail. Si no se abre o falta texto por la longitud del mensaje, usa «Copiar texto del correo» y pégalo en el correo.';
+  $('correo-status').textContent='Correo preparado para '+item.email+'. Revisa y confirma el envío en Gmail.';
  }catch(error){$('correo-status').textContent=error.message;}
 });
-$('nota-copy-email').addEventListener('click',async()=>{
- try{
-  const {item,message}=emailMessage();
-  await navigator.clipboard.writeText('Para: '+item.email+'\nAsunto: '+message.subject+'\n\n'+message.body);
-  $('correo-status').textContent='Texto completo copiado. Pégalo en Gmail.';
- }catch(error){$('correo-status').textContent='No se pudo copiar el correo: '+error.message;}
-});
-
 // ------------------------------------------------------------ Entrada de archivos
 async function add(files){
+ if(!window.ReviewAuth?.logged)return;
  let first=null;
  for(const file of files){
   try{
    if(file.size>3000000)throw Error('es demasiado grande');
    const item=await parse(typeof file.text==='string'?file.text:await file.text());
+   if(!window.ReviewAuth?.logged)return;
    item.file=file.name;
    if(!items.has(item.id))first??=item.id;
    items.set(item.id,item);
@@ -639,7 +673,20 @@ document.addEventListener('paste',e=>{
  if(text.startsWith(config.format.report)){e.preventDefault();add([{name:'Texto pegado',size:text.length,text}]);}
 });
 const linked=/^#entrega=([A-Za-z0-9._-]+)$/.exec(location.hash);
-if(linked)add([{name:'Enlace de la hoja',size:linked[1].length,text:linked[1]}]);
+let linkedLoaded=false;
+function loadLinked(){if(linked&&!linkedLoaded&&window.ReviewAuth?.logged){linkedLoaded=true;void add([{name:'Enlace de la hoja',size:linked[1].length,text:linked[1]}]);}}
+window.addEventListener('review-auth',event=>{if(event.detail.logged){loadLinked();if(current)renderResult();}else{$('vista').srcdoc='';}});
+loadLinked();
+window.addEventListener('review-content-saved',event=>{
+ const {activity,section,kind,content}=event.detail;
+ for(const item of items.values())if(item.known?.key===activity){
+  if(kind==='rubric'){const data=JSON.parse(content);item.known.rubric=window.LabTools.rubric(data);item.known.rubricVersion=data.version;item.known.rubricIssue='';}
+  else for(const s of [...(item.known.sections||[]),...(item.reviewSections||[])])if((s.path||'')===(section?'apartados/'+section+'/':''))s.statement=content;
+ }
+ const item=items.get(current);if(item?.known?.key!==activity)return;
+ if(kind==='rubric')renderRubric(item);
+ else if((window.ReviewActivity?.section||'')===section)$('review-statement-content').replaceChildren(instructionContent(content,new URL('actividades/'+activity+'/'+(section?'apartados/'+section+'/':''),location.href)));
+});
 window.reviewReady=true;
 })();
 </script>

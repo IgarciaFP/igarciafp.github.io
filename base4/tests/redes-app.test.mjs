@@ -13,9 +13,11 @@ for(const ip of ['88.26.12.1','45.86.255.9','185.197.0.1']){
 }
 const denied=await worker.fetch(request('acceso?a=diw/prueba&clave=test-professor','88.16.1.1'),env);assert.equal(denied.status,403);
 const body={a:'diw/prueba',email:'test@g.educaand.es',huella:'a'.repeat(64),clave:'test-professor'};
-assert.equal((await worker.fetch(request('sello','1.2.3.4',body),env)).status,403);
+const moved=await (await worker.fetch(request('sello','1.2.3.4',body),env)).json();
+assert.equal(moved.enRed,false);assert.match(moved.firma,/^[a-f0-9]{64}$/);
+assert.equal((await (await worker.fetch(request('verificar','1.2.3.4',{sello:moved}),env)).json()).valido,true);
 const signed=await (await worker.fetch(request('sello','45.86.1.2',body),env)).json();assert.equal(signed.enRed,true);assert.match(signed.firma,/^[a-f0-9]{64}$/);
 assert.equal((await (await worker.fetch(request('verificar','1.2.3.4',{sello:signed}),env)).json()).valido,true);
 signed.ip='88.16.1.1';assert.equal((await (await worker.fetch(request('verificar','1.2.3.4',{sello:signed}),env)).json()).valido,false);
 assert.equal((await worker.fetch(request('acceso?a=diw/prueba','88.26.1.1'),{})).status,500);
-console.log('OK: prefixes, ignored masks, denied IPv6/unknown IPs, no teacher bypass, mandatory stamp and fail-closed configuration.');
+console.log('OK: acceso inicial por prefijos, sin excepción de profesor; entrega firmada tras cambio de red, sin segunda restricción.');

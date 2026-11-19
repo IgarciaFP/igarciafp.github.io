@@ -110,7 +110,8 @@ function validarEntrega_(sobre) {
 }
 /** Comprueba el sello una sola vez y separa la IP de los avisos. */
 function controlEntrega_(datos,politica) {
-  const sello=datos.sello,avisos=[],exigir=politica.restringirHorario||politica.restringirIPs;
+  const base4=laboratorio_(datos)==='base4';
+  const sello=datos.sello,avisos=[],exigir=politica.restringirHorario||(!base4&&politica.restringirIPs);
   if(sello?.accesoSinComprobar===true)avisos.push('acceso sin comprobar');
   if(!sello||sello.error||typeof sello.ip!=='string'||!/^[0-9a-fA-F.:]{3,45}$/.test(sello.ip)){
     if(exigir)throw Error('CONTROL_REQUIRED');
@@ -136,8 +137,8 @@ function controlEntrega_(datos,politica) {
     return {ip:'',avisos:[...avisos,'SELLO NO VÁLIDO']};
   }
   if(exigir&&!verificado)throw Error('CONTROL_UNAVAILABLE');
-  const redPermitida=enRed(sello.ip,politica.redes);
-  if(politica.restringirIPs&&!redPermitida)throw Error('NETWORK_DENIED');
+  const redPermitida=base4||enRed(sello.ip,politica.redes);
+  if(!base4&&politica.restringirIPs&&!redPermitida)throw Error('NETWORK_DENIED');
   if(politica.restringirHorario&&sello.enHorario!==true)throw Error('SCHEDULE_DENIED');
   if(!verificado)avisos.push('sello sin verificar');
   if(!redPermitida)avisos.push('FUERA DE LA RED');
@@ -190,8 +191,8 @@ function configuracionActividad_(datos) {
     if(!config||typeof config!=='object'||Array.isArray(config))throw errorConfiguracion_('config.json debe contener un objeto.');
     const limite=config.entregas===undefined?(carpeta==='base4'?1:0):config.entregas;
     if(!Number.isSafeInteger(limite)||limite<0)throw errorConfiguracion_('entregas debe ser un entero mayor o igual a 0.');
-    const redes=config.redes===undefined?['185.197.0.0/16','88.16.0.0/16']:config.redes;
-    const restringirHorario=config.restringirHorario??false,restringirIPs=config.restringirIPs??false;
+    const redes=carpeta==='base4'?[]:config.redes===undefined?['185.197.0.0/16','88.16.0.0/16']:config.redes;
+    const restringirHorario=config.restringirHorario??false,restringirIPs=carpeta==='base4'?false:config.restringirIPs??false;
     if(!Array.isArray(redes)||!redes.every(cidrValido))throw errorConfiguracion_('redes debe ser una lista de redes CIDR válidas.');
     if(typeof restringirHorario!=='boolean'||typeof restringirIPs!=='boolean')throw errorConfiguracion_('restringirHorario y restringirIPs deben ser true o false.');
     return {entregas:limite,redes,restringirHorario,restringirIPs};
@@ -475,6 +476,14 @@ function estadoNota_(celda, celdaComentarios) {
   const comentarios = celdaComentarios.getDisplayValue();
   return { nota, comentarios, revision: huella_(JSON.stringify([valor, formula, nota, celdaComentarios.getValue(), celdaComentarios.getFormula(), comentarios])) };
 }
+/** La propuesta IA es de solo lectura; nunca se mezcla con la nota del profesor. */
+function estadoIA_(hoja, cabeceras, fila) {
+  const localizar = nombre => cabeceras.map((v,i) => igual_(v) === nombre ? i+1 : 0).filter(Boolean);
+  const notas = localizar('nota ia'), comentarios = localizar('comentarios ia');
+  if (notas.length > 1 || comentarios.length > 1) return { iaDisponible: false, iaAviso: 'Hay cabeceras de IA duplicadas en la hoja.' };
+  if (notas.length !== 1 || comentarios.length !== 1) return { iaDisponible: false, iaAviso: 'Faltan las columnas NOTA IA o COMENTARIOS IA.' };
+  return { iaDisponible: true, notaIA: hoja.getRange(fila, notas[0]).getDisplayValue(), comentariosIA: hoja.getRange(fila, comentarios[0]).getDisplayValue() };
+}
 /** Todas las consultas y escrituras de notas requieren una sesión validada aquí. */
 function gestionarNota(pedido) {
   let cerrojo;
@@ -482,6 +491,8 @@ function gestionarNota(pedido) {
     if (!pedido || typeof pedido !== 'object') throw Error('INVALID');
     if (pedido.action === 'login') return iniciarSesionProfesor_(pedido.key);
     const sesion = sesionProfesor_(pedido.token);
+    if (pedido.action === 'session') return { ok: true, expiresAt: sesion.expiresAt };
+    if (['content-get', 'content-set'].includes(pedido.action)) return gestionarContenido_(pedido);
     if (pedido.action === 'logout') { sesion.propiedades.deleteProperty(sesion.nombre); return { ok: true }; }
     if (!['get', 'set'].includes(pedido.action)) throw Error('INVALID');
     cerrojo = LockService.getScriptLock();
@@ -495,7 +506,7 @@ function gestionarNota(pedido) {
     const columnasComentarios = cabeceras.map((v, i) => igual_(v) === 'comentarios a la nota' ? i + 1 : 0).filter(Boolean);
     if (columnasComentarios.length !== 1) throw Error('COMMENTS_COLUMN');
     const columnaComentarios = columnasComentarios[0], celdaComentarios = hoja.getRange(fila, columnaComentarios);
-    const actual = estadoNota_(celda, celdaComentarios);
+    const actual = { ...estadoNota_(celda, celdaComentarios), ...estadoIA_(hoja, cabeceras, fila) };
     if (pedido.action === 'get') return { ok: true, submissionId: pedido.submissionId, ...actual };
     texto_(pedido.nota, 100, true);
     if (pedido.comentarios !== undefined) texto_(pedido.comentarios, 10000, true);
@@ -514,7 +525,7 @@ function gestionarNota(pedido) {
     } });
     Sheets.Spreadsheets.batchUpdate({ requests }, libro.getId());
     SpreadsheetApp.flush();
-    return { ok: true, submissionId: pedido.submissionId, ...estadoNota_(celda, celdaComentarios) };
+    return { ok: true, submissionId: pedido.submissionId, ...estadoNota_(celda, celdaComentarios), ...estadoIA_(hoja, cabeceras, fila) };
   } catch (error) {
     const conocidos = ['AUTH', 'AUTH_CONFIG', 'SESSION', 'INVALID', 'BUSY', 'SCHEMA', 'ROUTE', 'NOT_FOUND', 'AMBIGUOUS', 'GRADE_COLUMN', 'COMMENTS_COLUMN'];
     return { ok: false, code: conocidos.includes(error.message) ? error.message : 'STORAGE' };

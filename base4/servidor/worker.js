@@ -79,6 +79,9 @@ function responder(datos, origen, estado = 200) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url), ruta = url.pathname.replace(/^\/base4(?=\/|$)/,'').replace(/\/+$/, '') || '/';
+    // Solo la ruta explícita /base4 usa el control de red exclusivamente al inicio.
+    // El router y el verificador legacy de base3/servidor/worker.js no se modifican.
+    const soloRedInicial = /^\/base4(?:\/|$)/.test(url.pathname);
     const pedido = request.headers.get('Origin');
     const permitidos = [...ORIGENES, ...String(env.ORIGENES_EXTRA || '').split(',').map(t => t.trim()).filter(Boolean)];
     const origen = permitidos.includes(pedido) ? pedido : null;
@@ -97,14 +100,14 @@ export default {
         const cuerpo = JSON.parse(await request.text());
         const actividad = ACTIVIDAD.exec(String(cuerpo.a || '').toLowerCase());
         if (!actividad || typeof cuerpo.email !== 'string' || cuerpo.email.length > 254 || !/^[a-f0-9]{64}$/.test(cuerpo.huella || '')) return responder({ error: 'INVALIDO' }, origen, 400);
-        if(!enRed(ip))return responder({error:'NETWORK_DENIED'},origen,403);
+        if(!soloRedInicial&&!enRed(ip))return responder({error:'NETWORK_DENIED'},origen,403);
         const sello = { ip, hora: ahora.toISOString(), modulo: actividad[1], actividad: actividad[2], email: cuerpo.email.toLowerCase(), huella: cuerpo.huella,
           enRed: enRed(ip), enHorario: enHorario(actividad[1], ahora), profesor: await esProfesor(cuerpo.clave, env) };
         return responder({ ...sello, firma: await firmar(sello, env) }, origen);
       }
       if (request.method === 'POST' && ruta === '/verificar') {
         const sello = JSON.parse(await request.text()).sello || {};
-        const valido = enRed(sello.ip) && sello.enRed === true && typeof sello.firma === 'string' && await iguales(sello.firma, await firmar(sello, env));
+        const valido = (soloRedInicial || (enRed(sello.ip) && sello.enRed === true)) && typeof sello.firma === 'string' && await iguales(sello.firma, await firmar(sello, env));
         return responder({ valido }, origen);
       }
       if (request.method === 'GET' && ruta === '/diagnostico') {

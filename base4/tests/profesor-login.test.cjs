@@ -1,0 +1,24 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const {JSDOM}=require('jsdom');
+const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'profesor.html'),'utf8');
+const source=fs.readFileSync(path.join(root,'motor/notas.js'),'utf8');
+const tick=()=>new Promise(resolve=>setTimeout(resolve,15));
+(async()=>{
+const dom=new JSDOM(html,{url:'https://example.com/base4/profesor.html',runScripts:'outside-only'}),w=dom.window;
+let currentGrade={ok:true,submissionId:'one',nota:'8',comentarios:'Profesor',revision:'r1',iaDisponible:true,notaIA:'0',comentariosIA:'<script>no ejecutar</script>'};
+const calls=[];w.fetch=async()=>({ok:true,json:async()=>({delivery:{type:'apps-script',endpoint:'https://script.google.com/macros/s/test/exec'}})});
+w.__request=async data=>{calls.push(data);if(data.action==='login')return data.key==='clave'?{ok:true,token:'a'.repeat(64),expiresAt:Date.now()+10000}:{ok:false,code:'AUTH'};if(data.action==='logout')return {ok:true};return currentGrade;};
+w.eval(source.replace(/function request\(data\)\{[\s\S]*?\nconst ready=/,'function request(data){return window.__request(data);}\nconst ready='));
+await tick();const el=id=>w.document.getElementById(id);
+assert.equal(el('review-app').hidden,true);assert.equal(el('nota-refresh'),null);assert.equal(el('nota-copy-email'),null);
+el('nota-key').value='incorrecta';el('nota-login').dispatchEvent(new w.Event('submit',{cancelable:true}));await tick();assert.equal(el('review-app').hidden,true);
+el('nota-key').value='clave';el('nota-login').dispatchEvent(new w.Event('submit',{cancelable:true}));await tick();
+assert.equal(el('review-app').hidden,false);assert.equal(el('login-page').hidden,true);assert.equal(el('nota-key').value,'');
+w.dispatchEvent(new w.CustomEvent('review-selection',{detail:{id:'one',intact:true}}));await tick();
+assert.equal(el('nota-ai-value').textContent,'0');assert.equal(el('nota-value').value,'8');assert.equal(el('nota-ai-comments').querySelector('script'),null);
+el('nota-value').value='9';el('nota-save').click();await tick();assert.equal(calls.at(-1).nota,'9');assert.equal(calls.at(-1).notaIA,undefined);
+currentGrade={ok:true,submissionId:'two',nota:'',comentarios:'',revision:'r2',iaDisponible:true,notaIA:'',comentariosIA:''};
+w.dispatchEvent(new w.CustomEvent('review-selection',{detail:{id:'two',intact:true}}));await tick();assert.equal(el('nota-ai-value').textContent,'—');assert.equal(el('nota-ai-comments').textContent,'');
+currentGrade={ok:false,code:'SESSION'};w.dispatchEvent(new w.CustomEvent('review-selection',{detail:{id:'two',intact:true}}));await tick();assert.equal(el('review-app').hidden,true);assert.equal(w.ReviewAuth.logged,false);
+dom.window.close();console.log('OK: acceso, contraseña incorrecta, IA cero, texto seguro, cambio de entrega, guardado independiente y sesión caducada.');
+})().catch(e=>{console.error(e);process.exitCode=1;});

@@ -52,14 +52,30 @@ La página `profesor.html` consulta y modifica la columna cuya cabecera sea «no
 
 1. Actualiza **Code.gs y Bridge.html** con los archivos de esta carpeta.
 2. Publica una nueva versión de la implementación existente de Apps Script, conservando su URL.
-3. Abre «Probar código», introduce la **CLAVE_PROFESOR del Worker** e inicia sesión.
-4. Consulta la nota actual, edítala y pulsa «Guardar nota». «Actualizar nota» vuelve a consultar la hoja. Dejar el campo vacío borra la calificación.
+3. Abre `base4/profesor.html` o su enlace de entrega. La pantalla de entrada pide únicamente la **CLAVE_PROFESOR del Worker**. El enlace se conserva durante el acceso.
+4. Al seleccionar una entrega se consultan automáticamente la nota del profesor y la propuesta IA. Edita la calificación y pulsa «Guardar nota y comentarios». Volver a seleccionar la entrega recarga la hoja; dejar el campo vacío borra la calificación manual.
 5. La sesión se recuerda durante 30 días en el mismo navegador y perfil. «Cerrar sesión» revoca el identificador. No se guarda la clave: el navegador guarda un token aleatorio y el servidor su hash con caducidad en las propiedades del script.
 
 La consulta y escritura requieren validación de sesión en el servidor. Los alumnos no reciben acceso a las notas. La primera autenticación verifica la clave con el Worker; no requiere modificarlo. Los cambios manuales detectados desde la última consulta producen un aviso de conflicto; actualiza la nota antes de guardar de nuevo. El bloqueo del script coordina sus propias escrituras, pero no bloquea la edición simultánea desde Google Sheets.
 
+El receptor admite `action: session` para validar una sesión recordada antes de mostrar el visor. Las columnas **NOTA IA** y **COMENTARIOS IA** se buscan por cabecera y se devuelven como `notaIA` y `comentariosIA`, únicamente después de validar la sesión. Son de solo lectura desde el visor y guardar la nota manual nunca las modifica. Un cero se muestra como cero; las celdas vacías se indican como pendientes. Si las cabeceras faltan o están duplicadas se informa sin impedir la corrección manual ni crear columnas.
+
+Esta ampliación requiere **actualizar Code.gs y publicar una nueva versión de la implementación existente**, conservando la URL. Publicar los archivos en GitHub Pages no despliega Apps Script. Hasta actualizarlo, se puede iniciar sesión con la contraseña, pero la propuesta IA mostrará un aviso de receptor pendiente de actualización. No es necesario cambiar Bridge.html para esta ampliación. La interfaz no incluye los antiguos botones «Actualizar nota» y «Copiar texto del correo»; «Enviar por email» sigue abriendo un borrador en Gmail.
+
 Las entregas sin código completo en I, los borradores y las entregas duplicadas no se califican desde esta página: se muestra un aviso. Las notas numéricas se guardan como números; otros textos se guardan literalmente, nunca como fórmulas. Una nota con fórmula escrita previamente en la hoja se muestra con su resultado; guardar una nueva nota sustituye esa fórmula.
 
+
+## Edición de instrucciones y rúbrica desde profesor.html
+
+Añade **Contenido.gs** al mismo proyecto de Apps Script y actualiza **Code.gs**. En Configuración del proyecto → Propiedades del script, configura `BASE4_GITHUB_TOKEN` con un token fino de GitHub limitado al repositorio `IgarciaFP/igarciafp.github.io` y permiso **Contents: Read and write**. Nunca lo pegues en HTML, JavaScript público ni archivos del repositorio. Después publica una nueva versión de la implementación existente manteniendo la URL.
+
+El editor permite modificar `enunciado.html` de la actividad o de su apartado seleccionado, y `rubrica.json` de la actividad. La edición de rúbrica usa campos para título, criterios, puntos y niveles; el servidor valida la estructura y actualiza su versión. Cada guardado crea un commit en `main` y devuelve su enlace. La API rechaza una versión SHA obsoleta para no sobrescribir cambios ajenos. El guardado se limita a estos archivos bajo `base4/actividades/`; no admite rutas de base3, código del alumno, configuración de acceso ni archivos arbitrarios. Referencia: https://docs.github.com/en/rest/repos/contents#create-or-update-file-contents
+
+Los cambios se reflejan inmediatamente en la revisión abierta y en la web tras desplegar GitHub Pages. No modifican entregas históricas ni recalculan notas IA. La pantalla de revisión siempre identifica la rúbrica como la versión publicada actualmente.
+
+## Red de base4
+
+La restricción de IP se aplica únicamente al abrir la actividad mediante `/base4/acceso`, con la política de los dos primeros octetos. En `/base4/sello` se registra y firma la IP, pero no se rechaza un cambio posterior de red. `/base4/verificar` valida la firma sin repetir la restricción de acceso. El receptor no vuelve a comparar base4 con redes de la actividad ni con los valores heredados de base3, y no añade «FUERA DE LA RED» por la IP de entrega. Se conservan los datos y la firma para comprobar integridad. Las rutas y el comportamiento de base3 no se modifican. Este cambio necesita el despliegue del Worker y del receptor; los avisos históricos de la hoja permanecen sin alterar.
 
 ## Registro inicial y panel definitivo
 
@@ -73,7 +89,7 @@ La entrega final actualiza esa fila por ID; conserva los datos iniciales y las n
 - El motivo ocupa un campo de **2rem** de alto y se almacena en Incidencias.
 - «Cerrar sin entregar» exige confirmación. Recargar o cerrar la pestaña muestra la advertencia nativa del navegador cuando este la permite. Al salir se elimina la copia local pendiente; queda la fila inicial, no una entrega completa. No se recuperan comprobantes finalizados como prácticas editables.
 
-El ID se mantiene al guardar y recuperar una práctica pausada. El registro inicial se reintenta con el mismo ID antes del envío si falló la red; no se puede garantizar el registro remoto sin conexión. La actualización final mantiene las restricciones de red y horario. Si se rechaza, la fila inicial sigue pendiente y el panel permite reintentar.
+El ID se mantiene al guardar y recuperar una práctica pausada. El registro inicial se reintenta con el mismo ID antes del envío si falló la red; no se puede garantizar el registro remoto sin conexión. La actualización final de base4 conserva el control de horario y la firma, sin repetir la restricción de red inicial. Si se rechaza, la fila inicial sigue pendiente y el panel permite reintentar.
 
 **Despliegue:** sustituir **Code.gs y Bridge.html** y publicar una nueva versión de la implementación existente. La URL y el Worker no cambian. Solo se crean columnas de identificación si faltan. El orden ID, NUM ENTREGA, DIA Y HORA, MODULO, Nombre de la práctica, EMAIL… es válido.
 

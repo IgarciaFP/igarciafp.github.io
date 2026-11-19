@@ -142,6 +142,21 @@ const current=context.gestionarNota({action:'get',submissionId:moved.submissionI
 assert.equal(context.gestionarNota({action:'set',submissionId:moved.submissionId,revision:current.revision,nota:'9',comentarios:''}).ok,true);
 assert.equal(cell(last,12).value,'');
 assert.equal(cell(last,0).value,'6'.repeat(32));
+// IA se localiza por cabecera, admite cero y nunca se sobrescribe al guardar la nota manual.
+cell(0,13).value='COMENTARIOS IA';cell(0,14).value='NOTA IA';
+cell(last,13).value='Revisar variables';cell(last,14).value=0;
+const withAI=context.gestionarNota({action:'get',submissionId:moved.submissionId});
+assert.equal(withAI.notaIA,'0');assert.equal(withAI.comentariosIA,'Revisar variables');assert.equal(withAI.iaDisponible,true);
+assert.equal(context.gestionarNota({action:'set',submissionId:moved.submissionId,revision:withAI.revision,nota:'6',comentarios:'Revisado',notaIA:'10'}).ok,true);
+assert.equal(cell(last,14).value,0);assert.equal(cell(last,13).value,'Revisar variables');
+cell(0,15).value='NOTA IA';
+assert.equal(context.gestionarNota({action:'get',submissionId:moved.submissionId}).iaDisponible,false);
+cell(0,15).value='';
+vm.runInContext("sesionProfesor_=()=>{throw Error('SESSION');};",context);
+assert.equal(context.gestionarNota({action:'session',token:'falso'}).code,'SESSION');
+assert.equal(context.gestionarNota({action:'get',submissionId:moved.submissionId}).code,'SESSION');
+vm.runInContext("sesionProfesor_=()=>({expiresAt:123});",context);
+assert.equal(context.gestionarNota({action:'session'}).expiresAt,123);
 // Rechaza cabeceras ambiguas sin adivinar dónde escribir.
 cell(0,12).value='NUM ENTREGA';
 assert.throws(()=>context.columnasIntento_(sheet),/SCHEMA/);

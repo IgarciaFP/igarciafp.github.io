@@ -16,7 +16,7 @@ La actividad ya no define `redes` ni `restringirIPs`. Tampoco existe un modo per
 {"control": {"servidor": "https://igarciafp-github-io.igarciafp.workers.dev/base4"}}
 ```
 
-`GET /base4/acceso` responde con la política `base4-prefix2-v1`. Un servidor antiguo que no identifique esta política no habilita el laboratorio. `POST /base4/sello` solo firma desde las redes permitidas; el cliente no genera una entrega cuando falta una verificación positiva. La comprobación del horario se conserva como información del sello, independiente de esta regla de IP.
+`GET /base4/acceso` responde con la política `base4-prefix2-v1`. Un servidor antiguo que no identifique esta política no habilita el laboratorio. `POST /base4/sello` registra y firma la IP de entrega sin repetir la restricción de red. `/base4/verificar` comprueba la firma; la restricción de IP se aplica únicamente al inicio mediante `/base4/acceso`. La comprobación del horario se conserva como información del sello, independiente de esta regla de IP.
 
 ## Activación en el servidor existente
 
@@ -26,7 +26,7 @@ La integración de Cloudflare con GitHub publica el Worker al cambiar la rama pr
 
 ## Alcance
 
-Esta regla bloquea el flujo normal de entrada y la emisión de sellos de base4. El repositorio y GitHub Pages siguen siendo públicos: el contenido publicado puede consultarse directamente, sin ejecutar el laboratorio. Para impedir también ese acceso directo se necesita un alojamiento que aplique la restricción a los archivos, no solo al controlador.
+Esta regla bloquea el flujo normal de entrada a base4 desde redes no autorizadas. El repositorio y GitHub Pages siguen siendo públicos: el contenido publicado puede consultarse directamente, sin ejecutar el laboratorio. Para impedir también ese acceso directo se necesita un alojamiento que aplique la restricción a los archivos, no solo al controlador.
 
 El receptor de Apps Script heredado sigue siendo un despliegue independiente. La ruta nueva no modifica sus permisos ni hace privado el repositorio.
 
