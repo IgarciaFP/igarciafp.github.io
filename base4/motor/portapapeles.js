@@ -93,7 +93,7 @@ window.createLabClipboard=function(options){
  // Al cerrar o navegar fuera el navegador puede cancelar operaciones asíncronas.
  window.addEventListener('beforeunload',()=>{void clear();});
  window.addEventListener('pagehide',()=>{void clear();});
- return {clear,hide,preview(event,frame,token){
+ return {clear,hide,async copyText(text){internalText=String(text);try{await navigator.clipboard.writeText(internalText);}catch{}},preview(event,frame,token){
   const data=event.data;
   if(event.source!==frame.contentWindow||!token||data?.labClipboard!==token||data.action!=='menu')return;
   const rect=frame.getBoundingClientRect();

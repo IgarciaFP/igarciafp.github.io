@@ -7,7 +7,13 @@ async function main(){
  const config=w.LabTools.settings({},'diw','01-01-ejemplo'),tools=w.LabTools.init(config);
  assert.equal(d.querySelector('[data-tool=rubrica]'),null);
  const open=key=>{tools.close();d.querySelector('[data-tool='+key+']').click();return d.getElementById('tool-content');};
- let panel=open('colorPicker'),hex=panel.querySelector('input');hex.value='#FF0000';hex.dispatchEvent(new w.Event('input'));assert.equal(panel.querySelector('[role=status]').textContent,'rgb(255, 0, 0)');
+ let panel=open('colorPicker'),hex=panel.querySelector('.color-value');hex.value='#FF0000';hex.dispatchEvent(new w.Event('input'));assert.equal(panel.querySelector('.color-swatch').style.backgroundColor,'rgb(255, 0, 0)');
+ const format=panel.querySelector('.color-format');format.value='rgb';format.dispatchEvent(new w.Event('change'));assert.equal(hex.value,'rgb(255, 0, 0)');
+ format.value='hsl';format.dispatchEvent(new w.Event('change'));assert.equal(hex.value,'hsl(0, 100%, 50%)');
+ hex.value='hsl(120, 100%, 50%)';hex.dispatchEvent(new w.Event('input'));assert.equal(panel.querySelector('.color-swatch').style.backgroundColor,'rgb(0, 255, 0)');
+ format.value='hex';format.dispatchEvent(new w.Event('change'));assert.equal(hex.value,'#00FF00');
+ hex.value='#invalid';hex.dispatchEvent(new w.Event('input'));assert.equal(hex.getAttribute('aria-invalid'),'true');
+
  panel=open('binarioDecimal');let fields=panel.querySelectorAll('input');fields[0].value='1010';fields[0].dispatchEvent(new w.Event('input'));assert.equal(fields[1].value,'10');fields[1].value='15';fields[1].dispatchEvent(new w.Event('input'));assert.equal(fields[0].value,'1111');
  panel=open('traductor');panel.querySelector('textarea').value='Hola';panel.querySelector('button').click();await new Promise(r=>setTimeout(r,10));assert.equal(panel.querySelector('[role=status]').textContent,'Hello');assert.equal(new URL(requests[0]).searchParams.get('q'),'Hola');assert.equal(new URL(requests[0]).searchParams.size,2);
  panel=open('apuntes');await new Promise(r=>setTimeout(r,10));const frame=panel.querySelector('iframe');

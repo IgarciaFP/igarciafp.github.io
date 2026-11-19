@@ -1111,7 +1111,7 @@ window.addEventListener('unhandledrejection',e=>{
 },true);
 clipboard=window.createLabClipboard?.({canEdit:()=>phase==='ready'||!!guard?.canEdit(),language:()=>uiLanguage});
 window.addEventListener('message',event=>clipboard?.preview(event,frame,previewToken));
-toolbox=window.LabTools?.init(config.tools,{language:()=>uiLanguage});
+toolbox=window.LabTools?.init(config.tools,{language:()=>uiLanguage,copyText:text=>clipboard.copyText(text)});
 if(sectionMode){
  sectionView=window.createSectionView(sections,{
   changed:syncFinishAction,

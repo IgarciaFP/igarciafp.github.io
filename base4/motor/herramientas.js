@@ -47,7 +47,7 @@ function calculate(source){
  const result=sum();if(at!==tokens.length||!Number.isFinite(result))throw Error('Expresión inválida o resultado fuera de rango.');
  return Number(result.toPrecision(12)).toString();
 }
-function init(config,{language=()=> 'es'}={}){
+function init(config,{language=()=> 'es',copyText=null}={}){
  const doc=root.document,bar=doc.getElementById('toolbar-tools');if(!bar)return null;
  const names={colorPicker:['Color','Color'],calculadora:['Calculadora','Calculator'],binarioDecimal:['Binario ↔ decimal','Binary ↔ decimal'],hexadecimalDecimal:['Hexadecimal ↔ decimal','Hexadecimal ↔ decimal'],traductor:['Traductor','Translator'],apuntes:['Apuntes de la unidad','Unit notes'],rubrica:['Rúbrica de la actividad','Activity rubric']};
  const icons={colorPicker:'◉',calculadora:'±',binarioDecimal:'01',hexadecimalDecimal:'0F',traductor:'A↔文',apuntes:'▤',rubrica:'☷'};
@@ -69,10 +69,29 @@ function init(config,{language=()=> 'es'}={}){
   const addInput=(label,type='text')=>{const wrap=doc.createElement('label'),input=doc.createElement('input');wrap.textContent=label;input.type=type;wrap.append(input);panel.append(wrap);return input;};
   const action=(label,fn)=>{const button=doc.createElement('button');button.type='button';button.textContent=label;button.addEventListener('click',fn);panel.append(button);return button;};
   if(key==='colorPicker'){
-   const sample=doc.createElement('div');sample.className='color-sample';sample.setAttribute('aria-hidden','true');panel.append(sample);
-   const hex=addInput('HEX'),channels=['R','G','B'].map(label=>{const input=addInput(label,'range');input.min=0;input.max=255;input.value=128;return input;});hex.maxLength=7;
-   function update(){const values=channels.map(c=>Number(c.value));hex.value='#'+values.map(v=>v.toString(16).padStart(2,'0')).join('').toUpperCase();sample.style.backgroundColor=hex.value;status.textContent='rgb('+values.join(', ')+')';}
-   channels.forEach(c=>c.addEventListener('input',update));hex.addEventListener('input',()=>{if(!/^#[\da-f]{6}$/i.test(hex.value)){status.textContent='HEX: #RRGGBB';return;}channels.forEach((c,i)=>c.value=parseInt(hex.value.slice(1+i*2,3+i*2),16));update();});update();
+   panel.classList.add('color-picker');
+   panel.innerHTML='<div class="color-sv" tabindex="0" role="slider" aria-label="Saturación y brillo: flechas para ajustar" aria-valuemin="0" aria-valuemax="100"><span class="color-cursor"></span></div><input class="color-hue" type="range" min="0" max="360" step="1" aria-label="Tono"><div class="color-value-row"><span class="color-swatch" aria-hidden="true"></span><input class="color-value" type="text" aria-label="Valor del color" spellcheck="false"><button class="color-copy" type="button" aria-label="Copiar color" title="Copiar color"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M9 8V3h12v13h-5M3 8h13v13H3z"/></svg></button><select class="color-format" aria-label="Formato del color"><option value="hex">Hex</option><option value="rgb">RGB</option><option value="hsl">HSL</option></select></div>';
+   const area=panel.querySelector('.color-sv'),cursor=panel.querySelector('.color-cursor'),hue=panel.querySelector('.color-hue'),value=panel.querySelector('.color-value'),swatch=panel.querySelector('.color-swatch'),format=panel.querySelector('.color-format');
+   let h=211.017,s=0.608247,v=0.760784;
+   const clamp=(n,a=0,b=1)=>Math.min(b,Math.max(a,n));
+   function rgb(){const c=v*s,x=c*(1-Math.abs((h/60)%2-1)),m=v-c;return (h<60?[c,x,0]:h<120?[x,c,0]:h<180?[0,c,x]:h<240?[0,x,c]:h<300?[x,0,c]:[c,0,x]).map(n=>Math.round((n+m)*255));}
+   function fromRGB(values){const [r,g,b]=values.map(n=>n/255),max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;v=max;s=max?d/max:0;if(d)h=((max===r?(g-b)/d:max===g?(b-r)/d+2:(r-g)/d+4)*60+360)%360;}
+   function formatted(){const channels=rgb();if(format.value==='rgb')return 'rgb('+channels.join(', ')+')';if(format.value==='hsl'){const l=v*(1-s/2),sat=l===0||l===1?0:(v-l)/Math.min(l,1-l);return 'hsl('+Math.round(h)+', '+Math.round(sat*100)+'%, '+Math.round(l*100)+'%)';}return '#'+channels.map(n=>n.toString(16).padStart(2,'0')).join('').toUpperCase();}
+   function render(){const color='rgb('+rgb().join(', ')+')';area.style.backgroundColor='hsl('+h+',100%,50%)';cursor.style.left=s*100+'%';cursor.style.top=(1-v)*100+'%';cursor.style.backgroundColor=color;swatch.style.backgroundColor=color;hue.value=h;hue.style.setProperty('--tone','hsl('+h+',100%,50%)');value.value=formatted();value.setAttribute('aria-invalid','false');area.setAttribute('aria-valuenow',Math.round(s*100));area.setAttribute('aria-valuetext','Saturación '+Math.round(s*100)+'%, brillo '+Math.round(v*100)+'%');status.textContent='';}
+   function pick(e){const r=area.getBoundingClientRect();s=clamp((e.clientX-r.left)/r.width);v=1-clamp((e.clientY-r.top)/r.height);render();}
+   area.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();area.focus();area.setPointerCapture(e.pointerId);pick(e);});
+   area.addEventListener('pointermove',e=>{if(area.hasPointerCapture(e.pointerId))pick(e);});
+   area.addEventListener('pointerup',e=>{if(area.hasPointerCapture(e.pointerId))area.releasePointerCapture(e.pointerId);});
+   area.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;e.preventDefault();const step=e.shiftKey?0.1:0.01;if(e.key==='ArrowLeft')s=clamp(s-step);if(e.key==='ArrowRight')s=clamp(s+step);if(e.key==='ArrowUp')v=clamp(v+step);if(e.key==='ArrowDown')v=clamp(v-step);render();});
+   hue.addEventListener('input',()=>{h=Number(hue.value);render();});format.addEventListener('change',render);
+   value.addEventListener('input',()=>{const text=value.value.trim();let match,channels;
+    if(format.value==='hex'&&(match=/^#?([0-9a-f]{6}|[0-9a-f]{3})$/i.exec(text))){let hex=match[1];if(hex.length===3)hex=hex.split('').map(c=>c+c).join('');channels=[0,2,4].map(i=>parseInt(hex.slice(i,i+2),16));}
+    if(format.value==='rgb'&&(match=/^(?:rgb\()?\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)?$/i.exec(text))){const nums=match.slice(1).map(Number);if(nums.every(n=>n<=255))channels=nums;}
+    if(format.value==='hsl'&&(match=/^(?:hsl\()?\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)%\s*,\s*(\d+(?:\.\d+)?)%\s*\)?$/i.exec(text))){const [hh,ss,ll]=match.slice(1).map(Number);if(hh<=360&&ss<=100&&ll<=100){h=hh%360;const l=ll/100;v=l+ss/100*Math.min(l,1-l);s=v?2*(1-l/v):0;render();value.value=text;return;}}
+    if(channels){fromRGB(channels);render();value.value=text;}else{value.setAttribute('aria-invalid','true');status.textContent='Introduce un color válido en el formato seleccionado.';}
+   });
+   panel.querySelector('.color-copy').addEventListener('click',async()=>{if(value.getAttribute('aria-invalid')==='true')return;try{if(copyText)await copyText(formatted());else await navigator.clipboard.writeText(formatted());status.textContent='Color copiado';}catch{status.textContent='Err. permiso';}});
+   render();
   }else if(key==='calculadora'){
    const expression=addInput('Expresión / Expression');expression.placeholder='2^8 - 2';expression.maxLength=200;
    const run=()=>{try{status.textContent=calculate(expression.value);}catch(error){status.textContent=error.message;}};
