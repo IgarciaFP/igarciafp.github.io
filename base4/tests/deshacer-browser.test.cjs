@@ -33,6 +33,11 @@ const root=path.resolve(__dirname,'..'),S=require('../motor/apartados.js'),T=req
  await page.locator('#editor-undo').click();assert.equal(await field.inputValue(),initial+'CUT','cut is undoable');
  assert.equal(await page.evaluate(()=>saved.values.html),initial+'CUT','undo is saved for delivery');
  await page.keyboard.press('Control+End');await field.dispatchEvent('contextmenu',{clientX:20,clientY:20});await page.locator('#clipboard-menu button').filter({hasText:'Pegar'}).evaluate(el=>el.click());assert.equal(await field.inputValue(),initial+'CUTCUT');await page.locator('#editor-undo').click();assert.equal(await field.inputValue(),initial+'CUT','paste is undoable');
+ const beforeRestore=await field.inputValue();
+ await page.locator('#editor-restore').click();assert.equal(await page.locator('#action-confirm').evaluate(el=>el.open),false);
+ await page.locator('#editor-restore').click();assert.equal(await page.locator('#action-confirm').evaluate(el=>el.open),true);assert.equal(await field.inputValue(),beforeRestore);
+ await page.locator('#action-confirm-cancel').click();assert.equal(await field.inputValue(),beforeRestore);
+ await page.locator('#editor-restore').click();await page.locator('#editor-restore').click();await page.locator('#action-confirm-accept').click();assert.equal(await field.inputValue(),initial);
  console.log('OK: real Edge Ctrl+Z, redo, icon, context menu, indentation, Enter and cut share native history.');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1);});

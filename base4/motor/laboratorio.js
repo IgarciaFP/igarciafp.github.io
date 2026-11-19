@@ -322,7 +322,7 @@ function edited(id){
 function insertText(el,text){clipboard?.insert(el,text);}
 $('editor-undo').addEventListener('mousedown',e=>e.preventDefault());
 $('editor-undo').addEventListener('click',()=>{if(guard.canEdit())clipboard?.undo($(currentEditor));});
-$('editor-restore').addEventListener('click',()=>{
+$('editor-restore').addEventListener('click',async()=>{
  if(!guard.canEdit())return;
  const id=currentEditor;
  if(restoreArmed!==id){
@@ -330,6 +330,9 @@ $('editor-restore').addEventListener('click',()=>{
   restoreTimer=setTimeout(()=>{restoreArmed=null;syncRestore();},4000);
   syncRestore();return;
  }
+ restoreArmed=null;clearTimeout(restoreTimer);syncRestore();
+ const message=uiLanguage==='en'?'Restore the starter code for '+NAMES[id]+'? Your current code in this tab will be replaced.':'¿Restaurar el código de partida de '+NAMES[id]+'? Se sustituirá el contenido actual de esta pestaña.';
+ if(!await confirmActionModal(message)||!guard.canEdit()||currentEditor!==id)return;
  clipboard?.insert($(id),start[id],0,$(id).value.length);$(id).scrollTop=0;
  if(sectionView&&!sectionView.acceptCode())return;
  invalidate();guard.saveEdit();countChars();

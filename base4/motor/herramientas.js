@@ -1,6 +1,6 @@
 (function(root){
 'use strict';
-const KEYS=['colorPicker','calculadora','binarioDecimal','hexadecimalDecimal','traductor','apuntes','rubrica','atajosTeclado'];
+const KEYS=['colorPicker','calculadora','binarioDecimal','hexadecimalDecimal','traductor','rubrica','apuntes','atajosTeclado'];
 function rubric(value){
  if(value==null)return null;
  const fail=()=>{throw Error('Revisa rubrica.json: título, criterios, puntos y niveles no válidos.');};
