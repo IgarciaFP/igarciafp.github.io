@@ -103,7 +103,7 @@ async function main(){
  assert.ok(rw.document.getElementById('codigo').textContent.includes('Entrega antigua'));
  const numbered={...item,id:'line-test',sectionData:null,start:{...item.start,html:'uno\ndos\ntres'},code:{...item.code,html:'uno\nnuevo\ntres'},modified:['html']};
  rw.reviewTest.items.set(numbered.id,numbered);rw.document.getElementById('review-statement').open=false;rw.reviewTest.select(numbered.id);
- assert.equal(rw.document.getElementById('review-statement').open,true);
+ assert.equal(rw.document.getElementById('review-statement').open,false,'conserva plegadas las instrucciones al cambiar de entrega');
  const changes=rw.document.getElementById('cambios');changes.checked=true;changes.dispatchEvent(new rw.Event('change'));
  assert.deepEqual([...rw.document.querySelectorAll('#codigo>span')].map(el=>[el.dataset.oldLine,el.dataset.line]),[['1','1'],['2',''],['','2'],['3','3']]);
  changes.checked=false;changes.dispatchEvent(new rw.Event('change'));
