@@ -11,7 +11,7 @@ for(const enabled of [true,false])for(const preview of [false,true]){
   w.installPracticeInputGuards(d,e=>e.preventDefault(),true);
  }
  const target=d.querySelector('textarea');
- const shortcuts=[...['a','c','x','v','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].flatMap(key=>[{key,ctrlKey:true},{key,metaKey:true}]),{key:'ArrowLeft',shiftKey:true,ctrlKey:true},{key:'End',shiftKey:true,metaKey:true},{key:'Insert',ctrlKey:true},{key:'Insert',shiftKey:true},{key:'Delete',shiftKey:true}];
+ const shortcuts=[...['a','c','x','v','z','y','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].flatMap(key=>[{key,ctrlKey:true},{key,metaKey:true}]),{key:'ArrowLeft',shiftKey:true,ctrlKey:true},{key:'End',shiftKey:true,metaKey:true},{key:'Insert',ctrlKey:true},{key:'Insert',shiftKey:true},{key:'Delete',shiftKey:true}];
  for(const type of ['keydown','keypress','keyup'])for(const shortcut of shortcuts){
   const e=new w.KeyboardEvent(type,{...shortcut,bubbles:true,cancelable:true});target.dispatchEvent(e);
   assert.equal(e.defaultPrevented,!enabled,JSON.stringify({preview,type,...shortcut}));

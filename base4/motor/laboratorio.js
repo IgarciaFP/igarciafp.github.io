@@ -375,7 +375,6 @@ function bridge(token,jsLine,allowInspection,allowShortcuts=true){
  function prepareKeyboardTarget(){
   if(!document.body)return;
   document.body.setAttribute('tabindex','-1');
-  document.body.setAttribute('contenteditable','true');
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',prepareKeyboardTarget,{once:true});
  else prepareKeyboardTarget();

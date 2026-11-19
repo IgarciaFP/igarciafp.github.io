@@ -3,7 +3,7 @@ const source=fs.readFileSync('base4/motor/laboratorio.js','utf8');
 const dom=new JSDOM('<body><input id="field"><button id="button">Probar</button></body>',{runScripts:'outside-only'}),w=dom.window,d=w.document;
 w.eval(source.slice(source.indexOf('function bridge('),source.indexOf('const lines='))+'\nbridge("secret",0,true,true);');
 d.dispatchEvent(new w.Event('DOMContentLoaded'));
-assert.equal(d.body.getAttribute('tabindex'),'-1');assert.equal(d.body.getAttribute('contenteditable'),'true');
+assert.equal(d.body.getAttribute('tabindex'),'-1');assert.equal(d.body.hasAttribute('contenteditable'),false);
 const field=d.getElementById('field');field.focus();
 w.dispatchEvent(new w.MessageEvent('message',{source:w,data:{labFocus:'wrong'}}));assert.equal(d.activeElement,field);
 w.dispatchEvent(new w.MessageEvent('message',{source:null,data:{labFocus:'secret'}}));assert.equal(d.activeElement,field);
@@ -11,7 +11,7 @@ w.dispatchEvent(new w.MessageEvent('message',{source:w,data:{labFocus:'secret'}}
 let x=0;d.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){e.preventDefault();x+=10;}});
 d.activeElement.dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true,cancelable:true}));assert.equal(x,10);
 field.focus();assert.equal(d.activeElement,field,'Los controles del alumno siguen admitiendo foco');w.close();
-const host=new JSDOM('<button id="run">Ejecutar</button><textarea id="editor"></textarea><div id="cuaderno"><iframe id="preview" tabindex="-1" contenteditable="true"></iframe></div><dialog></dialog>',{runScripts:'outside-only'}),h=host.window,hd=h.document;
+const host=new JSDOM('<button id="run">Ejecutar</button><textarea id="editor"></textarea><div id="cuaderno"><iframe id="preview" tabindex="-1"></iframe></div><dialog></dialog>',{runScripts:'outside-only'}),h=host.window,hd=h.document;
 const loadHandler=source.slice(source.indexOf("frame.addEventListener('load',()=>{"),source.indexOf('// ---------------------------------------------------------------- Estado del intento'));
 h.eval(`const $=id=>document.getElementById(id),frame=$('preview');let previewFocusOwner=$('run'),previewToken='secret',noticeLoads=0;const guard={canEdit:()=>true};function verifyFrame(){};${loadHandler}\nwindow.requestResultFocus=()=>{previewFocusOwner=$('run')};`);
 const frame=hd.getElementById('preview'),run=hd.getElementById('run'),editor=hd.getElementById('editor');let messages=0;
@@ -20,4 +20,4 @@ run.focus();frame.dispatchEvent(new h.Event('load'));assert.equal(hd.activeEleme
 editor.focus();frame.dispatchEvent(new h.Event('load'));assert.equal(hd.activeElement,editor,'Actualizar HTML/CSS no roba el foco');
 h.requestResultFocus();editor.focus();frame.dispatchEvent(new h.Event('load'));assert.equal(hd.activeElement,editor,'No roba foco si se volvió al editor antes de terminar la carga');
 h.requestResultFocus();run.focus();hd.querySelector('dialog').setAttribute('open','');frame.dispatchEvent(new h.Event('load'));assert.equal(hd.activeElement,run,'No roba foco de un modal');
-h.close();console.log('OK: foco del resultado, atributos editables, eventos de teclado, validación de mensajes y respeto del editor y modales.');
+h.close();console.log('OK: foco del resultado, resultado no editable, eventos de teclado, validación de mensajes y respeto del editor y modales.');
