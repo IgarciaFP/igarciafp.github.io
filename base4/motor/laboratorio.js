@@ -410,17 +410,30 @@ function bridge(token,jsLine,allowInspection,allowShortcuts=true){
  window.alert=function(message){send('alert',['alert: '+format(message===undefined?'':message)]);};
  window.confirm=function(message){send('alert',['confirm: '+format(message===undefined?'':message)+' → false (no disponible en la vista previa)']);return false;};
  window.prompt=function(message){send('alert',['prompt: '+format(message===undefined?'':message)+' → null (no disponible en la vista previa)']);return null;};
+ const editable=el=>el&&(el.tagName==='TEXTAREA'||(el.tagName==='INPUT'&&['text','search','url','tel','password','email'].includes(el.type)))&&!el.disabled&&!el.readOnly;
+ let history=new WeakMap();
+ const capture=el=>({value:el.value,start:el.selectionStart,end:el.selectionEnd});
+ function remember(el){let h=history.get(el);if(!h||h.last!==el.value)h={last:el.value,stack:[]};h.stack.push(capture(el));if(h.stack.length>100)h.stack.shift();history.set(el,h);}
+ function canUndo(el){const h=history.get(el);return !!h&&h.last===el.value&&h.stack.length>0;}
+ function changed(el){const h=history.get(el);if(h)h.last=el.value;}
+ document.addEventListener('beforeinput',e=>{if(editable(e.target))remember(e.target);},true);
+ document.addEventListener('input',e=>{if(editable(e.target))changed(e.target);},true);
+ function undoEdit(el){if(!canUndo(el))return;const h=history.get(el),old=h.stack.pop();el.value=old.value;if(typeof old.start==='number')el.setSelectionRange(old.start,old.end);changed(el);el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));el.focus();}
  var clipboardTarget=null;
  document.addEventListener('contextmenu',function(event){
   event.preventDefault();event.stopImmediatePropagation();clipboardTarget=event.target;
   var el=clipboardTarget,editable=(el.tagName==='TEXTAREA'||(el.tagName==='INPUT'&&['text','search','url','tel','password','email'].indexOf(el.type)>=0))&&!el.disabled&&!el.readOnly;
   var text=typeof el.selectionStart==='number'?el.value.slice(el.selectionStart,el.selectionEnd):String(window.getSelection()||'');
-  parent.postMessage({labClipboard:token,action:'menu',text:text.slice(0,10000),editable:editable,x:event.clientX,y:event.clientY},'*');
+  parent.postMessage({labClipboard:token,action:'menu',text:text.slice(0,10000),editable:editable,canUndo:canUndo(el),x:event.clientX,y:event.clientY},'*');
  },true);
  window.addEventListener('message',function(event){
-  if(event.source!==parent||event.data?.labClipboard!==token||event.data.action!=='paste'||typeof event.data.text!=='string')return;
+  if(event.source!==parent||event.data?.labClipboard!==token||!['paste','cut','undo'].includes(event.data.action))return;
   var el=clipboardTarget;if(!el||!el.isConnected||el.disabled||el.readOnly)return;
-  var text=event.data.text.slice(0,10000);
+  if(!editable(el))return;
+  if(event.data.action==='undo'){undoEdit(el);return;}
+  if(event.data.action==='paste'&&typeof event.data.text!=='string')return;
+  remember(el);
+  var text=event.data.action==='cut'?'':event.data.text.slice(0,10000);
   if(typeof el.selectionStart==='number'){
    var room=el.maxLength>=0?Math.max(0,el.maxLength-(el.value.length-(el.selectionEnd-el.selectionStart))):text.length;
    el.setRangeText(text.slice(0,room),el.selectionStart,el.selectionEnd,'end');

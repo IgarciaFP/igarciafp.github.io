@@ -6,9 +6,14 @@ async function main(){
  w.eval(fs.readFileSync(path.join(__dirname,'../motor/portapapeles.js'),'utf8'));
  const api=w.createLabClipboard({canEdit:()=>editable});const field=d.getElementById('code');field.addEventListener('input',()=>inputs++);
  const tick=()=>new Promise(r=>setTimeout(r,0));
- function menu(){field.dispatchEvent(new w.MouseEvent('contextmenu',{bubbles:true,cancelable:true,clientX:20,clientY:20}));return [...d.querySelectorAll('#clipboard-menu button')];}
+ function menu(){field.dispatchEvent(new w.MouseEvent('contextmenu',{bubbles:true,cancelable:true,clientX:20,clientY:20}));const buttons=[...d.querySelectorAll('#clipboard-menu button')];assert.deepEqual(buttons.map(b=>b.textContent),['Deshacer','Cortar','Copiar','Pegar']);return buttons.slice(2);}
  field.setSelectionRange(0,4);let buttons=menu();assert.deepEqual(buttons.map(b=>b.textContent),['Copiar','Pegar']);buttons[0].click();await tick();assert.equal(text,'hola');
  text='externo';field.setSelectionRange(5,10);buttons=menu();buttons[1].click();await tick();assert.equal(field.value,'hola hola');assert.equal(inputs,1);
+ field.setSelectionRange(0,4);menu();d.querySelectorAll('#clipboard-menu button')[1].click();assert.equal(field.value,' hola');
+ menu();d.querySelectorAll('#clipboard-menu button')[0].click();assert.equal(field.value,'hola hola');
+ menu();d.querySelectorAll('#clipboard-menu button')[0].click();assert.equal(field.value,'hola mundo');
+ assert.equal(menu().length,2);assert.equal(d.querySelectorAll('#clipboard-menu button')[0].disabled,true);
+ field.readOnly=true;menu();assert.equal(d.querySelectorAll('#clipboard-menu button')[1].disabled,true);field.readOnly=false;
  editable=false;buttons=menu();assert.equal(buttons[1].disabled,true);editable=true;
  d.getElementById('guard-start').click();await tick();assert.equal(text,' ');
  assert.equal(menu()[1].disabled,true);

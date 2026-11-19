@@ -6,7 +6,7 @@ async function main(){
  const folder='actividades/diw/01-01-tarjeta-de-presentacion/',activity=JSON.parse(fs.readFileSync(path.join(root,folder,'config.json'),'utf8'));
  const read=async p=>({text:async()=>fs.readFileSync(path.join(root,p),'utf8'),json:async()=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'))});
  const sections=await S.load(activity,folder,read,async p=>fs.existsSync(path.join(root,p))?fs.readFileSync(path.join(root,p),'utf8'):'');
- const dom=new JSDOM(fs.readFileSync(path.join(root,'index.html'),'utf8'),{runScripts:'outside-only',url:'https://example.com/base4/?a=diw/01-01-tarjeta-de-presentacion'});
+ const dom=new JSDOM(fs.readFileSync(path.join(root,'index.html'),'utf8'),{runScripts:'outside-only',pretendToBeVisual:true,url:'https://example.com/base4/?a=diw/01-01-tarjeta-de-presentacion'});
  const w=dom.window,d=w.document;Object.defineProperty(w,'crypto',{value:webcrypto});
  Object.assign(w,{CompressionStream,DecompressionStream,Response,Blob,TextEncoder,TextDecoder,AbortSignal});w.scrollTo=()=>{};
  w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};w.HTMLDialogElement.prototype.close=function(){this.open=false;};
@@ -51,7 +51,7 @@ async function main(){
  d.getElementById('tool-dialog').close();
  // File mode test performs no external submission and sends no student data.
  assert.ok(saved.sections);dom.window.close();
- const review=new JSDOM(fs.readFileSync(path.join(root,'profesor.html'),'utf8'),{runScripts:'outside-only',url:'https://example.com/base4/profesor.html'});
+ const review=new JSDOM(fs.readFileSync(path.join(root,'profesor.html'),'utf8'),{runScripts:'outside-only',pretendToBeVisual:true,url:'https://example.com/base4/profesor.html'});
  const rw=review.window;Object.defineProperty(rw,'crypto',{value:webcrypto});Object.assign(rw,{CompressionStream,DecompressionStream,Response,Blob,TextEncoder,TextDecoder});
  rw.fetch=async url=>{const relative=new URL(url,'https://example.com/base4/profesor.html').pathname.replace('/base4/','');const file=path.join(root,relative);const exists=fs.existsSync(file);return {ok:exists,status:exists?200:404,text:async()=>exists?fs.readFileSync(file,'utf8'):'',json:async()=>JSON.parse(fs.readFileSync(file,'utf8'))};};
  rw.eval(fs.readFileSync(path.join(root,'motor/apartados.js'),'utf8'));
