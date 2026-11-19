@@ -298,7 +298,7 @@ function syncRestore(){
  if(restoreArmed&&(restoreArmed!==currentEditor||same)){restoreArmed=null;clearTimeout(restoreTimer);}
  button.disabled=same;
  button.classList.toggle('armado',!!restoreArmed);
- button.textContent=tr(restoreArmed?'restoreConfirm':'restore');
+ button.title=tr(restoreArmed?'restoreConfirm':'restore');
  button.setAttribute('aria-label',(restoreArmed?'Confirmar: restaurar':'Restaurar')+' el código de partida de '+NAMES[currentEditor]);
 }
 function countChars(){const el=$(currentEditor);$('editor-count').textContent=NAMES[currentEditor]+' · '+el.value.length+' / '+el.maxLength+tr('chars');syncRestore();syncLineNumbers();}
