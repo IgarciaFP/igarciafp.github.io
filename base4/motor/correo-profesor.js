@@ -43,6 +43,8 @@ function address(email){
  return value;
 }
 window.ReviewEmail={build,address,uri(email,message){
- return 'mailto:'+encodeURIComponent(address(email))+'?subject='+encodeURIComponent(message.subject)+'&body='+encodeURIComponent(message.body);
+ const url=new URL('https://mail.google.com/mail/');
+ url.search=new URLSearchParams({view:'cm',fs:'1',to:address(email),su:message.subject,body:message.body}).toString();
+ return url.href;
 }};
 })();

@@ -15,8 +15,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Entregas · Profesor</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261119103727-base4">
-<link rel="stylesheet" href="motor/taller.css?v=20261119103727-base4">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261119104124-base4">
+<link rel="stylesheet" href="motor/taller.css?v=20261119104124-base4">
 <style>
 .revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
 .revision h1{font-size:1.5rem;line-height:1.25;margin:0}
@@ -126,7 +126,7 @@
         </div>
         <label for="nota-comments">Comentarios a la nota</label>
         <textarea id="nota-comments" rows="3" maxlength="10000" disabled></textarea>
-        <p id="correo-status" role="status" aria-live="polite">El correo incluye la entrega completa y la nota y los comentarios visibles. Se abre en tu aplicación de correo para confirmar el envío.</p>
+        <p id="correo-status" role="status" aria-live="polite">El correo incluye la entrega completa y la nota y los comentarios visibles. Se abre en Gmail para revisar y confirmar el envío.</p>
         <p id="nota-status" role="status" aria-live="polite"></p>
       </section>
       <nav id="review-sections" aria-label="Apartados" hidden></nav>
@@ -168,9 +168,9 @@
   </div>
 </main>
 
-<script src="motor/apartados.js?v=20261119103727-base4"></script>
-<script src="motor/correo-profesor.js?v=20261119103727-base4"></script>
-<script src="motor/notas.js?v=20261119103727-base4"></script>
+<script src="motor/apartados.js?v=20261119104124-base4"></script>
+<script src="motor/correo-profesor.js?v=20261119104124-base4"></script>
+<script src="motor/notas.js?v=20261119104124-base4"></script>
 <script>
 (async () => {
 'use strict';
@@ -475,7 +475,7 @@ function renderSections(item,chosen){
 function chip(text,kind){const li=document.createElement('li');li.textContent=text;if(kind)li.className=kind;return li;}
 function select(id){
  current=id;const item=items.get(id);renderList();if(!item)return;
- $('correo-status').textContent='El correo incluye la entrega completa y la nota y los comentarios visibles. Se abre en tu aplicación de correo para confirmar el envío.';
+ $('correo-status').textContent='El correo incluye la entrega completa y la nota y los comentarios visibles. Se abre en Gmail para revisar y confirmar el envío.';
  $('alumno').textContent=item.email;
  const chips=[];
  if(item.draft)chips.push(chip('Práctica guardada sin entregar','mal'));
@@ -529,15 +529,16 @@ $('nota-email').addEventListener('click',()=>{
   const {item,message}=emailMessage();
   const link=document.createElement('a');
   link.href=window.ReviewEmail.uri(item.email,message);
+  link.target='_blank';link.rel='noopener noreferrer';
   link.click();
-  $('correo-status').textContent='Correo preparado para '+item.email+'. Confirma el envío en tu aplicación de correo. Si no se abre o falta texto por la longitud del mensaje, usa «Copiar texto del correo» y pégalo en el correo.';
+  $('correo-status').textContent='Correo preparado para '+item.email+'. Revisa y confirma el envío en Gmail. Si no se abre o falta texto por la longitud del mensaje, usa «Copiar texto del correo» y pégalo en el correo.';
  }catch(error){$('correo-status').textContent=error.message;}
 });
 $('nota-copy-email').addEventListener('click',async()=>{
  try{
   const {item,message}=emailMessage();
   await navigator.clipboard.writeText('Para: '+item.email+'\nAsunto: '+message.subject+'\n\n'+message.body);
-  $('correo-status').textContent='Texto completo copiado. Pégalo en tu aplicación de correo.';
+  $('correo-status').textContent='Texto completo copiado. Pégalo en Gmail.';
  }catch(error){$('correo-status').textContent='No se pudo copiar el correo: '+error.message;}
 });
 
