@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+
+<!-- Actividad: DWEC02-03-Bolita rebotando
+Alumno: igarcas306@g.educaand.es
+
+Bolita rebotando con eventos de animación
+
+Programa en JavaScript una bolita que recorre una caja, rebota en sus bordes y cambia de color al chocar.
+
+La animación CSS repite su ciclo cada 16 ms. Cada repetición genera un evento animationiteration en la bolita. Utiliza ese evento como señal para actualizar el movimiento.
+
+La bolita parte de (50, 50) y avanza inicialmente hacia la derecha y hacia abajo,  con un desplazamiento de 3 píxeles en cada eje por evento.
+
+En cada rebote, asigna un color RGB aleatorio -utiliza "Math.floor(Math.radom()*256))"
+
+Aplica las coordenadas mediante style.left y style.top, expresadas en píxeles.
+
+Te recomiendo que sigas los siguientes objetivos:
+
+Conseguir que la pelota rebote correctamente.
+
+Que cambie de color al rebotar.
+
+Ampliación: dos bolitas que choquen entre sí.
+
+-->
+
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bolita rebotando</title>
+  <style>
+body {
+  background-color: transparent;
+}
+
+.caja {
+  width: 500px;
+  height: 300px;
+  border: 3px solid black;
+  background-color: transparent;
+  position: relative;
+}
+
+/* Este ciclo sin cambios visuales permite usar la animación como reloj. */
+@keyframes reloj {
+  from { opacity: 1; }
+  to { opacity: 1; }
+}
+
+.bolita {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: rgb(16, 185, 129);
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  animation: reloj 16ms infinite;
+}
+</style>
+</head>
+<body>
+  <div id="caja" class="caja">
+    <div id="bolita" class="bolita"></div>
+  </div>
+</body>
+
+
+
+
+
+
+
+<script>
+"use strict";
+// Inicializo variables
+let posX=50;
+let posY=50;
+const offset=3;
+const maxX=470;
+const maxY=270;
+
+//inicialmente va hacia abajo y derecha=> direcciones positivas.
+let dirX=+1;
+let dirY=+1;
+
+function color(bola){
+ 
+ //asigno color aleatorio a RGB
+ let r=Math.floor(Math.random()*256);
+ let g=Math.floor(Math.random()*256);
+ let b=Math.floor(Math.random()*256);
+ bola.style.backgroundColor=`rgb(${r},${g},${b})`;
+ 
+}
+
+const bola=document.querySelector(".bolita");
+
+document.addEventListener("animationiteration",()=>{
+
+for (let i=0;i<2;i++){
+     //Si llega al borde cambio el signo de la dirección y el color.
+       if (posX>=maxX || posX<=0){ dirX*=-1; color(bola); }
+
+     //Idem
+       if (posY>=maxY || posY<=0){ dirY*=-1; color(bola); }
+   
+     //Calculo las nuevas posiciones (numéro)
+     posX+=offset*dirX;
+     posY+=offset*dirY;
+
+     //Aplico las nuevas posiciones
+     bola.style.left=posX+'px';
+     bola.style.top=posY+'px';
+  
+  }
+});
+
+</script>
+
+</html>
