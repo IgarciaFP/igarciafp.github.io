@@ -15,8 +15,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Entregas · Profesor</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261119105605-base4">
-<link rel="stylesheet" href="motor/taller.css?v=20261119105605-base4">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261119111219-base4">
+<link rel="stylesheet" href="motor/taller.css?v=20261119111219-base4">
 <style>
 .revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
 .revision h1{font-size:1.5rem;line-height:1.25;margin:0}
@@ -85,6 +85,10 @@
 #review-statement-content table{border-collapse:collapse}
 #review-statement-content th,#review-statement-content td{padding:6px;border:1px solid var(--line)}
 #review-status{font-weight:600}
+#review-rubric{background:white}
+#review-rubric-content{max-height:420px;overflow:auto}
+#review-rubric-content h4{margin-bottom:6px}
+#review-rubric-content li{margin:6px 0}
 #review-questions .selected-answer{font-weight:700;background:#e9f0ff;border-radius:6px;padding:6px}
 #review-questions .unanswered{color:#b42318;font-weight:600}
 </style>
@@ -140,6 +144,7 @@
       <nav id="review-sections" aria-label="Apartados" hidden></nav>
       <p id="review-status" role="status" hidden></p>
       <details id="review-statement" hidden open><summary>Instrucciones del apartado</summary><div id="review-statement-content"></div></details>
+      <details id="review-rubric" hidden><summary>Rúbrica de la actividad</summary><div id="review-rubric-content"></div><p><a href="correccion/instrucciones.txt" target="_blank" rel="noopener">Instrucciones reutilizables de corrección IA</a></p></details>
       <div id="review-questions" hidden></div>
       <div class="paneles">
         <section class="panel">
@@ -176,9 +181,10 @@
   </div>
 </main>
 
-<script src="motor/apartados.js?v=20261119105605-base4"></script>
-<script src="motor/correo-profesor.js?v=20261119105605-base4"></script>
-<script src="motor/notas.js?v=20261119105605-base4"></script>
+<script src="motor/apartados.js?v=20261119111219-base4"></script>
+<script src="motor/herramientas.js?v=20261119111219-base4"></script>
+<script src="motor/correo-profesor.js?v=20261119111219-base4"></script>
+<script src="motor/notas.js?v=20261119111219-base4"></script>
 <script>
 (async () => {
 'use strict';
@@ -219,11 +225,19 @@ function activityOf(mod,slug){
   const info=await response.json();
   const read=async path=>{const r=await fetchFile(path);if(!r.ok)throw Error(path);return r;};
   const sections=await window.LabSections.load(info,folder,read,async path=>{const r=await fetchFile(path);if(r.status===404)return '';if(!r.ok)throw Error(path);return r.text();});
+  let rubric=null,rubricVersion='',rubricIssue='';
+  try{
+   const response=await fetchFile(folder+'rubrica.json');
+   if(response.status!==404){
+    if(!response.ok)throw Error('HTTP '+response.status);
+    const data=await response.json();rubric=window.LabTools.rubric(data);rubricVersion=String(data?.version||'sin versión');
+   }
+  }catch(error){rubricIssue='No se pudo cargar o validar la rúbrica: '+error.message;}
   const code=ext=>Array.isArray(info.archivos)&&!info.archivos.includes(ext)?Promise.resolve(''):optional('codigo.'+ext);
   const [ownHtml,css,js]=await Promise.all([code('html'),code('css'),code('js')]);
   // Igual que el laboratorio: sin HTML de partida, la pestaña empieza con el esqueleto común.
   const html=ownHtml.trim()?ownHtml:await skeleton;
-  return {sections,key,title:mod.toUpperCase()+String(info.title||slug).trim().replace(new RegExp('^'+mod+'\\s*','i'),''),version:String(info.version??''),start:{html,css,js,txt:''}};
+  return {sections,rubric,rubricVersion,rubricIssue,key,title:mod.toUpperCase()+String(info.title||slug).trim().replace(new RegExp('^'+mod+'\\s*','i'),''),version:String(info.version??''),start:{html,css,js,txt:''}};
  })().catch(()=>null));
  return activities.get(key);
 }
@@ -463,6 +477,22 @@ function instructionContent(html,base){
  return fragment;
 }
 
+function renderRubric(item){
+ const panel=$('review-rubric'),content=$('review-rubric-content');panel.hidden=false;content.replaceChildren();
+ const rubric=item.known?.rubric;
+ if(!rubric){
+  const note=document.createElement('p');note.textContent=item.known?.rubricIssue||(item.known?'Esta actividad no tiene rúbrica. Antes de corregir con IA, genera una propuesta a partir del enunciado y utiliza la misma versión para todo el lote.':'No se pudo identificar o cargar la actividad para consultar su rúbrica.');content.append(note);return;
+ }
+ const title=document.createElement('h3'),total=document.createElement('p'),notice=document.createElement('p');
+ title.textContent=rubric.titulo;total.textContent='Total: '+rubric.total+' puntos · Versión de rúbrica: '+item.known.rubricVersion;
+ notice.textContent='Rúbrica publicada actualmente. Comprueba que corresponde a las condiciones de esta entrega; mostrarla no modifica la calificación.';content.append(title,total,notice);
+ for(const [index,criterion] of rubric.criterios.entries()){
+  const heading=document.createElement('h4'),list=document.createElement('ul');heading.textContent=(index+1)+'. '+criterion.titulo+' · '+criterion.puntos+' puntos';
+  for(const level of criterion.niveles){const row=document.createElement('li'),points=document.createElement('strong');points.textContent=level.puntos+' puntos: ';row.append(points,document.createTextNode(level.descripcion));list.append(row);}
+  content.append(heading,list);
+ }
+}
+
 // Cada apartado reutiliza el visor web o presenta sus respuestas como texto seguro.
 function renderSections(item,chosen){
  const nav=$('review-sections'),questions=$('review-questions'),panels=document.querySelector('.detalle>.paneles');
@@ -518,7 +548,7 @@ function chip(text,kind){const li=document.createElement('li');li.textContent=te
 function select(id){
  current=id;const item=items.get(id);renderList();if(!item)return;
  $('correo-status').textContent='El correo incluye la entrega completa y la nota y los comentarios visibles. Se abre en Gmail para revisar y confirmar el envío.';
- $('alumno').textContent=item.email;
+ $('alumno').textContent=item.email;renderRubric(item);
  const chips=[];
  if(item.draft)chips.push(chip('Práctica guardada sin entregar','mal'));
  else chips.push(item.intact?chip('Archivo íntegro','bien'):chip('El archivo ha sido alterado: el código de comprobación no coincide','mal'));

@@ -55,9 +55,10 @@ async function main(){
  const rw=review.window;Object.defineProperty(rw,'crypto',{value:webcrypto});Object.assign(rw,{CompressionStream,DecompressionStream,Response,Blob,TextEncoder,TextDecoder});
  rw.fetch=async url=>{const relative=new URL(url,'https://example.com/base4/profesor.html').pathname.replace('/base4/','');const file=path.join(root,relative);const exists=fs.existsSync(file);return {ok:exists,status:exists?200:404,text:async()=>exists?fs.readFileSync(file,'utf8'):'',json:async()=>JSON.parse(fs.readFileSync(file,'utf8'))};};
  rw.eval(fs.readFileSync(path.join(root,'motor/apartados.js'),'utf8'));
+ rw.eval(fs.readFileSync(path.join(root,'motor/herramientas.js'),'utf8'));
  const script=[...rw.document.querySelectorAll('script')].find(el=>!el.src).textContent;
  new Function(script);
- await rw.eval(script.replace('window.reviewReady=true;','window.reviewReady=true;window.reviewTest={parse,items,select,instructionContent};'));
+ await rw.eval(script.replace('window.reviewReady=true;','window.reviewReady=true;window.reviewTest={parse,items,select,instructionContent,activityOf,renderRubric};'));
  const item=await rw.reviewTest.parse(packed);rw.reviewTest.items.set(item.id,item);rw.reviewTest.select(item.id);
  assert.equal(rw.document.querySelectorAll('#review-sections button').length,3);
  assert.ok(rw.document.getElementById('codigo').textContent.includes('Mi tarjeta final'));
@@ -112,6 +113,12 @@ async function main(){
  const safeBox=rw.document.createElement('div');safeBox.append(safe);
  assert.equal(safeBox.querySelector('script'),null);assert.equal(safeBox.querySelector('[onerror]'),null);assert.equal(safeBox.querySelector('a').hasAttribute('href'),false);
  assert.equal(safeBox.querySelector('img').src,'https://example.com/base4/actividades/test/x.png');assert.equal(safeBox.querySelector('h3').textContent,'Enunciado');
+ const cssActivity=await rw.reviewTest.activityOf('diw','02-01-prueba-css-adaptable');
+ assert.equal(cssActivity.rubric.total,10);rw.reviewTest.renderRubric({known:cssActivity});
+ assert.equal(rw.document.querySelectorAll('#review-rubric-content h4').length,3);
+ assert.ok(rw.document.getElementById('review-rubric-content').textContent.includes('10 puntos'));
+ rw.reviewTest.renderRubric({known:{rubric:null}});assert.ok(rw.document.getElementById('review-rubric-content').textContent.includes('genera una propuesta'));
+ rw.reviewTest.renderRubric({known:{rubric:null,rubricIssue:'INVALIDA'}});assert.ok(rw.document.getElementById('review-rubric-content').textContent.includes('INVALIDA'));
  review.window.close();
  console.log('OK: complete adapter boot, saved state, gzip report, blank questions, internal tools and teacher review of all sections.');
 }
