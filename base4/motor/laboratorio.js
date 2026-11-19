@@ -434,10 +434,8 @@ function bridge(token,jsLine,allowInspection,allowShortcuts=true){
   event.preventDefault();event.stopImmediatePropagation();
  }
  ['contextmenu','copy','cut','paste','dragstart','drop'].forEach(function(type){document.addEventListener(type,stop,true);});
- ['keydown','keypress','keyup'].forEach(function(type){document.addEventListener(type,function(event){
-  var key=String(event.key||'').toLowerCase();
-  if((!allowShortcuts&&editingShortcut(event)&&!['control','meta','shift'].includes(key))||event.ctrlKey||(event.metaKey&&['c','x','v'].indexOf(key)>=0)||/^f([1-9]|1\d|2[0-4])$/.test(key))stop(event);
- },true);});
+ // El teclado del resultado pertenece al ejercicio: no se cancela ni se detiene.
+ // El control de pantalla completa permanece en el documento principal.
  document.addEventListener('click',function(event){
   var link=event.target&&event.target.closest&&event.target.closest('a[href],area[href]');
   var href=link&&(link.getAttribute('href')||'');

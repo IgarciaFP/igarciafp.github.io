@@ -14,13 +14,18 @@ for(const enabled of [true,false])for(const preview of [false,true]){
  const shortcuts=[...['a','c','x','v','z','y','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].flatMap(key=>[{key,ctrlKey:true},{key,metaKey:true}]),{key:'ArrowLeft',shiftKey:true,ctrlKey:true},{key:'End',shiftKey:true,metaKey:true},{key:'Insert',ctrlKey:true},{key:'Insert',shiftKey:true},{key:'Delete',shiftKey:true}];
  for(const type of ['keydown','keypress','keyup'])for(const shortcut of shortcuts){
   const e=new w.KeyboardEvent(type,{...shortcut,bubbles:true,cancelable:true});target.dispatchEvent(e);
-  assert.equal(e.defaultPrevented,!enabled,JSON.stringify({preview,type,...shortcut}));
+  assert.equal(e.defaultPrevented,preview?false:!enabled,JSON.stringify({preview,type,...shortcut}));
  }
  for(const type of ['copy','cut','paste']){
   const e=new w.Event(type,{bubbles:true,cancelable:true});target.dispatchEvent(e);assert.equal(e.defaultPrevented,!enabled,type);
  }
  for(const shortcut of [{key:'p',ctrlKey:true},{key:'F12'}]){
-  const e=new w.KeyboardEvent('keydown',{...shortcut,bubbles:true,cancelable:true});target.dispatchEvent(e);assert.equal(e.defaultPrevented,true,'Se conservan las otras restricciones');
+  const e=new w.KeyboardEvent('keydown',{...shortcut,bubbles:true,cancelable:true});target.dispatchEvent(e);assert.equal(e.defaultPrevented,!preview,'Solo el editor conserva restricciones de teclado');
+ }
+ if(preview){
+  const received=[];for(const type of ['keydown','keypress','keyup'])d.addEventListener(type,e=>received.push([e.type,e.key,e.defaultPrevented]));
+  for(const type of ['keydown','keypress','keyup'])for(const key of ['ArrowRight','Tab','Enter','Escape','F1','F12','p','s','r','z'])target.dispatchEvent(new w.KeyboardEvent(type,{key,ctrlKey:true,bubbles:true,cancelable:true}));
+  assert.equal(received.length,30,'Todos los eventos llegan al listener del alumno');assert.ok(received.every(e=>e[2]===false));
  }
  dom.window.close();
 }
