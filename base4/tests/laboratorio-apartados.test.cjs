@@ -84,7 +84,8 @@ async function main(){
  await display(encodeReport(unknown));rw.document.querySelectorAll('#review-sections button')[1].click();
  assert.equal(rw.document.querySelector('#review-questions img'),null);
  assert.ok(rw.document.getElementById('review-questions').textContent.includes('<img'));
- assert.equal(rw.document.getElementById('review-statement').hidden,true);
+ assert.equal(rw.document.getElementById('review-statement').hidden,false);
+ assert.ok(rw.document.querySelector('#review-statement iframe').srcdoc.includes('No se pudieron cargar'));
  const single=structuredClone(report),qa=single.sectionDefinitions[1];single.sectionDefinitions=[qa];
  single.answers=S.pack([{...qa,code:{}}],{active:qa.id,values:{[qa.id]:restored.values[qa.id]}});
  await display(encodeReport(single));assert.equal(rw.document.querySelectorAll('#review-sections button').length,1);
@@ -98,6 +99,14 @@ async function main(){
  assert.equal(rw.document.getElementById('review-status').hidden,true);
  assert.equal(rw.document.querySelector('.detalle>.paneles').hidden,false);
  assert.ok(rw.document.getElementById('codigo').textContent.includes('Entrega antigua'));
+ const numbered={...item,id:'line-test',sectionData:null,start:{...item.start,html:'uno\ndos\ntres'},code:{...item.code,html:'uno\nnuevo\ntres'},modified:['html']};
+ rw.reviewTest.items.set(numbered.id,numbered);rw.document.getElementById('review-statement').open=false;rw.reviewTest.select(numbered.id);
+ assert.equal(rw.document.getElementById('review-statement').open,true);
+ const changes=rw.document.getElementById('cambios');changes.checked=true;changes.dispatchEvent(new rw.Event('change'));
+ assert.deepEqual([...rw.document.querySelectorAll('#codigo>span')].map(el=>[el.dataset.oldLine,el.dataset.line]),[['1','1'],['2',''],['','2'],['3','3']]);
+ changes.checked=false;changes.dispatchEvent(new rw.Event('change'));
+ assert.deepEqual([...rw.document.querySelectorAll('#codigo>span')].map(el=>el.dataset.line),['1','2','3']);
+ assert.equal(rw.document.getElementById('codigo').textContent,'unonuevotres');
  review.window.close();
  console.log('OK: complete adapter boot, saved state, gzip report, blank questions, internal tools and teacher review of all sections.');
 }

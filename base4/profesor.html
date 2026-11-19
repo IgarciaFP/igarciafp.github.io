@@ -15,8 +15,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Entregas · Profesor</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261119104124-base4">
-<link rel="stylesheet" href="motor/taller.css?v=20261119104124-base4">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261119105021-base4">
+<link rel="stylesheet" href="motor/taller.css?v=20261119105021-base4">
 <style>
 .revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
 .revision h1{font-size:1.5rem;line-height:1.25;margin:0}
@@ -52,12 +52,15 @@
 .panel-cabecera label{display:flex;align-items:center;gap:6px;margin:0;font-size:.8rem;font-weight:500;color:var(--muted);white-space:nowrap}
 .panel-cabecera input[type=checkbox]{width:16px;min-height:16px;margin:0}
 #codigo{flex:1;min-height:0;margin:0;border-radius:0;padding:10px 0;font:13.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:2;user-select:text}
-#codigo span{display:block;padding:0 16px 0 28px;min-height:1.6em;white-space:pre;position:relative}
+#codigo{--gutter:5ch}
+#codigo.with-diff{--gutter:10ch}
+#codigo>span{display:block;padding:0 16px 0 calc(var(--gutter) + 24px);min-height:1.6em;white-space:pre;position:relative;min-width:max-content}
+#codigo>span::before{content:attr(data-number);position:absolute;left:0;width:var(--gutter);padding-right:8px;box-sizing:border-box;text-align:right;color:#9baac0;border-right:1px solid #3a4b65;user-select:none;text-decoration:none}
 #codigo .mas{background:#16402e;color:#d6ffe9}
 #codigo .menos{background:#4a1d22;color:#ffc9c4;text-decoration:line-through;text-decoration-color:#ff8c8280}
-#codigo .mas::before,#codigo .menos::before{position:absolute;left:10px;text-decoration:none}
-#codigo .mas::before{content:"+"}
-#codigo .menos::before{content:"−"}
+#codigo .mas::after,#codigo .menos::after{position:absolute;left:calc(var(--gutter) + 6px);text-decoration:none;user-select:none}
+#codigo .mas::after{content:"+"}
+#codigo .menos::after{content:"\2212"}
 #registro{margin:14px 0 0;background:#fff}
 #registro pre{margin:10px 0 0;padding:14px 16px;font-size:12.5px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:340px}
 @media(max-width:1000px){.mesa{grid-template-columns:minmax(0,1fr)}#entregas{max-height:220px}.detalle .paneles{height:auto}}
@@ -168,9 +171,9 @@
   </div>
 </main>
 
-<script src="motor/apartados.js?v=20261119104124-base4"></script>
-<script src="motor/correo-profesor.js?v=20261119104124-base4"></script>
-<script src="motor/notas.js?v=20261119104124-base4"></script>
+<script src="motor/apartados.js?v=20261119105021-base4"></script>
+<script src="motor/correo-profesor.js?v=20261119105021-base4"></script>
+<script src="motor/notas.js?v=20261119105021-base4"></script>
 <script>
 (async () => {
 'use strict';
@@ -364,10 +367,18 @@ function renderCode(){
  }
  const changed=item.modified.includes(tab),marked=$('cambios').checked&&changed;
  const rows=marked?diff(item.start[tab],item.code[tab]):item.code[tab].replace(/\n$/,'').split('\n').map(text=>({text}));
- $('codigo').replaceChildren(...rows.map(row=>{const span=document.createElement('span');if(row.kind)span.className=row.kind;span.textContent=row.text;return span;}));
+ let oldLine=0,newLine=0;
+ $('codigo').classList.toggle('with-diff',marked);
+ $('codigo').replaceChildren(...rows.map(row=>{
+  const span=document.createElement('span');if(row.kind)span.className=row.kind;
+  const before=row.kind==='mas'?'':String(++oldLine),after=row.kind==='menos'?'':String(++newLine);
+  span.dataset.oldLine=before;span.dataset.line=after;
+  span.dataset.number=marked?before.padStart(4)+' '+after.padStart(4):after;
+  span.textContent=row.text;return span;
+ }));
  $('codigo').scrollTop=0;
  const added=rows.filter(r=>r.kind==='mas').length,removed=rows.filter(r=>r.kind==='menos').length;
- $('pie-codigo').textContent=NAMES[tab]+' · '+(!changed?(tab==='txt'?'sin notas':'sin cambios: es el código de partida'):marked?added+' líneas añadidas o cambiadas · '+removed+' eliminadas':'modificada por el alumno');
+ $('pie-codigo').textContent=NAMES[tab]+' · '+(marked?'Numeración: original | entrega · ':'')+(!changed?(tab==='txt'?'sin notas':'sin cambios: es el código de partida'):marked?added+' líneas añadidas o cambiadas · '+removed+' eliminadas':'modificada por el alumno');
 }
 
 // ------------------------------------------------------------ Resultado (marco aislado)
@@ -429,8 +440,8 @@ function renderSections(item,chosen){
  instructions.hidden=true;frame.srcdoc='';status.hidden=true;status.textContent='';
  nav.replaceChildren();questions.replaceChildren();nav.hidden=!item.sectionData;questions.hidden=true;panels.hidden=false;
  const showStatement=statement=>{
-  if(!statement)return;
-  instructions.hidden=false;
+  instructions.hidden=false;instructions.open=true;
+  if(!statement?.trim())statement='<p>No se pudieron cargar las instrucciones de esta actividad. Comprueba que la entrega corresponde a una actividad disponible en base4 y que hay conexión.</p>';
   frame.srcdoc='<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src https: data:; base-uri &#39;none&#39;; form-action &#39;none&#39;"><style>body{font:16px/1.5 system-ui;color:#14243b}img{max-width:100%}</style>'+statement;
  };
  if(!item.sectionData){showStatement(item.known?.sections?.[0]?.statement);return;}
