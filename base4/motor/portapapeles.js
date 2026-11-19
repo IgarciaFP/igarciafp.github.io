@@ -99,8 +99,8 @@ window.createLabClipboard=function(options){
   if(operation===clearing)notify(success?'':'Err. permiso');
   return success;
  }
- // Captura: copiar antes de que solicitar pantalla completa consuma la activación.
- for(const id of ['guard-start','guard-continue'])
+// Captura: copiar en el clic, antes de iniciar la entrega o solicitar pantalla completa.
+ for(const id of ['guard-start','guard-continue','guard-finish','guard-confirm-ok','revision-delivery-send','delivery-retry'])
   document.getElementById(id)?.addEventListener('click',()=>{void clear({gesture:true});},true);
  // Al cerrar o navegar fuera el navegador puede cancelar operaciones asíncronas.
  window.addEventListener('beforeunload',()=>{void clear();});

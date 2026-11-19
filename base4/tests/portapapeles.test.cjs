@@ -3,6 +3,7 @@ async function main(){
  const dom=new JSDOM('<button id="guard-start">Start</button><button id="guard-continue">Continuar en pantalla completa</button><textarea id="code" maxlength="12">hola mundo</textarea>',{runScripts:'outside-only',url:'https://example.com/base4/'}),w=dom.window,d=w.document;
  let text='externo',deny=false,editable=true,inputs=0;
  Object.defineProperty(w.navigator,'clipboard',{value:{writeText:async value=>{if(deny)throw Error('Denied');text=value;},readText:()=>assert.fail('No debe solicitar permiso para leer el portapapeles')}});
+ for(const id of ['guard-finish','guard-confirm-ok','revision-delivery-send','delivery-retry']){const button=d.createElement('button');button.id=id;d.body.append(button);}
  w.eval(fs.readFileSync(path.join(__dirname,'../motor/portapapeles.js'),'utf8'));
  // jsdom no implementa el historial nativo; su comportamiento real se prueba en deshacer-browser.
  const nativeHistory=[];
@@ -35,6 +36,7 @@ async function main(){
  text='contenido externo';
  d.getElementById('guard-continue').addEventListener('click',()=>assert.equal(text,' ','la copia precede al regreso a pantalla completa'));
  d.getElementById('guard-continue').click();assert.equal(text,' ');await tick();
+ for(const id of ['guard-finish','guard-confirm-ok','revision-delivery-send','delivery-retry']){text='codigo copiado';d.getElementById(id).addEventListener('click',()=>assert.equal(text,' ','se borra antes de entregar'));d.getElementById(id).click();assert.equal(text,' ',id);await tick();}
  d.execCommand=()=>false;assert.equal(await api.clear({gesture:true}),false);
  deny=false;text='salir';w.dispatchEvent(new w.Event('beforeunload'));await tick();assert.equal(text,' ');
  const frame={contentWindow:{},getBoundingClientRect:()=>({left:0,top:0,width:100,height:100})};api.hide();api.preview({source:{},data:{labClipboard:'ok',action:'menu',text:'x'}},frame,'ok');assert.equal(d.getElementById('clipboard-menu').hidden,true);
