@@ -15,8 +15,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Entregas · Profesor</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261119-layout-01-base4">
-<link rel="stylesheet" href="motor/taller.css?v=20261119-layout-01-base4">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261119-layout-02-base4">
+<link rel="stylesheet" href="motor/taller.css?v=20261119-layout-02-base4">
 <style>
 .revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
 .revision h1{font-size:1.5rem;line-height:1.25;margin:0}
@@ -105,16 +105,18 @@
 .review-sidebar .soltar,.review-sidebar .soltar.compacta{flex-direction:column;padding:22px 16px;gap:8px;min-height:120px}
 .review-sidebar .soltar strong{font-size:.95rem}.review-sidebar .soltar span{font-size:.8rem;line-height:1.5}
 .review-sidebar .lista{margin-top:14px}#entregas{max-height:230px}
-.delivery-info{margin-top:14px;padding:16px;background:white;border:1px solid var(--line);border-radius:12px}
+.delivery-overview{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:14px;margin-bottom:14px;align-items:start}
+.delivery-info{margin:0;padding:16px;background:white;border:1px solid var(--line);border-radius:12px}
 #alumno{font-size:.95rem;overflow-wrap:anywhere;margin:0 0 14px}
 .review-meta{margin:0}.review-meta summary{font-size:.85rem;color:var(--muted);cursor:pointer}
-.ficha{display:grid;gap:7px;margin:12px 0 0}.ficha li{border-radius:8px;padding:7px 9px;overflow-wrap:anywhere}
+.ficha{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 0}.ficha li{border-radius:8px;padding:7px 9px;overflow-wrap:anywhere}
+.delivery-overview #registro{margin:0}
 #registro{padding:14px;border:1px solid var(--line);border-radius:12px;font-size:.85rem}
-#registro pre{padding:10px;font-size:.75rem;max-height:350px}
-.review-guidance{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;align-items:start}
+#registro pre{padding:10px;font-size:.75rem;max-height:170px}
+.review-guidance{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin:14px 0 0;align-items:start}
 .review-guidance details{margin:0!important;padding:14px;border:1px solid var(--line);border-radius:12px;background:white}
 .review-guidance summary{cursor:pointer;font-weight:650}
-.nota-panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:20px;position:static;padding:18px;margin:0 0 16px}
+.nota-panel{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;position:static;padding:18px;margin:0 0 16px}
 .nota-panel h3{font-size:1rem;margin:0 0 10px}.nota-panel label{display:block;font-size:.85rem;font-weight:600}
 .nota-ai{min-width:0;background:#f1f5fc;border:1px solid #d7e2f4;border-radius:10px;padding:14px}
 .nota-manual{min-width:0;display:grid;grid-template-columns:120px minmax(0,1fr);gap:6px 14px;align-items:start}
@@ -127,13 +129,14 @@
 #nota-ai-value{display:block;font-size:1.5rem;font-weight:700;margin:6px 0}
 #nota-ai-comments{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;font-size:.88rem;line-height:1.5;max-height:190px;overflow:auto}
 #nota-ai-status{color:var(--muted);font-size:.8rem;margin:8px 0 0}
+#nota-status:empty,#correo-status:empty{display:none}
 #correo-status{font-size:.78rem;color:var(--muted)}.nota-auth{font-size:.8rem}
 .detalle .paneles{height:65dvh;min-height:480px}.panel-cabecera{flex-wrap:wrap}
 #review-sections{margin:0 0 14px}
 @media(max-width:1200px){.review-shell{grid-template-columns:220px minmax(0,1fr);gap:14px}.nota-panel{grid-template-columns:1fr}.nota-ai{padding:12px}#nota-ai-comments{max-height:140px}}
-@media(max-width:760px){.review-shell{grid-template-columns:1fr}.review-guidance{grid-template-columns:1fr}.detalle .paneles{height:auto;min-height:0}.nota-auth{width:100%;justify-content:space-between}.login-card{padding:24px}.review-sidebar .soltar,.review-sidebar .soltar.compacta{min-height:0;padding:14px}.nota-manual{grid-template-columns:90px minmax(0,1fr)}#entregas{max-height:160px}}
+@media(max-width:760px){.delivery-overview{grid-template-columns:1fr}.review-shell{grid-template-columns:1fr}.review-guidance{grid-template-columns:1fr}.detalle .paneles{height:auto;min-height:0}.nota-auth{width:100%;justify-content:space-between}.login-card{padding:24px}.review-sidebar .soltar,.review-sidebar .soltar.compacta{min-height:0;padding:14px}.nota-manual{grid-template-columns:90px minmax(0,1fr)}#entregas{max-height:160px}}
 </style>
-<link rel="stylesheet" href="motor/editor-profesor.css?v=20261119-layout-01-base4">
+<link rel="stylesheet" href="motor/editor-profesor.css?v=20261119-layout-02-base4">
 </head>
 <body>
 <section id="login-page" class="login-page" aria-labelledby="login-title">
@@ -158,7 +161,7 @@
   </div>
 
   <div class="review-shell">
-    <aside class="review-sidebar" aria-label="Entregas y registro">
+    <aside class="review-sidebar" aria-label="Entregas, instrucciones y rúbrica">
   <label id="soltar" class="soltar" for="archivos">
     <strong>Arrastra aquí los archivos de entrega (.txt)</strong>
     <span>o pulsa para elegirlos. También puedes pegar (Ctrl+V) la celda «ENTREGA completa» de la hoja.</span>
@@ -172,27 +175,24 @@
       <ul id="entregas"></ul>
     </aside>
 
-      <section class="delivery-info" aria-label="Datos de la entrega">
-      <h2 id="alumno"></h2>
-      <details class="review-meta"><summary>Datos y registro de la entrega</summary><ul id="ficha" class="ficha"></ul></details>
-      </section>
-      <details id="registro">
-        <summary>Registro del intento</summary>
-        <pre id="auditoria"></pre>
-      </details>
+      <div class="review-guidance"><details id="review-statement" hidden><summary>Instrucciones de la práctica / apartado</summary><div id="review-statement-content"></div><button id="edit-statement" type="button" class="secondary">Editar instrucciones</button></details>
+      <details id="review-rubric" hidden><summary>Rúbrica de la actividad</summary><div id="review-rubric-content"></div><button id="edit-rubric" type="button" class="secondary">Editar rúbrica</button><p><a href="correccion/instrucciones.txt" target="_blank" rel="noopener">Instrucciones reutilizables de corrección IA</a></p></details>
+      </div>
       </div>
     </aside>
     <div id="mesa" class="mesa" hidden>
       <section class="detalle">
-      <div class="review-guidance"><details id="review-statement" hidden><summary>Instrucciones de la práctica / apartado</summary><div id="review-statement-content"></div><button id="edit-statement" type="button" class="secondary">Editar instrucciones</button></details>
-      <details id="review-rubric" hidden><summary>Rúbrica de la actividad</summary><div id="review-rubric-content"></div><button id="edit-rubric" type="button" class="secondary">Editar rúbrica</button><p><a href="correccion/instrucciones.txt" target="_blank" rel="noopener">Instrucciones reutilizables de corrección IA</a></p></details>
+      <div class="delivery-overview">
+      <section class="delivery-info" aria-label="Datos de la entrega">
+      <h2 id="alumno"></h2>
+      <details class="review-meta" open><summary>Datos y registro de la entrega</summary><ul id="ficha" class="ficha"></ul></details>
+      </section>
+      <details id="registro" open>
+        <summary>Registro del intento</summary>
+        <pre id="auditoria"></pre>
+      </details>
       </div>
       <aside class="nota-panel" aria-label="Calificación">
-        <section class="nota-ai" aria-labelledby="nota-ai-title">
-          <h3 id="nota-ai-title">Propuesta de IA</h3>
-          <output id="nota-ai-value">—</output>
-          <p id="nota-ai-comments"></p><p id="nota-ai-status">Selecciona una entrega.</p>
-        </section>
         <section class="nota-manual" aria-labelledby="nota-manual-title">
         <h3 id="nota-manual-title">Calificación del profesor</h3>
         <label for="nota-value">Nota</label>
@@ -204,7 +204,12 @@
           <button id="nota-email" type="button" class="secondary" disabled>Enviar por email</button>
         </div>
         <p id="nota-status" role="status" aria-live="polite"></p>
-        <p id="correo-status" role="status" aria-live="polite">Se abre en Gmail para revisar y confirmar el envío.</p>
+        <p id="correo-status" role="status" aria-live="polite"></p>
+        </section>
+        <section class="nota-ai" aria-labelledby="nota-ai-title">
+          <h3 id="nota-ai-title">Propuesta de IA</h3>
+          <output id="nota-ai-value">—</output>
+          <p id="nota-ai-comments"></p><p id="nota-ai-status">Selecciona una entrega.</p>
         </section>
       </aside>
       <div class="review-work">
@@ -244,11 +249,11 @@
   </div>
 </main>
 
-<script src="motor/apartados.js?v=20261119-layout-01-base4"></script>
-<script src="motor/herramientas.js?v=20261119-layout-01-base4"></script>
-<script src="motor/correo-profesor.js?v=20261119-layout-01-base4"></script>
-<script src="motor/notas.js?v=20261119-layout-01-base4"></script>
-<script src="motor/editor-profesor.js?v=20261119-layout-01-base4" defer></script>
+<script src="motor/apartados.js?v=20261119-layout-02-base4"></script>
+<script src="motor/herramientas.js?v=20261119-layout-02-base4"></script>
+<script src="motor/correo-profesor.js?v=20261119-layout-02-base4"></script>
+<script src="motor/notas.js?v=20261119-layout-02-base4"></script>
+<script src="motor/editor-profesor.js?v=20261119-layout-02-base4" defer></script>
 <script>
 (async () => {
 'use strict';
@@ -615,7 +620,7 @@ function renderSections(item,chosen){
 function chip(text,kind){const li=document.createElement('li');li.textContent=text;if(kind)li.className=kind;return li;}
 function select(id){
  current=id;const item=items.get(id);renderList();if(!item)return;
- $('correo-status').textContent='El correo incluye la entrega completa y la nota y los comentarios visibles. Se abre en Gmail para revisar y confirmar el envío.';
+ $('correo-status').textContent='';
  $('alumno').textContent=item.email;renderRubric(item);
  const chips=[];
  if(item.draft)chips.push(chip('Práctica guardada sin entregar','mal'));

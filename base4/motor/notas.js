@@ -131,7 +131,7 @@ async function operate(action){
    if(typeof result.comentarios!=='string')throw Error('RECEIVER_VERSION');
    revision=result.revision;$('nota-value').value=result.nota;$('nota-comments').value=result.comentarios;
    showIA(result);
-   status(action==='set'?'Nota y comentarios guardados en la hoja.':result.nota===''?'Sin calificar: la celda está vacía.':'Nota actual de la hoja.');
+   status(action==='set'?'Nota y comentarios guardados en la hoja.':result.nota===''?'Sin calificar: la celda está vacía.':'');
   }
  }catch(error){
   if(turn!==serial)return;
