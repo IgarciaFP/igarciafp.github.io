@@ -11,14 +11,15 @@ window.createLabClipboard=function(options){
  const message=(es,en)=>language()==='en'?en:es;
  const notify=text=>{status.textContent=text;status.hidden=!text;};
  const editable=el=>el&&(el.tagName==='TEXTAREA'||(el.tagName==='INPUT'&&['text','search','url','tel','password','email'].includes(el.type)))&&!el.disabled&&!el.readOnly&&!el.closest('[inert],fieldset:disabled');
- let history=new WeakMap();
- const capture=el=>({value:el.value,start:el.selectionStart,end:el.selectionEnd});
- function remember(el){let h=history.get(el);if(!h||h.last!==el.value)h={last:el.value,stack:[]};h.stack.push(capture(el));if(h.stack.length>100)h.stack.shift();history.set(el,h);}
- function canUndo(el){const h=history.get(el);return !!h&&h.last===el.value&&h.stack.length>0;}
- function changed(el){const h=history.get(el);if(h)h.last=el.value;}
- document.addEventListener('beforeinput',e=>{if(editable(e.target)&&canEdit())remember(e.target);},true);
- document.addEventListener('input',e=>{if(editable(e.target))changed(e.target);},true);
- function undoEdit(el){if(!canUndo(el))return;const h=history.get(el),old=h.stack.pop();el.value=old.value;if(typeof old.start==='number')el.setSelectionRange(old.start,old.end);changed(el);el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));el.focus();}
+ // El menú usa el mismo historial nativo que Ctrl+Z.
+ function canUndo(el){if(!editable(el))return false;el.focus({preventScroll:true});return document.queryCommandEnabled?.('undo')===true;}
+ function undoEdit(el){if(!canEdit()||!editable(el))return;el.focus({preventScroll:true});document.execCommand('undo');}
+ function insert(el,text,start=el.selectionStart,end=el.selectionEnd){
+  if(!canEdit()||!editable(el))return;
+  el.focus({preventScroll:true});if(typeof start==='number')el.setSelectionRange(start,end);
+  const room=el.maxLength>=0?Math.max(0,el.maxLength-(el.value.length-(end-start))):text.length;
+  document.execCommand('insertText',false,text.slice(0,room));
+ }
  function selected(el){
   if(el&&(el.tagName==='TEXTAREA'||el.tagName==='INPUT')&&typeof el.selectionStart==='number')return el.value.slice(el.selectionStart,el.selectionEnd);
   return String(window.getSelection()||'');
@@ -46,8 +47,7 @@ window.createLabClipboard=function(options){
   if(!current.frame&&(!current.target?.isConnected||!editable(current.target)))return;
   internalText=current.text;try{void navigator.clipboard.writeText(internalText).catch(()=>{});}catch{}
   if(current.frame){current.frame.contentWindow.postMessage({labClipboard:current.token,action:'cut'},'*');return;}
-  const el=current.target;remember(el);if(typeof current.start==='number')el.setRangeText('',current.start,current.end,'end');else el.value='';
-  changed(el);el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));el.focus();
+  insert(current.target,'',current.start,current.end);
  });
  copy.addEventListener('click',async()=>{
   const current=context;hide();if(!current?.text)return;
@@ -64,12 +64,7 @@ window.createLabClipboard=function(options){
     current.frame.contentWindow.postMessage({labClipboard:current.token,action:'paste',text:text.slice(0,10000)},'*');return;
    }
    const el=current.target;if(!el?.isConnected||!editable(el))return;
-   remember(el);
-   if(typeof current.start==='number'){
-    const room=el.maxLength>=0?Math.max(0,el.maxLength-(el.value.length-(current.end-current.start))):text.length;
-    el.setRangeText(text.slice(0,room),current.start,current.end,'end');
-   }else el.value=text.slice(0,el.maxLength>=0?el.maxLength:text.length);
-   el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));el.focus();notify('');
+   insert(el,text,current.start,current.end);notify('');
   }catch{notify(message('El navegador no ha permitido leer el portapapeles para pegar.','The browser did not allow reading the clipboard to paste.'));}
  });
  // Un espacio sustituye el contenido incluso en navegadores que ignoran una copia vacía.
@@ -110,7 +105,7 @@ window.createLabClipboard=function(options){
  // Al cerrar o navegar fuera el navegador puede cancelar operaciones asíncronas.
  window.addEventListener('beforeunload',()=>{void clear();});
  window.addEventListener('pagehide',()=>{void clear();});
- return {clear,hide,async copyText(text){internalText=String(text);try{await navigator.clipboard.writeText(internalText);}catch{}},preview(event,frame,token){
+ return {clear,hide,undo:undoEdit,insert,async copyText(text){internalText=String(text);try{await navigator.clipboard.writeText(internalText);}catch{}},preview(event,frame,token){
   const data=event.data;
   if(event.source!==frame.contentWindow||!token||data?.labClipboard!==token||data.action!=='menu')return;
   const rect=frame.getBoundingClientRect();

@@ -12,7 +12,7 @@ function editingShortcut(event){
  if(['copy','cut','paste','selectstart'].includes(event.type))return true;
  if(!event.type.startsWith('key')||event.altKey)return false;
  return ['control','meta','shift'].includes(key)||
-  ((event.ctrlKey||event.metaKey)&&['a','c','v','x','arrowleft','arrowright','arrowup','arrowdown','home','end','insert'].includes(key))||
+  ((event.ctrlKey||event.metaKey)&&['a','c','v','x','z','y','arrowleft','arrowright','arrowup','arrowdown','home','end','insert'].includes(key))||
   (event.shiftKey&&['arrowleft','arrowright','arrowup','arrowdown','home','end','pageup','pagedown','insert','delete'].includes(key));
 }
 // Conserva la inspección y el menú contextual ya habilitados en base4.
@@ -291,7 +291,7 @@ for(const id of ['html','css','js']){
 }
 
 // Restaurar el código de partida de la pestaña visible. Pide una segunda pulsación:
-// no hay deshacer (Ctrl+Z está bloqueado) y un confirm() nativo sacaría de la pantalla completa.
+// Un confirm() nativo sacaría de la pantalla completa.
 let restoreArmed=null,restoreTimer=null;
 function syncRestore(){
  const button=$('editor-restore'),same=$(currentEditor).value===start[currentEditor];
@@ -319,12 +319,9 @@ function edited(id){
  if(id==='txt')return; // Las notas no cambian el resultado.
  if(id==='js')previewStatus();else schedulePreview();
 }
-function insertText(el,text){
- const room=el.maxLength-(el.value.length-(el.selectionEnd-el.selectionStart));
- if(text.length>room)return;
- el.setRangeText(text,el.selectionStart,el.selectionEnd,'end');
- edited(el.id);
-}
+function insertText(el,text){clipboard?.insert(el,text);}
+$('editor-undo').addEventListener('mousedown',e=>e.preventDefault());
+$('editor-undo').addEventListener('click',()=>{if(guard.canEdit())clipboard?.undo($(currentEditor));});
 $('editor-restore').addEventListener('click',()=>{
  if(!guard.canEdit())return;
  const id=currentEditor;
@@ -333,7 +330,7 @@ $('editor-restore').addEventListener('click',()=>{
   restoreTimer=setTimeout(()=>{restoreArmed=null;syncRestore();},4000);
   syncRestore();return;
  }
- $(id).value=start[id];$(id).scrollTop=0;
+ clipboard?.insert($(id),start[id],0,$(id).value.length);$(id).scrollTop=0;
  if(sectionView&&!sectionView.acceptCode())return;
  invalidate();guard.saveEdit();countChars();
  // El JavaScript de partida es del profesor: se ejecuta sin esperar a «Ejecutar».
@@ -370,7 +367,7 @@ function bridge(token,jsLine,allowInspection,allowShortcuts=true){
  if(['copy','cut','paste','selectstart'].includes(event.type))return true;
  if(!event.type.startsWith('key')||event.altKey)return false;
  return ['control','meta','shift'].includes(key)||
-  ((event.ctrlKey||event.metaKey)&&['a','c','v','x','arrowleft','arrowright','arrowup','arrowdown','home','end','insert'].includes(key))||
+  ((event.ctrlKey||event.metaKey)&&['a','c','v','x','z','y','arrowleft','arrowright','arrowup','arrowdown','home','end','insert'].includes(key))||
   (event.shiftKey&&['arrowleft','arrowright','arrowup','arrowdown','home','end','pageup','pagedown','insert','delete'].includes(key));
 };
  var parent=window.parent,sent=0;
@@ -411,14 +408,8 @@ function bridge(token,jsLine,allowInspection,allowShortcuts=true){
  window.confirm=function(message){send('alert',['confirm: '+format(message===undefined?'':message)+' → false (no disponible en la vista previa)']);return false;};
  window.prompt=function(message){send('alert',['prompt: '+format(message===undefined?'':message)+' → null (no disponible en la vista previa)']);return null;};
  const editable=el=>el&&(el.tagName==='TEXTAREA'||(el.tagName==='INPUT'&&['text','search','url','tel','password','email'].includes(el.type)))&&!el.disabled&&!el.readOnly;
- let history=new WeakMap();
- const capture=el=>({value:el.value,start:el.selectionStart,end:el.selectionEnd});
- function remember(el){let h=history.get(el);if(!h||h.last!==el.value)h={last:el.value,stack:[]};h.stack.push(capture(el));if(h.stack.length>100)h.stack.shift();history.set(el,h);}
- function canUndo(el){const h=history.get(el);return !!h&&h.last===el.value&&h.stack.length>0;}
- function changed(el){const h=history.get(el);if(h)h.last=el.value;}
- document.addEventListener('beforeinput',e=>{if(editable(e.target))remember(e.target);},true);
- document.addEventListener('input',e=>{if(editable(e.target))changed(e.target);},true);
- function undoEdit(el){if(!canUndo(el))return;const h=history.get(el),old=h.stack.pop();el.value=old.value;if(typeof old.start==='number')el.setSelectionRange(old.start,old.end);changed(el);el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));el.focus();}
+ function canUndo(el){if(!editable(el))return false;el.focus();return document.queryCommandEnabled('undo');}
+ function undoEdit(el){el.focus();document.execCommand('undo');}
  var clipboardTarget=null;
  document.addEventListener('contextmenu',function(event){
   event.preventDefault();event.stopImmediatePropagation();clipboardTarget=event.target;
@@ -432,13 +423,11 @@ function bridge(token,jsLine,allowInspection,allowShortcuts=true){
   if(!editable(el))return;
   if(event.data.action==='undo'){undoEdit(el);return;}
   if(event.data.action==='paste'&&typeof event.data.text!=='string')return;
-  remember(el);
   var text=event.data.action==='cut'?'':event.data.text.slice(0,10000);
   if(typeof el.selectionStart==='number'){
    var room=el.maxLength>=0?Math.max(0,el.maxLength-(el.value.length-(el.selectionEnd-el.selectionStart))):text.length;
-   el.setRangeText(text.slice(0,room),el.selectionStart,el.selectionEnd,'end');
+   el.focus();document.execCommand('insertText',false,text.slice(0,room));
   }else if(el.tagName==='INPUT')el.value=text.slice(0,el.maxLength>=0?el.maxLength:text.length);else return;
-  el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));
  });
  function stop(event){
   var key=String(event.key||'').toLowerCase();

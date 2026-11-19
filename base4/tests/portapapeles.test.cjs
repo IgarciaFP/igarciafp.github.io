@@ -4,6 +4,10 @@ async function main(){
  let text='externo',deny=false,editable=true,inputs=0;
  Object.defineProperty(w.navigator,'clipboard',{value:{writeText:async value=>{if(deny)throw Error('Denied');text=value;},readText:()=>assert.fail('No debe solicitar permiso para leer el portapapeles')}});
  w.eval(fs.readFileSync(path.join(__dirname,'../motor/portapapeles.js'),'utf8'));
+ // jsdom no implementa el historial nativo; su comportamiento real se prueba en deshacer-browser.
+ const nativeHistory=[];
+ d.queryCommandEnabled=command=>command==='undo'&&nativeHistory.length>0;
+ d.execCommand=(command,unused,text)=>{const el=d.activeElement;if(command==='insertText'){nativeHistory.push(el.value);el.setRangeText(text,el.selectionStart,el.selectionEnd,'end');}else if(command==='undo'){if(!nativeHistory.length)return false;el.value=nativeHistory.pop();}else return false;el.dispatchEvent(new w.Event('input',{bubbles:true}));return true;};
  const api=w.createLabClipboard({canEdit:()=>editable});const field=d.getElementById('code');field.addEventListener('input',()=>inputs++);
  const tick=()=>new Promise(r=>setTimeout(r,0));
  function menu(){field.dispatchEvent(new w.MouseEvent('contextmenu',{bubbles:true,cancelable:true,clientX:20,clientY:20}));const buttons=[...d.querySelectorAll('#clipboard-menu button')];assert.deepEqual(buttons.map(b=>b.textContent),['Deshacer','Cortar','Copiar','Pegar']);return buttons.slice(2);}
