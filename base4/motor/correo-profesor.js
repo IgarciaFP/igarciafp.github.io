@@ -9,7 +9,8 @@ function plain(html){
  return doc.body.textContent.replace(/\n[ \t]+/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
 }
 function build(item,nota,comentarios){
- const lines=[item.label,'Alumno: '+item.email,'Nota: '+(nota.trim()||'Sin calificar'),'','Comentario:',comentarios.trim()||'Sin comentarios.','','EJERCICIO Y ENTREGA'];
+ const separator='================================================';
+ const lines=['NOTA: '+(nota.trim()||'Sin calificar'),'','COMENTARIO DEL PROFESOR:',comentarios.trim()||'Sin comentarios.','','',separator,'ENUNCIADO Y ENTREGA DEL ALUMNO',separator,'','Actividad: '+item.label,'Alumno: '+item.email,''];
  const code=values=>{
   for(const [key,name] of Object.entries({html:'HTML',css:'CSS',js:'JavaScript',txt:'Notas del alumno'})){
    if(typeof values?.[key]==='string'&&values[key]!=='')lines.push('',name+':',values[key]);

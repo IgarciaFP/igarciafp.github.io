@@ -15,8 +15,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Entregas · Profesor</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261119105021-base4">
-<link rel="stylesheet" href="motor/taller.css?v=20261119105021-base4">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261119105605-base4">
+<link rel="stylesheet" href="motor/taller.css?v=20261119105605-base4">
 <style>
 .revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
 .revision h1{font-size:1.5rem;line-height:1.25;margin:0}
@@ -78,7 +78,12 @@
 #review-sections button[aria-current=true]{background:var(--blue);color:white}
 #review-questions>section{background:white;border:1px solid var(--line);border-radius:12px;padding:20px;margin:12px 0}
 #review-statement{margin:12px 0;background:white;border:1px solid var(--line);border-radius:12px;padding:14px}
-#review-statement iframe{width:100%;height:220px;border:0}
+#review-statement-content{max-height:360px;overflow:auto;line-height:1.6;padding-top:12px;overflow-wrap:anywhere}
+#review-statement-content>:first-child{margin-top:0}
+#review-statement-content img{max-width:100%;height:auto}
+#review-statement-content pre{white-space:pre-wrap;padding:12px}
+#review-statement-content table{border-collapse:collapse}
+#review-statement-content th,#review-statement-content td{padding:6px;border:1px solid var(--line)}
 #review-status{font-weight:600}
 #review-questions .selected-answer{font-weight:700;background:#e9f0ff;border-radius:6px;padding:6px}
 #review-questions .unanswered{color:#b42318;font-weight:600}
@@ -134,7 +139,7 @@
       </section>
       <nav id="review-sections" aria-label="Apartados" hidden></nav>
       <p id="review-status" role="status" hidden></p>
-      <details id="review-statement" hidden open><summary>Instrucciones del apartado</summary><iframe title="Instrucciones del apartado" sandbox referrerpolicy="no-referrer"></iframe></details>
+      <details id="review-statement" hidden open><summary>Instrucciones del apartado</summary><div id="review-statement-content"></div></details>
       <div id="review-questions" hidden></div>
       <div class="paneles">
         <section class="panel">
@@ -171,9 +176,9 @@
   </div>
 </main>
 
-<script src="motor/apartados.js?v=20261119105021-base4"></script>
-<script src="motor/correo-profesor.js?v=20261119105021-base4"></script>
-<script src="motor/notas.js?v=20261119105021-base4"></script>
+<script src="motor/apartados.js?v=20261119105605-base4"></script>
+<script src="motor/correo-profesor.js?v=20261119105605-base4"></script>
+<script src="motor/notas.js?v=20261119105605-base4"></script>
 <script>
 (async () => {
 'use strict';
@@ -288,7 +293,7 @@ function reviewSections(item){
  return normalized.map((s,i)=>{
   const published=item.known?.sections?.find(k=>k.id===s.id&&k.type===s.type);
   const sameVersion=String(item.activityVersion)===String(item.known?.version);
-  return {...s,statement:published?.statement,baselineKnown:!!published&&sameVersion,
+  return {...s,path:published?.path||s.path,statement:published?.statement,baselineKnown:!!published&&sameVersion,
    code:published?.code||EMPTY,
    ...(s.type==='webcode'?{}:{questions:window.LabSections.questions((defs[i].questions||[]).map(q=>({id:q.id,enunciado:q.text,opciones:q.options})),s.type)})};
  });
@@ -433,16 +438,42 @@ window.addEventListener('message',event=>{
  $('console-count').textContent=errors?'· '+errors+(errors===1?' error':' errores'):'';
 });
 
+// Renderizar el enunciado sin un iframe y sin introducir HTML ejecutable.
+function instructionContent(html,base){
+ const parsed=new DOMParser().parseFromString(String(html),'text/html'),fragment=document.createDocumentFragment();
+ const allowed=new Set('p div section article h1 h2 h3 h4 h5 h6 ul ol li pre code strong em b i u s small sub sup br hr blockquote table thead tbody tfoot tr th td caption dl dt dd a img details summary span'.split(' '));
+ const blocked=new Set('SCRIPT STYLE IFRAME OBJECT EMBED LINK META BASE FORM INPUT BUTTON TEXTAREA SELECT TEMPLATE SVG MATH'.split(' '));
+ function copy(node,parent){
+  if(node.nodeType===Node.TEXT_NODE){parent.append(document.createTextNode(node.textContent));return;}
+  if(node.nodeType!==Node.ELEMENT_NODE||blocked.has(node.tagName))return;
+  const tag=node.tagName.toLowerCase();
+  if(!allowed.has(tag)){for(const child of node.childNodes)copy(child,parent);return;}
+  const el=document.createElement(tag);
+  for(const name of ['title','alt'])if(node.hasAttribute(name))el.setAttribute(name,node.getAttribute(name));
+  for(const name of ['colspan','rowspan','start'])if(/^\d{1,3}$/.test(node.getAttribute(name)||''))el.setAttribute(name,node.getAttribute(name));
+  const attribute=tag==='a'?'href':tag==='img'?'src':null;
+  if(attribute&&node.hasAttribute(attribute))try{
+   const url=new URL(node.getAttribute(attribute),base);
+   if(['https:','http:'].includes(url.protocol)){el.setAttribute(attribute,url.href);if(tag==='a'){el.target='_blank';el.rel='noopener noreferrer';}}
+  }catch{}
+  for(const child of node.childNodes)copy(child,el);
+  parent.append(el);
+ }
+ for(const node of parsed.body.childNodes)copy(node,fragment);
+ return fragment;
+}
+
 // Cada apartado reutiliza el visor web o presenta sus respuestas como texto seguro.
 function renderSections(item,chosen){
  const nav=$('review-sections'),questions=$('review-questions'),panels=document.querySelector('.detalle>.paneles');
- const instructions=$('review-statement'),frame=instructions.querySelector('iframe'),status=$('review-status');
- instructions.hidden=true;frame.srcdoc='';status.hidden=true;status.textContent='';
+ const instructions=$('review-statement'),content=$('review-statement-content'),status=$('review-status');
+ instructions.hidden=true;content.replaceChildren();status.hidden=true;status.textContent='';
  nav.replaceChildren();questions.replaceChildren();nav.hidden=!item.sectionData;questions.hidden=true;panels.hidden=false;
- const showStatement=statement=>{
+ const showStatement=(statement,sectionPath='')=>{
   instructions.hidden=false;instructions.open=true;
   if(!statement?.trim())statement='<p>No se pudieron cargar las instrucciones de esta actividad. Comprueba que la entrega corresponde a una actividad disponible en base4 y que hay conexión.</p>';
-  frame.srcdoc='<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src https: data:; base-uri &#39;none&#39;; form-action &#39;none&#39;"><style>body{font:16px/1.5 system-ui;color:#14243b}img{max-width:100%}</style>'+statement;
+  const base=new URL(item.known?'actividades/'+item.known.key+'/'+sectionPath:'.',location.href);
+  content.replaceChildren(instructionContent(statement,base));
  };
  if(!item.sectionData){showStatement(item.known?.sections?.[0]?.statement);return;}
  const sections=item.reviewSections;
@@ -459,7 +490,7 @@ function renderSections(item,chosen){
   button.setAttribute('aria-current',String(section.id===selected.id));
   button.addEventListener('click',()=>renderSections(item,section.id));nav.append(button);
  }
- showStatement(selected.statement);
+ showStatement(selected.statement,selected.path);
  status.hidden=false;status.textContent='Apartado '+(sections.indexOf(selected)+1)+' de '+sections.length+' · '+progress(selected)+'. '+(selected.type==='test'?'Se muestra la alternativa elegida; no implica que sea correcta.':'Pendiente de valoración del profesor.');
  if(item.known&&String(item.activityVersion)!==String(item.known.version))status.textContent+=' Las instrucciones y el código de partida corresponden a la versión publicada actualmente.';
  if(selected.type==='webcode'){

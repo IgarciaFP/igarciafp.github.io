@@ -57,7 +57,7 @@ async function main(){
  rw.eval(fs.readFileSync(path.join(root,'motor/apartados.js'),'utf8'));
  const script=[...rw.document.querySelectorAll('script')].find(el=>!el.src).textContent;
  new Function(script);
- await rw.eval(script.replace('window.reviewReady=true;','window.reviewReady=true;window.reviewTest={parse,items,select};'));
+ await rw.eval(script.replace('window.reviewReady=true;','window.reviewReady=true;window.reviewTest={parse,items,select,instructionContent};'));
  const item=await rw.reviewTest.parse(packed);rw.reviewTest.items.set(item.id,item);rw.reviewTest.select(item.id);
  assert.equal(rw.document.querySelectorAll('#review-sections button').length,3);
  assert.ok(rw.document.getElementById('codigo').textContent.includes('Mi tarjeta final'));
@@ -69,7 +69,8 @@ async function main(){
  assert.ok(rw.document.getElementById('review-status').textContent.includes('no implica que sea correcta'));
  assert.equal(rw.document.querySelector('.detalle>.paneles').hidden,true);
  assert.equal(rw.document.getElementById('review-statement').hidden,false);
- assert.equal(rw.document.querySelector('#review-statement iframe').getAttribute('sandbox'),'');
+ assert.ok(rw.document.getElementById('review-statement-content').textContent.trim());
+ assert.equal(rw.document.querySelector('#review-statement iframe'),null);
  rw.document.querySelectorAll('#review-sections button')[0].click();
  assert.equal(rw.document.querySelector('.detalle>.paneles').hidden,false);
  assert.ok(rw.document.getElementById('review-status').textContent.includes('Código modificado'));
@@ -85,7 +86,7 @@ async function main(){
  assert.equal(rw.document.querySelector('#review-questions img'),null);
  assert.ok(rw.document.getElementById('review-questions').textContent.includes('<img'));
  assert.equal(rw.document.getElementById('review-statement').hidden,false);
- assert.ok(rw.document.querySelector('#review-statement iframe').srcdoc.includes('No se pudieron cargar'));
+ assert.ok(rw.document.getElementById('review-statement-content').textContent.includes('No se pudieron cargar'));
  const single=structuredClone(report),qa=single.sectionDefinitions[1];single.sectionDefinitions=[qa];
  single.answers=S.pack([{...qa,code:{}}],{active:qa.id,values:{[qa.id]:restored.values[qa.id]}});
  await display(encodeReport(single));assert.equal(rw.document.querySelectorAll('#review-sections button').length,1);
@@ -107,6 +108,10 @@ async function main(){
  changes.checked=false;changes.dispatchEvent(new rw.Event('change'));
  assert.deepEqual([...rw.document.querySelectorAll('#codigo>span')].map(el=>el.dataset.line),['1','2','3']);
  assert.equal(rw.document.getElementById('codigo').textContent,'unonuevotres');
+ const safe=rw.reviewTest.instructionContent('<h3>Enunciado</h3><script>window.bad=true</script><img src="x.png" onerror="alert(1)"><a href="javascript:alert(1)">enlace</a>','https://example.com/base4/actividades/test/');
+ const safeBox=rw.document.createElement('div');safeBox.append(safe);
+ assert.equal(safeBox.querySelector('script'),null);assert.equal(safeBox.querySelector('[onerror]'),null);assert.equal(safeBox.querySelector('a').hasAttribute('href'),false);
+ assert.equal(safeBox.querySelector('img').src,'https://example.com/base4/actividades/test/x.png');assert.equal(safeBox.querySelector('h3').textContent,'Enunciado');
  review.window.close();
  console.log('OK: complete adapter boot, saved state, gzip report, blank questions, internal tools and teacher review of all sections.');
 }
