@@ -96,7 +96,7 @@ window.createLabClipboard=function(options){
   try{modern=Promise.resolve(navigator.clipboard.writeText(' ')).then(()=>true,()=>false);}catch{modern=Promise.resolve(false);}
   const copied=gesture&&copyBlank();
   const success=(await modern)||copied;
-  if(operation===clearing)notify(success?'':'Err. permiso');
+  if(operation===clearing)notify('');
   return success;
  }
 // Captura: copiar en el clic, antes de iniciar la entrega o solicitar pantalla completa.

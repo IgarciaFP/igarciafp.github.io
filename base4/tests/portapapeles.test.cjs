@@ -23,8 +23,8 @@ async function main(){
  d.getElementById('guard-start').click();await tick();assert.equal(text,' ');
  assert.equal(menu()[1].disabled,true);
  text='algo';assert.equal(await api.clear(),true);assert.equal(text,' ');
- deny=true;assert.equal(await api.clear(),false);assert.equal(d.getElementById('clipboard-status').hidden,false);
- assert.equal(d.getElementById('clipboard-status').textContent,'Err. permiso');
+ deny=true;assert.equal(await api.clear(),false);assert.equal(d.getElementById('clipboard-status').hidden,true);
+ assert.equal(d.getElementById('clipboard-status').textContent,'');
  // Synchronous copy succeeds even if the asynchronous API is denied.
  let copies=0;
  d.execCommand=command=>{assert.equal(command,'copy');copies++;assert.equal(d.activeElement.value,' ');text=d.activeElement.value;return true;};
