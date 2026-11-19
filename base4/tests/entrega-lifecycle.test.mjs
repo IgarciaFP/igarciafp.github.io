@@ -351,3 +351,13 @@ context.recibirEntrega({...separate,fromFile:true});
 assert.equal(rows.length,beforeFileRows);
 const fileRow=rows.find(row=>row.some(c=>c?.value==='aislamiento@g.educaand.es')&&row.some(c=>String(c?.value)==='b'.repeat(32)));
 assert.equal(fileRow[context.comprobarCabeceras_(sheet)[7]-1].value.split('Entrega desde archivo').length-1,1);
+
+// El receptor usa el endpoint propio de base4, con la clave en el cuerpo.
+let authCall;
+context.UrlFetchApp.fetch=(url,options)=>{authCall={url,options};return {getResponseCode:()=>200,getContentText:()=>'{"profesor":true}'};};
+context.autenticarProfesor_('clave-de-prueba');
+assert.match(authCall.url,/\/base4\/profesor$/);
+assert.equal(authCall.options.method,'post');
+assert.equal(JSON.parse(authCall.options.payload).clave,'clave-de-prueba');
+context.UrlFetchApp.fetch=()=>({getResponseCode:()=>403});
+assert.throws(()=>context.autenticarProfesor_('incorrecta'),/AUTH/);

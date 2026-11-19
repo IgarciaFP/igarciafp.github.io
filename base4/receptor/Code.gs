@@ -421,7 +421,9 @@ function autenticarProfesor_(clave) {
   if (!SERVIDOR_) throw Error('AUTH_CONFIG');
   let respuesta;
   try {
-    respuesta = UrlFetchApp.fetch(SERVIDOR_ + '/acceso?a=diw/revision&clave=' + encodeURIComponent(clave), { muteHttpExceptions: true });
+    respuesta = UrlFetchApp.fetch(SERVIDOR_ + '/base4/profesor', {
+      method: 'post', contentType: 'application/json', payload: JSON.stringify({ clave }), muteHttpExceptions: true
+    });
     if (respuesta.getResponseCode() !== 200) throw Error('AUTH');
     if (JSON.parse(respuesta.getContentText()).profesor !== true) throw Error('AUTH');
   } catch (error) { throw Error('AUTH'); }

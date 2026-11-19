@@ -20,7 +20,9 @@ La actividad ya no define `redes` ni `restringirIPs`. Tampoco existe un modo per
 
 ## Activación en el servidor existente
 
-El Worker utiliza `base3/servidor/worker.js` como punto de entrada. Un import del controlador de base4 y una condición derivan exclusivamente las rutas `/base4/`. Las demás rutas mantienen el controlador existente. La prueba `router-base3.test.mjs` comprueba que el código restante de base3 coincide con su versión anterior y conserva sus respuestas.
+El punto de entrada independiente es `base4/servidor/worker.js`. En Cloudflare Workers Builds, establece el directorio raíz en `base4/servidor` y conserva el nombre del Worker y sus secretos. Cambiar el comentario de `wrangler.jsonc` no cambia por sí solo la configuración del panel. Hasta cambiarla, la compilación anterior continúa dependiendo de `base3/servidor`.
+
+El receptor autentica al profesor con `POST /base4/profesor`, enviando la clave en el cuerpo. Esta ruta no utiliza el controlador de base3 ni la IP de salida de Apps Script. El acceso del alumnado sigue comprobando la red en `/base4/acceso` sin excepciones por contraseña. Publica primero el Worker y después el receptor actualizado.
 
 La integración de Cloudflare con GitHub publica el Worker al cambiar la rama principal. Deben comprobarse tanto el despliegue de Cloudflare como el de GitHub Pages. No se necesitan cambios en los secretos existentes. `CLAVE_PROFESOR` sirve para diagnóstico, no para evitar el bloqueo de IP.
 

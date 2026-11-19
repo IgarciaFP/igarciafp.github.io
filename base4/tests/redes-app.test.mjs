@@ -21,3 +21,12 @@ assert.equal((await (await worker.fetch(request('verificar','1.2.3.4',{sello:sig
 signed.ip='88.16.1.1';assert.equal((await (await worker.fetch(request('verificar','1.2.3.4',{sello:signed}),env)).json()).valido,false);
 assert.equal((await worker.fetch(request('acceso?a=diw/prueba','88.26.1.1'),{})).status,500);
 console.log('OK: acceso inicial por prefijos, sin excepción de profesor; entrega firmada tras cambio de red, sin segunda restricción.');
+
+// El Worker independiente autentica al docente, sin abrir el acceso del alumno.
+for (const [clave,status] of [['test-professor',200],['incorrecta',403],['',403]]) {
+ const response=await worker.fetch(request('profesor','1.2.3.4',{clave}),env);
+ assert.equal(response.status,status);
+ assert.equal((await response.json()).profesor,status===200);
+}
+assert.equal((await worker.fetch(request('profesor','1.2.3.4',{clave:'test-professor'}),{SECRETO_SELLO:'test'})).status,403);
+assert.equal((await worker.fetch(request('acceso?a=diw/prueba&clave=test-professor','1.2.3.4'),env)).status,403);

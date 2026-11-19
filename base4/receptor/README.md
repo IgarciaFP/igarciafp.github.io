@@ -56,7 +56,7 @@ La página `profesor.html` consulta y modifica la columna cuya cabecera sea «no
 4. Al seleccionar una entrega se consultan automáticamente la nota del profesor y la propuesta IA. Edita la calificación y pulsa «Guardar nota y comentarios». Volver a seleccionar la entrega recarga la hoja; dejar el campo vacío borra la calificación manual.
 5. La sesión se recuerda durante 30 días en el mismo navegador y perfil. «Cerrar sesión» revoca el identificador. No se guarda la clave: el navegador guarda un token aleatorio y el servidor su hash con caducidad en las propiedades del script.
 
-La consulta y escritura requieren validación de sesión en el servidor. Los alumnos no reciben acceso a las notas. La primera autenticación verifica la clave con el Worker; no requiere modificarlo. Los cambios manuales detectados desde la última consulta producen un aviso de conflicto; actualiza la nota antes de guardar de nuevo. El bloqueo del script coordina sus propias escrituras, pero no bloquea la edición simultánea desde Google Sheets.
+La consulta y escritura requieren validación de sesión en el servidor. Los alumnos no reciben acceso a las notas. La primera autenticación verifica la clave con `POST /base4/profesor` del Worker de base4. Publica el Worker actualizado antes de desplegar este receptor. Los cambios manuales detectados desde la última consulta producen un aviso de conflicto; actualiza la nota antes de guardar de nuevo. El bloqueo del script coordina sus propias escrituras, pero no bloquea la edición simultánea desde Google Sheets.
 
 El receptor admite `action: session` para validar una sesión recordada antes de mostrar el visor. Las columnas **NOTA IA** y **COMENTARIOS IA** se buscan por cabecera y se devuelven como `notaIA` y `comentariosIA`, únicamente después de validar la sesión. Son de solo lectura desde el visor y guardar la nota manual nunca las modifica. Un cero se muestra como cero; las celdas vacías se indican como pendientes. Si las cabeceras faltan o están duplicadas se informa sin impedir la corrección manual ni crear columnas.
 
@@ -91,7 +91,7 @@ La entrega final actualiza esa fila por ID; conserva los datos iniciales y las n
 
 El ID se mantiene al guardar y recuperar una práctica pausada. El registro inicial se reintenta con el mismo ID antes del envío si falló la red; no se puede garantizar el registro remoto sin conexión. La actualización final de base4 conserva el control de horario y la firma, sin repetir la restricción de red inicial. Si se rechaza, la fila inicial sigue pendiente y el panel permite reintentar.
 
-**Despliegue:** sustituir **Code.gs y Bridge.html** y publicar una nueva versión de la implementación existente. La URL y el Worker no cambian. Solo se crean columnas de identificación si faltan. El orden ID, NUM ENTREGA, DIA Y HORA, MODULO, Nombre de la práctica, EMAIL… es válido.
+**Despliegue:** sustituir **Code.gs y Bridge.html** y publicar una nueva versión de la implementación existente. La URL de Apps Script se conserva; el Worker debe incluir la ruta `/base4/profesor`. Solo se crean columnas de identificación si faltan. El orden ID, NUM ENTREGA, DIA Y HORA, MODULO, Nombre de la práctica, EMAIL… es válido.
 
 ## Hoja vacía y errores de cabecera
 

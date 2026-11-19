@@ -91,6 +91,12 @@ export default {
     if (!env.SECRETO_SELLO) return responder({ ok: false, error: 'SIN_CONFIGURAR' }, origen, 500);
     const ip = request.headers.get('CF-Connecting-IP') || '', ahora = new Date();
     try {
+      // Autentica al docente desde Apps Script sin usar el acceso de alumnos.
+      if (request.method === 'POST' && ruta === '/profesor') {
+        const cuerpo = JSON.parse(await request.text());
+        const profesor = typeof cuerpo.clave === 'string' && cuerpo.clave.length <= 500 && await esProfesor(cuerpo.clave, env);
+        return responder({ profesor }, origen, profesor ? 200 : 403);
+      }
       if (request.method === 'GET' && ruta === '/acceso') {
         const actividad = ACTIVIDAD.exec(String(url.searchParams.get('a') || '').toLowerCase());
         if (!actividad) return responder({ ok: false }, origen);
