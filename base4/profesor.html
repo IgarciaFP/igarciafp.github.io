@@ -135,6 +135,14 @@
 #review-sections{margin:0 0 14px}
 @media(max-width:1200px){.review-shell{grid-template-columns:220px minmax(0,1fr);gap:14px}.nota-panel{grid-template-columns:1fr}.nota-ai{padding:12px}#nota-ai-comments{max-height:140px}}
 @media(max-width:760px){.delivery-overview{grid-template-columns:1fr}.review-shell{grid-template-columns:1fr}.review-guidance{grid-template-columns:1fr}.detalle .paneles{height:auto;min-height:0}.nota-auth{width:100%;justify-content:space-between}.login-card{padding:24px}.review-sidebar .soltar,.review-sidebar .soltar.compacta{min-height:0;padding:14px}.nota-manual{grid-template-columns:90px minmax(0,1fr)}#entregas{max-height:160px}}
+
+/* Borradores de prueba: solo viven en la memoria de esta página. */
+.code-trial{display:flex;flex:1;min-height:280px;overflow:hidden;background:#0f172a;color:#e2e8f0}
+#trial-lines{flex:none;width:5ch;box-sizing:content-box;padding:10px 8px;margin:0;overflow:hidden;text-align:right;border-right:1px solid #3a4b65;color:#9baac0;user-select:none}
+#trial-code{flex:1;min-width:0;width:100%;height:100%;box-sizing:border-box;resize:none;border:0;border-radius:0;margin:0;padding:10px 16px;background:#0f172a;color:#e2e8f0;white-space:pre;overflow:auto}
+#trial-code,#trial-lines{font:13.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:2}
+.trial-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid var(--line)}
+.trial-actions button{font-size:.8rem;padding:6px 10px}
 </style>
 <link rel="stylesheet" href="motor/editor-profesor.css?v=20261119-layout-02-base4">
 </head>
@@ -227,7 +235,15 @@
             </div>
             <label style="margin-left:auto"><input id="cambios" type="checkbox" checked> Resaltar cambios</label>
           </header>
+          <div class="trial-actions">
+            <label><input id="trial-edit" type="checkbox"> Editar código temporalmente</label>
+            <button id="trial-reset" type="button" class="secondary" disabled>Restaurar entrega</button>
+          </div>
           <pre id="codigo" tabindex="0"></pre>
+          <div id="trial-editor" class="code-trial" hidden>
+            <pre id="trial-lines" aria-hidden="true"></pre>
+            <textarea id="trial-code" aria-label="Código temporal" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off"></textarea>
+          </div>
           <p id="pie-codigo" class="panel-pie"></p>
         </section>
         <section class="panel">
@@ -392,7 +408,43 @@ async function parse(text){
 }
 
 // ------------------------------------------------------------ Lista
-const items=new Map();let current=null,tab='html';
+const items=new Map();let current=null,tab='html',reviewSection='';
+const trialDrafts=new WeakMap();
+function trialCode(item){
+ return trialDrafts.get(item)?.get(reviewSection)||item.code;
+}
+function trialNumbers(){
+ $('trial-lines').textContent=Array.from({length:$('trial-code').value.split('\n').length},(_,i)=>i+1).join('\n');
+ $('trial-lines').scrollTop=$('trial-code').scrollTop;
+}
+function renderTrial(item){
+ const editing=$('trial-edit').checked&&tab!=='txt';
+ $('trial-edit').disabled=tab==='txt';
+ $('trial-editor').hidden=!editing;$('codigo').hidden=editing;
+ $('cambios').disabled=editing;
+ $('trial-reset').disabled=!trialDrafts.get(item)?.has(reviewSection);
+ if(editing){
+  $('trial-code').value=trialCode(item)[tab];
+  $('trial-code').setAttribute('aria-label','Código '+NAMES[tab]+' temporal');
+  trialNumbers();
+  $('pie-codigo').textContent='Edición temporal · Pulsa Actualizar para probar los cambios. No se guardan en la entrega.';
+ }else if(trialDrafts.get(item)?.has(reviewSection)){
+  $('pie-codigo').textContent+=' · El resultado usa cambios temporales; este visor muestra la entrega original.';
+ }
+}
+$('trial-edit').addEventListener('change',renderCode);
+$('trial-code').addEventListener('input',()=>{
+ const item=items.get(current);if(!item||tab==='txt')return;
+ let drafts=trialDrafts.get(item);if(!drafts){drafts=new Map();trialDrafts.set(item,drafts);}
+ const code={...trialCode(item),[tab]:$('trial-code').value};
+ drafts.set(reviewSection,code);$('trial-reset').disabled=false;trialNumbers();
+});
+$('trial-code').addEventListener('scroll',()=>{$('trial-lines').scrollTop=$('trial-code').scrollTop;});
+$('trial-reset').addEventListener('click',()=>{
+ const item=items.get(current);if(!item)return;
+ if(!confirm('¿Descartar los cambios temporales de este apartado y recuperar la entrega original?'))return;
+ trialDrafts.get(item)?.delete(reviewSection);renderCode();renderResult();
+});
 const duration=s=>Number.isFinite(s)?Math.floor(s/60)+' min '+String(s%60).padStart(2,'0')+' s':'—';
 const when=iso=>iso&&Number.isFinite(Date.parse(iso))?new Date(iso).toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'}):'';
 function problems(item){
@@ -468,6 +520,7 @@ function renderCode(){
  $('codigo').scrollTop=0;
  const added=rows.filter(r=>r.kind==='mas').length,removed=rows.filter(r=>r.kind==='menos').length;
  $('pie-codigo').textContent=NAMES[tab]+' · '+(marked?'Numeración: original | entrega · ':'')+(!changed?(tab==='txt'?'sin notas':'sin cambios: es el código de partida'):marked?added+' líneas añadidas o cambiadas · '+removed+' eliminadas':'modificada por el alumno');
+ renderTrial(item);
 }
 
 // ------------------------------------------------------------ Resultado (marco aislado)
@@ -505,12 +558,13 @@ function renderResult(){
  const item=items.get(current);if(!item)return;
  $('preview-console').replaceChildren();$('console-count').textContent='';
  token=Array.from(crypto.getRandomValues(new Uint8Array(12)),x=>x.toString(16).padStart(2,'0')).join('');
- const js=$('con-js').checked?item.code.js:'';
+ const code=trialCode(item);
+ const js=$('con-js').checked?code.js:'';
  // Sin «Ejecutar JavaScript» también se anulan los <script> y manejadores escritos en el HTML.
  const policy=$('con-js').checked?CSP:CSP.replace(/script-src[^;]*/,"script-src 'none'");
  $('vista').srcdoc='<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="'+attr(policy)+'">'
   +($('con-js').checked?'<script>('+bridge+')('+JSON.stringify(token)+')<\/script>':'')
-  +'<style>'+item.code.css.replace(/<\/style/gi,'<\\/style')+'</style>'+item.code.html
+  +'<style>'+code.css.replace(/<\/style/gi,'<\\/style')+'</style>'+code.html
   +(js?'<script>'+js.replace(/<\/script/gi,'<\\/script')+'<\/script>':'');
 }
 window.addEventListener('message',event=>{
@@ -566,6 +620,7 @@ function renderRubric(item){
 
 // Cada apartado reutiliza el visor web o presenta sus respuestas como texto seguro.
 function renderSections(item,chosen){
+ reviewSection='';
  const nav=$('review-sections'),questions=$('review-questions'),panels=document.querySelector('.detalle .paneles');
  const instructions=$('review-statement'),content=$('review-statement-content'),status=$('review-status');
  instructions.hidden=true;content.replaceChildren();status.hidden=true;status.textContent='';
@@ -582,6 +637,7 @@ function renderSections(item,chosen){
  const sections=item.reviewSections;
  const state=window.LabSections.sanitize(sections,item.sectionData);
  const selected=sections.find(s=>s.id===chosen)||sections[0];
+ reviewSection=selected.id;
  const pending=window.LabSections.incomplete(sections,state);
  const progress=section=>{
   if(section.type==='webcode')return !section.baselineKnown?'Cambios sin comparar':pending.some(p=>p.id===section.id)?'Sin cambios en HTML, CSS o JS':'Código modificado';
@@ -702,6 +758,7 @@ document.addEventListener('drop',e=>{if(e.dataTransfer?.files?.length)add([...e.
 $('archivos').addEventListener('change',()=>{add([...$('archivos').files]);$('archivos').value='';});
 // Texto de la columna «ENTREGA completa»: pegado en la página o recibido en el enlace de la hoja.
 document.addEventListener('paste',e=>{
+ if(e.target===$('trial-code'))return;
  const text=(e.clipboardData?.getData('text')||'').trim();
  if(text.startsWith(config.format.report)){e.preventDefault();add([{name:'Texto pegado',size:text.length,text}]);}
 });
