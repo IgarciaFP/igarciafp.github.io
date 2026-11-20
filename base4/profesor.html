@@ -238,6 +238,8 @@
           <div class="trial-actions">
             <label><input id="trial-edit" type="checkbox"> Editar código temporalmente</label>
             <button id="trial-reset" type="button" class="secondary" disabled>Restaurar entrega</button>
+            <button id="copy-code" type="button" class="secondary">Copiar código completo</button>
+            <span id="copy-code-status" role="status" aria-live="polite"></span>
           </div>
           <pre id="codigo" tabindex="0"></pre>
           <div id="trial-editor" class="code-trial" hidden>
@@ -413,11 +415,50 @@ const trialDrafts=new WeakMap();
 function trialCode(item){
  return trialDrafts.get(item)?.get(reviewSection)||item.code;
 }
+
+function completeCode(code){
+ const doc=new DOMParser().parseFromString(code.html||'','text/html');
+ // Sustituye las referencias habituales a las pestañas locales, conservando bibliotecas externas.
+ for(const node of doc.querySelectorAll('link[rel~="stylesheet"][href],script[src]')){
+  const ref=node.getAttribute(node.tagName==='LINK'?'href':'src');
+  const local=/^(?:\.\/)?(?:codigo|style|styles|estilos)\.css(?:[?#].*)?$/i.test(ref)&&node.tagName==='LINK'
+   ||/^(?:\.\/)?(?:codigo|app|script|main|index)\.js(?:[?#].*)?$/i.test(ref)&&node.tagName==='SCRIPT';
+  if(local)node.remove();
+ }
+ if(!doc.documentElement.lang)doc.documentElement.lang='es';
+ if(!doc.querySelector('meta[charset]')){
+  const meta=doc.createElement('meta');meta.setAttribute('charset','utf-8');doc.head.prepend(meta);
+ }
+ const style=doc.createElement('style');style.textContent='\n'+(code.css||'').replace(/<\/style/gi,'<\\/style')+'\n';doc.head.append(style);
+ // Al final del body los elementos ya existen cuando se ejecuta el código del alumno.
+ const script=doc.createElement('script');script.textContent='\n'+(code.js||'').replace(/<\/script/gi,'<\\/script')+'\n';doc.body.append(script);
+ return '<!DOCTYPE html>\n'+doc.documentElement.outerHTML;
+}
+function copyCodeFallback(text){
+ const focused=document.activeElement,field=document.createElement('textarea');
+ field.value=text;field.setAttribute('aria-label','Código para copiar');field.style.cssText='position:fixed;left:-9999px;top:0';
+ document.body.append(field);field.select();
+ let copied=false;try{copied=document.execCommand('copy');}finally{field.remove();focused?.focus({preventScroll:true});}
+ if(!copied)throw Error('No se pudo copiar. Comprueba el permiso del portapapeles y vuelve a intentarlo.');
+}
+$('copy-code').addEventListener('click',async()=>{
+ const item=items.get(current);if(!item)return;
+ const text=completeCode(trialCode(item)),status=$('copy-code-status');
+ status.textContent='';
+ try{
+  if(navigator.clipboard?.writeText){
+   try{await navigator.clipboard.writeText(text);}catch{copyCodeFallback(text);}
+  }else copyCodeFallback(text);
+  status.textContent='HTML, CSS y JavaScript copiados al portapapeles.';
+ }catch(error){status.textContent=error.message;}
+});
+
 function trialNumbers(){
  $('trial-lines').textContent=Array.from({length:$('trial-code').value.split('\n').length},(_,i)=>i+1).join('\n');
  $('trial-lines').scrollTop=$('trial-code').scrollTop;
 }
 function renderTrial(item){
+ $('copy-code-status').textContent='';
  const editing=$('trial-edit').checked&&tab!=='txt';
  $('trial-edit').disabled=tab==='txt';
  $('trial-editor').hidden=!editing;$('codigo').hidden=editing;
