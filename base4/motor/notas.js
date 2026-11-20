@@ -32,7 +32,7 @@ function showIA(result){
  const available=result.iaDisponible===true;
  $('nota-ai-value').textContent=available&&result.notaIA!==''?result.notaIA:'—';
  $('nota-ai-comments').textContent=available?result.comentariosIA||'':'';
- $('nota-ai-status').textContent=available?(result.notaIA===''&&!result.comentariosIA?'Sin corrección IA todavía.':'Propuesta de IA · no sustituye la calificación del profesor.'):(result.iaAviso||'El receptor debe actualizarse para consultar la corrección IA.');
+ $('nota-ai-status').textContent=available?(result.notaIA===''&&!result.comentariosIA?'Sin corrección IA todavía.':''):(result.iaAviso||'El receptor debe actualizarse para consultar la corrección IA.');
 }
 function remember(value){
  session=value;
