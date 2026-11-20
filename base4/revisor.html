@@ -163,7 +163,7 @@
   </div>
 
   <div class="review-shell">
-    <aside class="review-sidebar" aria-label="Entregas, registro, instrucciones y rúbrica">
+    <aside class="review-sidebar" aria-label="Entregas, instrucciones y rúbrica">
       <ul id="avisos" role="status"></ul>
 
       <div id="delivery-sidebar" hidden>
@@ -172,10 +172,6 @@
       <ul id="entregas"></ul>
     </aside>
 
-      <details id="registro" open>
-        <summary>Registro del intento</summary>
-        <pre id="auditoria"></pre>
-      </details>
       <div class="review-guidance"><details id="review-statement" hidden><summary>Instrucciones de la práctica / apartado</summary><div id="review-statement-content"></div></details>
       <details id="review-rubric" hidden><summary>Rúbrica de la actividad</summary><div id="review-rubric-content"></div></details>
       </div>
@@ -613,7 +609,7 @@ function renderSections(item,chosen){
   button.addEventListener('click',()=>renderSections(item,section.id));nav.append(button);
  }
  showStatement(selected.statement,selected.path);
- status.hidden=false;status.textContent='Apartado '+(sections.indexOf(selected)+1)+' de '+sections.length+' · '+progress(selected)+'. '+(selected.type==='test'?'Se muestra la alternativa elegida; no implica que sea correcta.':'Pendiente de valoración del profesor.');
+ status.hidden=false;status.textContent='Apartado '+(sections.indexOf(selected)+1)+' de '+sections.length+' · '+progress(selected)+'. '+(selected.type==='test'?'Se muestra la alternativa elegida; no implica que sea correcta.':'');
  if(item.known&&String(item.activityVersion)!==String(item.known.version))status.textContent+=' Las instrucciones y el código de partida corresponden a la versión publicada actualmente.';
  if(selected.type==='webcode'){
   item.start=selected.code;item.code=state.values[selected.id];item.modified=TABS.filter(t=>item.code[t]!==item.start[t]);
@@ -669,7 +665,6 @@ function select(id){
  if(blocked)chips.push(chip('Acciones bloqueadas: '+blocked));
  chips.push(chip(item.sectionData?item.reviewSections.length+' apartado(s) · '+[...new Set(item.reviewSections.map(s=>s.type==='qa'?'QA':s.type))].join(', '):item.modified.length?'Modificado: '+item.modified.map(t=>NAMES[t]).join(', '):'No modificó nada',item.sectionData||item.modified.length?'':'mal'));
  $('ficha').replaceChildren(...chips);
- $('auditoria').textContent=String(item.audit||'Sin registro.').replace(/([\w.+-]+)@[\w.-]+\.[A-Za-z]{2,}/g,'$1');
  if(!item.modified.includes(tab))tab=item.modified.find(t=>t!=='txt')||item.modified[0]||'html';
  if(item.sectionData)renderSections(item);else{renderSections(item);renderCode();renderResult();}
  window.dispatchEvent(new CustomEvent('review-selection',{detail:{id:item.id,intact:item.intact,draft:!!item.draft,module:item.reviewModule,user:String(item.email).split('@')[0],attemptId:item.attemptId,activity:item.activity,activityTitle:item.activityTitle,label:item.label}}));
