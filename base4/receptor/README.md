@@ -98,3 +98,15 @@ El ID se mantiene al guardar y recuperar una práctica pausada. El registro inic
 Al ejecutar `configurar`, una pestaña Entregas completamente vacía se inicializa con ID, NUM ENTREGA, las nueve cabeceras de entrega y nota. Una pestaña con contenido nunca se reinicializa ni se reordena. Si falta una cabecera o está repetida, el registro de ejecución indica su nombre; el protocolo del navegador conserva el código SCHEMA.
 
 El botón de limpieza local se muestra como un icono de recarga junto a Empezar, con el tooltip «Flush Caché». El pie del laboratorio muestra una fecha y hora de revisión fija, actualizada al modificar su HTML (Europe/Madrid), no la fecha de apertura.
+
+## Revisor de solo lectura (base4/revisor.html)
+
+La vista revisor.html abre sin contraseña y admite los mismos archivos y fragmentos #entrega= que profesor.html. No carga notas.js ni editor-profesor.js, no utiliza sesiones guardadas y no ofrece acciones de escritura. Muestra el usuario del correo como ID. Los enlaces a profesor.html que haya en los enunciados se convierten en enlaces a revisor.html.
+
+El panel presenta la nota del profesor si no está vacía (incluido cero), o NOTA IA; el comentario del profesor si no está vacío, o COMENTARIOS IA. Cada prioridad se resuelve de forma independiente en el servidor. No publica las notas en GitHub ni comparte el libro de cálculo.
+
+**Activación:** en el libro Entregas, abre Extensiones → Apps Script. Sustituye el contenido de Code.gs por el archivo actualizado de esta carpeta y guarda. Ve a Implementar → Gestionar implementaciones → Editar (lápiz) → Versión: Nueva versión → Implementar, conservando la URL existente. No es necesario cambiar Bridge.html ni Contenido.gs. Hasta publicar esa versión, la página muestra el código y un aviso de que la consulta de notas requiere actualizar el receptor.
+
+La acción review solo devuelve la nota y el comentario efectivos de una entrega. Exige su contenido completo y comprueba que su SHA-256 coincide con una entrega íntegra almacenada. Conocer un ID de intento, un usuario o un email no basta. Cualquier persona que posea el archivo completo o su enlace puede consultar esa calificación. Las acciones get, set, content-get y content-set del profesor siguen exigiendo sesión; no se proporciona ningún token en la vista pública.
+
+Para abrir una entrega existente en el revisor, sustituye únicamente profesor.html por revisor.html en su enlace, manteniendo todo el fragmento #entrega=. Cerrar cierra la pestaña si el navegador lo permite; en caso contrario deja la pestaña en blanco.

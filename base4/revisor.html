@@ -1,0 +1,717 @@
+<!doctype html>
+<!-- Revisor de entregas: consulta sin contraseña y sin operaciones de escritura. -->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Revisión de entrega</title>
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261119-layout-02-base4">
+<link rel="stylesheet" href="motor/taller.css?v=20261119-layout-02-base4">
+<style>
+.revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
+.revision h1{font-size:1.5rem;line-height:1.25;margin:0}
+.revision .eyebrow{margin:0 0 4px}
+.cabecera{display:flex;align-items:flex-end;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;margin-bottom:16px}
+.cabecera p{margin:0;font-size:.85rem;color:var(--muted)}
+.soltar{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:40px 20px;border:2px dashed #97a6bb;border-radius:14px;background:#fff;color:var(--muted);cursor:pointer}
+.soltar strong{color:var(--navy);font-size:1.05rem}
+.soltar.encima{border-color:var(--blue);background:#edf3ff}
+.soltar.compacta{flex-direction:row;padding:12px 16px;gap:12px}
+.soltar.compacta strong{font-size:.9rem}
+.soltar small{display:inline}
+#avisos{list-style:none;margin:12px 0 0;padding:0;font-size:.86rem}
+#avisos li{padding:8px 12px;margin-top:6px;border-radius:8px;background:#fffbeb;border-left:4px solid #e8aa28;overflow-wrap:anywhere}
+.mesa{display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;margin-top:16px;align-items:start}
+.lista{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.lista-cabecera{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;background:#f7f9fc;border-bottom:1px solid var(--line);font-size:.85rem;font-weight:650}
+.lista-cabecera button{padding:4px 10px;font-size:.78rem}
+#entregas{list-style:none;margin:0;padding:6px;max-height:calc(100dvh - 60px);overflow:auto}
+#entregas button{display:block;width:100%;text-align:left;background:transparent;color:var(--navy);border:1px solid transparent;border-radius:9px;padding:8px 10px;font-weight:500}
+#entregas button:hover{background:#f2f5fa}
+#entregas button[aria-current=true]{background:#e9f0ff;border-color:#b9cbf5}
+#entregas b{display:block;font-size:.9rem;overflow-wrap:anywhere}
+#entregas small{font-size:.76rem;line-height:1.45}
+.alerta{color:#b42318}
+.ficha{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;padding:0;list-style:none}
+.ficha li{background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.82rem}
+.ficha li.mal{border-color:#f3b4ad;background:#fff4f2;color:#8f1d14}
+.ficha li.bien{border-color:#b7e3cf;background:#f1fbf6;color:#0f5f47}
+.detalle h2{font-size:1.2rem;margin:0 0 10px;overflow-wrap:anywhere}
+.detalle .paneles{min-height:560px;height:calc(100dvh - 190px)}
+.pestanas button .punto{color:#e8590c;margin-left:3px}
+.panel-cabecera label{display:flex;align-items:center;gap:6px;margin:0;font-size:.8rem;font-weight:500;color:var(--muted);white-space:nowrap}
+.panel-cabecera input[type=checkbox]{width:16px;min-height:16px;margin:0}
+#codigo{flex:1;min-height:0;margin:0;border-radius:0;padding:10px 0;font:13.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:2;user-select:text}
+#codigo{--gutter:5ch}
+#codigo.with-diff{--gutter:10ch}
+#codigo>span{display:block;padding:0 16px 0 calc(var(--gutter) + 24px);min-height:1.6em;white-space:pre;position:relative;min-width:max-content}
+#codigo>span::before{content:attr(data-number);position:absolute;left:0;width:var(--gutter);padding-right:8px;box-sizing:border-box;text-align:right;color:#9baac0;border-right:1px solid #3a4b65;user-select:none;text-decoration:none}
+#codigo .mas{background:#16402e;color:#d6ffe9}
+#codigo .menos{background:#4a1d22;color:#ffc9c4;text-decoration:line-through;text-decoration-color:#ff8c8280}
+#codigo .mas::after,#codigo .menos::after{position:absolute;left:calc(var(--gutter) + 6px);text-decoration:none;user-select:none}
+#codigo .mas::after{content:"+"}
+#codigo .menos::after{content:"\2212"}
+#registro{margin:14px 0 0;background:#fff}
+#registro pre{margin:10px 0 0;padding:14px 16px;font-size:12.5px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:340px}
+@media(max-width:1000px){.mesa{grid-template-columns:minmax(0,1fr)}#entregas{max-height:220px}.detalle .paneles{height:auto}}
+.nota-panel{padding:12px 16px;margin-bottom:14px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.nota-auth,.nota-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.nota-controls{margin-top:10px}
+#nota-login{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#nota-login[hidden]{display:none}
+.nota-panel label{margin:0}.nota-panel button{padding:7px 12px;font-size:.85rem}
+#nota-key{width:220px;min-height:36px}#nota-value{width:120px;min-height:36px}
+#nota-comments{display:block;width:100%;box-sizing:border-box;margin-top:6px;resize:vertical}
+#nota-session,#nota-status{font-size:.85rem}#nota-status{margin:8px 0 0}
+#review-sections{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+#review-sections[hidden],#review-questions[hidden]{display:none}
+#review-sections button[aria-current=true]{background:var(--blue);color:white}
+#review-questions>section{background:white;border:1px solid var(--line);border-radius:12px;padding:20px;margin:12px 0}
+#review-statement{margin:12px 0;background:white;border:1px solid var(--line);border-radius:12px;padding:14px}
+#review-statement-content{max-height:360px;overflow:auto;line-height:1.6;padding-top:12px;overflow-wrap:anywhere}
+#review-statement-content>:first-child{margin-top:0}
+#review-statement-content img{max-width:100%;height:auto}
+#review-statement-content pre{white-space:pre-wrap;padding:12px}
+#review-statement-content table{border-collapse:collapse}
+#review-statement-content th,#review-statement-content td{padding:6px;border:1px solid var(--line)}
+#review-status{font-weight:600}
+#review-rubric{background:white}
+#review-rubric-content{max-height:420px;overflow:auto}
+#review-rubric-content h4{margin-bottom:6px}
+#review-rubric-content li{margin:6px 0}
+#review-questions .selected-answer{font-weight:700;background:#e9f0ff;border-radius:6px;padding:6px}
+#review-questions .unanswered{color:#b42318;font-weight:600}
+
+[hidden]{display:none!important}
+.login-page{min-height:100dvh;display:grid;place-items:center;padding:24px;box-sizing:border-box}
+.login-card{width:min(100%,390px);padding:32px;background:white;border:1px solid var(--line);border-radius:18px;box-shadow:0 16px 50px #10234a12}
+.login-card h1{margin:0 0 8px;font-size:1.5rem}.login-card p{color:var(--muted)}
+#nota-login{display:grid;gap:12px}#nota-key{width:100%;box-sizing:border-box;min-height:44px}
+.login-card button{width:100%}#login-status{min-height:1.5em;font-size:.9rem}
+.revision{max-width:1920px}
+.review-shell{display:grid;grid-template-columns:260px minmax(0,1fr);gap:18px;align-items:start}
+.review-sidebar,.mesa,.detalle,.review-work{min-width:0}
+.mesa{display:block;margin:0}
+.review-sidebar .soltar,.review-sidebar .soltar.compacta{flex-direction:column;padding:22px 16px;gap:8px;min-height:120px}
+.review-sidebar .soltar strong{font-size:.95rem}.review-sidebar .soltar span{font-size:.8rem;line-height:1.5}
+.review-sidebar .lista{margin-top:14px}#entregas{max-height:230px}
+.delivery-overview{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:14px;margin-bottom:14px;align-items:start}
+.delivery-info{margin:0;padding:16px;background:white;border:1px solid var(--line);border-radius:12px}
+#alumno{font-size:.95rem;overflow-wrap:anywhere;margin:0 0 14px}
+.review-meta{margin:0}.review-meta summary{font-size:.85rem;color:var(--muted);cursor:pointer}
+.ficha{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 0}.ficha li{border-radius:8px;padding:7px 9px;overflow-wrap:anywhere}
+.delivery-overview #registro{margin:0}
+#registro{padding:14px;border:1px solid var(--line);border-radius:12px;font-size:.85rem}
+#registro pre{padding:10px;font-size:.75rem;max-height:170px}
+.review-guidance{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin:14px 0 0;align-items:start}
+.review-guidance details{margin:0!important;padding:14px;border:1px solid var(--line);border-radius:12px;background:white}
+.review-guidance summary{cursor:pointer;font-weight:650}
+.nota-panel{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;position:static;padding:18px;margin:0 0 16px}
+.nota-panel h3{font-size:1rem;margin:0 0 10px}.nota-panel label{display:block;font-size:.85rem;font-weight:600}
+.nota-ai{min-width:0;background:#f1f5fc;border:1px solid #d7e2f4;border-radius:10px;padding:14px}
+.nota-manual{min-width:0;display:grid;grid-template-columns:120px minmax(0,1fr);gap:6px 14px;align-items:start}
+.nota-manual h3{grid-column:1/-1}.nota-manual label[for="nota-value"]{grid-column:1;grid-row:2}
+#nota-value{grid-column:1;grid-row:3;width:100%;box-sizing:border-box}
+.nota-manual label[for="nota-comments"]{grid-column:2;grid-row:2}
+#nota-comments{grid-column:2;grid-row:3;margin:0;min-height:86px}
+.nota-controls,#nota-status,#correo-status{grid-column:1/-1;margin:0}
+.nota-controls{gap:8px;margin-top:4px}.nota-controls button{flex:1}
+#nota-ai-value{display:block;font-size:1.5rem;font-weight:700;margin:6px 0}
+#nota-ai-comments{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;font-size:.88rem;line-height:1.5;max-height:190px;overflow:auto}
+#nota-ai-status{color:var(--muted);font-size:.8rem;margin:8px 0 0}
+#nota-status:empty,#correo-status:empty{display:none}
+#correo-status{font-size:.78rem;color:var(--muted)}.nota-auth{font-size:.8rem}
+.detalle .paneles{height:65dvh;min-height:480px}.panel-cabecera{flex-wrap:wrap}
+#review-sections{margin:0 0 14px}
+@media(max-width:1200px){.review-shell{grid-template-columns:220px minmax(0,1fr);gap:14px}.nota-panel{grid-template-columns:1fr}.nota-ai{padding:12px}#nota-ai-comments{max-height:140px}}
+@media(max-width:760px){.delivery-overview{grid-template-columns:1fr}.review-shell{grid-template-columns:1fr}.review-guidance{grid-template-columns:1fr}.detalle .paneles{height:auto;min-height:0}.nota-auth{width:100%;justify-content:space-between}.login-card{padding:24px}.review-sidebar .soltar,.review-sidebar .soltar.compacta{min-height:0;padding:14px}.nota-manual{grid-template-columns:90px minmax(0,1fr)}#entregas{max-height:160px}}
+
+.code-copy-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid var(--line)}
+#copy-code{width:auto;min-height:32px;margin:0;padding:6px 12px;font-size:.82rem;line-height:1.3}
+#copy-code-status{font-size:.78rem;line-height:1.3;color:var(--muted);overflow-wrap:anywhere}
+#copy-code-status:empty{display:none}
+.cabecera{align-items:center}
+.nota-auth{align-items:center;gap:10px}
+#soltar,#review-close{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:40px;height:40px;margin:0;padding:8px 14px;font-size:.85rem;line-height:1.2;white-space:nowrap;border-radius:9px}
+#soltar{border:2px dashed #97a6bb;background:white;color:var(--navy);font-weight:600}
+#soltar:hover,#soltar.encima{border-color:var(--blue);background:#edf3ff}
+.review-sidebar .lista{margin-top:0}
+.review-sidebar #registro{margin-top:14px}
+.delivery-info.review-meta{margin:0 0 16px;padding:14px 16px;background:white;border:1px solid var(--line);border-radius:12px}
+#nota-ai-status:empty,#avisos:empty,#nota-session:empty{display:none}
+@media(max-width:760px){.nota-auth{justify-content:flex-end}.nota-auth #nota-session{flex-basis:100%;text-align:right}}
+.review-grade{padding:18px;margin-bottom:16px;border:1px solid var(--line);border-radius:12px;background:white}
+.review-grade h3{margin:0 0 12px}.review-grade h4{font-size:.9rem;margin:0 0 8px}
+.review-grade-body{display:grid;grid-template-columns:100px minmax(0,1fr);gap:20px}
+#review-grade-value{display:block;font-size:2rem;font-weight:700}
+#review-grade-comment{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+#review-grade-status{font-size:.85rem;color:var(--muted)}#review-grade-status:empty{display:none}
+</style>
+</head>
+<body>
+<main id="review-app" class="revision">
+  <div class="cabecera">
+    <div>
+      <p class="eyebrow">Revisión de entrega</p>
+      <h1 id="titulo">Cargando…</h1>
+    </div>
+    <div class="nota-auth">
+      <button id="soltar" class="soltar secondary" type="button" title="Selecciona o arrastra archivos de entrega (.txt)">Añade entrega</button>
+      <input id="archivos" type="file" accept=".txt,text/plain" multiple hidden>
+      <button id="review-close" type="button" class="secondary">Cerrar</button></div>
+  </div>
+
+  <div class="review-shell">
+    <aside class="review-sidebar" aria-label="Entregas, registro, instrucciones y rúbrica">
+      <ul id="avisos" role="status"></ul>
+
+      <div id="delivery-sidebar" hidden>
+    <aside class="lista">
+      <div class="lista-cabecera"><span id="total"></span></div>
+      <ul id="entregas"></ul>
+    </aside>
+
+      <details id="registro" open>
+        <summary>Registro del intento</summary>
+        <pre id="auditoria"></pre>
+      </details>
+      <div class="review-guidance"><details id="review-statement" hidden><summary>Instrucciones de la práctica / apartado</summary><div id="review-statement-content"></div></details>
+      <details id="review-rubric" hidden><summary>Rúbrica de la actividad</summary><div id="review-rubric-content"></div></details>
+      </div>
+      </div>
+    </aside>
+    <div id="mesa" class="mesa" hidden>
+      <section class="detalle">
+      <section class="review-grade" aria-label="Calificación de la entrega">
+        <h3>Calificación</h3>
+        <div class="review-grade-body"><div><span>Nota</span><output id="review-grade-value">—</output></div>
+        <div><h4>Comentario</h4><p id="review-grade-comment"></p></div></div>
+        <p id="review-grade-status" role="status" aria-live="polite">Selecciona una entrega.</p>
+      </section>
+      <details class="review-meta delivery-info" open><summary>Datos y registro de la entrega</summary><ul id="ficha" class="ficha"></ul></details>
+      <div class="review-work">
+      <nav id="review-sections" aria-label="Apartados" hidden></nav>
+      <p id="review-status" role="status" hidden></p>
+<div id="review-questions" hidden></div>
+      <div class="paneles">
+        <section class="panel">
+          <header class="panel-cabecera">
+            <div class="pestanas" role="tablist" aria-label="Pestaña del código" style="margin-left:0">
+              <button type="button" role="tab" data-tab="html">HTML</button>
+              <button type="button" role="tab" data-tab="css">CSS</button>
+              <button type="button" role="tab" data-tab="js">JavaScript</button>
+              <button type="button" role="tab" data-tab="txt">TXT</button>
+            </div>
+            <label style="margin-left:auto"><input id="cambios" type="checkbox" checked> Resaltar cambios</label>
+          </header>
+          <div class="code-copy-actions">
+            <button id="copy-code" type="button" class="secondary">Copiar código completo</button>
+            <span id="copy-code-status" role="status" aria-live="polite"></span>
+          </div>
+          <pre id="codigo" tabindex="0"></pre>
+          <p id="pie-codigo" class="panel-pie"></p>
+        </section>
+        <section class="panel">
+          <header class="panel-cabecera">
+            <h2>Resultado</h2>
+            <label style="margin-left:auto"><input id="con-js" type="checkbox" checked> Ejecutar JavaScript</label>
+            <button id="recargar" type="button" class="secondary" style="padding:7px 14px;font-size:.86rem">↻ Actualizar</button>
+          </header>
+          <iframe id="vista" class="vista" title="Resultado de la entrega" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe>
+          <details class="consola" open>
+            <summary>Consola <span id="console-count"></span></summary>
+            <ol id="preview-console" data-empty="Aquí aparecen los mensajes de console.log y los errores del código."></ol>
+          </details>
+        </section>
+      </div>
+      </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<script src="motor/apartados.js?v=20261119-layout-02-base4"></script>
+<script src="motor/herramientas.js?v=20261119-layout-02-base4"></script>
+<script src="motor/revisor.js?v=20261120-revisor"></script>
+<script>
+(async () => {
+'use strict';
+const $=id=>document.getElementById(id);
+const TABS=['html','css','js','txt'];
+const NAMES={html:'HTML',css:'CSS',js:'JavaScript',txt:'TXT'};
+const warn=text=>{const li=document.createElement('li');li.textContent=text;$('avisos').append(li);};
+
+// ------------------------------------------------------------ Configuración común y actividades
+let config;
+const fetchFile=path=>{
+ const url=new URL(path,location.href),fresh=url.pathname.endsWith('/config.json');
+ if(fresh)url.searchParams.set('_config',Date.now()+'-'+Math.random().toString(36).slice(2));
+ return fetch(url,{cache:fresh?'no-store':'no-cache'});
+};
+try{
+ const response=await fetchFile('contenido/config.json');
+ if(!response.ok)throw Error('contenido/config.json ('+response.status+')');
+ config=await response.json();
+}catch(error){
+ $('titulo').textContent='No se pudo cargar la página';
+ warn('No se pudo leer la configuración de esta carpeta: '+error.message+'. Abre la página desde el sitio web o desde un servidor local, no con doble clic.');
+ return;
+}
+$('titulo').textContent='Revisión de entregas';
+const CSP=config.preview?.csp||"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: https:; media-src data: https:; font-src data: https:; form-action 'none'; base-uri 'none'";
+const EMPTY={html:'',css:'',js:'',txt:''};
+const skeleton=fetchFile('contenido/esqueleto.html').then(r=>r.ok?r.text():'').catch(()=>'');
+// Código de partida de cada actividad (actividades/MODULO/ACTIVIDAD/), leído una sola vez.
+const activities=new Map();
+function activityOf(mod,slug){
+ const key=mod+'/'+slug;
+ if(!/^(diw|dwec|ssii)\/[a-z0-9][a-z0-9-]{0,59}$/.test(key))return Promise.resolve(null);
+ if(!activities.has(key))activities.set(key,(async()=>{
+  const folder='actividades/'+key+'/',optional=async name=>{const r=await fetchFile(folder+name);return r.ok?r.text():'';};
+  const response=await fetchFile(folder+'config.json');
+  if(!response.ok)return null;
+  const info=await response.json();
+  const read=async path=>{const r=await fetchFile(path);if(!r.ok)throw Error(path);return r;};
+  const sections=await window.LabSections.load(info,folder,read,async path=>{const r=await fetchFile(path);if(r.status===404)return '';if(!r.ok)throw Error(path);return r.text();});
+  let rubric=null,rubricVersion='',rubricIssue='';
+  try{
+   const response=await fetchFile(folder+'rubrica.json');
+   if(response.status!==404){
+    if(!response.ok)throw Error('HTTP '+response.status);
+    const data=await response.json();rubric=window.LabTools.rubric(data);rubricVersion=String(data?.version||'sin versión');
+   }
+  }catch(error){rubricIssue='No se pudo cargar o validar la rúbrica: '+error.message;}
+  const code=ext=>Array.isArray(info.archivos)&&!info.archivos.includes(ext)?Promise.resolve(''):optional('codigo.'+ext);
+  const [ownHtml,css,js]=await Promise.all([code('html'),code('css'),code('js')]);
+  // Igual que el laboratorio: sin HTML de partida, la pestaña empieza con el esqueleto común.
+  const html=ownHtml.trim()?ownHtml:await skeleton;
+  return {sections,rubric,rubricVersion,rubricIssue,key,title:mod.toUpperCase()+String(info.title||slug).trim().replace(new RegExp('^'+mod+'\\s*','i'),''),version:String(info.version??''),start:{html,css,js,txt:''}};
+ })().catch(()=>null));
+ return activities.get(key);
+}
+// «DIW-TARJETA» o «DIW-TARJETA-SAVE» → módulo y actividad.
+function split(id){const m=/^(DIW|DWEC|SSII)-([A-Z0-9-]+?)(?:-SAVE)?$/.exec(String(id||''));return m?[m[1].toLowerCase(),m[2].toLowerCase()]:['',''];}
+
+// ------------------------------------------------------------ Sello del servidor (IP y hora)
+// 'ok' sello auténtico · 'bad' manipulado o de otra entrega · 'unknown' no se pudo comprobar
+// 'missing' la entrega no lleva sello aunque el control está activo · null sin control.
+const server=String(config.control?.servidor||'').replace(/\/+$/,'');
+async function checkStamp(report){
+ const sello=report.sello;
+ if(!sello||sello.error)return server||sello?'missing':null;
+ try{
+  const huella=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify([report.exam,report.email,report.answers])))),b=>b.toString(16).padStart(2,'0')).join('');
+  if(huella!==sello.huella||sello.email!==report.email)return 'bad';
+  if(!server)return 'unknown';
+  const response=await fetch(server+'/verificar',{method:'POST',cache:'no-store',signal:AbortSignal.timeout(8000),body:JSON.stringify({sello})});
+  return response.ok?((await response.json()).valido===true?'ok':'bad'):'unknown';
+ }catch{return 'unknown';}
+}
+
+// ------------------------------------------------------------ Descodificar
+async function decode(text){
+ text=text.trim();
+ const prefix=config.format.report;
+ if(!text.startsWith(prefix)||!/^[A-Za-z0-9_-]+$/.test(text.slice(prefix.length)))throw Error('no es un archivo de entrega de este tipo de práctica');
+ const encoded=text.slice(prefix.length).replaceAll('-','+').replaceAll('_','/');
+ try{
+  const bytes=Uint8Array.from(atob(encoded+'='.repeat((4-encoded.length%4)%4)),c=>c.charCodeAt(0));
+  const buffer=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+  return new TextDecoder('utf-8',{fatal:true}).decode(buffer);
+ }catch{throw Error('el archivo está dañado o ha sido alterado');}
+}
+async function parseRaw(text){
+ let decoded=await decode(text);
+ // Comprobantes y archivos de «Guardar y pausar»: llevan el intento completo.
+ if(decoded.trimStart().startsWith('{')&&!decoded.includes('\nCódigo de comprobación: ')){
+  const doc=JSON.parse(decoded),data=doc.state?.data;
+  if(!data)throw Error('formato no reconocido');
+  if(data.report)decoded=await decode(data.report);
+  else{
+   const values=data.values||{},[mod,slug]=split(doc.format),known=await activityOf(mod,slug),start=known?.start||EMPTY;
+   return {id:'borrador-'+(values.student||'')+'-'+(doc.state.savedAt||''),draft:true,intact:null,email:values.student||'(sin correo)',
+    sectionData:data.sections,sectionDefinitions:known?.sections,known,start,label:known?.title||String(doc.format||'Actividad desconocida'),activityVersion:known?.version,
+    code:Object.fromEntries(TABS.map(t=>[t,typeof values[t]==='string'?values[t]:start[t]])),
+    modified:TABS.filter(t=>typeof values[t]==='string'&&values[t]!==start[t]),
+    seconds:Math.floor((data.elapsed||0)/1000),guardPolicy:doc.state.returnRemainingMs!==undefined?'return-timeout':'incident-limit',incidents:doc.state.count,audit:(doc.state.events||[]).map(e=>new Date(e.at).toISOString()+' · '+e.text).join('\n')};
+  }
+ }
+ const marker='\nCódigo de comprobación: '+config.format.checksum,offset=decoded.lastIndexOf(marker);
+ if(offset<0)throw Error('falta el código de comprobación');
+ const payload=decoded.slice(0,offset),report=JSON.parse(payload);
+ const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(payload))),b=>b.toString(16).padStart(2,'0')).join('');
+ const [mod,slug]=report.module&&report.activity?[String(report.module).toLowerCase(),String(report.activity).toLowerCase()]:split(report.exam);
+ const known=await activityOf(mod,slug),start=known?.start||EMPTY;
+ const answers=Object.fromEntries((report.answers||[]).filter(a=>TABS.includes(a.question)&&typeof a.answer==='string').map(a=>[a.question,a.answer]));
+ return {...report,reviewProof:payload,sectionData:report.sectionsVersion===1?window.LabSections.unpack(report.answers||[]):null,id:hash,intact:hash===decoded.slice(offset+marker.length),stamp:await checkStamp(report),known,start,label:known?.title||String(report.exam||'Actividad desconocida'),
+  email:String(report.email||'(sin correo)'),modified:TABS.filter(t=>t in answers),
+  code:Object.fromEntries(TABS.map(t=>[t,t in answers?answers[t]:start[t]]))};
+}
+
+function reviewSections(item){
+ const defs=item.sectionDefinitions||item.known?.sections;
+ if(!Array.isArray(defs)||!defs.length)throw Error('No se dispone de la definición de los apartados.');
+ const normalized=window.LabSections.definitions({apartados:defs.map(s=>({id:s.id,tipo:s.type,titulo:s.title}))});
+ return normalized.map((s,i)=>{
+  const published=item.known?.sections?.find(k=>k.id===s.id&&k.type===s.type);
+  const sameVersion=String(item.activityVersion)===String(item.known?.version);
+  return {...s,path:published?.path||s.path,statement:published?.statement,baselineKnown:!!published&&sameVersion,
+   code:published?.code||EMPTY,
+   ...(s.type==='webcode'?{}:{questions:window.LabSections.questions((defs[i].questions||[]).map(q=>({id:q.id,enunciado:q.text,opciones:q.options})),s.type)})};
+ });
+}
+async function parse(text){
+ const item=await parseRaw(text);
+ if(item.sectionsVersion===1&&!item.sectionData)throw Error('Faltan las respuestas de los apartados.');
+ if(item.sectionData){
+  item.reviewSections=reviewSections(item);
+  item.sectionData=window.LabSections.sanitize(item.reviewSections,item.sectionData);
+ }
+ return item;
+}
+
+// ------------------------------------------------------------ Lista
+const items=new Map();let current=null,tab='html';
+
+function completeCode(code){
+ const doc=new DOMParser().parseFromString(code.html||'','text/html');
+ // Sustituye las referencias habituales a las pestañas locales, conservando bibliotecas externas.
+ for(const node of doc.querySelectorAll('link[rel~="stylesheet"][href],script[src]')){
+  const ref=node.getAttribute(node.tagName==='LINK'?'href':'src');
+  const local=/^(?:\.\/)?(?:codigo|style|styles|estilos)\.css(?:[?#].*)?$/i.test(ref)&&node.tagName==='LINK'
+   ||/^(?:\.\/)?(?:codigo|app|script|main|index)\.js(?:[?#].*)?$/i.test(ref)&&node.tagName==='SCRIPT';
+  if(local)node.remove();
+ }
+ if(!doc.documentElement.lang)doc.documentElement.lang='es';
+ if(!doc.querySelector('meta[charset]')){
+  const meta=doc.createElement('meta');meta.setAttribute('charset','utf-8');doc.head.prepend(meta);
+ }
+ const style=doc.createElement('style');style.textContent='\n'+(code.css||'').replace(/<\/style/gi,'<\\/style')+'\n';doc.head.append(style);
+ // Al final del body los elementos ya existen cuando se ejecuta el código del alumno.
+ const script=doc.createElement('script');script.textContent='\n'+(code.js||'').replace(/<\/script/gi,'<\\/script')+'\n';doc.body.append(script);
+ return '<!DOCTYPE html>\n'+doc.documentElement.outerHTML;
+}
+function copyCodeFallback(text){
+ const focused=document.activeElement,field=document.createElement('textarea');
+ field.value=text;field.setAttribute('aria-label','Código para copiar');field.style.cssText='position:fixed;left:-9999px;top:0';
+ document.body.append(field);field.select();
+ let copied=false;try{copied=document.execCommand('copy');}finally{field.remove();focused?.focus({preventScroll:true});}
+ if(!copied)throw Error('No se pudo copiar. Comprueba el permiso del portapapeles y vuelve a intentarlo.');
+}
+$('copy-code').addEventListener('click',async()=>{
+ const item=items.get(current);if(!item)return;
+ const text=completeCode(item.code),status=$('copy-code-status');
+ status.textContent='';
+ try{
+  if(navigator.clipboard?.writeText){
+   try{await navigator.clipboard.writeText(text);}catch{copyCodeFallback(text);}
+  }else copyCodeFallback(text);
+  status.textContent='Copiado al portapapeles.';
+ }catch(error){status.textContent=error.message;}
+});
+
+const duration=s=>Number.isFinite(s)?Math.floor(s/60)+' min '+String(s%60).padStart(2,'0')+' s':'—';
+const when=iso=>iso&&Number.isFinite(Date.parse(iso))?new Date(iso).toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'}):'';
+function problems(item){
+ const out=[];
+ if(item.draft)out.push('Sin entregar');
+ if(item.intact===false)out.push('Archivo alterado');
+ if(item.stamp==='missing')out.push('Sin sello');
+ if(item.stamp==='bad')out.push('Sello no válido');
+ if(item.stamp&&item.stamp!=='missing'&&item.sello){
+  if(!item.sello.enRed)out.push('Fuera de la red');
+  if(!item.sello.enHorario)out.push('Fuera de horario');
+ }
+ if(!item.known)out.push('Actividad desconocida');
+ else if(item.activityVersion!==item.known.version)out.push('Otra versión');
+ return out;
+}
+function renderList(){
+ const sorted=[...items.values()].sort((a,b)=>a.label.localeCompare(b.label,'es')||a.email.localeCompare(b.email,'es')||String(a.finishedAt).localeCompare(String(b.finishedAt)));
+ $('entregas').replaceChildren(...sorted.map(item=>{
+  const li=document.createElement('li'),button=document.createElement('button'),name=document.createElement('b'),meta=document.createElement('small');
+  button.type='button';button.setAttribute('aria-current',String(item.id===current));
+  name.textContent=String(item.email).split('@')[0];
+  const activity=document.createElement('small');activity.textContent=item.label;
+  meta.textContent=[when(item.finishedAt),duration(item.seconds),'incidencias '+(item.incidents??'—')].filter(Boolean).join(' · ');
+  button.append(name,activity,meta);
+  const bad=problems(item);
+  if(bad.length){const alert=document.createElement('small');alert.className='alerta';alert.textContent=bad.join(' · ');button.append(alert);}
+  button.addEventListener('click',()=>select(item.id));
+  li.append(button);return li;
+ }));
+ $('total').textContent=items.size+(items.size===1?' entrega':' entregas');
+ $('mesa').hidden=!items.size;
+ $('delivery-sidebar').hidden=!items.size;
+}
+
+// ------------------------------------------------------------ Código y cambios
+function diff(before,after){
+ const a=before===''?[]:before.replace(/\n$/,'').split('\n'),b=after===''?[]:after.replace(/\n$/,'').split('\n');
+ if((a.length+1)*(b.length+1)>4000000)return b.map(text=>({text}));
+ const width=b.length+1,table=new Uint16Array((a.length+1)*width);
+ for(let i=a.length-1;i>=0;i--)for(let j=b.length-1;j>=0;j--)
+  table[i*width+j]=a[i]===b[j]?table[(i+1)*width+j+1]+1:Math.max(table[(i+1)*width+j],table[i*width+j+1]);
+ const out=[];let i=0,j=0;
+ while(i<a.length&&j<b.length){
+  if(a[i]===b[j]){out.push({text:b[j]});i++;j++;}
+  else if(table[(i+1)*width+j]>=table[i*width+j+1])out.push({text:a[i++],kind:'menos'});
+  else out.push({text:b[j++],kind:'mas'});
+ }
+ while(i<a.length)out.push({text:a[i++],kind:'menos'});
+ while(j<b.length)out.push({text:b[j++],kind:'mas'});
+ return out;
+}
+function renderCode(){
+ const item=items.get(current);if(!item)return;
+ for(const button of document.querySelectorAll('[data-tab]')){
+  const t=button.dataset.tab;
+  button.setAttribute('aria-selected',String(t===tab));
+  button.replaceChildren(NAMES[t]);
+  if(item.modified.includes(t)){const dot=document.createElement('span');dot.className='punto';dot.textContent='●';dot.title='Modificada';button.append(dot);}
+ }
+ const changed=item.modified.includes(tab),marked=$('cambios').checked&&changed;
+ const rows=marked?diff(item.start[tab],item.code[tab]):item.code[tab].replace(/\n$/,'').split('\n').map(text=>({text}));
+ let oldLine=0,newLine=0;
+ $('codigo').classList.toggle('with-diff',marked);
+ $('codigo').replaceChildren(...rows.map(row=>{
+  const span=document.createElement('span');if(row.kind)span.className=row.kind;
+  const before=row.kind==='mas'?'':String(++oldLine),after=row.kind==='menos'?'':String(++newLine);
+  span.dataset.oldLine=before;span.dataset.line=after;
+  span.dataset.number=marked?before.padStart(4)+' '+after.padStart(4):after;
+  span.textContent=row.text;return span;
+ }));
+ $('codigo').scrollTop=0;
+ const added=rows.filter(r=>r.kind==='mas').length,removed=rows.filter(r=>r.kind==='menos').length;
+ $('pie-codigo').textContent=NAMES[tab]+' · '+(marked?'Numeración: original | entrega · ':'')+(!changed?(tab==='txt'?'sin notas':'sin cambios: es el código de partida'):marked?added+' líneas añadidas o cambiadas · '+removed+' eliminadas':'modificada por el alumno');
+ $('copy-code-status').textContent='';
+}
+
+// ------------------------------------------------------------ Resultado (marco aislado)
+function bridge(token){
+ var parent=window.parent,sent=0;
+ function format(value){
+  if(typeof value==='string')return value;
+  if(value instanceof Error)return value.name+': '+value.message;
+  try{var json=JSON.stringify(value);return json===undefined?String(value):json;}catch(error){return String(value);}
+ }
+ function send(kind,values){
+  if(sent>300)return;
+  var text=sent++===300?'… demasiados mensajes: se omite el resto.':Array.prototype.map.call(values,format).join(' ').slice(0,2000);
+  try{parent.postMessage({labReview:token,kind:kind,text:text},'*');}catch(error){}
+ }
+ ['log','info','warn','error','debug'].forEach(function(kind){
+  var original=console[kind];
+  console[kind]=function(){send(kind,arguments);try{original.apply(console,arguments);}catch(error){}};
+ });
+ window.addEventListener('error',function(event){send('error',[event.message||'Error']);});
+ window.addEventListener('unhandledrejection',function(event){send('error',['Promesa rechazada: '+format(event.reason)]);});
+ window.alert=function(message){send('alert',['alert: '+format(message===undefined?'':message)]);};
+ window.confirm=function(message){send('alert',['confirm: '+format(message===undefined?'':message)+' → false']);return false;};
+ window.prompt=function(message){send('alert',['prompt: '+format(message===undefined?'':message)+' → null']);return null;};
+ document.addEventListener('click',function(event){
+  var link=event.target&&event.target.closest&&event.target.closest('a[href],area[href]');
+  var href=link&&(link.getAttribute('href')||'');
+  if(link&&href.charAt(0)!=='#'&&href.toLowerCase().indexOf('javascript:')!==0){event.preventDefault();send('info',['Enlace desactivado en la vista previa: '+href]);}
+ },true);
+}
+const attr=text=>text.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
+let token='';
+function renderResult(){
+ 
+ const item=items.get(current);if(!item)return;
+ $('preview-console').replaceChildren();$('console-count').textContent='';
+ token=Array.from(crypto.getRandomValues(new Uint8Array(12)),x=>x.toString(16).padStart(2,'0')).join('');
+ const code=item.code;
+ const js=$('con-js').checked?code.js:'';
+ // Sin «Ejecutar JavaScript» también se anulan los <script> y manejadores escritos en el HTML.
+ const policy=$('con-js').checked?CSP:CSP.replace(/script-src[^;]*/,"script-src 'none'");
+ $('vista').srcdoc='<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="'+attr(policy)+'">'
+  +($('con-js').checked?'<script>('+bridge+')('+JSON.stringify(token)+')<\/script>':'')
+  +'<style>'+code.css.replace(/<\/style/gi,'<\\/style')+'</style>'+code.html
+  +(js?'<script>'+js.replace(/<\/script/gi,'<\\/script')+'<\/script>':'');
+}
+window.addEventListener('message',event=>{
+ const m=event.data;
+ if(!token||event.source!==$('vista').contentWindow||!m||m.labReview!==token||typeof m.kind!=='string'||typeof m.text!=='string')return;
+ const list=$('preview-console'),li=document.createElement('li');
+ li.className='consola-'+(['warn','error','alert'].includes(m.kind)?m.kind:'log');li.textContent=m.text.slice(0,2000);list.append(li);
+ while(list.children.length>200)list.firstElementChild.remove();
+ const errors=list.querySelectorAll('.consola-error').length;
+ $('console-count').textContent=errors?'· '+errors+(errors===1?' error':' errores'):'';
+});
+
+// Renderizar el enunciado sin un iframe y sin introducir HTML ejecutable.
+function instructionContent(html,base){
+ const parsed=new DOMParser().parseFromString(String(html),'text/html'),fragment=document.createDocumentFragment();
+ const allowed=new Set('p div section article h1 h2 h3 h4 h5 h6 ul ol li pre code strong em b i u s small sub sup br hr blockquote table thead tbody tfoot tr th td caption dl dt dd a img details summary span'.split(' '));
+ const blocked=new Set('SCRIPT STYLE IFRAME OBJECT EMBED LINK META BASE FORM INPUT BUTTON TEXTAREA SELECT TEMPLATE SVG MATH'.split(' '));
+ function copy(node,parent){
+  if(node.nodeType===Node.TEXT_NODE){parent.append(document.createTextNode(node.textContent));return;}
+  if(node.nodeType!==Node.ELEMENT_NODE||blocked.has(node.tagName))return;
+  const tag=node.tagName.toLowerCase();
+  if(!allowed.has(tag)){for(const child of node.childNodes)copy(child,parent);return;}
+  const el=document.createElement(tag);
+  for(const name of ['title','alt'])if(node.hasAttribute(name))el.setAttribute(name,node.getAttribute(name));
+  for(const name of ['colspan','rowspan','start'])if(/^\d{1,3}$/.test(node.getAttribute(name)||''))el.setAttribute(name,node.getAttribute(name));
+  const attribute=tag==='a'?'href':tag==='img'?'src':null;
+  if(attribute&&node.hasAttribute(attribute))try{
+   const url=new URL(node.getAttribute(attribute),base);
+   if(/\/profesor\.html$/i.test(url.pathname))url.pathname=url.pathname.replace(/profesor\.html$/i,'revisor.html');
+   if(['https:','http:'].includes(url.protocol)){el.setAttribute(attribute,url.href);if(tag==='a'){el.target='_blank';el.rel='noopener noreferrer';}}
+  }catch{}
+  for(const child of node.childNodes)copy(child,el);
+  parent.append(el);
+ }
+ for(const node of parsed.body.childNodes)copy(node,fragment);
+ return fragment;
+}
+
+function renderRubric(item){
+ const panel=$('review-rubric'),content=$('review-rubric-content');panel.hidden=false;content.replaceChildren();
+ const rubric=item.known?.rubric;
+ if(!rubric){
+  const note=document.createElement('p');note.textContent=item.known?.rubricIssue||(item.known?'Esta actividad no tiene rúbrica. Antes de corregir con IA, genera una propuesta a partir del enunciado y utiliza la misma versión para todo el lote.':'No se pudo identificar o cargar la actividad para consultar su rúbrica.');content.append(note);return;
+ }
+ const title=document.createElement('h3'),total=document.createElement('p'),notice=document.createElement('p');
+ title.textContent=rubric.titulo;total.textContent='Total: '+rubric.total+' puntos · Versión de rúbrica: '+item.known.rubricVersion;
+ notice.textContent='Rúbrica publicada actualmente. Comprueba que corresponde a las condiciones de esta entrega; mostrarla no modifica la calificación.';content.append(title,total,notice);
+ for(const [index,criterion] of rubric.criterios.entries()){
+  const heading=document.createElement('h4'),list=document.createElement('ul');heading.textContent=(index+1)+'. '+criterion.titulo+' · '+criterion.puntos+' puntos';
+  for(const level of criterion.niveles){const row=document.createElement('li'),points=document.createElement('strong');points.textContent=level.puntos+' puntos: ';row.append(points,document.createTextNode(level.descripcion));list.append(row);}
+  content.append(heading,list);
+ }
+}
+
+// Cada apartado reutiliza el visor web o presenta sus respuestas como texto seguro.
+function renderSections(item,chosen){
+ const nav=$('review-sections'),questions=$('review-questions'),panels=document.querySelector('.detalle .paneles');
+ const instructions=$('review-statement'),content=$('review-statement-content'),status=$('review-status');
+ instructions.hidden=true;content.replaceChildren();status.hidden=true;status.textContent='';
+ nav.replaceChildren();questions.replaceChildren();nav.hidden=!item.sectionData;questions.hidden=true;panels.hidden=false;
+ const showStatement=(statement,sectionPath='')=>{
+  window.ReviewActivity=item.known?{key:item.known.key,section:sectionPath.split('/')[1]||''}:null;
+  instructions.hidden=false;
+  if(!statement?.trim())statement='<p>No se pudieron cargar las instrucciones de esta actividad. Comprueba que la entrega corresponde a una actividad disponible en base4 y que hay conexión.</p>';
+  const base=new URL(item.known?'actividades/'+item.known.key+'/'+sectionPath:'.',location.href);
+  content.replaceChildren(instructionContent(statement,base));
+ };
+ if(!item.sectionData){showStatement(item.known?.sections?.[0]?.statement);return;}
+ const sections=item.reviewSections;
+ const state=window.LabSections.sanitize(sections,item.sectionData);
+ const selected=sections.find(s=>s.id===chosen)||sections[0];
+ const pending=window.LabSections.incomplete(sections,state);
+ const progress=section=>{
+  if(section.type==='webcode')return !section.baselineKnown?'Cambios sin comparar':pending.some(p=>p.id===section.id)?'Sin cambios en HTML, CSS o JS':'Código modificado';
+  const answered=section.questions.filter(q=>state.values[section.id][q.id].trim()).length;
+  return answered+'/'+section.questions.length+' respondidas';
+ };
+ for(const [index,section] of sections.entries()){
+  const button=document.createElement('button');button.type='button';button.className='secondary';button.textContent=(index+1)+'. '+section.title+' · '+(section.type==='qa'?'QA':section.type==='test'?'Test':'webcode')+' · '+progress(section);
+  button.setAttribute('aria-current',String(section.id===selected.id));
+  button.addEventListener('click',()=>renderSections(item,section.id));nav.append(button);
+ }
+ showStatement(selected.statement,selected.path);
+ status.hidden=false;status.textContent='Apartado '+(sections.indexOf(selected)+1)+' de '+sections.length+' · '+progress(selected)+'. '+(selected.type==='test'?'Se muestra la alternativa elegida; no implica que sea correcta.':'Pendiente de valoración del profesor.');
+ if(item.known&&String(item.activityVersion)!==String(item.known.version))status.textContent+=' Las instrucciones y el código de partida corresponden a la versión publicada actualmente.';
+ if(selected.type==='webcode'){
+  item.start=selected.code;item.code=state.values[selected.id];item.modified=TABS.filter(t=>item.code[t]!==item.start[t]);
+  if(!selected.baselineKnown)$('cambios').checked=false;
+  renderCode();renderResult();
+ }else{
+  panels.hidden=true;questions.hidden=false;token='';$('vista').srcdoc='';$('preview-console').replaceChildren();$('console-count').textContent='';
+  for(const q of selected.questions){
+   const article=document.createElement('section'),heading=document.createElement('h3'),answer=document.createElement('p');
+   heading.textContent=q.text;const value=state.values[selected.id][q.id];
+   if(selected.type==='test'){
+    const options=document.createElement('ol');options.type='A';
+    q.options.forEach((text,index)=>{const li=document.createElement('li');li.textContent=text;if(value===String(index)){li.className='selected-answer';li.textContent+=' — Elegida por el alumno';}options.append(li);});article.append(heading,options);
+   }else article.append(heading);
+   answer.textContent=!value.trim()?'Sin responder':selected.type==='test'?'Respuesta: '+String.fromCharCode(65+Number(value)):value;
+   if(!value.trim())answer.className='unanswered';
+   answer.style.whiteSpace='pre-wrap';article.append(answer);questions.append(article);
+  }
+ }
+}
+
+// ------------------------------------------------------------ Detalle
+function chip(text,kind){const li=document.createElement('li');li.textContent=text;if(kind)li.className=kind;return li;}
+function select(id){
+ current=id;const item=items.get(id);renderList();if(!item)return;
+
+ renderRubric(item);
+ const chips=[];
+ if(item.draft)chips.push(chip('Práctica guardada sin entregar','mal'));
+ else chips.push(item.intact?chip('Archivo íntegro','bien'):chip('El archivo ha sido alterado: el código de comprobación no coincide','mal'));
+ chips.unshift(chip(item.label));
+ if(!item.known)chips.push(chip('No se encuentra esta actividad en el sitio: solo se muestran las pestañas modificadas, sin código de partida','mal'));
+ else if(item.activityVersion!==item.known.version)chips.push(chip('Versión '+item.activityVersion+' (la actividad publicada es la '+item.known.version+'): el código de partida puede no coincidir','mal'));
+ if(item.sello?.accesoSinComprobar)chips.push(chip('Entró sin comprobar red ni horario: el servidor no respondió al abrir la actividad','mal'));
+ if(item.stamp==='missing')chips.push(chip('Sin sello del servidor: IP y hora sin comprobar','mal'));
+ else if(item.stamp){
+  const sello=item.sello;
+  if(item.stamp==='bad')chips.push(chip('Sello no válido: no corresponde a esta entrega o ha sido manipulado','mal'));
+  if(item.stamp==='unknown')chips.push(chip('Sello sin verificar: no se pudo consultar al servidor','mal'));
+  chips.push(chip('IP registrada: '+sello.ip));
+  chips.push(chip((sello.enHorario?'En horario de clase':'FUERA DE HORARIO')+' · '+when(sello.hora),sello.enHorario?'bien':'mal'));
+  if(sello.profesor)chips.push(chip('Entrega hecha con la clave del profesor'));
+ }
+ if(when(item.finishedAt))chips.push(chip('Entregado: '+when(item.finishedAt)));
+ chips.push(chip('Tiempo: '+duration(item.seconds)));
+ chips.push(chip('Incidencias: '+(item.incidents??'—')+(item.guardPolicy==='return-timeout'?'':'/3'),item.guardPolicy!=='return-timeout'&&item.incidents>=3?'mal':''));
+ if(item.finishReason==='incident-limit')chips.push(chip('Cierre automático por tercera incidencia','mal'));
+ if(item.finishReason==='return-timeout')chips.push(chip('Cierre automático: tiempo de regreso agotado','mal'));
+ if(item.finishReason==='duration-limit')chips.push(chip('Entrega automática al terminar el tiempo de la práctica'));
+ if(item.durationSeconds)chips.push(chip('Duración máxima: '+duration(item.durationSeconds)));
+ if(item.recoveries)chips.push(chip('Recuperaciones: '+item.recoveries));
+ const blocked=Object.entries(item.actionCounts||{}).map(([k,v])=>k+' ×'+v).join(', ');
+ if(blocked)chips.push(chip('Acciones bloqueadas: '+blocked));
+ chips.push(chip(item.sectionData?item.reviewSections.length+' apartado(s) · '+[...new Set(item.reviewSections.map(s=>s.type==='qa'?'QA':s.type))].join(', '):item.modified.length?'Modificado: '+item.modified.map(t=>NAMES[t]).join(', '):'No modificó nada',item.sectionData||item.modified.length?'':'mal'));
+ $('ficha').replaceChildren(...chips);
+ $('auditoria').textContent=String(item.audit||'Sin registro.').replace(/([\w.+-]+)@[\w.-]+\.[A-Za-z]{2,}/g,'$1');
+ if(!item.modified.includes(tab))tab=item.modified.find(t=>t!=='txt')||item.modified[0]||'html';
+ if(item.sectionData)renderSections(item);else{renderSections(item);renderCode();renderResult();}
+ window.dispatchEvent(new CustomEvent('review-selection',{detail:{id:item.id,intact:item.intact,draft:!!item.draft,proof:item.reviewProof}}));
+}
+for(const button of document.querySelectorAll('[data-tab]'))button.addEventListener('click',()=>{tab=button.dataset.tab;renderCode();});
+$('cambios').addEventListener('change',renderCode);
+$('con-js').addEventListener('change',renderResult);
+$('recargar').addEventListener('click',renderResult);
+
+
+// ------------------------------------------------------------ Entrada de archivos
+async function add(files){
+ let first=null;
+ for(const file of files){
+  try{
+   if(file.size>3000000)throw Error('es demasiado grande');
+   const item=await parse(typeof file.text==='string'?file.text:await file.text());
+     item.file=file.name;
+   if(!items.has(item.id))first??=item.id;
+   items.set(item.id,item);
+  }catch(error){warn(file.name+': no se pudo leer ('+(error.message||'archivo no válido')+').');}
+ }
+ if(first||!items.has(current))select(first||[...items.keys()][0]||null);else renderList();
+}
+const drop=$('soltar');
+drop.addEventListener('click',()=>$('archivos').click());
+for(const type of ['dragenter','dragover'])document.addEventListener(type,e=>{e.preventDefault();drop.classList.add('encima');});
+for(const type of ['dragleave','drop'])document.addEventListener(type,e=>{e.preventDefault();drop.classList.remove('encima');});
+document.addEventListener('drop',e=>{if(e.dataTransfer?.files?.length)add([...e.dataTransfer.files]);});
+$('archivos').addEventListener('change',()=>{add([...$('archivos').files]);$('archivos').value='';});
+// Texto de la columna «ENTREGA completa»: pegado en la página o recibido en el enlace de la hoja.
+document.addEventListener('paste',e=>{
+ const text=(e.clipboardData?.getData('text')||'').trim();
+ if(text.startsWith(config.format.report)){e.preventDefault();add([{name:'Texto pegado',size:text.length,text}]);}
+});
+const linked=/^#entrega=([A-Za-z0-9._-]+)$/.exec(location.hash);
+let linkedLoaded=false;
+function loadLinked(){if(linked&&!linkedLoaded){linkedLoaded=true;void add([{name:'Enlace de la hoja',size:linked[1].length,text:linked[1]}]);}}
+loadLinked();
+window.reviewReady=true;
+})();
+</script>
+</body>
+</html>
+

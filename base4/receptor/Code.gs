@@ -486,11 +486,31 @@ function estadoIA_(hoja, cabeceras, fila) {
   if (notas.length !== 1 || comentarios.length !== 1) return { iaDisponible: false, iaAviso: 'Faltan las columnas NOTA IA o COMENTARIOS IA.' };
   return { iaDisponible: true, notaIA: hoja.getRange(fila, notas[0]).getDisplayValue(), comentariosIA: hoja.getRange(fila, comentarios[0]).getDisplayValue() };
 }
-/** Todas las consultas y escrituras de notas requieren una sesión validada aquí. */
+/** Consulta pública de una entrega: requiere conocer su contenido completo, nunca solo un ID. */
+function consultarRevision_(pedido) {
+  texto_(pedido.proof, 3000000);
+  if(!/^[a-f0-9]{64}$/.test(pedido.submissionId||'')||huella_(pedido.proof)!==pedido.submissionId)throw Error('INVALID');
+  const hoja=libro_().getSheetByName(PESTANA_);
+  comprobarCabeceras_(hoja);
+  const fila=filaDeEntrega_(hoja,pedido.submissionId);
+  const headers=hoja.getRange(1,1,1,hoja.getLastColumn()).getValues()[0];
+  const read=(name,required)=>{
+    const columns=headers.map((v,i)=>igual_(v)===name?i+1:0).filter(Boolean);
+    if(columns.length>1||(required&&columns.length!==1))throw Error('SCHEMA');
+    return columns.length?hoja.getRange(fila,columns[0]).getDisplayValue():'';
+  };
+  const nota=read('nota',true),comentarios=read('comentarios a la nota',true);
+  return {ok:true,submissionId:pedido.submissionId,
+    nota:nota!==''?nota:read('nota ia',false),
+    comentarios:comentarios!==''?comentarios:read('comentarios ia',false)};
+}
+
+/** La gestión del profesor requiere sesión; review solo consulta la entrega acreditada. */
 function gestionarNota(pedido) {
   let cerrojo;
   try {
     if (!pedido || typeof pedido !== 'object') throw Error('INVALID');
+    if (pedido.action === 'review') return consultarRevision_(pedido);
     if (pedido.action === 'login') return iniciarSesionProfesor_(pedido.key);
     const sesion = sesionProfesor_(pedido.token);
     if (pedido.action === 'session') return { ok: true, expiresAt: sesion.expiresAt };
