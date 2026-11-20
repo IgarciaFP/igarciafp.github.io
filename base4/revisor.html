@@ -233,7 +233,7 @@
 
 <script src="motor/apartados.js?v=20261119-layout-02-base4"></script>
 <script src="motor/herramientas.js?v=20261119-layout-02-base4"></script>
-<script src="motor/revisor.js?v=20261120-revisor"></script>
+<script src="motor/revisor.js?v=20261120-public-grades"></script>
 <script>
 (async () => {
 'use strict';
@@ -344,7 +344,7 @@ async function parseRaw(text){
  const [mod,slug]=report.module&&report.activity?[String(report.module).toLowerCase(),String(report.activity).toLowerCase()]:split(report.exam);
  const known=await activityOf(mod,slug),start=known?.start||EMPTY;
  const answers=Object.fromEntries((report.answers||[]).filter(a=>TABS.includes(a.question)&&typeof a.answer==='string').map(a=>[a.question,a.answer]));
- return {...report,reviewProof:payload,sectionData:report.sectionsVersion===1?window.LabSections.unpack(report.answers||[]):null,id:hash,intact:hash===decoded.slice(offset+marker.length),stamp:await checkStamp(report),known,start,label:known?.title||String(report.exam||'Actividad desconocida'),
+ return {...report,reviewModule:mod,sectionData:report.sectionsVersion===1?window.LabSections.unpack(report.answers||[]):null,id:hash,intact:hash===decoded.slice(offset+marker.length),stamp:await checkStamp(report),known,start,label:known?.title||String(report.exam||'Actividad desconocida'),
   email:String(report.email||'(sin correo)'),modified:TABS.filter(t=>t in answers),
   code:Object.fromEntries(TABS.map(t=>[t,t in answers?answers[t]:start[t]]))};
 }
@@ -672,7 +672,7 @@ function select(id){
  $('auditoria').textContent=String(item.audit||'Sin registro.').replace(/([\w.+-]+)@[\w.-]+\.[A-Za-z]{2,}/g,'$1');
  if(!item.modified.includes(tab))tab=item.modified.find(t=>t!=='txt')||item.modified[0]||'html';
  if(item.sectionData)renderSections(item);else{renderSections(item);renderCode();renderResult();}
- window.dispatchEvent(new CustomEvent('review-selection',{detail:{id:item.id,intact:item.intact,draft:!!item.draft,proof:item.reviewProof}}));
+ window.dispatchEvent(new CustomEvent('review-selection',{detail:{id:item.id,intact:item.intact,draft:!!item.draft,module:item.reviewModule,user:String(item.email).split('@')[0],attemptId:item.attemptId,activity:item.activity,activityTitle:item.activityTitle,label:item.label}}));
 }
 for(const button of document.querySelectorAll('[data-tab]'))button.addEventListener('click',()=>{tab=button.dataset.tab;renderCode();});
 $('cambios').addEventListener('change',renderCode);
