@@ -108,3 +108,15 @@ La nota y el comentario se leen de las publicaciones públicas de DIW, DWEC y SS
 No necesita publicar Apps Script ni utiliza tokens o contraseñas para consultar la calificación. La acción pública review propuesta anteriormente se ha retirado del código del receptor: no hace falta implementarla. Las operaciones de gestión del profesor siguen requiriendo sesión.
 
 En los volcados derivados, sustituye /base3/profesor.html o /base4/profesor.html por /base4/revisor.html y conserva íntegro el fragmento de entrega. El prompt actualizado está en ../prompt-correccion.txt, con copia sincronizada en ../correccion/instrucciones.txt.
+
+## Guardado manual y sincronización de volcados (20/11/2026)
+
+Al pulsar «Guardar nota y comentarios» en profesor.html, el receptor prepara una única petición batchUpdate que actualiza Entregas y sincroniza la actividad en DIW/DWEC/SSII y su CuadranteDIW/CuadranteDWEC/Cuadrante_SSII. La planificación se realiza antes de escribir: si no se puede identificar la estructura, los ID, las fechas o la unidad, se devuelve un error y no se anuncia un guardado parcial como correcto.
+
+La nota del profesor prevalece sobre la IA (también cero); el comentario del profesor prevalece independientemente. Por alumno y actividad se conserva el intento de mayor nota efectiva, con desempate por fecha y después ID. La fila ganadora incluye su propio ID entrega, comentario y enlace a base4/revisor.html. Se eliminan duplicados de esa actividad en el módulo; los intentos originales se conservan en Entregas. El cuadrante reutiliza su columna, añade IDs ausentes al final y pone cero a quienes no tienen nota en esa actividad.
+
+La actividad con un único alumno que realmente ha entregado queda guardada solo en Entregas; el mensaje lo indica y no se modifica el volcado existente. Los registros sin informe recuperable no cuentan como entregas. Los comentarios de la IA no se sobrescriben desde este botón. Las notas de texto no numérico impiden el volcado automático y producen un aviso para que se revisen.
+
+**Activación obligatoria:** copia el Code.gs actualizado de esta carpeta en el proyecto de Apps Script vinculado al libro. Guarda y abre Implementar → Gestionar implementaciones → Editar (lápiz) → Nueva versión → Implementar. Conserva la URL existente. No se añaden archivos ni propiedades de script; se utiliza el servicio avanzado Sheets ya empleado por el receptor. Bridge.html y Contenido.gs no cambian.
+
+Tras publicar, el botón confirma que Entregas, el módulo y su cuadrante se han actualizado. Mientras siga activo el receptor anterior, la interfaz avisa de que el guardado solo ha afectado a Entregas. El revisor público lee los nuevos valores del módulo cuando Google actualice la publicación.

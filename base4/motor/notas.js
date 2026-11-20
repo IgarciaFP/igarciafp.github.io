@@ -19,6 +19,11 @@ const messages={
  SCHEMA:'Las cabeceras de la hoja no coinciden con las esperadas.',
  BUSY:'La hoja está ocupada. Inténtalo de nuevo.',
  NETWORK:'No se pudo conectar con el receptor.',
+ SYNC_SCHEMA:'No se ha guardado: revisa las cabeceras y la estructura de la hoja del módulo y su cuadrante.',
+ SYNC_DATE:'No se ha guardado: hay una fecha de entrega no reconocida en esta actividad.',
+ SYNC_ID:'No se ha guardado: hay IDs ambiguos o repetidos en el cuadrante.',
+ SYNC_GRADE:'No se ha guardado: una calificación de esta actividad no es numérica.',
+ SYNC_UNIT:'No se ha guardado: no se ha podido determinar la unidad de la actividad.',
  STORAGE:'No se pudo acceder a la nota. Comprueba la implementación de Apps Script.'
 };
 function status(text,error=false){for(const id of ['nota-status','login-status']){$(id).textContent=text;$(id).classList.toggle('alerta',error);}}
@@ -131,7 +136,7 @@ async function operate(action){
    if(typeof result.comentarios!=='string')throw Error('RECEIVER_VERSION');
    revision=result.revision;$('nota-value').value=result.nota;$('nota-comments').value=result.comentarios;
    showIA(result);
-   status(action==='set'?'Nota y comentarios guardados en la hoja.':result.nota===''?'Sin calificar: la celda está vacía.':'');
+   status(action==='set'?(result.volcado?.mensaje||'Guardado en Entregas. Actualiza Apps Script para sincronizar el módulo y el cuadrante.'):result.nota===''?'Sin calificar: la celda está vacía.':'');
   }
  }catch(error){
   if(turn!==serial)return;

@@ -525,11 +525,13 @@ function gestionarNota(pedido) {
       range: { sheetId: hoja.getSheetId(), startRowIndex: fila - 1, endRowIndex: fila, startColumnIndex: columnaComentarios - 1, endColumnIndex: columnaComentarios },
       rows: [{ values: [literal_(pedido.comentarios)] }], fields: 'userEnteredValue'
     } });
+    const volcado=prepararVolcadoNota_(libro,hoja,fila,nota,pedido.comentarios);
+    requests.push(...volcado.requests);
     Sheets.Spreadsheets.batchUpdate({ requests }, libro.getId());
     SpreadsheetApp.flush();
-    return { ok: true, submissionId: pedido.submissionId, ...estadoNota_(celda, celdaComentarios), ...estadoIA_(hoja, cabeceras, fila) };
+    return { ok: true, submissionId: pedido.submissionId, volcado:{estado:volcado.estado,mensaje:volcado.mensaje}, ...estadoNota_(celda, celdaComentarios), ...estadoIA_(hoja, cabeceras, fila) };
   } catch (error) {
-    const conocidos = ['AUTH', 'AUTH_CONFIG', 'SESSION', 'INVALID', 'BUSY', 'SCHEMA', 'ROUTE', 'NOT_FOUND', 'AMBIGUOUS', 'GRADE_COLUMN', 'COMMENTS_COLUMN'];
+    const conocidos = ['AUTH', 'AUTH_CONFIG', 'SESSION', 'INVALID', 'BUSY', 'SCHEMA', 'ROUTE', 'NOT_FOUND', 'AMBIGUOUS', 'GRADE_COLUMN', 'COMMENTS_COLUMN', 'SYNC_SCHEMA', 'SYNC_DATE', 'SYNC_ID', 'SYNC_GRADE', 'SYNC_UNIT'];
     return { ok: false, code: conocidos.includes(error.message) ? error.message : 'STORAGE' };
   } finally { if (cerrojo?.hasLock()) cerrojo.releaseLock(); }
 }
@@ -561,4 +563,118 @@ function diagnosticarBase4() {
     if(policy.entregas!==1)throw Error('Límite inesperado: '+policy.entregas);
     console.log(module+' '+activity+': límite='+policy.entregas+'; intento 1 adicional='+(1>policy.entregas)+'; intento 2 adicional='+(2>policy.entregas));
   }
+}
+
+
+/** Prepara el volcado de la actividad junto al guardado manual, sin escribir todavía. */
+function prepararVolcadoNota_(libro, origen, filaEditada, notaNueva, comentarioNuevo) {
+  const destinos={DIW:'CuadranteDIW',DWEC:'CuadranteDWEC',SSII:'Cuadrante_SSII'};
+  const tabla=origen.getDataRange().getValues(),cabeceras=tabla[0];
+  const indice=(headers,name,opcional=false)=>{
+    const matches=headers.map((v,i)=>nombreCabecera_(v)===nombreCabecera_(name)?i:-1).filter(i=>i>=0);
+    if(matches.length!==1){if(opcional&&!matches.length)return -1;throw Error('SYNC_SCHEMA');}
+    return matches[0];
+  };
+  const cols={id:indice(cabeceras,'ID',true),mod:indice(cabeceras,'MODULO'),actividad:indice(cabeceras,'Nombre de la práctica'),
+    email:indice(cabeceras,'EMAIL'),fecha:indice(cabeceras,'DIA Y HORA [DD/MM/AA HH:MM:SS]'),
+    enlace:indice(cabeceras,'PROBAR CODIGO'),informe:indice(cabeceras,'ENTREGA completa'),
+    nota:indice(cabeceras,'nota'),comentario:indice(cabeceras,'Comentarios a la nota'),
+    ia:indice(cabeceras,'NOTA IA',true),comentarioIA:indice(cabeceras,'COMENTARIOS IA',true)};
+  const editada=tabla[filaEditada-1],modulo=String(editada[cols.mod]).trim().toUpperCase(),actividad=String(editada[cols.actividad]).trim();
+  if(!destinos[modulo]||!actividad)throw Error('SYNC_SCHEMA');
+  editada[cols.nota]=notaNueva;
+  if(comentarioNuevo!==undefined)editada[cols.comentario]=comentarioNuevo;
+  const presente=v=>v!==''&&v!==null&&v!==undefined;
+  const numero=v=>typeof v==='number'?v:/^-?\d+(?:[.,]\d+)?$/.test(String(v).trim())?Number(String(v).replace(',','.')):NaN;
+  const fecha=v=>{
+    if(v instanceof Date)return v.getTime();
+    const m=/^(\d{2})\/(\d{2})\/(\d{2}|\d{4})\s+(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(String(v));
+    if(!m)throw Error('SYNC_DATE');
+    return Date.UTC(Number(m[3])+(m[3].length===2?2000:0),Number(m[2])-1,Number(m[1]),Number(m[4]),Number(m[5]),Number(m[6]||0));
+  };
+  const alumnos=new Set(),emails=new Map(),ganadores=new Map();
+  for(let i=1;i<tabla.length;i++){
+    const r=tabla[i];
+    if(String(r[cols.mod]).trim().toUpperCase()!==modulo||String(r[cols.actividad]).trim()!==actividad)continue;
+    const codigo=String(r[cols.informe]||''),informe=informeAlmacenado_(codigo);
+    if(!informe)continue; // Los registros iniciales sin entrega no cuentan.
+    const email=String(r[cols.email]||'').trim().toLowerCase(),usuario=email.split('@')[0];
+    if(!usuario||!email.includes('@'))throw Error('SYNC_SCHEMA');
+    if(emails.has(usuario)&&emails.get(usuario)!==email)throw Error('SYNC_ID');
+    emails.set(usuario,email);alumnos.add(usuario);
+    const valor=presente(r[cols.nota])?r[cols.nota]:cols.ia>=0?r[cols.ia]:'';
+    if(!presente(valor))continue;
+    const nota=numero(valor);
+    if(!Number.isFinite(nota))throw Error('SYNC_GRADE');
+    const id=String(cols.id>=0&&presente(r[cols.id])?r[cols.id]:informe.id);
+    const comentario=presente(r[cols.comentario])?String(r[cols.comentario]):cols.comentarioIA>=0?String(r[cols.comentarioIA]||''):'';
+    const candidato={id,usuario,nota,comentario,fecha:fecha(r[cols.fecha]),fila:i+1,codigo};
+    const anterior=ganadores.get(usuario);
+    if(!anterior||nota>anterior.nota||(nota===anterior.nota&&(candidato.fecha>anterior.fecha||(candidato.fecha===anterior.fecha&&id.localeCompare(anterior.id)>0))))ganadores.set(usuario,candidato);
+  }
+  if(alumnos.size<2)return {requests:[],estado:'excluida',mensaje:'Guardado en Entregas. Actividad de un único alumno: sin volcado al módulo ni al cuadrante.'};
+  const destino=libro.getSheetByName(modulo),cuadrante=libro.getSheetByName(destinos[modulo]);
+  if(!destino||!cuadrante)throw Error('SYNC_SCHEMA');
+  const datos=destino.getDataRange().getValues(),titulos=datos[0],campos=['ID entrega','ID','Nombre actividad','Enlace','Nota','Comentario a la nota'];
+  if(destino.getLastColumn()!==6||campos.some((t,i)=>nombreCabecera_(titulos[i])!==nombreCabecera_(t)))throw Error('SYNC_SCHEMA');
+  const q=cuadrante.getDataRange().getValues();
+  if(q.length<2||nombreCabecera_(q[1][0])!=='id')throw Error('SYNC_SCHEMA');
+  const requests=[],borrar=[],existentes=new Map();
+  for(let i=1;i<datos.length;i++){
+    if(String(datos[i][2]).trim()!==actividad)continue;
+    const usuario=String(datos[i][1]).trim().toLowerCase();
+    if(!existentes.has(usuario))existentes.set(usuario,[]);
+    existentes.get(usuario).push(i);
+  }
+  const celda=v=>({userEnteredValue:typeof v==='number'?{numberValue:v}:{stringValue:String(v)}});
+  const escribir=(sheet,row,col,values,fields='userEnteredValue')=>requests.push({updateCells:{start:{sheetId:sheet.getSheetId(),rowIndex:row,columnIndex:col},rows:[{values}],fields}});
+  const ampliar=(sheet,rows,columns)=>{
+    if(rows>sheet.getMaxRows())requests.push({appendDimension:{sheetId:sheet.getSheetId(),dimension:'ROWS',length:rows-sheet.getMaxRows()}});
+    if(columns>sheet.getMaxColumns())requests.push({appendDimension:{sheetId:sheet.getSheetId(),dimension:'COLUMNS',length:columns-sheet.getMaxColumns()}});
+  };
+  const nuevos=[...ganadores.keys()].filter(id=>!existentes.has(id));
+  let siguiente=datos.length;
+  ampliar(destino,siguiente+nuevos.length,6);
+  for(const [usuario,filas] of existentes)if(!ganadores.has(usuario))borrar.push(...filas);
+  for(const ganador of ganadores.values()){
+    const filas=existentes.get(ganador.usuario)||[],row=filas.length?filas[0]:siguiente++;
+    borrar.push(...filas.slice(1));
+    if(!filas.length&&datos.length>1)requests.push({copyPaste:{source:{sheetId:destino.getSheetId(),startRowIndex:datos.length-1,endRowIndex:datos.length,startColumnIndex:0,endColumnIndex:6},destination:{sheetId:destino.getSheetId(),startRowIndex:row,endRowIndex:row+1,startColumnIndex:0,endColumnIndex:6},pasteType:'PASTE_FORMAT'}});
+    const original=origen.getRange(ganador.fila,cols.enlace+1);
+    const formula=original.getFormula(),rich=original.getRichTextValue();
+    let enlace=rich&&rich.getLinkUrl();
+    if(!enlace){const m=/^=HYPERLINK\(\s*"((?:[^"]|"")+)"/i.exec(formula);enlace=m?m[1].replace(/""/g,'"'):String(original.getValue()||'');}
+    if(!/^https:\/\/igarciafp\.github\.io\/base[34]\/(?:profesor|revisor)\.html(?:[?#]|$)/i.test(enlace)){
+      enlace='https://igarciafp.github.io/base4/revisor.html#entrega='+ganador.codigo;
+    }else enlace=enlace.replace(/\/base[34]\/(?:profesor|revisor)\.html/i,'/base4/revisor.html');
+    const values=[ganador.id,ganador.usuario,actividad,'Ver entrega',ganador.nota,ganador.comentario].map(celda);
+    for(const c of values)c.textFormatRuns=[];
+    values[3].textFormatRuns=[{startIndex:0,format:{link:{uri:enlace}}}];
+    escribir(destino,row,0,values,'userEnteredValue,textFormatRuns');
+  }
+  const columnas=q[1].map((v,i)=>i>=2&&String(v).trim()===actividad?i:-1).filter(i=>i>=0);
+  if(columnas.length>1)throw Error('SYNC_SCHEMA');
+  let col=columnas.length?columnas[0]:Math.max(2,q[1].length);
+  const tema=/^(?:(?:DIW|DWEC|SSII)\s*)?(\d{1,2})[-.]/i.exec(actividad);
+  if(!tema)throw Error('SYNC_UNIT');
+  const ids=new Set(),roster=[];
+  for(let i=2;i<q.length;i++){
+    const id=String(q[i][0]||'').trim().toLowerCase();
+    if(!id)throw Error('SYNC_SCHEMA');
+    if(ids.has(id))throw Error('SYNC_ID');
+    ids.add(id);roster.push(id);
+  }
+  const added=[...ganadores.keys()].filter(id=>!ids.has(id));roster.push(...added);
+  ampliar(cuadrante,roster.length+2,col+1);
+  if(!columnas.length&&col>2)requests.push({copyPaste:{source:{sheetId:cuadrante.getSheetId(),startRowIndex:0,endRowIndex:q.length,startColumnIndex:col-1,endColumnIndex:col},destination:{sheetId:cuadrante.getSheetId(),startRowIndex:0,endRowIndex:q.length,startColumnIndex:col,endColumnIndex:col+1},pasteType:'PASTE_FORMAT'}});
+  for(let i=0;i<added.length;i++){
+    const row=q.length+i;
+    if(q.length>2)requests.push({copyPaste:{source:{sheetId:cuadrante.getSheetId(),startRowIndex:q.length-1,endRowIndex:q.length,startColumnIndex:0,endColumnIndex:Math.max(col+1,q[1].length)},destination:{sheetId:cuadrante.getSheetId(),startRowIndex:row,endRowIndex:row+1,startColumnIndex:0,endColumnIndex:Math.max(col+1,q[1].length)},pasteType:'PASTE_FORMAT'}});
+    escribir(cuadrante,row,0,[celda(added[i])]);
+  }
+  escribir(cuadrante,0,col,[celda(Number(tema[1]))]);escribir(cuadrante,1,col,[celda(actividad)]);
+  roster.forEach((id,i)=>escribir(cuadrante,i+2,col,[celda(ganadores.get(id)?.nota??0)]));
+  // Se borran al final y de abajo arriba para que los índices de escritura no se desplacen.
+  [...new Set(borrar)].sort((a,b)=>b-a).forEach(row=>requests.push({deleteDimension:{range:{sheetId:destino.getSheetId(),dimension:'ROWS',startIndex:row,endIndex:row+1}}}));
+  return {requests,estado:'actualizado',mensaje:'Nota y comentarios guardados. '+modulo+' y '+destinos[modulo]+' actualizados.'};
 }
