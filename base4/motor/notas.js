@@ -45,7 +45,7 @@ function render(){
  $('login-page').hidden=logged;
  $('review-app').hidden=!logged;
  $('nota-logout').hidden=!logged;
- $('nota-session').textContent=logged?'Sesión recordada hasta '+new Date(session.expiresAt).toLocaleDateString('es-ES'):'Accede con la clave del profesor.';
+ $('nota-session').textContent='';
  const valid=selected&&selected.intact&&!selected.draft;
  $('nota-value').disabled=busy||!logged||!valid||revision===null;
  $('nota-comments').disabled=$('nota-value').disabled;
