@@ -1904,89 +1904,20 @@ INSTRUCCIÓN PARA ASISTENTES DE GENERACIÓN DE CÓDIGO - Al generar cualquier so
 <h4 id="direccionamiento-classless">Direccionamiento sin clases (<em lang="en">classless</em>)</h4>
 <p>El direccionamiento actual utiliza un <strong>prefijo explícito</strong> para indicar qué bits identifican la red, sin deducirlo de la antigua clase. Permite ajustar los bloques a las necesidades y agrupar rutas.</p>
 <p>Un PC de una pequeña oficina tiene la dirección <code>192.168.10.70/28</code>. Para saber con qué equipos comparte subred, necesitamos el prefijo: <strong>/28 reserva 28 bits para la red y deja 4 para identificar hosts</strong>. Su máscara es <code>255.255.255.240</code>; no se deduce del primer número de la IP. Los 4 bits de host generan 16 direcciones, de las cuales 14 son asignables en esta subred. El esquema distingue la IP del PC, la máscara y los límites del bloque.</p>
-<figure id="esquema-cidr-26" style="margin:1.5rem auto;max-width:900px">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 970" role="img" aria-labelledby="cidr28-title cidr28-desc" style="display:block;width:100%;height:auto">
-<title id="cidr28-title">192.168.10.70/28: de la IP del equipo a su subred</title>
-<desc id="cidr28-desc">Un PC tiene la dirección 192.168.10.70/28. La máscara es 255.255.255.240: 28 bits a uno y 4 a cero. En el último octeto, la IP es 0100 0110 y la máscara es 1111 0000. Al conservar los bits de red y poner los de host a cero, la red es 192.168.10.64/28. Al poner los cuatro bits de host a uno, el broadcast es 192.168.10.79. El bloque contiene 16 direcciones: una de red, 14 asignables de 192.168.10.65 a 192.168.10.78 y una de broadcast. La dirección del PC, terminada en 70, está dentro del rango asignable.</desc>
-<rect x="1" y="1" width="718" height="968" rx="20" fill="#f8fafc" stroke="#cbd5e1"/>
-<g font-family="Arial,sans-serif" fill="#183153">
-<text x="360" y="46" font-size="29" text-anchor="middle" font-weight="700" fill="#1e3a8a">Un PC tiene 192.168.10.70/28</text>
-<text x="360" y="85" font-size="25" text-anchor="middle">Máscara: 255.255.255.240</text>
-<path d="M28 110H692" stroke="#cbd5e1"/>
-<text x="32" y="148" font-size="26" font-weight="700" fill="#1e3a8a">1. Separa los bits de red y de host</text>
-<text x="32" y="182" font-size="23" >En la IP, 192.168.10 aporta 24 bits de red.</text>
-<text x="32" y="214" font-size="23" >Solo ampliamos el último octeto (8 bits):</text>
-<text x="352" y="248" font-size="22" text-anchor="middle" font-weight="700" fill="#1e40af">4 de red</text>
-<text x="528" y="248" font-size="22" text-anchor="middle" font-weight="700" fill="#0f766e">4 de host</text>
-<text x="32" y="299" font-size="23" font-weight="700">IP del PC</text>
-<rect x="264" y="270" width="42" height="42" rx="3" fill="#dbeafe"/><text x="285" y="300" font-size="26" text-anchor="middle" font-family="monospace" fill="#1e40af">0</text>
-<rect x="308" y="270" width="42" height="42" rx="3" fill="#dbeafe"/><text x="329" y="300" font-size="26" text-anchor="middle" font-family="monospace" fill="#1e40af">1</text>
-<rect x="352" y="270" width="42" height="42" rx="3" fill="#dbeafe"/><text x="373" y="300" font-size="26" text-anchor="middle" font-family="monospace" fill="#1e40af">0</text>
-<rect x="396" y="270" width="42" height="42" rx="3" fill="#dbeafe"/><text x="417" y="300" font-size="26" text-anchor="middle" font-family="monospace" fill="#1e40af">0</text>
-<rect x="440" y="270" width="42" height="42" rx="3" fill="#ccfbf1"/><text x="461" y="300" font-size="26" text-anchor="middle" font-family="monospace" fill="#0f766e">0</text>
-<rect x="484" y="270" width="42" height="42" rx="3" fill="#ccfbf1"/><text x="505" y="300" font-size="26" text-anchor="middle" font-family="monospace" fill="#0f766e">1</text>
-<rect x="528" y="270" width="42" height="42" rx="3" fill="#ccfbf1"/><text x="549" y="300" font-size="26" text-anchor="middle" font-family="monospace" fill="#0f766e">1</text>
-<rect x="572" y="270" width="42" height="42" rx="3" fill="#ccfbf1"/><text x="593" y="300" font-size="26" text-anchor="middle" font-family="monospace" fill="#0f766e">0</text>
-<text x="652" y="299" font-size="24" text-anchor="middle">= 70</text>
-<text x="32" y="361" font-size="23" font-weight="700">Máscara</text>
-<rect x="264" y="332" width="42" height="42" rx="3" fill="#dbeafe"/><text x="285" y="362" font-size="26" text-anchor="middle" font-family="monospace" fill="#1e40af">1</text>
-<rect x="308" y="332" width="42" height="42" rx="3" fill="#dbeafe"/><text x="329" y="362" font-size="26" text-anchor="middle" font-family="monospace" fill="#1e40af">1</text>
-<rect x="352" y="332" width="42" height="42" rx="3" fill="#dbeafe"/><text x="373" y="362" font-size="26" text-anchor="middle" font-family="monospace" fill="#1e40af">1</text>
-<rect x="396" y="332" width="42" height="42" rx="3" fill="#dbeafe"/><text x="417" y="362" font-size="26" text-anchor="middle" font-family="monospace" fill="#1e40af">1</text>
-<rect x="440" y="332" width="42" height="42" rx="3" fill="#ccfbf1"/><text x="461" y="362" font-size="26" text-anchor="middle" font-family="monospace" fill="#0f766e">0</text>
-<rect x="484" y="332" width="42" height="42" rx="3" fill="#ccfbf1"/><text x="505" y="362" font-size="26" text-anchor="middle" font-family="monospace" fill="#0f766e">0</text>
-<rect x="528" y="332" width="42" height="42" rx="3" fill="#ccfbf1"/><text x="549" y="362" font-size="26" text-anchor="middle" font-family="monospace" fill="#0f766e">0</text>
-<rect x="572" y="332" width="42" height="42" rx="3" fill="#ccfbf1"/><text x="593" y="362" font-size="26" text-anchor="middle" font-family="monospace" fill="#0f766e">0</text>
-<text x="652" y="361" font-size="24" text-anchor="middle">= 240</text>
-<text x="32" y="423" font-size="23" font-weight="700">Red</text>
-<rect x="264" y="394" width="42" height="42" rx="3" fill="#dbeafe"/><text x="285" y="424" font-size="26" text-anchor="middle" font-family="monospace" fill="#1e40af">0</text>
-<rect x="308" y="394" width="42" height="42" rx="3" fill="#dbeafe"/><text x="329" y="424" font-size="26" text-anchor="middle" font-family="monospace" fill="#1e40af">1</text>
-<rect x="352" y="394" width="42" height="42" rx="3" fill="#dbeafe"/><text x="373" y="424" font-size="26" text-anchor="middle" font-family="monospace" fill="#1e40af">0</text>
-<rect x="396" y="394" width="42" height="42" rx="3" fill="#dbeafe"/><text x="417" y="424" font-size="26" text-anchor="middle" font-family="monospace" fill="#1e40af">0</text>
-<rect x="440" y="394" width="42" height="42" rx="3" fill="#ccfbf1"/><text x="461" y="424" font-size="26" text-anchor="middle" font-family="monospace" fill="#0f766e">0</text>
-<rect x="484" y="394" width="42" height="42" rx="3" fill="#ccfbf1"/><text x="505" y="424" font-size="26" text-anchor="middle" font-family="monospace" fill="#0f766e">0</text>
-<rect x="528" y="394" width="42" height="42" rx="3" fill="#ccfbf1"/><text x="549" y="424" font-size="26" text-anchor="middle" font-family="monospace" fill="#0f766e">0</text>
-<rect x="572" y="394" width="42" height="42" rx="3" fill="#ccfbf1"/><text x="593" y="424" font-size="26" text-anchor="middle" font-family="monospace" fill="#0f766e">0</text>
-<text x="652" y="423" font-size="24" text-anchor="middle">= 64</text>
-<text x="32" y="485" font-size="23" font-weight="700">Broadcast</text>
-<rect x="264" y="456" width="42" height="42" rx="3" fill="#dbeafe"/><text x="285" y="486" font-size="26" text-anchor="middle" font-family="monospace" fill="#1e40af">0</text>
-<rect x="308" y="456" width="42" height="42" rx="3" fill="#dbeafe"/><text x="329" y="486" font-size="26" text-anchor="middle" font-family="monospace" fill="#1e40af">1</text>
-<rect x="352" y="456" width="42" height="42" rx="3" fill="#dbeafe"/><text x="373" y="486" font-size="26" text-anchor="middle" font-family="monospace" fill="#1e40af">0</text>
-<rect x="396" y="456" width="42" height="42" rx="3" fill="#dbeafe"/><text x="417" y="486" font-size="26" text-anchor="middle" font-family="monospace" fill="#1e40af">0</text>
-<rect x="440" y="456" width="42" height="42" rx="3" fill="#ccfbf1"/><text x="461" y="486" font-size="26" text-anchor="middle" font-family="monospace" fill="#0f766e">1</text>
-<rect x="484" y="456" width="42" height="42" rx="3" fill="#ccfbf1"/><text x="505" y="486" font-size="26" text-anchor="middle" font-family="monospace" fill="#0f766e">1</text>
-<rect x="528" y="456" width="42" height="42" rx="3" fill="#ccfbf1"/><text x="549" y="486" font-size="26" text-anchor="middle" font-family="monospace" fill="#0f766e">1</text>
-<rect x="572" y="456" width="42" height="42" rx="3" fill="#ccfbf1"/><text x="593" y="486" font-size="26" text-anchor="middle" font-family="monospace" fill="#0f766e">1</text>
-<text x="652" y="485" font-size="24" text-anchor="middle">= 79</text>
-<path d="M439 260V504" stroke="#64748b" stroke-width="2" stroke-dasharray="5 5"/>
-<text x="32" y="540" font-size="23" >Red: conserva el prefijo y pon el host a 0000.</text>
-<text x="32" y="572" font-size="23" >Broadcast: conserva el prefijo y pon el host a 1111.</text>
-<path d="M28 594H692" stroke="#cbd5e1"/>
-<text x="32" y="633" font-size="26" font-weight="700" fill="#1e3a8a">2. Recorre las 16 direcciones del bloque</text>
-<text x="32" y="668" font-size="23" >32 − 28 = 4 bits de host → 2⁴ = 16 direcciones</text>
-<text x="32" y="701" font-size="22" >Todas empiezan por 192.168.10; mostramos el final:</text>
-<rect x="32" y="720" width="75" height="44" rx="6" fill="#dbeafe" stroke="#93c5fd" stroke-width="1"/><text x="69.5" y="750" font-size="25" text-anchor="middle" font-weight="700">64</text>
-<rect x="115" y="720" width="75" height="44" rx="6" fill="#ccfbf1" stroke="#5eead4" stroke-width="1"/><text x="152.5" y="750" font-size="25" text-anchor="middle" font-weight="700">65</text>
-<rect x="198" y="720" width="75" height="44" rx="6" fill="#ccfbf1" stroke="#5eead4" stroke-width="1"/><text x="235.5" y="750" font-size="25" text-anchor="middle" font-weight="700">66</text>
-<rect x="281" y="720" width="75" height="44" rx="6" fill="#ccfbf1" stroke="#5eead4" stroke-width="1"/><text x="318.5" y="750" font-size="25" text-anchor="middle" font-weight="700">67</text>
-<rect x="364" y="720" width="75" height="44" rx="6" fill="#ccfbf1" stroke="#5eead4" stroke-width="1"/><text x="401.5" y="750" font-size="25" text-anchor="middle" font-weight="700">68</text>
-<rect x="447" y="720" width="75" height="44" rx="6" fill="#ccfbf1" stroke="#5eead4" stroke-width="1"/><text x="484.5" y="750" font-size="25" text-anchor="middle" font-weight="700">69</text>
-<rect x="530" y="720" width="75" height="44" rx="6" fill="#ccfbf1" stroke="#183153" stroke-width="3"/><text x="567.5" y="750" font-size="25" text-anchor="middle" font-weight="700">70</text>
-<rect x="613" y="720" width="75" height="44" rx="6" fill="#ccfbf1" stroke="#5eead4" stroke-width="1"/><text x="650.5" y="750" font-size="25" text-anchor="middle" font-weight="700">71</text>
-<rect x="32" y="774" width="75" height="44" rx="6" fill="#ccfbf1" stroke="#5eead4" stroke-width="1"/><text x="69.5" y="804" font-size="25" text-anchor="middle" font-weight="700">72</text>
-<rect x="115" y="774" width="75" height="44" rx="6" fill="#ccfbf1" stroke="#5eead4" stroke-width="1"/><text x="152.5" y="804" font-size="25" text-anchor="middle" font-weight="700">73</text>
-<rect x="198" y="774" width="75" height="44" rx="6" fill="#ccfbf1" stroke="#5eead4" stroke-width="1"/><text x="235.5" y="804" font-size="25" text-anchor="middle" font-weight="700">74</text>
-<rect x="281" y="774" width="75" height="44" rx="6" fill="#ccfbf1" stroke="#5eead4" stroke-width="1"/><text x="318.5" y="804" font-size="25" text-anchor="middle" font-weight="700">75</text>
-<rect x="364" y="774" width="75" height="44" rx="6" fill="#ccfbf1" stroke="#5eead4" stroke-width="1"/><text x="401.5" y="804" font-size="25" text-anchor="middle" font-weight="700">76</text>
-<rect x="447" y="774" width="75" height="44" rx="6" fill="#ccfbf1" stroke="#5eead4" stroke-width="1"/><text x="484.5" y="804" font-size="25" text-anchor="middle" font-weight="700">77</text>
-<rect x="530" y="774" width="75" height="44" rx="6" fill="#ccfbf1" stroke="#5eead4" stroke-width="1"/><text x="567.5" y="804" font-size="25" text-anchor="middle" font-weight="700">78</text>
-<rect x="613" y="774" width="75" height="44" rx="6" fill="#fef3c7" stroke="#fcd34d" stroke-width="1"/><text x="650.5" y="804" font-size="25" text-anchor="middle" font-weight="700">79</text>
-<text x="32" y="853" font-size="25" font-weight="700" fill="#1e40af">Red: 192.168.10.64/28</text>
-<text x="32" y="889" font-size="25" font-weight="700" fill="#0f766e">Hosts: 192.168.10.65 a 192.168.10.78</text>
-<text x="32" y="925" font-size="25" font-weight="700" fill="#92400e">Broadcast: 192.168.10.79</text>
-</g>
-</svg>
-<figcaption class="media-caption">El PC terminado en <strong>.70</strong> pertenece a <strong>192.168.10.64/28</strong>. En esta subred, la dirección de red (<strong>.64</strong>) y el broadcast (<strong>.79</strong>) no se asignan a equipos: quedan <strong>16 − 2 = 14 direcciones asignables</strong>.</figcaption>
+<figure id="esquema-cidr-26" style="margin:1.5rem auto;max-width:100%">
+<pre tabindex="0" aria-label="Cálculo de la red, el primer host y el broadcast de 192.168.10.70/28" style="white-space:pre;overflow-wrap:normal">192.168.10.70 / 28
+
+=&gt;en binario:  1100 0000 . 1010 1000 . 0000 1010 . 0100 0110
+=&gt;Máscara:     1111 1111 . 1111 1111 . 1111 1111 . 1111 0000
+=&gt;Red:         1100 0000 . 1010 1000 . 0000 1010 . 0100 0000
+=&gt;Primer Host: 1100 0000 . 1010 1000 . 0000 1010 . 0100 0001
+=&gt;Broadcast:   1100 0000 . 1010 1000 . 0000 1010 . 0100 1111
+
+=&gt;Red en decimal: 192.168.10.64
+
+=&gt;Primer Host:    192.168.10.65
+
+=&gt;Broadcast:      192.168.10.79</pre>
 </figure>
 <p class="media-caption">Referencia: <a href="https://www.rfc-editor.org/rfc/rfc4632.html" target="_blank" rel="noopener noreferrer">RFC 4632: del direccionamiento por clases a CIDR</a>.</p>
 <details class="extension" id="recursos-ipv4"><summary>Para ampliar: interpretar una IPv4</summary><p>Revisa la parte de direcciones y máscaras de la presentación y reproduce un ejercicio del vídeo antes de consultar su resolución. Anota IP, prefijo, red, broadcast y rango asignable.</p><p>La presentación contiene material histórico: trabaja con CIDR y con los rangos corregidos de este tema. La lección de Udemy requiere acceso al curso.</p><div class="card-actions"><a class="resource-link-btn" href="https://docs.google.com/presentation/d/1vcbL8pq3uuzJO2bG9kD01-cI4yPFEHuT/edit" target="_blank" rel="noopener noreferrer">Abrir presentación de IPv4</a><a class="resource-link-btn" href="https://youtu.be/xyXQjZ7w_No" target="_blank" rel="noopener noreferrer">Ver ejercicio de direccionamiento</a><a class="resource-link-btn" href="https://www.udemy.com/course/cisco-curso-de-direccionamiento-ip-y-subnetting-ccna/learn/lecture/9359860#overview" target="_blank" rel="noopener noreferrer">Abrir lección de IP y subnetting</a></div></details>
