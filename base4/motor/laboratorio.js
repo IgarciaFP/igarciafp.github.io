@@ -482,7 +482,8 @@ function renderPreview(html,css,js,focusResult=false){
  clearTimeout(previewTimer);previewTimer=null;clearConsole();
  previewToken=Array.from(crypto.getRandomValues(new Uint8Array(12)),x=>x.toString(16).padStart(2,'0')).join('');
  noticeLoads=0;
- frame.srcdoc=previewDocument(html,css,js,previewToken);
+ const source=previewDocument(html,css,js,previewToken);
+ frame.srcdoc=window.Lab.transformPreview?window.Lab.transformPreview(source):source;
  shown={html,css,js};previewStatus();
 }
 function previewNotice(text){
@@ -542,7 +543,7 @@ frame.addEventListener('load',()=>{
  const owner=previewFocusOwner;previewFocusOwner=null;
  // Una recarga automática no roba el foco mientras se escribe en el editor.
  if(owner&&previewToken&&guard?.canEdit()&&!$('cuaderno').hidden&&
-    !document.querySelector('dialog[open]')&&
+    !document.querySelector('dialog[open]:not([data-inline-preview])')&&
     [owner,frame,document.body].includes(document.activeElement)){
   frame.focus({preventScroll:true});
   frame.contentWindow.postMessage({labFocus:previewToken},'*');

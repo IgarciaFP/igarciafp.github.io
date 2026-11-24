@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261124105854-base4';
+  const version=loaderURL.searchParams.get('v')||'20261124120803-base4';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=async path=>{
     // La configuración cambia sin necesidad de publicar otra versión del HTML.
@@ -121,6 +121,8 @@
     await script('/base/motor/entregas.js');
     if(sectionMode)await script('motor/apartados-ui.js');
     await script('motor/portapapeles.js');
+    // Prueba aislada del panel flotante en el checkpoint; no se activa en las demás actividades.
+    if(mod==='diw'&&slug==='02-02-checkpoint-modelo-de-caja')await script(folder+'vista-modal.js');
     await script('motor/laboratorio.js');
     if(!window.Lab.ready)throw Error('No se pudo completar el inicio. Recarga la página con Ctrl + F5.');
   } catch(error) {
