@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flotantes: espacio y contención · DIW UD02</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #f3f6fb; color: #172b42; font: 1rem/1.6 system-ui, sans-serif; }
+main { max-width: 1120px; margin: auto; padding: clamp(1rem, 4vw, 3rem); }
+a { color: #1745b0; }
+h1 { font-size: clamp(1.8rem, 4vw, 2.7rem); line-height: 1.15; margin: .5rem 0 1rem; }
+h2 { font-size: 1.2rem; margin: 0 0 1rem; }
+.eyebrow { color: #1745b0; font-weight: 750; letter-spacing: .08em; font-size: .8rem; text-transform: uppercase; }
+.intro { max-width: 70ch; }
+.panel { background: white; border: 1px solid #cbd5e1; border-radius: 1rem; padding: clamp(1rem, 3vw, 1.5rem); margin-top: 1.5rem; }
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+label { display: block; font-weight: 650; }
+select, button { font: inherit; min-height: 44px; border-radius: .5rem; border: 1px solid #64748b; padding: .5rem .75rem; }
+select { display: block; width: 100%; margin-top: .4rem; background: white; color: #172b42; }
+button { cursor: pointer; background: #1745b0; color: white; border-color: #1745b0; }
+button:hover { background: #123585; }
+:focus-visible { outline: 3px solid #c2410c; outline-offset: 3px; }
+.actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+.layout { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 1.5rem; }
+.layout > * { min-width: 0; }
+.stage { display: flow-root; padding: 1rem; border: 1px dashed #64748b; background: #fffaf0; }
+.noticia { border: 2px solid #2563eb; background: #dbeafe; padding: 12px; }
+.noticia[data-containment="flow-root"] { display: flow-root; }
+.noticia[data-containment="clearfix"]::after { content: ""; display: block; clear: both; }
+.foto { width: 128px; height: 160px; object-fit: cover; max-width: 100%; float: left; margin: 0 16px 8px 0; }
+.noticia p { margin: 0; }
+.despues { margin: 12px 0 0; padding: 8px; border: 2px dashed #9a3412; color: #7c2d12; background: #ffedd5; }
+.legend { font-size: .9rem; }
+.reading { border-left: 4px solid #1745b0; padding-left: 1rem; }
+pre { overflow: auto; padding: 1rem; background: #102039; color: #e2e8f0; border-radius: .6rem; font-size: .85rem; line-height: 1.6; }
+code { font-family: ui-monospace, monospace; }
+li + li { margin-top: .65rem; }
+.note { color: #475569; font-size: .9rem; }
+@media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+<a href="../u02_es.html#caja-float">← Volver al apartado 5</a>
+<p class="eyebrow">DIW · Unidad 2 · Prueba de concepto</p>
+<h1>¿Quién contiene al flotante?</h1>
+<p class="intro">Una imagen puede sobresalir del fondo de su artículo aunque esté dentro de él en el HTML. Cambia una condición cada vez y observa cómo se reparten el texto, la imagen y el bloque siguiente.</p>
+<section class="panel" aria-labelledby="controles">
+<h2 id="controles">Cambia y compara</h2>
+<div class="controls">
+<label>Flotación de la imagen<select id="float"><option value="left">float: left</option><option value="right">float: right</option><option value="none">float: none</option></select></label>
+<label>Texto del artículo<select id="texto"><option value="corto">Corto: una frase</option><option value="largo">Largo: varias líneas</option></select></label>
+<label>Contención del artículo<select id="containment"><option value="none">Sin solución</option><option value="clearfix">Clearfix con ::after</option><option value="flow-root">display: flow-root</option></select></label>
+<label>Bloque siguiente<select id="clear"><option value="none">clear: none</option><option value="left">clear: left</option><option value="right">clear: right</option><option value="both">clear: both</option></select></label>
+</div>
+<div class="actions"><button id="reset" type="button">Restablecer</button></div>
+</section>
+<div class="layout">
+<section class="panel" aria-labelledby="vista">
+<h2 id="vista">Vista previa</h2>
+<div class="stage">
+<article class="noticia" id="noticia" data-containment="none">
+<img class="foto" id="foto" width="128" height="160" alt="Ilustración de una hogaza de pan" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 160'%3E%3Crect width='128' height='160' fill='%23f1d6ab'/%3E%3Cellipse cx='64' cy='126' rx='51' ry='12' fill='%23b7864d'/%3E%3Cellipse cx='64' cy='88' rx='48' ry='43' fill='%23b76b29'/%3E%3Cellipse cx='64' cy='80' rx='43' ry='36' fill='%23dca15d'/%3E%3Cpath d='M39 61l-7 24M62 52l-9 28M84 59l-8 25' fill='none' stroke='%23fff0d0' stroke-width='7' stroke-linecap='round'/%3E%3C/svg%3E">
+<p id="descripcion">Hoy horneamos pan de centeno.</p>
+</article>
+<p class="despues" id="despues">Bloque siguiente: ingredientes y recogida.</p>
+</div>
+<p class="legend"><strong>Azul:</strong> límites del artículo. <strong>Naranja:</strong> bloque siguiente. El texto evita el flotante; el fondo de un bloque normal puede quedar detrás de él.</p>
+<div class="reading" aria-live="polite" aria-atomic="true"><p id="medidas"></p><p id="lectura"></p></div>
+</section>
+<section class="panel" aria-labelledby="css-title">
+<h2 id="css-title">CSS aplicado</h2>
+<pre><code id="codigo"></code></pre>
+<p class="note">La vista previa exterior usa su propio contexto de formato para que el experimento no invada los controles. Esa protección no contiene la imagen dentro del artículo azul.</p>
+</section>
+</div>
+<section class="panel" aria-labelledby="pruebas">
+<h2 id="pruebas">Tres pruebas para entenderlo</h2>
+<ol>
+<li><strong>Texto alrededor:</strong> elige texto largo y alterna <code>left</code>, <code>right</code> y <code>none</code>. Con flotación, las líneas rodean la imagen; sin ella, la imagen participa en el flujo normal.</li>
+<li><strong>Empezar debajo:</strong> restablece y cambia solo a <code>clear: both</code>. El bloque naranja baja, pero el artículo azul sigue sin contener la imagen. Prueba también <code>clear: right</code> con la imagen a la izquierda: no limpia ese lado.</li>
+<li><strong>Contener la imagen:</strong> restablece, compara clearfix y <code>flow-root</code>. Ambos hacen crecer el artículo con texto corto. Clearfix añade una caja final que limpia los flotantes; <code>flow-root</code> crea un contexto de formato que incluye sus flotantes internos.</li>
+</ol>
+<p><strong>Uso actual:</strong> usa <code>float</code> cuando quieras que el texto rodee una imagen. Usa Flexbox o Grid para distribuir columnas. <code>clear</code> decide dónde empieza otro bloque; <code>flow-root</code> hace que el padre contenga sus flotantes.</p>
+</section>
+</main>
+<script>
+(() => {
+  const field = id => document.getElementById(id);
+  const article = field('noticia'), image = field('foto'), next = field('despues');
+  const shortText = 'Hoy horneamos pan de centeno.';
+  const longText = 'Hoy horneamos pan de centeno con fermentación lenta. La corteza crujiente protege una miga tierna y aromática. Cada hogaza reposa antes de salir a la tienda. Puedes recoger tu pedido por la mañana y preguntar por los ingredientes. El pan acompaña una comida sencilla y se conserva varios días envuelto en un paño. Observa cómo las líneas aprovechan el espacio junto a la imagen y recuperan todo el ancho cuando pasan por debajo de ella.';
+  function measure() {
+    const a = article.getBoundingClientRect(), i = image.getBoundingClientRect();
+    const protrudes = i.bottom > a.bottom + .5;
+    field('medidas').textContent = `Altura del artículo: ${Math.round(a.height)} px · Altura de la imagen: ${Math.round(i.height)} px.`;
+    field('lectura').textContent = protrudes
+      ? 'La imagen sobresale del artículo. Cambiar clear en el bloque siguiente no aumenta la altura de este padre.'
+      : field('float').value === 'none'
+        ? 'La imagen está en el flujo normal y el artículo cuenta su altura.'
+        : field('containment').value === 'none'
+          ? 'El texto es suficientemente alto para cubrir la imagen. Acórtalo para comprobar que el padre no contiene por sí solo al flotante.'
+          : 'El artículo contiene la imagen incluso con texto corto. La flotación sigue permitiendo que el texto la rodee.';
+  }
+  function update() {
+    const floating = field('float').value, containment = field('containment').value, clear = field('clear').value;
+    const margin = floating === 'left' ? '0 16px 8px 0' : floating === 'right' ? '0 0 8px 16px' : '0 0 8px';
+    image.style.cssFloat = floating;
+    image.style.margin = margin;
+    article.dataset.containment = containment;
+    next.style.clear = clear;
+    field('descripcion').textContent = field('texto').value === 'corto' ? shortText : longText;
+    field('codigo').textContent = `.noticia {\n  padding: 12px;\n  border: 2px solid #2563eb;\n  background: #dbeafe;\n  display: ${containment === 'flow-root' ? 'flow-root' : 'block'};\n}\n.noticia p { margin: 0; }\n.foto {\n  float: ${floating};\n  width: 128px;\n  height: 160px;\n  max-width: 100%;\n  object-fit: cover;\n  margin: ${margin};\n}\n.despues { clear: ${clear}; }` + (containment === 'clearfix' ? '\n.noticia::after {\n  content: "";\n  display: block;\n  clear: both;\n}' : '');
+    measure();
+  }
+  for (const id of ['float', 'texto', 'containment', 'clear']) field(id).addEventListener('change', update);
+  field('reset').addEventListener('click', () => {
+    field('float').value = 'left'; field('texto').value = 'corto';
+    field('containment').value = 'none'; field('clear').value = 'none'; update();
+  });
+  new ResizeObserver(measure).observe(article);
+  update();
+})();
+</script>
+</body>
+</html>

@@ -2181,6 +2181,28 @@ h1 { font-size: clamp(1.5rem, 1rem + 2vw, 3rem); }</code></pre>
 </div>
 </section>
 <section id="caja-float"><h2>5. Flotantes: texto alrededor de una imagen</h2>
+<figure aria-labelledby="float-ejemplo-caption">
+<svg viewBox="0 0 640 252" width="720" style="display:block;max-width:100%;height:auto;margin:auto" role="img" aria-labelledby="float-ejemplo-title float-ejemplo-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="float-ejemplo-title">El texto rodea una imagen flotante</title>
+<desc id="float-ejemplo-desc">Una imagen de pan flota a la izquierda. Las primeras líneas del texto ocupan el espacio a su derecha; al superar la altura de la imagen, las líneas vuelven a ocupar todo el ancho del artículo.</desc>
+<rect x="8" y="8" width="624" height="236" rx="12" fill="#f8fafc" stroke="#94a3b8"/>
+<g font-family="system-ui,sans-serif" font-size="16" fill="#172b42">
+<text x="28" y="36" font-weight="700">float: left</text>
+<rect x="28" y="52" width="126" height="112" rx="6" fill="#f1d6ab"/>
+<ellipse cx="91" cy="138" rx="49" ry="9" fill="#b7864d"/>
+<ellipse cx="91" cy="110" rx="47" ry="32" fill="#b76b29"/>
+<ellipse cx="91" cy="104" rx="42" ry="28" fill="#dca15d"/>
+<path d="M69 91l-5 17M91 84l-7 23M113 91l-6 18" fill="none" stroke="#fff0d0" stroke-width="6" stroke-linecap="round"/>
+<text x="178" y="72">El texto empieza junto a la imagen.</text>
+<text x="178" y="101">Las líneas se ajustan al espacio libre</text>
+<text x="178" y="130">que queda a su derecha.</text>
+<path d="M178 151h420" stroke="#94a3b8" stroke-width="5" stroke-linecap="round"/>
+<text x="28" y="193">Al terminar la imagen, el texto recupera todo el ancho.</text>
+<path d="M28 218h570" stroke="#94a3b8" stroke-width="5" stroke-linecap="round"/>
+</g>
+</svg>
+<figcaption id="float-ejemplo-caption">El texto rodea la imagen mientras comparte su altura; después continúa debajo a todo el ancho.</figcaption>
+</figure>
 <p>Hoy <code>float</code> tiene un uso concreto: que el texto rodee una imagen, como en una noticia o una receta. Para colocar columnas o centrar componentes se usan Flexbox y Grid.</p>
 <p><code>float</code> lleva una caja a un lado de su contenedor y permite que las líneas de texto fluyan a su alrededor. Admite <code>left</code> y <code>right</code>; <code>none</code> desactiva la flotación. No existe <code>float: center</code>: los flotantes no se diseñaron para centrar cajas.</p>
 <details class="table-disclosure"><summary><code>float</code></summary><div class="table-wrap"><table><caption><code>float</code></caption><thead><tr><th scope="col">Propiedad</th><th scope="col">Uso o forma abreviada</th><th scope="col">Valores habituales</th></tr></thead><tbody>
@@ -2243,6 +2265,12 @@ h1 { font-size: clamp(1.5rem, 1rem + 2vw, 3rem); }</code></pre>
 }</code></pre><p>Usa varios párrafos para ver cómo las líneas siguen la curva. <code>shape-margin</code> separa el texto del contorno. Prueba a quitar <code>float</code>: la forma deja de desviar las líneas.</p>
 <p class="source"><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/shape-outside">shape-outside · MDN</a></p></details></aside>
 
+<aside class="box-lab" id="prueba-concepto-flotantes" aria-labelledby="prueba-flotantes-titulo">
+<p class="card-label">Prueba de concepto · HTML interactivo</p>
+<h4 id="prueba-flotantes-titulo">¿Quién contiene al flotante?</h4>
+<p>Cambia el lado de la imagen, la cantidad de texto, <code>clear</code> y la contención del artículo. Compara clearfix y <code>flow-root</code> y observa las medidas y el CSS aplicado.</p>
+<a class="delivery-trigger" href="ejemplos/flotantes.html" target="_blank" rel="noopener noreferrer">Abrir prueba de concepto ↗</a>
+</aside>
 <h3 id="comprueba-9">Comprueba antes de seguir</h3>
 <div class="section-check"><p>Responde de memoria y despliega después cada respuesta. Si fallas una, vuelve al apartado antes de continuar.</p><details><summary>Flotas la foto y el borde de la sección que la contiene se queda corto: no llega al final de la imagen. ¿Por qué y cómo lo corriges?</summary><p>El flotante sale del flujo y su contenedor no cuenta su altura. <code>display: flow-root</code> en el contenedor hace que lo contenga.</p></details><details><summary>Quieres que el título siguiente empiece debajo de la foto flotante, no a su lado. ¿Qué propiedad usas?</summary><p><code>clear</code> en el título, con <code>both</code> o con el lado del flotante.</p></details><details><summary>La foto flotante tiene <code>width: 50%</code> y, en un móvil, el texto que la rodea queda en líneas de dos palabras. ¿Qué límite del apartado 4.6 lo evita?</summary><p>Un ancho máximo, como <code>max-width: 10rem</code>, o un ancho menor. En pantallas muy estrechas puede ser mejor no flotarla.</p></details></div>
 <h3 id="hitos-5">Hito</h3>
