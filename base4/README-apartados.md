@@ -10,6 +10,8 @@ Si `config.json` no contiene `apartados` ni `tipo`, se interpreta como un único
 
 `webcode` conserva los tres paneles actuales: instrucciones, editor y resultado. Las pestañas de código y las notas TXT son independientes para cada apartado.
 
+El icono de pin de «Resultado» abre la vista previa en un modal redimensionable. Arrastra su esquina inferior derecha o utiliza las flechas con el control de tamaño enfocado. Esc o el botón de cierre devuelven el resultado a su posición sin recargarlo; el indicador muestra el ancho y el alto reales de la vista previa. El modal es común a todas las actividades; los apartados QA y Test conservan su propia vista.
+
 ## Combinar varios apartados
 
 La lista `apartados` determina el orden. Cada `id` coincide con el nombre de una subcarpeta y debe ser único: minúsculas, números y guiones, sin espacios. Si se omite `tipo`, se utiliza `webcode`.

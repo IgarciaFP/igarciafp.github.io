@@ -77,7 +77,7 @@ window.createLabClipboard=function(options){
   const start=active?.selectionStart,end=active?.selectionEnd,direction=active?.selectionDirection;
   const field=document.createElement('textarea');field.value=' ';field.tabIndex=-1;
   field.style.cssText='position:fixed;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
-  (document.querySelector('dialog[open]')||document.body).append(field);
+  (document.querySelector('dialog[open]:not([data-inline-preview])')||document.body).append(field);
   const onCopy=event=>{if(!event.clipboardData)return;event.clipboardData.setData('text/plain',' ');event.preventDefault();event.stopImmediatePropagation();};
   window.addEventListener('copy',onCopy,true);
   try{field.focus({preventScroll:true});field.select();return document.execCommand('copy')===true;}

@@ -81,8 +81,7 @@
 #guard-warning-count{color:#b42318;font-size:1.8rem;font-weight:800;font-variant-numeric:tabular-nums}
 
 /* El iframe sigue el tamaño del contenedor: vw y las media queries se recalculan. */
-.resize-hint{margin:0;padding:6px 12px;font-size:.75rem;color:var(--muted)}
-.preview-resizer{resize:both;overflow:hidden;width:100%;max-width:100%;height:360px;min-width:160px;min-height:120px;flex:none;border:1px solid var(--line);padding:0 8px 8px 0;background:#dce3ed;box-sizing:border-box}
+.preview-resizer{resize:none;overflow:hidden;width:100%;max-width:100%;height:360px;min-width:160px;min-height:120px;flex:none;border:1px solid var(--line);padding:0;background:#dce3ed;box-sizing:border-box}
 .preview-resizer .vista{display:block;width:100%;height:100%;border:0}
 
 /* Envío: barra indeterminada hasta recibir la confirmación real del receptor. */
@@ -215,3 +214,46 @@ dialog:not([open]){display:none!important}
 .editor-actions .editor-icon:active:not(:disabled){transform:translateY(1px);box-shadow:inset 0 2px 4px #0006}
 
 .editor-actions .editor-icon.armado{background:#b42318;border-color:#b42318;color:#fff}
+
+/* Resultado flotante: el mismo iframe vuelve al panel al cerrar el modal. */
+.preview-dialog:not(:modal) { display: contents !important; }
+.preview-dialog .preview-resizer { resize: none; padding: 0; position: relative; }
+.preview-dialog .preview-pin,
+.preview-dialog .preview-close {
+  display: inline-grid; place-items: center; flex: none; width: 36px; height: 36px;
+  min-height: 36px; padding: 7px; border-radius: 8px;
+}
+.preview-dialog button[hidden] { display: none !important; }
+.preview-dialog button svg { width: 20px; height: 20px; }
+.preview-dialog:modal {
+  display: block; position: fixed; inset: auto; margin: 0; padding: 0; border: 0;
+  box-sizing: border-box; max-width: calc(100vw - 16px); max-height: calc(100dvh - 16px);
+  overflow: hidden; background: #fff; color: var(--navy, #172b42); border-radius: 14px;
+  box-shadow: 0 18px 70px #111a2c66;
+}
+.preview-dialog::backdrop { background: #111a2c99; }
+.preview-dialog:modal > .panel { width: 100%; height: 100%; min-height: 0; }
+.preview-dialog:modal .panel-cabecera { flex: none; flex-wrap: wrap; gap: 8px; padding: 8px 12px; }
+.preview-dialog:modal .preview-close { margin-left: auto; }
+.preview-dialog:modal .preview-resizer {
+  flex: 1; width: 100%; height: auto; min-width: 0; min-height: 60px; max-width: none;
+  border: 0;
+}
+.preview-dialog:modal .consola { flex: none; max-height: 34%; overflow: auto; }
+.preview-dialog .preview-floating-footer {
+  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+  flex: none; min-height: 38px; padding: 0 4px 0 12px;
+  border-top: 1px solid var(--line, #d5deeb); background: #f7f9fc;
+}
+.preview-dialog:not(:modal) .preview-floating-footer { display: none; }
+.preview-dialog .preview-dimensions { font: .78rem/1.4 system-ui; color: #475569; font-variant-numeric: tabular-nums; }
+.preview-dialog .preview-resize-handle {
+  display: grid; place-items: center; width: 36px; height: 36px; min-height: 36px;
+  padding: 6px; border: 0; border-radius: 6px; background: transparent; color: #475569;
+  cursor: nwse-resize; touch-action: none; user-select: none;
+}
+.preview-dialog .preview-frame-shield { display: none; }
+.preview-dialog.is-resizing { cursor: nwse-resize; user-select: none; }
+.preview-dialog.is-resizing .preview-frame-shield {
+  display: block; position: absolute; inset: 0; z-index: 2; cursor: nwse-resize;
+}

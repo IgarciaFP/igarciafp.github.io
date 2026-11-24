@@ -1,61 +1,15 @@
-/* Prueba del panel flotante: únicamente DIW02-02. */
+/* Vista previa flotante común a los apartados webcode de base4. */
 (() => {
   'use strict';
   const lab = window.Lab;
-  if (lab?.config.module !== 'DIW' || lab.config.activity !== '02-02-checkpoint-modelo-de-caja') return;
+  if (!lab || document.getElementById('preview-dialog')) return;
   const frame = document.getElementById('preview');
   const panel = frame.closest('.panel');
   const header = panel.querySelector('.panel-cabecera');
   const resizer = panel.querySelector('.preview-resizer');
-  const style = document.createElement('style');
-  style.textContent = `
-.checkpoint-preview-dialog:not(:modal) { display: contents !important; }
-.checkpoint-preview-dialog .resize-hint { display: none; }
-.checkpoint-preview-dialog .preview-resizer { resize: none; padding: 0; position: relative; }
-.checkpoint-preview-dialog .preview-pin,
-.checkpoint-preview-dialog .preview-close {
-  display: inline-grid; place-items: center; flex: none; width: 36px; height: 36px;
-  min-height: 36px; padding: 7px; border-radius: 8px;
-}
-.checkpoint-preview-dialog button[hidden] { display: none !important; }
-.checkpoint-preview-dialog button svg { width: 20px; height: 20px; }
-.checkpoint-preview-dialog:modal {
-  display: block; position: fixed; inset: auto; margin: 0; padding: 0; border: 0;
-  box-sizing: border-box; max-width: calc(100vw - 16px); max-height: calc(100dvh - 16px);
-  overflow: hidden; background: #fff; color: var(--navy, #172b42); border-radius: 14px;
-  box-shadow: 0 18px 70px #111a2c66;
-}
-.checkpoint-preview-dialog::backdrop { background: #111a2c99; }
-.checkpoint-preview-dialog:modal > .panel { width: 100%; height: 100%; min-height: 0; }
-.checkpoint-preview-dialog:modal .panel-cabecera { flex: none; flex-wrap: wrap; gap: 8px; padding: 8px 12px; }
-.checkpoint-preview-dialog:modal .preview-close { margin-left: auto; }
-.checkpoint-preview-dialog:modal .preview-resizer {
-  flex: 1; width: 100%; height: auto; min-width: 0; min-height: 60px; max-width: none;
-  border: 0;
-}
-.checkpoint-preview-dialog:modal .consola { flex: none; max-height: 34%; overflow: auto; }
-.checkpoint-preview-dialog .preview-floating-footer {
-  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
-  flex: none; min-height: 38px; padding: 0 4px 0 12px;
-  border-top: 1px solid var(--line, #d5deeb); background: #f7f9fc;
-}
-.checkpoint-preview-dialog:not(:modal) .preview-floating-footer { display: none; }
-.checkpoint-preview-dialog .preview-dimensions { font: .78rem/1.4 system-ui; color: #475569; font-variant-numeric: tabular-nums; }
-.checkpoint-preview-dialog .preview-resize-handle {
-  display: grid; place-items: center; width: 36px; height: 36px; min-height: 36px;
-  padding: 6px; border: 0; border-radius: 6px; background: transparent; color: #475569;
-  cursor: nwse-resize; touch-action: none; user-select: none;
-}
-.checkpoint-preview-dialog .preview-frame-shield { display: none; }
-.checkpoint-preview-dialog.is-resizing { cursor: nwse-resize; user-select: none; }
-.checkpoint-preview-dialog.is-resizing .preview-frame-shield {
-  display: block; position: absolute; inset: 0; z-index: 2; cursor: nwse-resize;
-}
-`;
-  document.head.append(style);
   const dialog = document.createElement('dialog');
-  dialog.id = 'checkpoint-preview-dialog';
-  dialog.className = 'checkpoint-preview-dialog';
+  dialog.id = 'preview-dialog';
+  dialog.className = 'preview-dialog';
   dialog.setAttribute('role', 'presentation');
   dialog.setAttribute('open', '');
   dialog.setAttribute('data-inline-preview', '');
@@ -142,6 +96,7 @@
     if (!floating) return;
     finishResize();
     floating = false;
+    syncModalState();
     openedFullscreen = null;
     dialog.removeAttribute('aria-modal');
     dialog.removeAttribute('aria-labelledby');
@@ -184,6 +139,7 @@
     dialog.removeAttribute('open');
     dialog.removeAttribute('data-inline-preview');
     dialog.showModal();
+    syncModalState();
     clearTimeout(releaseTimer);
     void lockEscape();
     updateDimensions();
@@ -238,14 +194,31 @@
     if (floating && openedFullscreen && document.fullscreenElement !== openedFullscreen) closeModal();
   });
   const notebook = document.getElementById('cuaderno');
-  new MutationObserver(() => {
-    if (floating && (notebook.hidden || notebook.inert)) closeModal();
-  }).observe(notebook, { attributes: true, attributeFilter: ['hidden', 'inert'] });
-  // Escape también debe volver al panel cuando el teclado está dentro del iframe aislado.
+  const panelGroup = dialog.closest('.paneles');
+  const visibilityObserver = new MutationObserver(() => {
+    if (floating && (notebook.hidden || notebook.inert || panelGroup.hidden)) closeModal();
+  });
+  for (const node of [notebook, panelGroup]) visibilityObserver.observe(node, { attributes: true, attributeFilter: ['hidden', 'inert'] });
+  function translateControls() {
+    const english = document.documentElement.lang === 'en';
+    for (const [button, text] of [
+      [pin, english ? 'Open result in a resizable window' : 'Abrir resultado en una ventana redimensionable'],
+      [close, english ? 'Close and return the result to its position' : 'Cerrar y devolver el resultado a su posición'],
+      [handle, english ? 'Resize: drag or use the arrow keys' : 'Cambiar tamaño: arrastra o utiliza las flechas']
+    ]) { button.title = text; button.setAttribute('aria-label', text); }
+    dimensions.setAttribute('aria-label', english ? 'Preview size' : 'Tamaño de la vista previa');
+  }
+  new MutationObserver(translateControls).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  translateControls();
+  // El resultado conserva sus propias teclas cuando se muestra dentro del panel.
   const escapeToken = crypto.randomUUID();
-  const relay = '<script>document.addEventListener("keydown",function(e){if(e.key==="Escape"){e.preventDefault();e.stopImmediatePropagation();parent.postMessage({checkpointPreviewEscape:' + JSON.stringify(escapeToken) + '},"*");}},true);</script>';
+  function syncModalState() {
+    frame.contentWindow.postMessage({ labPreviewModal: escapeToken, open: floating }, '*');
+  }
+  const relay = '<script>(function(){var modal=false,token=' + JSON.stringify(escapeToken) + ';window.addEventListener("message",function(e){if(e.source===parent&&e.data&&e.data.labPreviewModal===token)modal=e.data.open===true;});document.addEventListener("keydown",function(e){if(modal&&e.key==="Escape"){e.preventDefault();e.stopImmediatePropagation();parent.postMessage({labPreviewEscape:token},"*");}},true);})();</script>';
   lab.transformPreview = source => source.replace('<style>', relay + '<style>');
+  frame.addEventListener('load', syncModalState);
   window.addEventListener('message', event => {
-    if (event.source === frame.contentWindow && event.data?.checkpointPreviewEscape === escapeToken) closeModal(true);
+    if (event.source === frame.contentWindow && event.data?.labPreviewEscape === escapeToken) closeModal(true);
   });
 })();
