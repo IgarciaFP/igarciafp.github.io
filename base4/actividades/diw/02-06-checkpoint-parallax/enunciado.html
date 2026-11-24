@@ -1,0 +1,34 @@
+<h3>Checkpoint 06 · Crea y comprueba un efecto parallax</h3>
+<p><strong>Tiempo disponible:</strong> 105 minutos.</p>
+<p class="activity-goal"><strong>Objetivo:</strong> crear un efecto de profundidad decorativo que tenga una alternativa estable para quien prefiere menos movimiento.</p>
+<p>El <strong>parallax</strong> crea sensación de profundidad cuando el fondo y el contenido se desplazan de forma distinta. Una aproximación sencilla consiste en fijar una imagen de fondo a la ventana mientras el texto se desplaza por encima.</p>
+<pre><code>&lt;section class="parallax"&gt;
+  &lt;h2&gt;Descubre nuestro entorno&lt;/h2&gt;
+&lt;/section&gt;
+
+.parallax {
+  min-height: 20rem;
+  padding: 3rem 1rem;
+  color: white;
+  background-image: linear-gradient(rgb(0 0 0 / .65), rgb(0 0 0 / .65)),
+                    url("imagenes/paisaje.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+}
+
+/* Activarlo en pantallas amplias, si no se pide reducir movimiento. */
+@media (min-width: 48rem) and (prefers-reduced-motion: no-preference) {
+  .parallax { background-attachment: fixed; }
+}</code></pre>
+<ol>
+<li><strong>Construye la escena.</strong> Usa el ejemplo con una fotografía propia y añade contenido antes y después de la sección para poder desplazarte por la página. Ajusta la capa oscura hasta que el título se lea bien.</li>
+<li><strong>Compara los dos fondos.</strong> En una ventana de al menos <code>48rem</code> de ancho y con la preferencia de movimiento normal, alterna <code>scroll</code> y <code>fixed</code> en la regla de medios. Desplázate por el mismo tramo en ambas pruebas. Elige un detalle reconocible de la foto y describe cómo cambia su posición respecto al título.</li>
+<li><strong>Comprueba la alternativa con menos movimiento.</strong> Deja <code>fixed</code> en la regla de medios y activa la preferencia de movimiento reducido del sistema. Repite la prueba y comprueba en el inspector qué valor de <code>background-attachment</code> se aplica ahora.</li>
+</ol>
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/background-attachment" rel="noopener noreferrer" target="_blank">Consultar background-attachment en MDN ↗</a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion" rel="noopener noreferrer" target="_blank">Consultar reducción de movimiento en MDN ↗</a>
+<p class="activity-criteria"><strong>Se valorará:</strong> contraste suficiente del título, comparación descrita entre <code>scroll</code> y <code>fixed</code> y alternativa de movimiento reducido comprobada en el inspector.</p><p><strong>Imagen en Base4:</strong> sustituye la ruta del ejemplo por una URL HTTPS accesible de tu fotografía. Comprueba la escena en una vista previa de al menos 48rem para probar la regla de pantallas amplias.</p>
+<p><strong>Entrega:</strong> el HTML, el CSS comentado y tus observaciones de las tres pruebas en TXT.</p>
+<p>Escribe las conclusiones en la pestaña TXT y comenta tus decisiones en el CSS. Cuando termines, pulsa Entregar.</p>

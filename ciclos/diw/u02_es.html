@@ -2404,46 +2404,17 @@ html { scroll-behavior: smooth; }
 
 <h3 id="comprueba-10">Comprueba antes de seguir</h3>
 <div class="section-check"><p>Responde de memoria y despliega después cada respuesta. Si fallas una, vuelve al apartado antes de continuar.</p><details><summary>La insignia tiene <code>position: absolute; top: .5rem; right: .5rem;</code> y aparece en la esquina de la página. ¿Qué falta?</summary><p>Un antepasado posicionado. Añade <code>position: relative</code> a la tarjeta para que sea su referencia.</p></details><details><summary>La cabecera tiene <code>position: sticky</code> y se va con el resto de la página. ¿Qué has olvidado?</summary><p>El límite: <code>top: 0</code>. Sin un desplazamiento, la caja no sabe dónde debe quedarse.</p></details><details><summary>Al pulsar un enlace a <code>#horarios</code>, la cabecera fija tapa el título. ¿Qué propiedad lo evita y a qué elemento se aplica?</summary><p><code>scroll-margin-top</code> en el título de destino, con la altura de la cabecera.</p></details></div>
-<h3 id="actividades-6">Actividades</h3>
-<div class="unit-practice-group" data-practice-group="actividades">
-<article class="didactic-note activity-callout" id="u02v2-act-23"><details class="card-disclosure"><summary><h4 class="exercise-title"><i aria-hidden="true" class="fa-solid fa-pen"></i> Actividad 02-25 · Comparar posiciones</h4></summary><p class="activity-goal"><strong>Objetivo:</strong> relacionar cada valor de <code>position</code> con el hueco que deja y la referencia que usa.</p><p>Crea tres cajas y prueba <code>relative</code>, <code>absolute</code> y <code>fixed</code> sobre la segunda. Anota en cada caso qué ocurre con su hueco y cuál es la referencia. Añade una navegación <code>sticky</code> y suficiente texto para comprobarla. Entrega las tres variantes y las conclusiones.</p><p class="activity-criteria"><strong>Se valorará:</strong> tres variantes correctas, navegación sticky funcional y conclusiones que mencionen hueco y referencia en cada caso.</p><a class="delivery-trigger" href="../../labs/entrega-practicas-diw.html?actividad=u02v2-act-23" rel="noopener noreferrer" target="_blank">Entregar actividad</a></details></article>
-<article aria-labelledby="ampliacion-parallax" class="didactic-note activity-callout" id="u02v2-act-24"><details class="card-disclosure"><summary><h4 class="exercise-title" id="ampliacion-parallax"><i aria-hidden="true" class="fa-solid fa-pen"></i> Actividad 02-26 · Crea y comprueba un efecto parallax</h4></summary><p class="activity-goal"><strong>Objetivo:</strong> crear un efecto de profundidad decorativo que tenga una alternativa estable para quien prefiere menos movimiento.</p>
-<p>El <strong>parallax</strong> crea sensación de profundidad cuando el fondo y el contenido se desplazan de forma distinta. Una aproximación sencilla consiste en fijar una imagen de fondo a la ventana mientras el texto se desplaza por encima.</p>
-<pre><code>&lt;section class="parallax"&gt;
-  &lt;h2&gt;Descubre nuestro entorno&lt;/h2&gt;
-&lt;/section&gt;
-
-.parallax {
-  min-height: 20rem;
-  padding: 3rem 1rem;
-  color: white;
-  background-image: linear-gradient(rgb(0 0 0 / .65), rgb(0 0 0 / .65)),
-                    url("imagenes/paisaje.jpg");
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: scroll;
-}
-
-/* Activarlo en pantallas amplias, si no se pide reducir movimiento. */
-@media (min-width: 48rem) and (prefers-reduced-motion: no-preference) {
-  .parallax { background-attachment: fixed; }
-}</code></pre>
-<ol>
-<li><strong>Construye la escena.</strong> Usa el ejemplo con una fotografía propia y añade contenido antes y después de la sección para poder desplazarte por la página. Ajusta la capa oscura hasta que el título se lea bien.</li>
-<li><strong>Compara los dos fondos.</strong> En una ventana de al menos <code>48rem</code> de ancho y con la preferencia de movimiento normal, alterna <code>scroll</code> y <code>fixed</code> en la regla de medios. Desplázate por el mismo tramo en ambas pruebas. Elige un detalle reconocible de la foto y describe cómo cambia su posición respecto al título.</li>
-<li><strong>Comprueba la alternativa con menos movimiento.</strong> Deja <code>fixed</code> en la regla de medios y activa la preferencia de movimiento reducido del sistema. Repite la prueba y comprueba en el inspector qué valor de <code>background-attachment</code> se aplica ahora.</li>
-</ol>
-<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/background-attachment" rel="noopener noreferrer" target="_blank">Consultar background-attachment en MDN ↗</a>
-<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion" rel="noopener noreferrer" target="_blank">Consultar reducción de movimiento en MDN ↗</a>
-<p class="activity-criteria"><strong>Se valorará:</strong> contraste suficiente del título, comparación descrita entre <code>scroll</code> y <code>fixed</code> y alternativa de movimiento reducido comprobada en el inspector.</p><a class="delivery-trigger" href="../../labs/entrega-practicas-diw.html?actividad=u02v2-act-24" rel="noopener noreferrer" target="_blank">Entregar actividad</a></details></article>
-<article aria-labelledby="ejercicio-03-3-titulo" class="didactic-note activity-callout" id="u02v2-act-25"><details class="card-disclosure"><summary><h4 class="exercise-title" id="ejercicio-03-3-titulo"><i aria-hidden="true" class="fa-solid fa-pen"></i> Actividad 02-27 · Tres piezas posicionadas y un enigma de capas</h4></summary><p class="activity-concepts"><strong>Practicas:</strong> <code>relative</code>, <code>absolute</code>, <code>sticky</code>, <code>fixed</code> y <code>z-index</code> (6).</p><p>En el catálogo de Migas Amigas necesitas tres piezas: una insignia «Nuevo» en la esquina de cada tarjeta, una cabecera que se quede arriba al desplazarse y un botón «Ver cesta» siempre visible abajo a la derecha.</p><ol><li>Coloca la insignia a 0,5 rem de la esquina superior derecha de su tarjeta. ¿Qué pasa si olvidas declarar <code>position</code> en la tarjeta?</li><li>Haz la cabecera <em>sticky</em>. ¿Qué propiedad, además de <code>position</code>, es imprescindible? ¿Por qué necesita fondo?</li><li>Fija el botón a 1 rem de la esquina inferior derecha de la ventana. Evita que tape el final de la página.</li><li>Enigma: la cabecera tiene <code>z-index: 10</code> y dentro hay un menú desplegable con <code>z-index: 100</code>. El botón de la cesta tiene <code>z-index: 20</code>. Donde se solapan, el botón tapa el menú. ¿Por qué, si 100 es mayor que 20? ¿Cómo lo arreglas?</li><li>¿En qué se diferencia <code>position: relative; top: 12px</code> de añadir <code>margin-top: 12px</code>?</li></ol><a class="delivery-trigger" href="../../labs/entrega-practicas-diw.html?actividad=u02v2-act-25" rel="noopener noreferrer" target="_blank">Entregar actividad</a></details></article>
+<h3 id="actividades-6">Checkpoints</h3>
+<div class="unit-practice-group" data-practice-group="checkpoint">
+<aside class="box-lab checkpoint-card" id="u02v2-act-23" aria-labelledby="checkpoint-05-titulo"><p class="card-label">Checkpoint · Base4</p><h4 id="checkpoint-05-titulo">Checkpoint 05 · Comparar posiciones</h4><p>Compara relative, absolute y fixed; comprueba el hueco y la referencia de cada caja y añade una navegación sticky.</p><a class="delivery-trigger" href="../../base4/?a=diw/02-05-checkpoint-comparar-posiciones" target="_blank" rel="noopener noreferrer">Abrir checkpoint ↗</a></aside>
+<aside class="box-lab checkpoint-card" id="u02v2-act-24" aria-labelledby="ampliacion-parallax"><p class="card-label">Checkpoint · Base4</p><h4 id="ampliacion-parallax">Checkpoint 06 · Crea y comprueba un efecto parallax</h4><p>Compara fondos scroll y fixed y comprueba una alternativa estable con movimiento reducido.</p><a class="delivery-trigger" href="../../base4/?a=diw/02-06-checkpoint-parallax" target="_blank" rel="noopener noreferrer">Abrir checkpoint ↗</a></aside>
+<aside class="box-lab checkpoint-card" id="u02v2-act-25" aria-labelledby="ejercicio-03-3-titulo"><p class="card-label">Checkpoint · Base4</p><h4 id="ejercicio-03-3-titulo">Checkpoint 07 · Tres piezas posicionadas y un enigma de capas</h4><p>Posiciona una insignia, una cabecera y un botón de cesta; explica cómo actúan los contextos de apilamiento.</p><a class="delivery-trigger" href="../../base4/?a=diw/02-07-checkpoint-posicionamiento-capas" target="_blank" rel="noopener noreferrer">Abrir checkpoint ↗</a></aside>
 </div>
 <h3 id="hitos-6">Hito</h3>
 <div class="unit-practice-group" data-practice-group="hitos">
 <article aria-labelledby="hito-10-titulo" class="didactic-note activity-callout project-step" id="u02v2-hito-10"><details class="card-disclosure"><summary><h4 class="exercise-title" id="hito-10-titulo">Migas Amigas · Hito 8 · Cabecera fija e insignia</h4></summary>
 <p class="activity-concepts"><strong>Aplicas:</strong> <code>relative</code>, <code>absolute</code>, <code>sticky</code> y <code>scroll-margin-top</code> (6.1–6.3).</p>
-<ol><li>Haz que <code>.cabecera</code> permanezca arriba al desplazarse. Dale fondo y un <code>z-index</code> suficiente.</li><li>Coloca la insignia «Nuevo» en la esquina superior derecha de su tarjeta. Parte de tu solución de la actividad 02-27.</li><li>Enlaza desde la navegación a <code>#horarios</code> y evita que la cabecera tape el título de destino.</li></ol>
+<ol><li>Haz que <code>.cabecera</code> permanezca arriba al desplazarse. Dale fondo y un <code>z-index</code> suficiente.</li><li>Coloca la insignia «Nuevo» en la esquina superior derecha de su tarjeta. Parte de tu solución del <a href="../../base4/?a=diw/02-07-checkpoint-posicionamiento-capas" target="_blank" rel="noopener noreferrer">checkpoint 07</a>.</li><li>Enlaza desde la navegación a <code>#horarios</code> y evita que la cabecera tape el título de destino.</li></ol>
 <p class="project-step-delivery"><strong>Entrega:</strong> no se entrega ahora. Forma parte de la <a href="#proyecto-migas-amigas">entrega de Migas Amigas</a> (apartado 11.3).</p>
 </details></article>
 </div>
