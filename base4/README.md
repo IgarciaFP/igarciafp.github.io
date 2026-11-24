@@ -66,7 +66,7 @@ for respuesta in informe["answers"]:
     print(respuesta["answer"])
 ```
 
-El archivo de «Guardar y pausar» (`practica-….txt`) es distinto: guarda el intento completo para poder recuperarlo.
+El archivo de «Pausar» (`practica-….txt`) es distinto: guarda el intento completo para poder recuperarlo.
 
 ## Vista previa
 
@@ -77,7 +77,7 @@ El archivo de «Guardar y pausar» (`practica-….txt`) es distinto: guarda el i
 - El resultado se ejecuta en un `iframe` aislado, sin acceso a la página, al guardado ni a la entrega. Una política de contenido impide peticiones de red, marcos anidados y envío de formularios; las imágenes, fuentes y medios por `https` sí se cargan. Se puede sustituir con `preview.csp` en `contenido/config.json`.
 - Los enlaces están desactivados y, si el marco navega a otra página, se sustituye por un aviso.
 
-Como en `/base/`, los controles son disuasorios y no constituyen una plataforma de examen seguro. Un bucle infinito ejecutado con «Ejecutar» puede bloquear la pestaña: el trabajo queda en el guardado local, pero solo se reanuda desde un archivo de «Guardar y pausar».
+Como en `/base/`, los controles son disuasorios y no constituyen una plataforma de examen seguro. Un bucle infinito ejecutado con «Ejecutar» puede bloquear la pestaña: el trabajo queda en el guardado local, pero solo se reanuda desde un archivo de «Pausar».
 
 ## Comprobación
 
@@ -93,7 +93,7 @@ Abrir `http://localhost:8000/base3/?a=diw/01-01-tarjeta-de-presentacion`.
 
 El icono de pin de «Resultado» abre la vista previa en un modal redimensionable. Arrastra su esquina inferior derecha o utiliza las flechas con el control de tamaño enfocado. Esc o el botón de cierre devuelven el resultado a su posición sin recargarlo; el indicador muestra el ancho y el alto reales de la vista previa. El CSS responde al ancho del propio resultado.
 
-`guard.returnSeconds` en `contenido/config.json` fija el plazo de regreso (actualmente 10 segundos acumulados por práctica). Al perder pantalla completa, visibilidad o foco, se bloquea el editor y aparece una cuenta atrás roja al volver a la página. Pulsa «Continuar en pantalla completa» antes del vencimiento. Si se agota, se conserva el código y se genera y envía la entrega automáticamente. Cada salida consume el tiempo restante; continuar, pausar o recuperar no repone los segundos consumidos. Las incidencias se registran sin límite de tres. Guardar y pausar detiene la práctica sin iniciar este plazo. El plazo usa una fecha límite, de modo que una pestaña suspendida comprueba el vencimiento al reactivarse; un navegador cerrado no puede enviar hasta volver a ejecutarse.
+`guard.returnSeconds` en `contenido/config.json` fija el plazo de regreso (actualmente 10 segundos acumulados por práctica). Al perder pantalla completa, visibilidad o foco, se bloquea el editor y aparece una cuenta atrás roja al volver a la página. Pulsa «Continuar en pantalla completa» antes del vencimiento. Si se agota, se conserva el código y se genera y envía la entrega automáticamente. Cada salida consume el tiempo restante; continuar, pausar o recuperar no repone los segundos consumidos. Las incidencias se registran sin límite de tres. Pausar detiene la práctica sin iniciar este plazo. El plazo usa una fecha límite, de modo que una pestaña suspendida comprueba el vencimiento al reactivarse; un navegador cerrado no puede enviar hasta volver a ejecutarse.
 
 El receptor actualizado y `profesor.html` reconocen `guardPolicy: "return-timeout"` y `finishReason: "return-timeout"`. Actualiza la implementación de Apps Script para que la hoja muestre el nuevo motivo de cierre y el contador sin «/3».
 
@@ -129,7 +129,7 @@ Cada carpeta `actividades/MODULO/ACTIVIDAD/` incluye un único **config.json** c
 | --- | --- | --- |
 | title | Nombre de la actividad | Obligatorio |
 | version | Versión del contenido | Obligatorio |
-| guardar | Mostrar Guardar y pausar y Recuperar práctica | false |
+| guardar | Mostrar Pausar; la recuperación desde archivo está disponible en el inicio | false |
 | duracion | Minutos disponibles; número positivo, hasta 1440 | 15 |
 | entregas | Oportunidades ordinarias por correo y actividad; entero no negativo; 0 exige motivo desde la primera entrega | 1 |
 | reiniciar | Mostrar y habilitar el botón Reiniciar | false |
