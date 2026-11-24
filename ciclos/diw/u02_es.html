@@ -1640,7 +1640,7 @@ li::marker { color: #0f766e; }
 <div class="box-lab-controls concept-lab-controls">
 <label>Ancho disponible: <output id="auto-space-value">400 px</output><input id="auto-space" type="range" min="240" max="640" step="20" value="400"></label>
 <label>Ancho de la tarjeta<select id="auto-width"><option value="auto">Automático</option><option value="200px">Fijo: 200 px</option></select></label>
-<label>Márgenes horizontales<select id="auto-margins"><option value="none">Ambos a cero</option><option value="left">Izquierdo automático</option><option value="both">Ambos automáticos</option></select></label>
+<label>Márgenes horizontales<select id="auto-margins"><option value="none">Ambos a cero</option><option value="left">Izquierdo automático</option><option value="right">Derecho automático</option><option value="both">Ambos automáticos</option></select></label>
 <label>Cantidad de contenido<select id="auto-content"><option value="1">Un párrafo</option><option value="3">Tres párrafos</option><option value="6">Seis párrafos</option></select></label>
 </div>
 <div class="concept-lab-stage" tabindex="0" role="region" aria-label="Tarjeta y espacio disponible"><div id="auto-demo-parent"><div id="auto-demo-card"><p>Pan del día · Hogaza de centeno.</p></div></div></div>
@@ -3784,8 +3784,8 @@ if(document.querySelector('#flex-direction')){const fd=document.querySelector('#
       parent.style.width=field('space').value+'px';
       field('space-value').textContent=field('space').value+' px';
       card.style.width=field('width').value;
-      card.style.marginLeft=field('margins').value==='none'?'0':'auto';
-      card.style.marginRight=field('margins').value==='both'?'auto':'0';
+      card.style.marginLeft=['left','both'].includes(field('margins').value)?'auto':'0';
+      card.style.marginRight=['right','both'].includes(field('margins').value)?'auto':'0';
       const paragraphs=Array.from({length:Number(field('content').value)},(_,i)=>{
         const p=document.createElement('p');p.textContent='Pan del día · Hogaza de centeno'+(i?' · Pedido '+(i+1):'.');return p;
       });
