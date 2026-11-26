@@ -1,6 +1,7 @@
 /* SSII4E1: gzip + AES-256-GCM; contraseña del profesor, nunca incluida en el archivo. */
 export const PREFIX='SSII4E1.';
-export const ITERATIONS=600000;
+// Cloudflare en producción limita PBKDF2 a 100000; workerd local no impone ese límite.
+export const ITERATIONS=100000;
 const encoder=new TextEncoder();
 const base64=bytes=>{let text='';for(const byte of bytes)text+=String.fromCharCode(byte);return btoa(text).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'');};
 const bytes=text=>Uint8Array.from(atob(text.replaceAll('-','+').replaceAll('_','/')),c=>c.charCodeAt(0));

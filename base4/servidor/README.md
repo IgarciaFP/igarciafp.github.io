@@ -43,8 +43,10 @@ Cubren los tres prefijos, los límites de octetos, las máscaras ignoradas, el r
 
 ## Cifrado de las entregas
 
-El receptor envía las respuestas por HTTPS al Worker propio mediante POST /base4/cifrar. El Worker comprueba el hash y que el sello corresponda a esas respuestas, comprime con gzip y cifra con AES-256-GCM usando CLAVE_PROFESOR. El formato SSII4E1. incorpora una sal y un IV aleatorios; PBKDF2-HMAC-SHA-256 deriva la clave con 600000 iteraciones. La implementación compartida está en ../motor/criptografia.mjs y se verifica también con workerd real. La contraseña no se devuelve al alumnado ni se publica en GitHub.
+El receptor envía las respuestas por HTTPS al Worker propio mediante POST /base4/cifrar. El Worker comprueba el hash y que el sello corresponda a esas respuestas, comprime con gzip y cifra con AES-256-GCM usando CLAVE_PROFESOR. El formato SSII4E1. incorpora una sal y un IV aleatorios; PBKDF2-HMAC-SHA-256 deriva la clave con 100000 iteraciones. La implementación compartida está en ../motor/criptografia.mjs y se verifica también con workerd real. La contraseña no se devuelve al alumnado ni se publica en GitHub.
 
 POST /base4/profesor valida la contraseña y entrega al receptor una autorización de descifrado firmada y con caducidad. Apps Script la conserva asociada al hash de la sesión; el navegador conserva solo su token habitual. POST /base4/descifrar exige esa autorización. Así profesor.html reutiliza su login sin pedir otra contraseña y los volcados generan enlaces sin cifrar para revisor.html, conservando cifrado el original de Entregas. La IA debe solicitar la contraseña antes de corregir, conforme a correccion/instrucciones.txt. Si se cambia la contraseña, los documentos anteriores requieren la contraseña con la que se cifraron.
 
 Despliega primero el Worker y después actualiza Code.gs y Bridge.html en la implementación existente de Apps Script. Los secretos actuales se conservan; no se añaden contraseñas al código ni a Apps Script.
+
+Cloudflare limita PBKDF2 a 100000 iteraciones en producción, aunque workerd local admita más. Este valor forma parte del formato SSII4E1. y debe coincidir al descifrar. Referencia del runtime: https://github.com/cloudflare/workerd/issues/1346. La prueba publicada se realiza con datos ficticios, sin escribir entregas en la hoja.
