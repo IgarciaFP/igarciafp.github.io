@@ -636,6 +636,12 @@ function syncFinishAction(){
  $('practice-finish').textContent=sectionView?.hasNext()?(uiLanguage==='en'?'Next':'Siguiente'):tr('toolbarFinish');
 }
 function afterRender(state,ctx){
+ for(const id of ['attempt-status','guard-action-status']){
+  const notice=$(id),isError=notice.textContent===exhaustedMessage;
+  notice.classList.toggle('login-error',isError);
+  notice.setAttribute('role',isError?'alert':'status');
+  notice.setAttribute('aria-live',isError?'assertive':'polite');
+ }
  const previousPhase=phase;
  phase=state.phase;if(['active','paused'].includes(previousPhase)&&!['active','paused'].includes(phase))void clipboard?.clear();if(!['active','paused'].includes(phase))toolbox?.close();if(previousPhase!==phase&&(phase==='closing'||phase==='submitted'))closeActionModal(false);
  if(phase==='closing'||phase==='submitted')panelEntered=true;clock();syncToolbar();
