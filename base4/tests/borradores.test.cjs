@@ -2,13 +2,13 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {webcrypto}=require('node:crypto'),{JSDOM,ResourceLoader,VirtualConsole}=require('jsdom');
 const repo=path.resolve(__dirname,'../..'),activity='dwec/01-01-contador-de-pulsaciones';
 let now=1800000000000;
-const attempts=new Map();let sends=0,failSend=false,legacyStatus=false,failStatus=false;
+const attempts=new Map();let sends=0,failSend=false,legacyStatus=false,failStatus=false,startGate=null;
 const tick=()=>new Promise(r=>setTimeout(r,20));
 async function until(check){for(let i=0;i<100;i++){if(check())return;await tick();}assert.ok(check(),'La operación no terminó');}
 const used=email=>[...attempts.values()].filter(a=>a.email===email).length;
 const delivery={configured:()=>true,
  status:async(_,request)=>{if(failStatus)throw Error('NETWORK');return ({used:used(request.email),limit:1,limitEnforced:true,...(legacyStatus?{}:{canResume:attempts.get(request.attemptId)?.status==='started',attemptStatus:attempts.get(request.attemptId)?.status||null})});},
- start:async(_,request)=>{const data=JSON.parse(request.payload),existing=attempts.get(data.attemptId);if(existing)return {number:1,limit:1,status:existing.status};if(used(data.email)>=1)throw Error('ATTEMPTS_EXHAUSTED');attempts.set(data.attemptId,{email:data.email,status:'started'});return {number:1,limit:1,status:'started'};},
+ start:async(_,request)=>{if(startGate)await startGate;const data=JSON.parse(request.payload),existing=attempts.get(data.attemptId);if(existing)return {number:1,limit:1,status:existing.status};if(used(data.email)>=1)throw Error('ATTEMPTS_EXHAUSTED');attempts.set(data.attemptId,{email:data.email,status:'started'});return {number:1,limit:1,status:'started'};},
  send:async(_,request)=>{if(failSend)throw Error('NETWORK');sends++;attempts.get(JSON.parse(request.payload).attemptId).status='submitted';return {submissionId:request.submissionId,receivedAt:new Date(now).toISOString()};}
 };
 async function boot(saved={}){
@@ -50,8 +50,14 @@ async function boot(saved={}){
  const email='alumno@g.educaand.es';let app=await boot();await app.login(email);
  failStatus=true;await new Promise(r=>setTimeout(r,600));assert.equal(app.$('attempt-status').textContent,'');
  app.$('guard-start').click();await until(()=>app.$('attempt-status').textContent.includes('No se pudieron comprobar'));
- assert.equal(app.$('cuaderno').hidden,true);assert.equal(app.w.localStorage.getItem(app.key(email)),null);assert.equal(attempts.size,0);
- failStatus=false;await app.start();
+ assert.equal(app.$('cuaderno').hidden,true);assert.equal(app.$('environment-loading').hidden,true);assert.equal(app.$('setup-stage').hidden,false);assert.equal(app.w.localStorage.getItem(app.key(email)),null);assert.equal(attempts.size,0);
+ failStatus=false;let releaseStart;startGate=new Promise(resolve=>releaseStart=resolve);
+ const starting=app.start();await tick();
+ assert.equal(app.$('environment-loading').hidden,false);assert.equal(app.$('setup-stage').hidden,true);
+ assert.equal(app.$('environment-loading-message').textContent,'Cargando el entorno...');
+ assert.equal(app.$('environment-loading').querySelector('progress').hasAttribute('value'),false);
+ assert.equal(app.$('cuaderno').hidden,true);releaseStart();await starting;startGate=null;
+ assert.equal(app.$('environment-loading').hidden,true);
  app.edit('// Trabajo antes del cierre');now+=300000;
  const beforeLog=app.$('guard-log').textContent;app.intervals.find(i=>i.ms===300000).fn();
  let saved=JSON.parse(app.w.localStorage.getItem(app.key(email)));

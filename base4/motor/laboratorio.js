@@ -642,7 +642,10 @@ function afterRender(state,ctx){
  $('practice-save').hidden=!config.allowSaveRecovery;
  const paused=phase==='paused',needsRecovery=paused||ctx.restoring;
  const active=phase==='active',submitted=phase==='submitted'||phase==='closing';
- const panelHidden=submitted||(active&&!ctx.restoring&&!ctx.problem&&!$('guard-action-status').textContent);
+ const loading=ctx.busy&&!submitted&&!ctx.problem;
+ $('environment-loading').hidden=!loading;
+ if(loading)$('practice-toolbar').hidden=true;
+ const panelHidden=loading||submitted||(active&&!ctx.restoring&&!ctx.problem&&!$('guard-action-status').textContent);
  $('guard-panel').hidden=panelHidden;
  $('setup-stage').hidden=panelHidden||recoveryMode;
  $('lab-title').hidden=active;
@@ -650,7 +653,7 @@ function afterRender(state,ctx){
  $('guard-start-box').hidden=active&&!ctx.restoring;
  $('active-status').hidden=true;
  $('event-details').hidden=false;
- $('cuaderno').hidden=!active||needsRecovery;$('cuaderno').inert=!active||needsRecovery;
+ $('cuaderno').hidden=loading||!active||needsRecovery;$('cuaderno').inert=loading||!active||needsRecovery;
  if(previewDeferred&&!$('cuaderno').hidden)resetPreview();
  $('delivery-stage').hidden=!submitted&&!recoveryMode;
  $('delivery-back').hidden=true;
@@ -689,8 +692,8 @@ function afterRender(state,ctx){
   $('guard-continue').textContent='Continuar en pantalla completa';
  }
  // Última entrega: accesible desde la pantalla de identificación.
- $('utility-actions').hidden=recoveryMode||phase!=='ready';
- $('recovery').hidden=recoveryMode||phase!=='ready';
+ $('utility-actions').hidden=loading||recoveryMode||phase!=='ready';
+ $('recovery').hidden=loading||recoveryMode||phase!=='ready';
  const attempts=cachedOpportunity();
  $('recovery-message').textContent=lastDelivery?.receipt?tr('previousReceived'):lastDelivery?tr('pendingDelivery'):'';
  $('toolbar-attempts').textContent=tr('attempts')+Math.max(0,attempts.limit-attempts.used);
