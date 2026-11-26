@@ -2,12 +2,12 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {webcrypto}=require('node:crypto'),{JSDOM,ResourceLoader,VirtualConsole}=require('jsdom');
 const repo=path.resolve(__dirname,'../..'),activity='dwec/01-01-contador-de-pulsaciones';
 let now=1800000000000;
-const attempts=new Map();let sends=0,failSend=false;
+const attempts=new Map();let sends=0,failSend=false,legacyStatus=false;
 const tick=()=>new Promise(r=>setTimeout(r,20));
 async function until(check){for(let i=0;i<100;i++){if(check())return;await tick();}assert.ok(check(),'La operación no terminó');}
 const used=email=>[...attempts.values()].filter(a=>a.email===email).length;
 const delivery={configured:()=>true,
- status:async(_,request)=>({used:used(request.email),limit:1,limitEnforced:true,canResume:attempts.get(request.attemptId)?.status==='started',attemptStatus:attempts.get(request.attemptId)?.status||null}),
+ status:async(_,request)=>({used:used(request.email),limit:1,limitEnforced:true,...(legacyStatus?{}:{canResume:attempts.get(request.attemptId)?.status==='started',attemptStatus:attempts.get(request.attemptId)?.status||null})}),
  start:async(_,request)=>{const data=JSON.parse(request.payload),existing=attempts.get(data.attemptId);if(existing)return {number:1,limit:1,status:existing.status};if(used(data.email)>=1)throw Error('ATTEMPTS_EXHAUSTED');attempts.set(data.attemptId,{email:data.email,status:'started'});return {number:1,limit:1,status:'started'};},
  send:async(_,request)=>{if(failSend)throw Error('NETWORK');sends++;attempts.get(JSON.parse(request.payload).attemptId).status='submitted';return {submissionId:request.submissionId,receivedAt:new Date(now).toISOString()};}
 };
@@ -41,7 +41,7 @@ async function boot(saved={}){
  const storage=()=>Object.fromEntries(Array.from({length:w.localStorage.length},(_,i)=>{const k=w.localStorage.key(i);return [k,w.localStorage.getItem(k)];}));
  async function login(email){$('student').value=email;$('student').dispatchEvent(new w.Event('input',{bubbles:true}));$('attempt-refresh').click();await until(()=>!$('attempt-refresh').disabled);}
  async function start(){assert.equal($('guard-start').disabled,false,$('attempt-status').textContent);$('guard-start').click();await until(()=>!$('cuaderno').hidden);}
- async function pause(){$('practice-save').click();$('guard-confirm-ok').click();await until(()=>!$('setup-stage').hidden&&$('cuaderno').hidden);await login($('student').value);}
+ async function pause(){$('practice-save').click();$('guard-confirm-ok').click();await until(()=>!$('setup-stage').hidden&&$('cuaderno').hidden&&$('guard-state').textContent==='Pendiente de comenzar');await login($('student').value);}
  function edit(value){const el=$('js');el.dispatchEvent(new w.InputEvent('beforeinput',{bubbles:true,cancelable:true,inputType:'insertText'}));el.value=value;el.dispatchEvent(new w.InputEvent('input',{bubbles:true,inputType:'insertText'}));}
  return {w,d,$,key,storage,login,start,pause,edit,downloads,intervals,errors,close:()=>w.close()};
 }
@@ -55,11 +55,14 @@ async function boot(saved={}){
  app=await boot(checkpoint);assert.equal(app.$('cuaderno').hidden,true,'el login precede a la recuperación');
  await app.login(email);await app.start();saved=JSON.parse(app.w.localStorage.getItem(app.key(email)));
  assert.equal(saved.data.elapsed,300000,'el tiempo cerrado no se descuenta');assert.equal(app.$('js').value,'// Trabajo antes del cierre');assert.equal(attempts.size,1,'no consume otro intento');
- now+=20000;await app.pause();saved=JSON.parse(app.w.localStorage.getItem(app.key(email)));
+ legacyStatus=true;now+=20000;await app.pause();saved=JSON.parse(app.w.localStorage.getItem(app.key(email)));
  assert.equal(saved.phase,'paused');assert.equal(saved.data.elapsed,320000);assert.equal(app.downloads.length,0);assert.equal(sends,0);
+ const pausedCopy=app.storage();app.close();now+=3600000;app=await boot(pausedCopy);await app.login(email);
+ assert.equal(app.$('guard-start').disabled,false,'un borrador permite continuar aunque el receptor no devuelva canResume');
+ assert.equal(JSON.parse(app.w.localStorage.getItem(app.key(email))).data.elapsed,320000);
  const other='otra@g.educaand.es';await app.login(other);await app.start();assert.notEqual(app.$('js').value,'// Trabajo antes del cierre');app.edit('// Otro alumno');await app.pause();
  assert.ok(app.w.localStorage.getItem(app.key(email)));assert.ok(app.w.localStorage.getItem(app.key(other)));
- await app.login(email);await app.start();assert.equal(app.$('js').value,'// Trabajo antes del cierre');
+ await app.login(email);assert.match(app.$('attempt-status').textContent,/guardada/);assert.equal(app.$('guard-start').title,'Continuar práctica guardada');await app.start();assert.equal(app.$('js').value,'// Trabajo antes del cierre');legacyStatus=false;
  app.$('practice-finish').click();app.$('action-confirm-accept').click();await until(()=>app.$('delivery-stage').dataset.state==='success');
  assert.equal(app.w.localStorage.getItem(app.key(email)),null,'la entrega manual borra solo su borrador');assert.ok(app.w.localStorage.getItem(app.key(other)));assert.equal(sends,1);
  await until(()=>app.downloads.length===1);
@@ -70,7 +73,7 @@ async function boot(saved={}){
  app.$('attempt-refresh').click();await until(()=>!app.$('attempt-refresh').disabled);await app.start();assert.notEqual(app.$('js').value,'// Trabajo antes del cierre','borrar la fila permite un intento nuevo y vacío');
  now+=app.w.Lab.config.durationMs+1;for(const i of app.intervals.filter(i=>i.ms===250))i.fn();await until(()=>app.$('delivery-stage').dataset.state==='success');
  assert.equal(app.w.localStorage.getItem(app.key(email)),null,'el cierre automático borra el borrador');
- app.close();
+ await until(()=>app.downloads.length===1);await tick();app.close();
  // Un envío fallido conserva un comprobante reenviable, nunca un borrador editable.
  attempts.clear();app=await boot();await app.login(email);await app.start();app.edit('// Pendiente de red');failSend=true;
  app.$('practice-finish').click();app.$('action-confirm-accept').click();await until(()=>app.$('delivery-stage').dataset.state==='error');
@@ -79,3 +82,4 @@ async function boot(saved={}){
  assert.equal(app.$('cuaderno').hidden,true);assert.equal(app.errors.length,0,app.errors.join('; '));app.close();
  console.log('OK: autoguardado silencioso, cierre, reloj congelado, pausa sin descarga, varios alumnos, limpieza manual/automática, límite y reenvío pendiente.');
 })().catch(e=>{console.error(e);process.exit(1);});
+
