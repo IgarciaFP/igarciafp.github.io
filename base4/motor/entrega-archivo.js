@@ -5,8 +5,8 @@ root.LabFileDelivery={init({config,decode,validEmail,recover}){
  const d=document,$=id=>d.getElementById(id),button=$('file-delivery-open');
  const dialog=$('file-delivery-dialog'),input=$('file-delivery-input'),resume=$('file-delivery-send'),status=$('file-delivery-status');
  let documentText=null,busy=false;
- button.hidden=false;
- button.addEventListener('click',()=>{if(!busy){input.value='';input.click();}});
+ if(button)button.hidden=false;
+ button?.addEventListener('click',()=>{if(!busy){input.value='';input.click();}});
  $('file-delivery-close').addEventListener('click',()=>{if(!busy)dialog.close();});
  dialog.addEventListener('cancel',event=>{if(busy)event.preventDefault();});
  input.addEventListener('change',async()=>{
@@ -50,3 +50,4 @@ root.LabFileDelivery={init({config,decode,validEmail,recover}){
  });
 }};
 })(window);
+
