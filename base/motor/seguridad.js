@@ -417,6 +417,11 @@
       try {
         await fullscreen();
         if (checkReturnDeadline() || problem || fatal) return;
+        // Comprobar antes de crear un intento o guardar un borrador vacío.
+        if(!resume&&adapter.beforeStart&&!await adapter.beforeStart()){
+          if(document.fullscreenElement===root){try{await document.exitFullscreen();}catch{}}
+          return false;
+        }
         // Una tercera salida durante la petición no puede revivir el intento.
         if (resume && !['active','paused'].includes(state.phase)) return;
         if(resume&&drafts)await adapter.beforeResume?.();
@@ -450,6 +455,11 @@
         return persist();
       } catch (e) {
         if(drafts){
+          if(!resume&&e.message==='ATTEMPTS_EXHAUSTED'){
+            drafts.remove();returnToLogin();adapter.startError?.(e);
+            if(document.fullscreenElement===root){try{await document.exitFullscreen();}catch{}}
+            return false;
+          }
           adapter.stopClock();state.data=adapter.snapshot();state.phase='paused';state.pending=null;
           persist();returnToLogin();adapter.startError?.(e);return false;
         }
@@ -807,4 +817,5 @@
     return Object.freeze({ canEdit, canDownloadReport, auditAction, saveEdit, metadata, render, resetProcess, finalizeForced, pausePractice, recoverPractice, exportPractice, importPractice, beginFileRecovery, endFileRecovery, ask });
   };
 })();
+
 

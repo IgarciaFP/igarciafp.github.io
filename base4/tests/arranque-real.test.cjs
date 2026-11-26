@@ -24,7 +24,7 @@ async function boot(activity,recoverFile){
  const missingKey=()=>{for(const type of ['keydown','keypress','keyup'])d.dispatchEvent(new w.Event(type,{bubbles:true,cancelable:true}));};
  missingKey();assert.equal(d.querySelector('#guard-boot').hidden,true,'Un evento sin key no debe bloquear la identificación');
  const student=d.querySelector('#student');student.value='alumno@g.educaand.es';student.dispatchEvent(new w.Event('input',{bubbles:true}));
- d.querySelector('#attempt-refresh').click();await new Promise(r=>setTimeout(r,30));
+ assert.equal(d.querySelector('#attempt-refresh'),null);
  assert.equal(d.querySelector('#guard-start').disabled,false);
  d.documentElement.requestFullscreen=async()=>{d.fullscreenElement=d.documentElement;d.dispatchEvent(new w.Event('fullscreenchange'));};
  if(recoverFile){
@@ -80,3 +80,4 @@ async function boot(activity,recoverFile){
  w.close();return exportFile;
 }
 (async()=>{await boot('diw/01-01-tarjeta-de-presentacion');const saved=await boot('dwec/01-01-contador-de-pulsaciones');await boot('dwec/01-01-contador-de-pulsaciones',saved);saved.state.phase='paused';await boot('dwec/01-01-contador-de-pulsaciones',saved);console.log('OK: actual HTML + loader + shared guard + modules boot and start for mixed and legacy activities.');})().catch(e=>{console.error(e);process.exit(1);});
+

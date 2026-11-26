@@ -119,15 +119,11 @@ if(fileMode)Object.assign(english,{
  pendingDelivery:'You already generated a submission in this browser. You can download its TXT again.',
  forcedPending:'Time is up. Preparing your submission file with your saved code.'
 });
-texts.continueSaved='Continuar práctica guardada';
-texts.cachedPractice='Hay una práctica guardada en este navegador. Pulsa Continuar para proseguir con tu código y el tiempo restante.';
-english.continueSaved='Continue saved practice';
-english.cachedPractice='There is a saved practice in this browser. Click Continue to resume your code and remaining time.';
 const tr=k=>(uiLanguage==='en'?english[k]:texts[k])??texts[k]??k;
 function renderStartIcon(){
  const button=$('guard-start');
  if(!button.querySelector('svg'))button.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
- const label=cachedLoginDraft()?tr('continueSaved'):tr('start');
+ const label=tr('start');
  button.setAttribute('aria-label',label);button.title=label;
 }
 function applyUILanguage(){
@@ -187,45 +183,38 @@ function saveOpportunity(email,used){
  opportunityCache[email]={used,at:Date.now()};
  try{localStorage.setItem(opportunityStore,JSON.stringify(opportunityCache));}catch{}
 }
-function cachedLoginDraft(){
- if(!browserDrafts||!validIdentity())return null;
- try{
-  const email=$('student').value.trim().toLowerCase();
-  const saved=JSON.parse(browserDrafts.peek(email));
-  if(saved?.version!==1||!['active','paused','closing'].includes(saved.phase)||
-   saved.data?.values?.student?.trim().toLowerCase()!==email||!saved.data?.attempt)return null;
-  return saved;
- }catch{return null;}
-}
-function canStart(){
- if(!deliveryReady()||!validIdentity())return false;
- if(!browserDrafts)return true;
- const checked=opportunityCheck;
- return checked?.email===$('student').value.trim().toLowerCase()&&(checked.used<checked.limit||checked.canResume);
-}
+const exhaustedMessage='Número de intentos agotados. Consulta con tu profesor.';
+function canStart(){return deliveryReady()&&validIdentity();}
 async function checkOpportunities(){
  const email=$('student').value.trim().toLowerCase(),serial=++opportunitySerial;
- if(!validIdentity()||!deliveryReady())return;
- if(browserDrafts){opportunityCheck=null;$('attempt-status').textContent=cachedLoginDraft()?tr('cachedPractice')+' Comprobando el intento…':'Comprobando intentos disponibles…';$('attempt-refresh').disabled=true;guard?.render();}
+ if(!validIdentity()||!deliveryReady())return null;
  try{
   const raw=browserDrafts?.peek(email),saved=raw?JSON.parse(raw):null,owner=saved?.data?.attempt;
-  const result=fileMode?{...cachedOpportunity(),canResume:!!saved}:await window.LabDelivery.status(config.delivery,{practiceId:config.id,email,activityTitle:config.activityTitle,url:location.origin+location.pathname,
+  const result=fileMode?cachedOpportunity():await window.LabDelivery.status(config.delivery,{practiceId:config.id,email,activityTitle:config.activityTitle,url:location.origin+location.pathname,
    ...(owner?{attemptId:owner.id,attemptToken:owner.token}:{})});
-  if(serial!==opportunitySerial)return;
+  if(serial!==opportunitySerial)return null;
   saveOpportunity(email,result.used);
-  if(browserDrafts){
-   if(result.attemptStatus==='submitted')browserDrafts.discard(email,raw);
-   opportunityCheck={email,used:result.used,limit:result.limit,canResume:result.canResume===true||(result.attemptStatus!=='submitted'&&!!cachedLoginDraft())};
-   $('attempt-status').textContent=canStart()?(cachedLoginDraft()?tr('cachedPractice'):''): 'No quedan intentos. El profesor debe autorizar otro eliminando la fila de una entrega en la hoja.';
-  }
-  if(phase==='ready')guard?.render();
- }catch(error){
-  if(serial!==opportunitySerial)return;
-  if(browserDrafts)$('attempt-status').textContent=error.message==='RECEIVER_VERSION'?'El profesor debe actualizar y volver a publicar el receptor de entregas.':'No se pudieron comprobar los intentos. Pulsa «Comprobar intentos» para reintentar.';
- }finally{if(browserDrafts&&serial===opportunitySerial){$('attempt-refresh').disabled=false;guard?.render();}}
+  opportunityCheck={email,used:result.used,limit:result.limit};
+  return opportunityCheck;
+ }catch{
+  if(serial===opportunitySerial)opportunityCheck=null;
+  return null;
+ }
+}
+async function beforeStart(){
+ clearTimeout(opportunityTimer);
+ $('attempt-status').textContent='';
+ const checked=await checkOpportunities();
+ if(!checked){
+  $('attempt-status').textContent='No se pudieron comprobar los intentos. Vuelve a pulsar Intro o el botón de inicio.';
+  return false;
+ }
+ if(checked.used>=checked.limit){$('attempt-status').textContent=exhaustedMessage;return false;}
+ return true;
 }
 function scheduleOpportunityCheck(){
  clearTimeout(opportunityTimer);++opportunitySerial;opportunityCheck=null;
+ $('attempt-status').textContent='';$('guard-action-status').textContent='';
  opportunityTimer=setTimeout(checkOpportunities,500);guard?.render();
 }
 
@@ -676,7 +665,7 @@ function afterRender(state,ctx){
  $('receipt-download').disabled=phase==='closing';$('receipt-download').hidden=fileMode;$('recovery-download').hidden=fileMode;
  if(phase==='submitted'&&lastDelivery?.code===$('report').value&&lastDelivery.receipt)showDeliveryReceipt(lastDelivery);
  $('download').hidden=true;
- $('student').disabled=false;
+ $('student').disabled=ctx.busy;
  renderStartIcon();
  $('delivery-config-note').hidden=deliveryReady();
  $('delivery-config-note').textContent=tr('notConfigured');
@@ -1059,7 +1048,6 @@ window.addEventListener('pagehide',discardPendingDelivery);
 window.addEventListener('pageshow',event=>{if(event.persisted&&panelEntered&&!deliveryComplete)location.reload();});
 $('student').addEventListener('blur',()=>{emailTouched=!!$('student').value.trim();guard?.render();});
 $('student').addEventListener('input',()=>{rememberIdentity();scheduleOpportunityCheck();});
-if(browserDrafts)$('attempt-refresh').addEventListener('click',()=>void checkOpportunities());
 $('student').addEventListener('keydown',e=>{if(e.key==='Enter'&&!$('guard-start').disabled)$('guard-start').click();});
 if(typeof ResizeObserver==='function')new ResizeObserver(syncToolbarHeight).observe($('practice-toolbar'));
 window.addEventListener('resize',syncToolbarHeight);
@@ -1097,8 +1085,8 @@ if(sectionMode){
   save:()=>{invalidate();guard.saveEdit();}
  });
 }
-guard=window.createPracticeGuard({config,browserDrafts,beforeResume:()=>ensureRegistration(),startError(error){
- $('guard-action-status').textContent=error.message==='ATTEMPTS_EXHAUSTED'?'No quedan intentos. Pide autorización al profesor.':error.message==='ALREADY_SUBMITTED'?'Este intento ya fue entregado.':'No se pudo registrar el intento. Comprueba la conexión y vuelve a iniciar.';
+guard=window.createPracticeGuard({config,browserDrafts,beforeStart,beforeResume:()=>ensureRegistration(),startError(error){
+ $('guard-action-status').textContent=error.message==='ATTEMPTS_EXHAUSTED'?exhaustedMessage:error.message==='ALREADY_SUBMITTED'?'Este intento ya fue entregado.':'No se pudo registrar el intento. Comprueba la conexión y vuelve a iniciar.';
 },preservePendingEdits:true,renderStartButton:renderStartIcon,deliveryPanel:true,allowSubmittedRecovery:!browserDrafts,onAttemptStart,confirmDelivery:()=>confirmActionModal('Vas a finalizar la práctica. Al aceptar no podrás volver al editor. ¿Entregar la práctica?',incompleteWarning(),true),timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
  async saveBeforeReset(current){
   if(current==='paused')return savePracticeDocument();
