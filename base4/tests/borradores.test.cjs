@@ -94,6 +94,29 @@ async function boot(saved={}){
  assert.equal(app.w.localStorage.getItem(app.key(email)),null);assert.ok(app.w.localStorage.getItem(app.w.Lab.config.storage.recovery));
  const pending=app.storage();app.close();failSend=false;app=await boot(pending);app.$('recover-delivery').click();await until(()=>app.$('delivery-stage').dataset.state==='success');
  assert.equal(app.$('cuaderno').hidden,true);assert.equal(app.errors.length,0,app.errors.join('; '));app.close();
+ // Pérdida de foco sin eventos blur/visibilitychange (por ejemplo, desde el iframe).
+ attempts.clear();app=await boot();await app.login(email);await app.start();
+ const poll=()=>app.intervals.filter(i=>i.ms===250).forEach(i=>i.fn());
+ const focusState=()=>JSON.parse(app.w.localStorage.getItem(app.key(email)));
+ // Cambiar de control dentro de la página y un desenfoque breve no suman incidencias.
+ app.$('js').focus();poll();assert.equal(focusState().count,0);
+ app.d.hasFocus=()=>false;poll();app.d.hasFocus=()=>true;
+ await new Promise(r=>setTimeout(r,250));assert.equal(focusState().count,0);
+ app.d.hasFocus=()=>false;poll();
+ await until(()=>focusState().pending==='resume');
+ const deadline=focusState().returnRemainingMs;
+ assert.equal(focusState().count,1);assert.equal(deadline,12000);
+ now+=3000;poll();poll();assert.equal(focusState().count,1,'no duplica la incidencia al sondear');
+ app.d.hasFocus=()=>true;
+ app.intervals.filter(i=>i.ms===100).forEach(i=>i.fn());
+ assert.equal(app.$('guard-warning').open,true);
+ app.$('guard-continue').click();await until(()=>!app.$('answer-fields').disabled);
+ assert.equal(focusState().returnRemainingMs,9000,'descuenta el tiempo sin foco');
+ app.d.hasFocus=()=>false;poll();await until(()=>focusState().count===2);
+ now+=9001;poll();await until(()=>app.$('delivery-stage').dataset.state==='success');
+ await until(()=>app.downloads.length===1);await tick();
+ assert.equal(app.w.localStorage.getItem(app.key(email)),null,'entrega al agotar el margen detectado por sondeo');
+ app.close();
  console.log('OK: autoguardado silencioso, cierre, reloj congelado, pausa sin descarga, varios alumnos, limpieza manual/automática, límite y reenvío pendiente.');
 })().catch(e=>{console.error(e);process.exit(1);});
 

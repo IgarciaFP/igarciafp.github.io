@@ -803,7 +803,14 @@
     adapter.restore(state.data);
     if (!problem) persist(); // Prueba escritura antes de habilitar Comenzar.
     initialized = true;
-    if(adapter.timeLimitMs)setInterval(()=>{if(!fatal&&!problem)checkReturnDeadline();},250);
+    if(adapter.timeLimitMs)setInterval(()=>{
+      if(fatal||problem||checkReturnDeadline())return;
+      if(state.phase!=='active'||busy||restoring||fileRecovery)return;
+      // Respaldo cuando el navegador no notifica blur, por ejemplo desde un iframe.
+      // Reutiliza los 200 ms de confirmación y agrupa cada salida en una incidencia.
+      const focused=safe(signals());
+      if((!focused&&!state.episode)||(focused&&state.episode&&!timed))environment('focus');
+    },250);
     if(drafts)setInterval(()=>{
       if(state.phase!=='active'||fatal||problem||busy||restoring)return;
       state.data=adapter.snapshot();persist();
