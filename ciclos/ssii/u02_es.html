@@ -2054,6 +2054,48 @@ Hosts/Net: 14</pre>
 <div class="activity-card activity-callout" id="practica-ip-router"><h4>02-09 · Práctica: Comunica dos redes con un router</h4><p class="activity-duration"><strong>Tiempo estimado:</strong> 50 minutos.</p><p>Abre la práctica y sigue las instrucciones. Entrega un documento final en PDF con las capturas (a pantalla completa).</p><div class="card-actions"><a class="resource-link-btn" href="https://docs.google.com/document/d/1jqviCfkXwoVtGI3i6myZ2sf5iITDdvO3vllDAP6Odgg/edit" target="_blank" rel="noopener noreferrer">Abrir práctica</a></div><div class="card-actions activity-submit"><a class="resource-link-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSfeD0nYyiE2bhmtoDXCIGh-ZNNQyJN4Vi6YXZrRD9cLuaJMSQ/viewform?usp=sf_link" target="_blank" rel="noopener noreferrer">Entregar actividad</a></div></div>
 <h3 id="ip-subredes">8.7. Dividir una red: subnetting</h3>
 <p>Dividir un bloque permite planificar direcciones para varias redes. Al aumentar el prefijo, quedan menos bits por subred. Para separar dominios de broadcast también se necesitan segmentos físicos distintos o VLAN: <strong>cambiar la máscara no crea por sí solo una barrera de seguridad</strong>.</p>
+<div class="example-box" id="ejemplo-subnetting-16-24">
+<h4>Ejemplo: dividir 11.11.0.0/16 en subredes /24</h4>
+<p>Partimos de la red <code>11.11.0.0/16</code>, con máscara <code>255.255.0.0</code>. Sus primeros 16 bits identifican la red y los otros 16 están disponibles para hosts. Al ampliar el prefijo a <strong>/24</strong>, tomamos <strong>8 bits para identificar subredes</strong>: todo el tercer octeto. El cuarto octeto queda para los hosts y la nueva máscara es <code>255.255.255.0</code>.</p>
+<figure style="margin:1.5rem auto;max-width:900px">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" role="img" aria-labelledby="subnet16-title subnet16-desc" style="display:block;width:100%;height:auto">
+<title id="subnet16-title">De 11.11.0.0/16 a subredes /24: ocho bits para subredes</title>
+<desc id="subnet16-desc">Antes, los dos primeros octetos identifican la red y los dos últimos se reservan a hosts. Después, el tercer octeto aporta ocho bits para distinguir 256 subredes y el cuarto conserva ocho bits para hosts. El prefijo pasa de 16 a 24 bits.</desc>
+<rect x="1" y="1" width="718" height="338" rx="16" fill="#f8fafc" stroke="#cbd5e1"/>
+<g font-family="Arial,sans-serif" text-anchor="middle" fill="#183153">
+<text x="360" y="36" font-size="25" font-weight="700" fill="#1e3a8a">El tercer octeto pasa a identificar la subred</text>
+<text x="28" y="77" text-anchor="start" font-size="22" font-weight="700">Antes: /16</text>
+<rect x="28" y="90" width="324" height="62" rx="8" fill="#dbeafe" stroke="#93c5fd"/>
+<rect x="368" y="90" width="324" height="62" rx="8" fill="#ccfbf1" stroke="#5eead4"/>
+<path d="M190 90V152M530 90V152" stroke="#94a3b8" stroke-dasharray="4 4"/>
+<text x="109" y="130" font-size="30" font-weight="700">11</text><text x="271" y="130" font-size="30" font-weight="700">11</text>
+<text x="449" y="130" font-size="30" font-weight="700">0</text><text x="611" y="130" font-size="30" font-weight="700">0</text>
+<text x="190" y="179" font-size="21" fill="#1e3a8a">Red original · 16 bits</text>
+<text x="530" y="179" font-size="21" fill="#0f766e">Hosts · 16 bits</text>
+<text x="28" y="222" text-anchor="start" font-size="22" font-weight="700">Después: /24</text>
+<rect x="28" y="235" width="324" height="62" rx="8" fill="#dbeafe" stroke="#93c5fd"/>
+<rect x="368" y="235" width="154" height="62" rx="8" fill="#fef3c7" stroke="#d97706"/>
+<rect x="538" y="235" width="154" height="62" rx="8" fill="#ccfbf1" stroke="#5eead4"/>
+<path d="M190 235V297" stroke="#94a3b8" stroke-dasharray="4 4"/>
+<text x="109" y="275" font-size="30" font-weight="700">11</text><text x="271" y="275" font-size="30" font-weight="700">11</text>
+<text x="445" y="275" font-size="27" font-weight="700" fill="#92400e">0…255</text><text x="615" y="275" font-size="27" font-weight="700" fill="#0f766e">0…255</text>
+<text x="190" y="325" font-size="21" fill="#1e3a8a">Red original · 16 bits</text>
+<text x="445" y="325" font-size="21" fill="#92400e">Subred · 8 bits</text>
+<text x="615" y="325" font-size="21" fill="#0f766e">Hosts · 8 bits</text>
+</g>
+</svg>
+</figure>
+<p>Los 8 bits tomados permiten <strong>2<sup>8</sup> = 256 subredes</strong>, desde <code>11.11.0.0/24</code> hasta <code>11.11.255.0/24</code>. En cada una quedan <em>n</em> = 8 bits de host: 256 direcciones, de las cuales <strong>2<sup>8</sup> − 2 = 254 son asignables</strong>. El salto entre redes es de 1 en el tercer octeto.</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Ejemplos de subredes /24 dentro de 11.11.0.0/16">
+<table><caption>Primeras subredes y última subred del bloque /16</caption><thead><tr><th scope="col">Red</th><th scope="col">Hosts asignables</th><th scope="col">Broadcast</th></tr></thead><tbody>
+<tr><th scope="row"><code>11.11.0.0/24</code></th><td><code>11.11.0.1</code> – <code>11.11.0.254</code></td><td><code>11.11.0.255</code></td></tr>
+<tr><th scope="row"><code>11.11.1.0/24</code></th><td><code>11.11.1.1</code> – <code>11.11.1.254</code></td><td><code>11.11.1.255</code></td></tr>
+<tr><th scope="row"><code>11.11.2.0/24</code></th><td><code>11.11.2.1</code> – <code>11.11.2.254</code></td><td><code>11.11.2.255</code></td></tr>
+<tr><td colspan="3">… El tercer octeto continúa de 3 a 254 …</td></tr>
+<tr><th scope="row"><code>11.11.255.0/24</code></th><td><code>11.11.255.1</code> – <code>11.11.255.254</code></td><td><code>11.11.255.255</code></td></tr>
+</tbody></table></div>
+<p><strong>11.11.0.0/24 es la primera de las 256 subredes</strong>; cubre solo una parte del bloque original <code>11.11.0.0/16</code>. Ahora dos direcciones con distinto tercer octeto pertenecen a subredes diferentes, aunque compartan los dos primeros.</p>
+</div>
 <div class="example-box"><h4>Ejemplo: dividir 192.168.10.0/24 en cuatro /26</h4><p>Tomamos 2 bits más para la red: obtenemos 2<sup>2</sup> = 4 subredes. Quedan 6 bits: 64 direcciones por bloque y 62 asignables. La máscara es <code>255.255.255.192</code> y el salto entre redes es 64.</p><div class="table-scroll" role="region" tabindex="0" aria-label="Tabla de direccionamiento IP"><table><thead><tr><th>Red</th><th>Hosts asignables</th><th>Broadcast</th></tr></thead><tbody><tr><td>192.168.10.0/26</td><td>.1 – .62</td><td>.63</td></tr><tr><td>192.168.10.64/26</td><td>.65 – .126</td><td>.127</td></tr><tr><td>192.168.10.128/26</td><td>.129 – .190</td><td>.191</td></tr><tr><td>192.168.10.192/26</td><td>.193 – .254</td><td>.255</td></tr></tbody></table></div><p>Todos los valores abreviados pertenecen a 192.168.10.x. Para <code>192.168.10.70/26</code>, la red es .64 y el broadcast .127; el primer host no es .1.</p></div>
 <figure id="esquema-subnetting-24-26" style="margin:1.5rem auto;max-width:900px">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 800" role="img" aria-labelledby="subnet24-title subnet24-desc" style="display:block;width:100%;height:auto">
