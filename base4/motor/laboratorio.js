@@ -889,8 +889,8 @@ async function downloadReceipt(item){
  if(!item?.code)return false;
  let url;
  try{
-  // El alumno recibe texto plano; el cifrado de la entrega almacenada pertenece al receptor.
-  const documentCode=await decodePracticeDocument(item.code);
+  // Comprobante comprimido: conserva el formato GZIP + Base64URL anterior.
+  const documentCode=item.practice&&!fileMode?await encodeReport(item.practice):item.code;
   url=URL.createObjectURL(new Blob([documentCode],{type:'text/plain;charset=utf-8'}));
   const link=document.createElement('a');
   // Entrega por archivo: «nombre de la actividad_usuario.txt», con el usuario del correo sin dominio.

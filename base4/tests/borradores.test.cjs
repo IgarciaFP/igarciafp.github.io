@@ -77,7 +77,14 @@ async function boot(saved={}){
  app.$('practice-finish').click();app.$('action-confirm-accept').click();await until(()=>app.$('delivery-stage').dataset.state==='success');
  assert.equal(app.w.localStorage.getItem(app.key(email)),null,'la entrega manual borra solo su borrador');assert.ok(app.w.localStorage.getItem(app.key(other)));assert.equal(sends,1);
  await until(()=>app.downloads.length===1);
- const receipt=await app.downloads[0].text();assert.ok(receipt.startsWith('{'));assert.ok(receipt.includes('Código de comprobación:'));assert.ok(receipt.includes('Trabajo antes del cierre'));
+ const receipt=await app.downloads[0].text(),prefix=app.w.Lab.config.format.report;
+ assert.ok(receipt.startsWith(prefix));assert.ok(!receipt.includes('Trabajo antes del cierre'));
+ const unpack=code=>require('node:zlib').gunzipSync(Buffer.from(code.slice(prefix.length),'base64url')).toString('utf8');
+ const recovered=JSON.parse(unpack(receipt));
+ assert.equal(recovered.format,app.w.Lab.config.format.save);assert.equal(recovered.state.phase,'submitted');
+ assert.equal(recovered.state.data.values.js,'// Trabajo antes del cierre');
+ const report=unpack(recovered.state.data.report);
+ assert.ok(report.includes('Código de comprobación:'));assert.ok(report.includes('Trabajo antes del cierre'));
  const complete=app.storage();app.close();
  app=await boot(complete);await app.login(email);assert.equal(app.$('guard-start').disabled,false);await new Promise(r=>setTimeout(r,600));assert.equal(app.$('attempt-status').textContent,'');
  app.$('student').dispatchEvent(new app.w.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
