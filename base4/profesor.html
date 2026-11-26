@@ -15,8 +15,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Entregas · Profesor</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261126110150-base4">
-<link rel="stylesheet" href="motor/taller.css?v=20261126110150-base4">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261126142930-base4">
+<link rel="stylesheet" href="motor/taller.css?v=20261126142930-base4">
 <style>
 .revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
 .revision h1{font-size:1.5rem;line-height:1.25;margin:0}
@@ -151,7 +151,7 @@
 #nota-ai-status:empty,#avisos:empty,#nota-session:empty{display:none}
 @media(max-width:760px){.nota-auth{justify-content:flex-end}.nota-auth #nota-session{flex-basis:100%;text-align:right}}
 </style>
-<link rel="stylesheet" href="motor/editor-profesor.css?v=20261126110150-base4">
+<link rel="stylesheet" href="motor/editor-profesor.css?v=20261126142930-base4">
 </head>
 <body>
 <section id="login-page" class="login-page" aria-labelledby="login-title">
@@ -261,11 +261,11 @@
   </div>
 </main>
 
-<script src="motor/apartados.js?v=20261126110150-base4"></script>
-<script src="motor/herramientas.js?v=20261126110150-base4"></script>
-<script src="motor/correo-profesor.js?v=20261126110150-base4"></script>
-<script src="motor/notas.js?v=20261126110150-base4"></script>
-<script src="motor/editor-profesor.js?v=20261126110150-base4" defer></script>
+<script src="motor/apartados.js?v=20261126142930-base4"></script>
+<script src="motor/herramientas.js?v=20261126142930-base4"></script>
+<script src="motor/correo-profesor.js?v=20261126142930-base4"></script>
+<script src="motor/notas.js?v=20261126142930-base4"></script>
+<script src="motor/editor-profesor.js?v=20261126142930-base4" defer></script>
 <script>
 (async () => {
 'use strict';
@@ -344,6 +344,12 @@ async function checkStamp(report){
 // ------------------------------------------------------------ Descodificar
 async function decode(text){
  text=text.trim();
+ if(text.startsWith('{'))return text;
+ if(text.startsWith('SSII4E1.')){
+  const result=await window.ReviewRequest({action:'decrypt',code:text});
+  if(!result.ok||typeof result.document!=='string')throw Error(result.code==='ENCRYPTION_SESSION'?'Vuelve a iniciar sesión para habilitar el descifrado.':'No se pudo descifrar la entrega con la sesión del profesor.');
+  return result.document;
+ }
  const prefix=config.format.report;
  if(!text.startsWith(prefix)||!/^[A-Za-z0-9_-]+$/.test(text.slice(prefix.length)))throw Error('no es un archivo de entrega de este tipo de práctica');
  const encoded=text.slice(prefix.length).replaceAll('-','+').replaceAll('_','/');

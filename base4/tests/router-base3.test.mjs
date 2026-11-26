@@ -8,7 +8,7 @@ const original=current.replace(importLine,'').replace(branch,'');
 assert.equal(createHash('sha256').update(original).digest('hex'),'45bd86dcc2a837057483769c6a7e25bd10a7137e7b69d7ab6111d4075111fc30','El resto de base3 debe permanecer idéntico a la versión anterior');
 const uri=s=>'data:text/javascript;base64,'+Buffer.from(s).toString('base64');
 const policy=JSON.parse(readFileSync(new URL('../contenido/redes.json',import.meta.url),'utf8'));
-const b4=readFileSync(new URL('../servidor/worker.js',import.meta.url),'utf8').replace("import politicaRed from '../contenido/redes.json';",'const politicaRed='+JSON.stringify(policy)+';');
+const b4=readFileSync(new URL('../servidor/worker.js',import.meta.url),'utf8').replace("import politicaRed from '../contenido/redes.json';",'const politicaRed='+JSON.stringify(policy)+';').replace("'../motor/criptografia.mjs'",JSON.stringify(new URL('../motor/criptografia.mjs',import.meta.url).href));
 const after=(await import(uri(current.replace(importLine,'import controlBase4 from '+JSON.stringify(uri(b4))+';\n')))).default;
 const before=(await import(uri(original))).default;
 const env={SECRETO_SELLO:'test-only-secret',CLAVE_PROFESOR:'test-only-key'};

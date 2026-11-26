@@ -16,6 +16,8 @@
         const m=event.data;
         if(!googleOrigin(event.origin)||m?.channel!==channel||!event.source)return;
         if(m.type==='LAB_READY'&&!sent){
+          if(delivery.requireAttemptLimit&&(!Array.isArray(m.capabilities)||!m.capabilities.includes('attempt-limit'))){fail('RECEIVER_VERSION');return;}
+          if(delivery.requireEncryptedStorage&&(!Array.isArray(m.capabilities)||!m.capabilities.includes('encrypted-storage'))){fail('RECEIVER_VERSION');return;}
           if(statusOnly==='start'&&(!Array.isArray(m.capabilities)||!m.capabilities.includes('start'))){fail('RECEIVER_VERSION');return;}
           // HtmlService se ejecuta dentro de un iframe adicional de Google.
           peer=event.source;peerOrigin=event.origin;sent=true;
@@ -23,6 +25,8 @@
         } else if(m.type==='LAB_RESULT'&&sent&&event.source===peer&&event.origin===peerOrigin){
           const result=m.result;
           if(!result?.ok){fail(result?.code||'STORAGE');return;}
+          if(delivery.requireAttemptLimit&&statusOnly&&result.limitEnforced!==true){fail('RECEIVER_VERSION');return;}
+          if(delivery.requireEncryptedStorage&&statusOnly&&result.encryptedStorage!==true){fail('RECEIVER_VERSION');return;}
           if(statusOnly==='start'){
             const data=JSON.parse(envelope.payload);
             if(result.attemptId!==data.attemptId||!Number.isSafeInteger(result.number)||result.number<1||!Number.isSafeInteger(result.limit)||result.limit<0){fail('INVALID_RECEIPT');return;}

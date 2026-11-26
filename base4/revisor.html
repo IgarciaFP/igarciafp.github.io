@@ -308,6 +308,8 @@ async function checkStamp(report){
 // ------------------------------------------------------------ Descodificar
 async function decode(text){
  text=text.trim();
+ if(text.startsWith('{'))return text;
+ if(text.startsWith('SSII4E1.'))throw Error('Esta entrega está cifrada. El profesor debe abrirla en profesor.html y publicar su enlace de consulta sin cifrar.');
  const prefix=config.format.report;
  if(!text.startsWith(prefix)||!/^[A-Za-z0-9_-]+$/.test(text.slice(prefix.length)))throw Error('no es un archivo de entrega de este tipo de práctica');
  const encoded=text.slice(prefix.length).replaceAll('-','+').replaceAll('_','/');

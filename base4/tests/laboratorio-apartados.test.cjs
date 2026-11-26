@@ -79,6 +79,9 @@ async function main(){
  const encode=value=>common.format.report+gzipSync(JSON.stringify(value)).toString('base64url');
  const encodeReport=value=>{const payload=JSON.stringify(value);return common.format.report+gzipSync(payload+'\nCódigo de comprobación: '+common.format.checksum+createHash('sha256').update(payload).digest('hex')).toString('base64url');};
  const display=async value=>{const parsed=await rw.reviewTest.parse(value);rw.reviewTest.items.set(parsed.id,parsed);rw.reviewTest.select(parsed.id);return parsed;};
+ const plainReceipt=await display(text);assert.equal(plainReceipt.intact,true);
+ let decrypts=0;rw.ReviewRequest=async request=>{assert.equal(request.action,'decrypt');decrypts++;return {ok:true,document:text};};
+ const protectedReport=await display('SSII4E1.datosDePrueba');assert.equal(protectedReport.intact,true);assert.equal(decrypts,1,'reutiliza la sesión ya iniciada');
  const draft=await display(encode({format:'DIW-01-01-TARJETA-DE-PRESENTACION-SAVE',state:{savedAt:'2026-11-18',data:full}}));
  assert.equal(draft.draft,true);assert.equal(rw.document.querySelectorAll('#review-sections button').length,3);
  // Unknown activities still show the question snapshot in the submitted report, safely as text.

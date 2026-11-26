@@ -7,6 +7,8 @@ const storageKey='base4-profesor-session-v1';
 const messages={
  AUTH:'Clave incorrecta o no se pudo verificar con el servidor de control.',
  AUTH_CONFIG:'No está configurado el servidor de control.',
+ ENCRYPTION_SESSION:'Vuelve a iniciar sesión para habilitar el descifrado de las entregas.',
+ DECRYPTION:'No se pudo descifrar la entrega. Comprueba que no esté dañada y que conserve la contraseña con la que se generó.',
  SESSION:'La sesión ha caducado. Introduce de nuevo la clave del profesor.',
  NOT_FOUND:'Esta entrega no se encuentra en la hoja. Comprueba que fue recibida y que su código completo está en la columna I.',
  AMBIGUOUS:'Hay varias filas con la misma entrega. Revisa los duplicados en la hoja.',
@@ -99,7 +101,7 @@ const ready=fetch('contenido/config.json',{cache:'no-cache'}).then(async r=>{
  }catch{}
  if(session){
   busy=true;render();status('Comprobando sesión…');
-  try{const result=await request({action:'session',token:session.token});if(!result.ok)throw Error(result.code||'SESSION');auth(true);}
+  try{const result=await request({action:'session',token:session.token});if(!result.ok||result.decryptReady!==true)throw Error(result.code||'ENCRYPTION_SESSION');auth(true);}
   catch(error){remember(null);auth(false);status(messages[error.message]||'Vuelve a introducir la contraseña.',true);}
   finally{busy=false;render();}
  }

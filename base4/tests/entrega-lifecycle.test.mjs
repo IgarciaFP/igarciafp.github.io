@@ -126,7 +126,7 @@ cell(last,10).value='SSII3G.'+Buffer.from(reportText).toString('base64url');
 context.Utilities.base64DecodeWebSafe=s=>Buffer.from(s,'base64url');
 context.Utilities.newBlob=bytes=>bytes;
 context.Utilities.ungzip=bytes=>({getDataAsString:()=>bytes.toString('utf8')});
-vm.runInContext("sesionProfesor_=()=>({});",context);
+vm.runInContext("sesionProfesor_=()=>({});prepararVolcadoNota_=()=>({requests:[],estado:'excluida',mensaje:'Sin volcado en esta prueba de ciclo de entrega.'});",context);
 cell(last,12).value='Comentario desde la hoja';
 const grade=context.gestionarNota({action:'get',submissionId:moved.submissionId});
 assert.equal(grade.ok,true);assert.equal(grade.nota,'8');
@@ -214,7 +214,7 @@ const part=(from,to)=>labSource.slice(labSource.indexOf(from),labSource.indexOf(
 for(const [reason,number,expected]of [['voluntary',1,1],['voluntary',2,0],['duration-limit',1,1],['return-timeout',1,1],['duration-limit',2,0],['return-timeout',2,0]]){
  const elements={};let sends=0;
  const ctx=vm.createContext({
-  attempt:{number,limit:1},revisionNeeded:false,revisionReason:'',delivering:false,panelSending:false,
+  attempt:{number,limit:1},browserDrafts:null,revisionNeeded:false,revisionReason:'',delivering:false,panelSending:false,
   $:id=>elements[id]||=( {value:'',hidden:true,disabled:false,textContent:''}),
   guard:{render(){}},rememberDelivery:()=>({code:'test'}),
   deliveryEnvelope:async()=>({payload:JSON.stringify({finishReason:reason})}),

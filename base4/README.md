@@ -40,7 +40,23 @@ Ejemplos incluidos: `?a=diw/01-01-tarjeta-de-presentacion` (con los tres archivo
 
 ## Entrega
 
-Por defecto (`"delivery": { "type": "archivo" }`) no hace falta receptor: al pulsar «Entregar» se descarga un único archivo `MÓDULO NN-MM-NOMBRE_USUARIO.txt` (el usuario es el del correo, sin dominio) con el código modificado, comprimido con gzip y codificado en base64 para URL, precedido del prefijo `format.report`. El alumno lo hace llegar al profesor por el medio que se le indique.
+Desde la revisión del 26/11/2026, el comprobante descargado es texto plano (JSON del informe y código SHA-256). La hoja Entregas conserva el informe comprimido y cifrado con la contraseña del profesor. Los archivos históricos comprimidos siguen admitidos. Los enlaces publicados en DIW, DWEC, SSII y revisor.html se generan sin cifrado después de corregir; el original de Entregas permanece cifrado.
+
+## Pausa, recuperación e intentos
+
+El borrador editable se guarda en localStorage por correo, actividad y versión. Se conserva el guardado de cambios y se añade una copia silenciosa cada cinco minutos mientras la práctica está activa. Si falla el almacenamiento, se muestra el error para no dar por guardado un trabajo que solo está en memoria.
+
+Pausar, cuando la actividad habilita guardar, conserva las respuestas, tiempo consumido, identificación del intento e incidencias y vuelve al login sin descargar ni entregar. Al pulsar Empezar después de identificarse, se recupera automáticamente la copia correspondiente. Tras un cierre inesperado, se retoma el tiempo restante de la última copia: el tiempo con la página cerrada no se descuenta. La recuperación conserva la reserva del intento y queda registrada.
+
+Al generar una entrega manual o automática se elimina el borrador editable. El justificante y un posible envío pendiente se guardan por separado para poder consultar o reintentar la recepción sin reabrir el editor. Un comprobante finalizado no se puede importar para seguir trabajando.
+
+La hoja es la autoridad del límite de intentos. El receptor comprueba el límite al reservar y al recibir; borrar la caché no permite saltárselo. Para autorizar otra oportunidad, el profesor elimina manualmente una fila completa de ese alumno y actividad en Entregas; esa fila y sus calificaciones dejan de conservarse. Vaciar una celda no basta, porque los metadatos de la reserva continúan en la fila. El alumno pulsa Comprobar intentos o vuelve a entrar: la consulta actualizada permite el nuevo intento. Reanudar una reserva pendiente no consume otra oportunidad.
+
+Los nuevos controles exigen actualizar Code.gs y Bridge.html y publicar una nueva versión del receptor. El frontend detecta un receptor antiguo y bloquea el inicio hasta actualizarlo. El cambio opcional del motor compartido solo se activa en base4; base3 y los laboratorios existentes mantienen su comportamiento.
+
+## Formato histórico y compatibilidad
+
+Por defecto (`"delivery": { "type": "archivo" }`) no hace falta receptor: al pulsar «Entregar» se descarga un único archivo `MÓDULO NN-MM-NOMBRE_USUARIO.txt` (el usuario es el del correo, sin dominio) en texto plano con el informe y su código de comprobación. El formato anterior llevaba gzip y Base64url con el prefijo `format.report`. El alumno lo hace llegar al profesor por el medio que se le indique.
 
 Con `"type": "apps-script"` y `endpoint`, además de la descarga, la entrega se envía al receptor de `receptor/`, que reserva una fila al empezar y la actualiza al entregar en la pestaña «Entregas», con ID y Número de entrega.
 
@@ -50,7 +66,7 @@ Con `control.servidor` en `contenido/config.json`, cada entrega lleva un sello d
 
 En ambos casos el informe conserva el formato del resto de laboratorios (versión 3), añade `module` y `activity`, e incluye solo las pestañas que difieren del código de partida, como respuestas abiertas `html`, `css`, `js` o `txt`; la lista `modified` las enumera. La respuesta `txt` son las notas del alumno, envueltas en un comentario `/* … */`. Si no se modificó nada, hay una única respuesta vacía `sin-cambios`. Cada pestaña admite 10 000 caracteres.
 
-Para revisar las entregas, abrir `profesor.html` y arrastrar los archivos TXT, aunque sean de actividades distintas (también admite pegar el texto de la columna «ENTREGA completa» de la hoja, o llegar desde su enlace «Probar código»): muestra de cada alumno la actividad, el código con los cambios respecto al de partida resaltados, el resultado, la consola, el tiempo, las incidencias y el registro del intento, y avisa si un archivo ha sido alterado, es de una actividad que no está en el sitio o de otra versión. Los archivos se leen en el navegador y no se envían a ningún sitio.
+Para revisar las entregas, abrir `profesor.html` y arrastrar los archivos TXT, aunque sean de actividades distintas (también admite pegar el texto de la columna «ENTREGA completa» de la hoja, o llegar desde su enlace «Probar código»): muestra de cada alumno la actividad, el código con los cambios respecto al de partida resaltados, el resultado, la consola, el tiempo, las incidencias y el registro del intento, y avisa si un archivo ha sido alterado, es de una actividad que no está en el sitio o de otra versión. Los comprobantes en texto plano y los archivos históricos SSII3G. se leen localmente. Las entregas SSII4E1. se descifran mediante la sesión ya autenticada en el receptor y el Worker del profesor; no se vuelve a pedir la contraseña.
 
 Para leer un archivo de entrega sin esa página:
 
@@ -66,7 +82,7 @@ for respuesta in informe["answers"]:
     print(respuesta["answer"])
 ```
 
-El archivo de «Pausar» (`practica-….txt`) es distinto: guarda el intento completo para poder recuperarlo.
+Los archivos históricos `practica-….txt` pueden recuperar un intento pausado. El botón Pausar actual no descarga archivos: conserva el borrador local. Un comprobante finalizado no reabre el editor.
 
 ## Vista previa
 
@@ -93,7 +109,7 @@ Abrir `http://localhost:8000/base3/?a=diw/01-01-tarjeta-de-presentacion`.
 
 El icono de pin de «Resultado» abre la vista previa en un modal redimensionable. Arrastra su esquina inferior derecha o utiliza las flechas con el control de tamaño enfocado. Esc o el botón de cierre devuelven el resultado a su posición sin recargarlo; el indicador muestra el ancho y el alto reales de la vista previa. El CSS responde al ancho del propio resultado.
 
-`guard.returnSeconds` en `contenido/config.json` fija el plazo de regreso (actualmente 10 segundos acumulados por práctica). Al perder pantalla completa, visibilidad o foco, se bloquea el editor y aparece una cuenta atrás roja al volver a la página. Pulsa «Continuar en pantalla completa» antes del vencimiento. Si se agota, se conserva el código y se genera y envía la entrega automáticamente. Cada salida consume el tiempo restante; continuar, pausar o recuperar no repone los segundos consumidos. Las incidencias se registran sin límite de tres. Pausar detiene la práctica sin iniciar este plazo. El plazo usa una fecha límite, de modo que una pestaña suspendida comprueba el vencimiento al reactivarse; un navegador cerrado no puede enviar hasta volver a ejecutarse.
+`guard.returnSeconds` en `contenido/config.json` fija el plazo de regreso (actualmente 12 segundos acumulados por práctica). Al perder pantalla completa, visibilidad o foco, se bloquea el editor y aparece una cuenta atrás roja al volver a la página. Pulsa «Continuar en pantalla completa» antes del vencimiento. Si se agota, se conserva el código y se genera y envía la entrega automáticamente. Cada salida consume el tiempo restante; continuar, pausar o recuperar no repone los segundos consumidos. Las incidencias se registran sin límite de tres. Pausar detiene la práctica sin iniciar este plazo. Con la página abierta, una pestaña suspendida comprueba el vencimiento al reactivarse. Tras cerrar el navegador se retoma el tiempo guardado en el último borrador.
 
 El receptor actualizado y `profesor.html` reconocen `guardPolicy: "return-timeout"` y `finishReason: "return-timeout"`. Actualiza la implementación de Apps Script para que la hoja muestre el nuevo motivo de cierre y el contador sin «/3».
 
@@ -129,9 +145,9 @@ Cada carpeta `actividades/MODULO/ACTIVIDAD/` incluye un único **config.json** c
 | --- | --- | --- |
 | title | Nombre de la actividad | Obligatorio |
 | version | Versión del contenido | Obligatorio |
-| guardar | Mostrar Pausar; la recuperación desde archivo está disponible en el inicio | false |
+| guardar | Mostrar Pausar para guardar localmente y volver al login; el autoguardado y la recuperación local están siempre activos | false |
 | duracion | Minutos disponibles; número positivo, hasta 1440 | 15 |
-| entregas | Oportunidades ordinarias por correo y actividad; entero no negativo; 0 exige motivo desde la primera entrega | 1 |
+| entregas | Máximo de intentos por correo y actividad; entero no negativo; 0 impide comenzar hasta autorización del profesor | 1 |
 | reiniciar | Mostrar y habilitar el botón Reiniciar | false |
 
 `title` y `version` son obligatorios. Los demás campos omitidos toman su valor predeterminado. Si falta config.json (404), la actividad no se abre. Un archivo inválido o un fallo de conexión produce un error; no se interpreta como ausencia. Los antiguos parámetros `guardar` y `duracion` de la URL ya no modifican la configuración.
@@ -140,19 +156,19 @@ Las actividades incluyen estos valores por defecto, salvo `diw/02-01-prueba-css-
 
 ### Duración y entrega
 
-El contador muestra el tiempo restante desde Empezar. Al quedar un minuto se pone rojo y aparece un aviso. A cero se bloquea el editor y se entrega automáticamente. El margen acumulado para volver a pantalla completa es independiente. Si guardar está habilitado, pausar detiene el tiempo de trabajo y recuperar conserva lo consumido.
+El contador muestra el tiempo restante desde Empezar. Al quedar un minuto se pone rojo y aparece un aviso. A cero se bloquea el editor y se entrega automáticamente. El margen acumulado para volver a pantalla completa es independiente. Si guardar está habilitado, pausar conserva el borrador local y detiene el tiempo de trabajo; recuperar conserva lo consumido.
 
 #
 ## Registro inicial y panel definitivo
 
-Al empezar se genera un ID aleatorio y se registra en segundo plano una fila con fecha y hora de inicio (Madrid), módulo, actividad, correo e IP. Se usan las columnas **ID** y **NUM ENTREGA** (o **Número de entrega**) donde estén. Todas las columnas se localizan por su cabecera, sin exigir un orden; solo se añaden al final las de identificación que falten. El número se asigna en el servidor bajo bloqueo para el mismo correo y práctica. Los intentos iniciados, aunque se abandonen, consumen una oportunidad.
+Al empezar se genera un ID aleatorio y se registra, antes de habilitar el editor, una fila con fecha y hora de inicio (Madrid), módulo, actividad, correo e IP. Se usan las columnas **ID** y **NUM ENTREGA** (o **Número de entrega**) donde estén. Todas las columnas se localizan por su cabecera, sin exigir un orden; solo se añaden al final las de identificación que falten. El número se asigna en el servidor bajo bloqueo para el mismo correo y práctica. Los intentos iniciados, aunque se abandonen, consumen una oportunidad.
 
 La entrega final actualiza esa fila por ID; conserva los datos iniciales y las notas del profesor. En Incidencias quedan el estado inicial pendiente, o los avisos y el motivo al completar. La hora de recepción final se conserva en los metadatos de la celda de «ENTREGA completa» y se devuelve en el comprobante. Reintentar una petición no crea filas duplicadas.
 
 - **Manual:** «Entregar» muestra un aviso sencillo que permite cancelar. Al aceptarlo se entra en el panel definitivo, se para el reloj y no se puede volver al editor.
 - **Automática con intentos:** abre el mismo panel y envía sin esperar confirmación.
-- **Automática sin intentos:** abre ese panel y espera un motivo de al menos 20 letras antes de enviar.
-- El motivo ocupa un campo de **2rem** de alto y se almacena en Incidencias.
+- **Sin intentos:** el inicio queda bloqueado hasta que el profesor libere una oportunidad borrando una fila completa. La entrega automática de una reserva ya iniciada no exige un motivo adicional.
+- Los reenvíos de una entrega pendiente conservan su identidad y no crean un nuevo intento.
 - «Cerrar sin entregar» exige confirmación. Recargar o cerrar la pestaña muestra la advertencia nativa del navegador cuando este la permite. Al salir se elimina la copia local pendiente; queda la fila inicial, no una entrega completa. No se recuperan comprobantes finalizados como prácticas editables.
 
 El ID se mantiene al guardar y recuperar una práctica pausada. El registro inicial se reintenta con el mismo ID antes del envío si falló la red; no se puede garantizar el registro remoto sin conexión. La actualización final mantiene las restricciones de red y horario. Si se rechaza, la fila inicial sigue pendiente y el panel permite reintentar.

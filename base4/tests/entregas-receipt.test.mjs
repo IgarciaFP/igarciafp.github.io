@@ -23,3 +23,15 @@ for(const method of ['start','status']){
  }
 }
 console.log('OK: inicio y consulta aceptan cero; rechazan límites negativos, fraccionarios o de texto.');
+
+for(const capabilities of [['start'],['start','attempt-limit']]){
+ let receive;
+ const runtime=vm.createContext({window:{addEventListener:(_,fn)=>receive=fn,removeEventListener(){}},document:{createElement:()=>({remove(){}}),body:{append(){}}},crypto:{getRandomValues:a=>a.fill(1)},URL,Uint8Array,setTimeout:()=>1,clearTimeout(){}});
+ vm.runInContext(source,runtime);
+ const promise=runtime.window.LabDelivery.start({type:'apps-script',endpoint:'https://script.google.com/macros/s/test/exec',requireAttemptLimit:true},{practiceId:'DIW-PRUEBA',payload:JSON.stringify({attemptId:'a'.repeat(32)})});
+ const peer={postMessage(){}},channel='01'.repeat(16),origin='https://script.googleusercontent.com';
+ receive({source:peer,origin,data:{type:'LAB_READY',channel,capabilities}});
+ if(capabilities.includes('attempt-limit'))receive({source:peer,origin,data:{type:'LAB_RESULT',channel,result:{ok:true,attemptId:'a'.repeat(32),number:1,limit:1}}});
+ await assert.rejects(promise,/RECEIVER_VERSION/,'no permite iniciar con Bridge o Code.gs antiguos');
+}
+console.log('OK: base4 exige soporte del límite tanto en Bridge.html como en Code.gs.');

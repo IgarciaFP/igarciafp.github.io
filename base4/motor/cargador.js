@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261126110150-base4';
+  const version=loaderURL.searchParams.get('v')||'20261126142930-base4';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   const fetchAsset=async path=>{
     // La configuración cambia sin necesidad de publicar otra versión del HTML.
@@ -103,7 +103,8 @@
     // Nombre de la actividad: «NN-MM-Nombre» (tema y número de actividad). Se muestra con el
     // módulo delante: «DIW02-01-Nombre». Si el título ya lo lleva escrito, no se repite.
     const name=activity.title.trim().replace(new RegExp('^'+mod+'\\s*','i'),'').trim()||activity.title.trim();
-    const config={...common,tools,allowSaveRecovery,allowRestart:settings.reiniciar,maxSubmissions:settings.entregas,durationMs:Math.round(minutes*60000),module:MOD,activity:slug,id,title:MOD+name,
+    const config={...common,tools,localDrafts:true,allowSaveRecovery,allowRestart:settings.reiniciar,maxSubmissions:settings.entregas,durationMs:Math.round(minutes*60000),module:MOD,activity:slug,id,title:MOD+name,
+      delivery:{...common.delivery,requireAttemptLimit:true,requireEncryptedStorage:true},
       filePrefix:mod+'-'+slug,version:String(activity.version).trim(),
       storage:{key:store+'-v1',legacyKey:store+'-anterior-v1',recovery:store+'-ultima-entrega-v1'},
       activityTitle:name,control:{servidor:server,clave:key},
@@ -122,6 +123,7 @@
     if(sectionMode)await script('motor/apartados-ui.js');
     await script('motor/portapapeles.js');
     await script('motor/vista-modal.js');
+    await script('motor/borradores.js');
     await script('motor/laboratorio.js');
     if(!window.Lab.ready)throw Error('No se pudo completar el inicio. Recarga la página con Ctrl + F5.');
   } catch(error) {

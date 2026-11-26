@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const policy=JSON.parse(readFileSync(new URL('../contenido/redes.json',import.meta.url),'utf8'));
-const source=readFileSync(new URL('../servidor/worker.js',import.meta.url),'utf8').replace("import politicaRed from '../contenido/redes.json';",'const politicaRed='+JSON.stringify(policy)+';');
+const source=readFileSync(new URL('../servidor/worker.js',import.meta.url),'utf8').replace("import politicaRed from '../contenido/redes.json';",'const politicaRed='+JSON.stringify(policy)+';').replace("'../motor/criptografia.mjs'",JSON.stringify(new URL('../motor/criptografia.mjs',import.meta.url).href));
 const {default:worker,enRed}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 for(const ip of ['88.26.0.0','88.26.255.255','45.86.123.45','185.197.255.1','::ffff:88.26.2.3'])assert.equal(enRed(ip),true,ip);
 for(const ip of ['88.16.2.3','88.27.0.1','45.85.0.1','185.198.0.1','88.260.1.1','88.26.256.1','2001:db8::1','',null])assert.equal(enRed(ip),false,String(ip));

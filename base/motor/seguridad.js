@@ -36,6 +36,8 @@
   };
 
   window.createPracticeGuard = function createPracticeGuard(adapter) {
+    const drafts=adapter.browserDrafts||null;
+    const readStored=()=>drafts?drafts.getItem():localStorage.getItem(CONFIG.key);
     // 1. POLÍTICA. Esta clave es exclusiva de este laboratorio. No usar clear():
     // borraría también borradores de otros laboratorios del mismo dominio.
     const CONFIG = Object.freeze({
@@ -166,10 +168,10 @@
         return s;
       } catch { problem = 'io'; problemText = 'El navegador no permite acceder al guardado local.'; return fresh(); }
     }
-    const previous=load();
+    const previous=drafts?fresh():load();
     // Opening the lab always starts at identification. Preserve the previous
     // browser snapshot separately; resumption is explicit through a document.
-    if(!adapter.config.resumeInBrowser&&lastRaw!==null&&problem!=='io'&&(previous.attempt>0||problem==='invalid')){
+    if(!drafts&&!adapter.config.resumeInBrowser&&lastRaw!==null&&problem!=='io'&&(previous.attempt>0||problem==='invalid')){
       try{
         localStorage.setItem(CONFIG.key+'-previous',lastRaw);
         if(problem==='invalid'){problem='';problemText='';}
@@ -185,14 +187,15 @@
     function persist() {
       if (fatal || problem) return false;
       try {
-        if (localStorage.getItem(CONFIG.key) !== lastRaw) {
+        if (readStored() !== lastRaw) {
           problem = 'conflict';
           problemText = 'El borrador cambió en otra pestaña. Esta copia se ha bloqueado para no sobrescribirlo. Cierra las copias adicionales y recarga.';
           render(); return false;
         }
         const savedAt = Date.now(), raw = JSON.stringify({ ...state, savedAt });
-        localStorage.setItem(CONFIG.key, raw);
-        lastRaw = raw; state.savedAt = savedAt;
+        if(drafts)lastRaw=drafts.write(raw);
+        else {localStorage.setItem(CONFIG.key, raw);lastRaw=raw;}
+        state.savedAt = savedAt;
         return true;
       } catch {
         problem = 'io';
@@ -416,6 +419,7 @@
         if (checkReturnDeadline() || problem || fatal) return;
         // Una tercera salida durante la petición no puede revivir el intento.
         if (resume && !['active','paused'].includes(state.phase)) return;
+        if(resume&&drafts)await adapter.beforeResume?.();
         if(recovery){
           state.count++;state.recoveries++;rerollPending=false;
           recordIPUnavailable('recovery');
@@ -435,7 +439,7 @@
           const backup = state.backup, events = state.events, attempt = state.attempt + 1;
           state = { ...fresh(), phase: 'active', attempt, data, backup, events };
           state.attemptAudit.startedAt=Date.now();recordIPUnavailable('start');
-          adapter.restore(data); adapter.onAttemptStart?.(); log(`Comienzo del intento ${attempt}. Identificación completada.`);
+          adapter.restore(data); await adapter.onAttemptStart?.(); log(`Comienzo del intento ${attempt}. Identificación completada.`);
         } else log('Intento reanudado en pantalla completa.');
         state.pending = null; state.episode = null; restoring = false;
         clearReturnTimer();
@@ -445,9 +449,42 @@
         if(checkReturnDeadline())return false;
         return persist();
       } catch (e) {
+        if(drafts){
+          adapter.stopClock();state.data=adapter.snapshot();state.phase='paused';state.pending=null;
+          persist();returnToLogin();adapter.startError?.(e);return false;
+        }
         $('guard-action-status').textContent = e.message || 'No se pudo activar pantalla completa.';
         $('guard-warning-error').textContent = 'No se pudo activar pantalla completa. Regresa a la página y vuelve a intentarlo.';
       } finally { busy = false; render(); }
+    }
+
+    // El login nunca restaura respuestas antes de identificar al alumno.
+    async function startFromLogin(){
+      if(!drafts)return startOrResume(false);
+      if(busy||problem||fatal||!adapter.canStart())return;
+      try{
+        const email=adapter.snapshot().values.student.trim().toLowerCase();
+        drafts.select(email);lastRaw=readStored();
+        if(lastRaw!==null){
+          state=validate(JSON.parse(lastRaw));
+          if(state.data.values.student.trim().toLowerCase()!==email)throw Error('El borrador pertenece a otro correo.');
+          state.data.started=null;state.pending=null;state.returnDeadline=null;
+          if(state.phase==='closing'){
+            adapter.restore(state.data);render();void finalizeForced();return;
+          }
+          if(!['active','paused'].includes(state.phase))throw Error('El borrador ya está finalizado.');
+          state.phase='paused';adapter.restore(state.data);
+          return startOrResume(true);
+        }
+        state=fresh();state.data.values.student=email;adapter.restore(state.data);
+        return startOrResume(false);
+      }catch(e){
+        problem='invalid';problemText='No se pudo recuperar el borrador: '+e.message;render();
+      }
+    }
+    function returnToLogin(){
+      drafts.release();lastRaw=null;state=fresh();restoring=false;rerollPending=false;
+      adapter.onReset();adapter.restore(state.data);render();
     }
 
 
@@ -496,6 +533,7 @@
       next.attemptAudit.finishedAt=null;
       next.data.started=null;next.pending=null;next.episode=null;next.returnDeadline=null;
       state=next;restoring=false;rerollPending=false;
+      if(drafts){drafts.select(currentEmail);lastRaw=readStored();}
       adapter.restore(state.data);
       log('Documento de práctica recuperado; pendiente de continuar.');
       if(!persist())throw Error('Could not save imported data');
@@ -619,6 +657,7 @@
       confirmation = null; confirmBox.close();
       if(kind==='save'){
         if(await pausePractice()){
+          if(drafts){returnToLogin();return;}
           busy=true;render();
           try{if(await adapter.savePracticeDocument())resetProcess();}finally{busy=false;render();}
         }
@@ -630,9 +669,9 @@
         busy=true;render();
         try {
           if(!await adapter.saveBeforeReset(state.phase))return;
-          if (localStorage.getItem(CONFIG.key) !== lastRaw) { environment('focus'); persist(); return; }
+          if (readStored() !== lastRaw) { environment('focus'); persist(); return; }
           localStorage.removeItem(CONFIG.legacyKey);
-          localStorage.removeItem(CONFIG.key);
+          if(drafts){drafts.remove();drafts.release();}else localStorage.removeItem(CONFIG.key);
           adapter.stopClock();
           state = fresh(); lastRaw = null; restoring = false;rerollPending=false;
           adapter.onReset();
@@ -690,6 +729,8 @@
     function resetProcess() {
       if (fatal || problem || !['submitted','reset','paused'].includes(state.phase)) return false;
       const prior = structuredClone(state);
+      if(drafts)drafts.release();
+      if(drafts)lastRaw=null;
       state = fresh(); restoring = false;
       if (!persist()) { state = prior; render(); return false; }
       adapter.onReset(); adapter.restore(state.data);
@@ -716,9 +757,9 @@
       }
     });
     window.addEventListener('storage', e => {
-      if (e.key !== CONFIG.key && e.key !== null) return;
+      if (drafts?!drafts.matches(e.key):(e.key !== CONFIG.key && e.key !== null)) return;
       try {
-        if (localStorage.getItem(CONFIG.key) !== lastRaw) {
+        if (readStored() !== lastRaw) {
           problem = 'conflict'; problemText = 'Otra pestaña modificó o borró este intento. Esta copia está bloqueada. Cierra las copias adicionales y recarga.'; render();
         }
       } catch { problem = 'io'; problemText = 'No se puede leer el guardado.'; render(); }
@@ -727,7 +768,7 @@
     // Control y botón derecho: durante toda la página, incluso tras finalizar.
     // Solo se pueden cancelar los eventos que el navegador entrega al documento.
     window.installPracticeInputGuards(document, blockAction, CONFIG.blockClipboard);
-    $('guard-start').addEventListener('click', () => startOrResume(false));
+    $('guard-start').addEventListener('click', startFromLogin);
     $('guard-continue').addEventListener('click', () => {
       if (state.phase === 'active') startOrResume(true);
       else { state.pending = null; state.episode = null; warning.close(); resetProcess(); }
@@ -753,6 +794,10 @@
     if (!problem) persist(); // Prueba escritura antes de habilitar Comenzar.
     initialized = true;
     if(adapter.timeLimitMs)setInterval(()=>{if(!fatal&&!problem)checkReturnDeadline();},250);
+    if(drafts)setInterval(()=>{
+      if(state.phase!=='active'||fatal||problem||busy||restoring)return;
+      state.data=adapter.snapshot();persist();
+    },300000);
     if (timed && state.phase === 'active' && state.returnDeadline !== null) armReturnTimer();
     $('cuaderno').hidden = false; $('cuaderno').inert = false;
     $('guard-panel').hidden = false; $('guard-panel').inert = false;

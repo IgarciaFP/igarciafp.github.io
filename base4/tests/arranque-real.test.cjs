@@ -5,6 +5,7 @@ async function boot(activity,recoverFile){
  const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));vc.on('error',e=>errors.push(String(e)));
  const dom=new JSDOM(fs.readFileSync(path.join(repo,'base4/index.html'),'utf8'),{url:'https://example.com/base4/?a='+activity,resources:new LocalResources(),runScripts:'dangerously',pretendToBeVisual:true,virtualConsole:vc,beforeParse(w){
   Object.defineProperty(w,'crypto',{value:webcrypto});Object.assign(w,{CompressionStream,DecompressionStream,Response,Blob,TextEncoder,TextDecoder,AbortSignal,structuredClone});
+  w.ResizeObserver=class{observe(){}disconnect(){}};
   w.HTMLElement.prototype.inert=false;w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};w.HTMLDialogElement.prototype.close=function(){this.open=false;};
   Object.defineProperty(w.document,'fullscreenEnabled',{value:true});w.document.hasFocus=()=>true;
   w.HTMLElement.prototype.requestFullscreen=async function(){w.document.fullscreenElement=this;w.document.dispatchEvent(new w.Event('fullscreenchange'));};w.document.exitFullscreen=async()=>{w.document.fullscreenElement=null;};
@@ -23,6 +24,7 @@ async function boot(activity,recoverFile){
  const missingKey=()=>{for(const type of ['keydown','keypress','keyup'])d.dispatchEvent(new w.Event(type,{bubbles:true,cancelable:true}));};
  missingKey();assert.equal(d.querySelector('#guard-boot').hidden,true,'Un evento sin key no debe bloquear la identificación');
  const student=d.querySelector('#student');student.value='alumno@g.educaand.es';student.dispatchEvent(new w.Event('input',{bubbles:true}));
+ d.querySelector('#attempt-refresh').click();await new Promise(r=>setTimeout(r,30));
  assert.equal(d.querySelector('#guard-start').disabled,false);
  d.documentElement.requestFullscreen=async()=>{d.fullscreenElement=d.documentElement;d.dispatchEvent(new w.Event('fullscreenchange'));};
  if(recoverFile){
@@ -31,8 +33,12 @@ async function boot(activity,recoverFile){
   input.dispatchEvent(new w.Event('change'));await new Promise(r=>setTimeout(r,30));
   assert.equal(d.querySelector('#file-delivery-send').disabled,false,d.querySelector('#file-delivery-status').textContent);
   d.querySelector('#file-delivery-send').click();await new Promise(r=>setTimeout(r,100));
+  if(recoverFile.state.phase==='submitted'){
+   assert.equal(d.querySelector('#cuaderno').hidden,true,'Un justificante finalizado no se reabre como editable');
+   assert.match(d.querySelector('#file-delivery-status').textContent,/finalizada/);w.close();return;
+  }
   assert.equal(d.querySelector('#cuaderno').hidden,false,d.querySelector('#file-delivery-status').textContent);
-  const restored=JSON.parse(w.localStorage.getItem(w.Lab.config.storage.key));
+  const restored=JSON.parse(w.localStorage.getItem(w.Lab.config.storage.key+'-draft-'+encodeURIComponent(w.Lab.config.version)+'-'+encodeURIComponent(student.value)));
   assert.equal(restored.phase,'active');assert.equal(restored.data.elapsed,120000);
   assert.equal(restored.returnRemainingMs,w.Lab.config.guard.returnSeconds*1000);
   assert.equal(restored.returnDeadline,null);
@@ -66,7 +72,7 @@ async function boot(activity,recoverFile){
   d.querySelector('#action-confirm-cancel').click();
  }
  assert.equal(errors.length,0,errors.join('; '));
- const saved=JSON.parse(w.localStorage.getItem(w.Lab.config.storage.key));
+ const saved=JSON.parse(w.localStorage.getItem(w.Lab.config.storage.key+'-draft-'+encodeURIComponent(w.Lab.config.version)+'-'+encodeURIComponent(student.value)));
  saved.phase='submitted';saved.data.elapsed=120000;saved.data.started=null;
  saved.returnRemainingMs=0;saved.returnDeadline=Date.now()-60000;
  saved.data.values.js='// Respuesta recuperada';

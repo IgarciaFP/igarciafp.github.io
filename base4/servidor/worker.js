@@ -1,4 +1,5 @@
 import politicaRed from '../contenido/redes.json';
+import {encryptDocument,decryptDocument} from '../motor/criptografia.mjs';
 /**
  * CONTROL DE ACCESO Y SELLO DE ENTREGA · base4
  * Cloudflare Worker. Ve la IP real del alumno y usa la hora del servidor, dos cosas que
@@ -69,6 +70,19 @@ async function firmar(sello, env) {
   const datos = JSON.stringify([sello.ip, sello.hora, sello.modulo, sello.actividad, sello.email, sello.huella, sello.enRed, sello.enHorario, sello.profesor]);
   return hex(await crypto.subtle.sign('HMAC', clave, new TextEncoder().encode(datos)));
 }
+async function firmaSesion(text,env){
+ const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(env.SECRETO_SELLO),{name:'HMAC',hash:'SHA-256'},false,['sign']);
+ return hex(await crypto.subtle.sign('HMAC',key,new TextEncoder().encode('base4-decrypt:'+text)));
+}
+async function sesionDescifrado(env){
+ const body=(Date.now()+30*86400000)+'.'+hex(crypto.getRandomValues(new Uint8Array(16)));
+ return body+'.'+await firmaSesion(body,env);
+}
+async function sesionValida(token,env){
+ if(typeof token!=='string'||!/^\d{13}\.[a-f0-9]{32}\.[a-f0-9]{64}$/.test(token))return false;
+ const [expires,nonce,signature]=token.split('.');
+ return Number(expires)>Date.now()&&iguales(signature,await firmaSesion(expires+'.'+nonce,env));
+}
 
 function responder(datos, origen, estado = 200) {
   const cabeceras = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', vary: 'Origin' };
@@ -95,7 +109,26 @@ export default {
       if (request.method === 'POST' && ruta === '/profesor') {
         const cuerpo = JSON.parse(await request.text());
         const profesor = typeof cuerpo.clave === 'string' && cuerpo.clave.length <= 500 && await esProfesor(cuerpo.clave, env);
-        return responder({ profesor }, origen, profesor ? 200 : 403);
+        return responder({ profesor,...(profesor?{decryptToken:await sesionDescifrado(env)}:{}) }, origen, profesor ? 200 : 403);
+      }
+      if(request.method==='POST'&&soloRedInicial&&ruta==='/cifrar'){
+        if(!env.CLAVE_PROFESOR)return responder({error:'SIN_CLAVE'},origen,503);
+        const raw=await request.text();if(raw.length>600000)return responder({error:'DEMASIADO_GRANDE'},origen,413);
+        const {payload,submissionId}=JSON.parse(raw);
+        if(typeof payload!=='string'||!/^[a-f0-9]{64}$/.test(submissionId||'')||hex(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(payload)))!==submissionId)return responder({error:'INVALIDO'},origen,400);
+        const report=JSON.parse(payload),stamp=report.sello;
+        if(!stamp||typeof stamp.firma!=='string'||!await iguales(stamp.firma,await firmar(stamp,env)))return responder({error:'SELLO_INVALIDO'},origen,403);
+        const fingerprint=hex(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify([report.exam,report.email,report.answers]))));
+        if(stamp.huella!==fingerprint||stamp.email!==report.email||stamp.modulo!==String(report.module).toLowerCase()||stamp.actividad!==report.activity)return responder({error:'SELLO_INVALIDO'},origen,403);
+        const document=payload+'\nCódigo de comprobación: SSII3-'+submissionId;
+        return responder({ok:true,code:await encryptDocument(document,env.CLAVE_PROFESOR)},origen);
+      }
+      if(request.method==='POST'&&soloRedInicial&&ruta==='/descifrar'){
+        const raw=await request.text();if(raw.length>1001000)return responder({error:'DEMASIADO_GRANDE'},origen,413);
+        const body=JSON.parse(raw);
+        if(!await sesionValida(body.token,env))return responder({error:'SESSION'},origen,403);
+        try{return responder({ok:true,document:await decryptDocument(body.code,env.CLAVE_PROFESOR)},origen);}
+        catch{return responder({error:'DECRYPTION'},origen,400);}
       }
       if (request.method === 'GET' && ruta === '/acceso') {
         const actividad = ACTIVIDAD.exec(String(url.searchParams.get('a') || '').toLowerCase());

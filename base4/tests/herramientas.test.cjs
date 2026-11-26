@@ -3,7 +3,7 @@ const defaults=T.settings({},'diw','02-01-prueba');assert.ok(Object.values(defau
 assert.equal(defaults.rubric,null);
 const rubric=require('../actividades/dwec/02-02-mover-cuadrado-con-teclado/rubrica.json');
 const withRubric=T.settings({},'dwec','02-02-mover-cuadrado-con-teclado',rubric);
-assert.equal(withRubric.rubric.total,10);assert.deepEqual(withRubric.rubric.criterios.map(c=>c.puntos),[1,1,2,4,2]);
+assert.equal(withRubric.rubric.total,10);assert.deepEqual(withRubric.rubric.criterios.map(c=>c.puntos),[1,3,3,2,1]);
 assert.equal(T.settings({herramientas:{rubrica:false}},'dwec','02-02',rubric).enabled.rubrica,false);
 assert.throws(()=>T.rubric({titulo:'Mal',criterios:[{titulo:'Error',puntos:1,niveles:[{puntos:2,descripcion:'Fuera de rango'}]}]}));
 const custom=T.settings({herramientas:{traductor:false,apuntes:false},unidad:3},'ssii','01-01-prueba');assert.equal(custom.enabled.traductor,false);assert.equal(custom.enabled.calculadora,true);assert.equal(custom.notes,'/ciclos/ssii/u03_es.html');

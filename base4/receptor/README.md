@@ -12,11 +12,23 @@ Escribe cada entrega en la pestaña **Entregas** de la hoja de cálculo del prof
 | Tiempo | Tiempo empleado |
 | IP | Solo la dirección IP; vacía si falta el sello o no es válido |
 | Incidencias | Número de incidencias y todos los avisos: cierre automático, fuera de red/horario, clave del profesor, acceso sin comprobar y problemas de verificación del sello |
-| ENTREGA completa | La entrega comprimida y codificada, igual que el archivo TXT del alumno |
+| ENTREGA completa | Informe gzip cifrado con AES-256-GCM (SSII4E1.) para base4; el comprobante del alumno es texto plano |
 
 Las columnas existentes siguientes (Detección IA, NOTA, Comentarios) no se tocan; ID y NUM ENTREGA se reutilizan donde estén; solo se añaden al final si faltan. El receptor comprueba que cada cabecera necesaria exista una sola vez, independientemente de su posición. Reenviar la misma entrega no añade otra fila.
 
-## Instalación
+## Actualizar una instalación existente (26/11/2026)
+
+1. Sustituye TODO el contenido del archivo de script principal (Code.gs o Código.gs) por el Code.gs de esta carpeta; no crees otro archivo con las mismas constantes y funciones.
+2. Sustituye TODO el contenido del archivo HTML Bridge por Bridge.html.
+3. Conserva Contenido.gs, appsscript.json, las propiedades del proyecto y la URL de recepción existentes. No añadas la contraseña del profesor a propiedades ni al código: continúa exclusivamente en el secreto CLAVE_PROFESOR del Worker.
+4. Guarda y abre Implementar → Gestionar implementaciones → Editar (lápiz) → Versión: Nueva versión → Implementar. Edita la aplicación web existente: conserva su identificador y la URL /exec. Guardar los archivos sin publicar otra versión no actualiza el receptor activo.
+5. Cuando el Worker actualizado esté publicado, abre profesor.html e inicia sesión una vez. Esa sesión habilita también el descifrado, sin una segunda contraseña.
+
+El receptor nuevo anuncia los controles attempt-limit y encrypted-storage. Si falta cualquiera de los dos archivos o Code.gs sigue publicado con una versión antigua, el laboratorio bloquea el inicio e indica que el receptor necesita actualizarse.
+
+Para autorizar otro intento, elimina manualmente una fila completa de ese alumno y actividad en Entregas. El siguiente login o Comprobar intentos consulta la hoja; vaciar una celda o borrar la caché no libera oportunidades. Eliminar la fila también elimina su nota y sus metadatos.
+
+## Instalación inicial
 
 1. Abrir la hoja de entregas y elegir **Extensiones → Apps Script**.
 2. Sustituir el contenido de `Código.gs` por el de `Code.gs`.
@@ -44,7 +56,7 @@ El enlace «Probar código» se genera con `paginaProfesor_(datos)`: las entrega
 
 - El correo es el que escribe el alumno: se comprueba el dominio, no la identidad.
 - La dirección `/exec` es pública. El receptor solo acepta entregas bien formadas de los tres módulos y del dominio del centro, pero no puede impedir envíos fabricados; el sello del servidor de control es lo que acredita IP y hora.
-- Una celda admite 50 000 caracteres. Si una entrega codificada no cabe, la fila se añade con un aviso en las columnas E e I y hay que pedir el archivo TXT al alumno.
+- Una celda admite 50 000 caracteres. En base4 se reserva un margen y se rechaza una entrega cifrada de más de 45 000 caracteres, conservando el intento pendiente para revisión; no se guarda como alternativa un original sin cifrar. La compatibilidad histórica de base3 mantiene su aviso de tamaño.
 
 ## Notas desde la revisión del profesor
 
@@ -60,7 +72,7 @@ La consulta y escritura requieren validación de sesión en el servidor. Los alu
 
 El receptor admite `action: session` para validar una sesión recordada antes de mostrar el visor. Las columnas **NOTA IA** y **COMENTARIOS IA** se buscan por cabecera y se devuelven como `notaIA` y `comentariosIA`, únicamente después de validar la sesión. Son de solo lectura desde el visor y guardar la nota manual nunca las modifica. Un cero se muestra como cero; las celdas vacías se indican como pendientes. Si las cabeceras faltan o están duplicadas se informa sin impedir la corrección manual ni crear columnas.
 
-Esta ampliación requiere **actualizar Code.gs y publicar una nueva versión de la implementación existente**, conservando la URL. Publicar los archivos en GitHub Pages no despliega Apps Script. Hasta actualizarlo, se puede iniciar sesión con la contraseña, pero la propuesta IA mostrará un aviso de receptor pendiente de actualización. No es necesario cambiar Bridge.html para esta ampliación. La interfaz no incluye los antiguos botones «Actualizar nota» y «Copiar texto del correo»; «Enviar por email» sigue abriendo un borrador en Gmail.
+Esta ampliación requiere **actualizar Code.gs y publicar una nueva versión de la implementación existente**, conservando la URL. Publicar los archivos en GitHub Pages no despliega Apps Script. Hasta actualizarlo, se puede iniciar sesión con la contraseña, pero la propuesta IA mostrará un aviso de receptor pendiente de actualización. Para la revisión actual sí hay que actualizar Bridge.html junto con Code.gs, por los controles de intentos y almacenamiento cifrado. La interfaz no incluye los antiguos botones «Actualizar nota» y «Copiar texto del correo»; «Enviar por email» sigue abriendo un borrador en Gmail.
 
 Las entregas sin código completo en I, los borradores y las entregas duplicadas no se califican desde esta página: se muestra un aviso. Las notas numéricas se guardan como números; otros textos se guardan literalmente, nunca como fórmulas. Una nota con fórmula escrita previamente en la hoja se muestra con su resultado; guardar una nueva nota sustituye esa fórmula.
 
@@ -79,14 +91,14 @@ La restricción de IP se aplica únicamente al abrir la actividad mediante `/bas
 
 ## Registro inicial y panel definitivo
 
-Al empezar se genera un ID aleatorio y se registra en segundo plano una fila con fecha y hora de inicio (Madrid), módulo, actividad, correo e IP. Se localizan **ID** y **NUM ENTREGA** (también se acepta **Número de entrega**) en cualquier posición. Si faltan se crean al final, sin desplazar «nota». El número se asigna en el servidor bajo bloqueo para el mismo correo y práctica. Los intentos iniciados, aunque se abandonen, consumen una oportunidad.
+Al empezar se genera un ID aleatorio y se registra, antes de habilitar el editor, una fila con fecha y hora de inicio (Madrid), módulo, actividad, correo e IP. Se localizan **ID** y **NUM ENTREGA** (también se acepta **Número de entrega**) en cualquier posición. Si faltan se crean al final, sin desplazar «nota». El número se asigna en el servidor bajo bloqueo para el mismo correo y práctica. Los intentos iniciados, aunque se abandonen, consumen una oportunidad.
 
 La entrega final actualiza esa fila por ID; conserva los datos iniciales y las notas del profesor. En Incidencias quedan el estado inicial pendiente, o los avisos y el motivo al completar. La hora de recepción final se conserva en los metadatos de la celda de «ENTREGA completa» y se devuelve en el comprobante. Reintentar una petición no crea filas duplicadas.
 
 - **Manual:** «Entregar» muestra un aviso sencillo que permite cancelar. Al aceptarlo se entra en el panel definitivo, se para el reloj y no se puede volver al editor.
 - **Automática con intentos:** abre el mismo panel y envía sin esperar confirmación.
-- **Automática sin intentos:** abre ese panel y espera un motivo de al menos 20 letras antes de enviar.
-- El motivo ocupa un campo de **2rem** de alto y se almacena en Incidencias.
+- **Sin intentos:** se rechaza cualquier reserva nueva. Solo borrar manualmente una fila completa libera otra oportunidad; reanudar una reserva existente no consume otra.
+- La entrega automática de una reserva existente se envía directamente, sin exigir un motivo adicional.
 - «Cerrar sin entregar» exige confirmación. Recargar o cerrar la pestaña muestra la advertencia nativa del navegador cuando este la permite. Al salir se elimina la copia local pendiente; queda la fila inicial, no una entrega completa. No se recuperan comprobantes finalizados como prácticas editables.
 
 El ID se mantiene al guardar y recuperar una práctica pausada. El registro inicial se reintenta con el mismo ID antes del envío si falló la red; no se puede garantizar el registro remoto sin conexión. La actualización final de base4 conserva el control de horario y la firma, sin repetir la restricción de red inicial. Si se rechaza, la fila inicial sigue pendiente y el panel permite reintentar.

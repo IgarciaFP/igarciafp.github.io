@@ -43,6 +43,7 @@ const fileMode=config.delivery.type==='archivo';
 const deliveryReady=()=>fileMode||window.LabDelivery.configured(config.delivery);
 const RECOVERY=config.storage.recovery;
 const IDENTITY_KEY=config.storage.key+'-identity';
+const browserDrafts=config.localDrafts?window.LabDrafts.create(config):null;
 let durationMs=config.durationMs;
 let emailTouched=false,guard=null,elapsed=0,started=null,phase='ready',delivering=false,lastDelivery=null,recoveryMode=false;
 
@@ -74,7 +75,7 @@ const texts={
  forcedError:'No se pudo generar la entrega automática. Tu código sigue guardado y bloqueado. Pulsa Reintentar entrega.',
  forcedRetry:'Reintentar entrega',
  savePractice:'Pausar',recoverPractice:'Recuperar práctica',toolbarFinish:'Entregar',toolbarReset:'Reiniciar',
- saveWarning:'Se descargará un documento y se pausará la práctica. La recuperación quedará registrada. ¿Pausar?',
+ saveWarning:'Se guardará la práctica en este navegador y volverás al inicio. El tiempo quedará pausado. ¿Pausar?',
  restartWarning:'Se descargará automáticamente una copia antes de borrar el intento y volver al comienzo. ¿Reiniciar?',
  recoveryFullscreenError:'El navegador no ha permitido activar la pantalla completa. Revisa el permiso y vuelve a pulsar Recuperar práctica.',
  fileSaved:'Archivo descargado. Consérvalo y recupéralo desde el inicio para continuar otro día.',
@@ -109,6 +110,7 @@ Object.assign(texts,{activity:'Actividad',yourCode:'Tu código',result:'Resultad
 const english={"identification":"ID","email":"School email","retrySave":"Retry saving","elapsed":"Time remaining","cancel":"Cancel","confirm":"Confirm","start":"Start","backStart":"Back to start","ready":"Ready to start","active":"In progress","blocked":"Code locked · timer running","paused":"Practice saved and paused","closing":"Automatic submission: code preserved","submitted":"Attempt finished","reset":"Attempt invalidated","review":"Recovered copy: read only","saved":"Code saved: ","saveReady":"Local saving ready.","saveError":"Saving blocked. Check the notice above.","first":"First warning","last":"Last warning","resetTitle":"Attempt reset","resume":"Recover saved practice","firstText":"Your code is preserved. Return to full screen before time runs out.","lastText":"Return to full screen before time runs out.","resetText":"Attempt finished. Identify yourself again.","resumeText":"Return to full screen to continue.","resumeAction":"Recover (+1 incident)","continue":"Continue in full screen","understood":"Back to start","confirmTitle":"Generate the submission and finish?","confirmBody":"Your code will be locked. A backup TXT will be downloaded and your work submitted. Wait for the receipt.","changed":"Your code has changed: the previous submission is no longer valid.","genericError":"The report could not be generated. Your attempt is still open. Check your details and try again.","receipt":"Download TXT receipt","receiptRequested":"Download requested. If it does not appear, click Download TXT receipt.","receiptError":"The download could not start. Your submission is saved; try downloading it again.","compressionError":"This browser cannot compress your submission. Update it or contact your teacher. Your attempt is still open.","forcedPending":"Time is up. Preparing your submission with your saved code.","forcedError":"Automatic submission failed. Your code is still saved and locked. Click Retry submission.","forcedRetry":"Retry submission","savePractice":"Pause","recoverPractice":"Recover practice","toolbarFinish":"Submit","toolbarReset":"Restart","saveWarning":"A file will be downloaded and the practice paused. Recovery will be recorded. Pause?","restartWarning":"A backup will be downloaded before deleting this attempt. Restart?","recoveryFullscreenError":"Full screen was not allowed. Check browser permissions and click Recover practice again.","fileSaved":"File downloaded. Keep it to recover your practice later.","fileError":"The file could not be downloaded. Your work remains saved here. Try again.","recoveryEmailRequired":"Enter your email before recovering a practice.","recoveryEmailMismatch":"Your email does not match the saved practice. Nothing was recovered and no incident was added.","fileInvalid":"Select a valid saved practice or receipt file.","deliveryTitle":"Laboratory submission","copyOpen":"Send / retry submission","deliveryNote":"Keep the TXT. Submission is confirmed only when its identifier and date appear. If the connection fails, retry without changing your code.","sending":"Sending your code… Wait for confirmation.","received":"Submission received. Identifier:","receivedShort":"Submission received","deliveryFailed":"Receipt could not be confirmed. Your code is still saved. Click Send / retry submission.","notConfigured":"Submission has not been configured yet. Your teacher must set it up before you can start.","pendingDelivery":"A submission is awaiting confirmation. You can resend it or download its TXT.","previousReceived":"You have already completed this laboratory","viewReceipt":"View confirmation","recover":"View last submission","pendingRun":"There are changes to run: click Run.","navigation":"The preview cannot open other pages. Click Run to return to your result.","consoleEmpty":"console.log messages and code errors appear here.","chars":" characters","restore":"↺ Restore","restoreConfirm":"Are you sure? Click again","activity":"Activity","yourCode":"Your code","result":"Result","refresh":"↻ Refresh","run":"▶ Run","console":"Console","attempts":"Attempts remaining: ","languageLabel":"Language","clearCache":"Clear cache"};
 english.domain=`Only @${config.emailDomain} email addresses are allowed.`;
 english.identityError=`Enter a valid email ending exactly in @${config.emailDomain}.`;
+english.saveWarning='Your practice will be saved in this browser and you will return to sign-in. The timer will be paused. Pause?';
 if(fileMode)Object.assign(english,{
  confirmBody:'Your code will be locked and a single TXT file downloaded. Submit it as instructed by your teacher.',
  copyOpen:'Download submission again',deliveryNote:'Your submission is the downloaded TXT file. Keep it unchanged and submit it as instructed by your teacher.',
@@ -171,7 +173,7 @@ async function recordSubmission(item){
 }
 const opportunityStore=config.storage.key+'-opportunities';
 let opportunityCache={};try{opportunityCache=JSON.parse(localStorage.getItem(opportunityStore))||{};}catch{}
-let opportunitySerial=0,opportunityTimer,revisionReason='',revisionNeeded=false;
+let opportunitySerial=0,opportunityTimer,opportunityCheck=null,revisionReason='',revisionNeeded=false;
 function cachedOpportunity(){
  const email=$('student').value.trim().toLowerCase(),saved=opportunityCache[email];
  return {used:Number.isSafeInteger(saved?.used)?saved.used:submittedCount(),limit:config.maxSubmissions};
@@ -180,19 +182,35 @@ function saveOpportunity(email,used){
  opportunityCache[email]={used,at:Date.now()};
  try{localStorage.setItem(opportunityStore,JSON.stringify(opportunityCache));}catch{}
 }
-function canStart(){return deliveryReady()&&validIdentity();}
+function canStart(){
+ if(!deliveryReady()||!validIdentity())return false;
+ if(!browserDrafts)return true;
+ const checked=opportunityCheck;
+ return checked?.email===$('student').value.trim().toLowerCase()&&(checked.used<checked.limit||checked.canResume);
+}
 async function checkOpportunities(){
  const email=$('student').value.trim().toLowerCase(),serial=++opportunitySerial;
- if(fileMode||!validIdentity()||!deliveryReady())return;
+ if(!validIdentity()||!deliveryReady())return;
+ if(browserDrafts){opportunityCheck=null;$('attempt-status').textContent='Comprobando intentos disponibles…';$('attempt-refresh').disabled=true;guard?.render();}
  try{
-  const result=await window.LabDelivery.status(config.delivery,{practiceId:config.id,email,activityTitle:config.activityTitle,url:location.origin+location.pathname});
+  const raw=browserDrafts?.peek(email),saved=raw?JSON.parse(raw):null,owner=saved?.data?.attempt;
+  const result=fileMode?{...cachedOpportunity(),canResume:!!saved}:await window.LabDelivery.status(config.delivery,{practiceId:config.id,email,activityTitle:config.activityTitle,url:location.origin+location.pathname,
+   ...(owner?{attemptId:owner.id,attemptToken:owner.token}:{})});
   if(serial!==opportunitySerial)return;
   saveOpportunity(email,result.used);
+  if(browserDrafts){
+   if(result.attemptStatus==='submitted')browserDrafts.discard(email,raw);
+   opportunityCheck={email,used:result.used,limit:result.limit,canResume:result.canResume===true};
+   $('attempt-status').textContent=canStart()?'': 'No quedan intentos. El profesor debe autorizar otro eliminando la fila de una entrega en la hoja.';
+  }
   if(phase==='ready')guard?.render();
- }catch{/* La entrada usa la caché y nunca espera a la red. */}
+ }catch(error){
+  if(serial!==opportunitySerial)return;
+  if(browserDrafts)$('attempt-status').textContent=error.message==='RECEIVER_VERSION'?'El profesor debe actualizar y volver a publicar el receptor de entregas.':'No se pudieron comprobar los intentos. Pulsa «Comprobar intentos» para reintentar.';
+ }finally{if(browserDrafts&&serial===opportunitySerial){$('attempt-refresh').disabled=false;guard?.render();}}
 }
 function scheduleOpportunityCheck(){
- clearTimeout(opportunityTimer);++opportunitySerial;
+ clearTimeout(opportunityTimer);++opportunitySerial;opportunityCheck=null;
  opportunityTimer=setTimeout(checkOpportunities,500);guard?.render();
 }
 
@@ -208,6 +226,7 @@ function onAttemptStart(){
  const owner=attempt;
  initialEnvelopePromise=makeReport({},false,Date.now(),{finishReason:'start'})
   .then(code=>deliveryEnvelope({code,attemptToken:owner.token}));
+ if(browserDrafts)return ensureRegistration();
  void ensureRegistration().catch(()=>{/* Se reintenta con el mismo ID antes de enviar. */});
 }
 async function ensureRegistration(){
@@ -220,13 +239,14 @@ async function ensureRegistration(){
  const job=(async()=>{
   const envelope=await source.catch(error=>{if(initialEnvelopePromise===source)initialEnvelopePromise=null;throw error;});
   const result=await window.LabDelivery.start(config.delivery,envelope);
+   if(browserDrafts&&result.status==='submitted')throw Error('ALREADY_SUBMITTED');
   owner.number=result.number;owner.limit=result.limit;owner.registered=true;
   saveOpportunity(JSON.parse(envelope.payload).email.toLowerCase(),result.number);
  })();
  registrationPromise=job;
  try{await job;}finally{if(registrationPromise===job)registrationPromise=null;}
 }
-function requiresReason(){return attempt?attempt.number>attempt.limit:cachedOpportunity().used>=cachedOpportunity().limit;}
+function requiresReason(){return browserDrafts?false:attempt?attempt.number>attempt.limit:cachedOpportunity().used>=cachedOpportunity().limit;}
 function showReason(){
  revisionNeeded=requiresReason();
  $('revision-delivery').hidden=!revisionNeeded;
@@ -726,7 +746,6 @@ async function makeReport(metadata,final,finishedAt=Date.now(),context={}){
 }
 function persistDelivery(item){
  lastDelivery=item;
- if(!item.receipt)return;
  try{localStorage.setItem(RECOVERY,JSON.stringify(item));}catch{/* El TXT sigue disponible. */}
 }
 function rememberDelivery(report){
@@ -813,7 +832,7 @@ async function deliver(item){
  persistDelivery(item);
  try{
   const envelope=await deliveryEnvelope(item);
-  if(JSON.parse(envelope.payload).attemptId)await ensureRegistration();
+  if(JSON.parse(envelope.payload).attemptId===attempt?.id)await ensureRegistration();
   item.receipt=await window.LabDelivery.send(config.delivery,envelope);
   persistDelivery(item);await recordSubmission(item);showDeliveryReceipt(item);
  }catch(error){
@@ -831,6 +850,8 @@ async function deliver(item){
    return;
   }
   const policyErrors={
+   ENCRYPTION_UNAVAILABLE:'No se pudo cifrar la entrega. Se conserva para reintentar; el receptor no guardará una copia sin cifrar.',
+   ENCRYPTED_DOCUMENT_TOO_LARGE:'La entrega cifrada supera el tamaño admitido por la hoja. Conserva el comprobante y avisa al profesor.',
    NETWORK_DENIED:'Entrega no admitida: la IP no pertenece a las redes permitidas para esta actividad.',
    SCHEDULE_DENIED:'Entrega no admitida: se ha realizado fuera del horario permitido para el módulo.',
    CONTROL_REQUIRED:'No se ha obtenido el sello necesario para comprobar las restricciones. Conserva el TXT.',
@@ -854,8 +875,8 @@ async function downloadReceipt(item){
  if(!item?.code)return false;
  let url;
  try{
-  // En la entrega por archivo se descarga solo el informe: no incluye el código sin modificar.
-  const documentCode=item.practice&&!fileMode?await encodeReport(item.practice):item.code;
+  // El alumno recibe texto plano; el cifrado de la entrega almacenada pertenece al receptor.
+  const documentCode=await decodePracticeDocument(item.code);
   url=URL.createObjectURL(new Blob([documentCode],{type:'text/plain;charset=utf-8'}));
   const link=document.createElement('a');
   // Entrega por archivo: «nombre de la actividad_usuario.txt», con el usuario del correo sin dominio.
@@ -974,6 +995,7 @@ clearLocalButton.addEventListener('click',async()=>{
  if(phase!=='ready'||recoveryMode)return;
  try{
   for(const key of [config.storage.key,config.storage.key+'-previous',config.storage.legacyKey,RECOVERY,submissionStore,opportunityStore])localStorage.removeItem(key);
+  browserDrafts?.clear();
   location.reload();
  }catch{$('recovery-message').textContent='El navegador no permite borrar los datos locales. Revisa sus permisos de almacenamiento.';}
 });
@@ -1022,6 +1044,7 @@ window.addEventListener('pagehide',discardPendingDelivery);
 window.addEventListener('pageshow',event=>{if(event.persisted&&panelEntered&&!deliveryComplete)location.reload();});
 $('student').addEventListener('blur',()=>{emailTouched=!!$('student').value.trim();guard?.render();});
 $('student').addEventListener('input',()=>{rememberIdentity();scheduleOpportunityCheck();});
+if(browserDrafts)$('attempt-refresh').addEventListener('click',()=>void checkOpportunities());
 $('student').addEventListener('keydown',e=>{if(e.key==='Enter'&&!$('guard-start').disabled)$('guard-start').click();});
 if(typeof ResizeObserver==='function')new ResizeObserver(syncToolbarHeight).observe($('practice-toolbar'));
 window.addEventListener('resize',syncToolbarHeight);
@@ -1059,7 +1082,9 @@ if(sectionMode){
   save:()=>{invalidate();guard.saveEdit();}
  });
 }
-guard=window.createPracticeGuard({config,preservePendingEdits:true,renderStartButton:renderStartIcon,deliveryPanel:true,allowSubmittedRecovery:true,onAttemptStart,confirmDelivery:()=>confirmActionModal('Vas a finalizar la práctica. Al aceptar no podrás volver al editor. ¿Entregar la práctica?',incompleteWarning(),true),timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
+guard=window.createPracticeGuard({config,browserDrafts,beforeResume:()=>ensureRegistration(),startError(error){
+ $('guard-action-status').textContent=error.message==='ATTEMPTS_EXHAUSTED'?'No quedan intentos. Pide autorización al profesor.':error.message==='ALREADY_SUBMITTED'?'Este intento ya fue entregado.':'No se pudo registrar el intento. Comprueba la conexión y vuelve a iniciar.';
+},preservePendingEdits:true,renderStartButton:renderStartIcon,deliveryPanel:true,allowSubmittedRecovery:!browserDrafts,onAttemptStart,confirmDelivery:()=>confirmActionModal('Vas a finalizar la práctica. Al aceptar no podrás volver al editor. ¿Entregar la práctica?',incompleteWarning(),true),timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
  async saveBeforeReset(current){
   if(current==='paused')return savePracticeDocument();
   if(current==='submitted')return downloadReceipt(rememberDelivery($('report').value));

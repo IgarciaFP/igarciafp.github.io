@@ -33,3 +33,11 @@ out=ctx.gestionarNota({action:'set',nota:'9',comentarios:'Docente',revision:'old
 dest[0][0]='otro';out=ctx.gestionarNota({action:'set',nota:'9',comentarios:'Docente',revision:'rev'});assert.equal(out.code,'SYNC_SCHEMA');assert.equal(batches.length,1);
 console.log('OK: prioridad manual/IA, cero, comentario independiente, mayor nota, empate, enlace, duplicados, IDs nuevos, ceros, alumno único, conflicto y guardado atómico.');
 
+// El original de Entregas sigue cifrado; solo el enlace publicado se reconstruye en claro.
+dest[0][0]='ID entrega';source[1][6]='SSII4E1.a1';source[2][6]='SSII4E1.a2';source[3][6]='SSII4E1.b1';
+const tokens=[];ctx.descifrarDocumento_=(code,token)=>{tokens.push(token);return 'report-'+code.slice('SSII4E1.'.length);};ctx.codificarDocumento_=text=>text;
+p=ctx.prepararVolcadoNota_(book,origin,3,'9','Docente','sesion-descifrado');
+one=cells(p,1).find(x=>x.values[1]==='uno');assert.match(one.raw[3].textFormatRuns[0].format.link.uri,/#entrega=report-a2$/);assert.ok(tokens.every(t=>t==='sesion-descifrado'));
+assert.equal(source[2][6],'SSII4E1.a2');assert.ok(!JSON.stringify(p.requests).includes('SSII4E1.'));
+console.log('OK: volcado autenticado sin cifrar y originales cifrados intactos.');
+
