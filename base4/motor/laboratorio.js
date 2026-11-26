@@ -130,7 +130,8 @@ function applyUILanguage(){
  toolbox?.language();
  document.documentElement.lang=uiLanguage;
  document.querySelectorAll('[data-text]').forEach(el=>el.textContent=tr(el.dataset.text));
- const languageAction=uiLanguage==='es'?'Cambiar a inglés':'Switch to Spanish';
+ const languageAction=tr('languageLabel');
+ $('ui-language').value=uiLanguage;
  $('ui-language').setAttribute('aria-label',languageAction);
  $('ui-language').title=languageAction;
  $('student').placeholder=(uiLanguage==='en'?'name':'nombre')+'@'+config.emailDomain;
@@ -1017,8 +1018,8 @@ document.title=config.title;
 
 $('lab-title').textContent=config.title;
 applyUILanguage();
-$('ui-language').addEventListener('click',()=>{
- uiLanguage=uiLanguage==='es'?'en':'es';
+$('ui-language').addEventListener('change',()=>{
+ uiLanguage=$('ui-language').value==='en'?'en':'es';
  try{localStorage.setItem('base4-ui-language',uiLanguage);}catch{}
  applyUILanguage();guard?.render();
 });
