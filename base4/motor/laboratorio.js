@@ -700,7 +700,8 @@ function afterRender(state,ctx){
  }
  // Última entrega: accesible desde la pantalla de identificación.
  $('utility-actions').hidden=loading||recoveryMode||phase!=='ready';
- $('recovery').hidden=loading||recoveryMode||phase!=='ready';
+ // El login no muestra entregas ya completadas ni sus comprobantes.
+ $('recovery').hidden=loading||recoveryMode||phase!=='ready'||!lastDelivery||!!lastDelivery.receipt||fileMode;
  const attempts=cachedOpportunity();
  $('recovery-message').textContent=lastDelivery?.receipt?tr('previousReceived'):lastDelivery?tr('pendingDelivery'):'';
  $('toolbar-attempts').textContent=tr('attempts')+Math.max(0,attempts.limit-attempts.used);
