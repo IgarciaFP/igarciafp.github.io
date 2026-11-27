@@ -119,10 +119,10 @@ function init(config,{language=()=> 'es',copyText=null}={}){
    });
   }else if(key==='rubrica'){
    const heading=doc.createElement('h3');heading.textContent=config.rubric.titulo;panel.append(heading);
-   const total=doc.createElement('p');total.textContent='Total: '+config.rubric.total+' puntos / points';panel.append(total);
+   const total=doc.createElement('p');total.textContent='Total: '+config.rubric.total+(language()==='en'?' points':' puntos');panel.append(total);
    for(const criterion of config.rubric.criterios){
     const section=doc.createElement('section'),title=doc.createElement('h4'),list=doc.createElement('ul');
-    title.textContent=criterion.titulo+' · '+criterion.puntos+' puntos / points';section.append(title,list);
+    title.textContent=criterion.titulo+' · '+criterion.puntos+(language()==='en'?' points':' puntos');section.append(title,list);
     for(const level of criterion.niveles){const li=doc.createElement('li'),score=doc.createElement('strong');score.textContent=level.puntos+' — ';li.append(score,doc.createTextNode(level.descripcion));list.append(li);}
     panel.append(section);
    }
@@ -159,7 +159,7 @@ function init(config,{language=()=> 'es',copyText=null}={}){
   button.addEventListener('click',()=>{selected=key;dialog.querySelector('h2').textContent=title(key);if(!panels.has(key))panels.set(key,build(key));content.replaceChildren(panels.get(key));openedFullscreen=doc.fullscreenElement;dialog.showModal();});bar.append(button);
  }
  bar.hidden=!bar.children.length;
- return {close:closeDialog,language(){for(const button of bar.children){button.title=title(button.dataset.tool);button.setAttribute('aria-label',button.title);}if(selected)dialog.querySelector('h2').textContent=title(selected);}};
+ return {close:closeDialog,language(){panels.delete('rubrica');for(const button of bar.children){button.title=title(button.dataset.tool);button.setAttribute('aria-label',button.title);}if(selected)dialog.querySelector('h2').textContent=title(selected);}};
 }
 const api={KEYS,settings,rubric,convert,calculate,init};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.LabTools=api;

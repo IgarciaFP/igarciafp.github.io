@@ -5,9 +5,11 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261126162550-base4';
+  const version=loaderURL.searchParams.get('v')||'20261127135151-base4';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
+  let encryptedBundle=null,protectedFolder='',initialEmail='';
   const fetchAsset=async path=>{
+    if(encryptedBundle){const response=window.LabCipher.response(encryptedBundle,protectedFolder,path);if(response)return response;}
     // La configuración cambia sin necesidad de publicar otra versión del HTML.
     const fresh=path.endsWith('/config.json');
     let response,error;
@@ -73,7 +75,13 @@
     const settingsResponse=await fetchAsset(folder+'config.json');
     if(settingsResponse.status===404){notFound();return;}
     if(!settingsResponse.ok)throw Error('No se pudo cargar config.json de la actividad.');
-    const supplied=await settingsResponse.json();
+    let supplied=await settingsResponse.json();
+    if(supplied?.cifrado){
+      await script('motor/contenido-cifrado.js');
+      const unlocked=await window.LabCipher.unlock(supplied,common.emailDomain,async name=>{const response=await read(folder+name);return response.json();});
+      encryptedBundle=unlocked.bundle;protectedFolder=folder;initialEmail=unlocked.email;
+      supplied=JSON.parse(encryptedBundle.files['config.json']);
+    }
     if(!supplied||typeof supplied!=='object'||Array.isArray(supplied))throw Error('config.json de la actividad no es válido.');
     const settings={guardar:false,duracion:15,entregas:1,reiniciar:false,restringirHorario:false,...supplied};
     if(typeof settings.guardar!=='boolean'||typeof settings.reiniciar!=='boolean'||
@@ -82,12 +90,15 @@
       typeof settings.restringirHorario!=='boolean')
       throw Error('Revisa guardar, duracion, entregas, reiniciar y restringirHorario en el config.json de la actividad.');
     await script('motor/apartados.js');
+    await script('motor/examen-modelo.js');
+    await script('motor/examen-idiomas.js');
     await script('motor/herramientas.js');
     const rubricText=await optional(folder+'rubrica.json');
     const tools=window.LabTools.settings(settings,mod,slug,rubricText?JSON.parse(rubricText):null);
     const allowSaveRecovery=settings.guardar,minutes=settings.duracion;
     const activity=supplied;
     const sections=await window.LabSections.load(activity,folder,read,optional);
+    if(activity.idiomas){const bundle=await window.LabI18n.init({activity,folder,sections,read});tools.rubric=window.LabTools.rubric(bundle.rubric);}
     const sectionMode=activity.apartados!==undefined||sections[0].type!=='webcode';
     const code=sections[0].code||{html:'',css:'',js:'',txt:''};
     const statement=sections[0].statement;
@@ -103,12 +114,16 @@
     // Nombre de la actividad: «NN-MM-Nombre» (tema y número de actividad). Se muestra con el
     // módulo delante: «DIW02-01-Nombre». Si el título ya lo lleva escrito, no se repite.
     const name=activity.title.trim().replace(new RegExp('^'+mod+'\\s*','i'),'').trim()||activity.title.trim();
-    const config={...common,tools,localDrafts:true,allowSaveRecovery,allowRestart:settings.reiniciar,maxSubmissions:settings.entregas,durationMs:Math.round(minutes*60000),module:MOD,activity:slug,id,title:MOD+name,
+    const config={...common,tools,localDrafts:true,allowSaveRecovery,allowRestart:settings.reiniciar,maxSubmissions:settings.entregas,durationMs:Math.round(minutes*60000),module:MOD,activity:slug,id,title:MOD+' · '+name,
       delivery:{...common.delivery,requireAttemptLimit:true,requireEncryptedStorage:true},
       filePrefix:mod+'-'+slug,version:String(activity.version).trim(),
       storage:{key:store+'-v1',legacyKey:store+'-anterior-v1',recovery:store+'-ultima-entrega-v1'},
       activityTitle:name,control:{servidor:server,clave:key},
       format:{...common.format,save:id+'-SAVE'}};
+    if(settings.usuariosPermitidos!==undefined){
+      if(!Array.isArray(settings.usuariosPermitidos)||settings.usuariosPermitidos.some(user=>typeof user!=='string'||!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(user)))throw Error('Lista de usuarios inválida.');
+      config.allowedUsers=settings.usuariosPermitidos.slice();
+    }
     document.getElementById('activity-text').innerHTML=statement;
     const seen=new Set();
     for(const el of document.querySelectorAll('[id]')){
@@ -117,10 +132,11 @@
     }
     document.getElementById('student').placeholder='nombre@'+config.emailDomain;
     window.Lab={config,code,sections,sectionMode,ready:false};
+    window.Lab.initialEmail=initialEmail;
     // Seguridad, entrega y estilos generales son los de la plantilla común /base/.
     await script('/base/motor/seguridad.js');
     await script('/base/motor/entregas.js');
-    if(sectionMode)await script('motor/apartados-ui.js');
+    if(sectionMode)await script('motor/examen-vista.js');
     await script('motor/portapapeles.js');
     await script('motor/vista-modal.js');
     await script('motor/borradores.js');

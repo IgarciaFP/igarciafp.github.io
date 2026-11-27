@@ -32,9 +32,8 @@ const $=id=>document.getElementById(id);
 // Pestañas del editor. «txt» son notas del alumno: no forman parte del resultado.
 const LANGS=['html','css','js','txt'];
 const NAMES={html:'HTML',css:'CSS',js:'JavaScript',txt:'TXT'};
-const language='es'; // Idioma del contenido y del formato de entrega.
-let uiLanguage='es';
-try{if(localStorage.getItem('base4-ui-language')==='en')uiLanguage='en';}catch{}
+let language=window.LabI18n?.language||'es';
+let uiLanguage=language;
 const ids=[...LANGS,'student'];
 // El código de partida (contenido/codigo.*) se carga en las pestañas del editor al empezar.
 const start={...code,txt:''};
@@ -106,8 +105,8 @@ if(fileMode)Object.assign(texts,{
  pendingDelivery:'Ya generaste una entrega en este navegador. Puedes volver a descargar su archivo TXT.',
  forcedPending:'Se ha agotado el tiempo permitido. Se está generando el archivo de entrega con tu código conservado.'
 });
-Object.assign(texts,{activity:'Actividad',yourCode:'Tu código',result:'Resultado',refresh:'↻ Actualizar',run:'▶ Ejecutar',console:'Consola',attempts:'Intentos restantes: ',languageLabel:'Idioma',clearCache:'Borrar caché'});
-const english={"identification":"ID","email":"School email","retrySave":"Retry saving","elapsed":"Time remaining","cancel":"Cancel","confirm":"Confirm","start":"Start","backStart":"Back to start","ready":"Ready to start","active":"In progress","blocked":"Code locked · timer running","paused":"Practice saved and paused","closing":"Automatic submission: code preserved","submitted":"Attempt finished","reset":"Attempt invalidated","review":"Recovered copy: read only","saved":"Code saved: ","saveReady":"Local saving ready.","saveError":"Saving blocked. Check the notice above.","first":"First warning","last":"Last warning","resetTitle":"Attempt reset","resume":"Recover saved practice","firstText":"Your code is preserved. Return to full screen before time runs out.","lastText":"Return to full screen before time runs out.","resetText":"Attempt finished. Identify yourself again.","resumeText":"Return to full screen to continue.","resumeAction":"Recover (+1 incident)","continue":"Continue in full screen","understood":"Back to start","confirmTitle":"Generate the submission and finish?","confirmBody":"Your code will be locked. A backup TXT will be downloaded and your work submitted. Wait for the receipt.","changed":"Your code has changed: the previous submission is no longer valid.","genericError":"The report could not be generated. Your attempt is still open. Check your details and try again.","receipt":"Download TXT receipt","receiptRequested":"Download requested. If it does not appear, click Download TXT receipt.","receiptError":"The download could not start. Your submission is saved; try downloading it again.","compressionError":"This browser cannot compress your submission. Update it or contact your teacher. Your attempt is still open.","forcedPending":"Time is up. Preparing your submission with your saved code.","forcedError":"Automatic submission failed. Your code is still saved and locked. Click Retry submission.","forcedRetry":"Retry submission","savePractice":"Pause","recoverPractice":"Recover practice","toolbarFinish":"Submit","toolbarReset":"Restart","saveWarning":"A file will be downloaded and the practice paused. Recovery will be recorded. Pause?","restartWarning":"A backup will be downloaded before deleting this attempt. Restart?","recoveryFullscreenError":"Full screen was not allowed. Check browser permissions and click Recover practice again.","fileSaved":"File downloaded. Keep it to recover your practice later.","fileError":"The file could not be downloaded. Your work remains saved here. Try again.","recoveryEmailRequired":"Enter your email before recovering a practice.","recoveryEmailMismatch":"Your email does not match the saved practice. Nothing was recovered and no incident was added.","fileInvalid":"Select a valid saved practice or receipt file.","deliveryTitle":"Laboratory submission","copyOpen":"Send / retry submission","deliveryNote":"Keep the TXT. Submission is confirmed only when its identifier and date appear. If the connection fails, retry without changing your code.","sending":"Sending your code… Wait for confirmation.","received":"Submission received. Identifier:","receivedShort":"Submission received","deliveryFailed":"Receipt could not be confirmed. Your code is still saved. Click Send / retry submission.","notConfigured":"Submission has not been configured yet. Your teacher must set it up before you can start.","pendingDelivery":"A submission is awaiting confirmation. You can resend it or download its TXT.","previousReceived":"You have already completed this laboratory","viewReceipt":"View confirmation","recover":"View last submission","pendingRun":"There are changes to run: click Run.","navigation":"The preview cannot open other pages. Click Run to return to your result.","consoleEmpty":"console.log messages and code errors appear here.","chars":" characters","restore":"↺ Restore","restoreConfirm":"Are you sure? Click again","activity":"Activity","yourCode":"Your code","result":"Result","refresh":"↻ Refresh","run":"▶ Run","console":"Console","attempts":"Attempts remaining: ","languageLabel":"Language","clearCache":"Clear cache"};
+Object.assign(texts,{activity:'Instrucciones',yourCode:'Tu código',result:'Resultado',refresh:'↻ Actualizar',run:'▶ Ejecutar',console:'Consola',attempts:'Intentos restantes: ',languageLabel:'Idioma',clearCache:'Borrar caché'});
+const english={"identification":"ID","email":"School email","retrySave":"Retry saving","elapsed":"Time remaining","cancel":"Cancel","confirm":"Confirm","start":"Start","backStart":"Back to start","ready":"Ready to start","active":"In progress","blocked":"Code locked · timer running","paused":"Practice saved and paused","closing":"Automatic submission: code preserved","submitted":"Attempt finished","reset":"Attempt invalidated","review":"Recovered copy: read only","saved":"Code saved: ","saveReady":"Local saving ready.","saveError":"Saving blocked. Check the notice above.","first":"First warning","last":"Last warning","resetTitle":"Attempt reset","resume":"Recover saved practice","firstText":"Your code is preserved. Return to full screen before time runs out.","lastText":"Return to full screen before time runs out.","resetText":"Attempt finished. Identify yourself again.","resumeText":"Return to full screen to continue.","resumeAction":"Recover (+1 incident)","continue":"Continue in full screen","understood":"Back to start","confirmTitle":"Generate the submission and finish?","confirmBody":"Your code will be locked. A backup TXT will be downloaded and your work submitted. Wait for the receipt.","changed":"Your code has changed: the previous submission is no longer valid.","genericError":"The report could not be generated. Your attempt is still open. Check your details and try again.","receipt":"Download TXT receipt","receiptRequested":"Download requested. If it does not appear, click Download TXT receipt.","receiptError":"The download could not start. Your submission is saved; try downloading it again.","compressionError":"This browser cannot compress your submission. Update it or contact your teacher. Your attempt is still open.","forcedPending":"Time is up. Preparing your submission with your saved code.","forcedError":"Automatic submission failed. Your code is still saved and locked. Click Retry submission.","forcedRetry":"Retry submission","savePractice":"Pause","recoverPractice":"Recover practice","toolbarFinish":"Submit","toolbarReset":"Restart","saveWarning":"A file will be downloaded and the practice paused. Recovery will be recorded. Pause?","restartWarning":"A backup will be downloaded before deleting this attempt. Restart?","recoveryFullscreenError":"Full screen was not allowed. Check browser permissions and click Recover practice again.","fileSaved":"File downloaded. Keep it to recover your practice later.","fileError":"The file could not be downloaded. Your work remains saved here. Try again.","recoveryEmailRequired":"Enter your email before recovering a practice.","recoveryEmailMismatch":"Your email does not match the saved practice. Nothing was recovered and no incident was added.","fileInvalid":"Select a valid saved practice or receipt file.","deliveryTitle":"Laboratory submission","copyOpen":"Send / retry submission","deliveryNote":"Keep the TXT. Submission is confirmed only when its identifier and date appear. If the connection fails, retry without changing your code.","sending":"Sending your code… Wait for confirmation.","received":"Submission received. Identifier:","receivedShort":"Submission received","deliveryFailed":"Receipt could not be confirmed. Your code is still saved. Click Send / retry submission.","notConfigured":"Submission has not been configured yet. Your teacher must set it up before you can start.","pendingDelivery":"A submission is awaiting confirmation. You can resend it or download its TXT.","previousReceived":"You have already completed this laboratory","viewReceipt":"View confirmation","recover":"View last submission","pendingRun":"There are changes to run: click Run.","navigation":"The preview cannot open other pages. Click Run to return to your result.","consoleEmpty":"console.log messages and code errors appear here.","chars":" characters","restore":"↺ Restore","restoreConfirm":"Are you sure? Click again","activity":"Instructions","yourCode":"Your code","result":"Result","refresh":"↻ Refresh","run":"▶ Run","console":"Console","attempts":"Attempts remaining: ","languageLabel":"Language","clearCache":"Clear cache"};
 english.domain=`Only @${config.emailDomain} email addresses are allowed.`;
 english.identityError=`Enter a valid email ending exactly in @${config.emailDomain}.`;
 english.saveWarning='Your practice will be saved in this browser and you will return to sign-in. The timer will be paused. Pause?';
@@ -119,6 +118,10 @@ if(fileMode)Object.assign(english,{
  pendingDelivery:'You already generated a submission in this browser. You can download its TXT again.',
  forcedPending:'Time is up. Preparing your submission file with your saved code.'
 });
+if(Array.isArray(config.allowedUsers)){
+ texts.identityError='Este correo no está autorizado para el examen.';
+ english.identityError='This email is not allowed to open the exam.';
+}
 const tr=k=>(uiLanguage==='en'?english[k]:texts[k])??texts[k]??k;
 function renderStartIcon(){
  const button=$('guard-start');
@@ -127,6 +130,15 @@ function renderStartIcon(){
  button.setAttribute('aria-label',label);button.title=label;
 }
 function applyUILanguage(){
+ const en=uiLanguage==='en';
+ $('action-confirm-title').textContent=en?'Confirm action':'Confirmar acción';
+ $('action-confirm-cancel').textContent=en?'Cancel':'Cancelar';
+ $('action-confirm-accept').textContent=en?'Confirm':'Aceptar';
+ $('editor-undo').title=en?'Undo (Ctrl+Z)':'Deshacer (Ctrl+Z)';
+ $('editor-undo').setAttribute('aria-label',$('editor-undo').title);
+ $('editor-restore').title=en?'Restore starter code':'Restaurar código de partida';
+ $('editor-restore').setAttribute('aria-label',$('editor-restore').title);
+ $('txt').placeholder=en?'Notes for the teacher (optional). They do not affect the result.':'Notas para el profesor (opcional). No afectan al resultado.';
  toolbox?.language();
  document.documentElement.lang=uiLanguage;
  document.querySelectorAll('[data-text]').forEach(el=>el.textContent=tr(el.dataset.text));
@@ -154,7 +166,10 @@ function fillCachedIdentity(onlyEmpty=true){
  const saved=cachedIdentity();if(!saved)return;
  if(!onlyEmpty||!$('student').value)$('student').value=saved.student;
 }
-function validEmail(email){return /^[^\s@]+@[^\s@]+$/.test(email)&&email.split('@')[1].toLowerCase()===config.emailDomain.toLowerCase();}
+function validEmail(email){
+ const value=String(email).trim().toLowerCase();
+ return /^[^\s@]+@[^\s@]+$/.test(value)&&value.split('@')[1]===config.emailDomain.toLowerCase()&&(!Array.isArray(config.allowedUsers)||config.allowedUsers.includes(value.split('@')[0]));
+}
 function validIdentity(){return $('student').validity.valid&&validEmail($('student').value.trim());}
 const submissionStore=config.storage.key+'-submissions';
 let submissionLedger={};
@@ -278,7 +293,7 @@ function clock(){
  const urgent=phase==='active'&&remaining<=60000;
  $('clock').classList.toggle('time-urgent',urgent);
  $('duration-warning').hidden=!urgent;
- const notice=remaining>0?'Queda menos de un minuto. La práctica se entregará automáticamente al terminar.':'Tiempo agotado. Generando la entrega automática…';
+ const notice=uiLanguage==='en'?(remaining>0?'Less than one minute remains. Your exam will be submitted automatically when time runs out.':'Time is up. Preparing automatic submission…'):(remaining>0?'Queda menos de un minuto. La práctica se entregará automáticamente al terminar.':'Tiempo agotado. Generando la entrega automática…');
  if($('duration-warning').textContent!==notice)$('duration-warning').textContent=notice;
 }
 function startClock(){if(started===null)started=Date.now();clock();}
@@ -599,7 +614,7 @@ function sanitize(data){
  const report=typeof data.report==='string'?data.report:'';
  if(report.length>2000000)throw new Error('Informe demasiado largo');
  if(report&&data.reportEncoding!=='gzip-base64url')throw new Error('Formato de informe no válido');
- if(data.language!=null&&data.language!==language)throw Error('Invalid language');
+ if(data.language!=null&&!['es','en'].includes(data.language))throw Error('Invalid language');
  if(data.attempt){
   const a=data.attempt;
   if(!/^[a-f0-9]{32}$/.test(a.id||'')||!/^[a-f0-9]{64}$/.test(a.token||'')||!Number.isSafeInteger(a.number)||a.number<1)throw Error('Invalid attempt');
@@ -681,7 +696,7 @@ function afterRender(state,ctx){
  $('delivery-config-note').textContent=tr('notConfigured');
 
  $('guard-state').textContent=tr(active?($('answer-fields').disabled?'blocked':'active'):phase);
- $('guard-count').textContent='Incidencias: '+state.count;
+ $('guard-count').textContent=(uiLanguage==='en'?'Incidents: ':'Incidencias: ')+state.count;
  $('guard-conditions').textContent='Pantalla completa: '+(document.fullscreenElement?'✓':'—')+' · Foco: '+(document.hasFocus()?'✓':'—')+' · Visible: '+(document.visibilityState==='visible'?'✓':'—');
  $('saveStatus').textContent=ctx.problem?tr('saveError'):state.savedAt?tr('saved')+new Date(state.savedAt).toLocaleTimeString('es-ES'):tr('saveReady');
  $('identity-error').textContent=emailTouched&&$('student').value.trim()&&!validIdentity()?tr('identityError'):'';
@@ -693,10 +708,10 @@ function afterRender(state,ctx){
   $('guard-continue').textContent=tr(ctx.restoring?'resumeAction':active?'continue':'understood');
  }
  if(ctx.returnSeconds && state.pending){
-  $('guard-warning-title').textContent='Vuelve a pantalla completa';
-  $('guard-warning-text').textContent='Pulsa Continuar en pantalla completa antes de que termine el tiempo. El tiempo disponible es acumulado para toda la práctica. Si se agota, se entregará automáticamente tu código.';
-  $('guard-warning-count').textContent=ctx.remainingSeconds===null?'':'Entrega automática en '+ctx.remainingSeconds+' s';
-  $('guard-continue').textContent='Continuar en pantalla completa';
+  $('guard-warning-title').textContent=uiLanguage==='en'?'Return to full screen':'Vuelve a pantalla completa';
+  $('guard-warning-text').textContent=uiLanguage==='en'?'Click Continue in full screen before the countdown ends. This allowance is shared across the whole exam. If it runs out, your work will be submitted automatically.':'Pulsa Continuar en pantalla completa antes de que termine el tiempo. El tiempo disponible es acumulado para toda la práctica. Si se agota, se entregará automáticamente tu código.';
+  $('guard-warning-count').textContent=ctx.remainingSeconds===null?'':(uiLanguage==='en'?'Automatic submission in ':'Entrega automática en ')+ctx.remainingSeconds+' s';
+  $('guard-continue').textContent=uiLanguage==='en'?'Continue in full screen':'Continuar en pantalla completa';
  }
  // Última entrega: accesible desde la pantalla de identificación.
  $('utility-actions').hidden=loading||recoveryMode||phase!=='ready';
@@ -715,7 +730,7 @@ function afterRender(state,ctx){
  if(panelEntered){$('practice-save').hidden=true;$('practice-reset').hidden=true;}
  if(!$('revision-delivery').hidden)$('delivery-retry').disabled=true;
  syncDeliveryActions();
- $('toolbar-count').textContent='Incidencias: '+state.count+' · Margen: '+ctx.remainingSeconds+' s';
+ $('toolbar-count').textContent=(uiLanguage==='en'?'Incidents: ':'Incidencias: ')+state.count+(uiLanguage==='en'?' · Allowance: ':' · Margen: ')+ctx.remainingSeconds+' s';
 }
 function confirmText(kind){
  revisionNeeded=kind==='finish'&&requiresReason();
@@ -977,6 +992,7 @@ function incompleteWarning(){
   (english?'\nYou can cancel to review them or confirm submission anyway.':'\nPuedes cancelar para revisarlos o confirmar la entrega igualmente.');
 }
 function confirmActionModal(message,warning='',clearClipboard=false){
+ message=window.LabI18n?.message(message)||message;
  if(modalResolve)return Promise.resolve(false);
  modalClearsClipboard=clearClipboard;
  const dialog=$('action-confirm');
@@ -1026,9 +1042,16 @@ document.title=config.title;
 $('lab-title').textContent=config.title;
 applyUILanguage();
 $('ui-language').addEventListener('change',()=>{
- uiLanguage=$('ui-language').value==='en'?'en':'es';
+ const saved=sectionView?.snapshot();
+ uiLanguage=$('ui-language').value==='en'?'en':'es';language=uiLanguage;
+ if(window.LabI18n?.activity){
+  const bundle=window.LabI18n.apply(uiLanguage);
+  config.title='DWEC · '+bundle.title;document.title=config.title;$('lab-title').textContent=config.title;
+  config.tools.rubric=window.LabTools.rubric(bundle.rubric);
+ }
  try{localStorage.setItem('base4-ui-language',uiLanguage);}catch{}
- applyUILanguage();guard?.render();
+ if(saved)sectionView.restore(saved);
+ applyUILanguage();guard?.render();if(guard?.canEdit())guard.saveEdit();
 });
 $('preview-console').dataset.empty=tr('consoleEmpty');
 
@@ -1088,6 +1111,9 @@ window.addEventListener('message',event=>clipboard?.preview(event,frame,previewT
 toolbox=window.LabTools?.init(config.tools,{language:()=>uiLanguage,copyText:text=>clipboard.copyText(text)});
 if(sectionMode){
  sectionView=window.createSectionView(sections,{
+  language:()=>uiLanguage,
+  presentationSeed:()=>[$('student').value.trim().toLowerCase(),config.activity,config.version].join('|'),
+  clearClipboard:()=>clipboard?.clear({gesture:true}),
   changed:syncFinishAction,
   canEdit:()=>!!guard?.canEdit(),
   readCode:()=>Object.fromEntries(LANGS.map(id=>[id,$(id).value])),
@@ -1116,6 +1142,10 @@ guard=window.createPracticeGuard({config,browserDrafts,beforeStart,beforeResume:
  restoreValue(el,data){if(sectionView?.isAnswer(el))sectionView.restore(data.sections);else el.value=data.values[el.id]||'';}
 });
 if(['ready','reset','review'].includes(phase))fillCachedIdentity(false);
+if(window.Lab.initialEmail&&phase==='ready'){
+ $('student').value=window.Lab.initialEmail;window.Lab.initialEmail='';
+ $('student').dispatchEvent(new Event('input',{bubbles:true}));
+}
 // Registrados después de los del controlador: añaden el detalle a su aviso de bloqueo.
 const showError=()=>{if(lastError&&!$('guard-boot').hidden&&!$('guard-boot-detail').textContent.includes('Detalle técnico'))$('guard-boot-detail').textContent+=' Detalle técnico: '+lastError.slice(0,300);};
 window.addEventListener('error',showError);
