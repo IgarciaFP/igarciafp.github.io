@@ -148,6 +148,14 @@ La lista de IP está en `contenido/redes.json`, no en cada actividad. Se compara
 
 ## Guardado, entrega y revisión
 
+### Penalización opcional al agotar el margen de regreso
+
+`"penalizacionSalidaMinutos": 10` en el `config.json` de una actividad sustituye la entrega automática por pérdida de foco o pantalla completa por un aviso de descuento. Al agotar el margen, las respuestas permanecen bloqueadas hasta pulsar Aceptar y recuperar pantalla completa. Entonces se descuentan 10 minutos del tiempo restante, se conservan las respuestas y se reanuda el intento.
+
+Después de cada penalización, el margen completo se reduce en 3 segundos: con un margen inicial de 12 segundos, pasa a 9, 6, 3 y 0. Desde cero, una nueva incidencia muestra inmediatamente el aviso. Los descuentos y el margen se conservan al recargar. Si el descuento agota el tiempo total, se genera la entrega por fin de tiempo.
+
+La opción está desactivada si se omite o vale cero; las demás actividades conservan su política actual. En las actividades cifradas, este ajuste operativo se lee del `config.json` público, sin necesidad de regenerar las preguntas cifradas.
+
 Cambiar de apartado conserva el código, las respuestas abiertas y las alternativas seleccionadas. El guardado y la entrega incluyen todos los apartados, también las preguntas sin responder. El tiempo es común y no se reinicia al navegar. Las actividades con apartados usan un espacio de guardado propio de `base4` para no interpretar los borradores antiguos como respuestas nuevas.
 
 El botón de la barra muestra Siguiente mientras quedan apartados y avanza conservando las respuestas. En el último apartado muestra Entregar. Una actividad de un solo apartado muestra Entregar directamente.

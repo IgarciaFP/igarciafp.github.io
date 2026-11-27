@@ -23,12 +23,13 @@ for(const value of [undefined,false])test('La actividad sigue en claro con cifra
 });
 test('Cifra solo el paquete nuevo y conserva la rúbrica y el HTML/CSS públicos',async()=>{
  const {source,target,settings}=await fixture(true);
- settings.usuariosPermitidos=['alumno'];await writeFile(path.join(source,'config.json'),JSON.stringify(settings));
+ settings.usuariosPermitidos=['alumno'];settings.penalizacionSalidaMinutos=10;await writeFile(path.join(source,'config.json'),JSON.stringify(settings));
  await mkdir(path.join(source,'idiomas'));
  await writeFile(path.join(source,'idiomas/en.json'),JSON.stringify({title:'Activity',rubric:{criterios:[]},sections:[]}));
  assert.equal((await prepararActividad(source,target,'g.educaand.es')).cifrado,true);
  assert.deepEqual((await readdir(target)).sort(),['codigo.css','codigo.html','config.json','contenido.cifrado.json','rubrica-en.json','rubrica.json']);
  const manifest=await readJSON(path.join(target,'config.json'));
+ assert.equal(manifest.penalizacionSalidaMinutos,10);
  assert.ok(!manifest.usuariosPermitidos);assert.ok(!manifest.apartados);
  assert.equal(await cipher.allowedEmail('ALUMNO@G.EDUCAAND.ES',manifest),true);
  assert.equal(await cipher.allowedEmail('otro@g.educaand.es',manifest),false);

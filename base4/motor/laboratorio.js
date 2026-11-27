@@ -298,6 +298,7 @@ function clock(){
 }
 function startClock(){if(started===null)started=Date.now();clock();}
 function stopClock(at=Date.now()){elapsed=timeSpent(at);started=null;clock();}
+function applyTimePenalty(ms){elapsed+=ms;clock();}
 
 // ---------------------------------------------------------------- Editor
 const editorTabs=[...document.querySelectorAll('[data-editor]')];
@@ -707,11 +708,22 @@ function afterRender(state,ctx){
   $('guard-warning-count').textContent=$('guard-count').textContent;
   $('guard-continue').textContent=tr(ctx.restoring?'resumeAction':active?'continue':'understood');
  }
- if(ctx.returnSeconds && state.pending){
+ if(ctx.returnSeconds && state.pending&&state.pending!=='penalty'){
   $('guard-warning-title').textContent=uiLanguage==='en'?'Return to full screen':'Vuelve a pantalla completa';
   $('guard-warning-text').textContent=uiLanguage==='en'?'Click Continue in full screen before the countdown ends. This allowance is shared across the whole exam. If it runs out, your work will be submitted automatically.':'Pulsa Continuar en pantalla completa antes de que termine el tiempo. El tiempo disponible es acumulado para toda la práctica. Si se agota, se entregará automáticamente tu código.';
   $('guard-warning-count').textContent=ctx.remainingSeconds===null?'':(uiLanguage==='en'?'Automatic submission in ':'Entrega automática en ')+ctx.remainingSeconds+' s';
   $('guard-continue').textContent=uiLanguage==='en'?'Continue in full screen':'Continuar en pantalla completa';
+  if(ctx.returnPenaltyMinutes){
+   $('guard-warning-text').textContent=uiLanguage==='en'?'Return before the countdown ends. Otherwise, you must accept a '+ctx.returnPenaltyMinutes+'-minute time deduction to continue.':'Regresa antes de que termine la cuenta atrás. Si se agota, tendrás que aceptar un descuento de '+ctx.returnPenaltyMinutes+' minutos para continuar.';
+   $('guard-warning-count').textContent=(uiLanguage==='en'?'Time deduction in ':'Penalización en ')+ctx.remainingSeconds+' s';
+  }
+ }
+ if(state.pending==='penalty'){
+  $('guard-warning-title').textContent=uiLanguage==='en'?'Time deduction':'Descuento de tiempo';
+  $('guard-warning-text').textContent=uiLanguage==='en'?'The return allowance has run out. Accepting will deduct '+ctx.returnPenaltyMinutes+' minutes from your remaining time and return you to full screen.':'Se ha agotado el margen de regreso. Al aceptar se descontarán '+ctx.returnPenaltyMinutes+' minutos del tiempo restante y volverás a pantalla completa.';
+  $('guard-warning-count').textContent=uiLanguage==='en'?'Next return allowance: '+ctx.nextReturnSeconds+' seconds.':'Margen para la próxima incidencia: '+ctx.nextReturnSeconds+' segundos.';
+  $('guard-continue').textContent=uiLanguage==='en'?'Accept':'Aceptar';
+  if($('guard-warning-error').textContent)$('guard-warning-error').textContent=uiLanguage==='en'?'Full screen could not be restored. Click Accept again; the time deduction has not been applied yet.':'No se pudo recuperar pantalla completa. Vuelve a pulsar Aceptar; todavía no se ha aplicado el descuento.';
  }
  // Última entrega: accesible desde la pantalla de identificación.
  $('utility-actions').hidden=loading||recoveryMode||phase!=='ready';
@@ -1122,7 +1134,7 @@ if(sectionMode){
   save:()=>{invalidate();guard.saveEdit();}
  });
 }
-guard=window.createPracticeGuard({config,browserDrafts,beforeStart,beforeResume:()=>ensureRegistration(),startError(error){
+guard=window.createPracticeGuard({config,browserDrafts,beforeStart,applyTimePenalty,beforeResume:()=>ensureRegistration(),startError(error){
  $('guard-action-status').textContent=error.message==='ATTEMPTS_EXHAUSTED'?exhaustedMessage:error.message==='ALREADY_SUBMITTED'?'Este intento ya fue entregado.':'No se pudo registrar el intento. Comprueba la conexión y vuelve a iniciar.';
 },preservePendingEdits:true,renderStartButton:renderStartIcon,deliveryPanel:true,allowSubmittedRecovery:!browserDrafts,onAttemptStart,confirmDelivery:()=>confirmActionModal('Vas a finalizar la práctica. Al aceptar no podrás volver al editor. ¿Entregar la práctica?',incompleteWarning(),true),timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
  async saveBeforeReset(current){

@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261127141308-base4';
+  const version=loaderURL.searchParams.get('v')||'20261127170909-base4';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   let encryptedBundle=null,protectedFolder='',initialEmail='';
   const fetchAsset=async path=>{
@@ -76,6 +76,7 @@
     if(settingsResponse.status===404){notFound();return;}
     if(!settingsResponse.ok)throw Error('No se pudo cargar config.json de la actividad.');
     let supplied=await settingsResponse.json();
+    const publicPenaltyMinutes=supplied?.penalizacionSalidaMinutos;
     // Omitir cifrado o usar false mantiene el acceso y la carga habituales.
     if(supplied?.cifrado!==undefined&&supplied.cifrado!==false&&
       (!supplied.cifrado||typeof supplied.cifrado!=='object'||Array.isArray(supplied.cifrado)))
@@ -85,9 +86,11 @@
       const unlocked=await window.LabCipher.unlock(supplied,common.emailDomain,async name=>{const response=await read(folder+name);return response.json();});
       encryptedBundle=unlocked.bundle;protectedFolder=folder;initialEmail=unlocked.email;
       supplied=JSON.parse(encryptedBundle.files['config.json']);
+      if(publicPenaltyMinutes!==undefined)supplied.penalizacionSalidaMinutos=publicPenaltyMinutes;
     }
     if(!supplied||typeof supplied!=='object'||Array.isArray(supplied))throw Error('config.json de la actividad no es válido.');
-    const settings={guardar:false,duracion:15,entregas:1,reiniciar:false,restringirHorario:false,...supplied};
+    const settings={guardar:false,duracion:15,entregas:1,reiniciar:false,restringirHorario:false,penalizacionSalidaMinutos:0,...supplied};
+    if(!Number.isFinite(settings.penalizacionSalidaMinutos)||settings.penalizacionSalidaMinutos<0||settings.penalizacionSalidaMinutos>1440)throw Error('penalizacionSalidaMinutos debe ser un número entre 0 y 1440.');
     if(typeof settings.guardar!=='boolean'||typeof settings.reiniciar!=='boolean'||
       !Number.isFinite(settings.duracion)||settings.duracion<=0||settings.duracion>1440||
       !Number.isSafeInteger(settings.entregas)||settings.entregas<0||
@@ -124,6 +127,7 @@
       storage:{key:store+'-v1',legacyKey:store+'-anterior-v1',recovery:store+'-ultima-entrega-v1'},
       activityTitle:name,control:{servidor:server,clave:key},
       format:{...common.format,save:id+'-SAVE'}};
+    if(settings.penalizacionSalidaMinutos>0)config.guard={...common.guard,returnPenaltyMinutes:settings.penalizacionSalidaMinutos};
     if(settings.usuariosPermitidos!==undefined){
       if(!Array.isArray(settings.usuariosPermitidos)||settings.usuariosPermitidos.some(user=>typeof user!=='string'||!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(user)))throw Error('Lista de usuarios inválida.');
       config.allowedUsers=settings.usuariosPermitidos.slice();
