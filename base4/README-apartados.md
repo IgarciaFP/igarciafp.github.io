@@ -12,6 +12,32 @@ Si `config.json` no contiene `apartados` ni `tipo`, se interpreta como un único
 
 El icono de pin de «Resultado» abre la vista previa en un modal redimensionable. Arrastra su esquina inferior derecha o utiliza las flechas con el control de tamaño enfocado. Esc o el botón de cierre devuelven el resultado a su posición sin recargarlo; el indicador muestra el ancho y el alto reales de la vista previa. El modal es común a todas las actividades; los apartados QA y Test conservan su propia vista.
 
+## Cifrado opcional por actividad
+
+El cifrado está **desactivado por defecto**. Omitir `cifrado` o escribir `"cifrado": false` conserva la carga y el acceso habituales. No es una opción global ni cambia otras actividades.
+
+Para preparar una actividad cifrada, añade `"cifrado": true` al `config.json` de su copia local de autor y ejecuta:
+
+```powershell
+node base4/scripts/cifrar-actividad.mjs "ruta/copia-local" "ruta/paquete-publicable"
+```
+
+El destino debe ser una carpeta nueva, separada del origen. El script usa el dominio de `base4/contenido/config.json`; también admite indicarlo como tercer argumento, y debe coincidir con el configurado en el sitio donde se publique. Publica solo el contenido de la carpeta resultante dentro de `base4/actividades/MODULO/ACTIVIDAD/`. Mantén la copia de autor fuera del repositorio público. Activar la opción exige generar y publicar el paquete; cambiar solo el JSON no cifra los archivos que ya estén publicados.
+
+El paquete contiene un `config.json` público con el descriptor generado:
+
+```json
+"cifrado": {
+  "archivo": "contenido.cifrado.json",
+  "modo": "email-domain",
+  "dominio": "g.educaand.es"
+}
+```
+
+Los enunciados, preguntas, traducciones y JavaScript de partida quedan en el paquete AES-GCM. Las rúbricas y los archivos proporcionados `codigo.html` y `codigo.css` permanecen públicos. La lista opcional `usuariosPermitidos` limita los correos admitidos; si se omite, se acepta cualquier correo del dominio configurado.
+
+El alumno escribe el correo una sola vez en el acceso original de base4. El contenido se prepara en segundo plano y el botón habitual Empezar se habilita al terminar; el intento y el reloj comienzan al pulsarlo. No se añade otra pantalla ni se autentica la cuenta. El dominio es público: este mecanismo oculta los enunciados del repositorio, pero no constituye una clave secreta ni acredita la titularidad del correo.
+
 ## Combinar varios apartados
 
 La lista `apartados` determina el orden. Cada `id` coincide con el nombre de una subcarpeta y debe ser único: minúsculas, números y guiones, sin espacios. Si se omite `tipo`, se utiliza `webcode`.

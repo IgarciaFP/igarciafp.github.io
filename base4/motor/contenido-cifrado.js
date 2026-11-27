@@ -59,29 +59,55 @@ function unlock(manifest,domain,fetchEnvelope){
  const expected=normalizedDomain(domain);
  if(manifest.cifrado?.modo!=='email-domain'||normalizedDomain(manifest.cifrado.dominio)!==expected||!/^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.json$/.test(manifest.cifrado.archivo||''))return Promise.reject(Error('INVALID_ENCRYPTED_CONFIG'));
  return new Promise(resolve=>{
-  const gate=document.createElement('section');gate.className='encrypted-entry';gate.setAttribute('aria-labelledby','encrypted-entry-title');
-  gate.innerHTML='<h1 id="encrypted-entry-title"></h1><form><label for="encrypted-email"></label><input id="encrypted-email" type="email" autocomplete="email" maxlength="254" required><button type="submit"></button><p role="status" aria-live="polite"></p></form>';
-  const title=gate.querySelector('h1'),form=gate.querySelector('form'),label=form.querySelector('label'),email=form.querySelector('input'),button=form.querySelector('button'),status=form.querySelector('p');
+  // Se prepara el contenido en el acceso original; no se crea otro formulario.
+  const get=id=>document.getElementById(id),email=get('student'),button=get('guard-start'),status=get('guard-action-status'),error=get('identity-error');
   const language=document.getElementById('ui-language');let busy=false,settled=false,timer;
   const english=()=>language?.value==='en';
   const message=(es,en)=>english()?en:es;
-  function localize(){title.textContent=message('Examen de JavaScript','JavaScript exam');label.textContent=message('Correo del centro','School email');email.placeholder=message('nombre@','name@')+expected;button.textContent=message('Continuar','Continue');document.documentElement.lang=english()?'en':'es';}
-  const requested=new URLSearchParams(location.search).get('lang');if(language){let selected=requested;try{selected=selected||localStorage.getItem('base4-ui-language');}catch{}language.value=selected==='en'?'en':'es';language.addEventListener('change',localize);}
-  const finish=(bundle,value)=>{settled=true;clearTimeout(timer);language?.removeEventListener('change',localize);gate.remove();resolve({bundle,email:value});};
+  function localize(){
+   const mod=(new URLSearchParams(location.search).get('a')||'').split('/')[0].toUpperCase();
+   const name=String(manifest.title||message('Laboratorio','Laboratory')).trim().replace(new RegExp('^'+mod+'\\s*','i'),'').trim();
+   get('lab-title').textContent=(mod?mod+' · ':'')+name;
+   document.title=get('lab-title').textContent;
+   get('guard-panel').querySelector('[data-text="identification"]').textContent='ID';
+   get('guard-panel').querySelector('[data-text="email"]').textContent=message('Correo del centro','School email');
+   email.placeholder=message('nombre@','name@')+expected;
+   button.setAttribute('aria-label',message('Empezar','Start'));button.title=message('Empezar','Start');
+   language?.setAttribute('aria-label',message('Idioma','Language'));
+   document.documentElement.lang=english()?'en':'es';
+   if(busy)status.textContent=message('Preparando la actividad…','Preparing the activity…');
+  }
+  function changeLanguage(){
+   const lang=english()?'en':'es',url=new URL(location.href);url.searchParams.set('lang',lang);history.replaceState(null,'',url);
+   try{localStorage.setItem('base4-ui-language',lang);}catch{}
+   error.textContent='';localize();
+  }
+  const requested=new URLSearchParams(location.search).get('lang');if(language){let selected=requested;try{selected=selected||localStorage.getItem('base4-ui-language');}catch{}language.value=selected==='en'?'en':'es';language.addEventListener('change',changeLanguage);}
+  const finish=(bundle,value)=>{
+   settled=true;clearTimeout(timer);email.disabled=false;status.textContent='';get('guard-panel').removeAttribute('aria-busy');
+   email.removeEventListener('input',input);email.removeEventListener('blur',blur);email.removeEventListener('keydown',keydown);language?.removeEventListener('change',changeLanguage);
+   // El controlador habitual habilitará Empezar cuando termine de cargar.
+   resolve({bundle,email:value});
+  };
   async function submit(showError=false){
    if(busy||settled)return;
-   if(!email.validity.valid||domainOf(email.value)!==expected){if(showError)status.textContent=message('Introduce tu correo del centro.','Enter your school email.');return;}
-   busy=true;email.disabled=button.disabled=true;status.textContent=message('Preparando el examen…','Preparing the exam…');
+   if(!email.validity.valid||domainOf(email.value)!==expected){if(showError)error.textContent=message('Introduce tu correo del centro.','Enter your school email.');return;}
+   busy=true;email.disabled=button.disabled=true;get('guard-panel').setAttribute('aria-busy','true');error.textContent='';localize();
    const value=email.value.trim().toLowerCase();
    try{
-    if(!await allowedEmail(value,manifest)){status.textContent=message('Este correo no está autorizado para el examen.','This email is not allowed to open the exam.');email.disabled=button.disabled=false;busy=false;return;}
+    if(!await allowedEmail(value,manifest)){error.textContent=message('Este correo no está autorizado para la actividad.','This email is not allowed to open the activity.');return;}
     const envelope=await fetchEnvelope(manifest.cifrado.archivo);finish(await decrypt(envelope,domainOf(value)),value);
    }
-   catch{status.textContent=message('No se pudo preparar el examen. Vuelve a intentarlo.','The exam could not be prepared. Try again.');email.disabled=button.disabled=false;busy=false;}
+   catch{error.textContent=message('No se pudo preparar la actividad. Pulsa Intro para reintentar.','The activity could not be prepared. Press Enter to retry.');}
+   finally{if(!settled){busy=false;email.disabled=false;status.textContent='';get('guard-panel').removeAttribute('aria-busy');}}
   }
-  form.addEventListener('submit',event=>{event.preventDefault();void submit(true);});
-  email.addEventListener('input',()=>{clearTimeout(timer);status.textContent='';if(email.validity.valid&&domainOf(email.value)===expected)timer=setTimeout(()=>void submit(),350);});
-  localize();const anchor=document.getElementById('guard-boot');if(anchor)anchor.before(gate);else document.body.append(gate);email.focus();
+  function input(){clearTimeout(timer);error.textContent='';if(email.validity.valid&&domainOf(email.value)===expected)timer=setTimeout(()=>void submit(),250);}
+  function blur(){clearTimeout(timer);if(email.value.trim())void submit(true);}
+  function keydown(event){if(event.key==='Enter'){event.preventDefault();clearTimeout(timer);void submit(true);}}
+  email.addEventListener('input',input);email.addEventListener('blur',blur);email.addEventListener('keydown',keydown);
+  button.disabled=true;button.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+  get('active-status').hidden=true;get('guard-panel').hidden=false;get('guard-panel').inert=false;get('setup-stage').hidden=false;
+  localize();email.focus();if(email.value)input();
  });
 }
 const api={FORMAT,ITERATIONS,encrypt,decrypt,domainOf,emailHash,allowedEmail,response,unlock,validateBundle};

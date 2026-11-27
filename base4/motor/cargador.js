@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261127135700-base4';
+  const version=loaderURL.searchParams.get('v')||'20261127141118-base4';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   let encryptedBundle=null,protectedFolder='',initialEmail='';
   const fetchAsset=async path=>{
@@ -76,6 +76,10 @@
     if(settingsResponse.status===404){notFound();return;}
     if(!settingsResponse.ok)throw Error('No se pudo cargar config.json de la actividad.');
     let supplied=await settingsResponse.json();
+    // Omitir cifrado o usar false mantiene el acceso y la carga habituales.
+    if(supplied?.cifrado!==undefined&&supplied.cifrado!==false&&
+      (!supplied.cifrado||typeof supplied.cifrado!=='object'||Array.isArray(supplied.cifrado)))
+      throw Error('Prepara el cifrado de esta actividad con scripts/cifrar-actividad.mjs antes de publicarla.');
     if(supplied?.cifrado){
       await script('motor/contenido-cifrado.js');
       const unlocked=await window.LabCipher.unlock(supplied,common.emailDomain,async name=>{const response=await read(folder+name);return response.json();});
