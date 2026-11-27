@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261127141118-base4';
+  const version=loaderURL.searchParams.get('v')||'20261127141308-base4';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   let encryptedBundle=null,protectedFolder='',initialEmail='';
   const fetchAsset=async path=>{
