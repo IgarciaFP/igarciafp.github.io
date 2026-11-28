@@ -149,7 +149,7 @@ Cada carpeta `actividades/MODULO/ACTIVIDAD/` incluye un único **config.json** c
 
 `title` y `version` son obligatorios. Los demás campos omitidos toman su valor predeterminado. Si falta config.json (404), la actividad no se abre. Un archivo inválido o un fallo de conexión produce un error; no se interpreta como ausencia. Los antiguos parámetros `guardar` y `duracion` de la URL ya no modifican la configuración.
 
-Las actividades incluyen estos valores por defecto, salvo `diw/02-01-prueba-css-adaptable`, configurada para pruebas con guardar y reiniciar activados, 2 minutos y 1 intento. Para crear otra, copia uno de ellos a su carpeta. `contenido/config.json` sigue conteniendo los ajustes comunes de correo, entrega, servidor y margen de regreso.
+Cada actividad puede ajustar estos valores. Por ejemplo, `diw/02-01-prueba-css-adaptable` tiene pausa desactivada, reinicio activado, 10 minutos y 1 intento. Consulta siempre su `config.json`. `contenido/config.json` contiene los ajustes comunes de correo, entrega, servidor y margen de regreso.
 
 ### Duración y entrega
 
