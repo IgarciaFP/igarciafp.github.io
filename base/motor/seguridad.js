@@ -44,6 +44,7 @@
       key: adapter.config.storage.key, legacyKey: adapter.config.storage.legacyKey,
       returnSeconds: Number.isFinite(adapter.config.guard?.returnSeconds) && adapter.config.guard.returnSeconds > 0 ? adapter.config.guard.returnSeconds : 0,
       returnPenaltyMs: typeof adapter.applyTimePenalty==='function'&&Number.isFinite(adapter.config.guard?.returnPenaltyMinutes)&&adapter.config.guard.returnPenaltyMinutes>0 ? adapter.config.guard.returnPenaltyMinutes*60000 : 0,
+      returnPenaltyPercent: typeof adapter.applyTimePenalty==='function'&&typeof adapter.timeLimitMs==='function'&&typeof adapter.timeSpent==='function'&&Number.isFinite(adapter.config.guard?.returnPenaltyPercent)&&adapter.config.guard.returnPenaltyPercent>0&&adapter.config.guard.returnPenaltyPercent<=100 ? adapter.config.guard.returnPenaltyPercent : 0,
       limit: adapter.config.guard?.returnSeconds > 0 ? Number.MAX_SAFE_INTEGER : 3, maxEvents: 80, settleMs: 200, blockClipboard: true
     });
     const WHY = { hidden: 'página oculta', blur: 'pérdida de foco',
@@ -56,6 +57,8 @@
     let confirmation = null, forcedBusy = false, rerollPending = false, fileRecovery=false;
     let focusTimer = null, returnTimer = null;
     const timed = CONFIG.returnSeconds > 0;
+    const penaltyEnabled=!!(CONFIG.returnPenaltyMs||CONFIG.returnPenaltyPercent);
+    const penaltyLabel=()=>CONFIG.returnPenaltyPercent?CONFIG.returnPenaltyPercent+' % del tiempo restante':CONFIG.returnPenaltyMs/60000+' minutos';
     const allowanceFor=count=>Math.max(0,CONFIG.returnSeconds*1000-count*3000);
     const returnAllowance=()=>allowanceFor(state.returnPenalties||0);
     const recentActions = new Map();
@@ -69,7 +72,7 @@
     // submitted permite descargar el informe final; review solo es un estado legado.
     function fresh() {
       return { version: 1, phase: 'ready', attempt: 0, count: 0, pending: null,
-        ...(CONFIG.returnPenaltyMs?{returnPenalties:0}:{}),
+        ...(penaltyEnabled?{returnPenalties:0}:{}),
         episode: null, returnDeadline: null, returnRemainingMs: CONFIG.returnSeconds * 1000, clipboardBlocked: 0, savedAt: null, events: [],
         data: adapter.empty(), backup: null, attemptAudit:{startedAt:null,finishedAt:null,ipSamples:[]}, closingAt: null, closingReason: null, recoveries: 0, actionCounts: {}, actions: [] };
     }
@@ -114,12 +117,12 @@
         || (['active','paused'].includes(s.phase) && s.count >= CONFIG.limit)
         || !Number.isInteger(s.clipboardBlocked) || s.clipboardBlocked < 0
         || s.clipboardBlocked > 1000000
-        || ![null,'first','last','reset','resume',...(CONFIG.returnPenaltyMs?['penalty']:[])].includes(s.pending)
+        || ![null,'first','last','reset','resume',...(penaltyEnabled?['penalty']:[])].includes(s.pending)
         || !s.data || !Array.isArray(s.events)) throw new Error('Estado inválido');
       return { ...fresh(), phase: s.phase, attempt: s.attempt, count: s.count,
-        ...(CONFIG.returnPenaltyMs?{returnPenalties:Number.isSafeInteger(s.returnPenalties)&&s.returnPenalties>=0?s.returnPenalties:0}:{}),
+        ...(penaltyEnabled?{returnPenalties:Number.isSafeInteger(s.returnPenalties)&&s.returnPenalties>=0?s.returnPenalties:0}:{}),
         pending: s.pending, returnDeadline: stamp(s.returnDeadline) ? s.returnDeadline : null,
-        returnRemainingMs: Number.isFinite(s.returnRemainingMs) ? Math.max(0, Math.min(CONFIG.returnPenaltyMs?allowanceFor(Number.isSafeInteger(s.returnPenalties)&&s.returnPenalties>=0?s.returnPenalties:0):CONFIG.returnSeconds*1000, s.returnRemainingMs)) : CONFIG.returnSeconds * 1000, clipboardBlocked: s.clipboardBlocked,
+        returnRemainingMs: Number.isFinite(s.returnRemainingMs) ? Math.max(0, Math.min(penaltyEnabled?allowanceFor(Number.isSafeInteger(s.returnPenalties)&&s.returnPenalties>=0?s.returnPenalties:0):CONFIG.returnSeconds*1000, s.returnRemainingMs)) : CONFIG.returnSeconds * 1000, clipboardBlocked: s.clipboardBlocked,
         attemptAudit:sanitizeAudit(s.attemptAudit),
         recoveries: Number.isInteger(s.recoveries)&&s.recoveries>=0&&s.recoveries<=s.count?s.recoveries:0,
         closingAt: stamp(s.closingAt) ? s.closingAt : null,
@@ -269,7 +272,7 @@
         confirmation = null;
       } else showWarning();
       adapter.afterRender(state, {problem, supported, busy, restoring, forcedBusy,
-        returnSeconds: CONFIG.returnSeconds, returnPenaltyMinutes:CONFIG.returnPenaltyMs/60000, nextReturnSeconds:Math.max(0,(returnAllowance()-3000)/1000), remainingSeconds: Math.max(0, Math.ceil((state.returnDeadline === null ? state.returnRemainingMs : state.returnDeadline - Date.now()) / 1000))});
+        returnSeconds: CONFIG.returnSeconds, returnPenaltyMinutes:CONFIG.returnPenaltyMs/60000, returnPenaltyPercent:CONFIG.returnPenaltyPercent, nextReturnSeconds:Math.max(0,(returnAllowance()-3000)/1000), remainingSeconds: Math.max(0, Math.ceil((state.returnDeadline === null ? state.returnRemainingMs : state.returnDeadline - Date.now()) / 1000))});
     }
     function showWarning() {
       if (restoring || !initialized || !state.pending || !signals().visible || !signals().focused || fatal) return;
@@ -280,7 +283,7 @@
         last: ['Último aviso', 'Segunda incidencia. La próxima vez se cerrará el intento y se generará una entrega con las respuestas actuales.'],
         reset: ['Intento reiniciado', 'Tercera incidencia: se han vaciado respuestas, comprobaciones e informe. Puedes comenzar un nuevo intento vacío.'],
         resume: ['Reanudar el intento', 'Se han recuperado las respuestas y el contador. El reloj sigue contando. Debes recuperar pantalla completa y foco para seguir.'],
-        penalty: ['Descuento de tiempo', 'Se ha agotado el margen de regreso. Al aceptar se descontarán '+CONFIG.returnPenaltyMs/60000+' minutos del tiempo restante y volverás a pantalla completa.']
+        penalty: ['Descuento de tiempo', 'Se ha agotado el margen de regreso. Al aceptar se descontará '+penaltyLabel()+' y volverás a pantalla completa.']
       };
       const [title, text] = texts[state.pending];
       $('guard-warning-title').textContent = title;
@@ -315,19 +318,8 @@
       if(persist()){render();void finalizeForced();}
       return true;
     }
-    function checkReturnDeadline() {
-      if(checkDuration())return true;
-      if (!timed || state.phase !== 'active' || state.returnDeadline === null) return false;
-      if (Date.now() < state.returnDeadline) return false;
-      const deadline = state.returnDeadline;
+    function finishReturnTimeout(deadline){
       clearReturnTimer();
-      if(CONFIG.returnPenaltyMs){
-        state.pending='penalty';state.data=adapter.snapshot();rerollPending=false;
-        if(confirmBox.open)confirmBox.close();confirmation=null;
-        log('Margen de regreso agotado: pendiente de aceptar un descuento de '+CONFIG.returnPenaltyMs/60000+' minutos.');
-        if(persist())render();
-        return true;
-      }
       state.closingAt = deadline; state.closingReason='return-timeout'; state.attemptAudit.finishedAt = deadline;
       adapter.stopClock(deadline); state.data = adapter.snapshot();
       state.phase = 'closing'; state.pending = null; state.episode = null; restoring = false; rerollPending = false;
@@ -336,6 +328,22 @@
       confirmation = null;
       log('Tiempo para regresar agotado: entrega automática con respuestas conservadas.');
       if (persist()) { render(); void finalizeForced(); }
+    }
+    function checkReturnDeadline() {
+      if(checkDuration())return true;
+      if(penaltyEnabled&&state.phase==='active'&&(returnAllowance()<=0||(state.pending==='penalty'&&returnAllowance()<=3000))){finishReturnTimeout(Date.now());return true;}
+      if (!timed || state.phase !== 'active' || state.returnDeadline === null) return false;
+      if (Date.now() < state.returnDeadline) return false;
+      const deadline = state.returnDeadline;
+      clearReturnTimer();
+      if(penaltyEnabled&&returnAllowance()>3000){
+        state.pending='penalty';state.data=adapter.snapshot();rerollPending=false;
+        if(confirmBox.open)confirmBox.close();confirmation=null;
+        log('Margen de regreso agotado: pendiente de aceptar un descuento de '+penaltyLabel()+'.');
+        if(persist())render();
+        return true;
+      }
+      finishReturnTimeout(deadline);
       return true;
     }
     function armReturnTimer() {
@@ -425,7 +433,7 @@
     }
     async function startOrResume(resume) {
       if (checkReturnDeadline() || busy || problem || !supported || fatal) return;
-      const penalize=!!(resume&&CONFIG.returnPenaltyMs&&state.pending==='penalty');
+      const penalize=!!(resume&&penaltyEnabled&&state.pending==='penalty');
       if (!resume && (!adapter.canStart() || !['ready','reset','review'].includes(state.phase))) return;
       const recovery=resume&&(restoring||state.phase==='paused');
       busy = true; $('guard-warning-error').textContent = ''; render();
@@ -462,10 +470,12 @@
           adapter.restore(data); await adapter.onAttemptStart?.(); log(`Comienzo del intento ${attempt}. Identificación completada.`);
         } else log('Intento reanudado en pantalla completa.');
         if(penalize){
-          adapter.applyTimePenalty(CONFIG.returnPenaltyMs);
+          const remaining=CONFIG.returnPenaltyPercent?Math.max(0,adapter.timeLimitMs()-adapter.timeSpent()):0;
+          const deduction=CONFIG.returnPenaltyPercent?remaining*CONFIG.returnPenaltyPercent/100:CONFIG.returnPenaltyMs;
+          adapter.applyTimePenalty(deduction);
           state.returnPenalties=(state.returnPenalties||0)+1;
           state.returnRemainingMs=returnAllowance();
-          log('Penalización aceptada: '+CONFIG.returnPenaltyMs/60000+' minutos descontados. Nuevo margen: '+returnAllowance()/1000+' segundos.');
+          log('Penalización aceptada: '+Math.round(deduction)+' ms descontados ('+penaltyLabel()+'). Nuevo margen: '+returnAllowance()/1000+' segundos.');
         }
         state.pending = null; state.episode = null; restoring = false;
         clearReturnTimer();
@@ -503,7 +513,7 @@
         if(lastRaw!==null){
           state=validate(JSON.parse(lastRaw));
           if(state.data.values.student.trim().toLowerCase()!==email)throw Error('El borrador pertenece a otro correo.');
-          const penaltyDue=CONFIG.returnPenaltyMs&&(state.pending==='penalty'||(state.pending==='resume'&&state.returnRemainingMs<=0));
+          const penaltyDue=penaltyEnabled&&(state.pending==='penalty'||(state.pending==='resume'&&state.returnRemainingMs<=0));
           state.data.started=null;state.pending=null;state.returnDeadline=null;
           if(penaltyDue){
             state.phase='active';state.pending='penalty';adapter.restore(state.data);persist();render();return;
@@ -564,15 +574,15 @@
         if(state.phase==='closing'||state.count>=CONFIG.limit)throw Error('Incident limit reached');
         next.count=Math.max(next.count,state.count);
         next.recoveries=Math.max(next.recoveries,state.recoveries);
-        if(CONFIG.returnPenaltyMs){
+        if(penaltyEnabled){
           const previous=next.returnPenalties||0;
           next.returnPenalties=Math.max(previous,state.returnPenalties||0);
-          next.data.elapsed+=(next.returnPenalties-previous)*CONFIG.returnPenaltyMs;
+          next.data.elapsed=Math.max(next.data.elapsed,adapter.timeSpent());
         }
         if(timed)next.returnRemainingMs=Math.min(next.returnRemainingMs,state.returnDeadline===null?state.returnRemainingMs:Math.max(0,state.returnDeadline-Date.now()));
       }
       if(next.count>=CONFIG.limit)throw Error('Incident limit reached');
-      if(timed&&next.returnRemainingMs<=0&&!CONFIG.returnPenaltyMs)throw Error('Return time exhausted');
+      if(timed&&next.returnRemainingMs<=0&&!penaltyEnabled)throw Error('Return time exhausted');
       next.phase='paused';next.data.report='';next.closingAt=null;
       next.attemptAudit.finishedAt=null;
       next.data.started=null;next.pending=null;next.episode=null;next.returnDeadline=null;
@@ -666,8 +676,8 @@
 
     // 7. FINALIZAR Y BORRAR. El adaptador descarga el TXT y envía la entrega al receptor configurado.
     function metadata() {
-      return [`Intento: ${state.attempt}`, timed ? `Incidencias de entorno: ${state.count}; plazo de regreso: ${CONFIG.returnPenaltyMs?returnAllowance()/1000:CONFIG.returnSeconds} s` : `Incidencias de entorno: ${state.count}/${CONFIG.limit}`,
-        ...(CONFIG.returnPenaltyMs?['Penalizaciones de tiempo aceptadas: '+state.returnPenalties+'; minutos descontados: '+state.returnPenalties*CONFIG.returnPenaltyMs/60000]:[]),
+      return [`Intento: ${state.attempt}`, timed ? `Incidencias de entorno: ${state.count}; plazo de regreso: ${penaltyEnabled?returnAllowance()/1000:CONFIG.returnSeconds} s` : `Incidencias de entorno: ${state.count}/${CONFIG.limit}`,
+        ...(penaltyEnabled?['Penalizaciones de tiempo aceptadas: '+state.returnPenalties+'; descuento por incidencia: '+penaltyLabel()]:[]),
         'Acciones bloqueadas: ' + JSON.stringify(state.actionCounts),
         'Registro local orientativo; no acredita copia ni identidad.',
         ...state.events.map(e => `${new Date(e.at).toISOString()} · ${e.text}`)].join('\n');

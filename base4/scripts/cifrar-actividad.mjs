@@ -49,7 +49,7 @@ export async function prepararActividad(origin,destination,domain){
    bundle.files[name]=name==='config.json'?asText({...settings,cifrado:false}):text;
   }
   const manifest={};
-  for(const name of ['title','version','guardar','duracion','entregas','reiniciar','restringirHorario','penalizacionSalidaMinutos','unidad','herramientas'])if(Object.hasOwn(settings,name))manifest[name]=settings[name];
+  for(const name of ['title','version','guardar','duracion','entregas','reiniciar','restringirHorario','penalizacionSalidaMinutos','penalizacionSalidaPorcentaje','unidad','herramientas'])if(Object.hasOwn(settings,name))manifest[name]=settings[name];
   if(settings.usuariosPermitidos!==undefined){
    const users=settings.usuariosPermitidos;
    if(!Array.isArray(users)||!users.length||new Set(users).size!==users.length||users.some(user=>typeof user!=='string'||!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(user)))throw Error('Lista de usuarios inválida.');

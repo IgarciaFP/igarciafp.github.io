@@ -5,7 +5,7 @@
   'use strict';
   const loaderURL=new URL(document.currentScript.src);
   const root=new URL('../',loaderURL);
-  const version=loaderURL.searchParams.get('v')||'20261127170909-base4';
+  const version=loaderURL.searchParams.get('v')||'20261128123655-base4';
   const asset=path=>{const url=new URL(path,root);url.searchParams.set('v',version);return url;};
   let encryptedBundle=null,protectedFolder='',initialEmail='';
   const fetchAsset=async path=>{
@@ -77,6 +77,7 @@
     if(!settingsResponse.ok)throw Error('No se pudo cargar config.json de la actividad.');
     let supplied=await settingsResponse.json();
     const publicPenaltyMinutes=supplied?.penalizacionSalidaMinutos;
+    const publicPenaltyPercent=supplied?.penalizacionSalidaPorcentaje;
     // Omitir cifrado o usar false mantiene el acceso y la carga habituales.
     if(supplied?.cifrado!==undefined&&supplied.cifrado!==false&&
       (!supplied.cifrado||typeof supplied.cifrado!=='object'||Array.isArray(supplied.cifrado)))
@@ -87,10 +88,12 @@
       encryptedBundle=unlocked.bundle;protectedFolder=folder;initialEmail=unlocked.email;
       supplied=JSON.parse(encryptedBundle.files['config.json']);
       if(publicPenaltyMinutes!==undefined)supplied.penalizacionSalidaMinutos=publicPenaltyMinutes;
+      if(publicPenaltyPercent!==undefined){supplied.penalizacionSalidaPorcentaje=publicPenaltyPercent;supplied.penalizacionSalidaMinutos=publicPenaltyMinutes??0;}
     }
     if(!supplied||typeof supplied!=='object'||Array.isArray(supplied))throw Error('config.json de la actividad no es válido.');
-    const settings={guardar:false,duracion:15,entregas:1,reiniciar:false,restringirHorario:false,penalizacionSalidaMinutos:0,...supplied};
+    const settings={guardar:false,duracion:15,entregas:1,reiniciar:false,restringirHorario:false,penalizacionSalidaMinutos:0,penalizacionSalidaPorcentaje:0,...supplied};
     if(!Number.isFinite(settings.penalizacionSalidaMinutos)||settings.penalizacionSalidaMinutos<0||settings.penalizacionSalidaMinutos>1440)throw Error('penalizacionSalidaMinutos debe ser un número entre 0 y 1440.');
+    if(!Number.isFinite(settings.penalizacionSalidaPorcentaje)||settings.penalizacionSalidaPorcentaje<0||settings.penalizacionSalidaPorcentaje>100)throw Error('penalizacionSalidaPorcentaje debe ser un número entre 0 y 100.');
     if(typeof settings.guardar!=='boolean'||typeof settings.reiniciar!=='boolean'||
       !Number.isFinite(settings.duracion)||settings.duracion<=0||settings.duracion>1440||
       !Number.isSafeInteger(settings.entregas)||settings.entregas<0||
@@ -127,7 +130,8 @@
       storage:{key:store+'-v1',legacyKey:store+'-anterior-v1',recovery:store+'-ultima-entrega-v1'},
       activityTitle:name,control:{servidor:server,clave:key},
       format:{...common.format,save:id+'-SAVE'}};
-    if(settings.penalizacionSalidaMinutos>0)config.guard={...common.guard,returnPenaltyMinutes:settings.penalizacionSalidaMinutos};
+    if(settings.penalizacionSalidaPorcentaje>0)config.guard={...common.guard,returnPenaltyPercent:settings.penalizacionSalidaPorcentaje,returnPenaltyMinutes:0};
+    else if(settings.penalizacionSalidaMinutos>0)config.guard={...common.guard,returnPenaltyMinutes:settings.penalizacionSalidaMinutos};
     if(settings.usuariosPermitidos!==undefined){
       if(!Array.isArray(settings.usuariosPermitidos)||settings.usuariosPermitidos.some(user=>typeof user!=='string'||!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(user)))throw Error('Lista de usuarios inválida.');
       config.allowedUsers=settings.usuariosPermitidos.slice();
@@ -148,6 +152,7 @@
     await script('motor/portapapeles.js');
     await script('motor/vista-modal.js');
     await script('motor/borradores.js');
+    await script('motor/comprobar-js.js');
     await script('motor/laboratorio.js');
     if(!window.Lab.ready)throw Error('No se pudo completar el inicio. Recarga la página con Ctrl + F5.');
   } catch(error) {

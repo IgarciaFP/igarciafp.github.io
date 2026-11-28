@@ -150,11 +150,19 @@ La lista de IP está en `contenido/redes.json`, no en cada actividad. Se compara
 
 ### Penalización opcional al agotar el margen de regreso
 
-`"penalizacionSalidaMinutos": 10` en el `config.json` de una actividad sustituye la entrega automática por pérdida de foco o pantalla completa por un aviso de descuento. Al agotar el margen, las respuestas permanecen bloqueadas hasta pulsar Aceptar y recuperar pantalla completa. Entonces se descuentan 10 minutos del tiempo restante, se conservan las respuestas y se reanuda el intento.
+`"penalizacionSalidaPorcentaje": 25` en el `config.json` de una actividad muestra un aviso al agotar el margen de regreso. Al pulsar Aceptar y recuperar pantalla completa, se descuenta el 25 % del tiempo que quede en ese momento; se conservan las respuestas y se reanuda el intento. Si quedan 40 minutos se descuentan 10; si quedan 20, se descuentan 5.
 
-Después de cada penalización, el margen completo se reduce en 3 segundos: con un margen inicial de 12 segundos, pasa a 9, 6, 3 y 0. Desde cero, una nueva incidencia muestra inmediatamente el aviso. Los descuentos y el margen se conservan al recargar. Si el descuento agota el tiempo total, se genera la entrega por fin de tiempo.
+El margen completo disminuye 3 segundos tras cada penalización: 12 → 9 → 6 → 3 segundos. Si se agotan esos últimos 3 segundos, se genera la entrega automática, sin otra penalización. El descuento y el margen se conservan al recargar. El reloj normal del examen continúa contando durante los avisos.
 
-La opción está desactivada si se omite o vale cero; las demás actividades conservan su política actual. En las actividades cifradas, este ajuste operativo se lee del `config.json` público, sin necesidad de regenerar las preguntas cifradas.
+La opción está desactivada si se omite o vale cero. Las actividades que ya utilizan `penalizacionSalidaMinutos` conservan el descuento fijo; el porcentaje tiene prioridad cuando se configura. En las actividades cifradas, estos ajustes se leen del `config.json` público, sin regenerar las preguntas cifradas.
+
+### Comprobación de JavaScript al ejecutar
+
+El botón Ejecutar analiza el JavaScript con ESLint antes de enviarlo a la vista previa. Comprueba la sintaxis y las reglas `no-constant-condition` y `no-unmodified-loop-condition`, restringidas a bucles sin una salida identificable; añade la comprobación de `for (;;)` sin salida. Admite salidas válidas mediante `break`, `return` y excepciones no capturadas dentro del bucle. No corrige ni modifica las respuestas, y no aplica reglas de formato ni de estilo.
+
+También comprueba los scripts y manejadores escritos en HTML. El análisis ocurre en un Worker con un límite de tiempo; nunca ejecuta el código del alumno. Los avisos aparecen en la consola de base4, en español o inglés, sin ventanas nativas. Si no se puede completar la comprobación, el código no se ejecuta. ESLint 10.16.0 está alojado con los archivos del sitio y no envía respuestas a servicios externos. El análisis estático no garantiza detectar todos los bucles infinitos.
+
+### Continuidad y entrega
 
 Cambiar de apartado conserva el código, las respuestas abiertas y las alternativas seleccionadas. El guardado y la entrega incluyen todos los apartados, también las preguntas sin responder. El tiempo es común y no se reinicia al navegar. Las actividades con apartados usan un espacio de guardado propio de `base4` para no interpretar los borradores antiguos como respuestas nuevas.
 

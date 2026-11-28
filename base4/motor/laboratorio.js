@@ -502,7 +502,7 @@ function previewDocument(html,css,js,token){
 let previewToken='',pingId=0,pongId=0,noticeLoads=0,previewTimer=null,ranJs=null,shown={html:null,css:null,js:null},previewFocusOwner=null;
 const value=id=>$(id).value;
 // El HTML del alumno con <script> propio se trata como JavaScript: solo se ejecuta al pulsar Ejecutar.
-const ownScript=html=>/<script/i.test(html)&&html!==start.html;
+const ownScript=html=>(/<script\b|\son[a-z]+\s*=|(?:href|action|formaction)\s*=\s*["']?\s*javascript:/i.test(html))&&html!==start.html;
 function clearConsole(){$('preview-console').replaceChildren();$('console-count').textContent='';}
 function consoleLine(kind,text){
  const list=$('preview-console'),item=document.createElement('li');
@@ -539,7 +539,34 @@ function autoPreview(){
  renderPreview(value('html'),value('css'),ranJs??'');
 }
 function schedulePreview(){clearTimeout(previewTimer);previewTimer=setTimeout(autoPreview,350);previewStatus();}
-function runPreview(){ranJs=value('js');renderPreview(value('html'),value('css'),ranJs,true);}
+let checkingJavaScript=false;
+function lintMessage(message){
+ const english=uiLanguage==='en',where=message.file+' · '+(english?'line ':'línea ')+Math.max(1,message.line||1)+': ';
+ const descriptions={
+  'no-constant-condition':english?'Constant loop condition without an identifiable exit.':'Condición constante en un bucle sin una salida identificable.',
+  'no-unmodified-loop-condition':english?'The loop condition does not change during execution.':'La condición del bucle no cambia durante su ejecución.',
+  'base4/no-unbounded-loop':english?'Loop without a stopping condition or an identifiable exit.':'Bucle sin condición de finalización ni una salida identificable.'
+ };
+ return where+(message.fatal?(english?'Syntax error: ':'Error de sintaxis: ')+message.message.replace(/^Parsing error:\s*/i,''):(descriptions[message.ruleId]||message.message));
+}
+async function runPreview(){
+ if(checkingJavaScript||!guard?.canEdit())return;
+ const input={html:value('html'),css:value('css'),js:value('js'),section:sectionView?.snapshot().active};
+ checkingJavaScript=true;$('preview-run').disabled=true;
+ $('preview-status').textContent=uiLanguage==='en'?'Checking JavaScript…':'Comprobando JavaScript…';
+ try{
+  const messages=await window.LabJSCheck.check(input.html,input.js);
+  if(!guard.canEdit()||input.html!==value('html')||input.css!==value('css')||input.js!==value('js')||input.section!==sectionView?.snapshot().active){previewStatus();return;}
+  if(messages.length){
+   clearConsole();for(const message of messages)consoleLine('error',lintMessage(message));
+   $('console-box').open=true;$('preview-status').textContent=uiLanguage==='en'?'Not executed: review the JavaScript messages.':'Sin ejecutar: revisa los avisos de JavaScript.';return;
+  }
+  ranJs=input.js;renderPreview(input.html,input.css,input.js,true);
+ }catch{
+  clearConsole();consoleLine('error',uiLanguage==='en'?'JavaScript could not be checked. Nothing was executed; try again.':'No se pudo comprobar el JavaScript. No se ha ejecutado; vuelve a intentarlo.');
+  $('console-box').open=true;previewStatus();
+ }finally{checkingJavaScript=false;$('preview-run').disabled=false;}
+}
 // Al cargar o recuperar un intento solo se ejecuta sin pedirlo el JavaScript del ejercicio.
 // Un marco cargado mientras el taller está oculto puede quedarse en blanco al mostrarlo:
 // en ese caso se deja pendiente y se genera cuando el taller pasa a ser visible.
@@ -713,14 +740,17 @@ function afterRender(state,ctx){
   $('guard-warning-text').textContent=uiLanguage==='en'?'Click Continue in full screen before the countdown ends. This allowance is shared across the whole exam. If it runs out, your work will be submitted automatically.':'Pulsa Continuar en pantalla completa antes de que termine el tiempo. El tiempo disponible es acumulado para toda la práctica. Si se agota, se entregará automáticamente tu código.';
   $('guard-warning-count').textContent=ctx.remainingSeconds===null?'':(uiLanguage==='en'?'Automatic submission in ':'Entrega automática en ')+ctx.remainingSeconds+' s';
   $('guard-continue').textContent=uiLanguage==='en'?'Continue in full screen':'Continuar en pantalla completa';
-  if(ctx.returnPenaltyMinutes){
-   $('guard-warning-text').textContent=uiLanguage==='en'?'Return before the countdown ends. Otherwise, you must accept a '+ctx.returnPenaltyMinutes+'-minute time deduction to continue.':'Regresa antes de que termine la cuenta atrás. Si se agota, tendrás que aceptar un descuento de '+ctx.returnPenaltyMinutes+' minutos para continuar.';
+  if(ctx.returnPenaltyMinutes||ctx.returnPenaltyPercent){
+   const amount=ctx.returnPenaltyPercent?(uiLanguage==='en'?ctx.returnPenaltyPercent+'% of your remaining time':ctx.returnPenaltyPercent+' % del tiempo restante'):(uiLanguage==='en'?ctx.returnPenaltyMinutes+' minutes':ctx.returnPenaltyMinutes+' minutos');
+   $('guard-warning-text').textContent=ctx.nextReturnSeconds<=0?(uiLanguage==='en'?'Return before this final allowance runs out. When it reaches zero, your work will be submitted automatically.':'Regresa antes de que se agote este último margen. Al llegar a cero se entregará automáticamente la práctica.'):(uiLanguage==='en'?'Return before the countdown ends. Otherwise, you must accept a deduction of '+amount+' to continue.':'Regresa antes de que termine la cuenta atrás. Si se agota, tendrás que aceptar un descuento de '+amount+' para continuar.');
    $('guard-warning-count').textContent=(uiLanguage==='en'?'Time deduction in ':'Penalización en ')+ctx.remainingSeconds+' s';
+   if(ctx.nextReturnSeconds<=0)$('guard-warning-count').textContent=(uiLanguage==='en'?'Automatic submission in ':'Entrega automática en ')+ctx.remainingSeconds+' s';
   }
  }
  if(state.pending==='penalty'){
   $('guard-warning-title').textContent=uiLanguage==='en'?'Time deduction':'Descuento de tiempo';
-  $('guard-warning-text').textContent=uiLanguage==='en'?'The return allowance has run out. Accepting will deduct '+ctx.returnPenaltyMinutes+' minutes from your remaining time and return you to full screen.':'Se ha agotado el margen de regreso. Al aceptar se descontarán '+ctx.returnPenaltyMinutes+' minutos del tiempo restante y volverás a pantalla completa.';
+  const amount=ctx.returnPenaltyPercent?(uiLanguage==='en'?ctx.returnPenaltyPercent+'% of your remaining time':ctx.returnPenaltyPercent+' % del tiempo restante'):(uiLanguage==='en'?ctx.returnPenaltyMinutes+' minutes':ctx.returnPenaltyMinutes+' minutos');
+  $('guard-warning-text').textContent=uiLanguage==='en'?'The return allowance has run out. Accepting will deduct '+amount+' and return you to full screen.':'Se ha agotado el margen de regreso. Al aceptar se descontará '+amount+' y volverás a pantalla completa.';
   $('guard-warning-count').textContent=uiLanguage==='en'?'Next return allowance: '+ctx.nextReturnSeconds+' seconds.':'Margen para la próxima incidencia: '+ctx.nextReturnSeconds+' segundos.';
   $('guard-continue').textContent=uiLanguage==='en'?'Accept':'Aceptar';
   if($('guard-warning-error').textContent)$('guard-warning-error').textContent=uiLanguage==='en'?'Full screen could not be restored. Click Accept again; the time deduction has not been applied yet.':'No se pudo recuperar pantalla completa. Vuelve a pulsar Aceptar; todavía no se ha aplicado el descuento.';
