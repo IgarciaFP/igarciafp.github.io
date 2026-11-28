@@ -15,8 +15,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Entregas · Profesor</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261128132808-base4">
-<link rel="stylesheet" href="motor/taller.css?v=20261128132808-base4">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261128145922-base4">
+<link rel="stylesheet" href="motor/taller.css?v=20261128145922-base4">
 <style>
 .revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
 .revision h1{font-size:1.5rem;line-height:1.25;margin:0}
@@ -151,8 +151,8 @@
 #nota-ai-status:empty,#avisos:empty,#nota-session:empty{display:none}
 @media(max-width:760px){.nota-auth{justify-content:flex-end}.nota-auth #nota-session{flex-basis:100%;text-align:right}}
 </style>
-<link rel="stylesheet" href="motor/editor-profesor.css?v=20261128132808-base4">
-<link rel="stylesheet" href="motor/revision-detallada.css?v=20261128132808-base4">
+<link rel="stylesheet" href="motor/editor-profesor.css?v=20261128145922-base4">
+<link rel="stylesheet" href="motor/revision-detallada.css?v=20261128145922-base4">
 </head>
 <body>
 <section id="login-page" class="login-page" aria-labelledby="login-title">
@@ -262,15 +262,15 @@
   </div>
 </main>
 
-<script src="motor/revision-modelo.js?v=20261128132808-base4"></script>
-<script src="motor/revision-detallada.js?v=20261128132808-base4"></script>
-<script src="motor/apartados.js?v=20261128132808-base4"></script>
+<script src="motor/revision-modelo.js?v=20261128145922-base4"></script>
+<script src="motor/revision-detallada.js?v=20261128145922-base4"></script>
+<script src="motor/apartados.js?v=20261128145922-base4"></script>
 <script src="motor/examen-modelo.js"></script>
 <script src="motor/contenido-cifrado.js"></script>
-<script src="motor/herramientas.js?v=20261128132808-base4"></script>
-<script src="motor/correo-profesor.js?v=20261128132808-base4"></script>
-<script src="motor/notas.js?v=20261128132808-base4"></script>
-<script src="motor/editor-profesor.js?v=20261128132808-base4" defer></script>
+<script src="motor/herramientas.js?v=20261128145922-base4"></script>
+<script src="motor/correo-profesor.js?v=20261128145922-base4"></script>
+<script src="motor/notas.js?v=20261128145922-base4"></script>
+<script src="motor/editor-profesor.js?v=20261128145922-base4" defer></script>
 <script>
 (async () => {
 'use strict';
@@ -416,6 +416,8 @@ async function parse(text){
  const item=await parseRaw(reviewPackage.document);
  item.reviewAnalysisIssue=reviewPackage.issue||'';
  try{item.reviewAnalysis=window.ReviewModel?.analysis(reviewPackage.analysis,{id:item.id,module:item.reviewModule||item.module,activity:item.activity,version:item.activityVersion});}catch(error){item.reviewAnalysis=null;item.reviewAnalysisIssue=error.message;}
+ const identity=item.reviewAnalysis?.identity;
+ if(identity&&String(item.email).split('@')[0]===identity.sourceStudentId){item.originalEmail=item.email;item.email=identity.studentId+'@'+String(item.email).split('@')[1];}
  if(item.sectionsVersion===1&&!item.sectionData)throw Error('Faltan las respuestas de los apartados.');
  if(item.sectionData){
   item.reviewSections=reviewSections(item);

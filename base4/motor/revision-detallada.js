@@ -41,6 +41,8 @@ function summary(entry){
  if(!panel)return;panel.replaceChildren(element('h3','Análisis de la nota'));
  if(entry.analysis){
   const a=entry.analysis;panel.append(element('strong',points(a.score)),element('p',a.summary));
+  if(a.bonus){const base=a.sections.some(s=>s.score.earned===null)?'Pendiente':a.sections.reduce((sum,s)=>sum+s.score.earned,0);panel.append(element('p','Nota base: '+base+' / '+a.score.max+' · Extra: +'+a.bonus.points+' · '+a.bonus.reason+' · Máximo final: '+a.score.max,'review-detail-note'));}
+  if(a.identity)panel.append(element('p','Identidad confirmada por el profesor: '+a.identity.studentId+'; el documento original figura como '+a.identity.sourceStudentId+'. '+a.identity.reason,'review-detail-note'));
   panel.append(element('p','Revisión IA'+(a.generatedAt?' · '+a.generatedAt:'')+' · Rúbrica '+(a.rubricVersion||'sin versión indicada'), 'review-detail-note'));
   if(entry.grade!==undefined&&entry.grade!==''&&Number(String(entry.grade).replace(',','.'))!==a.score.earned)panel.append(element('p','Este desglose corresponde a la valoración IA. La calificación actual del profesor o de la hoja puede ser distinta.','review-detail-note'));
  }else panel.append(element('p',entry.analysisIssue||'Esta entrega no dispone de un análisis detallado. Su nota y sus comentarios siguen disponibles.','review-detail-note'));

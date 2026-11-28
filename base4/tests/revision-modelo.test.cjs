@@ -14,6 +14,16 @@ test('Valida soluciones por actividad, versión y revisión',()=>{
  assert.throws(()=>M.solution(solution,{version:'2'}));assert.throws(()=>M.solution(solution,{solutionVersion:'otra'}));
  const wrong=structuredClone(solution);wrong.sections[2].questions[0].correctOption=4;assert.throws(()=>M.solution(wrong));
 });
+test('La bonificación autorizada mantiene el desglose base y el máximo final',async()=>{
+ const extra=structuredClone(analysis);extra.bonus={points:1,reason:'Examen en inglés autorizado por el profesor'};extra.score.earned=6;
+ assert.equal(M.analysis(extra).score.earned,6);assert.equal(M.analysis(extra).sections[0].score.earned,3);assert.equal((await M.unpack(await M.pack('SSII3G.original',extra))).analysis.bonus.points,1);
+ extra.bonus.points=8;extra.score.earned=10;assert.equal(M.analysis(extra).score.earned,10);extra.score.earned=11;assert.throws(()=>M.analysis(extra));extra.bonus.points=-1;assert.throws(()=>M.analysis(extra));
+});
+test('Una identidad confirmada se conserva sin modificar el documento original',async()=>{
+ const assigned=structuredClone(analysis);assigned.identity={studentId:'destino',sourceStudentId:'origen',reason:'Confirmado expresamente por el profesor'};
+ const result=await M.unpack(await M.pack('SSII3G.original',assigned));assert.equal(result.document,'SSII3G.original');assert.equal(result.analysis.identity.studentId,'destino');
+ assigned.identity.studentId='../otro';assert.throws(()=>M.analysis(assigned));
+});
 test('Los enlaces nuevos conservan íntegramente el documento y los antiguos siguen funcionando',async()=>{
  const document='SSII3G.documento-original';const packed=await M.pack(document,analysis),decoded=await M.unpack(packed);
  assert.equal(decoded.document,document);assert.equal(decoded.analysis.submissionId,id);assert.deepEqual(await M.unpack(document),{document,analysis:null});assert.equal(await M.pack(document,null),document);

@@ -1,0 +1,151 @@
+{
+  "format": "base4-solution-v1",
+  "activity": {
+    "module": "dwec",
+    "id": "02-08-examen-ud02-2026-11-27",
+    "version": "10"
+  },
+  "revision": "ud02-v10-modelo-1",
+  "createdAt": "2026-11-28T14:49:55.849Z",
+  "sections": [
+    {
+      "id": "a-programacion",
+      "type": "webcode",
+      "explanation": "Clasifica enteros positivos, negativos y cero y muestra el resultado en la página. La validación añadida rechaza vacíos, valores no numéricos y números no enteros. Se aceptan implementaciones equivalentes y validación HTML o JavaScript que el alumno haya implementado; los controles ya proporcionados no se atribuyen a su trabajo.",
+      "code": {
+        "html": "<!doctype html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Par o impar</title>\n</head>\n<body>\n  <h1>Par o impar</h1>\n  <form id=\"formulario\" novalidate>\n    <label for=\"numero\">Número entero</label>\n    <input type=\"text\" inputmode=\"numeric\" id=\"numero\" name=\"numero\">\n    <button type=\"submit\">Comprobar</button>\n  </form>\n  <p id=\"resultado\" aria-live=\"polite\"></p>\n</body>\n</html>",
+        "css": "",
+        "js": "\"use strict\";\n\nconst formulario = document.querySelector(\"#formulario\");\nconst campoNumero = document.querySelector(\"#numero\");\nconst resultado = document.querySelector(\"#resultado\");\n\nformulario.addEventListener(\"submit\", (event) => {\n  event.preventDefault();\n\n  // Se comprueba el texto antes de convertirlo: una entrada vacía se convertiría en cero.\n  const texto = campoNumero.value.trim();\n  const numero = Number(texto);\n  if (texto === \"\" || !Number.isFinite(numero) || numero % 1 !== 0) {\n    resultado.textContent = \"Introduce un número entero válido.\";\n    return;\n  }\n\n  resultado.textContent = numero % 2 !== 0 ? \"Es impar.\" : \"Es par.\";\n});"
+      }
+    },
+    {
+      "id": "b-consola",
+      "type": "qa",
+      "questions": [
+        {
+          "id": "b1",
+          "answer": "1-5",
+          "explanation": "El parámetro local n toma el valor 1; el argumento 5 se asigna a i. El bucle solo ejecuta j = 0 y no altera n. Se devuelve la cadena 1-5."
+        },
+        {
+          "id": "b2",
+          "answer": "Notable\nSobresaliente",
+          "explanation": "La ejecución entra en case 7, muestra Notable y continúa hasta case 9, que muestra Sobresaliente antes del break."
+        }
+      ]
+    },
+    {
+      "id": "c-test",
+      "type": "test",
+      "questions": [
+        {
+          "id": "c1",
+          "correctOption": 2,
+          "answer": "Una NodeList estática",
+          "explanation": "Devuelve una NodeList estática con todas las coincidencias."
+        },
+        {
+          "id": "c2",
+          "correctOption": 1,
+          "answer": "Ejecuta el script tras analizar el HTML y en orden.",
+          "explanation": "Un script clásico diferido se ejecuta tras analizar el HTML y conserva el orden respecto de los demás scripts diferidos."
+        },
+        {
+          "id": "c3",
+          "correctOption": 3,
+          "answer": "function sumar(a, b) { return a + b; }",
+          "explanation": "Las declaraciones de función pueden usarse antes de la línea de su declaración."
+        },
+        {
+          "id": "c4",
+          "correctOption": 0,
+          "answer": "Cancela el envío del formulario; el manejador continúa.",
+          "explanation": "Se cancela la acción predeterminada, pero el resto del manejador continúa."
+        },
+        {
+          "id": "c5",
+          "correctOption": 2,
+          "answer": "Devuelve undefined por la inserción de ;.",
+          "explanation": "La inserción automática de punto y coma termina return antes de la expresión siguiente."
+        },
+        {
+          "id": "c6",
+          "correctOption": 1,
+          "answer": "function saludar(nombre = \"Hola\") { ... }",
+          "explanation": "El valor predeterminado se declara mediante una asignación en el parámetro."
+        },
+        {
+          "id": "c7",
+          "correctOption": 0,
+          "answer": "Ambas crean cadenas sin interpolación.",
+          "explanation": "Ambos delimitadores crean cadenas; la interpolación requiere una plantilla."
+        },
+        {
+          "id": "c8",
+          "correctOption": 3,
+          "answer": "Solo los acentos graves permiten interpolar.",
+          "explanation": "Las plantillas con acentos graves admiten interpolación de expresiones."
+        },
+        {
+          "id": "c9",
+          "correctOption": 0,
+          "answer": "textContent inserta texto; innerHTML interpreta HTML.",
+          "explanation": "El primero trata el contenido como texto; el segundo lo interpreta como HTML."
+        },
+        {
+          "id": "c10",
+          "correctOption": 2,
+          "answer": "innerHTML: contenido. outerHTML: elemento completo.",
+          "explanation": "El primero representa el contenido del elemento; el segundo incluye el propio elemento."
+        }
+      ]
+    },
+    {
+      "id": "d-completar",
+      "type": "qa",
+      "questions": [
+        {
+          "id": "d1",
+          "answer": "const areaRect = (base, altura) => base * altura;\nconsole.log(areaRect(4, 5)); // 20",
+          "explanation": "Los huecos pueden ser (base, altura) y base * altura, con nombres coherentes equivalentes. Dos huecos: 0,25 puntos por cada parte correcta; se admite crédito parcial justificado dentro de cada hueco."
+        },
+        {
+          "id": "d3",
+          "answer": "const menu = document.querySelector(\"#menu\");\nif (menu !== null) {\n  menu.classList.toggle(\"abierto\");\n}",
+          "explanation": "Los huecos son !== y classList. También es válido != en esta comprobación de existencia. Dos huecos: 0,25 puntos por cada parte correcta."
+        },
+        {
+          "id": "d4",
+          "answer": "formulario.addEventListener(\"submit\", (event) => {\n  event.preventDefault();\n  const texto = campo.value.trim();\n  const numero = Number(texto);\n  if (texto === \"\" || !Number.isFinite(numero)) {\n    error.textContent = \"Introduce un número válido\";\n  }\n});",
+          "explanation": "Los huecos son submit, preventDefault, trim e isFinite. Cuatro huecos: 0,25 puntos por cada parte correcta; no se exige acertar todos para obtener crédito."
+        }
+      ]
+    },
+    {
+      "id": "e-corregir",
+      "type": "qa",
+      "questions": [
+        {
+          "id": "e1",
+          "answer": "El método busca un ID literal y no un selector CSS.\nconst titulo = document.getElementById(\"titulo\");\ntitulo.textContent = \"Bienvenido\";",
+          "explanation": "Se elimina # del argumento. También sirve sustituir la selección por una consulta CSS que utilice #titulo. La explicación y la corrección aportan crédito por separado."
+        },
+        {
+          "id": "e2",
+          "answer": "La selección devuelve una colección de elementos. Hay que recorrerla y cambiar el texto de cada elemento.\nconst avisos = document.getElementsByClassName(\"aviso\");\nfor (const aviso of avisos) {\n  aviso.textContent = \"Revisa los datos\";\n}",
+          "explanation": "Son equivalentes un recorrido por índices o convertir la colección en un array y recorrerlo. Un bucle aplicado a la colección original es válido; asignar el texto a la colección no modifica todos sus elementos."
+        },
+        {
+          "id": "e3",
+          "answer": "Con mostrar() se ejecuta la función al registrar el evento. Debe pasarse la referencia para ejecutarla al hacer clic.\nfunction mostrar() {\n  console.log(\"Pulsado\");\n}\nboton.addEventListener(\"click\", mostrar);",
+          "explanation": "También son válidos un callback envolvente o una función flecha que invoque mostrar al recibir el evento."
+        },
+        {
+          "id": "e4",
+          "answer": "Los valores de los campos son cadenas; + las concatena. Hay que convertir ambas cantidades antes de sumarlas.\nconst total = Number(campoA.value) + Number(campoB.value);\nresultado.textContent = total;",
+          "explanation": "Se aceptan otras conversiones numéricas adecuadas a las cantidades. La conversión debe afectar a ambos operandos. La explicación y la corrección aportan crédito por separado."
+        }
+      ]
+    }
+  ]
+}

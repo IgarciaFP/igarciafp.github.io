@@ -6,8 +6,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Revisión de entrega</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261128132808-base4">
-<link rel="stylesheet" href="motor/taller.css?v=20261128132808-base4">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261128145922-base4">
+<link rel="stylesheet" href="motor/taller.css?v=20261128145922-base4">
 <style>
 .revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
 .revision h1{font-size:1.5rem;line-height:1.25;margin:0}
@@ -148,7 +148,7 @@
 #review-grade-comment{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
 #review-grade-status{font-size:.85rem;color:var(--muted)}#review-grade-status:empty{display:none}
 </style>
-<link rel="stylesheet" href="motor/revision-detallada.css?v=20261128132808-base4">
+<link rel="stylesheet" href="motor/revision-detallada.css?v=20261128145922-base4">
 </head>
 <body>
 <main id="review-app" class="revision">
@@ -228,13 +228,13 @@
   </div>
 </main>
 
-<script src="motor/contenido-cifrado.js?v=20261128132808-base4"></script>
-<script src="motor/revision-modelo.js?v=20261128132808-base4"></script>
-<script src="motor/revision-detallada.js?v=20261128132808-base4"></script>
-<script src="motor/apartados.js?v=20261128132808-base4"></script>
-<script src="motor/examen-modelo.js?v=20261128132808-base4"></script>
-<script src="motor/herramientas.js?v=20261128132808-base4"></script>
-<script src="motor/revisor.js?v=20261128132808-base4"></script>
+<script src="motor/contenido-cifrado.js?v=20261128145922-base4"></script>
+<script src="motor/revision-modelo.js?v=20261128145922-base4"></script>
+<script src="motor/revision-detallada.js?v=20261128145922-base4"></script>
+<script src="motor/apartados.js?v=20261128145922-base4"></script>
+<script src="motor/examen-modelo.js?v=20261128145922-base4"></script>
+<script src="motor/herramientas.js?v=20261128145922-base4"></script>
+<script src="motor/revisor.js?v=20261128145922-base4"></script>
 <script>
 (async () => {
 'use strict';
@@ -376,6 +376,8 @@ async function parse(text){
  const item=await parseRaw(reviewPackage.document);
  item.reviewAnalysisIssue=reviewPackage.issue||'';
  try{item.reviewAnalysis=window.ReviewModel?.analysis(reviewPackage.analysis,{id:item.id,module:item.reviewModule||item.module,activity:item.activity,version:item.activityVersion});}catch(error){item.reviewAnalysis=null;item.reviewAnalysisIssue=error.message;}
+ const identity=item.reviewAnalysis?.identity;
+ if(identity&&String(item.email).split('@')[0]===identity.sourceStudentId){item.originalEmail=item.email;item.email=identity.studentId+'@'+String(item.email).split('@')[1];}
  if(item.sectionsVersion===1&&!item.sectionData)throw Error('Faltan las respuestas de los apartados.');
  if(item.sectionData){
   item.reviewSections=reviewSections(item);

@@ -26,8 +26,11 @@ function analysis(value,binding={}){
   }));
   const points=score(section.score);agrees(points,total(items));return {id:section.id,type:section.type,title:text(section.title||section.id,2000),score:points,items};
  }));
- const points=score(value.score);agrees(points,total(sections));
- return {format:value.format,submissionId:value.submissionId,attemptId:text(value.attemptId||'',100),activity:a,generatedAt:text(value.generatedAt||'',100),rubricVersion:text(value.rubricVersion||'',200),solutionVersion:text(value.solutionVersion||a.version,200),score:points,summary:text(value.summary||'',8000),sections};
+ const points=score(value.score),base=total(sections);let bonus,identity;
+ if(value.bonus!==undefined){if(!value.bonus||!Number.isFinite(value.bonus.points)||value.bonus.points<0||value.bonus.points>100)fail();bonus={points:value.bonus.points,reason:text(value.bonus.reason,2000)};if(!bonus.reason.trim())fail();}
+ if(value.identity!==undefined){const v=value.identity,student=/^[a-z0-9][a-z0-9._-]{0,63}$/;if(!v||!student.test(v.studentId)||!student.test(v.sourceStudentId))fail();identity={studentId:v.studentId,sourceStudentId:v.sourceStudentId,reason:text(v.reason,2000)};if(!identity.reason.trim())fail();}
+ agrees(points,{max:base.max,earned:base.earned===null?null:Math.min(base.max,base.earned+(bonus?.points||0))});
+ return {format:value.format,submissionId:value.submissionId,attemptId:text(value.attemptId||'',100),activity:a,generatedAt:text(value.generatedAt||'',100),rubricVersion:text(value.rubricVersion||'',200),solutionVersion:text(value.solutionVersion||a.version,200),score:points,...(bonus?{bonus}:{}),...(identity?{identity}:{}),summary:text(value.summary||'',8000),sections};
 }
 function solution(value,binding={}){
  if(!value||value.format!=='base4-solution-v1'||JSON.stringify(value).length>250000)fail();

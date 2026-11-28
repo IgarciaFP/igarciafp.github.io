@@ -51,6 +51,10 @@ La columna privada `Análisis de la nota` contiene un JSON `base4-analysis-v1`, 
 
 Estados admitidos: `correct`, `partial`, `incorrect`, `unanswered`, `unverified`. Para aspectos pendientes de verificación, `earned` puede ser `null`, también en los subtotales afectados. Eso no representa una nota de cero. Las sumas de los ítems, apartados y total deben coincidir. No se añade una penalización académica por las incidencias del navegador salvo que la rúbrica lo exija.
 
+Si el profesor autoriza expresamente una bonificación, el análisis puede incluir `"bonus":{"points":1,"reason":"Motivo autorizado"}`. Los ítems y apartados conservan la nota base de la rúbrica. La nota total es la suma base más la bonificación, limitada al máximo de la rúbrica: nunca se infla una pregunta para ocultar ese extra. El visor muestra por separado base, extra y límite final. Una base pendiente sigue pendiente, también con bonificación.
+
+Si el profesor confirma expresamente una discrepancia de identidad, se puede incluir `identity` con `studentId` (usuario confirmado), `sourceStudentId` (usuario del documento original) y `reason` (confirmación y motivo). Se conserva íntegro el documento y su checksum. La copia individual muestra la identidad confirmada y permite consultar su nota, dejando visible la discrepancia original. Nunca se deduce esta asignación de similitudes entre nombres.
+
 ## Enlace de revisión
 
 El enlace mantiene `revisor.html#entrega=...`. Si existe análisis, el valor empieza por `BASE4R1.` y continúa con Base64url, sin relleno, de gzip de este JSON UTF-8:
