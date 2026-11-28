@@ -551,7 +551,7 @@
     }
     function exportPractice(){
       if(problem||fatal||!['paused','submitted'].includes(state.phase))throw Error('Attempt cannot be exported');
-      return JSON.stringify({format:adapter.config.format.save,version:1,language:state.data.language,state},null,2);
+      return JSON.stringify({format:adapter.config.format.save,version:1,activityVersion:adapter.config.version,practiceId:adapter.config.id,language:state.data.language,state},null,2);
     }
     function importPractice(text){
       if(problem||fatal||busy||!(['ready','paused','submitted','reset'].includes(state.phase)||(state.phase==='active'&&(restoring||fileRecovery))))throw Error('Cannot import now');
@@ -559,6 +559,7 @@
       if(adapter.deliveryPanel&&((doc.state?.phase==='submitted'&&!adapter.allowSubmittedRecovery)||['closing','submitted'].includes(state.phase)))throw Error('La práctica ya está finalizada');
       if(doc.format!==adapter.config.format.save||doc.version!==1||!['paused','submitted'].includes(doc.state?.phase))throw Error('Invalid save file');
       const next=validate(doc.state);
+      if(doc.activityVersion!==undefined&&String(doc.activityVersion)!==String(adapter.config.version))throw Error('El archivo corresponde a otra versión de la actividad.');
       if(doc.language!==undefined){
         if(!['es','en'].includes(doc.language)||next.data.language&&next.data.language!==doc.language)throw Error('Invalid document language');
         next.data.language=doc.language;
@@ -712,7 +713,11 @@
       confirmation = null; confirmBox.close();
       if(kind==='save'){
         if(await pausePractice()){
-          if(drafts){returnToLogin();return;}
+          if(drafts){
+            let downloaded=true;
+            if(adapter.config.allowSaveRecovery)downloaded=await adapter.savePracticeDocument();
+            returnToLogin();adapter.pauseFileResult?.(downloaded);return;
+          }
           busy=true;render();
           try{if(await adapter.savePracticeDocument())resetProcess();}finally{busy=false;render();}
         }

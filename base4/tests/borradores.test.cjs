@@ -67,17 +67,17 @@ async function boot(saved={}){
  await app.login(email);await app.start();saved=JSON.parse(app.w.localStorage.getItem(app.key(email)));
  assert.equal(saved.data.elapsed,300000,'el tiempo cerrado no se descuenta');assert.equal(app.$('js').value,'// Trabajo antes del cierre');assert.equal(attempts.size,1,'no consume otro intento');
  legacyStatus=true;now+=20000;await app.pause();saved=JSON.parse(app.w.localStorage.getItem(app.key(email)));
- assert.equal(saved.phase,'paused');assert.equal(saved.data.elapsed,320000);assert.equal(app.downloads.length,0);assert.equal(sends,0);
+ assert.equal(saved.phase,'paused');assert.equal(saved.data.elapsed,320000);assert.equal(app.downloads.length,1);assert.equal(sends,0);
  const pausedCopy=app.storage();app.close();now+=3600000;app=await boot(pausedCopy);await app.login(email);
  assert.equal(app.$('guard-start').disabled,false,'un borrador permite continuar aunque el receptor no devuelva canResume');
  assert.equal(JSON.parse(app.w.localStorage.getItem(app.key(email))).data.elapsed,320000);
  const other='otra@g.educaand.es';await app.login(other);await app.start();assert.notEqual(app.$('js').value,'// Trabajo antes del cierre');app.edit('// Otro alumno');await app.pause();
  assert.ok(app.w.localStorage.getItem(app.key(email)));assert.ok(app.w.localStorage.getItem(app.key(other)));
  await app.login(email);assert.equal(app.$('attempt-status').textContent,'');assert.equal(app.$('guard-start').title,'Empezar');await app.start();assert.equal(app.$('js').value,'// Trabajo antes del cierre');legacyStatus=false;
- app.$('practice-finish').click();app.$('action-confirm-accept').click();await until(()=>app.$('delivery-stage').dataset.state==='success');
+ const beforeFinalDownloads=app.downloads.length;app.$('practice-finish').click();app.$('action-confirm-accept').click();await until(()=>app.$('delivery-stage').dataset.state==='success');
  assert.equal(app.w.localStorage.getItem(app.key(email)),null,'la entrega manual borra solo su borrador');assert.ok(app.w.localStorage.getItem(app.key(other)));assert.equal(sends,1);
- await until(()=>app.downloads.length===1);
- const receipt=await app.downloads[0].text(),prefix=app.w.Lab.config.format.report;
+ await until(()=>app.downloads.length===beforeFinalDownloads+1);
+ const receipt=await app.downloads.at(-1).text(),prefix=app.w.Lab.config.format.report;
  assert.ok(receipt.startsWith(prefix));assert.ok(!receipt.includes('Trabajo antes del cierre'));
  const unpack=code=>require('node:zlib').gunzipSync(Buffer.from(code.slice(prefix.length),'base64url')).toString('utf8');
  const recovered=JSON.parse(unpack(receipt));
@@ -124,6 +124,6 @@ async function boot(saved={}){
  await until(()=>app.downloads.length===1);await tick();
  assert.equal(app.w.localStorage.getItem(app.key(email)),null,'entrega al agotar el margen detectado por sondeo');
  app.close();
- console.log('OK: autoguardado silencioso, cierre, reloj congelado, pausa sin descarga, varios alumnos, limpieza manual/automática, límite y reenvío pendiente.');
+ console.log('OK: autoguardado silencioso, cierre, reloj congelado, pausa con entrega.txt, varios alumnos, limpieza manual/automática, límite y reenvío pendiente.');
 })().catch(e=>{console.error(e);process.exit(1);});
 

@@ -172,6 +172,12 @@ Al pulsar Entregar, la confirmación muestra un aviso rojo si hay preguntas QA v
 
 Para revisar estos archivos utiliza **`base4/profesor.html`**. El visor muestra una navegación por apartados: código y resultado para `webcode`, respuestas escritas para QA y alternativa elegida para Test.
 
+Al corregir se genera y verifica una solución de referencia antes de evaluar al alumnado. Se publica como `solucion.json` dentro de la actividad, con copias por revisión y versión. Es JSON sin contraseña, también en actividades cifradas. Los dos prompts de corrección indican el procedimiento y [los formatos de revisión](correccion/formatos-revision.md) definen sus campos.
+
+`profesor.html` y `revisor.html` muestran esa solución junto a la respuesta del alumno cuando corresponde a la misma actividad y versión. Las correcciones nuevas guardan el desglose por pregunta o criterio en la columna privada **Análisis de la nota**. El enlace individual lleva una copia de ese análisis junto a la entrega, sin modificar el informe original ni añadir columnas públicas. Las entregas antiguas siguen abriéndose sin análisis. Las notas manuales del profesor conservan su prioridad y no se recalifican entregas anteriores.
+
+Cuando `guardar` es `true`, Pausar descarga `entrega.txt` y conserva el borrador local. En el login aparece Recuperar solo si no hay borrador correspondiente al correo introducido. La recuperación desde archivo conserva respuestas, tiempo consumido, intento y margen de regreso. Una entrega finalizada no permite continuar el editor.
+
 El transporte mantiene el protocolo del receptor actual: el estado se serializa en fragmentos `apartados-01`, `apartados-02`, etc., de hasta 9000 caracteres. El visor los recompone antes de mostrar las respuestas. Se admiten hasta 20 apartados, 50 preguntas por apartado, 10 000 caracteres por respuesta o archivo de código y 90 000 caracteres serializados para el conjunto del estado. Si se supera el límite, se conserva el último estado válido y se avisa; no se recorta la respuesta silenciosamente.
 
 El control de red de base4 utiliza la ruta propia `/base4/` del Worker compartido y comprueba la IP únicamente al iniciar la actividad. La entrega conserva un sello firmado y registra la IP sin volver a restringirla. El receptor de Apps Script se despliega por separado; el enlace de revisión apunta a `base4/profesor.html`, que también puede abrir el TXT descargado.

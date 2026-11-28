@@ -6,8 +6,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Revisión de entrega</title>
-<link rel="stylesheet" href="/base/motor/estilos.css?v=20261119-layout-02-base4">
-<link rel="stylesheet" href="motor/taller.css?v=20261119-layout-02-base4">
+<link rel="stylesheet" href="/base/motor/estilos.css?v=20261128132808-base4">
+<link rel="stylesheet" href="motor/taller.css?v=20261128132808-base4">
 <style>
 .revision{padding:20px 16px 32px;max-width:1700px;margin:auto}
 .revision h1{font-size:1.5rem;line-height:1.25;margin:0}
@@ -148,6 +148,7 @@
 #review-grade-comment{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
 #review-grade-status{font-size:.85rem;color:var(--muted)}#review-grade-status:empty{display:none}
 </style>
+<link rel="stylesheet" href="motor/revision-detallada.css?v=20261128132808-base4">
 </head>
 <body>
 <main id="review-app" class="revision">
@@ -227,9 +228,13 @@
   </div>
 </main>
 
-<script src="motor/apartados.js?v=20261119-layout-02-base4"></script>
-<script src="motor/herramientas.js?v=20261119-layout-02-base4"></script>
-<script src="motor/revisor.js?v=20261120-public-grades"></script>
+<script src="motor/contenido-cifrado.js?v=20261128132808-base4"></script>
+<script src="motor/revision-modelo.js?v=20261128132808-base4"></script>
+<script src="motor/revision-detallada.js?v=20261128132808-base4"></script>
+<script src="motor/apartados.js?v=20261128132808-base4"></script>
+<script src="motor/examen-modelo.js?v=20261128132808-base4"></script>
+<script src="motor/herramientas.js?v=20261128132808-base4"></script>
+<script src="motor/revisor.js?v=20261128132808-base4"></script>
 <script>
 (async () => {
 'use strict';
@@ -264,12 +269,19 @@ function activityOf(mod,slug){
  const key=mod+'/'+slug;
  if(!/^(diw|dwec|ssii)\/[a-z0-9][a-z0-9-]{0,59}$/.test(key))return Promise.resolve(null);
  if(!activities.has(key))activities.set(key,(async()=>{
-  const folder='actividades/'+key+'/',optional=async name=>{const r=await fetchFile(folder+name);return r.ok?r.text():'';};
+  const folder='actividades/'+key+'/';let archived=null;
+  const fetchActivity=async path=>archived?(window.LabCipher.response(archived,folder,path)||fetchFile(path)):fetchFile(path);
+  const optional=async name=>{const r=await fetchActivity(folder+name);return r.ok?r.text():'';};
   const response=await fetchFile(folder+'config.json');
   if(!response.ok)return null;
-  const info=await response.json();
-  const read=async path=>{const r=await fetchFile(path);if(!r.ok)throw Error(path);return r;};
-  const sections=await window.LabSections.load(info,folder,read,async path=>{const r=await fetchFile(path);if(r.status===404)return '';if(!r.ok)throw Error(path);return r.text();});
+  let info=await response.json();const encrypted=!!info.cifrado;
+  if(encrypted){
+   if(info.cifrado.modo!=='email-domain'||info.cifrado.dominio!==config.emailDomain||!/^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.json$/.test(info.cifrado.archivo||''))throw Error('Configuración de cifrado inválida');
+   const encryptedResponse=await fetchFile(folder+info.cifrado.archivo);if(!encryptedResponse.ok)throw Error('No se pudo cargar el contenido');
+   archived=await window.LabCipher.decrypt(await encryptedResponse.json(),config.emailDomain);info=JSON.parse(archived.files['config.json']);
+  }
+  const read=async path=>{const r=await fetchActivity(path);if(!r.ok)throw Error(path);return r;};
+  const sections=await window.LabSections.load(info,folder,read,async path=>{const r=await fetchActivity(path);if(r.status===404)return '';if(!r.ok)throw Error(path);return r.text();});
   let rubric=null,rubricVersion='',rubricIssue='';
   try{
    const response=await fetchFile(folder+'rubrica.json');
@@ -282,7 +294,7 @@ function activityOf(mod,slug){
   const [ownHtml,css,js]=await Promise.all([code('html'),code('css'),code('js')]);
   // Igual que el laboratorio: sin HTML de partida, la pestaña empieza con el esqueleto común.
   const html=ownHtml.trim()?ownHtml:await skeleton;
-  return {sections,rubric,rubricVersion,rubricIssue,key,title:mod.toUpperCase()+String(info.title||slug).trim().replace(new RegExp('^'+mod+'\\s*','i'),''),version:String(info.version??''),start:{html,css,js,txt:''}};
+  return {sections,rubric,rubricVersion,rubricIssue,key,encrypted,title:mod.toUpperCase()+String(info.title||slug).trim().replace(new RegExp('^'+mod+'\\s*','i'),''),version:String(info.version??''),start:{html,css,js,txt:''}};
  })().catch(()=>null));
  return activities.get(key);
 }
@@ -356,11 +368,14 @@ function reviewSections(item){
   const sameVersion=String(item.activityVersion)===String(item.known?.version);
   return {...s,path:published?.path||s.path,statement:published?.statement,baselineKnown:!!published&&sameVersion,
    code:published?.code||EMPTY,
-   ...(s.type==='webcode'?{}:{questions:window.LabSections.questions((defs[i].questions||[]).map(q=>({id:q.id,enunciado:q.text,opciones:q.options})),s.type)})};
+   ...(s.type==='webcode'?{}:{questions:window.LabSections.questions((defs[i].questions||[]).map(q=>({id:q.id,enunciado:q.text,opciones:q.options,codigo:q.code,formato:q.format})),s.type)})};
  });
 }
 async function parse(text){
- const item=await parseRaw(text);
+ const reviewPackage=window.ReviewModel?await window.ReviewModel.unpack(text):{document:text,analysis:null};
+ const item=await parseRaw(reviewPackage.document);
+ item.reviewAnalysisIssue=reviewPackage.issue||'';
+ try{item.reviewAnalysis=window.ReviewModel?.analysis(reviewPackage.analysis,{id:item.id,module:item.reviewModule||item.module,activity:item.activity,version:item.activityVersion});}catch(error){item.reviewAnalysis=null;item.reviewAnalysisIssue=error.message;}
  if(item.sectionsVersion===1&&!item.sectionData)throw Error('Faltan las respuestas de los apartados.');
  if(item.sectionData){
   item.reviewSections=reviewSections(item);
@@ -484,6 +499,7 @@ function renderCode(){
  const added=rows.filter(r=>r.kind==='mas').length,removed=rows.filter(r=>r.kind==='menos').length;
  $('pie-codigo').textContent=NAMES[tab]+' · '+(marked?'Numeración: original | entrega · ':'')+(!changed?(tab==='txt'?'sin notas':'sin cambios: es el código de partida'):marked?added+' líneas añadidas o cambiadas · '+removed+' eliminadas':'modificada por el alumno');
  $('copy-code-status').textContent='';
+ window.ReviewDetailed?.code(item,tab);
 }
 
 // ------------------------------------------------------------ Resultado (marco aislado)
@@ -599,6 +615,7 @@ function renderSections(item,chosen){
  const sections=item.reviewSections;
  const state=window.LabSections.sanitize(sections,item.sectionData);
  const selected=sections.find(s=>s.id===chosen)||sections[0];
+ item.reviewSelectedSection=selected.id;
  const pending=window.LabSections.incomplete(sections,state);
  const progress=section=>{
   if(section.type==='webcode')return !section.baselineKnown?'Cambios sin comparar':pending.some(p=>p.id===section.id)?'Sin cambios en HTML, CSS o JS':'Código modificado';
@@ -625,10 +642,10 @@ function renderSections(item,chosen){
    if(selected.type==='test'){
     const options=document.createElement('ol');options.type='A';
     q.options.forEach((text,index)=>{const li=document.createElement('li');li.textContent=text;if(value===String(index)){li.className='selected-answer';li.textContent+=' — Elegida por el alumno';}options.append(li);});article.append(heading,options);
-   }else article.append(heading);
-   answer.textContent=!value.trim()?'Sin responder':selected.type==='test'?'Respuesta: '+String.fromCharCode(65+Number(value)):value;
+   }else{article.append(heading);if(q.code){const pre=document.createElement('pre');pre.textContent=q.format==='gaps'?window.LabSections.completedCode(q,value):q.code;pre.style.cssText='background:#09090b;color:#e4e4e7;padding:20px;border-radius:8px;overflow:auto;font:15px/1.7 Consolas,monospace';article.append(pre);}}
+   answer.textContent=!value.trim()?'Sin responder':selected.type==='test'?'Respuesta: '+String.fromCharCode(65+Number(value)):q.format==='gaps'?window.LabSections.completedCode(q,value):value;
    if(!value.trim())answer.className='unanswered';
-   answer.style.whiteSpace='pre-wrap';article.append(answer);questions.append(article);
+   answer.style.whiteSpace='pre-wrap';article.append(answer);questions.append(article);window.ReviewDetailed?.question(article,item,selected,q);
   }
  }
 }
@@ -669,7 +686,7 @@ function select(id){
  $('ficha').replaceChildren(...chips);
  if(!item.modified.includes(tab))tab=item.modified.find(t=>t!=='txt')||item.modified[0]||'html';
  if(item.sectionData)renderSections(item);else{renderSections(item);renderCode();renderResult();}
- window.dispatchEvent(new CustomEvent('review-selection',{detail:{id:item.id,intact:item.intact,draft:!!item.draft,module:item.reviewModule,user:String(item.email).split('@')[0],attemptId:item.attemptId,activity:item.activity,activityTitle:item.activityTitle,label:item.label}}));
+ window.dispatchEvent(new CustomEvent('review-selection',{detail:{reviewItem:item,id:item.id,intact:item.intact,draft:!!item.draft,module:item.reviewModule,user:String(item.email).split('@')[0],attemptId:item.attemptId,activity:item.activity,activityTitle:item.activityTitle,label:item.label}}));
 }
 for(const button of document.querySelectorAll('[data-tab]'))button.addEventListener('click',()=>{tab=button.dataset.tab;renderCode();});
 $('cambios').addEventListener('change',renderCode);
@@ -700,7 +717,7 @@ $('archivos').addEventListener('change',()=>{add([...$('archivos').files]);$('ar
 // Texto de la columna «ENTREGA completa»: pegado en la página o recibido en el enlace de la hoja.
 document.addEventListener('paste',e=>{
  const text=(e.clipboardData?.getData('text')||'').trim();
- if(text.startsWith(config.format.report)){e.preventDefault();add([{name:'Texto pegado',size:text.length,text}]);}
+ if((text.startsWith(config.format.report)||text.startsWith(window.ReviewModel.PREFIX))){e.preventDefault();add([{name:'Texto pegado',size:text.length,text}]);}
 });
 const linked=/^#entrega=([A-Za-z0-9._-]+)$/.exec(location.hash);
 let linkedLoaded=false;

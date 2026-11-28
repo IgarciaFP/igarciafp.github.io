@@ -55,6 +55,7 @@ window.addEventListener('review-selection',async event=>{
   if(turn!==serial)return;
   $('review-grade-value').textContent=result.nota!==''?result.nota:'Sin calificar';
   $('review-grade-comment').textContent=result.comentarios||'Sin comentarios.';
+  window.ReviewDetailed?.grade(item.id,result.nota);
   status.textContent='';
  }catch(error){
   if(turn!==serial)return;

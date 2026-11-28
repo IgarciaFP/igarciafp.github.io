@@ -4,7 +4,7 @@
 // Sin selección de idioma ni nombre: la identificación es solo el correo del centro.
 // Seguridad y entrega son los módulos comunes de /base/motor/.
 const {config,code,sections,sectionMode}=window.Lab;
-let sectionView=null,toolbox=null,clipboard=null;
+let sectionView=null,toolbox=null,clipboard=null,fileRecoveryControl=null;
 // Herramienta activada por defecto; solo el profesor la configura.
 const allowEditingShortcuts=config.tools?.enabled?.atajosTeclado!==false;
 function editingShortcut(event){
@@ -689,7 +689,7 @@ function afterRender(state,ctx){
  phase=state.phase;if(['active','paused'].includes(previousPhase)&&!['active','paused'].includes(phase))void clipboard?.clear();if(!['active','paused'].includes(phase))toolbox?.close();if(previousPhase!==phase&&(phase==='closing'||phase==='submitted'))closeActionModal(false);
  if(phase==='closing'||phase==='submitted')panelEntered=true;clock();syncToolbar();
  $('practice-reset').hidden=!config.allowRestart;
- $('practice-save').hidden=!config.allowSaveRecovery;
+ $('practice-save').hidden=!config.allowSaveRecovery;fileRecoveryControl?.refresh();
  const paused=phase==='paused',needsRecovery=paused||ctx.restoring;
  const active=phase==='active',submitted=phase==='submitted'||phase==='closing';
  const loading=ctx.busy&&!submitted&&!ctx.problem;
@@ -1006,7 +1006,7 @@ async function savePracticeDocument(){
  try{
   const documentCode=await encodeReport(guard.exportPractice());
   url=URL.createObjectURL(new Blob([documentCode],{type:'text/plain;charset=utf-8'}));
-  const link=document.createElement('a');link.href=url;link.download='practica-'+config.filePrefix+'-'+Date.now()+'.txt';
+  const link=document.createElement('a');link.href=url;link.download='entrega.txt';
   document.body.append(link);link.click();link.remove();
   fileStatus('fileSaved');return true;
  }catch{fileStatus('fileError');return false;}
@@ -1164,7 +1164,7 @@ if(sectionMode){
   save:()=>{invalidate();guard.saveEdit();}
  });
 }
-guard=window.createPracticeGuard({config,browserDrafts,beforeStart,applyTimePenalty,beforeResume:()=>ensureRegistration(),startError(error){
+guard=window.createPracticeGuard({config,browserDrafts,beforeStart,applyTimePenalty,pauseFileResult:ok=>{$('guard-action-status').textContent=tr(ok?'fileSaved':'fileError');},beforeResume:()=>ensureRegistration(),startError(error){
  $('guard-action-status').textContent=error.message==='ATTEMPTS_EXHAUSTED'?exhaustedMessage:error.message==='ALREADY_SUBMITTED'?'Este intento ya fue entregado.':'No se pudo registrar el intento. Comprueba la conexión y vuelve a iniciar.';
 },preservePendingEdits:true,renderStartButton:renderStartIcon,deliveryPanel:true,allowSubmittedRecovery:!browserDrafts,onAttemptStart,confirmDelivery:()=>confirmActionModal('Vas a finalizar la práctica. Al aceptar no podrás volver al editor. ¿Entregar la práctica?',incompleteWarning(),true),timeSpent,timeLimitMs:()=>durationMs,validEmail,savePracticeDocument,refreshPendingParameters:()=>0,empty,sanitize,snapshot,restore,setEnabled,startClock,stopClock,downloadReport,makeReport,setReport,canStart,afterRender,confirmText,onReset,validateFinish,
  async saveBeforeReset(current){
@@ -1195,15 +1195,13 @@ window.addEventListener('unhandledrejection',showError);
 rememberIdentity();guard.render();
 void checkOpportunities();
 let recoveredLoginText=null;
-window.LabFileDelivery?.init({config,decode:decodePracticeDocument,validEmail,
+fileRecoveryControl=window.LabFileDelivery?.init({config,decode:decodePracticeDocument,validEmail,
+ hasDraft:()=>{try{return !!browserDrafts?.peek($('student').value.trim().toLowerCase());}catch{return false;}},canRecover:()=>phase==='ready'&&!recoveryMode,
  recover(text){
-  const finalized=JSON.parse(text).state?.phase==='submitted';
+  // La recuperación solo admite pausas, aunque se invoque fuera del selector.
+  if(JSON.parse(text).state?.phase!=='paused')throw Error('Una entrega finalizada no se puede reabrir. Selecciona un archivo de pausa.');
   if(recoveredLoginText!==text){
    guard.importPractice(text);
-  // Un comprobante finalizado puede pertenecer a una entrega ya recibida.
-  // Su ID es inmutable en el receptor; continuar requiere otro intento.
-  // onAttemptStart solo renueva la identidad: conserva respuestas y reloj.
-   if(finalized)onAttemptStart();
    recoveredLoginText=text;
   }
   panelEntered=false;deliveryComplete=false;lastDelivery=null;recoveryMode=false;

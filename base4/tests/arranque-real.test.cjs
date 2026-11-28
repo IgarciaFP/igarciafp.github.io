@@ -11,6 +11,7 @@ async function boot(activity,recoverFile){
   w.HTMLElement.prototype.requestFullscreen=async function(){w.document.fullscreenElement=this;w.document.dispatchEvent(new w.Event('fullscreenchange'));};w.document.exitFullscreen=async()=>{w.document.fullscreenElement=null;};
   w.fetch=async url=>{if(new URL(url,'https://example.com/base4/').pathname==='/base4/acceso')return {ok:true,json:async()=>({ok:true,policy:'base4-prefix2-v1'})};const p=path.join(repo,new URL(url,'https://example.com/base4/').pathname),exists=fs.existsSync(p);let text=exists?fs.readFileSync(p,'utf8'):'';
    if(p.endsWith(path.join('contenido','config.json'))){const c=JSON.parse(text);c.delivery={type:'archivo'};text=JSON.stringify(c);}
+   if(recoverFile&&p.endsWith(path.join(activity,'config.json'))){const c=JSON.parse(text);c.guardar=true;text=JSON.stringify(c);}
    return {status:exists?200:404,ok:exists,text:async()=>text,json:async()=>JSON.parse(text)};
   };
  }});
@@ -31,21 +32,19 @@ async function boot(activity,recoverFile){
   const input=d.querySelector('#file-delivery-input');
   Object.defineProperty(input,'files',{value:[{name:'practica.txt',size:2000,text:async()=>JSON.stringify(recoverFile)}]});
   input.dispatchEvent(new w.Event('change'));await new Promise(r=>setTimeout(r,30));
-  assert.equal(d.querySelector('#file-delivery-send').disabled,false,d.querySelector('#file-delivery-status').textContent);
-  d.querySelector('#file-delivery-send').click();await new Promise(r=>setTimeout(r,100));
   if(recoverFile.state.phase==='submitted'){
+   assert.equal(d.querySelector('#file-delivery-send').disabled,true,'Un justificante finalizado no se ofrece para recuperar');
    assert.equal(d.querySelector('#cuaderno').hidden,true,'Un justificante finalizado no se reabre como editable');
    assert.match(d.querySelector('#file-delivery-status').textContent,/finalizada/);w.close();return;
   }
+  assert.equal(d.querySelector('#file-delivery-send').disabled,false,d.querySelector('#file-delivery-status').textContent);
+  d.querySelector('#file-delivery-send').click();await new Promise(r=>setTimeout(r,100));
   assert.equal(d.querySelector('#cuaderno').hidden,false,d.querySelector('#file-delivery-status').textContent);
   const restored=JSON.parse(w.localStorage.getItem(w.Lab.config.storage.key+'-draft-'+encodeURIComponent(w.Lab.config.version)+'-'+encodeURIComponent(student.value)));
   assert.equal(restored.phase,'active');assert.equal(restored.data.elapsed,120000);
   assert.equal(restored.returnRemainingMs,w.Lab.config.guard.returnSeconds*1000);
   assert.equal(restored.returnDeadline,null);
-  if(recoverFile.state.phase==='submitted'){
-   assert.notEqual(restored.data.attempt.id,recoverFile.state.data.attempt.id,'Un comprobante cerrado necesita otro ID');
-   assert.notEqual(restored.data.attempt.token,recoverFile.state.data.attempt.token);
-  }else assert.equal(restored.data.attempt.id,recoverFile.state.data.attempt.id,'Una pausa conserva el intento');
+  assert.equal(restored.data.attempt.id,recoverFile.state.data.attempt.id,'Una pausa conserva el intento');
   assert.equal(restored.data.durationMs,w.Lab.config.durationMs);
   assert.equal(restored.recoveries,recoverFile.state.recoveries+1);
   assert.equal(restored.data.values.js,recoverFile.state.data.values.js);
@@ -66,15 +65,15 @@ async function boot(activity,recoverFile){
  if(w.Lab.sectionMode){assert.equal(d.querySelectorAll('#section-nav button').length,3);d.querySelectorAll('#section-nav button')[1].click();assert.equal(d.querySelector('#question-fields').hidden,false);assert.equal(d.querySelector('#question-fields').disabled,false);d.querySelectorAll('#section-nav button')[0].click();assert.equal(d.querySelector('#activity-text').innerHTML,w.Lab.sections[0].statement.replace(/\r\n/g,'\n'));}
  if(w.Lab.sectionMode){
   const next=d.querySelector('#practice-finish');
-  next.click();assert.equal(d.querySelector('#section-heading').textContent,'Explica tus decisiones · QA');assert.equal(next.textContent,'Siguiente');
-  next.click();assert.equal(d.querySelector('#section-heading').textContent,'Comprueba tus conocimientos · Test');assert.equal(next.textContent,'Entregar');
+  next.click();assert.equal(d.querySelector('#section-heading').textContent,'Explica tus decisiones');assert.equal(next.textContent,'Siguiente');
+  next.click();assert.equal(d.querySelector('#section-heading').textContent,'Comprueba tus conocimientos');assert.equal(next.textContent,'Entregar');
   next.click();await new Promise(r=>setTimeout(r,20));assert.equal(d.querySelector('#action-confirm').open,true);assert.equal(d.querySelector('#action-confirm-warning').hidden,false);
   d.querySelector('#action-confirm-cancel').click();
  }
  assert.equal(errors.length,0,errors.join('; '));
  const saved=JSON.parse(w.localStorage.getItem(w.Lab.config.storage.key+'-draft-'+encodeURIComponent(w.Lab.config.version)+'-'+encodeURIComponent(student.value)));
  saved.phase='submitted';saved.data.elapsed=120000;saved.data.started=null;
- saved.returnRemainingMs=0;saved.returnDeadline=Date.now()-60000;
+ saved.returnRemainingMs=w.Lab.config.guard.returnSeconds*1000;saved.returnDeadline=null;
  saved.data.values.js='// Respuesta recuperada';
  const exportFile={format:w.Lab.config.format.save,version:1,state:saved};
  w.close();return exportFile;

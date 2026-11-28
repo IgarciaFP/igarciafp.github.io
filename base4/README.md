@@ -1,11 +1,11 @@
 > **base4:** consulta [Apartados y herramientas](README-apartados.md) para configurar webcode, QA, Test y los paneles de la barra superior. Las actividades sin apartados conservan el funcionamiento descrito a continuación.
 
-# Laboratorio de taller de código (base3)
+# Laboratorio de taller de código (base4)
 
 Variante de [`/base/`](../base/README.md) para ejercicios de HTML, CSS y JavaScript. Mantiene la barra, las incidencias y el guardado de la plantilla común, con estas diferencias:
 
-- Hay un solo laboratorio para todas las actividades. La actividad y su módulo se eligen en la dirección: `…/base3/?a=MODULO/ACTIVIDAD`, con módulo `diw`, `dwec` o `ssii`.
-- No se elige idioma (solo español) y la identificación pide únicamente el correo del centro.
+- Hay un solo laboratorio para todas las actividades. La actividad y su módulo se eligen en la dirección: `…/base4/?a=MODULO/ACTIVIDAD`, con módulo `diw`, `dwec` o `ssii`.
+- La identificación pide únicamente el correo del centro. Las actividades pueden aportar una versión en inglés.
 - Bajo la barra aparece el enunciado, en una tarjeta desplegable que empieza abierta.
 - Debajo hay dos paneles: a la izquierda el editor con pestañas HTML, CSS y JavaScript, que empiezan con el código de partida y tienen un botón para restaurarlo, más una pestaña TXT para notas; a la derecha el resultado y una consola.
 - La entrega, por defecto, es un único archivo TXT descargado con el código modificado; el envío a Google Sheets es opcional.
@@ -32,7 +32,7 @@ La seguridad, la entrega y los estilos generales se cargan de `/base/motor/` (`s
 1. Crear la carpeta `actividades/diw/NN-MM-nombre/` (o `dwec`, `ssii`), con NN el número de tema y MM el de la actividad, por ejemplo `actividades/diw/02-01-menu-responsive/`. Solo admite minúsculas, números y guiones.
 2. Añadir `config.json` con `title` (`"02-01-Menú responsive"`) y `version`, y `enunciado.html` con el texto.
 3. Añadir, si hacen falta, `codigo.html`, `codigo.css` y `codigo.js`. Los tres son opcionales: las pestañas CSS y JavaScript sin archivo empiezan vacías, y la pestaña HTML sin archivo (o con el archivo vacío) empieza con el esqueleto de `contenido/esqueleto.html`.
-4. Dar a los alumnos la dirección `…/base3/?a=diw/02-01-menu-responsive`.
+4. Dar a los alumnos la dirección `…/base4/?a=diw/02-01-menu-responsive`.
 
 Las actividades se nombran `MÓDULO NN-MM-Nombre de la actividad`: el alumno ve «DIW02-01-Menú responsive» y en la hoja el módulo y el nombre van en columnas separadas. El identificador de la práctica (`DIW-02-01-MENU-RESPONSIVE`), las claves de guardado y los nombres de archivo se derivan del módulo y de la carpeta. Sin parámetro, o si la actividad no existe, la página muestra «No se encuentra la actividad.».
 
@@ -46,11 +46,11 @@ Desde la revisión del 26/11/2026, el comprobante descargado es texto plano (JSO
 
 El borrador editable se guarda en localStorage por correo, actividad y versión. Se conserva el guardado de cambios y se añade una copia silenciosa cada cinco minutos mientras la práctica está activa. Si falla el almacenamiento, se muestra el error para no dar por guardado un trabajo que solo está en memoria.
 
-Pausar, cuando la actividad habilita guardar, conserva las respuestas, tiempo consumido, identificación del intento e incidencias y vuelve al login sin descargar ni entregar. Al pulsar Empezar después de identificarse, se recupera automáticamente la copia correspondiente. Tras un cierre inesperado, se retoma el tiempo restante de la última copia: el tiempo con la página cerrada no se descuenta. La recuperación conserva la reserva del intento y queda registrada.
+Pausar, cuando la actividad habilita `guardar`, conserva las respuestas, tiempo consumido, identificación del intento e incidencias, descarga `entrega.txt` y vuelve al login. No entrega la práctica. Al pulsar Empezar después de identificarse, se recupera automáticamente la copia local correspondiente. Si no hay borrador del alumno o se ha borrado la caché, aparece Recuperar para abrir el archivo de pausa. El tiempo con la página cerrada no se descuenta. La recuperación conserva la reserva del intento y queda registrada. Los archivos de otra actividad, versión o correo y los comprobantes finalizados se rechazan.
 
 Al generar una entrega manual o automática se elimina el borrador editable. El justificante y un posible envío pendiente se guardan por separado para poder consultar o reintentar la recepción sin reabrir el editor. Un comprobante finalizado no se puede importar para seguir trabajando.
 
-La hoja es la autoridad del límite de intentos. El receptor comprueba el límite al reservar y al recibir; borrar la caché no permite saltárselo. Para autorizar otra oportunidad, el profesor elimina manualmente una fila completa de ese alumno y actividad en Entregas; esa fila y sus calificaciones dejan de conservarse. Vaciar una celda no basta, porque los metadatos de la reserva continúan en la fila. El alumno pulsa Comprobar intentos o vuelve a entrar: la consulta actualizada permite el nuevo intento. Reanudar una reserva pendiente no consume otra oportunidad.
+La hoja es la autoridad del límite de intentos. El receptor comprueba el límite al reservar y al recibir; borrar la caché no permite saltárselo. Para autorizar otra oportunidad, el profesor elimina manualmente una fila completa de ese alumno y actividad en Entregas; esa fila y sus calificaciones dejan de conservarse. Vaciar una celda no basta, porque los metadatos de la reserva continúan en la fila. El alumno vuelve a entrar: la consulta actualizada permite el nuevo intento. Reanudar una reserva pendiente no consume otra oportunidad.
 
 Los nuevos controles exigen actualizar Code.gs y Bridge.html y publicar una nueva versión del receptor. El frontend detecta un receptor antiguo y bloquea el inicio hasta actualizarlo. El cambio opcional del motor compartido solo se activa en base4; base3 y los laboratorios existentes mantienen su comportamiento.
 
@@ -62,7 +62,7 @@ Con `"type": "apps-script"` y `endpoint`, además de la descarga, la entrega se 
 
 ## Control de red y horario
 
-Con `control.servidor` en `contenido/config.json`, cada entrega lleva un sello del servidor con la IP y la hora (campo `sello` del informe). Actualmente `control.restringirAcceso` es `false`: se permite abrir y realizar las prácticas fuera de red y horario, dejando constancia en Incidencias. La columna IP contiene solo la dirección, o queda vacía si no hay un sello utilizable. Para activar más adelante el bloqueo al abrir, cambiar `control.restringirAcceso` a `true`. Ver [servidor/README.md](servidor/README.md).
+El inicio comprueba la red mediante `/base4/acceso` del servidor de control y la lista común `contenido/redes.json`. Sin respuesta positiva no se carga la actividad. No existe una excepción por clave del profesor. Al entregar se solicita un sello firmado con IP y hora (campo `sello` del informe), sin volver a restringir la red. La columna IP contiene solo la dirección, o queda vacía si no hay un sello utilizable. Ver [servidor/README.md](servidor/README.md).
 
 En ambos casos el informe conserva el formato del resto de laboratorios (versión 3), añade `module` y `activity`, e incluye solo las pestañas que difieren del código de partida, como respuestas abiertas `html`, `css`, `js` o `txt`; la lista `modified` las enumera. La respuesta `txt` son las notas del alumno, envueltas en un comentario `/* … */`. Si no se modificó nada, hay una única respuesta vacía `sin-cambios`. Cada pestaña admite 10 000 caracteres.
 
@@ -93,7 +93,7 @@ Los archivos históricos `practica-….txt` pueden recuperar un intento pausado.
 - El resultado se ejecuta en un `iframe` aislado, sin acceso a la página, al guardado ni a la entrega. Una política de contenido impide peticiones de red, marcos anidados y envío de formularios; las imágenes, fuentes y medios por `https` sí se cargan. Se puede sustituir con `preview.csp` en `contenido/config.json`.
 - Los enlaces están desactivados y, si el marco navega a otra página, se sustituye por un aviso.
 
-Como en `/base/`, los controles son disuasorios y no constituyen una plataforma de examen seguro. Un bucle infinito ejecutado con «Ejecutar» puede bloquear la pestaña: el trabajo queda en el guardado local, pero solo se reanuda desde un archivo de «Pausar».
+Como en `/base/`, los controles son disuasorios y no constituyen una plataforma de examen seguro. Ejecutar comprueba el JavaScript mediante ESLint antes de mostrar el resultado. Este análisis detecta errores de sintaxis y algunos bucles infinitos, pero no todos. Tras un bloqueo se puede recuperar el último borrador local o un archivo de pausa de una actividad que permita guardar.
 
 ## Comprobación
 
@@ -103,7 +103,7 @@ Servir desde la raíz del repositorio, porque se usan rutas `/base/motor/`:
 python3 -m http.server 8000
 ```
 
-Abrir `http://localhost:8000/base3/?a=diw/01-01-tarjeta-de-presentacion`.
+Abrir `http://localhost:8000/base4/?a=diw/01-01-tarjeta-de-presentacion`.
 
 ## Plazo para regresar y tamaño del resultado
 
@@ -115,15 +115,14 @@ El receptor actualizado y `profesor.html` reconocen `guardPolicy: "return-timeou
 
 ## Llamada y configuración por actividad
 
-La URL conserva únicamente la actividad y, si hace falta, la clave del profesor:
+La actividad se selecciona mediante el parámetro `a`:
 
 ```text
-https://igarciafp.github.io/base3/?a=MODULO/ACTIVIDAD
-https://igarciafp.github.io/base3/?a=MODULO/ACTIVIDAD&clave=TU_CLAVE
+https://igarciafp.github.io/base4/?a=MODULO/ACTIVIDAD
 ```
 
 Módulos admitidos: `diw`, `dwec`, `ssii`. Ejemplo:
-`/base3/?a=diw/02-01-prueba-css-adaptable`.
+`/base4/?a=diw/02-01-prueba-css-adaptable`.
 
 Cada carpeta `actividades/MODULO/ACTIVIDAD/` incluye un único **config.json** con título, versión y ajustes (sustituye al antiguo archivo de metadatos):
 
@@ -135,9 +134,7 @@ Cada carpeta `actividades/MODULO/ACTIVIDAD/` incluye un único **config.json** c
   "duracion": 15,
   "entregas": 1,
   "reiniciar": false,
-  "redes": ["185.197.0.0/16", "88.16.0.0/16"],
-  "restringirHorario": false,
-  "restringirIPs": false
+  "restringirHorario": false
 }
 ```
 
@@ -145,7 +142,7 @@ Cada carpeta `actividades/MODULO/ACTIVIDAD/` incluye un único **config.json** c
 | --- | --- | --- |
 | title | Nombre de la actividad | Obligatorio |
 | version | Versión del contenido | Obligatorio |
-| guardar | Mostrar Pausar para guardar localmente y volver al login; el autoguardado y la recuperación local están siempre activos | false |
+| guardar | Mostrar Pausar para guardar localmente, descargar entrega.txt y volver al login; el autoguardado y la recuperación local están siempre activos | false |
 | duracion | Minutos disponibles; número positivo, hasta 1440 | 15 |
 | entregas | Máximo de intentos por correo y actividad; entero no negativo; 0 impide comenzar hasta autorización del profesor | 1 |
 | reiniciar | Mostrar y habilitar el botón Reiniciar | false |
@@ -158,7 +155,6 @@ Las actividades incluyen estos valores por defecto, salvo `diw/02-01-prueba-css-
 
 El contador muestra el tiempo restante desde Empezar. Al quedar un minuto se pone rojo y aparece un aviso. A cero se bloquea el editor y se entrega automáticamente. El margen acumulado para volver a pantalla completa es independiente. Si guardar está habilitado, pausar conserva el borrador local y detiene el tiempo de trabajo; recuperar conserva lo consumido.
 
-#
 ## Registro inicial y panel definitivo
 
 Al empezar se genera un ID aleatorio y se registra, antes de habilitar el editor, una fila con fecha y hora de inicio (Madrid), módulo, actividad, correo e IP. Se usan las columnas **ID** y **NUM ENTREGA** (o **Número de entrega**) donde estén. Todas las columnas se localizan por su cabecera, sin exigir un orden; solo se añaden al final las de identificación que falten. El número se asigna en el servidor bajo bloqueo para el mismo correo y práctica. Los intentos iniciados, aunque se abandonen, consumen una oportunidad.
@@ -171,25 +167,17 @@ La entrega final actualiza esa fila por ID; conserva los datos iniciales y las n
 - Los reenvíos de una entrega pendiente conservan su identidad y no crean un nuevo intento.
 - «Cerrar sin entregar» exige confirmación. Recargar o cerrar la pestaña muestra la advertencia nativa del navegador cuando este la permite. Al salir se elimina la copia local pendiente; queda la fila inicial, no una entrega completa. No se recuperan comprobantes finalizados como prácticas editables.
 
-El ID se mantiene al guardar y recuperar una práctica pausada. El registro inicial se reintenta con el mismo ID antes del envío si falló la red; no se puede garantizar el registro remoto sin conexión. La actualización final mantiene las restricciones de red y horario. Si se rechaza, la fila inicial sigue pendiente y el panel permite reintentar.
+El ID se mantiene al guardar y recuperar una práctica pausada. El registro inicial se reintenta con el mismo ID antes del envío si falló la red; no se puede garantizar el registro remoto sin conexión. La actualización final respeta el horario si la actividad lo exige; no vuelve a restringir la red. Si se rechaza, la fila inicial sigue pendiente y el panel permite reintentar.
 
 **Despliegue:** sustituir **Code.gs y Bridge.html** y publicar una nueva versión de la implementación existente. La URL y el Worker no cambian. Las columnas nuevas se crean automáticamente en el primer inicio.
 
 ## Restricciones de entrega por actividad
 
-- `redes`: lista de redes IPv4 o IPv6 en CIDR. Por defecto `["185.197.0.0/16", "88.16.0.0/16"]`. Una lista vacía no autoriza ninguna IP si se activa su restricción.
-- `restringirHorario`: por defecto `false`. Con `true`, exige que el sello firmado corresponda al horario del módulo definido en el Worker (Europe/Madrid y cinco minutos de margen).
-- `restringirIPs`: por defecto `false`. Con `true`, exige que la IP real del sello firmado pertenezca a alguna red de la lista.
+La red se autoriza al iniciar mediante `contenido/redes.json`; `redes` y `restringirIPs` por actividad no se utilizan en base4. La entrega conserva la IP firmada sin volver a bloquear por red.
 
-Ambas restricciones son independientes y se aplican a la recepción de entregas, incluidas las automáticas y las realizadas con clave del profesor. No impiden abrir ni trabajar en la actividad. No cambian el control de acceso común opcional `control.restringirAcceso`.
+`restringirHorario` es `false` por defecto. Con `true`, la recepción final exige un sello válido dentro del horario del módulo definido en el Worker, con zona Europe/Madrid y cinco minutos de margen. Los reintentos de una entrega ya recibida devuelven su confirmación sin duplicarla.
 
-Con ambas desactivadas se admite la entrega aunque no se pueda verificar el sello y se registran los avisos habituales. Con alguna activada, un sello ausente, inválido o imposible de verificar impide completar la fila inicial. Los reintentos de una entrega ya recibida siguen devolviendo su confirmación, sin duplicarla. La comprobación de red del receptor utiliza el config.json actual, no una lista enviada por el navegador.
-
-El Worker compara las redes configuradas con la IP pública de salida del equipo.
-
-Para activar esta versión, actualiza Code.gs y publica una nueva versión de Apps Script. Publica también servidor/worker.js en Cloudflare para que el sello y la revisión del profesor usen las redes de cada actividad. El nuevo registro inicial también requiere actualizar Bridge.html.
-
-Pruebas de regresión del ciclo de entrega: `node base3/tests/entrega-lifecycle.test.mjs`.
+Pruebas del ciclo de entrega: `node base4/tests/entrega-lifecycle.test.mjs`.
 
 ## Caché local y receptor publicado
 

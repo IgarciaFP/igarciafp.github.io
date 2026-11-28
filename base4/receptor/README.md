@@ -13,10 +13,13 @@ Escribe cada entrega en la pestaña **Entregas** de la hoja de cálculo del prof
 | IP | Solo la dirección IP; vacía si falta el sello o no es válido |
 | Incidencias | Número de incidencias y todos los avisos: cierre automático, fuera de red/horario, clave del profesor, acceso sin comprobar y problemas de verificación del sello |
 | ENTREGA completa | Informe gzip cifrado con AES-256-GCM (SSII4E1.) para base4; el comprobante del alumno es texto plano |
+| Análisis de la nota | JSON opcional con el desglose IA por pregunta o criterio; las entregas históricas pueden dejarlo vacío |
 
 Las columnas existentes siguientes (Detección IA, NOTA, Comentarios) no se tocan; ID y NUM ENTREGA se reutilizan donde estén; solo se añaden al final si faltan. El receptor comprueba que cada cabecera necesaria exista una sola vez, independientemente de su posición. Reenviar la misma entrega no añade otra fila.
 
 ## Actualizar una instalación existente (26/11/2026)
+
+La revisión del 28/11/2026 amplía **Code.gs**: devuelve el análisis privado al profesor, conserva su copia en los enlaces individuales y obtiene el tema a partir del identificador de la actividad al guardar notas. Sustituye el archivo completo y publica una nueva versión de la aplicación web existente, conservando su URL. No es necesario cambiar la estructura de las hojas públicas de los módulos. El procedimiento y el formato JSON están en [formatos-revision.md](../correccion/formatos-revision.md).
 
 1. Sustituye TODO el contenido del archivo de script principal (Code.gs o Código.gs) por el Code.gs de esta carpeta; no crees otro archivo con las mismas constantes y funciones.
 2. Sustituye TODO el contenido del archivo HTML Bridge por Bridge.html.

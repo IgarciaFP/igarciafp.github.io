@@ -37,6 +37,8 @@ function auth(value){
 function clearIA(){ $('nota-ai-value').textContent='—';$('nota-ai-comments').textContent='';$('nota-ai-status').textContent='Selecciona una entrega.'; }
 function showIA(result){
  const available=result.iaDisponible===true;
+ if(selected&&typeof result.analisisNota==='string')window.ReviewDetailed?.analysis(selected.id,result.analisisNota,result.analisisAviso);
+ if(selected)window.ReviewDetailed?.grade(selected.id,result.nota!==''?result.nota:result.notaIA);
  $('nota-ai-value').textContent=available&&result.notaIA!==''?result.notaIA:'—';
  $('nota-ai-comments').textContent=available?result.comentariosIA||'':'';
  $('nota-ai-status').textContent=available?(result.notaIA===''&&!result.comentariosIA?'Sin corrección IA todavía.':''):(result.iaAviso||'El receptor debe actualizarse para consultar la corrección IA.');

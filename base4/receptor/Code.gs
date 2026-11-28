@@ -286,7 +286,7 @@ function informeAlmacenado_(codigo) {
     const payload=texto.slice(0,pos),id=huella_(payload);
     if(id!==texto.slice(pos+marker.length))return null;
     const report=JSON.parse(payload);
-    return {laboratorio:laboratorio_(report),exam:report.exam,email:String(report.email).toLowerCase(),id};
+    return {laboratorio:laboratorio_(report),exam:report.exam,activity:report.activity,activityTitle:report.activityTitle,unidad:report.unidad,email:String(report.email).toLowerCase(),id};
   }catch{return null;}
 }
 function entregasAnteriores_(hoja,datos,id) {
@@ -515,9 +515,11 @@ function estadoNota_(celda, celdaComentarios) {
 function estadoIA_(hoja, cabeceras, fila) {
   const localizar = nombre => cabeceras.map((v,i) => igual_(v) === nombre ? i+1 : 0).filter(Boolean);
   const notas = localizar('nota ia'), comentarios = localizar('comentarios ia');
-  if (notas.length > 1 || comentarios.length > 1) return { iaDisponible: false, iaAviso: 'Hay cabeceras de IA duplicadas en la hoja.' };
-  if (notas.length !== 1 || comentarios.length !== 1) return { iaDisponible: false, iaAviso: 'Faltan las columnas NOTA IA o COMENTARIOS IA.' };
-  return { iaDisponible: true, notaIA: hoja.getRange(fila, notas[0]).getDisplayValue(), comentariosIA: hoja.getRange(fila, comentarios[0]).getDisplayValue() };
+  const analisis=cabeceras.map((v,i)=>nombreCabecera_(v)==='analisis de la nota'?i+1:0).filter(Boolean);
+  const detalle={analisisNota:analisis.length===1?String(hoja.getRange(fila,analisis[0]).getValue()||''):'',analisisAviso:analisis.length>1?'Hay columnas de análisis duplicadas.':''};
+  if (notas.length > 1 || comentarios.length > 1) return { ...detalle,iaDisponible: false, iaAviso: 'Hay cabeceras de IA duplicadas en la hoja.' };
+  if (notas.length !== 1 || comentarios.length !== 1) return { ...detalle,iaDisponible: false, iaAviso: 'Faltan las columnas NOTA IA o COMENTARIOS IA.' };
+  return { ...detalle,iaDisponible: true, notaIA: hoja.getRange(fila, notas[0]).getDisplayValue(), comentariosIA: hoja.getRange(fila, comentarios[0]).getDisplayValue() };
 }
 /** Todas las consultas y escrituras de notas requieren una sesión validada aquí. */
 function gestionarNota(pedido) {
@@ -607,6 +609,27 @@ function diagnosticarBase4() {
 
 
 /** Prepara el volcado de la actividad junto al guardado manual, sin escribir todavía. */
+function unidadActividad_(informe,nombre){
+  for(const value of [informe&&informe.activity,informe&&informe.exam,informe&&informe.activityTitle,nombre]){
+    const text=String(value||'').trim();
+    const match=/^(?:(?:DIW|DWEC|SSII)[\s·:/-]*)?(?:UD?|TEMA\s*)?0?(\d{1,2})(?=[-._\s]|$)/i.exec(text);
+    if(match&&Number(match[1])>0)return Number(match[1]);
+    const labelled=/\b(?:UD|UNIDAD|TEMA)\s*0?(\d{1,2})\b/i.exec(text);
+    if(labelled&&Number(labelled[1])>0)return Number(labelled[1]);
+  }
+  return Number.isInteger(informe&&informe.unidad)&&informe.unidad>0&&informe.unidad<100?informe.unidad:null;
+}
+/** Copia individual de la revisión. No modifica el informe ni su checksum original. */
+function codificarRevision_(codigo,analisis,id){
+  if(!analisis)return codigo;
+  try{
+    if(typeof analisis!=='string'||analisis.length>50000)return codigo;
+    const detail=JSON.parse(analisis);
+    if(detail.format!=='base4-analysis-v1'||detail.submissionId!==id)return codigo;
+    const text=JSON.stringify({format:'base4-review-v1',document:codigo,analysis:detail});
+    return 'BASE4R1.'+Utilities.base64EncodeWebSafe(Utilities.gzip(Utilities.newBlob(text,'application/json')).getBytes()).replace(/=+$/,'');
+  }catch{return codigo;}
+}
 function prepararVolcadoNota_(libro, origen, filaEditada, notaNueva, comentarioNuevo,decryptToken) {
   const destinos={DIW:'CuadranteDIW',DWEC:'CuadranteDWEC',SSII:'Cuadrante_SSII'};
   const tabla=origen.getDataRange().getValues(),cabeceras=tabla[0];
@@ -619,7 +642,7 @@ function prepararVolcadoNota_(libro, origen, filaEditada, notaNueva, comentarioN
     email:indice(cabeceras,'EMAIL'),fecha:indice(cabeceras,'DIA Y HORA [DD/MM/AA HH:MM:SS]'),
     enlace:indice(cabeceras,'PROBAR CODIGO'),informe:indice(cabeceras,'ENTREGA completa'),
     nota:indice(cabeceras,'nota'),comentario:indice(cabeceras,'Comentarios a la nota'),
-    ia:indice(cabeceras,'NOTA IA',true),comentarioIA:indice(cabeceras,'COMENTARIOS IA',true)};
+    ia:indice(cabeceras,'NOTA IA',true),comentarioIA:indice(cabeceras,'COMENTARIOS IA',true),analisis:indice(cabeceras,'Análisis de la nota',true)};
   const editada=tabla[filaEditada-1],modulo=String(editada[cols.mod]).trim().toUpperCase(),actividad=String(editada[cols.actividad]).trim();
   if(!destinos[modulo]||!actividad)throw Error('SYNC_SCHEMA');
   editada[cols.nota]=notaNueva;
@@ -632,13 +655,14 @@ function prepararVolcadoNota_(libro, origen, filaEditada, notaNueva, comentarioN
     if(!m)throw Error('SYNC_DATE');
     return Date.UTC(Number(m[3])+(m[3].length===2?2000:0),Number(m[2])-1,Number(m[1]),Number(m[4]),Number(m[5]),Number(m[6]||0));
   };
-  const alumnos=new Set(),emails=new Map(),ganadores=new Map();
+  const alumnos=new Set(),emails=new Map(),ganadores=new Map(),unidades=new Set();
   for(let i=1;i<tabla.length;i++){
     const r=tabla[i];
     if(String(r[cols.mod]).trim().toUpperCase()!==modulo||String(r[cols.actividad]).trim()!==actividad)continue;
     const almacenado=String(r[cols.informe]||''),cifrado=almacenado.startsWith('SSII4E1.');
     const codigo=cifrado?codificarDocumento_(descifrarDocumento_(almacenado,decryptToken)):almacenado,informe=informeAlmacenado_(codigo);
     if(!informe)continue; // Los registros iniciales sin entrega no cuentan.
+    const unidad=unidadActividad_(informe,actividad);if(unidad)unidades.add(unidad);
     const email=String(r[cols.email]||'').trim().toLowerCase(),usuario=email.split('@')[0];
     if(!usuario||!email.includes('@'))throw Error('SYNC_SCHEMA');
     if(emails.has(usuario)&&emails.get(usuario)!==email)throw Error('SYNC_ID');
@@ -649,7 +673,7 @@ function prepararVolcadoNota_(libro, origen, filaEditada, notaNueva, comentarioN
     if(!Number.isFinite(nota))throw Error('SYNC_GRADE');
     const id=String(cols.id>=0&&presente(r[cols.id])?r[cols.id]:informe.id);
     const comentario=presente(r[cols.comentario])?String(r[cols.comentario]):cols.comentarioIA>=0?String(r[cols.comentarioIA]||''):'';
-    const candidato={id,usuario,nota,comentario,fecha:fecha(r[cols.fecha]),fila:i+1,codigo,cifrado};
+    const candidato={id,usuario,nota,comentario,fecha:fecha(r[cols.fecha]),fila:i+1,codigo,cifrado,originalId:informe.id,...(cols.analisis>=0?{analisis:String(r[cols.analisis]||'')}:{})};
     const anterior=ganadores.get(usuario);
     if(!anterior||nota>anterior.nota||(nota===anterior.nota&&(candidato.fecha>anterior.fecha||(candidato.fecha===anterior.fecha&&id.localeCompare(anterior.id)>0))))ganadores.set(usuario,candidato);
   }
@@ -688,6 +712,7 @@ function prepararVolcadoNota_(libro, origen, filaEditada, notaNueva, comentarioN
     if(ganador.cifrado||!/^https:\/\/igarciafp\.github\.io\/base[34]\/(?:profesor|revisor)\.html(?:[?#]|$)/i.test(enlace)){
       enlace='https://igarciafp.github.io/base4/revisor.html#entrega='+ganador.codigo;
     }else enlace=enlace.replace(/\/base[34]\/(?:profesor|revisor)\.html/i,'/base4/revisor.html');
+    if(ganador.analisis!==undefined)enlace='https://igarciafp.github.io/base4/revisor.html#entrega='+codificarRevision_(ganador.codigo,ganador.analisis,ganador.originalId);
     const values=[ganador.id,ganador.usuario,actividad,'Ver entrega',ganador.nota,ganador.comentario].map(celda);
     for(const c of values)c.textFormatRuns=[];
     values[3].textFormatRuns=[{startIndex:0,format:{link:{uri:enlace}}}];
@@ -696,7 +721,8 @@ function prepararVolcadoNota_(libro, origen, filaEditada, notaNueva, comentarioN
   const columnas=q[1].map((v,i)=>i>=2&&String(v).trim()===actividad?i:-1).filter(i=>i>=0);
   if(columnas.length>1)throw Error('SYNC_SCHEMA');
   let col=columnas.length?columnas[0]:Math.max(2,q[1].length);
-  const tema=/^(?:(?:DIW|DWEC|SSII)\s*)?(\d{1,2})[-.]/i.exec(actividad);
+  if(unidades.size>1)throw Error('SYNC_UNIT');
+  const tema=unidades.size?[...unidades][0]:unidadActividad_(null,actividad);
   if(!tema)throw Error('SYNC_UNIT');
   const ids=new Set(),roster=[];
   for(let i=2;i<q.length;i++){
@@ -713,7 +739,7 @@ function prepararVolcadoNota_(libro, origen, filaEditada, notaNueva, comentarioN
     if(q.length>2)requests.push({copyPaste:{source:{sheetId:cuadrante.getSheetId(),startRowIndex:q.length-1,endRowIndex:q.length,startColumnIndex:0,endColumnIndex:Math.max(col+1,q[1].length)},destination:{sheetId:cuadrante.getSheetId(),startRowIndex:row,endRowIndex:row+1,startColumnIndex:0,endColumnIndex:Math.max(col+1,q[1].length)},pasteType:'PASTE_FORMAT'}});
     escribir(cuadrante,row,0,[celda(added[i])]);
   }
-  escribir(cuadrante,0,col,[celda(Number(tema[1]))]);escribir(cuadrante,1,col,[celda(actividad)]);
+  escribir(cuadrante,0,col,[celda(tema)]);escribir(cuadrante,1,col,[celda(actividad)]);
   roster.forEach((id,i)=>escribir(cuadrante,i+2,col,[celda(ganadores.get(id)?.nota??0)]));
   // Se borran al final y de abajo arriba para que los índices de escritura no se desplacen.
   [...new Set(borrar)].sort((a,b)=>b-a).forEach(row=>requests.push({deleteDimension:{range:{sheetId:destino.getSheetId(),dimension:'ROWS',startIndex:row,endIndex:row+1}}}));

@@ -282,7 +282,7 @@ for(const compatible of [false,true]){
 {
  const elements={};
  const get=id=>elements[id]||=( {open:false,textContent:'',handlers:{},addEventListener(type,fn){this.handlers[type]=fn;},showModal(){this.open=true;},close(){this.open=false;}});
- const runtime=vm.createContext({$:get});
+ const runtime=vm.createContext({$:get,window:{}});
  vm.runInContext(part('let modalResolve=null,','const clearLocalButton='),runtime);
  let promise=runtime.confirmActionModal('¿Continuar?');
  assert.equal(get('action-confirm').open,true);
